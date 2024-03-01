@@ -1,7 +1,7 @@
 
 # trader-goods-profiles-frontend
 
-This is a placeholder README.md for a new repository
+This is the frontend for Trader Goods Profile. For more information on how to get started, see: https://github.com/hmrc/hmrc-frontend-scaffold.g8/wiki/Usage#using-scaffolds-to-create-new-pages
 
 ### License
 
