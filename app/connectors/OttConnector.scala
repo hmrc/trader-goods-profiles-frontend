@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.ott.OttResponse
+import models.ott.{GoodsNomenclature}
 import play.api.http.Status.OK
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc.Results.BadRequest
@@ -32,10 +32,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
   private def setHeaders(): Seq[(String, String)] = Seq(
-    "Authorization" -> "Token REPLACE-ME-WITH-TOKEN-SOMEHOW"
+    "Authorization" -> "Token ???"
   )
 
-  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Either[Result, OttResponse]] = {
+  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Either[Result, GoodsNomenclature]] = {
     val url = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
     val responseFuture: Future[HttpResponse] = http.GET[HttpResponse](url = url, headers = setHeaders())
 
@@ -43,7 +43,7 @@ class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(imp
       httpResponse.status match {
         case OK =>
           val json = Json.parse(httpResponse.body)
-          json.validate[OttResponse] match {
+          json.validate[GoodsNomenclature] match {
             case JsSuccess(ottResponse, _) =>
               Right(ottResponse)
             case JsError(errors) =>
