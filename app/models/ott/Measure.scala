@@ -22,10 +22,10 @@ import play.api.libs.functional.syntax._
 
 case class Measure(
   id: String,
-  goodsNomenclatureItemId: Option[String],
-  goodsNomenclatureSid: Option[JsValue],
-  effectiveStartDate: Option[JsValue],
-  effectiveEndDate: Option[JsValue],
-  measureType: Option[JsValue],
-  footnotes: Option[JsValue]
+//  goodsNomenclatureItemId: Option[String],
+//  goodsNomenclatureSid: Option[JsValue],
+//  effectiveStartDate: Option[JsValue],
+//  effectiveEndDate: Option[JsValue],
+//  measureType: Option[JsValue],
+//  footnotes: Option[JsValue]
 )

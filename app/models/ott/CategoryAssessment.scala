@@ -22,10 +22,10 @@ import play.api.libs.functional.syntax._
 // Refine these types
 case class CategoryAssessment(
  id: String,
- category: String,
- theme: Option[JsValue],
- geographical_area: Option[Map[String, Either[Data, List[Data]]]],
- excluded_geographical_areas: Option[Map[String, Either[Data, List[Data]]]],
- exemptions: Option[Map[String, Either[Data, List[Data]]]],
+// category: String,
+// theme: Option[JsValue],
+// geographical_area: Option[Map[String, Either[Data, List[Data]]]],
+// excluded_geographical_areas: Option[Map[String, Either[Data, List[Data]]]],
+// exemptions: Option[Map[String, Either[Data, List[Data]]]],
  measures: Option[List[Measure]]
 )

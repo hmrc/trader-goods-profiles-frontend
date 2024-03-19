@@ -17,87 +17,34 @@
 package models.ott
 
 import play.api.libs.json._
-import scala.collection.mutable.ArrayBuffer
 
 case class OttResponse(
-  data: Data,
-  included: Option[List[Data]]
+  data: JsObject,
+  included: List[JsObject]
 ) {
-
-
-  private def extractMeasuresForCategoryAssessment(categoryAssessmentId: String): Option[List[Measure]] = {
-    val relatedMeasureData = included.map { includedData =>
-      includedData.filter(_.id == categoryAssessmentId)
+  def getApplicableCategoryAssessments(): Option[List[CategoryAssessment]] = {
+    val applicableIds = (data \ "relationships" \ "applicable_category_assessments" \ "data").asOpt[List[JsObject]] match {
+      case Some(list) => list.map(obj => (obj \ "id").as[String])
+      case None => List.empty[String]
     }
 
-    val measureBuffer = ArrayBuffer[Measure]()
+    val assessments = included.filter(obj => applicableIds.contains((obj \ "id").as[String]))
 
-    for {
-      dataList <- relatedMeasureData
-      x <- dataList
-    } {
-      measureBuffer += Measure(
-        x.id,
-        data.attributes.flatMap(_.get("goods_nomenclature_item_id")).map {x => x.toString()},
-        None,
-        None,
-        None,
-        None,
-        None
-      )
-    }
-
-    if (measureBuffer.isEmpty) {
-      None
-    } else {
-      Some(measureBuffer.toList)
-    }
-  }
-
-
-  def extractCategoryAssessments(): Option[List[CategoryAssessment]] = {
-    val referencesToAssesmentData = data.relationships.flatMap { rels =>
-      rels.get("applicable_category_assessments").map { categoryAssessments =>
-        categoryAssessments.values.flatMap {
-          case Left(data) => Some(List(data))
-          case Right(list) => Some(list)
-        }.toList.flatten
+    Some(assessments.map { assessment =>
+      val measureIds = (assessment \ "relationships" \ "measures" \ "data").asOpt[List[JsObject]] match {
+        case Some(list) => list.map(obj => (obj \ "id").as[String])
+        case None => List.empty[String]
       }
-    }
-
-    val referencedAssessmentData = included.flatMap { includedData =>
-      referencesToAssesmentData.map { references =>
-        references.flatMap { reference =>
-          includedData.find(_.id == reference.id)
-        }
+      val measures = included.filter(obj => measureIds.contains((obj \ "id").as[String]))
+      val measuresModelled = measures.map { measure =>
+        Measure((measure \ "id").as[String])
       }
-    }
 
-    val categoryAssessmentsBuffer = ArrayBuffer[CategoryAssessment]()
-
-    for {
-      dataList <- referencedAssessmentData
-      data <- dataList
-    } {
-      categoryAssessmentsBuffer += CategoryAssessment(
-        data.id,
-        data.attributes.flatMap(_.get("category")).get.toString(),
-        data.attributes.flatMap(_.get("theme")),
-        data.relationships.flatMap(_.get("geographical_area")),
-        data.relationships.flatMap(_.get("excluded_geographical_areas")),
-        data.relationships.flatMap(_.get("exemptions")),
-        extractMeasuresForCategoryAssessment(data.id)
-      )
-    }
-
-    if (categoryAssessmentsBuffer.isEmpty)  {
-      None
-    } else {
-      Some(categoryAssessmentsBuffer.toList)
-    }
+      CategoryAssessment((assessment \ "id").as[String], Some(measuresModelled))
+    })
   }
 }
 
 object OttResponse {
-  implicit val goodsNomenclatureFormat: Format[OttResponse] = Json.format[OttResponse]
+  implicit val ottResponseFormat = Json.format[OttResponse]
 }
