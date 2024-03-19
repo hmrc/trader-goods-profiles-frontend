@@ -16,7 +16,7 @@
 
 package models.ott
 
-import play.api.libs.json.{JsValue, Json, OFormat, Reads, __}
+import play.api.libs.json.{JsValue, Reads, __}
 import play.api.libs.functional.syntax._
 
 
@@ -27,19 +27,5 @@ case class Measure(
   effectiveStartDate: Option[JsValue],
   effectiveEndDate: Option[JsValue],
   measureType: Option[JsValue],
-  footnotes: Option[JsValue],
-  included: Option[List[JsValue]]
+  footnotes: Option[JsValue]
 )
-
-object Measure {
-  implicit val measureReads: Reads[Measure] = (
-    (__ \ "id").read[String] and
-      (__ \ "attributes" \ "goods_nomenclature_item_id").readNullable[JsValue] and
-      (__ \ "attributes" \ "goods_nomenclature_sid").readNullable[JsValue] and
-      (__ \ "attributes" \ "effective_start_date").readNullable[JsValue] and
-      (__ \ "attributes" \ "effective_end_date").readNullable[JsValue] and
-      (__ \ "relationships" \ "measure_type").readNullable[JsValue] and
-      (__ \ "relationships" \ "footnotes").readNullable[JsValue] and
-      (__ \ "included").readNullable[List[JsValue]]
-    )(Measure.apply _)
-}

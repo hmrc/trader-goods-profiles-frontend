@@ -19,40 +19,13 @@ package models.ott
 import play.api.libs.json.{JsValue, Json, OFormat, Reads, __}
 import play.api.libs.functional.syntax._
 
+// Refine these types
 case class CategoryAssessment(
  id: String,
- category: Option[JsValue],
+ category: String,
  theme: Option[JsValue],
  geographical_area: Option[JsValue],
  excluded_geographical_areas: Option[JsValue],
  exemptions: Option[JsValue],
- measures: Option[List[IdTypePair]],
- included: Option[List[JsValue]]
-) {
-  def getRelatedMeasures(): Option[List[Measure]] = {
-    (measures, included) match {
-      case (Some(measureList), Some(includedList)) =>
-        Some(measureList.flatMap { jsValue =>
-          includedList.find(_.as[IdTypePair].id == jsValue.id).map { jsValue =>
-            val measure = jsValue.as[Measure]
-            val measure_with_included = measure.copy(included = Some(includedList))
-            measure_with_included
-          }
-        })
-      case _ => None
-    }
-  }
-}
-
-object CategoryAssessment {
-  implicit val categoryAssessmentReads: Reads[CategoryAssessment] = (
-    (__ \ "id").read[String] and
-      (__ \ "attributes" \ "category").readNullable[JsValue] and
-      (__ \ "attributes" \ "theme").readNullable[JsValue] and
-      (__ \ "relationships" \ "geographical_area").readNullable[JsValue] and
-      (__ \ "relationships" \ "excluded_geographical_areas").readNullable[JsValue] and
-      (__ \ "relationships" \ "exemptions").readNullable[JsValue] and
-      (__ \ "relationships" \ "measures" \ "data").readNullable[List[IdTypePair]] and
-      (__ \ "included").readNullable[List[JsValue]]
-    )(CategoryAssessment.apply _)
-}
+ measures: Option[List[Measure]]
+)

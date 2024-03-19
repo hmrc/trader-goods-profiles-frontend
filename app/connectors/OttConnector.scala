@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.ott.{GoodsNomenclature}
+import models.ott.OttResponse
 import play.api.http.Status.OK
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc.Results.BadRequest
@@ -35,7 +35,7 @@ class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(imp
     "Authorization" -> "Token ???"
   )
 
-  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Either[Result, GoodsNomenclature]] = {
+  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Either[Result, OttResponse]] = {
     val url = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
     val responseFuture: Future[HttpResponse] = http.GET[HttpResponse](url = url, headers = setHeaders())
 
@@ -43,7 +43,7 @@ class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(imp
       httpResponse.status match {
         case OK =>
           val json = Json.parse(httpResponse.body)
-          json.validate[GoodsNomenclature] match {
+          json.validate[OttResponse] match {
             case JsSuccess(ottResponse, _) =>
               Right(ottResponse)
             case JsError(errors) =>
