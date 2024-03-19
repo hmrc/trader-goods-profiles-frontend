@@ -45,6 +45,7 @@ class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(imp
           val json = Json.parse(httpResponse.body)
           json.validate[OttResponse] match {
             case JsSuccess(ottResponse, _) =>
+              println(ottResponse.extractCategoryAssessments())
               Right(ottResponse)
             case JsError(errors) =>
               Left(BadRequest("Failed to parse response: " + errors.mkString(", ")))
