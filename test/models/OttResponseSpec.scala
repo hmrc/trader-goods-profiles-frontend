@@ -22,12 +22,12 @@ import org.scalatest.matchers.must.Matchers.have
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.libs.json.{JsError, JsSuccess, Json}
 
-import java.nio.file.{Files, Paths}
 import java.time.Instant
+import scala.io.Source
 
 class OttResponseSpec extends AnyFreeSpec {
   val jsonFilePath = "ott_response_test_data.json"
-  val jsonDataString = scala.io.Source.fromFile(jsonFilePath).mkString
+  val jsonDataString = Source.fromFile(jsonFilePath).mkString
   val jsonData = Json.parse(jsonDataString)
 
   "OttResponse" - {
@@ -38,50 +38,57 @@ class OttResponseSpec extends AnyFreeSpec {
             val result = ottResponse.getApplicableCategoryAssessments()
 
             result should have size 1
-            result.headOption.foreach { categoryAssessment =>
-              categoryAssessment.id shouldBe Some("123456cd")
-              categoryAssessment.category shouldBe Some("Category1")
-//              categoryAssessment.theme shouldBe Some("Theme1")
-//              categoryAssessment.geographicalArea.map(_.id) shouldBe Some("1011")
-              categoryAssessment.exemptions shouldBe Some(List(
-                Right(
-                  AdditionalCode(
-                    Some("3200"),
-                    Some("3"),
-                    Some("200"),
-                    Some("3200"),
-                    Some("Mixtures of scheduled substances listed in the Annex to Regulation () No 111/2005 that can be used for the illicit manufacture of narcotic drugs or psychotropic substances"),
-                    Some("Mixtures of scheduled substances listed in the Annex to Regulation (EC) No 111/2005 that can be used for the illicit manufacture of narcotic drugs or psychotropic substances")
-                  )
-                ),
-                Left(
-                  Certificate(
-                    Some("Y069"),
-                    Some("Y"),
-                    Some("069"),
-                    Some("Y069"),
-                    Some("Goods not consigned from Iran"),
-                    Some("Goods not consigned from Iran")
+
+            result.map { categoryAssessment =>
+
+              categoryAssessment.id shouldBe Some("abcdef01")
+              categoryAssessment.category shouldBe Some("Dummy Category")
+
+              categoryAssessment.exemptions shouldBe Some(
+                List(
+                  Right(
+                    AdditionalCode(
+                      Some("9999"),
+                      Some("9"),
+                      Some("999"),
+                      Some("9999"),
+                      Some("Dummy additional code description"),
+                      Some("Dummy formatted additional code description"))
+                  ),
+                  Left(
+                    Certificate(
+                      Some("X999"),
+                      Some("X"),
+                      Some("999"),
+                      Some("X999"),
+                      Some("Dummy certificate description"),
+                      Some("Dummy formatted certificate description")
+                    )
                   )
                 )
               )
-              )
-              categoryAssessment.measures shouldBe Some(List(
-                Measure(
-                  Some("3871194"),
-                  Some("2404120000"),
-                  Some("106662"),
-                  Some(Instant.parse("2022-01-01T00:00:00Z")),
-                  None,
-                  Some(MeasureType(
-                    Some("475"),
-                    Some("Restriction on entry into free circulation"),
-                    Some("Entry into free circulation or exportation subject to conditions"),
-                    Some(Instant.parse("1972-01-01T00:00:00Z")),
+
+              categoryAssessment.measures shouldBe Some(
+                List(
+                  Measure(
+                    Some("1234567"),
+                    Some("9999990000"),
+                    Some("999999"),
+                    Some(Instant.parse("2022-01-01T00:00:00Z")),
                     None,
-                    Some("B"),
-                    Some(0))))
-              ))
+                    Some(MeasureType(
+                      Some("789"),
+                      Some("Dummy measure description"),
+                      Some("Dummy measure series description"),
+                      Some(Instant.parse("1972-01-01T00:00:00Z")),
+                      None,
+                      Some("Z"),
+                      Some(0))
+                    )
+                  )
+                )
+              )
+
             }
           case JsError(errors) =>
             fail
