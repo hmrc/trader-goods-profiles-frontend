@@ -16,16 +16,17 @@
 
 package models.ott
 
-import play.api.libs.json.{JsValue, Reads, __}
-import play.api.libs.functional.syntax._
+import play.api.libs.json.JsValue
+import java.time.Instant
 
 
 case class Measure(
-  id: String,
-//  goodsNomenclatureItemId: Option[String],
-//  goodsNomenclatureSid: Option[JsValue],
-//  effectiveStartDate: Option[JsValue],
-//  effectiveEndDate: Option[JsValue],
-//  measureType: Option[JsValue],
-//  footnotes: Option[JsValue]
+  id: Option[String] = None,
+  goodsNomenclatureItemId: Option[String] = None,
+  goodsNomenclatureSid: Option[String] = None,
+  effectiveStartDate: Option[Instant] = None,
+  effectiveEndDate: Option[Instant] = None,
+  measureType: Option[MeasureType] = None,
+  footnotes: Option[JsValue] = None
 )
+

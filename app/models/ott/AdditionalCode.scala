@@ -16,14 +16,11 @@
 
 package models.ott
 
-import play.api.libs.json.{JsObject, JsValue}
-
-case class CategoryAssessment(
+case class AdditionalCode(
   id: Option[String] = None,
-  category: Option[String] = None,
-  theme: Option[String] = None,
-  geographicalArea: Option[JsObject] = None,
-  excludedGeographicalAreas: Option[JsObject] = None,
-  exemptions: Option[List[Either[Certificate, AdditionalCode]]] = None,
-  measures: Option[List[Measure]] = None
+  additionalCodeTypeId: Option[String] = None,
+  additionalCode: Option[String] = None,
+  code: Option[String] = None,
+  description: Option[String] = None,
+  formattedDescription: Option[String] = None
 )

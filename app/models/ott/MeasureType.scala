@@ -16,14 +16,14 @@
 
 package models.ott
 
-import play.api.libs.json.{JsObject, JsValue}
+import java.time.Instant
 
-case class CategoryAssessment(
+case class MeasureType(
   id: Option[String] = None,
-  category: Option[String] = None,
-  theme: Option[String] = None,
-  geographicalArea: Option[JsObject] = None,
-  excludedGeographicalAreas: Option[JsObject] = None,
-  exemptions: Option[List[Either[Certificate, AdditionalCode]]] = None,
-  measures: Option[List[Measure]] = None
+  description: Option[String] = None,
+  measureTypeSeriesDescription: Option[String] = None,
+  validityStartDate: Option[Instant] = None,
+  validityEndDate: Option[Instant] = None,
+  measureTypeSeriesId: Option[String] = None,
+  tradeMovementCode: Option[Int] = None
 )
