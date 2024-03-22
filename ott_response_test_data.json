@@ -1,0 +1,125 @@
+{
+  "data": {
+    "id": "106662",
+    "type": "goods_nomenclature",
+    "attributes": {
+      "goods_nomenclature_item_id": "2404120000",
+      "parent_sid": "106659",
+      "description": "Other, containing nicotine",
+      "number_indents": 2,
+      "productline_suffix": "80",
+      "validity_start_date": "2022-01-01T00:00:00.000Z",
+      "validity_end_date": null
+    },
+    "relationships": {
+      "applicable_category_assessments": {
+        "data": [
+          {
+            "id": "123456cd",
+            "type": "category_assessment"
+          }
+        ]
+      }
+    }
+  },
+  "included": [
+    {
+      "id": "123456cd",
+      "type": "category_assessment",
+      "attributes":{
+        "category": "Category1"
+      },
+      "relationships": {
+        "geographical_area": {
+          "data": {
+            "id": "1011",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": [
+
+          ]
+        },
+        "theme": {
+          "data": {
+            "id": "1.1",
+            "type": "theme"
+          }
+        },
+        "exemptions": {
+          "data": [
+            {
+              "id": "Y069",
+              "type": "certificate"
+            },
+            {
+              "id": "3200",
+              "type": "certificate"
+            }
+          ]
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "3871194",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "3200",
+      "type": "additional_code",
+      "attributes": {
+        "additional_code_type_id": "3",
+        "additional_code": "200",
+        "code": "3200",
+        "description": "Mixtures of scheduled substances listed in the Annex to Regulation () No 111/2005 that can be used for the illicit manufacture of narcotic drugs or psychotropic substances",
+        "formatted_description": "Mixtures of scheduled substances listed in the Annex to Regulation (EC) No 111/2005 that can be used for the illicit manufacture of narcotic drugs or psychotropic substances"
+      }
+    },
+    {
+      "id": "Y069",
+      "type": "certificate",
+      "attributes": {
+        "certificate_type_code": "Y",
+        "certificate_code": "069",
+        "code": "Y069",
+        "description": "Goods not consigned from Iran",
+        "formatted_description": "Goods not consigned from Iran"
+      }
+    },
+    {
+      "id": "3871194",
+      "type": "measure",
+      "attributes": {
+        "goods_nomenclature_item_id": "2404120000",
+        "goods_nomenclature_sid": "106662",
+        "effective_start_date": "2022-01-01T00:00:00.000Z",
+        "effective_end_date": null
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "475",
+            "type": "measure_type"
+          }
+        }
+      }
+    },
+    {
+      "id": "475",
+      "type": "measure_type",
+      "attributes": {
+        "description": "Restriction on entry into free circulation",
+        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions",
+        "validity_start_date": "1972-01-01T00:00:00.000Z",
+        "validity_end_date": null,
+        "measure_type_series_id": "B",
+        "trade_movement_code": 0
+      }
+    }
+  ]
+}
