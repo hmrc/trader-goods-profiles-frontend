@@ -26,7 +26,7 @@ import java.time.Instant
 import scala.io.Source
 
 class OttResponseSpec extends AnyFreeSpec {
-  val jsonFilePath = "ott_response_test_data.json"
+  val jsonFilePath = "test/models/test_data/ott_response_test_data.json"
   val jsonDataString = Source.fromFile(jsonFilePath).mkString
   val jsonData = Json.parse(jsonDataString)
 

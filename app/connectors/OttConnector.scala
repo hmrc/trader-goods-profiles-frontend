@@ -27,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, StringContextOps}
 
 @Singleton
 class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
@@ -36,29 +36,35 @@ class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(i
     "Authorization" -> "Token ???"
   )
 
-  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Either[Result, OttResponse]] = {
-    val urlString = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
-    val url = url"${urlString}"
-    val responseFuture: Future[HttpResponse] = http.get(url).addHeaders(setHeaders()).execute[HttpResponse]
-    responseFuture.map { httpResponse =>
+  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[OttResponse] = {
+    val responseFuture = requestDataFromOtt(comcode)
+    responseFuture.flatMap { httpResponse =>
       httpResponse.status match {
         case OK =>
           val json = Json.parse(httpResponse.body)
           json.validate[OttResponse] match {
             case JsSuccess(ottResponse, _) =>
-              println(ottResponse.getApplicableCategoryAssessments())
-              Right(ottResponse)
+              Future.successful(ottResponse)
             case JsError(errors) =>
-              Left(BadRequest("Failed to parse response: " + errors.mkString(", ")))
+              Future.failed(new Exception("Failed to parse OTT response: " + errors.mkString(", ")))
           }
         case _ =>
-          // Handle status codes in this match... At the moment just uses OTT status to respond.
-          Left(Status(httpResponse.status)(httpResponse.body))
+          Future.failed(new Exception(s"Failure status from OTT. Code: ${httpResponse.status.toString}  Body: ${httpResponse.body}"))
       }
     }.recover {
       case exception: Exception =>
-        // Handle exceptions like timeouts or whatever.
-        Left(InternalServerError("An error occurred: " + exception.getMessage))
+        throw new Exception("Error communicating with OTT: " + exception.getMessage)
     }
+  }
+
+  def requestDataFromOtt(comcode: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val urlString = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
+    val url = url"${urlString}"
+    val responseFuture = http
+      .get(url)
+      .addHeaders(setHeaders())
+      .withProxy
+      .execute[HttpResponse]
+    responseFuture
   }
 }
