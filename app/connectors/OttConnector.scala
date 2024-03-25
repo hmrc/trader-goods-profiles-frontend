@@ -20,25 +20,26 @@ import config.FrontendAppConfig
 import models.ott.OttResponse
 import play.api.http.Status.OK
 import play.api.libs.json.{JsError, JsSuccess, Json}
-import play.api.mvc.Results.BadRequest
+import play.api.mvc.Results.{BadRequest, InternalServerError, Status}
 import play.api.mvc.{Result, Results}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 @Singleton
-class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
-  private def setHeaders(): Seq[(String, String)] = Seq(
+  private def setHeaders(): (String, String) = (
     "Authorization" -> "Token ???"
   )
 
   def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Either[Result, OttResponse]] = {
-    val url = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
-    val responseFuture: Future[HttpResponse] = http.GET[HttpResponse](url = url, headers = setHeaders())
-
+    val urlString = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
+    val url = url"${urlString}"
+    val responseFuture: Future[HttpResponse] = http.get(url).addHeaders(setHeaders()).execute[HttpResponse]
     responseFuture.map { httpResponse =>
       httpResponse.status match {
         case OK =>
@@ -52,12 +53,12 @@ class OttConnector @Inject()(http: HttpClient, appConfig: FrontendAppConfig)(imp
           }
         case _ =>
           // Handle status codes in this match... At the moment just uses OTT status to respond.
-          Left(Results.Status(httpResponse.status)(httpResponse.body))
+          Left(Status(httpResponse.status)(httpResponse.body))
       }
     }.recover {
       case exception: Exception =>
         // Handle exceptions like timeouts or whatever.
-        Left(Results.InternalServerError("An error occurred: " + exception.getMessage))
+        Left(InternalServerError("An error occurred: " + exception.getMessage))
     }
   }
 }

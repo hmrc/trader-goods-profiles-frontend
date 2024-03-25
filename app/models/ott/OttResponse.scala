@@ -96,7 +96,7 @@ case class OttResponse(
           AdditionalCode(
             id = (exemption \ "id").asOpt[String],
             additionalCodeTypeId = (exemption \ "attributes" \ "additional_code_type_id").asOpt[String],
-            additionalCode = (exemption \ "attributes" \ "additional_code_type_id").asOpt[String],
+            additionalCode = (exemption \ "attributes" \ "additional_code").asOpt[String],
             code = (exemption \ "attributes" \ "code").asOpt[String],
             description = (exemption \ "attributes" \ "description").asOpt[String],
             formattedDescription = (exemption \ "attributes" \ "formatted_description").asOpt[String]
