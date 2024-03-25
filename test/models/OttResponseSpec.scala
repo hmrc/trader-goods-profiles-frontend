@@ -91,7 +91,7 @@ class OttResponseSpec extends AnyFreeSpec {
 
             }
           case JsError(errors) =>
-            fail
+            fail(s"Failed to validate OttResponse: ${errors.mkString(", ")}")
         }
       }
     }
