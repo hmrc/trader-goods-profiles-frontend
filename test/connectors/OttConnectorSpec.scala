@@ -47,7 +47,7 @@ class OttConnectorSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
     val ottResponse = "{\"data\": {\"id\": \"1234\", \"type\": \"some_type\"}, \"included\": []}"
     val nonParsableOttResponse = "{\"well_formed\": {\"but\": \"incorrect\", \"json\": \"right\"}, \"here\": []}"
 
-    "getGoodsNomenclatures should return an OttResponseStore object when OTT response can be parsed" in {
+    "getGoodsNomenclatures should return an OttResponseStore object when the OTT response can be parsed" in {
       doReturn(Future.successful(HttpResponse(OK, ottResponse)))
         .when(ottConnector).requestDataFromOtt(testComcode)(mockHeaderCarrier)
 
@@ -78,7 +78,7 @@ class OttConnectorSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
       assert(exception.getMessage.contains("Error communicating with OTT: JsResultException"))
     }
 
-    "getGoodsNomenclatures should error when the OTT resadfgsdfhgponse cannot be parsed " in {
+    "getGoodsNomenclatures should error when OTT responds with an error status" in {
       doReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, ottResponse)))
         .when(ottConnector).requestDataFromOtt(testComcode)(mockHeaderCarrier)
 
