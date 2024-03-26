@@ -17,17 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.ott.OttResponse
+import models.ott.OttResponseStore
 import play.api.http.Status.OK
-import play.api.libs.json.{JsError, JsSuccess, Json}
-import play.api.mvc.Results.{BadRequest, InternalServerError, Status}
-import play.api.mvc.{Result, Results}
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 @Singleton
 class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
@@ -36,20 +32,11 @@ class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(i
     "Authorization" -> "Token ???"
   )
 
-  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[OttResponse] = {
-    val responseFuture = requestDataFromOtt(comcode)
-    responseFuture.flatMap { httpResponse =>
-      httpResponse.status match {
-        case OK =>
-          val json = Json.parse(httpResponse.body)
-          json.validate[OttResponse] match {
-            case JsSuccess(ottResponse, _) =>
-              Future.successful(ottResponse)
-            case JsError(errors) =>
-              Future.failed(new Exception("Failed to parse OTT response: " + errors.mkString(", ")))
-          }
-        case _ =>
-          Future.failed(new Exception(s"Failure status from OTT. Code: ${httpResponse.status.toString}  Body: ${httpResponse.body}"))
+  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[OttResponseStore] = {
+    requestDataFromOtt(comcode).map { res =>
+      res.status match {
+        case OK => new OttResponseStore(res.json)
+        case _ => throw new Exception("OTT responded with status " + res.status.toString)
       }
     }.recover {
       case exception: Exception =>

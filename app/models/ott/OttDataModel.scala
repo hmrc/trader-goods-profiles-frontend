@@ -16,14 +16,17 @@
 
 package models.ott
 
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{JsValue, Json}
 
-case class CategoryAssessment(
-  id: Option[String] = None,
-  category: Option[String] = None,
-  theme: Option[String] = None,
-  geographicalArea: Option[JsObject] = None,
-  excludedGeographicalAreas: Option[JsObject] = None,
-  exemptions: Option[List[Either[Certificate, AdditionalCode]]] = None,
-  measures: Option[List[Measure]] = None
+case class OttDataModel(
+  id: String,
+  `type`: String,
+  attributes: Option[Map[String, JsValue]],
+  relationships: Option[Map[String, JsValue]],
+  links: Option[Map[String, String]],
+  meta: Option[Map[String, String]] = None
 )
+
+object OttDataModel {
+  implicit val modelFormat = Json.format[OttDataModel]
+}
