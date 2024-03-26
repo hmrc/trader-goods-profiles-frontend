@@ -17,21 +17,19 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.ott.OttResponse
-import org.scalatest._
+import models.ott.OttResponseStore
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.time.{Seconds, Span}
-import play.api.http.Status.{BAD_REQUEST, OK}
-import play.api.libs.json.JsObject
+import play.api.http.Status.{BAD_REQUEST, OK, INTERNAL_SERVER_ERROR}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
 import scala.concurrent.{ExecutionContext, Future}
-
 
 class OttConnectorSpec extends AnyFreeSpec with Matchers with ScalaFutures with MockitoSugar {
 
@@ -42,81 +40,58 @@ class OttConnectorSpec extends AnyFreeSpec with Matchers with ScalaFutures with 
   val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
 
   val testComcode = "testComcode"
-
   val ottConnector = spy(new OttConnector(mockHttpClient, mockAppConfig))
 
   "OttConnector" - {
 
-    "getGoodsNomenclatures should return an OttResponse object when OTT response can be parsed" in {
+    val ottResponse = "{\"data\": {\"id\": \"1234\", \"type\": \"some_type\"}, \"included\": []}"
+    val nonParsableOttResponse = "{\"well_formed\": {\"but\": \"incorrect\", \"json\": \"right\"}, \"here\": []}"
 
-      val ottResponseBody = "{\"data\": {}, \"included\": []}"
-
-      doReturn(Future.successful(HttpResponse(OK, ottResponseBody)))
+    "getGoodsNomenclatures should return an OttResponseStore object when OTT response can be parsed" in {
+      doReturn(Future.successful(HttpResponse(OK, ottResponse)))
         .when(ottConnector).requestDataFromOtt(testComcode)(mockHeaderCarrier)
 
-      val expectedOttResponseObject = OttResponse(data = JsObject.empty, included = List())
+      val expectedStore = new OttResponseStore(Json.parse(ottResponse))
 
       whenReady(
         ottConnector.getGoodsNomenclatures(testComcode),
         PatienceConfiguration.Timeout(Span(5, Seconds))
-      ) { response =>
-        response shouldBe expectedOttResponseObject
+      ) { store =>
+        store.getRoot shouldBe expectedStore.getRoot
       }
     }
 
-    "getGoodsNomenclatures should return an exception when OTT response cannot be parsed" in {
+    "getGoodsNomenclatures should error when the OTT response cannot be parsed " in {
 
-      val ottResponseBody = "{\"abcd\": {}, \"abcdef\": []}"
-
-      doReturn(Future.successful(HttpResponse(OK, ottResponseBody)))
+      doReturn(Future.successful(HttpResponse(OK, nonParsableOttResponse)))
         .when(ottConnector).requestDataFromOtt(testComcode)(mockHeaderCarrier)
 
       val exception = intercept[Exception] {
         whenReady(
           ottConnector.getGoodsNomenclatures(testComcode),
           PatienceConfiguration.Timeout(Span(5, Seconds))
-        ) { response =>
-          response
+        ) { store =>
+          store
         }
       }
 
-      assert(exception.getMessage.contains("Error communicating with OTT: Failed to parse OTT response:"))
+      assert(exception.getMessage.contains("Error communicating with OTT: JsResultException"))
     }
 
-    "getGoodsNomenclatures should return an exception when OTT response is malformed" in {
-
-      val ottResponseBody = "{\"abc...{d\": {}, \"abc{d}{ef\"+{: [{}]}"
-
-      doReturn(Future.successful(HttpResponse(OK, ottResponseBody)))
+    "getGoodsNomenclatures should error when the OTT resadfgsdfhgponse cannot be parsed " in {
+      doReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, ottResponse)))
         .when(ottConnector).requestDataFromOtt(testComcode)(mockHeaderCarrier)
 
       val exception = intercept[Exception] {
         whenReady(
           ottConnector.getGoodsNomenclatures(testComcode),
           PatienceConfiguration.Timeout(Span(5, Seconds))
-        ) { response =>
-          response
+        ) { store =>
+          store
         }
       }
 
-      assert(exception.getMessage.contains("Error communicating with OTT: Unexpected character"))
-    }
-
-    "getGoodsNomenclatures should return an exception when OTT responds with an error" in {
-
-      doReturn(Future.successful(HttpResponse(BAD_REQUEST, "bad request")))
-        .when(ottConnector).requestDataFromOtt(testComcode)(mockHeaderCarrier)
-
-      val exception = intercept[Exception] {
-        whenReady(
-          ottConnector.getGoodsNomenclatures(testComcode),
-          PatienceConfiguration.Timeout(Span(5, Seconds))
-        ) { response =>
-          response
-        }
-      }
-
-      assert(exception.getMessage.contains("Error communicating with OTT: Failure status from OTT. Code: 400  Body: bad request."))
+      assert(exception.getMessage.contains("Error communicating with OTT: OTT responded with status 500"))
     }
 
   }
