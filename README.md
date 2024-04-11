@@ -1,7 +1,22 @@
 
-# trader-goods-profiles-frontend
+## Trader Goods Profile
 
-This is the frontend for Trader Goods Profile. For more information on how to get started, see: https://github.com/hmrc/hmrc-frontend-scaffold.g8/wiki/Usage#using-scaffolds-to-create-new-pages
+Trader Goods Profile (TGP) supports UK Internal Market Scheme (UKIMS) registered traders moving goods from Great Britain to Northern Ireland that are not-at-risk of moving into the European Union.
+
+TGP stores goods information allowing traders or intermediaries to use the information to create, update and remove declarations.
+
+### Dependencies
+
+- Scala 2.13.12
+- Java 11
+- sbt > 1.9.7
+- [Service Manager](https://github.com/hmrc/service-manager)
+
+### Setup
+
+Run this service from your console using: `sbt run`
+
+Use service manager to start up supporting services: `sm --start TGP_ALL` 
 
 ### License
 
