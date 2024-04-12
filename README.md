@@ -9,14 +9,15 @@ TGP stores goods information allowing traders or intermediaries to use the infor
 
 - Scala 2.13.12
 - Java 11
-- sbt > 1.9.7
-- [Service Manager](https://github.com/hmrc/service-manager)
+- SBT > 1.9.7
+- Mongo 4.4
+- [Service Manager](https://github.com/hmrc/sm2)
 
 ### Setup
 
 Run this service from your console using: `sbt run`
 
-Use service manager to start up supporting services: `sm --start TGP_ALL` 
+Use service manager to start up supporting services: `sm2 --start TGP_FE` 
 
 ### License
 
