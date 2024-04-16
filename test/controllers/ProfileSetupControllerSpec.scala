@@ -3,22 +3,22 @@ package controllers
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.IndexView
+import views.html.ProfileSetupView
 
-class IndexControllerSpec extends SpecBase {
+class ProfileSetupControllerSpec extends SpecBase {
 
-  "Index Controller" - {
+  "Profile Setup Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.IndexController.onPageLoad.url)
+        val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad.url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[IndexView]
+        val view = application.injector.instanceOf[ProfileSetupView]
 
         status(result) mustEqual OK
 
