@@ -33,17 +33,17 @@
     <h2 class="govuk-heading-m">@messages("profileSetup.ukims.h2")</h2>
     <p class="govuk-body">@messages("profileSetup.p1")</p>
     <p class="govuk-body">@messages("profileSetup.p2")</p>
-    <p class="govuk-body">@messages("profileSetup.p3") <a href="https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland">@messages("profileSetup.p3.linkText")</a>@messages("site.fullStop")</p>
+    <p class="govuk-body">@Html(messages("profileSetup.p3", messages("profileSetup.p3.linkText")))</p>
 
     <h2 class="govuk-heading-m">@messages("profileSetup.nirms.h2")</h2>
     <p class="govuk-body">@messages("profileSetup.p4")</p>
     <p class="govuk-body">@messages("profileSetup.p5")</p>
-    <p class="govuk-body">@messages("profileSetup.p6") <a href="https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility">@messages("profileSetup.p6.linkText")</a>@messages("site.fullStop")</p>
+    <p class="govuk-body">@Html(messages("profileSetup.p6", messages("profileSetup.p6.linkText")))</p>
 
     <h2 class="govuk-heading-m">@messages("profileSetup.niphl.h2")</h2>
     <p class="govuk-body">@messages("profileSetup.p7")</p>
     <p class="govuk-body">@messages("profileSetup.p8")</p>
-    <p class="govuk-body">@messages("profileSetup.p9") <a href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland">@messages("profileSetup.p9.linkText")</a>@messages("site.fullStop")</p>
+    <p class="govuk-body">@Html(messages("profileSetup.p9", messages("profileSetup.p9.linkText")))</p>
 
     @govukButton(
         ButtonViewModel(messages("site.continue"))
