@@ -17,23 +17,20 @@
 package controllers
 
 import controllers.actions.IdentifierAction
-import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ProfileSetupView
+import views.html.{DummyView, ProfileSetupView}
 
-class ProfileSetupController @Inject()(
+import javax.inject.Inject
+
+class DummyController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
                                  identify: IdentifierAction,
-                                 view: ProfileSetupView
+                                 view: DummyView
                                ) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = identify { implicit request =>
     Ok(view())
-  }
-
-  def onSubmit: Action[AnyContent] = identify { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
   }
 }

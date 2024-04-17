@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package models
+@this(
+    layout: templates.Layout,
+    heading1: components.Heading1
+)
 
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
+@()(implicit request: Request[_], messages: Messages)
 
-class WithNameSpec extends AnyFreeSpec with Matchers {
-
-  object Foo extends WithName("bar")
-
-  ".toString" - {
-
-    "must return the correct string" in {
-      Foo.toString mustEqual "bar"
-    }
-  }
+@layout(
+    pageTitle    = titleNoForm("Dummy Page"),
+    showBackLink = false
+) {
+    @heading1(":)")
 }
