@@ -17,6 +17,7 @@
 @this(
     layout: templates.Layout,
     govukButton: GovukButton,
+    formHelper: FormWithCSRF,
     paragraph: components.Paragraph,
     heading1: components.Heading1,
     heading2: components.Heading2
@@ -46,10 +47,9 @@
     @paragraph(Html(messages("profileSetup.p8")))
     @paragraph(Html(messages("profileSetup.p9", messages("profileSetup.p9.linkText"))))
 
-    @govukButton(
+    @formHelper(action = ProfileSetupController.onSubmit) {
+        @govukButton(
         ButtonViewModel(messages("site.continue"))
-            //TODO actual link needed
-            .asLink(routes.JourneyRecoveryController.onPageLoad().url)
-    )
-
+        )
+    }
 }
