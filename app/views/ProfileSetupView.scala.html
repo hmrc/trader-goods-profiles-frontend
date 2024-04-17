@@ -16,7 +16,10 @@
 
 @this(
     layout: templates.Layout,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    paragraph: components.Paragraph,
+    heading1: components.Heading1,
+    heading2: components.Heading2
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -25,25 +28,23 @@
     pageTitle    = titleNoForm(messages("profileSetup.title")),
     showBackLink = false
 ) {
+    @heading1(messages("profileSetup.h1"))
+    @paragraph(Html(messages("profileSetup.body.intro")))
 
-    <h1 class="govuk-heading-l">@messages("profileSetup.h1")</h1>
+    @heading2(messages("profileSetup.ukims.h2"))
+    @paragraph(Html(messages("profileSetup.p1")))
+    @paragraph(Html(messages("profileSetup.p2")))
+    @paragraph(Html(messages("profileSetup.p3", messages("profileSetup.p3.linkText"))))
 
-    <p class="govuk-body">@messages("profileSetup.body.intro")</p>
+    @heading2(messages("profileSetup.nirms.h2"))
+    @paragraph(Html(messages("profileSetup.p4")))
+    @paragraph(Html(messages("profileSetup.p5")))
+    @paragraph(Html(messages("profileSetup.p6", messages("profileSetup.p6.linkText"))))
 
-    <h2 class="govuk-heading-m">@messages("profileSetup.ukims.h2")</h2>
-    <p class="govuk-body">@messages("profileSetup.p1")</p>
-    <p class="govuk-body">@messages("profileSetup.p2")</p>
-    <p class="govuk-body">@Html(messages("profileSetup.p3", messages("profileSetup.p3.linkText")))</p>
-
-    <h2 class="govuk-heading-m">@messages("profileSetup.nirms.h2")</h2>
-    <p class="govuk-body">@messages("profileSetup.p4")</p>
-    <p class="govuk-body">@messages("profileSetup.p5")</p>
-    <p class="govuk-body">@Html(messages("profileSetup.p6", messages("profileSetup.p6.linkText")))</p>
-
-    <h2 class="govuk-heading-m">@messages("profileSetup.niphl.h2")</h2>
-    <p class="govuk-body">@messages("profileSetup.p7")</p>
-    <p class="govuk-body">@messages("profileSetup.p8")</p>
-    <p class="govuk-body">@Html(messages("profileSetup.p9", messages("profileSetup.p9.linkText")))</p>
+    @heading2(messages("profileSetup.niphl.h2"))
+    @paragraph(Html(messages("profileSetup.p7")))
+    @paragraph(Html(messages("profileSetup.p8")))
+    @paragraph(Html(messages("profileSetup.p9", messages("profileSetup.p9.linkText"))))
 
     @govukButton(
         ButtonViewModel(messages("site.continue"))
