@@ -46,8 +46,8 @@ class AuthorisedAction @Inject()(
 
     authorised().retrieve(Retrievals.internalId and Retrievals.allEnrolments) {
       case Some(internalId) ~ enrolments =>
-        val enrolment: Option[Enrolment] = enrolments.enrolments.find(x => x.key == "HMRC-CUS-ORG")
-        val tgpEnrolment = enrolment.flatMap(value => value.getIdentifier("fake-identifier"))
+        val enrolment: Option[Enrolment] = enrolments.getEnrolment(config.tgpEnrolmentIdentifier.key)
+        val tgpEnrolment = enrolment.flatMap(value => value.getIdentifier(config.tgpEnrolmentIdentifier.identifier))
         tgpEnrolment match {
           case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
           case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")

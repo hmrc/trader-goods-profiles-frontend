@@ -17,10 +17,10 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
+import models.EnrolmentConfig
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
-
 import uk.gov.hmrc.http.StringContextOps
 @Singleton
 class FrontendAppConfig @Inject() (configuration: Configuration) {
@@ -53,4 +53,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
   val cacheTtl: Int = configuration.get[Int]("mongodb.timeToLiveInSeconds")
+
+  val tgpEnrolmentIdentifier: EnrolmentConfig = configuration.get[EnrolmentConfig]("enrolment-config")
 }
