@@ -48,7 +48,10 @@ class AuthenticatedIdentifierAction @Inject()(
       case Some(internalId) ~ enrolments =>
         val enrolment: Option[Enrolment] = enrolments.enrolments.find(x => x.key == "HMRC-CUS-ORG")
         val tgpEnrolment = enrolment.flatMap(value => value.getIdentifier("fake-identifier"))
-        block(AuthorisedRequest(request, InternalId(internalId), Eori("TODO")))
+        tgpEnrolment match {
+          case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
+          case None => throw new UnauthorizedException("Unable to retrieve Enrolment")
+        }
     }  recover {
       case _: NoActiveSession =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
