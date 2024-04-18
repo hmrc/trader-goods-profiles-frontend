@@ -18,7 +18,7 @@ package controllers.actions
 
 import base.SpecBase
 import models.UserAnswers
-import models.requests.{IdentifierRequest, OptionalDataRequest}
+import models.requests.{AuthorisedRequest, OptionalDataRequest}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
@@ -30,7 +30,7 @@ import scala.concurrent.Future
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
   class Harness(sessionRepository: SessionRepository) extends DataRetrievalActionImpl(sessionRepository) {
-    def callTransform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] = transform(request)
+    def callTransform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] = transform(request)
   }
 
   "Data Retrieval Action" - {
@@ -57,7 +57,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         when(sessionRepository.get("id")) thenReturn Future(Some(UserAnswers("id")))
         val action = new Harness(sessionRepository)
 
-        val result = action.callTransform(new IdentifierRequest(FakeRequest(), "id")).futureValue
+        val result = action.callTransform(new AuthorisedRequest(FakeRequest(), "id")).futureValue
 
         result.userAnswers mustBe defined
       }
