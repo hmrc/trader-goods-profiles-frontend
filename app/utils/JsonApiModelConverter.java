@@ -25,8 +25,8 @@ public class JsonApiModelConverter {
 
     private static final ResourceConverter resourceConverter = new ResourceConverter(GoodsNomenclature.class);
 
-    public static com.github.jasminb.jsonapi.JSONAPIDocument<GoodsNomenclature> convert(String jsonString) {
-        return resourceConverter.readDocument(jsonString.getBytes(StandardCharsets.UTF_8), GoodsNomenclature.class);
+    public static GoodsNomenclature convert(String jsonString) {
+        return resourceConverter.readDocument(jsonString.getBytes(StandardCharsets.UTF_8), GoodsNomenclature.class).get();
     }
 
 }

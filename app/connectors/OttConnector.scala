@@ -36,15 +36,14 @@ class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(i
   val rc: ResourceConverter = new ResourceConverter(classOf[GoodsNomenclature])
 
   private def setHeaders(): (String, String) = (
-    "Authorization" -> "Token mGAP1GZVd6"
+    "Authorization" -> "Token ???"
   )
 
-  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[Any] = {
+  def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[GoodsNomenclature] = {
     requestDataFromOtt(comcode).map { res =>
       res.status match {
         case OK => {
           JsonApiModelConverter.convert(res.body)
-          print(res.body)
         }
         case _ => throw new Exception("OTT responded with status " + res.status.toString)
       }
