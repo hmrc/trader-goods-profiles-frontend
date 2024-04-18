@@ -33,12 +33,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait IdentifierAction extends ActionBuilder[AuthorisedRequest, AnyContent] with ActionFunction[Request, AuthorisedRequest]
 
-class AuthenticatedIdentifierAction @Inject()(
-                                               override val authConnector: AuthConnector,
-                                               config: FrontendAppConfig,
-                                               val parser: BodyParsers.Default
-                                             )
-                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
+class AuthorisedAction @Inject()(
+                                 override val authConnector: AuthConnector,
+                                 config: FrontendAppConfig,
+                                 val parser: BodyParsers.Default
+                               )
+                               (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
@@ -50,7 +50,7 @@ class AuthenticatedIdentifierAction @Inject()(
         val tgpEnrolment = enrolment.flatMap(value => value.getIdentifier("fake-identifier"))
         tgpEnrolment match {
           case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
-          case None => throw new UnauthorizedException("Unable to retrieve Enrolment")
+          case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")
         }
     }  recover {
       case _: NoActiveSession =>
