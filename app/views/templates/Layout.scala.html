@@ -30,11 +30,13 @@
     hmrcTimeoutDialog: HmrcTimeoutDialog,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcScripts: HmrcScripts,
-    alphaBanner: StandardAlphaBanner
+    betaBanner: StandardBetaBanner
+
 )
 
 @(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @head = {
 
     @hmrcHead(
@@ -89,7 +91,7 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceUrl  = Some(routes.ProfileSetupController.onPageLoad.url),
         signOutUrl  = if(showSignOut) Some(controllers.auth.routes.AuthController.signOut.url) else None,
-        phaseBanner = Some(alphaBanner(appConfig.feedbackUrl.toString()))
+        phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
     )),
     beforeContentBlock = Some(beforeContent),
     footerBlock        = Some(hmrcStandardFooter()),
