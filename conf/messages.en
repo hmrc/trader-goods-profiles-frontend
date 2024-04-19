@@ -53,7 +53,7 @@ profileSetup.nirms.h2 = Northern Ireland Retail Movement Scheme (NIRMS)
 profileSetup.p4 = Businesses responsible for selling or facilitating the movement of food for final consumption in Northern Ireland are eligible to benefit from the NIRMS arrangements.
 profileSetup.p5 = NIRMS registered traders can add their NIRMS authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIRMS.
 profileSetup.p6 = NIRMS authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIRMS authorised, find out about {0}.
-profileSetup.p6.linkText = <a target="_blank" href="https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility" class="govuk-link" >the Northern Ireland Retail Movement Scheme</a>
+profileSetup.p6.linkText = <a target="_blank" href="https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments" class="govuk-link" >the Northern Ireland Retail Movement Scheme</a>
 
 profileSetup.niphl.h2 = Northern Ireland plant health label (NIPHL)
 profileSetup.p7 = The NIPHL scheme is a way for growers and traders in Great Britain (England, Scotland and Wales) to move certain products to Northern Ireland.
