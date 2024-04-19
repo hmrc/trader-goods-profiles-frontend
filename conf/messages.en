@@ -38,7 +38,7 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-profileSetup.title = Setting up your profile - Trader Goods Profile
+profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
 
 profileSetup.body.intro = We’re going to ask you some questions, then for some information depending on your answers.
