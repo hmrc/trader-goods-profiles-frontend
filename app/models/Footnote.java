@@ -18,22 +18,14 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
-import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Type("measure_type")
-public class MeasureType {
+@Type("footnote")
+public class Footnote {
     @Id
     public String id;
 
+    public String code;
     public String description;
-    public String measure_type_series_description;
-    public String validity_start_date;
-    public String validity_end_date;
-    public String measure_type_series_id;
-    public Integer trade_movement_code;
-
-    @Relationship("footnote")
-    public Footnote footnote;
 }
