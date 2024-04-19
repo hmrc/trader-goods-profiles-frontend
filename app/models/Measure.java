@@ -29,4 +29,9 @@ public class Measure {
     @Id
     public String id;
 
+    public String goods_nomenclature_item_id;
+    public String goods_nomenclature_sid;
+    public String effective_start_date;
+    public String effective_end_date;
+
 }
