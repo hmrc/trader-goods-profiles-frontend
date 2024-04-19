@@ -31,5 +31,4 @@ public class CategoryAssessment {
 
     @Relationship("measures")
     public Collection<Measure> measures;
-
 }

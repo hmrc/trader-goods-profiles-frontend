@@ -21,11 +21,9 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 
-import java.util.Collection;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Type("measure")
-public class Measure {
+public class MeasureType {
     @Id
     public String id;
 
@@ -36,4 +34,5 @@ public class Measure {
 
     @Relationship("measure_type")
     public MeasureType measure_type;
+
 }
