@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.IdentifierAction
+import controllers.actions.AuthoriseAction
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 class JourneyRecoveryController @Inject()(
                                            val controllerComponents: MessagesControllerComponents,
-                                           identify: IdentifierAction,
+                                           identify: AuthoriseAction,
                                            continueView: JourneyRecoveryContinueView,
                                            startAgainView: JourneyRecoveryStartAgainView
                                          ) extends FrontendBaseController with I18nSupport with Logging {
