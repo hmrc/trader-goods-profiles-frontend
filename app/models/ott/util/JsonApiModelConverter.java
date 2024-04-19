@@ -30,7 +30,10 @@ public class JsonApiModelConverter {
             Measure.class,
             MeasureType.class,
             Certificate.class,
-            AdditionalCode.class
+            AdditionalCode.class,
+            GeographicalArea.class,
+            ReferencedGoodsNomenclature.class,
+            CategoryAssessmentListing.class
     );
 
     public static GoodsNomenclature convert(String jsonString) {
