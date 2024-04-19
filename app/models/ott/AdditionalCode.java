@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-package models;
+package models.ott;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
-import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import models.ott.Exemption;
-import models.ott.Measure;
-
-import java.util.Collection;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Type("category_assessment")
-public class CategoryAssessment {
+@Type("additional_code")
+public class AdditionalCode implements Exemption {
+
     @Id
     public String id;
 
-    @Relationship("measures")
-    public Collection<Measure> measures;
-
-    @Relationship("exemptions")
-    public Collection<Exemption> exemptions;
-
+    public String additional_code_type_id;
+    public String additional_code;
+    public String code;
+    public String description;
+    public String formatted_description;
 }

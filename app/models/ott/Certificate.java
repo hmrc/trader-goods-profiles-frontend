@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package models;
+package models.ott;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
-import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 
-import java.util.Collection;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Type("measure")
-public class Measure {
+@Type("certificate")
+public class Certificate implements Exemption {
+
     @Id
     public String id;
 
-    public String goods_nomenclature_item_id;
-    public String goods_nomenclature_sid;
-    public String effective_start_date;
-    public String effective_end_date;
+    public String certificate_type_code;
+    public String certificate_code;
+    public String code;
+    public String description;
+    public String formatted_description;
 
-    @Relationship("measure_type")
-    public MeasureType measure_type;
 }

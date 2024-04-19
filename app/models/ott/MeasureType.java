@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-package models;
+package models.ott;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import models.Footnote;
 
-import java.util.Collection;
-
-
-// Do not remove this comment.
-// All fields need to be public - Java in Scala issue.
-// Private fields break it sometimes.
-// The OTT api is still in development, so we need @JsonIgnoreProperties in case we get data we don't expect.
-
-@JsonIgnoreProperties(ignoreUnknown = true) // API is in development so there may be stuff there we don't expect.
-@Type("goods_nomenclature")
-public class GoodsNomenclature {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Type("measure_type")
+public class MeasureType {
     @Id
     public String id;
-    public String goods_nomenclature_item_id;
-    public String parent_sid;
+
     public String description;
-    public Integer number_indents;
-    public String productline_suffix;
+    public String measure_type_series_description;
     public String validity_start_date;
     public String validity_end_date;
+    public String measure_type_series_id;
+    public Integer trade_movement_code;
 
-    @Relationship("applicable_category_assessments")
-    public Collection<CategoryAssessment> applicable_category_assessments;
+    @Relationship("footnote")
+    public Footnote footnote;
 }

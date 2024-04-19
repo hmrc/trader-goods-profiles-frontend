@@ -26,9 +26,8 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import com.github.jasminb.jsonapi.ResourceConverter
-import com.github.jasminb.jsonapi.annotations.{Id, Meta, Relationship, Type}
-import models.GoodsNomenclature
-import utils.JsonApiModelConverter
+import models.ott.GoodsNomenclature
+import models.ott.util.JsonApiModelConverter
 
 @Singleton
 class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {

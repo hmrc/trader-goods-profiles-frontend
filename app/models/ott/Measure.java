@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models;
+package models.ott;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
@@ -22,18 +22,16 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Type("measure_type")
-public class MeasureType {
+@Type("measure")
+public class Measure {
     @Id
     public String id;
 
-    public String description;
-    public String measure_type_series_description;
-    public String validity_start_date;
-    public String validity_end_date;
-    public String measure_type_series_id;
-    public Integer trade_movement_code;
+    public String goods_nomenclature_item_id;
+    public String goods_nomenclature_sid;
+    public String effective_start_date;
+    public String effective_end_date;
 
-    @Relationship("footnote")
-    public Footnote footnote;
+    @Relationship("measure_type")
+    public MeasureType measure_type;
 }
