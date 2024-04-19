@@ -28,17 +28,17 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.auth.core.retrieve.~
-
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Logging
 
-trait IdentifierAction extends ActionBuilder[AuthorisedRequest, AnyContent] with ActionFunction[Request, AuthorisedRequest]
+trait AuthoriseAction extends ActionBuilder[AuthorisedRequest, AnyContent] with ActionFunction[Request, AuthorisedRequest]
 
-class AuthorisedAction @Inject()(
+class AuthoriseActionImpl @Inject()(
                                  override val authConnector: AuthConnector,
                                  config: FrontendAppConfig,
                                  val parser: BodyParsers.Default
                                )
-                               (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
+                                   (implicit val executionContext: ExecutionContext) extends AuthoriseAction with AuthorisedFunctions with Logging{
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
@@ -54,8 +54,10 @@ class AuthorisedAction @Inject()(
         }
     }  recover {
       case _: NoActiveSession =>
+        logger.info(s"NoActiveSession. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException =>
+        logger.info("AuthorisationException occurred. Redirect to UnauthorisedController")
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }

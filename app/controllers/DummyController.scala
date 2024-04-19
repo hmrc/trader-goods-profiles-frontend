@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.IdentifierAction
+import controllers.actions.AuthoriseAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class DummyController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
-                                 identify: IdentifierAction,
+                                 identify: AuthoriseAction,
                                  view: DummyView
                                ) extends FrontendBaseController with I18nSupport {
 
