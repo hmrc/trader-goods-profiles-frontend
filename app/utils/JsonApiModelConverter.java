@@ -19,12 +19,19 @@ package utils;
 import com.github.jasminb.jsonapi.ResourceConverter;
 import models.CategoryAssessment;
 import models.GoodsNomenclature;
+import models.Measure;
+import models.MeasureType;
 
 import java.nio.charset.StandardCharsets;
 
 public class JsonApiModelConverter {
 
-    private static final ResourceConverter resourceConverter = new ResourceConverter(GoodsNomenclature.class, CategoryAssessment.class);
+    private static final ResourceConverter resourceConverter = new ResourceConverter(
+            GoodsNomenclature.class,
+            CategoryAssessment.class,
+            Measure.class,
+            MeasureType.class
+    );
 
     public static GoodsNomenclature convert(String jsonString) {
         return resourceConverter.readDocument(jsonString.getBytes(StandardCharsets.UTF_8), GoodsNomenclature.class).get();

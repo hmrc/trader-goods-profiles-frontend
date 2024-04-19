@@ -45,7 +45,10 @@ class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(i
         case OK => {
           JsonApiModelConverter.convert(res.body)
         }
-        case _ => throw new Exception("OTT responded with status " + res.status.toString)
+        case _ => {
+
+          throw new Exception("OTT responded with status " + res.status.toString)
+        }
       }
     }.recover {
       case exception: Exception =>

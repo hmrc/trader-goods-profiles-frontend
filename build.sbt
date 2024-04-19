@@ -44,8 +44,9 @@ lazy val microservice = (project in file("."))
       "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
     ),
     libraryDependencies ++= AppDependencies(),
+    dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.14.3",
     retrieveManaged := true,
-    resolvers ++= Seq(Resolver.jcenterRepo),
+    resolvers ++= Seq(Resolver.jcenterRepo, Resolver.sonatypeRepo("releases")),
     // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" ->
