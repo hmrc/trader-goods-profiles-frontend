@@ -20,7 +20,7 @@ import base.SpecBase
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.{CheckYourAnswersView, DummyView, JourneyRecoveryContinueView, ProfileSetupView}
+import views.html.ProfileSetupView
 
 class ProfileSetupControllerSpec extends SpecBase {
 
