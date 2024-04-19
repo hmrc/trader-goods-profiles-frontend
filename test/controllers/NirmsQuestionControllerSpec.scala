@@ -25,13 +25,13 @@ import forms.NirmsQuestionFormProvider
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
+  private val formProvider = new NirmsQuestionFormProvider()
+
   "NirmsQuestion Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = None).build()
-
-      val formProvider = new NirmsQuestionFormProvider()
 
       running(application) {
         val request = FakeRequest(GET, routes.NirmsQuestionController.onPageLoad.url)
@@ -63,8 +63,6 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
     "must send bad request on Submit when user doesn't select yes or no" in {
       val application = applicationBuilder(userAnswers = None).build()
-
-      val formProvider = new NirmsQuestionFormProvider()
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
