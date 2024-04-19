@@ -15,8 +15,8 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardAlphaBanner
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(
     appConfig: FrontendAppConfig,
@@ -36,7 +36,6 @@
 
 @(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @head = {
 
     @hmrcHead(
