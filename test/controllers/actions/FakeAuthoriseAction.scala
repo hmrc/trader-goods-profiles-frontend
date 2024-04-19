@@ -23,7 +23,7 @@ import models.{Eori, InternalId}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeAuthoriseAction @Inject()(bodyParsers: PlayBodyParsers) extends AuthoriseAction {
+class FakeAuthoriseAction @Inject() (bodyParsers: PlayBodyParsers) extends AuthoriseAction {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     block(AuthorisedRequest(request, InternalId("id"), Eori("eori")))

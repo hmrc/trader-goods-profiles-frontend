@@ -23,14 +23,11 @@ case class EnrolmentConfig(key: String, identifier: String)
 
 object EnrolmentConfig {
 
-  implicit lazy val configLoader: ConfigLoader[EnrolmentConfig] = ConfigLoader {
-    config =>
-      prefix =>
+  implicit lazy val configLoader: ConfigLoader[EnrolmentConfig] = ConfigLoader { config => prefix =>
+    val enrolmentConfig = Configuration(config).get[Configuration](prefix)
+    val key             = enrolmentConfig.get[String]("tgp-enrolment-key")
+    val id              = enrolmentConfig.get[String]("tgp-enrolment-identifier")
 
-        val enrolmentConfig = Configuration(config).get[Configuration](prefix)
-        val key = enrolmentConfig.get[String]("tgp-enrolment-key")
-        val id = enrolmentConfig.get[String]("tgp-enrolment-identifier")
-
-        EnrolmentConfig(key, id)
+    EnrolmentConfig(key, id)
   }
 }
