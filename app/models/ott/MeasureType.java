@@ -35,6 +35,4 @@ public class MeasureType {
     public String measure_type_series_id;
     public Integer trade_movement_code;
 
-    @Relationship("footnote")
-    public Footnote footnote;
 }

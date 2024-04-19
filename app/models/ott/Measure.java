@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import models.Footnote;
+
+import java.util.Collection;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Type("measure")
@@ -34,4 +37,7 @@ public class Measure {
 
     @Relationship("measure_type")
     public MeasureType measure_type;
+
+    @Relationship("footnotes")
+    public Collection<Footnote> footnotes;
 }

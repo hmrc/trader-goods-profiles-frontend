@@ -49,7 +49,6 @@ class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(i
         throw new Exception("Error communicating with OTT: " + exception.getMessage)
     }
   }
-//
   def requestDataFromOtt(comcode: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val urlString = s"${appConfig.ottBaseUrl}${appConfig.ottGreenLanePath}${comcode}"
     val url = url"${urlString}"
