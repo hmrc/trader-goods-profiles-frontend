@@ -17,13 +17,14 @@
 package utils;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
+import models.CategoryAssessment;
 import models.GoodsNomenclature;
 
 import java.nio.charset.StandardCharsets;
 
 public class JsonApiModelConverter {
 
-    private static final ResourceConverter resourceConverter = new ResourceConverter(GoodsNomenclature.class);
+    private static final ResourceConverter resourceConverter = new ResourceConverter(GoodsNomenclature.class, CategoryAssessment.class);
 
     public static GoodsNomenclature convert(String jsonString) {
         return resourceConverter.readDocument(jsonString.getBytes(StandardCharsets.UTF_8), GoodsNomenclature.class).get();

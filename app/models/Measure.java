@@ -23,25 +23,10 @@ import com.github.jasminb.jsonapi.annotations.Type;
 
 import java.util.Collection;
 
-
-// Do not remove this comment.
-// All fields need to be public - Java in Scala issue.
-// Private fields break it sometimes.
-// The OTT api is still in development, so we need @JsonIgnoreProperties in case we get data we don't expect.
-
-@JsonIgnoreProperties(ignoreUnknown = true) // API is in development so there may be stuff there we don't expect.
-@Type("goods_nomenclature")
-public class GoodsNomenclature {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Type("measure")
+public class Measure {
     @Id
     public String id;
-    public String goods_nomenclature_item_id;
-    public String parent_sid;
-    public String description;
-    public Integer number_indents;
-    public String productline_suffix;
-    public String validity_start_date;
-    public String validity_end_date;
 
-    @Relationship("applicable_category_assessments")
-    public Collection<CategoryAssessment> applicable_category_assessments;
 }
