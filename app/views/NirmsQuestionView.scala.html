@@ -15,18 +15,37 @@
  *@
 
 @this(
-layout: templates.Layout,
-heading1: components.Heading1,
-paragraph: components.Paragraph
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    heading1: components.Heading1,
+    heading2: components.Heading2,
+    paragraph: components.Paragraph,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle    = titleNoForm(messages("nirmsQuestion.title")),
-showBackLink = true
+    pageTitle    = titleNoForm(messages("nirmsQuestion.title")),
+    showBackLink = true
 ) {
-@heading1(messages("nirmsQuestion.h1"))
-@paragraph(Html(messages("nirmsQuestion.p1")))
-@paragraph(Html(messages("nirmsQuestion.p2", messages("nirmsQuestion.p2.linkText"))))
+    @heading1(messages("nirmsQuestion.h1"))
+    @paragraph(Html(messages("nirmsQuestion.p1")))
+    @paragraph(Html(messages("nirmsQuestion.p2", messages("nirmsQuestion.p2.linkText"))))
+
+    @heading2(messages("nirmsQuestion.h2"))
+
+    @formHelper(action = NirmsQuestionController.onSubmit) {
+        @govukRadios(
+          RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = Legend()
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }
