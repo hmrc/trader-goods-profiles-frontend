@@ -31,29 +31,32 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.Logging
 
-trait AuthoriseAction extends ActionBuilder[AuthorisedRequest, AnyContent] with ActionFunction[Request, AuthorisedRequest]
+trait AuthoriseAction
+    extends ActionBuilder[AuthorisedRequest, AnyContent]
+    with ActionFunction[Request, AuthorisedRequest]
 
-class AuthoriseActionImpl @Inject()(
-                                 override val authConnector: AuthConnector,
-                                 config: FrontendAppConfig,
-                                 val parser: BodyParsers.Default
-                               )
-                                   (implicit val executionContext: ExecutionContext) extends AuthoriseAction with AuthorisedFunctions with Logging{
+class AuthoriseActionImpl @Inject() (
+  override val authConnector: AuthConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends AuthoriseAction
+    with AuthorisedFunctions
+    with Logging {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised().retrieve(Retrievals.internalId and Retrievals.allEnrolments) {
-      case Some(internalId) ~ enrolments =>
-        val enrolment: Option[Enrolment] = enrolments.getEnrolment(config.tgpEnrolmentIdentifier.key)
-        val tgpEnrolment = enrolment.flatMap(value => value.getIdentifier(config.tgpEnrolmentIdentifier.identifier))
-        tgpEnrolment match {
-          case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
-          case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")
-        }
-    }  recover {
-      case _: NoActiveSession =>
+    authorised().retrieve(Retrievals.internalId and Retrievals.allEnrolments) { case Some(internalId) ~ enrolments =>
+      val enrolment: Option[Enrolment] = enrolments.getEnrolment(config.tgpEnrolmentIdentifier.key)
+      val tgpEnrolment                 = enrolment.flatMap(value => value.getIdentifier(config.tgpEnrolmentIdentifier.identifier))
+      tgpEnrolment match {
+        case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
+        case None            => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+      }
+    } recover {
+      case _: NoActiveSession        =>
         logger.info(s"NoActiveSession. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException =>
