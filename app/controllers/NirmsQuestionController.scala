@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.IdentifierAction
+import forms.NirmsQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -27,15 +28,23 @@ import javax.inject.Inject
 class NirmsQuestionController @Inject()(
                                          val controllerComponents: MessagesControllerComponents,
                                          identify: IdentifierAction,
-                                         view: NirmsQuestionView
+                                         view: NirmsQuestionView,
+                                         formProvider: NirmsQuestionFormProvider
                                        ) extends FrontendBaseController with I18nSupport {
 
+  private val form = formProvider()
+
   def onPageLoad: Action[AnyContent] = identify { implicit request =>
-    Ok(view())
+    Ok(view(form))
   }
 
   def onSubmit: Action[AnyContent] = identify { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
+    //TODO saving session data???
+    form.bindFromRequest().fold(
+      formWithErrors => BadRequest(view(formWithErrors)),
+      _ => Redirect(routes.DummyController.onPageLoad.url)
+    )
+
   }
 
 }

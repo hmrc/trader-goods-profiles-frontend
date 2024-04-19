@@ -66,6 +66,8 @@ nirmsQuestion.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
 nirmsQuestion.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
 nirmsQuestion.p2 = Find out more about {0}.
 nirmsQuestion.p2.linkText = <a target="_blank" href= "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility" class="govuk-link">which products can be moved under NIRMS</a>
+nirmsQuestion.h2 = Are you NIRMS registered?
+nirmsQuestion.radio.notSelected = Select if you are NIRMS registered
 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
