@@ -22,7 +22,7 @@ import models.ott.*;
 
 import java.nio.charset.StandardCharsets;
 
-public class JsonApiModelConverter {
+public class OttJsonApiParser {
 
     private static final ResourceConverter resourceConverter = new ResourceConverter(
             GoodsNomenclature.class,
@@ -36,8 +36,11 @@ public class JsonApiModelConverter {
             CategoryAssessmentListing.class
     );
 
-    public static GoodsNomenclature convert(String jsonString) {
-        return resourceConverter.readDocument(jsonString.getBytes(StandardCharsets.UTF_8), GoodsNomenclature.class).get();
+    public static GoodsNomenclature parse(String jsonString) {
+        return resourceConverter.readDocument(
+            jsonString.getBytes(StandardCharsets.UTF_8),
+            GoodsNomenclature.class
+        ).get();
     }
 
 }

@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import com.github.jasminb.jsonapi.ResourceConverter
 import models.ott.GoodsNomenclature
-import models.ott.util.JsonApiModelConverter
+import models.ott.util.OttJsonApiParser
 
 @Singleton
 class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
@@ -35,15 +35,13 @@ class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(i
   val rc: ResourceConverter = new ResourceConverter(classOf[GoodsNomenclature])
 
   private def setHeaders(): (String, String) = (
-    "Authorization" -> "Token mGAP1GZVd6"
+    "Authorization" -> "Token ???"
   )
 
   def getGoodsNomenclatures(comcode: String)(implicit hc: HeaderCarrier): Future[GoodsNomenclature] = {
     requestDataFromOtt(comcode).map { res =>
       res.status match {
-        case OK => {
-          JsonApiModelConverter.convert(res.body)
-        }
+        case OK => OttJsonApiParser.parse(res.body)
         case _ => throw new Exception("OTT responded with status " + res.status.toString)
       }
     }.recover {
