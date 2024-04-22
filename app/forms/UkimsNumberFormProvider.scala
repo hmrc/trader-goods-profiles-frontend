@@ -25,6 +25,7 @@ class UkimsNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
   Form(
-    "value" -> text("ukimsNumber.error.required")
+    "ukimsNumber" -> text("ukimsNumber.error.required")
+      .verifying(regexp("^(GB|XI)[0-9]{12}[0-9]{14}|(GB|XI)[0-9]{15}[0-9]{14}$", "ukimsNumber.error.format"))
   )
 }

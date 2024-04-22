@@ -71,7 +71,7 @@ ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = <a href="" class="govuk-link">I am not UKIMS registered</a>
 
 
-ukimsNumber.error.required = Enter your UKIMS number should be displayed
+ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.format = "Enter your UKIMS number in the correct format"
 
 checkYourAnswers.title = Check Your Answers
