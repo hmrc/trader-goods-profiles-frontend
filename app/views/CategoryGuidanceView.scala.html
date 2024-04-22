@@ -15,28 +15,30 @@
  *@
 
 @this(
-layout: templates.Layout,
-govukButton: GovukButton,
-formHelper: FormWithCSRF,
-paragraph: components.Paragraph,
-heading1: components.Heading1
+    layout: templates.Layout,
+    govukButton: GovukButton,
+    formHelper: FormWithCSRF,
+    paragraph: components.Paragraph,
+    heading1: components.Heading1
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle    = titleNoForm(messages("profileSetup.title")),
-showBackLink = true
+    pageTitle    = titleNoForm(messages("profileSetup.title")),
+    showBackLink = true
 ) {
-@heading1(messages("categoryGuidance.h1"))
-@paragraph(Html(messages("categoryGuidance.p1")))
-@paragraph(Html(messages("categoryGuidance.p2")))
-@paragraph(Html(messages("categoryGuidance.p3")))
+    @heading1(messages("categoryGuidance.h1"))
+    @paragraph(Html(messages("categoryGuidance.p1")))
+    @paragraph(Html(messages("categoryGuidance.p2")))
+    @paragraph(Html(messages("categoryGuidance.p3")))
 
-@formHelper(action = CategoryGuidanceController.onSubmit) {
-@govukButton(
-ButtonViewModel(messages("site.continue"))
-)
+    @formHelper(action = CategoryGuidanceController.onSubmit) {
+        @govukButtonn(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }
-}
+
+
 
