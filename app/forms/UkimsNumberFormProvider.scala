@@ -24,8 +24,7 @@ import javax.inject.Inject
 class UkimsNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
-    Form(
-      "value" -> text("ukimsNumber.error.required")
-      .verifying(maxLength(16, "firstNumber.error.outOfRange"))
+  Form(
+    "value" -> text("ukimsNumber.error.required")
   )
 }

@@ -16,38 +16,54 @@
 
 package controllers
 
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions._
 import forms.UkimsNumberFormProvider
-import models.Mode
+import models.{Mode, UserAnswers}
+import navigation.Navigator
 import pages.UkimsNumberPage
 import play.api.i18n.I18nSupport
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class UkimsNumberController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
+                                 sessionRepository: SessionRepository,
+                                 navigator: Navigator,
                                  getData: DataRetrievalAction,
                                  requireData: DataRequiredAction,
                                  identify: IdentifierAction,
                                  view: UkimsNumberView,
                                  formProvider: UkimsNumberFormProvider,
-                               ) extends FrontendBaseController with I18nSupport {
+                               )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
 
-      Ok(view(preparedForm, mode))
+//      if (request.userAnswers.isEmpty)
+//        sessionRepository.set(UserAnswers("test", Json.obj()))
+//      else
+//        Future.unit
+//      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
+//        case None        => form
+//        case Some(value) => form.fill(value)
+//      }
+      Ok(view(form, mode))
   }
 
-  def onSubmit: Action[AnyContent] = identify { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (identify andThen getData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          _ => Future.successful(Redirect(routes.DummyController.onPageLoad.url)) // TO DO
+        )
+    }
 }

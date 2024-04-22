@@ -66,6 +66,13 @@ ukimsNumber.h1 = UK Internal Market Scheme number
 
 ukimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
 ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by your EORI number, then 14 numbers.
+ukimsNumber.heading = What is your UKIMS number?
+ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
+ukimsNumber.linkText = <a href="" class="govuk-link">I am not UKIMS registered</a>
+
+
+ukimsNumber.error.required = Enter your UKIMS number should be displayed
+ukimsNumber.error.format = "Enter your UKIMS number in the correct format"
 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers

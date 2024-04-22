@@ -9,7 +9,7 @@ GET         /profile-setup                               controllers.ProfileSetu
 POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
 
 GET         /ukims-number                                controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /ukims-number                                controllers.UkimsNumberController.onSubmit
+POST        /ukims-number                                controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 

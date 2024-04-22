@@ -35,6 +35,6 @@ class ProfileSetupController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = identify { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
+    Redirect(routes.UkimsNumberController.onPageLoad())
   }
 }

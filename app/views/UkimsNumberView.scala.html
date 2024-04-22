@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
+@import viewmodels.LabelSize._
 
 @this(
     layout: templates.Layout,
@@ -22,7 +22,8 @@
     paragraph: components.Paragraph,
     formHelper: FormWithCSRF,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukErrorSummary: GovukErrorSummary
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -34,17 +35,25 @@
     @heading1(messages("ukimsNumber.h1"))
 
     @paragraph(Html(messages("ukimsNumber.p1")))
-    @paragraph(Html(messages("ukimsNumber.p1")))
+    @paragraph(Html(messages("ukimsNumber.p2")))
 
     @formHelper(action = routes.UkimsNumberController.onSubmit) {
 
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
         @govukInput(
-        InputViewModel(field = form("value"),
-            label = LabelViewModel(messages("UKIMS number")).asPageHeading()
-        ))
+            InputViewModel(
+                    field = form("ukimsNumber"),
+                    label = LabelViewModel(messages("ukimsNumber.heading")).asPageHeading(Medium)
+            ).withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
+        )
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )
     }
+
+    @paragraph(Html(messages("ukimsNumber.linkText")))
 }

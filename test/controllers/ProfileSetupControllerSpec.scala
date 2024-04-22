@@ -53,7 +53,7 @@ class ProfileSetupControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        //TO DO: Needs to be changed to actual controller when it becomes available
+
         redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
       }
     }
