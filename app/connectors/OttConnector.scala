@@ -25,14 +25,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
-import com.github.jasminb.jsonapi.ResourceConverter
 import models.ott.GoodsNomenclature
 import models.ott.util.OttJsonApiParser
 
 @Singleton
 class OttConnector @Inject()(http: HttpClientV2, appConfig: FrontendAppConfig)(implicit ec: ExecutionContext) {
-
-  val rc: ResourceConverter = new ResourceConverter(classOf[GoodsNomenclature])
 
   private def setHeaders(): (String, String) = (
     "Authorization" -> "Token ???"
