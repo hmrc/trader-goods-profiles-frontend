@@ -38,6 +38,9 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
+categoryGuidance.title = Setting up your profile
+categoryGuidance.h1 = Boo
+
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
 
