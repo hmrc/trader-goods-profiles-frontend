@@ -48,14 +48,17 @@ class AuthoriseActionImpl @Inject() (
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised().retrieve(Retrievals.internalId and Retrievals.allEnrolments) { case Some(internalId) ~ enrolments =>
-      val enrolment: Option[Enrolment] = enrolments.getEnrolment(config.tgpEnrolmentIdentifier.key)
-      val tgpEnrolment                 = enrolment.flatMap(value => value.getIdentifier(config.tgpEnrolmentIdentifier.identifier))
-      tgpEnrolment match {
-        case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
-        case None            => throw InsufficientEnrolments("Unable to retrieve Enrolment")
-      }
-    } recover {
+    authorised(Enrolment(config.tgpEnrolmentIdentifier.key))
+      .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
+        case Some(internalId) ~ authorisedEnrolments =>
+          authorisedEnrolments
+            .getEnrolment(config.tgpEnrolmentIdentifier.key)
+            .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
+            case Some(enrolment) =>
+              block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
+            case None            => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+          }
+      } recover {
       case _: NoActiveSession        =>
         logger.info(s"NoActiveSession. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
