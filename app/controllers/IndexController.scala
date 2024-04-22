@@ -16,7 +16,6 @@
 
 package controllers
 
-import connectors.OttConnector
 import controllers.actions.IdentifierAction
 
 import javax.inject.Inject
@@ -29,12 +28,9 @@ class IndexController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
                                  identify: IdentifierAction,
                                  view: IndexView,
-                                 ottConnector: OttConnector
                                ) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = identify { implicit request =>
-
-    ottConnector.getGoodsNomenclatures("2404120000")
     Ok(view())
   }
 }
