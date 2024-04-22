@@ -25,12 +25,10 @@ import scala.collection.immutable.List;
 
 import java.util.ArrayList;
 
-// Do not remove this comment.
-// All fields need to be public - Java in Scala issue.
-// Private fields break it sometimes.
-// The OTT api is still in development, so we need @JsonIgnoreProperties in case we get data we don't expect.
 
-@JsonIgnoreProperties(ignoreUnknown = true) // API is in development so there may be stuff there we don't expect.
+// The OTT API is still in development.
+// We need @JsonIgnoreProperties in case we get data we don't expect.
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Type("goods_nomenclature")
 public class GoodsNomenclature {
     @Id
