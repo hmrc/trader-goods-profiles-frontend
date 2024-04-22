@@ -38,8 +38,12 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-categoryGuidance.title = Setting up your profile
-categoryGuidance.h1 = Boo
+categoryGuidance.title = Categorisation - Trader Goods Profile
+categoryGuidance.h1 = Categorisation
+
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
+categoryGuidance.p2 = We’ll ask you questions about waivers that you hold and then tell you what category your goods are. If the commodity code has too many waivers for us to list, we might ask you for an 8 or 10 digit commodity code.
+categoryGuidance.p3 = You’ll need to know the certificate number or name of any waivers you have for your goods. If you get a new waiver, you’ll be able to change this later.
 
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
