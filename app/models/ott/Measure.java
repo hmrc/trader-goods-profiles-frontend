@@ -37,7 +37,7 @@ public class Measure {
     public String effective_end_date;
 
     @Relationship("measure_type")
-    private MeasureType measure_type;
+    public MeasureType measure_type;
 
     @Relationship("footnotes")
     private ArrayList<Footnote> footnotes;

@@ -20,13 +20,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import models.ott.Exemption;
-import models.ott.Measure;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.List;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Type("category_assessment")
