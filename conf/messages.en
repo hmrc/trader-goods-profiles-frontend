@@ -38,7 +38,7 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-categoryGuidance.title = Categorisation - Trader Goods Profile
+categoryGuidance.title = Categorisation
 categoryGuidance.h1 = Categorisation
 
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
