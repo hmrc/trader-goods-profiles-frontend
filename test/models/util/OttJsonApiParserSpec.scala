@@ -24,6 +24,7 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 
 import java.util
 import java.util.Collections
+import scala.io.Source
 
 class OttJsonApiParserSpec extends AnyFreeSpec {
 
@@ -42,144 +43,26 @@ class OttJsonApiParserSpec extends AnyFreeSpec {
     }
 
     "should correctly parse a complex OTT response to a GoodsNomenclature object" in {
-      val ottResponse =
-        """
-          |{
-          |  "data": {
-          |    "id": "106662",
-          |    "type": "goods_nomenclature",
-          |    "attributes": {
-          |      "goods_nomenclature_item_id": "2404120000"
-          |    },
-          |    "relationships": {
-          |      "applicable_category_assessments": {
-          |        "data": [
-          |          {
-          |            "id": "123456cd",
-          |            "type": "category_assessment"
-          |          }
-          |        ]
-          |      }
-          |    }
-          |  },
-          |  "included": [
-          |    {
-          |      "id": "123456cd",
-          |      "type": "category_assessment",
-          |      "relationships": {
-          |        "measures": {
-          |          "data": [
-          |            {
-          |              "id": "3871194",
-          |              "type": "measure"
-          |            }
-          |          ]
-          |        },
-          |        "exemptions": {
-          |          "data": [
-          |            {
-          |              "id": "D005",
-          |              "type": "certificate"
-          |            },
-          |            {
-          |              "id": "3200",
-          |              "type": "additional_code"
-          |            }
-          |          ]
-          |        }
-          |      }
-          |    },
-          |    {
-          |      "id": "3871194",
-          |      "type": "measure",
-          |      "attributes": {
-          |        "goods_nomenclature_item_id": "2404120000",
-          |        "goods_nomenclature_sid": "106662",
-          |        "effective_start_date": "2022-01-01T00:00:00.000Z",
-          |        "effective_end_date": null
-          |      },
-          |      "relationships": {
-          |        "measure_type": {
-          |          "data": {
-          |            "id": "714",
-          |            "type": "measure_type"
-          |          }
-          |        },
-          |        "footnotes": {
-          |           "data": [
-          |             {
-          |              "id": "CD437",
-          |              "type": "footnote"
-          |             }
-          |           ]
-          |        }
-          |      }
-          |    },
-          |    {
-          |      "id": "714",
-          |      "type": "measure_type",
-          |      "attributes": {
-          |        "description": "Restriction on entry into free circulation",
-          |        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions",
-          |        "validity_start_date": "1972-01-01T00:00:00.000Z",
-          |        "validity_end_date": null,
-          |        "measure_type_series_id": "B",
-          |        "trade_movement_code": 0
-          |      }
-          |    },
-          |    {
-          |      "id": "CD437",
-          |      "type": "footnote",
-          |      "attributes": {
-          |        "code": "CD437",
-          |        "description": "example description"
-          |      }
-          |    },
-          |    {
-          |      "id": "D005",
-          |      "type": "certificate",
-          |      "attributes": {
-          |        "certificate_type_code": "D",
-          |        "certificate_code": "005",
-          |        "code": "D005",
-          |        "description": "some certificate description",
-          |        "formatted_description": "some certificate description"
-          |      }
-          |    },
-          |    {
-          |      "id": "3200",
-          |      "type": "additional_code",
-          |      "attributes": {
-          |        "additional_code_type_id": "3",
-          |        "additional_code": "200",
-          |        "code": "3200",
-          |        "description": "some additional code description",
-          |        "formatted_description": "some additional code description"
-          |      }
-          |    }
-          |  ]
-          |}
-          |""".stripMargin
-
+      val ottResponse = Source.fromFile("test/models/util/ott-test-response.json", "utf-8").getLines.mkString
       val goodsNomenclature = OttJsonApiParser.parse(ottResponse)
-      val categoryAssessment = goodsNomenclature.applicable_category_assessments.stream().findFirst().get()
-      val measure = categoryAssessment.measures.stream().findFirst().get()
+      val categoryAssessment = goodsNomenclature.getCategoryAssessments()(0)
+      val measure = categoryAssessment.getMeasures()(0)
       val measureType = measure.measure_type
-      val footnote = measure.footnotes.stream().findFirst().get()
-      val certificate: Exemption = categoryAssessment.exemptions.stream().findFirst().get()
-      val additionalCode: Exemption = categoryAssessment.exemptions.stream().skip(1).findFirst().get()
+      val footnote = measure.getFootnotes()(0)
+      val certificate: Exemption = categoryAssessment.getExemptions()(0)
+      val additionalCode: Exemption = categoryAssessment.getExemptions()(1)
 
       goodsNomenclature.id shouldEqual "106662"
       goodsNomenclature.goods_nomenclature_item_id shouldEqual "2404120000"
-      goodsNomenclature.applicable_category_assessments.size() shouldEqual 1
+      goodsNomenclature.getCategoryAssessments.size shouldEqual 1
 
       categoryAssessment.id shouldEqual "123456cd"
-      categoryAssessment.measures.size() shouldEqual 1
-      categoryAssessment.exemptions.size() shouldEqual 2
+      categoryAssessment.getMeasures.size shouldEqual 1
+      categoryAssessment.getExemptions.size shouldEqual 2
 
       measure.id shouldEqual "3871194"
       measure.goods_nomenclature_sid shouldEqual "106662"
-      measure.footnotes.size() shouldEqual 1
+      measure.getFootnotes.size shouldEqual 1
 
       measureType.id shouldEqual "714"
       measureType.measure_type_series_id

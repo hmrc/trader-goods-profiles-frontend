@@ -20,8 +20,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import models.CategoryAssessment;
 import models.Footnote;
+import scala.collection.JavaConverters;
+import scala.collection.immutable.List;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,5 +43,9 @@ public class Measure {
     public MeasureType measure_type;
 
     @Relationship("footnotes")
-    public Collection<Footnote> footnotes;
+    private ArrayList<Footnote> footnotes;
+
+    public List<Footnote> getFootnotes() {
+        return JavaConverters.asScalaBuffer(footnotes).toList();
+    }
 }

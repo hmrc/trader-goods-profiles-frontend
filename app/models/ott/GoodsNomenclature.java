@@ -21,9 +21,10 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import models.CategoryAssessment;
+import scala.collection.JavaConverters;
+import scala.collection.immutable.List;
 
-import java.util.Collection;
-
+import java.util.ArrayList;
 
 // Do not remove this comment.
 // All fields need to be public - Java in Scala issue.
@@ -44,5 +45,9 @@ public class GoodsNomenclature {
     public String validity_end_date;
 
     @Relationship("applicable_category_assessments")
-    public Collection<CategoryAssessment> applicable_category_assessments;
+    private ArrayList<CategoryAssessment> applicable_category_assessments;
+
+    public List<CategoryAssessment> getCategoryAssessments() {
+        return JavaConverters.asScalaBuffer(applicable_category_assessments).toList();
+    }
 }
