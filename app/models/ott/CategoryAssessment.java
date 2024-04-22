@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models;
+package models.ott;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
@@ -22,7 +22,10 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import models.ott.Exemption;
 import models.ott.Measure;
+import scala.collection.JavaConverters;
+import scala.collection.immutable.List;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -32,9 +35,17 @@ public class CategoryAssessment {
     public String id;
 
     @Relationship("measures")
-    public Collection<Measure> measures;
+    private ArrayList<Measure> measures;
 
     @Relationship("exemptions")
-    public Collection<Exemption> exemptions;
+    private ArrayList<Exemption> exemptions;
 
+
+    public List<Measure> getMeasures() {
+        return JavaConverters.asScalaBufferConverter(measures).asScala().toList();
+    }
+
+    public List<Exemption> getExemptions() {
+        return JavaConverters.asScalaBuffer(exemptions).toList();
+    }
 }

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package models.util
+package models.ott.util
 
-import models.CategoryAssessment
-import models.ott.{AdditionalCode, Certificate, Exemption, GoodsNomenclature}
+import models.ott.{AdditionalCode, CategoryAssessment, Certificate, Exemption, GoodsNomenclature}
 import models.ott.util.OttJsonApiParser
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper

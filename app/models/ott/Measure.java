@@ -20,13 +20,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import models.CategoryAssessment;
-import models.Footnote;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.List;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Type("measure")
@@ -40,7 +37,7 @@ public class Measure {
     public String effective_end_date;
 
     @Relationship("measure_type")
-    public MeasureType measure_type;
+    private MeasureType measure_type;
 
     @Relationship("footnotes")
     private ArrayList<Footnote> footnotes;

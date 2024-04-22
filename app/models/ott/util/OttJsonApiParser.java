@@ -17,7 +17,6 @@
 package models.ott.util;
 
 import com.github.jasminb.jsonapi.ResourceConverter;
-import models.*;
 import models.ott.*;
 
 import java.nio.charset.StandardCharsets;

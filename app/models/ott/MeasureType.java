@@ -18,9 +18,7 @@ package models.ott;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.jasminb.jsonapi.annotations.Id;
-import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import models.Footnote;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Type("measure_type")
