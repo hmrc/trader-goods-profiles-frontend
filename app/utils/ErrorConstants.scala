@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import config.Service
-import play.api.{ConfigLoader, Configuration}
+object ErrorConstants {
 
-case class EnrolmentConfig(key: String, identifier: String)
+  val UNABLE_TO_RETRIEVE_ENROLMENT = "Unable to retrieve Enrolment"
+  val AUTHORISATION_EXCEPTION = "AuthorisationException occurred. Redirect to UnauthorisedController"
+  val NO_ACTIVE_SESSION = "NoActiveSession. Redirect to "
 
-object EnrolmentConfig {
-
-  implicit lazy val configLoader: ConfigLoader[EnrolmentConfig] = ConfigLoader { config => prefix =>
-    val enrolmentConfig = Configuration(config).get[Configuration](prefix)
-    val key             = enrolmentConfig.get[String]("enrolment-key")
-    val id              = enrolmentConfig.get[String]("enrolment-identifier")
-
-    EnrolmentConfig(key, id)
-  }
 }

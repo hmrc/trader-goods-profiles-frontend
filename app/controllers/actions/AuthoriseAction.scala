@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.auth.core.retrieve.~
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.Logging
+import utils.ErrorConstants
 
 trait AuthoriseAction
     extends ActionBuilder[AuthorisedRequest, AnyContent]
@@ -56,14 +57,14 @@ class AuthoriseActionImpl @Inject() (
             .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
             case Some(enrolment) =>
               block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
-            case None            => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+            case None            => throw InsufficientEnrolments(ErrorConstants.UNABLE_TO_RETRIEVE_ENROLMENT)
           }
       } recover {
       case _: NoActiveSession        =>
-        logger.info(s"NoActiveSession. Redirect to $config.loginContinueUrl")
+        logger.info(s"${ErrorConstants.NO_ACTIVE_SESSION}${config.loginContinueUrl}")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException =>
-        logger.info("AuthorisationException occurred. Redirect to UnauthorisedController")
+        logger.info(ErrorConstants.AUTHORISATION_EXCEPTION)
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }
