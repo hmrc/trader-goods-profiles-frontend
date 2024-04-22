@@ -42,7 +42,7 @@ class OttJsonApiParserSpec extends AnyFreeSpec {
     }
 
     "should correctly parse a complex OTT response to a GoodsNomenclature object" in {
-      val ottResponse = Source.fromFile("test/models/util/ott-test-response.json", "utf-8").getLines.mkString
+      val ottResponse = Source.fromFile("test/models/ott/util/ott-test-response.json", "utf-8").getLines.mkString
       val goodsNomenclature = OttJsonApiParser.parse(ottResponse)
       val categoryAssessment = goodsNomenclature.getCategoryAssessments()(0)
       val measure = categoryAssessment.getMeasures()(0)
