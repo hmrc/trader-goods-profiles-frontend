@@ -26,12 +26,12 @@ import javax.inject.Inject
 
 class DummyController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  identify: AuthoriseAction,
+  authorise: AuthoriseAction,
   view: DummyView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
   }
 }
