@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -27,57 +28,49 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
   private val formProvider = new NirmsQuestionFormProvider()
 
+  private val nirmsQuestionView = app.injector.instanceOf[NirmsQuestionView]
+
+  private val nirmsQuestionController = new NirmsQuestionController(
+    stubMessagesControllerComponents(),
+    new FakeAuthoriseAction(defaultBodyParser),
+    nirmsQuestionView,
+    formProvider
+  )
+
   "NirmsQuestion Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val result = nirmsQuestionController.onPageLoad(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.NirmsQuestionController.onPageLoad.url)
+      status(result) mustEqual OK
 
-        val result = route(application, request).value
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
 
-        val view = application.injector.instanceOf[NirmsQuestionView]
-
-        status(result) mustEqual OK
-
-        contentAsString(result) mustEqual view(formProvider())(request, messages(application)).toString
-      }
     }
 
     "must redirect on Submit when user selects yes or no" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      running(application) {
-        val request = FakeRequest(POST, routes.NirmsQuestionController.onSubmit.url).withFormUrlEncodedBody("value" -> "true")
+      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
 
-        val result = route(application, request).value
+      status(result) mustEqual SEE_OTHER
 
-        status(result) mustEqual SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
 
-        redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
-      }
     }
 
     "must send bad request on Submit when user doesn't select yes or no" in {
-      val application = applicationBuilder(userAnswers = None).build()
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val view = application.injector.instanceOf[NirmsQuestionView]
+      val result = nirmsQuestionController.onSubmit(fakeRequest)
 
+      status(result) mustEqual BAD_REQUEST
 
-      running(application) {
-        val request = FakeRequest(POST, routes.NirmsQuestionController.onSubmit.url)
+      contentAsString(result) mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
 
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-
-        contentAsString(result) mustEqual view(formWithErrors)(request, messages(application)).toString
-      }
     }
   }
 }
