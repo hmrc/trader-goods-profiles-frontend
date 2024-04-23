@@ -17,7 +17,7 @@
 package controllers
 
 import helpers.ItTestBase
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
@@ -47,6 +47,17 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe OK
+    }
+
+    "returns redirect when submitting" in {
+      authorisedUser
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(""))
+
+      response.status mustBe SEE_OTHER
+
     }
   }
 }
