@@ -17,13 +17,66 @@
 package controllers
 
 import base.SpecBase
+import forms.UkimsNumberFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.ProfileSetupView
+import views.html.UkimsNumberView
 
 class UkimsNumberControllerSpec extends SpecBase {
 
+  private val formProvider = new UkimsNumberFormProvider()
+
   "Ukims Number Controller" - {
+    "must return OK and the correct view for a GET" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.UkimsNumberController.onPageLoad.url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[UkimsNumberView]
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual view(formProvider())(request, messages(application)).toString
+      }
+    }
+
+    "must redirect on Submit when user enters correct Ukims number" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.UkimsNumberController.onSubmit.url).withFormUrlEncodedBody("ukimsNumber" -> "XI47699357400020231115081800")
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      }
+    }
+
+    "must send bad request on Submit when user leave the field blank" in {
+      val application = applicationBuilder(userAnswers = None).build()
+
+      val formWithErrors = formProvider().bind(Map.empty[String, String])
+
+      val view = application.injector.instanceOf[UkimsNumberView]
+
+
+      running(application) {
+        val request = FakeRequest(POST, routes.UkimsNumberController.onSubmit.url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+
+        contentAsString(result) mustEqual view(formWithErrors)(request, messages(application)).toString
+      }
+    }
   }
 }

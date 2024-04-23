@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import forms.mappings.Mappings
-import models.StringFieldRegex
-import play.api.data.Form
-
-import javax.inject.Inject
-
-class UkimsNumberFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-  Form(
-    "ukimsNumber" -> text("ukimsNumber.error.required")
-      .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
-  )
+object StringFieldRegex {
+  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
 }
