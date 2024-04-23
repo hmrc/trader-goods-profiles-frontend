@@ -27,9 +27,9 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
   private val url = s"http://localhost:$port$appRouteContext/nirms-question"
 
-  "Nirms question controller" should {
+  "NIRMS question controller" should {
 
-    "returns an error when auth fails" in {
+    "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -38,6 +38,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
@@ -48,10 +49,9 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe OK
-
     }
 
-    "returns redirect when submitting valid data" in {
+    "redirects to dummy controller when submitting valid data" in {
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -60,6 +60,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
     }
 
     "returns bad request when submitting no data" in {
@@ -70,10 +71,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       val response = await(request.post(""))
 
       response.status mustBe BAD_REQUEST
-
     }
 
   }
-
-
 }
