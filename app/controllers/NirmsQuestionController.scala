@@ -25,12 +25,13 @@ import views.html.NirmsQuestionView
 
 import javax.inject.Inject
 
-class NirmsQuestionController @Inject()(
-                                         val controllerComponents: MessagesControllerComponents,
-                                         authorise: AuthoriseAction,
-                                         view: NirmsQuestionView,
-                                         formProvider: NirmsQuestionFormProvider
-                                       ) extends FrontendBaseController with I18nSupport {
+class NirmsQuestionController @Inject() (
+  val controllerComponents: MessagesControllerComponents,
+  authorise: AuthoriseAction,
+  view: NirmsQuestionView,
+  formProvider: NirmsQuestionFormProvider
+) extends FrontendBaseController
+    with I18nSupport {
 
   private val form = formProvider()
 
@@ -40,10 +41,12 @@ class NirmsQuestionController @Inject()(
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
     //TODO saving session data???
-    form.bindFromRequest().fold(
-      formWithErrors => BadRequest(view(formWithErrors)),
-      _ => Redirect(routes.DummyController.onPageLoad.url)
-    )
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        _ => Redirect(routes.DummyController.onPageLoad.url)
+      )
 
   }
 
