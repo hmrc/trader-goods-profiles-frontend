@@ -17,45 +17,45 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import play.api.mvc.PlayBodyParsers
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.test.Helpers.fakeRequest
 import views.html.CategoryGuidanceView
 
 class CategoryGuidanceControllerSpec extends SpecBase {
+
+  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
+
+  val categoryGuidanceView: CategoryGuidanceView = app.injector.instanceOf[CategoryGuidanceView]
+
+  val categoryGuidanceController = new CategoryGuidanceController(
+    stubMessagesControllerComponents(),
+    new FakeAuthoriseAction(defaultBodyParser),
+    categoryGuidanceView
+  )
 
   "Category Guidance Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val result = categoryGuidanceController.onPageLoad()(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad.url)
+      status(result) mustEqual OK
 
-        val result = route(application, request).value
+      contentAsString(result) mustEqual categoryGuidanceView()(fakeRequest, stubMessages()).toString()
 
-        val view = application.injector.instanceOf[CategoryGuidanceView]
-
-        status(result) mustEqual OK
-
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
     }
 
     "must redirect on Submit" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val result = categoryGuidanceController.onSubmit()(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit.url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        //TO DO: Needs to be changed to actual controller when it becomes available
-        redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
-      }
+      status(result) mustEqual SEE_OTHER
+      //TO DO: Needs to be changed to actual controller when it becomes available
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
     }
   }
 }
