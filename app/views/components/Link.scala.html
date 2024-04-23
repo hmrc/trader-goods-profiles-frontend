@@ -14,21 +14,8 @@
  * limitations under the License.
  *@
 
-@this(
-    layout: templates.Layout,
-    paragraph: components.Paragraph,
-    heading1: components.Heading1,
-    link: components.Link
-)
+@this()
 
-@()(implicit request: Request[_], messages: Messages)
+@(linkText: String, link: String, classes: String = "govuk-link")
 
-@layout(
-    pageTitle = titleNoForm(messages("unauthorised.title")),
-    timeout   = false,
-    showBackLink = false
-) {
-    @heading1(messages("unauthorised.heading"))
-    @paragraph(Html(messages("unauthorised.p1")))
-    @paragraph(Html(messages("unauthorised.p2", link(messages("unauthorised.p2.linkText"), controllers.auth.routes.AuthController.signOut.url))))
-}
+<a href="@link" class="govuk-link" >@linkText</a>
