@@ -29,41 +29,24 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 class UkimsNumberController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
-                                 sessionRepository: SessionRepository,
-                                 navigator: Navigator,
-                                 getData: DataRetrievalAction,
-                                 requireData: DataRequiredAction,
                                  identify: IdentifierAction,
                                  view: UkimsNumberView,
                                  formProvider: UkimsNumberFormProvider,
-                               )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
-  val form = formProvider()
+                               ) extends FrontendBaseController with I18nSupport {
+  private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
-    implicit request =>
-
-//      if (request.userAnswers.isEmpty)
-//        sessionRepository.set(UserAnswers("test", Json.obj()))
-//      else
-//        Future.unit
-//      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
-//        case None        => form
-//        case Some(value) => form.fill(value)
-//      }
-      Ok(view(form, mode))
+  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+    Ok(view(form))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
-    (identify andThen getData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          _ => Future.successful(Redirect(routes.DummyController.onPageLoad.url)) // TO DO
-        )
-    }
+  def onSubmit: Action[AnyContent] = identify { implicit request =>
+    //TODO saving session data???
+    form.bindFromRequest().fold(
+      formWithErrors => BadRequest(view(formWithErrors)),
+      _ => Redirect(routes.DummyController.onPageLoad.url)
+    )
+  }
 }

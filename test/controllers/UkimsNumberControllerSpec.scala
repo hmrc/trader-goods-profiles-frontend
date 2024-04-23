@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package forms
+package controllers
 
-import forms.mappings.Mappings
-import play.api.data.Form
+import base.SpecBase
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import views.html.ProfileSetupView
 
-import javax.inject.Inject
+class UkimsNumberControllerSpec extends SpecBase {
 
-class UkimsNumberFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-  Form(
-    "ukimsNumber" -> text("ukimsNumber.error.required")
-      .verifying(regexp("^(GB|XI)[0-9]{12}[0-9]{14}$", "ukimsNumber.error.format"))
-  )
+  "Ukims Number Controller" - {
+  }
 }
