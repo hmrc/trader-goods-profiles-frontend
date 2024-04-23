@@ -21,7 +21,9 @@ Use service manager to start up supporting services: `sm2 --start TGP_FE`
 
 ### Testing
 
-Run this to check tests: `sbt test`
+Run this to check unit tests: `sbt test`
+
+Run this to check integration tests: `sbt it/test`
 
 Run this to check code coverage: `sbt clean coverage test`
 
