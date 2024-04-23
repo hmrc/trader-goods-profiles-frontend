@@ -21,7 +21,8 @@
     heading2: components.Heading2,
     paragraph: components.Paragraph,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    link: components.Link
 )
 
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
@@ -32,7 +33,7 @@
 ) {
     @heading1(messages("nirmsQuestion.h1"))
     @paragraph(Html(messages("nirmsQuestion.p1")))
-    @paragraph(Html(messages("nirmsQuestion.p2", messages("nirmsQuestion.p2.linkText"))))
+    @paragraph(Html(messages("nirmsQuestion.p2", link(messages("nirmsQuestion.p2.linkText"),"https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"))))
 
     @heading2(messages("nirmsQuestion.h2"))
 
