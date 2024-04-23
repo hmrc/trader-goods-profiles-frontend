@@ -16,6 +16,6 @@
 
 @this()
 
-@(linkText: String, link: String, classes: String = "govuk-link")
+@(linkText: String, link: String, target: String = "_self", classes: String = "govuk-link")
 
-<a href="@link" class="govuk-link" >@linkText</a>
+<a target="@target" href="@link" class="govuk-link" >@linkText</a>
