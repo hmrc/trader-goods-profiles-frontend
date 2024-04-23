@@ -27,18 +27,18 @@ import javax.inject.Inject
 
 class NirmsQuestionController @Inject()(
                                          val controllerComponents: MessagesControllerComponents,
-                                         identify: IdentifierAction,
+                                         authorise: IdentifierAction,
                                          view: NirmsQuestionView,
                                          formProvider: NirmsQuestionFormProvider
                                        ) extends FrontendBaseController with I18nSupport {
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = identify { implicit request =>
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
     //TODO saving session data???
     form.bindFromRequest().fold(
       formWithErrors => BadRequest(view(formWithErrors)),
