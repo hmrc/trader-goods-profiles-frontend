@@ -27,5 +27,4 @@ public class GeographicalArea {
     @Id
     public String id;
 
-    // Implement if needed.
 }

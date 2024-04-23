@@ -27,5 +27,4 @@ public class CategoryAssessmentListing {
     @Id
     public String id;
 
-    // Implement if needed.
 }

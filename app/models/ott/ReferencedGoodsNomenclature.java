@@ -27,5 +27,4 @@ public class ReferencedGoodsNomenclature {
     @Id
     public String id;
 
-    // Implement if needed.
 }

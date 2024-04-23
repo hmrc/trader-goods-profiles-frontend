@@ -25,9 +25,6 @@ import scala.collection.immutable.List;
 
 import java.util.ArrayList;
 
-
-// The OTT API is still in development.
-// We need @JsonIgnoreProperties in case we get data we don't expect.
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Type("goods_nomenclature")
 public class GoodsNomenclature {
