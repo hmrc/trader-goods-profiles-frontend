@@ -2,7 +2,11 @@
 
 ->          /hmrc-frontend                               hmrcfrontend.Routes
 
-GET         /                                            controllers.IndexController.onPageLoad
+GET         /dummy                                       controllers.DummyController.onPageLoad
+
+GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad
+
+POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
