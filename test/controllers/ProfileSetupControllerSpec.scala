@@ -17,30 +17,35 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import play.api.http.Status.OK
+import play.api.mvc.{BodyParsers, PlayBodyParsers}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.ProfileSetupView
 
 class ProfileSetupControllerSpec extends SpecBase {
 
+  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
+
+  val profileSetupView: ProfileSetupView  = app.injector.instanceOf[ProfileSetupView]
+
+  val profileSetupController = new ProfileSetupController(
+    stubMessagesControllerComponents(),
+    new FakeAuthoriseAction(defaultBodyParser),
+    profileSetupView
+  )
+
   "Profile Setup Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val result = profileSetupController.onPageLoad()(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad.url)
+      status(result) mustEqual OK
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[ProfileSetupView]
-
-        status(result) mustEqual OK
-
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
+      contentAsString(result) mustEqual profileSetupView()(fakeRequest, stubMessages()).toString()
     }
 
     "must redirect on Submit" in {
