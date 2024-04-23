@@ -49,9 +49,11 @@ lazy val microservice = (project in file("."))
     // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" ->
-        group(Seq(
-          "javascripts/app.js"
-        ))
+        group(
+          Seq(
+            "javascripts/app.js"
+          )
+        )
     ),
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)

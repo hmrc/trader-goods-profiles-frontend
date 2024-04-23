@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.IdentifierAction
+import controllers.actions.AuthoriseAction
 import forms.NirmsQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 class NirmsQuestionController @Inject()(
                                          val controllerComponents: MessagesControllerComponents,
-                                         authorise: IdentifierAction,
+                                         authorise: AuthoriseAction,
                                          view: NirmsQuestionView,
                                          formProvider: NirmsQuestionFormProvider
                                        ) extends FrontendBaseController with I18nSupport {

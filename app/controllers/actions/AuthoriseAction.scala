@@ -28,34 +28,42 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.auth.core.retrieve.~
-
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Logging
 
-trait IdentifierAction extends ActionBuilder[AuthorisedRequest, AnyContent] with ActionFunction[Request, AuthorisedRequest]
+trait AuthoriseAction
+    extends ActionBuilder[AuthorisedRequest, AnyContent]
+    with ActionFunction[Request, AuthorisedRequest]
 
-class AuthorisedAction @Inject()(
-                                 override val authConnector: AuthConnector,
-                                 config: FrontendAppConfig,
-                                 val parser: BodyParsers.Default
-                               )
-                               (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
+class AuthoriseActionImpl @Inject() (
+  override val authConnector: AuthConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends AuthoriseAction
+    with AuthorisedFunctions
+    with Logging {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised().retrieve(Retrievals.internalId and Retrievals.allEnrolments) {
-      case Some(internalId) ~ enrolments =>
-        val enrolment: Option[Enrolment] = enrolments.getEnrolment(config.tgpEnrolmentIdentifier.key)
-        val tgpEnrolment = enrolment.flatMap(value => value.getIdentifier(config.tgpEnrolmentIdentifier.identifier))
-        tgpEnrolment match {
-          case Some(enrolment) => block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
-          case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")
-        }
-    }  recover {
-      case _: NoActiveSession =>
+    authorised(Enrolment(config.tgpEnrolmentIdentifier.key))
+      .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
+        case Some(internalId) ~ authorisedEnrolments =>
+          authorisedEnrolments
+            .getEnrolment(config.tgpEnrolmentIdentifier.key)
+            .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
+            case Some(enrolment) =>
+              block(AuthorisedRequest(request, InternalId(internalId), Eori(enrolment.value)))
+            case None            => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+          }
+      } recover {
+      case _: NoActiveSession        =>
+        logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException =>
+        logger.info("Authorisation failure: No enrolments found for TGP. Redirecting to UnauthorisedController")
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }

@@ -20,7 +20,7 @@ import base.SpecBase
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.{CheckYourAnswersView, DummyView, JourneyRecoveryContinueView, ProfileSetupView}
+import views.html.ProfileSetupView
 
 class ProfileSetupControllerSpec extends SpecBase {
 
@@ -53,7 +53,7 @@ class ProfileSetupControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-
+        //TO DO: Needs to be changed to actual controller when it becomes available
         redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
       }
     }

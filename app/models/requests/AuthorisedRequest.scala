@@ -19,4 +19,5 @@ package models.requests
 import models.{Eori, InternalId}
 import play.api.mvc.{Request, WrappedRequest}
 
-case class AuthorisedRequest[A](request: Request[A], internalId: InternalId, eori: Eori) extends WrappedRequest[A](request)
+case class AuthorisedRequest[A](request: Request[A], internalId: InternalId, eori: Eori)
+    extends WrappedRequest[A](request)
