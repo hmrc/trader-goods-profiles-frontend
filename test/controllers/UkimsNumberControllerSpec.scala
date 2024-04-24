@@ -28,6 +28,8 @@ class UkimsNumberControllerSpec extends SpecBase {
 
   private val formProvider = new UkimsNumberFormProvider()
 
+  private val fieldName = "ukimsNumber"
+
   private val ukimsNumberView = app.injector.instanceOf[UkimsNumberView]
 
   private val ukimsNumberController = new UkimsNumberController(
@@ -51,12 +53,15 @@ class UkimsNumberControllerSpec extends SpecBase {
 
     "must redirect on Submit when user enters correct Ukims number" in {
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("ukimsNumber" -> "XI47699357400020231115081800")
+      val validUkimsNumber = "XI47699357400020231115081800"
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
 
       val result = ukimsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
+      // TO DO : Redirects needs to be change to actual when available
       redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
 
     }
@@ -66,6 +71,22 @@ class UkimsNumberControllerSpec extends SpecBase {
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
       val result = ukimsNumberController.onSubmit(fakeRequest)
+
+      status(result) mustEqual BAD_REQUEST
+
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+
+    }
+
+    "must send bad request on Submit when user enters invalid ukims number" in {
+
+      val invalidUkimsNumber = "XIAA476993574000202311"
+
+      val formWithErrors = formProvider().bind(Map(fieldName -> invalidUkimsNumber))
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
+
+      val result = ukimsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
