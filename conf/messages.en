@@ -69,6 +69,14 @@ nirmsQuestion.p2.linkText = which products can be moved under NIRMS
 nirmsQuestion.h2 = Are you NIRMS registered?
 nirmsQuestion.radio.notSelected = Select if you are NIRMS registered
 
+niphlsQuestion.title = Northern Ireland plant health label (NIPHL)
+niphlsQuestion.h1 = Northern Ireland plant health label (NIPHL)
+niphlsQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
+niphlsQuestion.p2 = Find out more about {0}.
+niphlsQuestion.p2.linkText = moving plants from Great Britain to Northern Ireland
+niphlsQuestion.h2 = Are you NIPHL registered?
+niphlsQuestion.radio.notSelected = Select if you are NIPHL registered
+
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 

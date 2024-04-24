@@ -12,6 +12,10 @@ GET         /nirms-question                              controllers.NirmsQuesti
 
 POST        /nirms-question                              controllers.NirmsQuestionController.onSubmit
 
+GET         /niphls-question                              controllers.NiphlsQuestionController.onPageLoad
+
+POST        /niphls-question                              controllers.NiphlsQuestionController.onSubmit
+
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
