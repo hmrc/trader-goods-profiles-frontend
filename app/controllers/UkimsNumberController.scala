@@ -18,13 +18,8 @@ package controllers
 
 import controllers.actions._
 import forms.UkimsNumberFormProvider
-import models.{Mode, UserAnswers}
-import navigation.Navigator
-import pages.UkimsNumberPage
 import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
