@@ -17,7 +17,7 @@
 package repositories
 
 import config.FrontendAppConfig
-import models.UserAnswers
+import models.{InternalId, UserAnswers}
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
@@ -50,7 +50,7 @@ class SessionRepository @Inject() (
       )
     ) {
 
-  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+  implicit private val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
   private def byId(id: String): Bson = Filters.equal("_id", id)
 
@@ -63,10 +63,10 @@ class SessionRepository @Inject() (
       .toFuture()
       .map(_ => true)
 
-  def get(id: String): Future[Option[UserAnswers]] =
-    keepAlive(id).flatMap { _ =>
+  def get(id: InternalId): Future[Option[UserAnswers]] =
+    keepAlive(id.value).flatMap { _ =>
       collection
-        .find(byId(id))
+        .find(byId(id.value))
         .headOption()
     }
 
@@ -76,7 +76,7 @@ class SessionRepository @Inject() (
 
     collection
       .replaceOne(
-        filter = byId(updatedAnswers.id),
+        filter = byId(updatedAnswers.id.value),
         replacement = updatedAnswers,
         options = ReplaceOptions().upsert(true)
       )

@@ -16,22 +16,47 @@
 
 package controllers.actions
 
+import models.UserAnswers
+
 import javax.inject.Inject
-import models.requests.{AuthorisedRequest, OptionalDataRequest}
-import play.api.mvc.ActionTransformer
+import models.requests.{AuthorisedRequest, DataRequest, OptionalDataRequest}
+import play.api.mvc.{ActionTransformer, Result}
 import repositories.SessionRepository
+import services.SessionService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject() (
-  val sessionRepository: SessionRepository
+  val sessionService: SessionService
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] =
-    sessionRepository.get(request.internalId.value).map {
-      OptionalDataRequest(request.request, request.internalId.value, _)
+  // got to any page
+  // get answers
+  // if empty create
+  // and redirect to start page
+
+  override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] =
+    (for {
+      userAnswers <- sessionService.getUserAnswers(request.internalId)
+      either <- getOrCreateAndRedirect()
+    } yield either)
+
+  }
+
+  private def getOrCreateAndRedirect(userAnswers: Option[UserAnswers], request: AuthorisedRequest[_]) = {
+    userAnswers match {
+      case Some(userAnswers) =>
+        Right(DataRequest(request.request, request.internalId, userAnswers, request.eori))
+
+      case None =>
+        val emptyUserAnswers = UserAnswers(request.internalId, None)
+        sessionService.setUserAnswers(emptyUserAnswers).map { userAnswers =>
+          DataRequest(request.request, request.internalId, userAnswers, request.eori)
+        }
+       // Left(Profile set up page)
     }
+  }
 }
 
 trait DataRetrievalAction extends ActionTransformer[AuthorisedRequest, OptionalDataRequest]

@@ -16,4 +16,10 @@
 
 package models
 
+import play.api.libs.json.Json
+
 case class InternalId(value: String)
+
+object InternalId {
+  implicit val format = Json.format[InternalId]
+}

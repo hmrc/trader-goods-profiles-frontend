@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package models.requests
+package models
 
-import play.api.mvc.{Request, WrappedRequest}
-import models.{Eori, InternalId, UserAnswers}
+import play.api.libs.json.Json
 
-case class DataRequest[A](request: Request[A], internalId: InternalId, userAnswers: UserAnswers, eori: Eori)
-    extends WrappedRequest[A](request)
+case class TraderGoodsProfile(ukims: Ukims)
+
+object TraderGoodsProfile {
+  implicit val format = Json.format[TraderGoodsProfile]
+}

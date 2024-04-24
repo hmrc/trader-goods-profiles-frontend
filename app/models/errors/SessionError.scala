@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package models.requests
+package models.errors
 
-import play.api.mvc.{Request, WrappedRequest}
-import models.{Eori, InternalId, UserAnswers}
+import models.InternalId
 
-case class DataRequest[A](request: Request[A], internalId: InternalId, userAnswers: UserAnswers, eori: Eori)
-    extends WrappedRequest[A](request)
+trait SessionError
+
+object SessionError {
+  case class InternalUnexpectedError(thr: Throwable) extends SessionError
+  case class NotFound(id: InternalId) extends SessionError
+}
