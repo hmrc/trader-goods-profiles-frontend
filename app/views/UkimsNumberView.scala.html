@@ -23,7 +23,8 @@
     formHelper: FormWithCSRF,
     govukInput: GovukInput,
     govukButton: GovukButton,
-    govukErrorSummary: GovukErrorSummary
+    govukErrorSummary: GovukErrorSummary,
+    link: components.Link
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
@@ -55,5 +56,5 @@
         )
     }
 
-    @paragraph(Html(messages("ukimsNumber.linkText")))
+    @paragraph(link(messages("ukimsNumber.linkText"), ""))
 }
