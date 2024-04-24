@@ -24,21 +24,21 @@ import pages._
 import models._
 
 @Singleton
-class Navigator @Inject()() {
+class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case UkimsNumberPage => _ => routes.DummyController.onPageLoad
-    case _ => _ => routes.ProfileSetupController.onPageLoad
+    case _               => _ => routes.ProfileSetupController.onPageLoad
   }
 
-  private val checkRouteMap: Page => UserAnswers => Call = {
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad
+  private val checkRouteMap: Page => UserAnswers => Call = { case _ =>
+    _ => routes.CheckYourAnswersController.onPageLoad
   }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
       normalRoutes(page)(userAnswers)
-    case CheckMode =>
+    case CheckMode  =>
       checkRouteMap(page)(userAnswers)
   }
 }

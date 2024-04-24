@@ -25,8 +25,8 @@ import javax.inject.Inject
 class UkimsNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
-  Form(
-    "ukimsNumber" -> text("ukimsNumber.error.required")
-      .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
-  )
+    Form(
+      "ukimsNumber" -> text("ukimsNumber.error.required")
+        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
+    )
 }

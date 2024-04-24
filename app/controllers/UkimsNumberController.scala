@@ -30,12 +30,13 @@ import views.html.UkimsNumberView
 
 import javax.inject.Inject
 
-class UkimsNumberController @Inject()(
-                                 val controllerComponents: MessagesControllerComponents,
-                                 identify: AuthoriseAction,
-                                 view: UkimsNumberView,
-                                 formProvider: UkimsNumberFormProvider,
-                               ) extends FrontendBaseController with I18nSupport {
+class UkimsNumberController @Inject() (
+  val controllerComponents: MessagesControllerComponents,
+  identify: AuthoriseAction,
+  view: UkimsNumberView,
+  formProvider: UkimsNumberFormProvider
+) extends FrontendBaseController
+    with I18nSupport {
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = identify { implicit request =>
@@ -44,9 +45,11 @@ class UkimsNumberController @Inject()(
 
   def onSubmit: Action[AnyContent] = identify { implicit request =>
     //TODO saving session data???
-    form.bindFromRequest().fold(
-      formWithErrors => BadRequest(view(formWithErrors)),
-      _ => Redirect(routes.DummyController.onPageLoad.url)
-    )
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        _ => Redirect(routes.DummyController.onPageLoad.url)
+      )
   }
 }
