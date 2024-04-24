@@ -20,16 +20,19 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
+import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
-import play.api.inject.bind
+import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
+import play.api.inject.bind
+import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 
 import scala.concurrent.Future
 
@@ -48,7 +51,8 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
   override implicit lazy val app: Application = appBuilder.build()
 
   private val authFetch               = Retrievals.internalId and Retrievals.authorisedEnrolments
-  private val ourEnrolment: Enrolment = Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", "lasfskjfsdf")
+  private val ourEnrolment: Enrolment =
+    Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
   private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
   def authorisedUser: OngoingStubbing[Future[Option[String] ~ Enrolments]] =
@@ -62,4 +66,7 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
       Future.successful(authResult)
     )
   }
+
+  def redirectUrl(response: WSResponse): Option[String] =
+    response.header(HeaderNames.LOCATION)
 }

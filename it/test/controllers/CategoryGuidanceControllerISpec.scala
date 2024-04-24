@@ -29,7 +29,7 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
 
   "Category Guidance controller" should {
 
-    "returns an error when auth fails" in {
+    "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -37,6 +37,8 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
@@ -58,6 +60,7 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
     }
   }
 }
