@@ -21,19 +21,19 @@ import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 
 class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
-  private val formProvider = new UkimsNumberFormProvider()
+  private val formProvider       = new UkimsNumberFormProvider()
   private val form: Form[String] = formProvider()
-  private val requiredKey = "ukimsNumber.error.required"
+  private val requiredKey        = "ukimsNumber.error.required"
 
   val ukimsNumberGenerator: Gen[String] = {
-    val prefixGen = Gen.oneOf("GB", "XI")
+    val prefixGen      = Gen.oneOf("GB", "XI")
     val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
-    val lastDigitsGen = Gen.listOfN(14, Gen.numChar).map(_.mkString)
+    val lastDigitsGen  = Gen.listOfN(14, Gen.numChar).map(_.mkString)
 
     for {
-      prefix <- prefixGen
+      prefix      <- prefixGen
       firstDigits <- firstDigitsGen
-      lastDigits <- lastDigitsGen
+      lastDigits  <- lastDigitsGen
     } yield s"$prefix$firstDigits$lastDigits"
   }
 

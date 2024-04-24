@@ -30,7 +30,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
   private val ukimsNumberView = app.injector.instanceOf[UkimsNumberView]
 
-  private val ukimsnNumberController = new UkimsNumberController(
+  private val ukimsNumberController = new UkimsNumberController(
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     ukimsNumberView,
@@ -41,8 +41,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-
-      val result = ukimsnNumberController.onPageLoad(fakeRequest)
+      val result = ukimsNumberController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
 
@@ -54,7 +53,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("ukimsNumber" -> "XI47699357400020231115081800")
 
-      val result = ukimsnNumberController.onSubmit(fakeRequestWithData)
+      val result = ukimsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -66,7 +65,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = ukimsnNumberController.onSubmit(fakeRequest)
+      val result = ukimsNumberController.onSubmit(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
