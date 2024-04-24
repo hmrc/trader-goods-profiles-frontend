@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.FakeAuthoriseAction
 import forms.UkimsNumberFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
@@ -27,56 +28,49 @@ class UkimsNumberControllerSpec extends SpecBase {
 
   private val formProvider = new UkimsNumberFormProvider()
 
+  private val ukimsNumberView = app.injector.instanceOf[UkimsNumberView]
+
+  private val ukimsnNumberController = new UkimsNumberController(
+    stubMessagesControllerComponents(),
+    new FakeAuthoriseAction(defaultBodyParser),
+    ukimsNumberView,
+    formProvider
+  )
+
   "Ukims Number Controller" - {
+
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val result = ukimsnNumberController.onPageLoad(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.UkimsNumberController.onPageLoad.url)
+      status(result) mustEqual OK
 
-        val result = route(application, request).value
+      contentAsString(result) mustEqual ukimsNumberView(formProvider())(fakeRequest, stubMessages()).toString
 
-        val view = application.injector.instanceOf[UkimsNumberView]
-
-        status(result) mustEqual OK
-
-        contentAsString(result) mustEqual view(formProvider())(request, messages(application)).toString
-      }
     }
 
     "must redirect on Submit when user enters correct Ukims number" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("ukimsNumber" -> "XI47699357400020231115081800")
 
-      running(application) {
-        val request = FakeRequest(POST, routes.UkimsNumberController.onSubmit.url).withFormUrlEncodedBody("ukimsNumber" -> "XI47699357400020231115081800")
+      val result = ukimsnNumberController.onSubmit(fakeRequestWithData)
 
-        val result = route(application, request).value
+      status(result) mustEqual SEE_OTHER
 
-        status(result) mustEqual SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
 
-        redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
-      }
     }
 
     "must send bad request on Submit when user leave the field blank" in {
-      val application = applicationBuilder(userAnswers = None).build()
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val view = application.injector.instanceOf[UkimsNumberView]
+      val result = ukimsnNumberController.onSubmit(fakeRequest)
 
+      status(result) mustEqual BAD_REQUEST
 
-      running(application) {
-        val request = FakeRequest(POST, routes.UkimsNumberController.onSubmit.url)
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
 
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-
-        contentAsString(result) mustEqual view(formWithErrors)(request, messages(application)).toString
-      }
     }
   }
 }

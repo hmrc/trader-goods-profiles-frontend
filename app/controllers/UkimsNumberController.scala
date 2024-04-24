@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 class UkimsNumberController @Inject()(
                                  val controllerComponents: MessagesControllerComponents,
-                                 identify: IdentifierAction,
+                                 identify: AuthoriseAction,
                                  view: UkimsNumberView,
                                  formProvider: UkimsNumberFormProvider,
                                ) extends FrontendBaseController with I18nSupport {

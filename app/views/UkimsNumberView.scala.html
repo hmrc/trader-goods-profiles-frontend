@@ -37,7 +37,7 @@
     @paragraph(Html(messages("ukimsNumber.p1")))
     @paragraph(Html(messages("ukimsNumber.p2")))
 
-    @formHelper(action = routes.UkimsNumberController.onSubmit) {
+    @formHelper(action = routes.UkimsNumberController.onSubmit, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
