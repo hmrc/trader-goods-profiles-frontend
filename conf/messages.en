@@ -61,14 +61,6 @@ profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to 
 profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about {0}.
 profileSetup.p9.linkText = <a target="_blank" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland" class="govuk-link" >Moving plants from Great Britain to Northern Ireland</a>
 
-nirmsQuestion.title = Northern Ireland Retail Movement Scheme (NIRMS)
-nirmsQuestion.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
-nirmsQuestion.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
-nirmsQuestion.p2 = Find out more about {0}.
-nirmsQuestion.p2.linkText = which products can be moved under NIRMS
-nirmsQuestion.h2 = Are you NIRMS registered?
-nirmsQuestion.radio.notSelected = Select if you are NIRMS registered
-
 niphlsQuestion.title = Northern Ireland plant health label (NIPHL)
 niphlsQuestion.h1 = Northern Ireland plant health label (NIPHL)
 niphlsQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
