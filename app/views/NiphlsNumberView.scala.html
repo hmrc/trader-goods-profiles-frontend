@@ -15,20 +15,42 @@
  *@
 
 @this(
-layout: templates.Layout,
-heading1: components.Heading1,
-paragraph: components.Paragraph,
-unorderedList: components.UnorderedList
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    heading1: components.Heading1,
+    heading2: components.Heading2,
+    paragraph: components.Paragraph,
+    unorderedList: components.UnorderedList,
+    govukInput: GovukInput,
+    govukButton: GovukButton
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = titleNoForm(messages("niphlsNumber.title")),
-timeout   = false
+     pageTitle = titleNoForm(messages("niphlsNumber.title")),
+     timeout   = false
 ) {
     @heading1(messages("niphlsNumber.h1"))
     @paragraph(Html(messages("niphlsNumber.p1")))
 
-@unorderedList(Seq(messages("niphlsNumber.li1"), messages("niphlsNumber.li2"), messages("niphlsNumber.li3")))
+    @unorderedList(Seq(messages("niphlsNumber.li1"), messages("niphlsNumber.li2"), messages("niphlsNumber.li3")))
+    @heading2(messages("niphlsNumber.h2"))
+
+    @formHelper(action = NiphlsNumberController.onSubmit) {
+        @* TODO add form to this *@
+        @govukInput(Input(
+            id = "niphlsNumber",
+            name = "niphlsNumber",
+            classes = "govuk-input--width-10",
+            hint = Some(Hint(
+            content = Text(messages("niphlsNumber.hint"))
+            )),
+        ))
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
+
 }

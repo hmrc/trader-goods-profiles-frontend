@@ -67,6 +67,9 @@ niphlsNumber.p1 = NIPHL registration numbers have several formats. They could be
 niphlsNumber.li1 = 4 to 6 numbers
 niphlsNumber.li2 = start with one letter, then 5 numbers
 niphlsNumber.li3 = start with 2 letters, then 5 numbers
+niphlsNumber.h2 = What is your NIPHL registration number?
+niphlsNumber.hint = For example, 612345, S12345 or SN12345
+niphlsNumber.error.notSupplied = Enter your NIPHL registration number.
 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
