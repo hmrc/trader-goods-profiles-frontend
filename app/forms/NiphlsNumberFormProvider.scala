@@ -23,6 +23,12 @@ import play.api.data.Form
 class NiphlsNumberFormProvider extends Mappings {
 
   //TODO niphlsnumber format not string?
-  def apply() = Form("value" -> text(("niphlsNumber.error.notSupplied")))
+  def apply() = Form(
+    "value" -> text("niphlsNumber.error.notSupplied")
+      .verifying(
+        regexp("[0-9]{4,7}", "niphlsNumber.error.wrongFormat")
+      )
+
+  )
 
 }

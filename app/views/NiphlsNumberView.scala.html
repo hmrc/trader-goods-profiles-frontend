@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.RichInput
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -25,7 +27,7 @@
     govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(
      pageTitle = titleNoForm(messages("niphlsNumber.title")),
@@ -42,11 +44,12 @@
         @govukInput(Input(
             id = "niphlsNumber",
             name = "niphlsNumber",
+            value = form("value").value,
             classes = "govuk-input--width-10",
             hint = Some(Hint(
-            content = Text(messages("niphlsNumber.hint"))
-            )),
-        ))
+                content = Text(messages("niphlsNumber.hint"))
+            ))
+        ).withFormField(form("value")))
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))

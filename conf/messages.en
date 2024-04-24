@@ -62,7 +62,7 @@ profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If y
 profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
 niphlsNumber.title = NIPHL reference
-niphlsNumber.h1 = NIPHL reference
+niphlsNumber.h1 = NIPHL registration number
 niphlsNumber.p1 = NIPHL registration numbers have several formats. They could be:
 niphlsNumber.li1 = 4 to 6 numbers
 niphlsNumber.li2 = start with one letter, then 5 numbers

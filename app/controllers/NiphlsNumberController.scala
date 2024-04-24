@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.AuthoriseAction
+import forms.NiphlsNumberFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -27,12 +28,15 @@ import javax.inject.Inject
 class NiphlsNumberController @Inject() (
                                          val controllerComponents: MessagesControllerComponents,
                                          authorise: AuthoriseAction,
-                                         view: NiphlsNumberView
+                                         view: NiphlsNumberView,
+                                         formProvider: NiphlsNumberFormProvider
                                        ) extends FrontendBaseController
   with I18nSupport {
 
+  private val form = formProvider()
+
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view())
+    Ok(view(form))
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
