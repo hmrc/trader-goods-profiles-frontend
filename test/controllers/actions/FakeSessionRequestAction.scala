@@ -21,7 +21,7 @@ import models.requests.{AuthorisedRequest, OptionalDataRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends DataRetrievalAction {
+class FakeSessionRequestAction(dataToReturn: Option[UserAnswers]) extends SessionRequestAction {
 
   override protected def transform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] =
     Future(OptionalDataRequest(request.request, request.internalId.value, dataToReturn))

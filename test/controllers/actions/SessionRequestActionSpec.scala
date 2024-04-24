@@ -28,9 +28,9 @@ import models.{Eori, InternalId}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
+class SessionRequestActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(sessionRepository: SessionRepository) extends DataRetrievalActionImpl(sessionRepository) {
+  class Harness(sessionRepository: SessionRepository) extends SessionRequestActionImpl(sessionRepository) {
     def callTransform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] = transform(request)
   }
 

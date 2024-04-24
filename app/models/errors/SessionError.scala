@@ -22,5 +22,4 @@ trait SessionError
 
 object SessionError {
   case class InternalUnexpectedError(thr: Throwable) extends SessionError
-  case class NotFound(id: InternalId) extends SessionError
 }

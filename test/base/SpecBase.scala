@@ -47,6 +47,6 @@ trait SpecBase
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
         bind[AuthoriseAction].to[FakeAuthoriseAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+        bind[SessionRequestAction].toInstance(new FakeSessionRequestAction(userAnswers))
       )
 }

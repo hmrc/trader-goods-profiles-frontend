@@ -26,17 +26,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait SessionService {
   def getUserAnswers(id: InternalId): EitherT[Future, SessionError, Option[UserAnswers]]
-  def setUserAnswers(userAnswers: UserAnswers): EitherT[Future, SessionError, UserAnswers]
+  def createUserAnswers(internalId: InternalId): EitherT[Future, SessionError, Unit]
 }
 
 class SessionServiceImpl @Inject() (sessionRepository: SessionRepository)(implicit ec: ExecutionContext)
     extends SessionService {
 
-  def setUserAnswers(userAnswers: UserAnswers): EitherT[Future, SessionError, UserAnswers] =
+  def createUserAnswers(internalId: InternalId): EitherT[Future, SessionError, Unit] =
     EitherT {
+      val emptyUserAnswers = UserAnswers(internalId, None)
       sessionRepository
-        .set(userAnswers)
-        .map(Right(_))
+        .set(emptyUserAnswers)
+        .map(_ => Right(()))
         .recover { case thr => Left(SessionError.InternalUnexpectedError(thr)) }
     }
 
