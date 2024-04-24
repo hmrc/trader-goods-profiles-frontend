@@ -8,10 +8,6 @@ GET         /profile-setup                               controllers.ProfileSetu
 
 POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
 
-GET         /nirms-question                              controllers.NirmsQuestionController.onPageLoad
-
-POST        /nirms-question                              controllers.NirmsQuestionController.onSubmit
-
 GET         /niphls-question                              controllers.NiphlsQuestionController.onPageLoad
 
 POST        /niphls-question                              controllers.NiphlsQuestionController.onSubmit

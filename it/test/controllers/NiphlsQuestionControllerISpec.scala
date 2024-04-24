@@ -27,7 +27,7 @@ class NiphlsQuestionControllerISpec extends ItTestBase {
 
   private val url = s"http://localhost:$port$appRouteContext/niphls-question"
 
-  "NIRMS question controller" should {
+  "NIPHLS question controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
