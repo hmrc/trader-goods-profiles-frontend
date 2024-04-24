@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-trait ModelGenerators {}
+import forms.mappings.Mappings
+import play.api.data.Form
+
+class NirmsQuestionFormProvider extends Mappings {
+
+  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.radio.notSelected"))
+
+}

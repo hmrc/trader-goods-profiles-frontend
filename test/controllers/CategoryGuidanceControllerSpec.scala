@@ -19,15 +19,10 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.mvc.PlayBodyParsers
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.test.Helpers.fakeRequest
 import views.html.CategoryGuidanceView
 
 class CategoryGuidanceControllerSpec extends SpecBase {
-
-  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
   val categoryGuidanceView: CategoryGuidanceView = app.injector.instanceOf[CategoryGuidanceView]
 
