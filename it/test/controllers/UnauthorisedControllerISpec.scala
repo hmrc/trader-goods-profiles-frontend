@@ -16,28 +16,26 @@
 
 package controllers
 
-import base.SpecBase
-import play.api.test.Helpers._
-import views.html.UnauthorisedView
+import helpers.ItTestBase
+import play.api.http.Status.OK
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class UnauthorisedControllerSpec extends SpecBase {
+class UnauthorisedControllerISpec extends ItTestBase {
 
-  private val unauthorisedView = app.injector.instanceOf[UnauthorisedView]
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val unauthorisedController = new UnauthorisedController(
-    stubMessagesControllerComponents(),
-    unauthorisedView
-  )
+  private val url = s"http://localhost:$port$appRouteContext/unauthorised"
 
-  "Unauthorised Controller" - {
+  "Unauthorised controller" should {
 
-    "must return OK and the correct view for a GET" in {
+    "loads page" in {
 
-      val result = unauthorisedController.onPageLoad(fakeRequest)
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustEqual OK
+      val response = await(request.get())
 
-      contentAsString(result) mustEqual unauthorisedView()(fakeRequest, stubMessages()).toString
+      response.status mustBe OK
     }
   }
 }

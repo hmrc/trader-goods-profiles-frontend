@@ -16,6 +16,7 @@
 
 package helpers
 
+import config.FrontendAppConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.when
@@ -40,11 +41,10 @@ trait ItTestBase extends PlaySpec
   with GuiceOneServerPerSuite{
 
   val appRouteContext: String = "/trader-goods-profiles"
-
+  private val mockAppConfig   = mock[FrontendAppConfig]
   lazy val authConnector: AuthConnector = mock[AuthConnector]
 
   def appBuilder: GuiceApplicationBuilder = {
-
     GuiceApplicationBuilder()
       .overrides(
         bind[AuthConnector].to(authConnector)
@@ -52,10 +52,12 @@ trait ItTestBase extends PlaySpec
   }
 
   override implicit lazy val app: Application = appBuilder.build()
-
-  private val authFetch = Retrievals.internalId and Retrievals.authorisedEnrolments
-  private val ourEnrolment: Enrolment = Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
-  private val authResult = Some("internalId") and Enrolments(Set(ourEnrolment))
+  private val appConfig                       = app.injector.instanceOf[FrontendAppConfig]
+  private val eori                            = Gen.alphaNumStr.sample.get
+  private val authFetch                       = Retrievals.internalId and Retrievals.authorisedEnrolments
+  private val ourEnrolment: Enrolment         =
+    Enrolment(appConfig.tgpEnrolmentIdentifier.key).withIdentifier(appConfig.tgpEnrolmentIdentifier.identifier, eori)
+  private val authResult                      = Some("internalId") and Enrolments(Set(ourEnrolment))
 
   def authorisedUser: OngoingStubbing[Future[Option[String] ~ Enrolments]] = {
     when(authConnector.authorise(any, eqTo(authFetch))(any, any)).thenReturn(
