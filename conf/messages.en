@@ -82,5 +82,8 @@ signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
 signedOut.guidance = We did not save your answers.
 
-unauthorised.title = You can’t access this service with this account
-unauthorised.heading = You can’t access this service with this account
+unauthorised.title = There is a problem
+unauthorised.heading = There is a problem
+unauthorised.p1 = The details signed in to GOV.UK do not have a Trader Goods Profile.
+unauthorised.p2 = If you have a Trader Goods Profile, {0} and sign in with the correct details.
+unauthorised.p2.linkText = sign out
