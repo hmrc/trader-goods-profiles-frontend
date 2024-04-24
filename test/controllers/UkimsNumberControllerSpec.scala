@@ -41,6 +41,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
+
       val result = ukimsnNumberController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
