@@ -40,6 +40,11 @@ trait LabelFluency {
     def withCssClass(className: String): Label =
       label.copy(classes = s"${label.classes} $className")
 
+    def asHidden(): Label =
+      label
+        .copy(isPageHeading = false)
+        .withCssClass("govuk-visually-hidden")
+
     def withAttribute(attribute: (String, String)): Label =
       label.copy(attributes = label.attributes + attribute)
 

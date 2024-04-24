@@ -8,6 +8,10 @@ GET         /profile-setup                               controllers.ProfileSetu
 
 POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
 
+GET         /nirms-number                                controllers.NirmsNumberController.onPageLoad
+
+POST        /nirms-number                                controllers.NirmsNumberController.onSubmit
+
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
