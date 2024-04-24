@@ -32,18 +32,18 @@ import javax.inject.Inject
 
 class UkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  identify: AuthoriseAction,
+  authorise: AuthoriseAction,
   view: UkimsNumberView,
   formProvider: UkimsNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = identify { implicit request =>
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
     //TODO saving session data???
     form
       .bindFromRequest()
