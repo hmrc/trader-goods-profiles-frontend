@@ -41,15 +41,14 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   val appRouteContext: String = "/trader-goods-profiles"
 
-  private val mockAppConfig = mock[FrontendAppConfig]
-
   lazy val authConnector: AuthConnector = mock[AuthConnector]
 
-  def appBuilder: GuiceApplicationBuilder     =
+  def appBuilder: GuiceApplicationBuilder =
     GuiceApplicationBuilder()
       .overrides(
         bind[AuthConnector].to(authConnector)
       )
+
   override implicit lazy val app: Application = appBuilder.build()
   private val appConfig                       = app.injector.instanceOf[FrontendAppConfig]
   private val eori                            = Gen.alphaNumStr.sample.get
@@ -72,5 +71,4 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   def redirectUrl(response: WSResponse): Option[String] =
     response.header(HeaderNames.LOCATION)
-
 }
