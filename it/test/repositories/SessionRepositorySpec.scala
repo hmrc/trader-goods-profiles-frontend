@@ -43,7 +43,7 @@ class SessionRepositorySpec
   private val instant          = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
-  private val userAnswers = UserAnswers(InternalId("id"), None, Instant.ofEpochSecond(1))
+  private val userAnswers = UserAnswers("id", None, Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1
@@ -76,7 +76,7 @@ class SessionRepositorySpec
 
         insert(userAnswers).futureValue
 
-        val result         = repository.get(userAnswers.id).futureValue
+        val result         = repository.get(InternalId(userAnswers.id)).futureValue
         val expectedResult = userAnswers copy (lastUpdated = instant)
 
         result.value mustEqual expectedResult
@@ -98,10 +98,10 @@ class SessionRepositorySpec
 
       insert(userAnswers).futureValue
 
-      val result = repository.clear(userAnswers.id.value).futureValue
+      val result = repository.clear(userAnswers.id).futureValue
 
       result mustEqual true
-      repository.get(userAnswers.id).futureValue must not be defined
+      repository.get(InternalId(userAnswers.id)).futureValue must not be defined
     }
 
     "must return true when there is no record to remove" in {
@@ -119,7 +119,7 @@ class SessionRepositorySpec
 
         insert(userAnswers).futureValue
 
-        val result = repository.keepAlive(userAnswers.id.value).futureValue
+        val result = repository.keepAlive(userAnswers.id).futureValue
 
         val expectedUpdatedAnswers = userAnswers copy (lastUpdated = instant)
 

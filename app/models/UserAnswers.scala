@@ -22,7 +22,7 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import java.time.Instant
 
 final case class UserAnswers(
-  id: InternalId,
+  id: String,
   traderGoodsProfile: Option[TraderGoodsProfile] = None,
   lastUpdated: Instant = Instant.now
 )
@@ -34,7 +34,7 @@ object UserAnswers {
     import play.api.libs.functional.syntax._
 
     (
-      (__ \ "_id").read[InternalId] and
+      (__ \ "_id").read[String] and
         (__ \ "traderGoodsProfile").readNullable[TraderGoodsProfile] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
     )(UserAnswers.apply _)
@@ -45,7 +45,7 @@ object UserAnswers {
     import play.api.libs.functional.syntax._
 
     (
-      (__ \ "_id").write[InternalId] and
+      (__ \ "_id").write[String] and
         (__ \ "traderGoodsProfile").writeNullable[TraderGoodsProfile] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
     )(unlift(UserAnswers.unapply))

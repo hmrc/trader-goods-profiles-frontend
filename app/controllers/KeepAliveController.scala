@@ -22,7 +22,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class KeepAliveController @Inject() (
   val controllerComponents: MessagesControllerComponents,
@@ -33,6 +33,10 @@ class KeepAliveController @Inject() (
     extends FrontendBaseController {
 
   def keepAlive: Action[AnyContent] = (identify andThen getData).async { implicit request =>
-    sessionRepository.keepAlive(request.userAnswers.id.value).map(_ => Ok)
+    request.userAnswers.traderGoodsProfile
+      .map { traderGoodsProfile =>
+        sessionRepository.keepAlive(request.userAnswers.id).map(_ => Ok)
+      }
+      .getOrElse(Future.successful(Ok))
   }
 }
