@@ -18,7 +18,7 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import org.scalacheck.Gen
-import play.api.data.{Form, FormError}
+import play.api.data.FormError
 
 class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
   private val formProvider = new NiphlsNumberFormProvider()
@@ -30,26 +30,58 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
 
     val fieldName = "value"
 
-    //TODO
-    //behave like fieldWithMaxLength(form, fieldName, 7, lengthError = FormError(fieldName, wrongFormat))
-
     behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
 
-    "anything with less than 4 characters errors" - {
-      behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLength(3), FormError(fieldName, wrongFormat))
+    "errors with" - {
+      "less than 4 characters" - {
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLength(3), FormError(fieldName, wrongFormat))
+      }
+
+      "more than 7 characters" - {
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsLongerThan(7), FormError(fieldName, wrongFormat))
+      }
+
+      "one letter and 4 numbers" - {
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1,4), FormError(fieldName, wrongFormat))
+      }
+
+      "one letter and 6 numbers" - {
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1, 6), FormError(fieldName, wrongFormat))
+      }
+
+      "three letters and 5 numbers" - {
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(3, 5), FormError(fieldName, wrongFormat))
+      }
+
     }
 
-    "anything with more than 7 characters errors" - {
-      behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsLongerThan(7), FormError(fieldName, wrongFormat))
+    "accepts" - {
+      "4 to 6 digits" - {
+        behave like fieldThatBindsValidData(form, fieldName, intsInRange(1000, 999999))
+      }
+
+      "one letter and 5 numbers" - {
+        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(1,5))
+      }
+
+      "two letters and 5 numbers" - {
+        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(2,5))
+      }
     }
 
     // 4 to 6 numbers - \/
     //start with one letter, then 5 numbers
     //start with 2 letters, then 5 numbers
-    "accept 4 to 6 digits" - {
-      behave like fieldThatBindsValidData(form, fieldName, intsInRange(1000, 999999))
-    }
-
-
   }
+
+  private def niphlsNumberGenerator(letterCount: Int, numberCount: Int) = {
+
+      val letter = Gen.listOfN(letterCount, Gen.alphaChar).map(_.mkString)
+      val numbers = Gen.listOfN(numberCount, Gen.numChar).map(_.mkString)
+
+      for {
+        letter <- letter
+        numbers <- numbers
+      } yield s"$letter$numbers"
+    }
 }
