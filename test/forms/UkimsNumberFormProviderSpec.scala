@@ -21,28 +21,82 @@ import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 
 class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
+
   private val formProvider       = new UkimsNumberFormProvider()
   private val form: Form[String] = formProvider()
   private val requiredKey        = "ukimsNumber.error.required"
-
-  val ukimsNumberGenerator: Gen[String] = {
-    val prefixGen      = Gen.oneOf("GB", "XI")
-    val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
-    val lastDigitsGen  = Gen.listOfN(14, Gen.numChar).map(_.mkString)
-
-    for {
-      prefix      <- prefixGen
-      firstDigits <- firstDigitsGen
-      lastDigits  <- lastDigitsGen
-    } yield s"$prefix$firstDigits$lastDigits"
-  }
+  private val invalidFormatKey   = "ukimsNumber.error.invalidFormat"
+  private val fieldName          = "ukimsNumber"
 
   ".ukimsNumber" - {
 
-    val fieldName = "ukimsNumber"
+    "valid UKIMS number" - {
 
-    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
+      val ukimsNumberGenerator: Gen[String] = {
+        val prefixGen      = Gen.oneOf("GB", "XI")
+        val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
+        val lastDigitsGen  = Gen.listOfN(14, Gen.numChar).map(_.mkString)
 
-    behave like fieldThatBindsValidData(form, fieldName, ukimsNumberGenerator)
+        for {
+          prefix      <- prefixGen
+          firstDigits <- firstDigitsGen
+          lastDigits  <- lastDigitsGen
+        } yield s"$prefix$firstDigits$lastDigits"
+      }
+
+      behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
+
+      behave like fieldThatBindsValidData(form, fieldName, ukimsNumberGenerator)
+
+    }
+
+    "invalid UKIMS number" - {
+
+      "invalid UKIMS number with invalid length" - {
+
+        val invalidUkimsNumberGeneratorWithInvalidLength: Gen[String] = {
+
+          val prefixGen      = Gen.oneOf("GB", "XI")
+          val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
+          val lastDigitsGen  = Gen.listOfN(15, Gen.numChar).map(_.mkString)
+
+          for {
+            prefix      <- prefixGen
+            firstDigits <- firstDigitsGen
+            lastDigits  <- lastDigitsGen
+          } yield s"$prefix$firstDigits$lastDigits"
+        }
+
+        behave like fieldThatErrorsOnInvalidData(
+          form,
+          fieldName,
+          invalidUkimsNumberGeneratorWithInvalidLength,
+          FormError(fieldName, invalidFormatKey)
+        )
+      }
+
+      "invalid UKIMS number with invalid prefix" - {
+
+        val invalidUkimsNumberGeneratorWithInvalidPrefix: Gen[String] = {
+          val prefixGen      = Gen.oneOf("AA", "BB")
+          val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
+          val lastDigitsGen  = Gen.listOfN(14, Gen.numChar).map(_.mkString)
+
+          for {
+            prefix      <- prefixGen
+            firstDigits <- firstDigitsGen
+            lastDigits  <- lastDigitsGen
+          } yield s"$prefix$firstDigits$lastDigits"
+        }
+
+        behave like fieldThatErrorsOnInvalidData(
+          form,
+          fieldName,
+          invalidUkimsNumberGeneratorWithInvalidPrefix,
+          FormError(fieldName, invalidFormatKey)
+        )
+
+      }
+    }
   }
 }
