@@ -18,13 +18,10 @@ package controllers
 
 import helpers.ItTestBase
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.libs.ws.{WSClient, WSRequest}
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{status, _}
 
-class NirmsNumberControllerISpec extends ItTestBase {
-  lazy val client: WSClient = app.injector.instanceOf[WSClient]
-
-  private val url = s"http://localhost:$port$appRouteContext/nirms-number"
+class NirmsNumberControllerISpec  extends ItTestBase {
 
   "Nirms number controller" should {
 
@@ -32,13 +29,11 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe SEE_OTHER
 
-      response.status mustBe SEE_OTHER
-
-      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
     }
 
@@ -46,26 +41,25 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe OK
 
-      response.status mustBe OK
+      html(result) must include ("What is your NIRMS number?")
 
     }
+
 
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data" in {
 
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456"))
 
-      val response = await(request.post(Map("nirmsNumber" -> "RMS-GB-123456")))
+      status(result) mustBe SEE_OTHER
 
-      response.status mustBe SEE_OTHER
-
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
 
     }
 
@@ -73,23 +67,35 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456"))
 
-      val response = await(request.post(Map("nirmsNumber" -> "ABC-GF-123456")))
+      status(result) mustBe BAD_REQUEST
 
-      response.status mustBe BAD_REQUEST
+      html(result) must include ("Enter your NIRMS number in the correct format")
 
     }
+
+    "return bad request when submitting incorrect format" in {
+
+      authorisedUser
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "AB2343534"))
+
+      status(result) mustBe BAD_REQUEST
+
+      html(result) must include ("Enter your NIRMS number in the correct format")
+
+    }
+
     "return bad request when submitting no data" in {
 
       authorisedUser
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> ""))
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      status(result) mustBe BAD_REQUEST
 
-      val response = await(request.post(""))
-
-      response.status mustBe BAD_REQUEST
+      html(result) must include ("Enter your NIRMS number")
 
     }
   }
+
 }

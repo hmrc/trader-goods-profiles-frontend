@@ -16,7 +16,6 @@
 
 package forms
 
-
 import forms.behaviours.StringFieldBehaviours
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
@@ -25,6 +24,8 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
   private val formProvider       = new NirmsNumberFormProvider()
   private val form: Form[String] = formProvider()
   private val requiredKey        = "nirmsNumber.error.required"
+  private val invalidKey         = "nirmsNumber.error.invalidFormat"
+  private val rmsRegex           = "RMS-(GB|NI)-[0-9]{6}"
 
   val nirmsNumberGenerator: Gen[String] = {
     val regionGen = Gen.oneOf("GB", "NI")
@@ -36,6 +37,19 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
     } yield s"RMS-$region-$digits"
   }
 
+  val nonNirmsNumberGenerator: Gen[String] = {
+    val invalidRegionGen = Gen.alphaStr.suchThat(s => s != "GB" && s != "NI" && s.nonEmpty)
+    val invalidDigitsGen = for {
+      length <- Gen.choose(1, 10)
+      digits <- Gen.listOfN(length, Gen.oneOf(Gen.alphaChar, Gen.numChar))
+    } yield digits.mkString
+
+    Gen.oneOf(
+      invalidRegionGen.map(region => s"RMS-$region-123456"),
+      invalidDigitsGen.map(digits => s"RMS-GB-$digits")
+    )
+  }
+
   ".nirmsNumber" - {
 
     val fieldName = "nirmsNumber"
@@ -43,5 +57,7 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
     behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
 
     behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGenerator)
+
+    behave like fieldThatDoesNotBindInvalidData(form, fieldName, rmsRegex, nonNirmsNumberGenerator, invalidKey)
   }
 }

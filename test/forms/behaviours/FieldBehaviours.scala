@@ -20,7 +20,7 @@ import forms.FormSpec
 import generators.Generators
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import play.api.data.{Form, FormError}
+import play.api.data.{Field, Form, FormError}
 
 trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Generators {
 
@@ -48,4 +48,20 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
       result.errors mustEqual Seq(requiredError)
     }
   }
+
+  def fieldThatDoesNotBindInvalidData(
+    form: Form[_],
+    fieldName: String,
+    regex: String,
+    gen: Gen[String],
+    invalidKey: String
+  ): Unit =
+    s"must not bind strings which don't match $regex" in {
+
+      val expectedError = FormError(fieldName, invalidKey, Seq(regex))
+      forAll(gen.retryUntil(!_.matches(regex))) { invalidString =>
+        val result: Field = form.bind(Map(fieldName -> invalidString)).apply(fieldName)
+        result.errors must contain(expectedError)
+      }
+    }
 }

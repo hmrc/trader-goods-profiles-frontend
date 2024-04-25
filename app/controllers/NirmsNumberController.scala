@@ -26,10 +26,10 @@ import views.html.NirmsNumberView
 import javax.inject.Inject
 
 class NirmsNumberController @Inject() (
-                                        val controllerComponents: MessagesControllerComponents,
-                                        authorise: AuthoriseAction,
-                                        view: NirmsNumberView,
-                                        formProvider: NirmsNumberFormProvider
+  val controllerComponents: MessagesControllerComponents,
+  authorise: AuthoriseAction,
+  view: NirmsNumberView,
+  formProvider: NirmsNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()

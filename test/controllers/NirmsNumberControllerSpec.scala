@@ -24,10 +24,10 @@ import play.api.test.Helpers._
 import play.api.test.FakeRequest
 import views.html.NirmsNumberView
 
-class NirmsNumberControllerSpec extends  SpecBase{
+class NirmsNumberControllerSpec extends SpecBase {
 
-  private val formProvider = new NirmsNumberFormProvider()
-  private val nirmsNumberView = app.injector.instanceOf[NirmsNumberView]
+  private val formProvider          = new NirmsNumberFormProvider()
+  private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
   private val nirmsNumberController = new NirmsNumberController(
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
@@ -38,7 +38,6 @@ class NirmsNumberControllerSpec extends  SpecBase{
   "Nirms Number Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
 
       val result = nirmsNumberController.onPageLoad(fakeRequest)
 
@@ -117,6 +116,4 @@ class NirmsNumberControllerSpec extends  SpecBase{
     }
   }
 
-
-
-  }
+}
