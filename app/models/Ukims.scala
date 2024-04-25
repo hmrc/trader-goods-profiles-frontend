@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class Ukims(value: String)
 
 object Ukims {
-  implicit val format = Json.format[Ukims]
+  implicit val format: OFormat[models.Ukims] = Json.format[Ukims]
 }

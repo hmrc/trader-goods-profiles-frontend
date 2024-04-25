@@ -26,7 +26,6 @@ class Module extends AbstractModule {
   override def configure(): Unit = {
 
     bind(classOf[SessionRequestAction]).to(classOf[SessionRequestActionImpl]).asEagerSingleton()
-    bind(classOf[DataRequiredAction]).to(classOf[DataRequiredActionImpl]).asEagerSingleton()
 
     // For session based storage instead of cred based, change to SessionIdentifierAction
     bind(classOf[AuthoriseAction]).to(classOf[AuthoriseActionImpl]).asEagerSingleton()

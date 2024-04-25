@@ -17,14 +17,15 @@
 package controllers.actions
 
 import models.UserAnswers
-import models.requests.{AuthorisedRequest, OptionalDataRequest}
+import models.requests.{AuthorisedRequest, DataRequest}
+import play.api.mvc.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeSessionRequestAction(dataToReturn: Option[UserAnswers]) extends SessionRequestAction {
+class FakeSessionRequestAction(dataToReturn: UserAnswers) extends SessionRequestAction {
 
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] =
-    Future(OptionalDataRequest(request.request, request.internalId.value, dataToReturn))
+  override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, DataRequest[A]]] =
+    Future(Right(DataRequest(request.request, request.internalId, dataToReturn, request.eori)))
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global

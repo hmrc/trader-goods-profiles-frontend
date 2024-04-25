@@ -32,7 +32,11 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.ProfileSetupController.onPageLoad
+        navigator.nextPage(
+          UnknownPage,
+          NormalMode,
+          UserAnswers(InternalId("id"), None)
+        ) mustBe routes.ProfileSetupController.onPageLoad
       }
     }
 
@@ -44,7 +48,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           UnknownPage,
           CheckMode,
-          UserAnswers("id")
+          UserAnswers(InternalId("id"), None)
         ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
     }

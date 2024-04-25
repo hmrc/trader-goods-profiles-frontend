@@ -29,27 +29,30 @@ final case class UserAnswers(
 
 object UserAnswers {
 
-  val reads: Reads[UserAnswers] = {
+//  private val reads: Reads[UserAnswers] = {
+//
+//    import play.api.libs.functional.syntax._
+//
+//    (
+//      (__ \ "_id").read[InternalId] and
+//        (__ \ "traderGoodsProfile").read[TraderGoodsProfile] and
+//        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
+//    )(UserAnswers.apply _)
+//  }
 
-    import play.api.libs.functional.syntax._
+//  val writes: OWrites[UserAnswers] = {
+//
+//    import play.api.libs.functional.syntax._
+//
+//    (
+//      (__ \ "_id").write[InternalId] and
+//        (__ \ "traderGoodsProfile").write[TraderGoodsProfile] and
+//        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
+//    )(unlift(UserAnswers.unapply))
+//  }
 
-    (
-      (__ \ "_id").read[InternalId] and
-        (__ \ "traderGoodsProfile").read[TraderGoodsProfile] and
-        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
-    )(UserAnswers.apply _)
-  }
-
-  private val writes: OWrites[UserAnswers] = {
-
-    import play.api.libs.functional.syntax._
-
-    (
-      (__ \ "_id").write[InternalId] and
-        (__ \ "traderGoodsProfile").write[TraderGoodsProfile] and
-        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
-    )(unlift(UserAnswers.unapply))
-  }
+  val writes: OWrites[UserAnswers] = Json.writes[UserAnswers]
+  val reads: Reads[UserAnswers]    = Json.reads[UserAnswers]
 
   implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)
 }

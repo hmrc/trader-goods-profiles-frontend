@@ -16,8 +16,6 @@
 
 package models.errors
 
-import models.InternalId
-
 trait SessionError
 
 object SessionError {

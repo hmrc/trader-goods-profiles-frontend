@@ -21,7 +21,6 @@ import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ProfileSetupView
 
@@ -37,7 +36,7 @@ class ProfileSetupController @Inject() (
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest) { _ =>
     Redirect(routes.DummyController.onPageLoad.url)
   }
 }

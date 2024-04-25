@@ -30,7 +30,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the continue view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
 
         running(application) {
           val continueUrl = RedirectUrl("/foo")
@@ -53,7 +53,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the start again view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
 
         running(application) {
           val continueUrl = RedirectUrl("https://foo.com")
@@ -73,7 +73,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the start again view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.JourneyRecoveryController.onPageLoad().url)
