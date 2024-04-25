@@ -24,7 +24,7 @@ import play.api.test.Helpers.{await, defaultAwaitTimeout}
 class UkimsNumberControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port$appRouteContext/ukims-number"
+  private val url = s"http://localhost:$port${routes.UkimsNumberController.onPageLoad.url}"
 
   "Ukims number controller" should {
 
