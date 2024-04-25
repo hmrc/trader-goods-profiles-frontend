@@ -62,7 +62,6 @@ profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If y
 profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
-nirmsNumber.h1 = What is your NIRMS number?
 nirmsNumber.heading = What is your NIRMS number?
 nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
 

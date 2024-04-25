@@ -34,7 +34,6 @@
     pageTitle    = titleNoForm(messages("nirmsNumber.title")),
     showBackLink = true
 ) {
-    @heading1(messages("nirmsNumber.h1"))
 
 
     @formHelper(action = routes.NirmsNumberController.onSubmit, Symbol("autoComplete") -> "off") {
@@ -46,7 +45,7 @@
         @govukInput(
             InputViewModel(
                 field = form("nirmsNumber"),
-                label = LabelViewModel(messages("nirmsNumber.heading")).asHidden()
+                label = LabelViewModel(messages("nirmsNumber.heading")).asPageHeading(Large)
             ).withHint(Hint(content = Text(messages("nirmsNumber.hint"))))
             .withWidth(Fixed10)
         )
