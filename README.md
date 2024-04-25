@@ -29,7 +29,7 @@ Run this to get code coverage report: `sbt coverageReport`
 
 ### Formatting
 
-Run this to format scala files : `sbt scalafmt`
+Run this to format scala files : `sbt scalafmtCheckAll`
 
 ### License
 
