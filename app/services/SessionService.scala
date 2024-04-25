@@ -34,7 +34,7 @@ class SessionServiceImpl @Inject() (sessionRepository: SessionRepository)(implic
 
   def createUserAnswers(internalId: InternalId): EitherT[Future, SessionError, Unit] =
     EitherT {
-      val emptyUserAnswers = UserAnswers(internalId, None)
+      val emptyUserAnswers = UserAnswers(internalId)
       sessionRepository
         .set(emptyUserAnswers)
         .map(_ => Right(()))

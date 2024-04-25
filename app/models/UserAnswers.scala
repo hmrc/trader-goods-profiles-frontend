@@ -23,36 +23,36 @@ import java.time.Instant
 
 final case class UserAnswers(
   id: InternalId,
-  traderGoodsProfile: Option[TraderGoodsProfile],
+  traderGoodsProfile: Option[TraderGoodsProfile] = None,
   lastUpdated: Instant = Instant.now
 )
 
 object UserAnswers {
 
-//  private val reads: Reads[UserAnswers] = {
-//
-//    import play.api.libs.functional.syntax._
-//
-//    (
-//      (__ \ "_id").read[InternalId] and
-//        (__ \ "traderGoodsProfile").read[TraderGoodsProfile] and
-//        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
-//    )(UserAnswers.apply _)
-//  }
+  private val reads: Reads[UserAnswers] = {
 
-//  val writes: OWrites[UserAnswers] = {
-//
-//    import play.api.libs.functional.syntax._
-//
-//    (
-//      (__ \ "_id").write[InternalId] and
-//        (__ \ "traderGoodsProfile").write[TraderGoodsProfile] and
-//        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
-//    )(unlift(UserAnswers.unapply))
-//  }
+    import play.api.libs.functional.syntax._
 
-  val writes: OWrites[UserAnswers] = Json.writes[UserAnswers]
-  val reads: Reads[UserAnswers]    = Json.reads[UserAnswers]
+    (
+      (__ \ "_id").read[InternalId] and
+        (__ \ "traderGoodsProfile").readNullable[TraderGoodsProfile] and
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
+    )(UserAnswers.apply _)
+  }
+
+  val writes: OWrites[UserAnswers] = {
+
+    import play.api.libs.functional.syntax._
+
+    (
+      (__ \ "_id").write[InternalId] and
+        (__ \ "traderGoodsProfile").writeNullable[TraderGoodsProfile] and
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
+    )(unlift(UserAnswers.unapply))
+  }
+
+//  val writes: OWrites[UserAnswers] = Json.writes[UserAnswers]
+//  val reads: Reads[UserAnswers]    = Json.reads[UserAnswers]
 
   implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)
 }
