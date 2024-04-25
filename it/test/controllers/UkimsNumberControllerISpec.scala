@@ -18,13 +18,12 @@ package controllers
 
 import helpers.ItTestBase
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.libs.ws.{WSClient, WSRequest}
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
 class UkimsNumberControllerISpec extends ItTestBase {
-  lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.UkimsNumberController.onPageLoad.url}"
+  private val fieldName = "ukimsNumber"
 
   "Ukims number controller" should {
 
@@ -32,41 +31,38 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe SEE_OTHER
 
-      response.status mustBe SEE_OTHER
-
-      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
-
+      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
 
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe OK
 
-      response.status mustBe OK
+      html(result) must include("What is your UKIMS number?")
 
     }
 
     "redirects to dummy controller when submitting valid data" in {
 
-      authorisedUser
-
       val validUkimsNumber = "XI47699357400020231115081800"
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      authorisedUser
 
-      val response = await(request.post(Map("ukimsNumber" -> validUkimsNumber)))
+      val result = callRoute(
+        FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+      )
 
-      response.status mustBe SEE_OTHER
+      status(result) mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
 
     }
 
@@ -74,11 +70,12 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result =
+        callRoute(FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> ""))
 
-      val response = await(request.post(""))
+      status(result) mustBe BAD_REQUEST
 
-      response.status mustBe BAD_REQUEST
+      html(result) must include("Enter your UKIMS number")
 
     }
 
@@ -88,11 +85,13 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       val invalidUkimsNumber = "XI4769935740002023111508"
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(
+        FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
+      )
 
-      val response = await(request.post(Map("ukimsNumber" -> invalidUkimsNumber)))
+      status(result) mustBe BAD_REQUEST
 
-      response.status mustBe BAD_REQUEST
+      html(result) must include("Enter your UKIMS number in the correct format")
 
     }
   }
