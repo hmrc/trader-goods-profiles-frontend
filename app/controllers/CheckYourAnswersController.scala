@@ -26,7 +26,7 @@ import views.html.CheckYourAnswersView
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
-  identify: AuthoriseAction,
+  authorise: AuthoriseAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
@@ -34,7 +34,7 @@ class CheckYourAnswersController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen getData andThen requireData) { implicit request =>
     val list = SummaryListViewModel(
       rows = Seq.empty
     )
