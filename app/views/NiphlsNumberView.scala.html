@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits.RichInput
+@import viewmodels.InputWidth.Fixed10
 
 @this(
     layout: templates.Layout,
@@ -40,16 +41,12 @@
     @heading2(messages("niphlsNumber.h2"))
 
     @formHelper(action = NiphlsNumberController.onSubmit) {
-        @* TODO add form to this *@
-        @govukInput(Input(
-            id = "niphlsNumber",
-            name = "niphlsNumber",
-            value = form("value").value,
-            classes = "govuk-input--width-10",
-            hint = Some(Hint(
-                content = Text(messages("niphlsNumber.hint"))
-            ))
-        ).withFormField(form("value")))
+
+        @govukInput(InputViewModel(
+            field = form("value"),
+            label = Label()
+            ).withWidth(Fixed10)
+        )
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))

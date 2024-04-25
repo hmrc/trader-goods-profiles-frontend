@@ -40,6 +40,12 @@ class NiphlsNumberController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
+    //TODO saving session data and change redirect
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        _ => Redirect(routes.DummyController.onPageLoad.url)
+      )
   }
 }

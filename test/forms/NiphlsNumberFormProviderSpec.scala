@@ -34,23 +34,23 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
 
     "errors with" - {
       "less than 4 characters" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLength(3), FormError(fieldName, wrongFormat))
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLength(3), wrongFormat)
       }
 
       "more than 7 characters" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsLongerThan(7), FormError(fieldName, wrongFormat))
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsLongerThan(7), wrongFormat)
       }
 
       "one letter and 4 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1,4), FormError(fieldName, wrongFormat))
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1,4), wrongFormat)
       }
 
       "one letter and 6 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1, 6), FormError(fieldName, wrongFormat))
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1, 6), wrongFormat)
       }
 
       "three letters and 5 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(3, 5), FormError(fieldName, wrongFormat))
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(3, 5), wrongFormat)
       }
 
     }
@@ -69,9 +69,6 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
       }
     }
 
-    // 4 to 6 numbers - \/
-    //start with one letter, then 5 numbers
-    //start with 2 letters, then 5 numbers
   }
 
   private def niphlsNumberGenerator(letterCount: Int, numberCount: Int) = {
