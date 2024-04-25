@@ -21,7 +21,7 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class UkimsNumberControllerSpec extends ItTestBase {
+class UkimsNumberControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
   private val url = s"http://localhost:$port$appRouteContext/ukims-number"
@@ -58,9 +58,11 @@ class UkimsNumberControllerSpec extends ItTestBase {
 
       authorisedUser
 
+      val validUkimsNumber = "XI47699357400020231115081800"
+
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      val response = await(request.post(Map("ukimsNumber" -> "XI47699357400020231115081800")))
+      val response = await(request.post(Map("ukimsNumber" -> validUkimsNumber)))
 
       response.status mustBe SEE_OTHER
 
@@ -75,6 +77,20 @@ class UkimsNumberControllerSpec extends ItTestBase {
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
       val response = await(request.post(""))
+
+      response.status mustBe BAD_REQUEST
+
+    }
+
+    "returns bad request when submitting invalid data" in {
+
+      authorisedUser
+
+      val invalidUkimsNumber = "XI4769935740002023111508"
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(Map("ukimsNumber" -> invalidUkimsNumber)))
 
       response.status mustBe BAD_REQUEST
 
