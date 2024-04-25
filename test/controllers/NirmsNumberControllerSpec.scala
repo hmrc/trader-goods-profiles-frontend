@@ -88,6 +88,22 @@ class NirmsNumberControllerSpec extends  SpecBase{
 
     }
 
+    "must send bad request when user enters invalid Nirms number format" in {
+
+      val inCorrectnirmsNumber = "DDD123456"
+
+      val formWithErrors = formProvider().bind(Map("nirmsNumber" -> inCorrectnirmsNumber))
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> inCorrectnirmsNumber)
+
+      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual BAD_REQUEST
+
+      contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+
+    }
+
     "must send bad request on Submit when user leave the field blank" in {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])

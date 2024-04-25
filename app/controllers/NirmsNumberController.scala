@@ -26,19 +26,19 @@ import views.html.NirmsNumberView
 import javax.inject.Inject
 
 class NirmsNumberController @Inject() (
-  val controllerComponents: MessagesControllerComponents,
-  identify: AuthoriseAction,
-  view: NirmsNumberView,
-  formProvider: NirmsNumberFormProvider
+                                        val controllerComponents: MessagesControllerComponents,
+                                        authorise: AuthoriseAction,
+                                        view: NirmsNumberView,
+                                        formProvider: NirmsNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = identify { implicit request =>
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
     //TODO: save session data and change redirect page when it becomes available
     form
       .bindFromRequest()
