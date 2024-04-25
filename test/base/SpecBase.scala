@@ -48,6 +48,8 @@ trait SpecBase
 
   val messages: Messages = messagesApi.preferred(fakeRequest)
 
+  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
+
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
