@@ -17,50 +17,95 @@
 package controllers.actions
 
 import base.SpecBase
-import models.{Eori, InternalId}
+import cats.data.EitherT
+import controllers.routes
+import models.errors.SessionError
+import models.{Eori, InternalId, TraderGoodsProfile, Ukims, UserAnswers}
 import models.requests.{AuthorisedRequest, DataRequest}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Result
 import services.SessionService
 import org.mockito.Mockito.when
+import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SessionRequestActionSpec extends SpecBase with MockitoSugar {
   class Harness(sessionService: SessionService) extends SessionRequestActionImpl(sessionService) {
-    def callRefine[A](request: AuthorisedRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
+    def callRefine[A](
+      request: AuthorisedRequest[A]
+    ): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
 
-//  "Session Request Action" - {
-//
-//    "when there is no data in the cache" - {
-//
-//      "must set userAnswers to 'None' in the request" in {
-//
-//        val sessionService = mock[SessionService]
-//        when(sessionService.getUserAnswers(InternalId("id"))) thenReturn Future(Right(None))
-//        val action         = new Harness(sessionService)
-//
-//        val result = action.callRefine(AuthorisedRequest(FakeRequest(), InternalId("id"), Eori("eori"))).futureValue
-//
-//        result.leftSide.must not be defined
-//      }
-//    }
-//
-//    "when there is data in the cache" - {
-//
-//      "must build a userAnswers object and add it to the request" in {
-//
-//        val sessionRepository = mock[SessionRepository]
-//        when(sessionRepository.get("id")) thenReturn Future(Some(UserAnswers("id")))
-//        val action            = new Harness(sessionRepository)
-//
-//        val result = action.callTransform(AuthorisedRequest(FakeRequest(), InternalId("id"), Eori("eori"))).futureValue
-//
-//        result.userAnswers mustBe defined
-//      }
-//    }
-//  }
+  "Session Request Action" - {
+    val internalId          = InternalId("id")
+    val eori                = Eori("eori")
+    val ukims               = Ukims("ukims")
+    val authRequest         = AuthorisedRequest(FakeRequest(), internalId, eori)
+    val sessionService      = mock[SessionService]
+    val repositoryThrowable = new Throwable("There was an error with sessionRepository")
+    val userAnswers         = UserAnswers(internalId.value, Some(TraderGoodsProfile(ukims)))
+
+    "when it is a new user" - {
+
+      "must create a new user answers and redirect to ProfileSetupController" in {
+        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+          Future.successful(Right(None))
+        )
+        when(sessionService.createUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
+        val action = new Harness(sessionService)
+        val result = await(action.callRefine(authRequest))
+
+        result mustBe Left(Redirect(routes.ProfileSetupController.onPageLoad))
+      }
+      "redirects if unexpected error when creating answers" in {
+        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+          Future.successful(Right(None))
+        )
+        when(sessionService.createUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Left(SessionError.InternalUnexpectedError(repositoryThrowable)))
+        )
+
+        val action = new Harness(sessionService)
+        val result = await(action.callRefine(authRequest))
+
+        result mustBe Left(Redirect(routes.DummyController.onPageLoad))
+
+      }
+    }
+
+    "when it is a not a new user" - {
+
+      "must get user answers" in {
+        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+          Future.successful(Right(Some(userAnswers)))
+        )
+
+        val action = new Harness(sessionService)
+        val result = await(action.callRefine(authRequest))
+
+        result mustBe Right(DataRequest(authRequest, internalId, userAnswers, eori))
+      }
+
+      "redirects if unexpected error when getting answers" in {
+
+        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+          Future.successful(Left(SessionError.InternalUnexpectedError(repositoryThrowable)))
+        )
+
+        val action = new Harness(sessionService)
+        val result = await(action.callRefine(authRequest))
+
+        result mustBe Left(Redirect(routes.DummyController.onPageLoad))
+
+      }
+
+    }
+  }
 }
