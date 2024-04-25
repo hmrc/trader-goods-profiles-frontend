@@ -67,7 +67,7 @@ nirmsQuestion.p1 = Businesses who sell, or facilitate the movement of food for f
 nirmsQuestion.p2 = Find out more about {0}.
 nirmsQuestion.p2.linkText = which products can be moved under NIRMS
 nirmsQuestion.h2 = Are you NIRMS registered?
-nirmsQuestion.radio.notSelected = Select if you are NIRMS registered
+nirmsQuestion.error.notSelected = Select if you are NIRMS registered
 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers

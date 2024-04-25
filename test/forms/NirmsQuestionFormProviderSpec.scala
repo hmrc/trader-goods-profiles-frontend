@@ -23,7 +23,7 @@ class NirmsQuestionFormProviderSpec extends BooleanFieldBehaviours{
   private val formProvider = new NirmsQuestionFormProvider()
   private val form: Form[Boolean] = formProvider()
   private val invalidKey  = "error.boolean"
-  private val requiredKey = "nirmsQuestion.radio.notSelected"
+  private val requiredKey = "nirmsQuestion.error.notSelected"
 
   ".value" - {
 

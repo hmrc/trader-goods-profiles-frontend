@@ -69,7 +69,9 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      val pageContent = contentAsString(result)
+      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent must include("nirmsQuestion.error.notSelected")
 
     }
   }

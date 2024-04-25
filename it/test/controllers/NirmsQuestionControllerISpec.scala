@@ -25,7 +25,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port$appRouteContext/nirms-question"
+  private val url = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad.url}"
 
   "NIRMS question controller" should {
 
