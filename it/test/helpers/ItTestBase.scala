@@ -40,6 +40,7 @@ import scala.concurrent.Future
 trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   val appRouteContext: String = "/trader-goods-profiles"
+  private val mockAppConfig   = mock[FrontendAppConfig]
 
   lazy val authConnector: AuthConnector = mock[AuthConnector]
 
