@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NiphlsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  sessionRequest: SessionRequestAction, // Here
+  sessionRequest: SessionRequestAction,
   view: NiphlsNumberView,
   formProvider: NiphlsNumberFormProvider,
   sessionService: SessionService
@@ -39,26 +39,24 @@ class NiphlsNumberController @Inject() (
     with I18nSupport {
 
   private val form = formProvider()
-
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request => {
-      val preparedForm = request.userAnswers.traderGoodsProfile.flatMap(_.niphlsNumber)
-      preparedForm match {
+      val optionalNiphlsNumber = request.userAnswers.traderGoodsProfile.flatMap(_.niphlsNumber)
+
+      optionalNiphlsNumber match {
         case Some(niphlsNumber) => Ok(view(form.fill(niphlsNumber.value)))
         case None => Ok(view(form))
       }
     }
   }
 
-
-  // Must have .asyc to handle session repository future result
   def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
       niphlsNumber => {
-        val updatedTgpModel = request.userAnswers.traderGoodsProfile.map(_.copy(niphlsNumber = Some(NiphlsNumber(niphlsNumber))))
+        val updatedTgpModelObject = request.userAnswers.traderGoodsProfile.map(_.copy(niphlsNumber = Some(NiphlsNumber(niphlsNumber))))
           .getOrElse(TraderGoodsProfile(niphlsNumber = Some(NiphlsNumber(niphlsNumber))))
 
-        val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = Some(updatedTgpModel))
+        val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = Some(updatedTgpModelObject))
 
         sessionService.updateUserAnswers(updatedUserAnswers).value.map {
           case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
