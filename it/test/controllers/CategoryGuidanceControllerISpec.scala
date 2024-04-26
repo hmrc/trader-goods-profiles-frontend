@@ -25,7 +25,7 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port$appRouteContext/category-guidance"
+  private val url = s"http://localhost:$port${routes.CategoryGuidanceController.onPageLoad.url}"
 
   "Category Guidance controller" should {
 
