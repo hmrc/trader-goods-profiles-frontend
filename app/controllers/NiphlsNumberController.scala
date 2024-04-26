@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NiphlsNumberFormProvider
-import models.{NiphlsNumber, TraderGoodsProfile, Ukims}
+import models.{NiphlsNumber, TraderGoodsProfile}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -40,47 +40,32 @@ class NiphlsNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    request.userAnswers.traderGoodsProfile match {
-      case Some(tgp) => {
-        val preparedForm = form.fill(tgp.niphlsNumber.value)
-        Ok(view(preparedForm))
-      }
-      case None => {
-        Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request => {
+      val preparedForm = request.userAnswers.traderGoodsProfile.flatMap(_.niphlsNumber)
+      preparedForm match {
+        case Some(niphlsNumber) => Ok(view(form.fill(niphlsNumber.value)))
+        case None => Ok(view(form))
       }
     }
   }
 
+
   // Must have .asyc to handle session repository future result
   def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        // needs to be future.successful now since we use .async
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        // if no errors in validation, take the number and do stuff with it
-        niphlsNumber => {
+    form.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+      niphlsNumber => {
+        val updatedTgpModel = request.userAnswers.traderGoodsProfile.map(_.copy(niphlsNumber = Some(NiphlsNumber(niphlsNumber))))
+          .getOrElse(TraderGoodsProfile(niphlsNumber = Some(NiphlsNumber(niphlsNumber))))
 
-          // create and updated tgp model object with the niphls number
-          val updatedTgpModel = request.userAnswers.traderGoodsProfile match {
-            case Some(tgpModelObject) => tgpModelObject.copy(niphlsNumber = NiphlsNumber(niphlsNumber))
-            case None => TraderGoodsProfile(Ukims("someukims"), NiphlsNumber(niphlsNumber))
-          }
+        val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = Some(updatedTgpModel))
 
-          // create an udated user answers object with the updated tgp one inside
-          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = Some(updatedTgpModel))
-
-          // update the answers and handle session error and success cases.
-          // session error happens when it can't connect to the repository for some reason.
-          sessionService.updateUserAnswers(updatedUserAnswers).value.map {
-            case Left(sessionError) =>
-              Redirect(routes.JourneyRecoveryController.onPageLoad().url) // Probs redirect somewhere else
-            case Right(success) =>
-              Redirect(routes.DummyController.onPageLoad.url) // Go to the next page if it worked.
-          }
+        sessionService.updateUserAnswers(updatedUserAnswers).value.map {
+          case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          case Right(success) => Redirect(routes.DummyController.onPageLoad.url)
         }
-      )
+      }
+    )
   }
 
 }

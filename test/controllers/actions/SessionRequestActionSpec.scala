@@ -20,7 +20,7 @@ import base.SpecBase
 import cats.data.EitherT
 import controllers.routes
 import models.errors.SessionError
-import models.{Eori, InternalId, TraderGoodsProfile, Ukims, UserAnswers}
+import models.{Eori, InternalId, TraderGoodsProfile, UserAnswers}
 import models.requests.{AuthorisedRequest, DataRequest}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Result
@@ -43,11 +43,10 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
   "Session Request Action" - {
     val internalId          = InternalId("id")
     val eori                = Eori("eori")
-    val ukims               = Ukims("ukims")
     val authRequest         = AuthorisedRequest(FakeRequest(), internalId, eori)
     val sessionService      = mock[SessionService]
     val repositoryThrowable = new Throwable("There was an error with sessionRepository")
-    val userAnswers         = UserAnswers(internalId.value, Some(TraderGoodsProfile(ukims)))
+    val userAnswers         = UserAnswers(internalId.value, Some(TraderGoodsProfile()))
 
     "when it is a new user" - {
 

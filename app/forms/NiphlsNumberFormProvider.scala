@@ -17,7 +17,6 @@
 package forms
 
 import forms.mappings.Mappings
-import models.NiphlsNumber
 import play.api.data.Form
 
 class NiphlsNumberFormProvider extends Mappings {
