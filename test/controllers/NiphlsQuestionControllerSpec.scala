@@ -69,9 +69,11 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      val pageContent = contentAsString(result)
 
-      contentAsString(result) must include("niphlsQuestion.radio.notSelected")
+      pageContent mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+
+      pageContent must include("niphlsQuestion.radio.notSelected")
     }
   }
 }
