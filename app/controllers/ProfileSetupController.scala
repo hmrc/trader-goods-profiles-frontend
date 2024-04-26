@@ -25,16 +25,16 @@ import views.html.ProfileSetupView
 
 class ProfileSetupController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  identify: AuthoriseAction,
+  authorise: AuthoriseAction,
   view: ProfileSetupView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = identify { implicit request =>
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
     Redirect(routes.UkimsNumberController.onPageLoad.url)
   }
 }
