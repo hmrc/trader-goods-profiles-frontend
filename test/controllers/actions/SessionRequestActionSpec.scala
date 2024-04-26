@@ -52,7 +52,7 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
     "when it is a new user" - {
 
       "must create a new user answers and redirect to ProfileSetupController" in {
-        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+        when(sessionService.readUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
           Future.successful(Right(None))
         )
         when(sessionService.createUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Unit](
@@ -65,7 +65,7 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
         result mustBe Left(Redirect(routes.ProfileSetupController.onPageLoad))
       }
       "redirects if unexpected error when creating answers" in {
-        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+        when(sessionService.readUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
           Future.successful(Right(None))
         )
         when(sessionService.createUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Unit](
@@ -83,7 +83,7 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
     "when it is a not a new user" - {
 
       "must get user answers" in {
-        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+        when(sessionService.readUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
           Future.successful(Right(Some(userAnswers)))
         )
 
@@ -95,7 +95,7 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
 
       "redirects if unexpected error when getting answers" in {
 
-        when(sessionService.getUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+        when(sessionService.readUserAnswers(internalId)) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
           Future.successful(Left(SessionError.InternalUnexpectedError(repositoryThrowable)))
         )
 

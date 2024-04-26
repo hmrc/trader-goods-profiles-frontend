@@ -24,13 +24,7 @@ import models.errors.SessionError
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-trait SessionService {
-  def getUserAnswers(id: InternalId): EitherT[Future, SessionError, Option[UserAnswers]]
-  def createUserAnswers(internalId: InternalId): EitherT[Future, SessionError, Unit]
-}
-
-class SessionServiceImpl @Inject() (sessionRepository: SessionRepository)(implicit ec: ExecutionContext)
-    extends SessionService {
+class SessionService @Inject() (sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
 
   def createUserAnswers(internalId: InternalId): EitherT[Future, SessionError, Unit] =
     EitherT {
@@ -41,11 +35,19 @@ class SessionServiceImpl @Inject() (sessionRepository: SessionRepository)(implic
         .recover { case thr => Left(SessionError.InternalUnexpectedError(thr)) }
     }
 
-  def getUserAnswers(id: InternalId): EitherT[Future, SessionError, Option[UserAnswers]] =
+  def readUserAnswers(id: InternalId): EitherT[Future, SessionError, Option[UserAnswers]] =
     EitherT {
       sessionRepository
         .get(id)
         .map(Right(_))
+        .recover { case thr => Left(SessionError.InternalUnexpectedError(thr)) }
+    }
+
+  def updateUserAnswers(userAnswers: UserAnswers): EitherT[Future, SessionError, Unit] =
+    EitherT {
+      sessionRepository
+        .set(userAnswers)
+        .map(_ => Right(()))
         .recover { case thr => Left(SessionError.InternalUnexpectedError(thr)) }
     }
 

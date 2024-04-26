@@ -27,13 +27,13 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import repositories.SessionRepository
 
 import scala.concurrent.{ExecutionContext, Future}
-class SessionServiceImplSpec extends SpecBase {
+class SessionServiceSpec extends SpecBase {
 
   "Session Service" - {
 
     implicit val ec: ExecutionContext = ExecutionContext.global;
     val mockSessionRepository         = mock[SessionRepository]
-    val sessionService                = new SessionServiceImpl(mockSessionRepository)
+    val sessionService                = new SessionService(mockSessionRepository)
     val id = InternalId("id")
     val repositoryThrowable = new Throwable("There was an error with sessionRepository")
 
@@ -46,7 +46,7 @@ class SessionServiceImplSpec extends SpecBase {
 
       val result: EitherT[Future, SessionError, Unit] = sessionService.createUserAnswers(id)
       result.value.futureValue match {
-        case Left(sessionError) => fail("Session service should not error")
+        case Left(sessionError) => fail("Session service should not fail to create answers")
         case Right(unit) => succeed
       }
     }
@@ -65,14 +65,14 @@ class SessionServiceImplSpec extends SpecBase {
       }
     }
 
-    "getUserAnswers should get answers if sessionRepository does not fail" in {
+    "readUserAnswers should get answers if sessionRepository does not fail" in {
       when(
         mockSessionRepository.get(any())
       ).thenReturn(
         Future.successful(Some(emptyUserAnswers))
       )
 
-      val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.getUserAnswers(id)
+      val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.readUserAnswers(id)
       result.value.futureValue match {
         case Left(sessionError) => fail("Session service should get answers and not error")
         case Right(Some(answers)) => {
@@ -82,17 +82,45 @@ class SessionServiceImplSpec extends SpecBase {
       }
     }
 
-    "getUserAnswers should not get answers if sessionRepository fails" in {
+    "readUserAnswers should not get answers if sessionRepository fails" in {
       when(
         mockSessionRepository.get(any())
       ).thenReturn(
         Future.failed(repositoryThrowable)
       )
 
-      val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.getUserAnswers(id)
+      val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.readUserAnswers(id)
       result.value.futureValue match {
         case Left(sessionError) => succeed
         case Right(Some(answers)) => fail("Session service should not get answers and should fail")
+      }
+    }
+
+    "updateUserAnswers should update answers if sessionRepository does not fail" in {
+      when(
+        mockSessionRepository.set(any())
+      ).thenReturn(
+        Future.successful(true)
+      )
+
+      val result: EitherT[Future, SessionError, Unit] = sessionService.updateUserAnswers(emptyUserAnswers)
+      result.value.futureValue match {
+        case Left(sessionError) => fail("Session service should not fail to update answers")
+        case Right(unit) => succeed
+      }
+    }
+
+    "updateUserAnswers should not update answers if sessionRepository fails" in {
+      when(
+        mockSessionRepository.set(any())
+      ).thenReturn(
+        Future.failed(repositoryThrowable)
+      )
+
+      val result: EitherT[Future, SessionError, Unit] = sessionService.updateUserAnswers(emptyUserAnswers)
+      result.value.futureValue match {
+        case Left(sessionError) => succeed
+        case Right(unit) => fail("Session service should fail to update answers but doesn't")
       }
     }
 

@@ -32,7 +32,7 @@ class SessionRequestActionImpl @Inject() (
 
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, DataRequest[A]]] =
     sessionService
-      .getUserAnswers(request.internalId)
+      .readUserAnswers(request.internalId)
       .foldF(
         error => Future.successful(Left(Redirect(routes.DummyController.onPageLoad))), //TODO - redirect to error page
         {
