@@ -21,7 +21,7 @@ import generators.NiphlsNumberGenerator
 import org.scalacheck.Gen
 import play.api.data.FormError
 
-class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumberGenerator{
+class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumberGenerator {
   private val formProvider = new NiphlsNumberFormProvider()
   private val form         = formProvider()
   private val wrongFormat  = "niphlsNumber.error.wrongFormat"
@@ -71,6 +71,5 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumb
     }
 
   }
-
 
 }
