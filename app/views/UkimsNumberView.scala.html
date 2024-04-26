@@ -31,7 +31,8 @@
 
 @layout(
     pageTitle    = titleNoForm(messages("ukimsNumber.title")),
-    showBackLink = true
+    showBackLink = true,
+    backLinkUrl = controllers.routes.ProfileSetupController.onPageLoad.url
 ) {
     @heading1(messages("ukimsNumber.h1"))
 
