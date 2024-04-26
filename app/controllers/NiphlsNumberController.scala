@@ -26,12 +26,12 @@ import views.html.NiphlsNumberView
 import javax.inject.Inject
 
 class NiphlsNumberController @Inject() (
-                                         val controllerComponents: MessagesControllerComponents,
-                                         authorise: AuthoriseAction,
-                                         view: NiphlsNumberView,
-                                         formProvider: NiphlsNumberFormProvider
-                                       ) extends FrontendBaseController
-  with I18nSupport {
+  val controllerComponents: MessagesControllerComponents,
+  authorise: AuthoriseAction,
+  view: NiphlsNumberView,
+  formProvider: NiphlsNumberFormProvider
+) extends FrontendBaseController
+    with I18nSupport {
 
   private val form = formProvider()
 
