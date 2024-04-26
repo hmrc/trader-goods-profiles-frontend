@@ -16,4 +16,4 @@
 
 package models
 
-case class NiphlsNumber (value: String)
+case class NiphlsNumber(value: String)
