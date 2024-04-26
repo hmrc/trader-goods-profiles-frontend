@@ -25,8 +25,6 @@ import views.html.CategoryGuidanceView
 
 class CategoryGuidanceControllerSpec extends SpecBase {
 
-  override val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
-
   val categoryGuidanceView: CategoryGuidanceView = app.injector.instanceOf[CategoryGuidanceView]
 
   val categoryGuidanceController = new CategoryGuidanceController(
