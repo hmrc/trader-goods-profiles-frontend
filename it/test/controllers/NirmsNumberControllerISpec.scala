@@ -21,7 +21,7 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
-class NirmsNumberControllerISpec  extends ItTestBase {
+class NirmsNumberControllerISpec extends ItTestBase {
 
   "Nirms number controller" should {
 
@@ -45,17 +45,33 @@ class NirmsNumberControllerISpec  extends ItTestBase {
 
       status(result) mustBe OK
 
-      html(result) must include ("What is your NIRMS number?")
+      html(result) must include("What is your NIRMS number?")
 
     }
-
 
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data" in {
 
       authorisedUser
 
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456"))
+      val result = callRoute(
+        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+      )
+
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+
+    }
+
+    //TODO: Should change Dummy controller to actual when it becomes available
+    "redirect to dummy controller when submitting valid data without hyphens" in {
+
+      authorisedUser
+
+      val result = callRoute(
+        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+      )
 
       status(result) mustBe SEE_OTHER
 
@@ -67,33 +83,38 @@ class NirmsNumberControllerISpec  extends ItTestBase {
 
       authorisedUser
 
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456"))
+      val result = callRoute(
+        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456")
+      )
 
       status(result) mustBe BAD_REQUEST
 
-      html(result) must include ("Enter your NIRMS number in the correct format")
+      html(result) must include("Enter your NIRMS number in the correct format")
 
     }
 
     "return bad request when submitting incorrect format" in {
 
       authorisedUser
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "AB2343534"))
+      val result = callRoute(
+        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "AB2343534")
+      )
 
       status(result) mustBe BAD_REQUEST
 
-      html(result) must include ("Enter your NIRMS number in the correct format")
+      html(result) must include("Enter your NIRMS number in the correct format")
 
     }
 
     "return bad request when submitting no data" in {
 
       authorisedUser
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> ""))
+      val result =
+        callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> ""))
 
       status(result) mustBe BAD_REQUEST
 
-      html(result) must include ("Enter your NIRMS number")
+      html(result) must include("Enter your NIRMS number")
 
     }
   }

@@ -71,6 +71,18 @@ class NirmsNumberControllerSpec extends SpecBase {
 
     }
 
+    "must redirect on Submit when user enters correct Nirms number without hyphens" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+
+      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+      //TO DO : Redirect needs to be changed to actual page when available
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+    }
+
     "must send bad request when user enters incorrect Nirms number" in {
 
       val inCorrectnirmsNumber = "DDD-GB-123456"
@@ -85,21 +97,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
 
-    }
-
-    "must send bad request when user enters invalid Nirms number format" in {
-
-      val inCorrectnirmsNumber = "DDD123456"
-
-      val formWithErrors = formProvider().bind(Map("nirmsNumber" -> inCorrectnirmsNumber))
-
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> inCorrectnirmsNumber)
-
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
-
-      status(result) mustEqual BAD_REQUEST
-
-      contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) must include("nirmsNumber.error.invalidFormat")
 
     }
 
@@ -112,6 +110,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       status(result) mustEqual BAD_REQUEST
 
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+
+      contentAsString(result) must include("nirmsNumber.error.required")
 
     }
   }

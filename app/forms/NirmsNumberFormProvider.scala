@@ -26,7 +26,7 @@ class NirmsNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "nirmsNumber" -> text("nirmsNumber.error.required")
-        .verifying(regexp("RMS-(GB|NI)-[0-9]{6}", "nirmsNumber.error.invalidFormat"))
+        .verifying(regexp("RMS-?(GB|NI)-?[0-9]{6}", "nirmsNumber.error.invalidFormat"))
     )
 
 }

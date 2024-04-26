@@ -25,16 +25,19 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
   private val form: Form[String] = formProvider()
   private val requiredKey        = "nirmsNumber.error.required"
   private val invalidKey         = "nirmsNumber.error.invalidFormat"
-  private val rmsRegex           = "RMS-(GB|NI)-[0-9]{6}"
+  private val rmsRegex           = "RMS-?(GB|NI)-?[0-9]{6}"
 
   val nirmsNumberGenerator: Gen[String] = {
     val regionGen = Gen.oneOf("GB", "NI")
     val digitsGen = Gen.listOfN(6, Gen.numChar).map(_.mkString)
+    val hyphenGen = Gen.oneOf("", "-")
 
     for {
-      region <- regionGen
-      digits <- digitsGen
-    } yield s"RMS-$region-$digits"
+      region  <- regionGen
+      digits  <- digitsGen
+      hyphen1 <- hyphenGen
+      hyphen2 <- hyphenGen
+    } yield s"RMS$hyphen1$region$hyphen2$digits"
   }
 
   val nonNirmsNumberGenerator: Gen[String] = {
