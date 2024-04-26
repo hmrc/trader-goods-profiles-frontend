@@ -71,6 +71,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
 
+      contentAsString(result) must include("niphlsQuestion.radio.notSelected")
     }
   }
 }
