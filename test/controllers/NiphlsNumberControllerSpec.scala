@@ -23,8 +23,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlsNumberView
 import forms.NiphlsNumberFormProvider
+import generators.NiphlsNumberGenerator
+import org.scalacheck.Gen
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
-class NiphlsNumberControllerSpec extends SpecBase {
+class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
   private val formProvider = new NiphlsNumberFormProvider()
 
@@ -39,6 +42,7 @@ class NiphlsNumberControllerSpec extends SpecBase {
 
   "NiphlsNumber Controller" - {
 
+
     "must return OK and the correct view for a GET" in {
 
       val result = niphlsNumberController.onPageLoad(fakeRequest)
@@ -49,18 +53,53 @@ class NiphlsNumberControllerSpec extends SpecBase {
 
     }
 
-    "must redirect on Submit when user enters valid NIPHL number" in {
+    "must redirect on Submit when user enters valid NIPHL number" - {
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "AB12345")
+      "with 2 letters and 5 numbers" in {
+        forAll(niphlsAlphaNumericGenerator(2, 5) -> "validDataItem") { niphlNumber =>
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> niphlNumber)
 
-      val result = niphlsNumberController.onSubmit(fakeRequestWithData)
+          val result = niphlsNumberController.onSubmit(fakeRequestWithData)
 
-      status(result) mustEqual SEE_OTHER
+          status(result) mustEqual SEE_OTHER
 
-      //TODO point to real next page
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+          //TODO point to real next page
+          redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+        }
+
+      }
+
+      "with 1 letter and 5 numbers" in {
+        forAll(niphlsAlphaNumericGenerator(1, 5) -> "validDataItem") { niphlNumber =>
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> niphlNumber)
+
+          val result = niphlsNumberController.onSubmit(fakeRequestWithData)
+
+          status(result) mustEqual SEE_OTHER
+
+          //TODO point to real next page
+          redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+        }
+      }
+
+      "with 4 to 6 numbers" in {
+        forAll(niphlsNumericGenerator(1000, 999999) -> "validDataItem") { niphlNumber =>
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> niphlNumber)
+
+          val result = niphlsNumberController.onSubmit(fakeRequestWithData)
+
+          status(result) mustEqual SEE_OTHER
+
+          //TODO point to real next page
+          redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+        }
+      }
+
+
 
     }
+
+
 
     "must send bad request on Submit when user doesn't enter anything" in {
 

@@ -17,10 +17,11 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
+import generators.NiphlsNumberGenerator
 import org.scalacheck.Gen
 import play.api.data.FormError
 
-class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
+class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumberGenerator{
   private val formProvider = new NiphlsNumberFormProvider()
   private val form         = formProvider()
   private val wrongFormat  = "niphlsNumber.error.wrongFormat"
@@ -42,43 +43,34 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
       }
 
       "one letter and 4 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1, 4), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsAlphaNumericGenerator(1, 4), wrongFormat)
       }
 
       "one letter and 6 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1, 6), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsAlphaNumericGenerator(1, 6), wrongFormat)
       }
 
       "three letters and 5 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(3, 5), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsAlphaNumericGenerator(3, 5), wrongFormat)
       }
 
     }
 
     "accepts" - {
       "4 to 6 digits" - {
-        behave like fieldThatBindsValidData(form, fieldName, intsInRange(1000, 999999))
+        behave like fieldThatBindsValidData(form, fieldName, niphlsNumericGenerator(1000, 999999))
       }
 
       "one letter and 5 numbers" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(1, 5))
+        behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericGenerator(1, 5))
       }
 
       "two letters and 5 numbers" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(2, 5))
+        behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericGenerator(2, 5))
       }
     }
 
   }
 
-  private def niphlsNumberGenerator(letterCount: Int, numberCount: Int) = {
 
-    val letter  = Gen.listOfN(letterCount, Gen.alphaChar).map(_.mkString)
-    val numbers = Gen.listOfN(numberCount, Gen.numChar).map(_.mkString)
-
-    for {
-      letter  <- letter
-      numbers <- numbers
-    } yield s"$letter$numbers"
-  }
 }
