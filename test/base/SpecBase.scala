@@ -27,7 +27,7 @@ import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 import play.api.test.FakeRequest
 
 trait SpecBase
@@ -46,6 +46,8 @@ trait SpecBase
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
