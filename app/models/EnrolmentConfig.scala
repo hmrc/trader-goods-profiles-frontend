@@ -16,7 +16,6 @@
 
 package models
 
-import config.Service
 import play.api.{ConfigLoader, Configuration}
 
 case class EnrolmentConfig(key: String, identifier: String)
