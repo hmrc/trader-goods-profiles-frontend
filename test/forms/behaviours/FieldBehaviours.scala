@@ -34,7 +34,12 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
       }
     }
 
-  def fieldThatErrorsOnInvalidData(form: Form[_], fieldName: String, invalidDataGenerator: Gen[String], invalidError: String): Unit =
+  def fieldThatErrorsOnInvalidData(
+    form: Form[_],
+    fieldName: String,
+    invalidDataGenerator: Gen[String],
+    invalidError: String
+  ): Unit =
     "error on invalid data" in {
 
       forAll(invalidDataGenerator -> "invalidDataItem") { dataItem: String =>

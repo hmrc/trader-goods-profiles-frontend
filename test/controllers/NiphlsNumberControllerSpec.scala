@@ -94,7 +94,7 @@ class NiphlsNumberControllerSpec extends SpecBase {
 
       pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
 
-      pageContent must include ("niphlsNumber.error.wrongFormat")
+      pageContent must include("niphlsNumber.error.wrongFormat")
 
     }
   }

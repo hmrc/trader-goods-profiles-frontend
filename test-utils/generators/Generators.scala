@@ -46,9 +46,8 @@ trait Generators extends ModelGenerators {
     genIntersperseString(numberGen, ",")
   }
 
-  def intsInRange(min: Int, max: Int): Gen[String] = {
+  def intsInRange(min: Int, max: Int): Gen[String] =
     choose[Int](min, max).map(_.toString)
-  }
 
   def intsLargerThanMaxValue: Gen[BigInt] =
     arbitrary[BigInt] suchThat (x => x > Int.MaxValue)

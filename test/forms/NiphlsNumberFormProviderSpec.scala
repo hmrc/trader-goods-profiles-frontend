@@ -42,7 +42,7 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
       }
 
       "one letter and 4 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1,4), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsNumberGenerator(1, 4), wrongFormat)
       }
 
       "one letter and 6 numbers" - {
@@ -61,11 +61,11 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
       }
 
       "one letter and 5 numbers" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(1,5))
+        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(1, 5))
       }
 
       "two letters and 5 numbers" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(2,5))
+        behave like fieldThatBindsValidData(form, fieldName, niphlsNumberGenerator(2, 5))
       }
     }
 
@@ -73,12 +73,12 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours {
 
   private def niphlsNumberGenerator(letterCount: Int, numberCount: Int) = {
 
-      val letter = Gen.listOfN(letterCount, Gen.alphaChar).map(_.mkString)
-      val numbers = Gen.listOfN(numberCount, Gen.numChar).map(_.mkString)
+    val letter  = Gen.listOfN(letterCount, Gen.alphaChar).map(_.mkString)
+    val numbers = Gen.listOfN(numberCount, Gen.numChar).map(_.mkString)
 
-      for {
-        letter <- letter
-        numbers <- numbers
-      } yield s"$letter$numbers"
-    }
+    for {
+      letter  <- letter
+      numbers <- numbers
+    } yield s"$letter$numbers"
+  }
 }
