@@ -36,8 +36,10 @@ trait SpecBase
     with TryValues
     with OptionValues
     with ScalaFutures
-      with IntegrationPatience
-      with GuiceOneAppPerSuite {
+    with IntegrationPatience
+    with GuiceOneAppPerSuite {
+
+  val userAnswersId: String = "id"
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -46,8 +48,6 @@ trait SpecBase
   val messages: Messages = messagesApi.preferred(fakeRequest)
 
   val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
-
-  val userAnswersId: String = "id"
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 

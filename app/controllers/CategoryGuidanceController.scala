@@ -20,18 +20,22 @@ import controllers.actions.AuthoriseAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.DummyView
+import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 
-class DummyController @Inject() (
+class CategoryGuidanceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: DummyView
+  view: CategoryGuidanceView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
+  }
+
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+    Redirect(routes.DummyController.onPageLoad.url)
   }
 }

@@ -4,6 +4,10 @@
 
 GET         /dummy                                       controllers.DummyController.onPageLoad
 
+GET         /category-guidance                           controllers.CategoryGuidanceController.onPageLoad
+
+POST        /category-guidance                           controllers.CategoryGuidanceController.onSubmit
+
 GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad
 
 POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
