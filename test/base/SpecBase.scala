@@ -31,7 +31,7 @@ import play.api.test.FakeRequest
 import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 
 trait SpecBase
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with TryValues
     with OptionValues
