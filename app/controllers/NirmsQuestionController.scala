@@ -45,7 +45,14 @@ class NirmsQuestionController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.NirmsNumberController.onPageLoad.url)
+        userResponse => {
+          val url = if (userResponse) {
+            routes.NirmsNumberController.onPageLoad.url
+          } else {
+            routes.DummyController.onPageLoad.url
+          }
+          Redirect(url)
+        }
       )
 
   }
