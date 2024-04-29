@@ -31,7 +31,8 @@
 
 @layout(
     pageTitle    = titleNoForm(messages("niphlsQuestion.title")),
-    showBackLink = true
+    showBackLink = true,
+    backLinkUrl = controllers.routes.NirmsNumberController.onPageLoad.url
 ) {
     @heading1(messages("niphlsQuestion.h1"))
     @paragraph(Html(messages("niphlsQuestion.p1")))
