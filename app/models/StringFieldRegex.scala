@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package navigation
+package models
 
-import play.api.mvc.Call
-import pages._
-import models.{Mode, UserAnswers}
-
-class FakeNavigator(desiredRoute: Call) extends Navigator {
-
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-    desiredRoute
+object StringFieldRegex {
+  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
 }

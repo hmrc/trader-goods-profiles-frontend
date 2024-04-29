@@ -4,13 +4,17 @@
 
 GET         /dummy                                       controllers.DummyController.onPageLoad
 
-GET         /category-guidance                           controllers.CategoryGuidanceController.onPageLoad
+GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad
 
-POST        /category-guidance                           controllers.CategoryGuidanceController.onSubmit
+POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
 
 GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad
 
 POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
+
+GET         /ukims-number                                controllers.UkimsNumberController.onPageLoad
+
+POST        /ukims-number                                controllers.UkimsNumberController.onSubmit
 
 GET         /nirms-question                              controllers.NirmsQuestionController.onPageLoad
 
