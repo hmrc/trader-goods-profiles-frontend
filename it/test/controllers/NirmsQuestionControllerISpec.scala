@@ -51,7 +51,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       response.status mustBe OK
     }
 
-    "redirects to dummy controller when submitting valid data" in {
+    "redirects to dummy controller when submitting valid data with yes" in {
       authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -61,6 +61,18 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       response.status mustBe SEE_OTHER
 
       redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
+    }
+
+    "redirects to dummy controller when submitting valid data with no" in {
+      authorisedUserWithAnswers
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(Map("value" -> "false")))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
     }
 
     "returns bad request when submitting no data" in {
