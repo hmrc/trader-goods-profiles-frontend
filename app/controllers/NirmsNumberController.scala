@@ -17,19 +17,19 @@
 package controllers
 
 import controllers.actions._
-import forms.UkimsNumberFormProvider
+import forms.NirmsNumberFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.UkimsNumberView
+import views.html.NirmsNumberView
 
 import javax.inject.Inject
 
-class UkimsNumberController @Inject() (
+class NirmsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: UkimsNumberView,
-  formProvider: UkimsNumberFormProvider
+  view: NirmsNumberView,
+  formProvider: NirmsNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
@@ -39,13 +39,12 @@ class UkimsNumberController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data???
-
+    //TODO: save session data
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+        _ => Redirect(routes.NiphlsQuestionController.onPageLoad.url)
       )
   }
 }

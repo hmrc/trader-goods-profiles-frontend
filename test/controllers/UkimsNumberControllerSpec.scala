@@ -61,8 +61,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      // TO DO : Redirects needs to be change to actual when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad.url)
 
     }
 

@@ -33,8 +33,8 @@ class ProfileSetupController @Inject() (
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
   }
-
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+  // TODO replace dummy route and create session data
+  def onSubmit: Action[AnyContent]   = authorise { implicit request =>
     Redirect(routes.UkimsNumberController.onPageLoad.url)
   }
 }

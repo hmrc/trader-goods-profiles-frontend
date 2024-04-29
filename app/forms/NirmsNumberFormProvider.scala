@@ -17,18 +17,16 @@
 package forms
 
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
 import play.api.data.Form
 
 import javax.inject.Inject
 
-class UkimsNumberFormProvider @Inject() extends Mappings {
+class NirmsNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "ukimsNumber" -> text("ukimsNumber.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
+      "nirmsNumber" -> text("nirmsNumber.error.required")
+        .verifying(regexp("RMS-?(GB|NI)-?[0-9]{6}", "nirmsNumber.error.invalidFormat"))
     )
+
 }

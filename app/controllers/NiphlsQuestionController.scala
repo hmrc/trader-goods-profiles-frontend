@@ -16,22 +16,23 @@
 
 package controllers
 
-import controllers.actions._
-import forms.UkimsNumberFormProvider
+import controllers.actions.AuthoriseAction
+import forms.NiphlsQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.UkimsNumberView
+import views.html.NiphlsQuestionView
 
 import javax.inject.Inject
 
-class UkimsNumberController @Inject() (
+class NiphlsQuestionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: UkimsNumberView,
-  formProvider: UkimsNumberFormProvider
+  view: NiphlsQuestionView,
+  formProvider: NiphlsQuestionFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
+
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
@@ -39,13 +40,21 @@ class UkimsNumberController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data???
-
+    //TODO saving session data
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+        userResponse => {
+          val url = if (userResponse) {
+            //TODO change redirect to niphls number
+            routes.DummyController.onPageLoad.url
+          } else {
+            //TODO change redirect to page after niphls number in the journey
+            routes.DummyController.onPageLoad.url
+          }
+          Redirect(url)
+        }
       )
   }
 }

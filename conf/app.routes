@@ -4,9 +4,9 @@
 
 GET         /dummy                                       controllers.DummyController.onPageLoad
 
-GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad
+GET         /category-guidance                           controllers.CategoryGuidanceController.onPageLoad
 
-POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
+POST        /category-guidance                           controllers.CategoryGuidanceController.onSubmit
 
 GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad
 
@@ -15,6 +15,18 @@ POST        /profile-setup                               controllers.ProfileSetu
 GET         /ukims-number                                controllers.UkimsNumberController.onPageLoad
 
 POST        /ukims-number                                controllers.UkimsNumberController.onSubmit
+
+GET         /nirms-question                              controllers.NirmsQuestionController.onPageLoad
+
+POST        /nirms-question                              controllers.NirmsQuestionController.onSubmit
+
+GET         /nirms-number                                controllers.NirmsNumberController.onPageLoad
+
+POST        /nirms-number                                controllers.NirmsNumberController.onSubmit
+
+GET         /niphls-question                             controllers.NiphlsQuestionController.onPageLoad
+
+POST        /niphls-question                             controllers.NiphlsQuestionController.onSubmit
 
 GET         /niphls-number                               controllers.NiphlsNumberController.onPageLoad
 

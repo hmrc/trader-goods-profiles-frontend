@@ -21,7 +21,9 @@ Use service manager to start up supporting services: `sm2 --start TGP_FE`
 
 ### Testing
 
-Run this to check tests: `sbt test`
+Run this to check unit tests: `sbt test`
+
+Run this to check integration tests: `sbt it/test`
 
 Run this to check code coverage: `sbt clean coverage test`
 
@@ -29,7 +31,9 @@ Run this to get code coverage report: `sbt coverageReport`
 
 ### Formatting
 
-Run this to format scala files : `sbt scalafmt`
+Run this to check all scala files are formatted: `sbt scalafmtCheckAll`
+
+Run this to format none test scala files: `sbt scalafmt`
 
 ### License
 

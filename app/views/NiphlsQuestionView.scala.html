@@ -1,0 +1,54 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.LegendSize._
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    heading1: components.Heading1,
+    heading2: components.Heading2,
+    paragraph: components.Paragraph,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton,
+    link: components.Link
+)
+
+@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
+
+@layout(
+    pageTitle    = titleNoForm(messages("niphlsQuestion.title")),
+    showBackLink = true,
+    backLinkUrl = controllers.routes.NirmsNumberController.onPageLoad.url
+) {
+    @heading1(messages("niphlsQuestion.h1"))
+    @paragraph(Html(messages("niphlsQuestion.p1")))
+    @paragraph(Html(messages("niphlsQuestion.p2",
+        link(messages("niphlsQuestion.p2.linkText"),"https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"))))
+
+    @formHelper(action = NiphlsQuestionController.onSubmit) {
+        @govukRadios(
+          RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = Legend(messages("niphlsQuestion.h2")).asPageHeading(Medium)
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
+}

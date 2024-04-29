@@ -50,7 +50,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
     }
 
-    "redirects to dummy controller when submitting valid data" in {
+    "redirects to NIRMS Question controller when submitting valid data" in {
 
       val validUkimsNumber = "XI47699357400020231115081800"
 
@@ -62,7 +62,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NirmsQuestionController.onPageLoad.url)
 
     }
 
