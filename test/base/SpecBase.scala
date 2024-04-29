@@ -19,16 +19,16 @@ package base
 import controllers.actions._
 import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -46,6 +46,8 @@ trait SpecBase
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
