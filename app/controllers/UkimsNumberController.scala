@@ -39,7 +39,8 @@ class UkimsNumberController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form                   = formProvider()
+  private val form = formProvider()
+
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.flatMap(_.ukimsNumber)
 
