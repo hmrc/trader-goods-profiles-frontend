@@ -18,6 +18,7 @@ import java.time.{Clock, Instant, ZoneId}
 import scala.concurrent.duration.{DurationInt}
 import scala.concurrent.{Await, ExecutionContext}
 import scala.language.postfixOps
+
 class SessionServiceISpec extends AnyFreeSpec
   with Matchers
   with DefaultPlayMongoRepositorySupport[UserAnswers]
