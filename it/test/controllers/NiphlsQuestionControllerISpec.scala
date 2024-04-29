@@ -18,71 +18,72 @@ package controllers
 
 import helpers.ItTestBase
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
 class NiphlsQuestionControllerISpec extends ItTestBase {
-
-  lazy val client: WSClient = app.injector.instanceOf[WSClient]
-
-  private val url = s"http://localhost:$port${routes.NiphlsQuestionController.onPageLoad.url}"
 
   "NIPHLS question controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.NiphlsQuestionController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe SEE_OTHER
 
-      response.status mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
-      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.NiphlsQuestionController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe OK
 
-      response.status mustBe OK
+      html(result) must include("Are you NIPHL registered?")
+
     }
 
     "redirects to dummy controller when submitting valid data with yes" in {
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(
+        FakeRequest(routes.NiphlsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
+      )
 
-      val response = await(request.post(Map("value" -> "true")))
+      status(result) mustBe SEE_OTHER
 
-      response.status mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
     }
 
     "redirects to dummy controller when submitting valid data with no" in {
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(
+        FakeRequest(routes.NiphlsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
+      )
 
-      val response = await(request.post(Map("value" -> "false")))
+      status(result) mustBe SEE_OTHER
 
-      response.status mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
     }
+
     "returns bad request when submitting no data" in {
       authorisedUser
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(
+        FakeRequest(routes.NiphlsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")
+      )
 
-      val response = await(request.post(""))
+      status(result) mustBe BAD_REQUEST
 
-      response.status mustBe BAD_REQUEST
+      html(result) must include("Select if you are NIPHL registered")
+
     }
 
   }
