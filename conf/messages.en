@@ -91,6 +91,13 @@ nirmsQuestion.p2.linkText = which products can be moved under NIRMS
 nirmsQuestion.h2 = Are you NIRMS registered?
 nirmsQuestion.error.notSelected = Select if you are NIRMS registered
 
+nirmsNumber.title = Northern Ireland Retail Movement Scheme number
+nirmsNumber.heading = What is your NIRMS number?
+nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
+
+nirmsNumber.error.required = Enter your NIRMS number
+nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
+
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 
@@ -105,8 +112,5 @@ signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
 signedOut.guidance = We did not save your answers.
 
-unauthorised.title = There is a problem
-unauthorised.heading = There is a problem
-unauthorised.p1 = The details signed in to GOV.UK do not have a Trader Goods Profile.
-unauthorised.p2 = If you have a Trader Goods Profile, {0} and sign in with the correct details.
-unauthorised.p2.linkText = sign out
+unauthorised.title = You can’t access this service with this account
+unauthorised.heading = You can’t access this service with this account

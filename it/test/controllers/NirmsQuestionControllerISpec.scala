@@ -60,7 +60,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
     }
 
     "returns bad request when submitting no data" in {
