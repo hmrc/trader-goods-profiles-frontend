@@ -97,6 +97,29 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
         )
 
       }
+
+      "invalid UKIMS number with special characters" - {
+
+        val invalidUkimsNumberGeneratorWithSpecialCharacters: Gen[String] = {
+          val prefixGen      = Gen.oneOf("  ", "A-", "B_")
+          val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
+          val lastDigitsGen  = Gen.listOfN(14, Gen.numChar).map(_.mkString)
+
+          for {
+            prefix      <- prefixGen
+            firstDigits <- firstDigitsGen
+            lastDigits  <- lastDigitsGen
+          } yield s"$prefix$firstDigits$lastDigits"
+        }
+
+        behave like fieldThatErrorsOnInvalidData(
+          form,
+          fieldName,
+          invalidUkimsNumberGeneratorWithSpecialCharacters,
+          FormError(fieldName, invalidFormatKey)
+        )
+
+      }
     }
   }
 }
