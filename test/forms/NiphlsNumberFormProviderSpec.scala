@@ -67,6 +67,9 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumb
       "two letters and 5 numbers" - {
         behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericGenerator(2, 5))
       }
+      "valid NIPHLS number with spaces" - {
+        behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericWithSpacesGenerator(2, 5))
+      }
     }
 
   }

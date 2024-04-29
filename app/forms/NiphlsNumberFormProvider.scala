@@ -17,6 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
 import models.StringFieldRegex.niphlsNumberRegex
 import play.api.data.Form
 
@@ -24,6 +25,7 @@ class NiphlsNumberFormProvider extends Mappings {
 
   def apply(): Form[String] = Form(
     "value" -> text("niphlsNumber.error.notSupplied")
+      .transform(removeWhitespace, identity[String])
       .verifying(
         regexp(niphlsNumberRegex, "niphlsNumber.error.wrongFormat")
       )
