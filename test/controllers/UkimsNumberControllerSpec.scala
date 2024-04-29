@@ -24,7 +24,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.UkimsNumberView
 
+import scala.concurrent.ExecutionContext
+
 class UkimsNumberControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new UkimsNumberFormProvider()
 
@@ -36,10 +40,16 @@ class UkimsNumberControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     ukimsNumberView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "Ukims Number Controller" - {
+
+    ukimsNumberController.onPageLoad(
+      fakeRequest
+    ) // TODO: MOCK Properly, Prepare some answers using sessionRequest and SessionService proper mocks.
 
     "must return OK and the correct view for a GET" in {
 

@@ -24,7 +24,11 @@ import play.api.test.Helpers._
 import views.html.NirmsQuestionView
 import forms.NirmsQuestionFormProvider
 
+import scala.concurrent.ExecutionContext
+
 class NirmsQuestionControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NirmsQuestionFormProvider()
 
@@ -34,10 +38,16 @@ class NirmsQuestionControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "NirmsQuestion Controller" - {
+
+    nirmsQuestionController.onPageLoad(
+      fakeRequest
+    ) // TODO: MOCK Properly, Prepare some answers using sessionRequest and SessionService proper mocks.
 
     "must return OK and the correct view for a GET" in {
 
