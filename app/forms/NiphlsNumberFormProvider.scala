@@ -17,7 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import models.NiphlsNumber
+import models.StringFieldRegex.niphlsNumberRegex
 import play.api.data.Form
 
 class NiphlsNumberFormProvider extends Mappings {
@@ -25,7 +25,7 @@ class NiphlsNumberFormProvider extends Mappings {
   def apply(): Form[String] = Form(
     "value" -> text("niphlsNumber.error.notSupplied")
       .verifying(
-        regexp("^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$", "niphlsNumber.error.wrongFormat")
+        regexp(niphlsNumberRegex, "niphlsNumber.error.wrongFormat")
       )
   )
 
