@@ -18,33 +18,53 @@ package controllers
 
 import controllers.actions._
 import forms.NirmsNumberFormProvider
+import models.{NirmsNumber, TraderGoodsProfile}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsNumberView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class NirmsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: NirmsNumberView,
-  formProvider: NirmsNumberFormProvider
-) extends FrontendBaseController
+  formProvider: NirmsNumberFormProvider,
+  sessionRequest: SessionRequestAction,
+  sessionService: SessionService
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalNirmsNumber = request.userAnswers.traderGoodsProfile.flatMap(_.nirmsNumber)
+
+    optionalNirmsNumber match {
+      case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value)))
+      case None => Ok(view(form))
+    }
   }
 
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO: save session data and change redirect page when it becomes available
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        nirmsNumber => {
+          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile
+            .map(_.copy(nirmsNumber = Some(NirmsNumber(nirmsNumber))))
+            .getOrElse(TraderGoodsProfile(nirmsNumber = Some(NirmsNumber(nirmsNumber))))
+
+          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = Some(updatedTgpModelObject))
+
+          sessionService.updateUserAnswers(updatedUserAnswers).value.map {
+            case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+            case Right(success) => Redirect(routes.DummyController.onPageLoad.url)
+          }
+        }
       )
   }
 }
