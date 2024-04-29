@@ -70,7 +70,8 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
       Future.successful(authResult)
     )
     val client: WSClient = app.injector.instanceOf[WSClient]
-    client.url(s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}")
+    val request = client.url(s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}")
+    await(request.get())
     mock
   }
 

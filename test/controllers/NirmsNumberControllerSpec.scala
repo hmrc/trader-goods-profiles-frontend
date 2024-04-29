@@ -24,7 +24,11 @@ import play.api.test.Helpers._
 import play.api.test.FakeRequest
 import views.html.NirmsNumberView
 
+import scala.concurrent.ExecutionContext
+
 class NirmsNumberControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider          = new NirmsNumberFormProvider()
   private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
@@ -32,7 +36,9 @@ class NirmsNumberControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsNumberView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "Nirms Number Controller" - {

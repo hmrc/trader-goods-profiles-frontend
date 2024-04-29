@@ -39,7 +39,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
     "loads page" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad))
 
@@ -52,7 +52,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
@@ -67,7 +67,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data without hyphens" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
@@ -81,7 +81,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
     "return bad request when submitting invalid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456")
@@ -95,7 +95,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
     "return bad request when submitting incorrect format" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
       val result = callRoute(
         FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "AB2343534")
       )
@@ -108,7 +108,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
     "return bad request when submitting no data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
       val result =
         callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> ""))
 

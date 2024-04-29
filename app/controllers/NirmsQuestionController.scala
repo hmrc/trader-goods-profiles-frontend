@@ -65,11 +65,12 @@ class NirmsQuestionController @Inject() (
           sessionService.updateUserAnswers(updatedUserAnswers).value.map {
             case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
             case Right(success)     =>
-              if (hasNirmsAnswer) {
-                Redirect(routes.NirmsNumberController.onPageLoad.url)
+              val url = if (hasNirmsAnswer) {
+                routes.NirmsNumberController.onPageLoad.url
               } else {
-                Redirect(routes.DummyController.onPageLoad.url)
+                routes.DummyController.onPageLoad.url
               }
+              Redirect(url)
           }
         }
       )
