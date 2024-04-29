@@ -31,8 +31,6 @@ Run this to check code coverage: `sbt clean coverage test`
 
 Run this to get code coverage report: `sbt coverageReport`
 
-Run this to check accessibility tests: `sbt clean a11y:test`
-
 ### Formatting
 
 Run this to format scala files : `sbt scalafmt`
