@@ -35,7 +35,8 @@ class NirmsNumberController @Inject() (
   formProvider: NirmsNumberFormProvider,
   sessionRequest: SessionRequestAction,
   sessionService: SessionService
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
 
@@ -44,7 +45,7 @@ class NirmsNumberController @Inject() (
 
     optionalNirmsNumber match {
       case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value)))
-      case None => Ok(view(form))
+      case None              => Ok(view(form))
     }
   }
 
@@ -62,7 +63,7 @@ class NirmsNumberController @Inject() (
 
           sessionService.updateUserAnswers(updatedUserAnswers).value.map {
             case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-            case Right(success) => Redirect(routes.DummyController.onPageLoad.url)
+            case Right(success)     => Redirect(routes.DummyController.onPageLoad.url)
           }
         }
       )

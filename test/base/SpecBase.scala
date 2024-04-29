@@ -40,7 +40,7 @@ import services.SessionService
 import scala.concurrent.Future
 
 trait SpecBase
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with TryValues
     with OptionValues
