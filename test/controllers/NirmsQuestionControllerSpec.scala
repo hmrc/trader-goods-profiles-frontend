@@ -69,7 +69,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
 
     }
 
@@ -82,7 +82,9 @@ class NirmsQuestionControllerSpec extends SpecBase {
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
+
       pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+
       pageContent must include("nirmsQuestion.error.notSelected")
 
     }

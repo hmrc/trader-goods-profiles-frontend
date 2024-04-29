@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
-import forms.NiphlsQuestionFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlsQuestionView
+import forms.NiphlsQuestionFormProvider
 
 class NiphlsQuestionControllerSpec extends SpecBase {
 
@@ -49,9 +49,21 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
     }
 
-    "must redirect on Submit when user selects yes or no" in {
+    "must redirect on Submit when user selects yes" in {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val result = niphlsQuestionController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+    }
+
+    "must redirect on Submit when user selects no" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
       val result = niphlsQuestionController.onSubmit(fakeRequestWithData)
 

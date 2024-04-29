@@ -40,12 +40,21 @@ class NiphlsQuestionController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data and change redirect
+    //TODO saving session data
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
+        userResponse => {
+          val url = if (userResponse) {
+            //TODO change redirect to niphls number
+            routes.DummyController.onPageLoad.url
+          } else {
+            //TODO change redirect to page after niphls number in the journey
+            routes.DummyController.onPageLoad.url
+          }
+          Redirect(url)
+        }
       )
   }
 }
