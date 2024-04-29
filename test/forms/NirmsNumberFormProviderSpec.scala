@@ -61,6 +61,6 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
 
     behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGenerator)
 
-    behave like fieldThatDoesNotBindInvalidData(form, fieldName, rmsRegex, nonNirmsNumberGenerator, invalidKey)
+    behave like fieldThatErrorsOnInvalidData(form, fieldName, nonNirmsNumberGenerator, FormError(fieldName, invalidKey))
   }
 }

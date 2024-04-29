@@ -15,29 +15,31 @@
  *@
 
 @import viewmodels.LabelSize._
-@import viewmodels.InputWidth._
-
 
 @this(
-        layout: templates.Layout,
-        heading1: components.Heading1,
-        formHelper: FormWithCSRF,
-        govukInput: GovukInput,
-        govukButton: GovukButton,
-        govukErrorSummary: GovukErrorSummary
+    layout: templates.Layout,
+    heading1: components.Heading1,
+    paragraph: components.Paragraph,
+    formHelper: FormWithCSRF,
+    govukInput: GovukInput,
+    govukButton: GovukButton,
+    govukErrorSummary: GovukErrorSummary,
+    link: components.Link
 )
-
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("nirmsNumber.title")),
+    pageTitle    = titleNoForm(messages("ukimsNumber.title")),
     showBackLink = true,
-    backLinkUrl = controllers.routes.NirmsQuestionController.onPageLoad.url
+    backLinkUrl = controllers.routes.ProfileSetupController.onPageLoad.url
 ) {
+    @heading1(messages("ukimsNumber.h1"))
 
+    @paragraph(Html(messages("ukimsNumber.p1")))
+    @paragraph(Html(messages("ukimsNumber.p2")))
 
-    @formHelper(action = routes.NirmsNumberController.onSubmit, Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.UkimsNumberController.onSubmit, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -45,10 +47,9 @@
 
         @govukInput(
             InputViewModel(
-                field = form("nirmsNumber"),
-                label = LabelViewModel(messages("nirmsNumber.heading")).asPageHeading(Large)
-            ).withHint(Hint(content = Text(messages("nirmsNumber.hint"))))
-            .withWidth(Fixed10)
+                    field = form("ukimsNumber"),
+                    label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
+            ).withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
         )
 
         @govukButton(
@@ -56,4 +57,5 @@
         )
     }
 
+    @paragraph(link(messages("ukimsNumber.linkText"), "TODO"))
 }

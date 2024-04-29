@@ -17,24 +17,37 @@
 package controllers
 
 import controllers.actions.AuthoriseAction
-import javax.inject.Inject
+import forms.NirmsQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ProfileSetupView
+import views.html.NirmsQuestionView
 
-class ProfileSetupController @Inject() (
+import javax.inject.Inject
+
+class NirmsQuestionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: ProfileSetupView
+  view: NirmsQuestionView,
+  formProvider: NirmsQuestionFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
 
+  private val form = formProvider()
+
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view())
+    Ok(view(form))
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    Redirect(routes.UkimsNumberController.onPageLoad.url)
+    //TODO saving session data and change redirect
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        _ => Redirect(routes.NirmsNumberController.onPageLoad.url)
+      )
+
   }
+
 }

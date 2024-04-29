@@ -17,17 +17,17 @@
 package controllers
 
 import helpers.ItTestBase
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class CategoryGuidanceControllerISpec extends ItTestBase {
+class NirmsQuestionControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.CategoryGuidanceController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad.url}"
 
-  "Category Guidance controller" should {
+  "NIRMS question controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
@@ -51,16 +51,27 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       response.status mustBe OK
     }
 
-    "returns redirect when submitting" in {
+    "redirects to dummy controller when submitting valid data" in {
+      authorisedUser
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(Map("value" -> "true")))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
+    }
+
+    "returns bad request when submitting no data" in {
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
       val response = await(request.post(""))
 
-      response.status mustBe SEE_OTHER
-
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+      response.status mustBe BAD_REQUEST
     }
+
   }
 }

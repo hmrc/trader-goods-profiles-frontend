@@ -43,34 +43,31 @@ import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ItTestBase extends PlaySpec
-  with GuiceOneServerPerSuite{
+trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   val appRouteContext: String = "/trader-goods-profiles"
 
   lazy val authConnector: AuthConnector = mock[AuthConnector]
 
-  implicit def ec: ExecutionContext            = global
+  implicit def ec: ExecutionContext = global
 
-  def appBuilder: GuiceApplicationBuilder = {
-
+  def appBuilder: GuiceApplicationBuilder =
     GuiceApplicationBuilder()
       .overrides(
         bind[AuthConnector].to(authConnector)
       )
-  }
 
   override implicit lazy val app: Application = appBuilder.build()
 
-  private val authFetch = Retrievals.internalId and Retrievals.authorisedEnrolments
-  private val ourEnrolment: Enrolment = Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
-  private val authResult = Some("internalId") and Enrolments(Set(ourEnrolment))
+  private val authFetch               = Retrievals.internalId and Retrievals.authorisedEnrolments
+  private val ourEnrolment: Enrolment =
+    Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
+  private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
-  def authorisedUser: OngoingStubbing[Future[Option[String] ~ Enrolments]] = {
+  def authorisedUser: OngoingStubbing[Future[Option[String] ~ Enrolments]] =
     when(authConnector.authorise(any, eqTo(authFetch))(any, any)).thenReturn(
       Future.successful(authResult)
     )
-  }
 
   def noEnrolment: OngoingStubbing[Future[Option[String] ~ Enrolments]] = {
     val authResult = Some("internalId") and Enrolments(Set.empty)
@@ -79,9 +76,8 @@ trait ItTestBase extends PlaySpec
     )
   }
 
-  def redirectUrl(response: WSResponse): Option[String] = {
+  def redirectUrl(response: WSResponse): Option[String] =
     response.header(HeaderNames.LOCATION)
-  }
   def callRoute[A](fakeRequest: FakeRequest[A], requiresAuth: Boolean = true)(implicit
                                                                               app: Application,
                                                                               w: Writeable[A]
