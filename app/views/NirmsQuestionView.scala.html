@@ -29,7 +29,8 @@
 
 @layout(
     pageTitle    = titleNoForm(messages("nirmsQuestion.title")),
-    showBackLink = true
+    showBackLink = true,
+    backLinkUrl = controllers.routes.UkimsNumberController.onPageLoad.url
 ) {
     @heading1(messages("nirmsQuestion.h1"))
     @paragraph(Html(messages("nirmsQuestion.p1")))

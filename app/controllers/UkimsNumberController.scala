@@ -41,12 +41,11 @@ class UkimsNumberController @Inject() (
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
     //TODO saving session data???
 
-    //TODO redirect should be linked to next page
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
+        _ => Redirect(routes.NirmsQuestionController.onPageLoad.url)
       )
   }
 }
