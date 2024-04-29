@@ -34,8 +34,8 @@ class CategoryGuidanceController @Inject() (
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
   }
-
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+  // TODO replace dummy route
+  def onSubmit: Action[AnyContent]   = authorise { implicit request =>
     Redirect(routes.DummyController.onPageLoad.url)
   }
 }
