@@ -32,7 +32,8 @@
 
 @layout(
      pageTitle = titleNoForm(messages("niphlsNumber.title")),
-     timeout   = false
+     showBackLink = true,
+     backLinkUrl = controllers.routes.NiphlsQuestionController.onPageLoad.url
 ) {
     @heading1(messages("niphlsNumber.h1"))
     @paragraph(Html(messages("niphlsNumber.p1")))
