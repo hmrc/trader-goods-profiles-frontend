@@ -48,7 +48,7 @@
         @govukInput(
             InputViewModel(
                     field = form("ukimsNumber"),
-                    label = LabelViewModel(messages("ukimsNumber.heading")).asPageHeading(Medium)
+                    label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
             ).withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
         )
 
