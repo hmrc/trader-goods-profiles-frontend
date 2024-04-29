@@ -16,27 +16,37 @@
 
 package controllers
 
-import controllers.actions.{AuthoriseAction, SessionRequestAction}
-
-import javax.inject.Inject
+import controllers.actions._
+import forms.UkimsNumberFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ProfileSetupView
+import views.html.UkimsNumberView
 
-class ProfileSetupController @Inject() (
+import javax.inject.Inject
+
+class UkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  sessionRequest: SessionRequestAction,
-  view: ProfileSetupView
+  view: UkimsNumberView,
+  formProvider: UkimsNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
+  private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    Ok(view())
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+    Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    Redirect(routes.UkimsNumberController.onPageLoad.url)
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+    //TODO saving session data???
+
+    //TODO redirect should be linked to next page
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        _ => Redirect(routes.DummyController.onPageLoad.url)
+      )
   }
 }
