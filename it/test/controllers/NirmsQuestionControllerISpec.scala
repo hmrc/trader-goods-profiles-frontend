@@ -42,7 +42,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     }
 
     "loads page" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -52,7 +52,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     }
 
     "redirects to dummy controller when submitting valid data" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -64,7 +64,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     }
 
     "returns bad request when submitting no data" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
