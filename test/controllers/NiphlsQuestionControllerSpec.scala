@@ -57,7 +57,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlsNumberController.onPageLoad.url)
 
     }
 

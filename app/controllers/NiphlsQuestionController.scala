@@ -47,8 +47,7 @@ class NiphlsQuestionController @Inject() (
         formWithErrors => BadRequest(view(formWithErrors)),
         userResponse => {
           val url = if (userResponse) {
-            //TODO change redirect to niphls number
-            routes.DummyController.onPageLoad.url
+            routes.NiphlsNumberController.onPageLoad.url
           } else {
             //TODO change redirect to page after niphls number in the journey
             routes.DummyController.onPageLoad.url

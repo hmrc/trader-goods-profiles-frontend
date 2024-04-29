@@ -46,7 +46,8 @@
         @govukInput(InputViewModel(
             field = form("value"),
             label = Label(content = "niphlsNumber.h1", classes = "govuk-visually-hidden")
-            ).withWidth(Fixed10)
+            ).withHint(Hint(content = Text(messages("niphlsNumber.hint"))))
+            .withWidth(Fixed10)
         )
 
         @govukButton(
