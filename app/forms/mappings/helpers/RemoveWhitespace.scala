@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings.helpers
 
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+object RemoveWhitespace {
 
-import javax.inject.Inject
+  def removeWhitespace: String => String = _.filterNot(_.isWhitespace)
 
-class UkimsNumberFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "ukimsNumber" -> text("ukimsNumber.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
-    )
 }
