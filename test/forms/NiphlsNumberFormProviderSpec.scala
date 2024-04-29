@@ -18,7 +18,6 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import generators.NiphlsNumberGenerator
-import org.scalacheck.Gen
 import play.api.data.FormError
 
 class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumberGenerator {
