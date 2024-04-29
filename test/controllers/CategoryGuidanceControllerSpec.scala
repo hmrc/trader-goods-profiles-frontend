@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.mvc.PlayBodyParsers
 import play.api.test.Helpers._
 import views.html.CategoryGuidanceView
 
