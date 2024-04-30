@@ -32,7 +32,8 @@
 @layout(
     pageTitle    = titleNoForm(messages("niphlQuestion.title")),
     showBackLink = true,
-    backLinkUrl = controllers.routes.NirmsNumberController.onPageLoad.url
+// TODO session data check for nirms
+    backLinkUrl = if ("we have a nirms") controllers.routes.NirmsNumberController.onPageLoad.url else controllers.routes.NirmsQuestionController.onPageLoad.url
 ) {
     @heading1(messages("niphlQuestion.h1"))
     @paragraph(Html(messages("niphlQuestion.p1")))
