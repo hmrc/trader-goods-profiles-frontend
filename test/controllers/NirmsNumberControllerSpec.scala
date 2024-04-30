@@ -55,7 +55,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -67,7 +67,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -79,7 +79,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 

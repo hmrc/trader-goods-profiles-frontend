@@ -4,9 +4,9 @@
 
 GET         /dummy                                       controllers.DummyController.onPageLoad
 
-GET         /category-guidance                           controllers.CategoryGuidanceController.onPageLoad
+GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad
 
-POST        /category-guidance                           controllers.CategoryGuidanceController.onSubmit
+POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
 
 GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad
 
@@ -24,9 +24,9 @@ GET         /nirms-number                                controllers.NirmsNumber
 
 POST        /nirms-number                                controllers.NirmsNumberController.onSubmit
 
-GET         /niphls-question                             controllers.NiphlsQuestionController.onPageLoad
+GET         /niphl-question                              controllers.NiphlQuestionController.onPageLoad
 
-POST        /niphls-question                             controllers.NiphlsQuestionController.onSubmit
+POST        /niphl-question                             controllers.NiphlQuestionController.onSubmit
 
 GET         /niphl-number                               controllers.NiphlsNumberController.onPageLoad
 
@@ -43,7 +43,9 @@ GET         /there-is-a-problem                          controllers.JourneyReco
 GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
 
 GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
+
 GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey
+
 GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad

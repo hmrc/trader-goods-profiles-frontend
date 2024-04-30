@@ -49,7 +49,7 @@ class NirmsQuestionController @Inject() (
           val url = if (userResponse) {
             routes.NirmsNumberController.onPageLoad.url
           } else {
-            routes.NiphlsQuestionController.onPageLoad.url
+            routes.NiphlQuestionController.onPageLoad.url
           }
           Redirect(url)
         }

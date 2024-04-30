@@ -21,14 +21,14 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
-class NiphlsQuestionControllerISpec extends ItTestBase {
+class NiphlQuestionControllerISpec extends ItTestBase {
 
-  "NIPHLS question controller" should {
+  "NIPHL question controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NiphlsQuestionController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
 
       status(result) mustBe SEE_OTHER
 
@@ -39,7 +39,7 @@ class NiphlsQuestionControllerISpec extends ItTestBase {
     "loads page" in {
       authorisedUser
 
-      val result = callRoute(FakeRequest(routes.NiphlsQuestionController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
 
       status(result) mustBe OK
 
@@ -51,7 +51,7 @@ class NiphlsQuestionControllerISpec extends ItTestBase {
       authorisedUser
 
       val result = callRoute(
-        FakeRequest(routes.NiphlsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
+        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
       )
 
       status(result) mustBe SEE_OTHER
@@ -64,7 +64,7 @@ class NiphlsQuestionControllerISpec extends ItTestBase {
       authorisedUser
 
       val result = callRoute(
-        FakeRequest(routes.NiphlsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
+        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
       )
 
       status(result) mustBe SEE_OTHER
@@ -77,7 +77,7 @@ class NiphlsQuestionControllerISpec extends ItTestBase {
       authorisedUser
 
       val result = callRoute(
-        FakeRequest(routes.NiphlsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")
+        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")
       )
 
       status(result) mustBe BAD_REQUEST

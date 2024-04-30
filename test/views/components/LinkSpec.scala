@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package forms
+package views.components
 
-import forms.mappings.Mappings
-import play.api.data.Form
+import base.SpecBase
+import play.twirl.api.HtmlFormat
+import views.html.components.Link
 
-class NiphlsQuestionFormProvider extends Mappings {
+class LinkSpec extends SpecBase {
 
-  def apply(): Form[Boolean] = Form("value" -> boolean("niphlsQuestion.radio.notSelected"))
+  "link html" - {
+    "should not have a space or new line at the end of the html" in {
+
+      val linkComponent = app.injector.instanceOf[Link]
+
+      val linkHtml: HtmlFormat.Appendable = linkComponent("linkText", "link")
+
+      linkHtml.toString must endWith regex ".*\\S"
+
+    }
+
+  }
 
 }
