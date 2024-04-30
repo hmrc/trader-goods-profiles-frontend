@@ -39,7 +39,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
   "NiphlsQuestion Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for an onPageLoad" in {
 
       val result = niphlsQuestionController.onPageLoad(fakeRequest)
 
