@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
+import forms.NiphlsQuestionFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlsQuestionView
-import forms.NiphlsQuestionFormProvider
 
 class NiphlsQuestionControllerSpec extends SpecBase {
 
@@ -31,7 +31,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
   private val niphlsQuestionView = app.injector.instanceOf[NiphlsQuestionView]
 
   private val niphlsQuestionController = new NiphlsQuestionController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     niphlsQuestionView,
     formProvider
@@ -45,7 +45,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlsQuestionView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -83,7 +83,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("niphlsQuestion.radio.notSelected")
     }

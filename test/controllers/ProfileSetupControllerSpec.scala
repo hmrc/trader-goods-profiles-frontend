@@ -27,7 +27,7 @@ class ProfileSetupControllerSpec extends SpecBase {
   private val profileSetupView = app.injector.instanceOf[ProfileSetupView]
 
   private val profileSetupController = new ProfileSetupController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     profileSetupView
   )
@@ -37,7 +37,7 @@ class ProfileSetupControllerSpec extends SpecBase {
     "must return OK and the correct view onPageLoad" in {
       val result = profileSetupController.onPageLoad(fakeRequest)
       status(result) mustEqual OK
-      contentAsString(result) mustEqual profileSetupView()(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual profileSetupView()(fakeRequest, messages).toString
     }
 
     "must redirect onSubmit" in {

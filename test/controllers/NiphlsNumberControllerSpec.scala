@@ -18,13 +18,13 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
+import forms.NiphlsNumberFormProvider
+import generators.NiphlsNumberGenerator
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlsNumberView
-import forms.NiphlsNumberFormProvider
-import generators.NiphlsNumberGenerator
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
 class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
@@ -33,7 +33,7 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
   private val niphlsNumberView = app.injector.instanceOf[NiphlsNumberView]
 
   private val niphlsNumberController = new NiphlsNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     niphlsNumberView,
     formProvider
@@ -47,7 +47,7 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlsNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlsNumberView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -90,7 +90,7 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequestWithData, stubMessages()).toString
+      pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequestWithData, messages).toString
 
       pageContent must include("niphlsNumber.error.notSupplied")
 
@@ -108,7 +108,7 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("niphlsNumber.error.wrongFormat")
 

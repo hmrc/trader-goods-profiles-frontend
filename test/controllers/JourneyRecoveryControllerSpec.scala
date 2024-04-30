@@ -24,7 +24,7 @@ import views.html.{JourneyRecoveryContinueView, JourneyRecoveryStartAgainView}
 
 class JourneyRecoveryControllerSpec extends SpecBase {
 
-  private val journeyRecoveryContinueView = app.injector.instanceOf[JourneyRecoveryContinueView]
+  private val journeyRecoveryContinueView   = app.injector.instanceOf[JourneyRecoveryContinueView]
   private val journeyRecoveryStartAgainView = app.injector.instanceOf[JourneyRecoveryStartAgainView]
 
   private val journeyRecoveryController = new JourneyRecoveryController(
@@ -40,7 +40,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the continue view" in {
         val continueUrl = RedirectUrl("/foo")
-        val result = journeyRecoveryController.onPageLoad(Some(continueUrl))(fakeRequest)
+        val result      = journeyRecoveryController.onPageLoad(Some(continueUrl))(fakeRequest)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual journeyRecoveryContinueView(continueUrl.unsafeValue)(
@@ -56,7 +56,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
       "must return OK and the start again view" in {
 
         val continueUrl = RedirectUrl("https://foo.com")
-        val result = journeyRecoveryController.onPageLoad(Some(continueUrl))(fakeRequest)
+        val result      = journeyRecoveryController.onPageLoad(Some(continueUrl))(fakeRequest)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual journeyRecoveryStartAgainView()(
