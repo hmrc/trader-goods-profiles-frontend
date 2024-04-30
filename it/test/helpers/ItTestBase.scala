@@ -16,33 +16,40 @@
 
 package helpers
 
-import config.FrontendAppConfig
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalacheck.Gen
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.{Status => _}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
-import play.api.http.HeaderNames
-import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
+import play.api.http._
 import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.Helpers._
+import play.api.test._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments}
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.global
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   val appRouteContext: String = "/trader-goods-profiles"
-  private val mockAppConfig   = mock[FrontendAppConfig]
 
   lazy val authConnector: AuthConnector = mock[AuthConnector]
+
+  implicit def ec: ExecutionContext = global
 
   def appBuilder: GuiceApplicationBuilder =
     GuiceApplicationBuilder()
@@ -51,12 +58,11 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
       )
 
   override implicit lazy val app: Application = appBuilder.build()
-  private val appConfig                       = app.injector.instanceOf[FrontendAppConfig]
-  private val eori                            = Gen.alphaNumStr.sample.get
-  private val authFetch                       = Retrievals.internalId and Retrievals.authorisedEnrolments
-  private val ourEnrolment: Enrolment         =
-    Enrolment(appConfig.tgpEnrolmentIdentifier.key).withIdentifier(appConfig.tgpEnrolmentIdentifier.identifier, eori)
-  private val authResult                      = Some("internalId") and Enrolments(Set(ourEnrolment))
+
+  private val authFetch               = Retrievals.internalId and Retrievals.authorisedEnrolments
+  private val ourEnrolment: Enrolment =
+    Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
+  private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
   def authorisedUser: OngoingStubbing[Future[Option[String] ~ Enrolments]] =
     when(authConnector.authorise(any, eqTo(authFetch))(any, any)).thenReturn(
@@ -72,4 +78,26 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   def redirectUrl(response: WSResponse): Option[String] =
     response.header(HeaderNames.LOCATION)
+  def callRoute[A](fakeRequest: FakeRequest[A], requiresAuth: Boolean = true)(implicit
+    app: Application,
+    w: Writeable[A]
+  ): Future[Result] = {
+    val errorHandler = app.errorHandler
+
+    val req = if (requiresAuth) fakeRequest.withSession("authToken" -> "test") else fakeRequest
+
+    route(app, req) match {
+      case None         => fail("Route does not exist")
+      case Some(result) =>
+        result.recoverWith { case t: Throwable =>
+          errorHandler.onServerError(req, t)
+        }
+    }
+  }
+
+  def html(result: Future[Result]): String = {
+    contentType(result) shouldBe Some("text/html")
+    Jsoup.parse(contentAsString(result)).html()
+  }
+
 }

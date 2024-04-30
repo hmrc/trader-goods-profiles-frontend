@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package forms.mappings.helpers
 
-@(linkText: String, link: String, target: String = "_self", classes: String = "govuk-link")
+object RemoveWhitespace {
 
-<a target="@target" href="@link" class="@classes" >@linkText</a>
+  def removeWhitespace: String => String = _.filterNot(_.isWhitespace)
+
+}

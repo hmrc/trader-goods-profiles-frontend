@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package navigation
+package forms
 
-import play.api.mvc.Call
-import pages._
-import models.{Mode, UserAnswers}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+class NirmsQuestionFormProvider extends Mappings {
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-    desiredRoute
+  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.error.notSelected"))
+
 }

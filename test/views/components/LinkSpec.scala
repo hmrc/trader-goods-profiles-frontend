@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package views.components
 
-@(linkText: String, link: String, target: String = "_self", classes: String = "govuk-link")
+import base.SpecBase
+import play.twirl.api.HtmlFormat
+import views.html.components.Link
 
-<a target="@target" href="@link" class="@classes" >@linkText</a>
+class LinkSpec extends SpecBase {
+
+  "link html" - {
+    "should not have a space or new line at the end of the html" in {
+
+      val linkComponent = app.injector.instanceOf[Link]
+
+      val linkHtml: HtmlFormat.Appendable = linkComponent("linkText", "link")
+
+      linkHtml.toString must endWith regex ".*\\S"
+
+    }
+
+  }
+
+}
