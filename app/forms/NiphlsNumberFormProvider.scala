@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-object StringFieldRegex {
-  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
+import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex.niphlsNumberRegex
+import play.api.data.Form
 
-  val niphlsNumberRegex: String = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
+class NiphlsNumberFormProvider extends Mappings {
+
+  def apply(): Form[String] = Form(
+    "value" -> text("niphlsNumber.error.notSupplied")
+      .transform(removeWhitespace, identity[String])
+      .verifying(
+        regexp(niphlsNumberRegex, "niphlsNumber.error.wrongFormat")
+      )
+  )
+
 }
