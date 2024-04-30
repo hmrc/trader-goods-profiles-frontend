@@ -3,9 +3,10 @@ import org.scalacheck.Arbitrary
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.scalatestaccessibilitylinter.views.AutomaticAccessibilitySpec
-import views.html._
+import views.html.{DummyView, _}
 import views.html.templates.Layout
 import viewmodels.govuk.summarylist._
+import views.html.auth.SignedOutView
 class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
 
   // If you wish to override the GuiceApplicationBuilder to provide additional
@@ -32,7 +33,7 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
   // e.g implicit val arbReportProblemPage: Arbitrary[Form[ReportProblemForm]] = fixed(reportProblemForm)
 
   // This is the package where the page templates are located in your service
-  val viewPackageName = "views/html"
+  val viewPackageName = "views"
 
   // This is the layout class or classes which are injected into all full pages in your service.
   // This might be `HmrcLayout` or some custom class(es) that your service uses as base page templates.
@@ -49,6 +50,9 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case journeyRecoveryStartAgainView: JourneyRecoveryStartAgainView => render(journeyRecoveryStartAgainView)
     case journeyRecoveryContinueView: JourneyRecoveryContinueView     => render(journeyRecoveryContinueView)
     case unauthorisedView: UnauthorisedView                           => render(unauthorisedView)
+    case dummyView: DummyView                                         => render(dummyView)
+    case signedOutView: SignedOutView                                 => render(signedOutView)
+
   }
 
   runAccessibilityTests()
