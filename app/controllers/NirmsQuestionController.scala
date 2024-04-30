@@ -58,20 +58,20 @@ class NirmsQuestionController @Inject() (
         hasNirmsAnswer => {
           val updatedTgpModelObject = request.userAnswers.traderGoodsProfile
             .map(_.copy(hasNirms = Some(hasNirmsAnswer)))
-            .getOrElse(TraderGoodsProfile(hasNirms = Some(hasNirmsAnswer)))
 
-          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = Some(updatedTgpModelObject))
+          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
-          sessionService.updateUserAnswers(updatedUserAnswers).value.map {
-            case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-            case Right(success)     =>
-              val url = if (hasNirmsAnswer) {
-                routes.NirmsNumberController.onPageLoad.url
-              } else {
-                routes.NiphlsQuestionController.onPageLoad.url
-              }
-              Redirect(url)
-          }
+          sessionService
+            .updateUserAnswers(updatedUserAnswers)
+            .fold(
+              sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+              success =>
+                if (hasNirmsAnswer) {
+                  Redirect(routes.NirmsNumberController.onPageLoad.url)
+                } else {
+                  Redirect(routes.NiphlsQuestionController.onPageLoad.url)
+                }
+            )
         }
       )
   }
