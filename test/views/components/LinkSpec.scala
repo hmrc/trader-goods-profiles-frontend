@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package forms
+package views.components
 
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+import base.SpecBase
+import play.twirl.api.HtmlFormat
+import views.html.components.Link
 
-import javax.inject.Inject
+class LinkSpec extends SpecBase {
 
-class UkimsNumberFormProvider @Inject() extends Mappings {
+  "link html" - {
+    "should not have a space or new line at the end of the html" in {
 
-  def apply(): Form[String] =
-    Form(
-      "ukimsNumber" -> text("ukimsNumber.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
-    )
+      val linkComponent = app.injector.instanceOf[Link]
+
+      val linkHtml: HtmlFormat.Appendable = linkComponent("linkText", "link")
+
+      linkHtml.toString must endWith regex ".*\\S"
+
+    }
+
+  }
+
 }

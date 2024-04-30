@@ -16,6 +16,10 @@ GET         /ukims-number                                controllers.UkimsNumber
 
 POST        /ukims-number                                controllers.UkimsNumberController.onSubmit
 
+GET         /nirms-question                              controllers.NirmsQuestionController.onPageLoad
+
+POST        /nirms-question                              controllers.NirmsQuestionController.onSubmit
+
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)

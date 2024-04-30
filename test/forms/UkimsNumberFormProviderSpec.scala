@@ -50,6 +50,26 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
 
     }
 
+    "valid UKIMS number with spaces" - {
+
+      val ukimsNumberGenerator: Gen[String] = {
+        val prefixGen      = Gen.oneOf("GB", "XI")
+        val firstDigitsGen = Gen.listOfN(12, Gen.numChar).map(_.mkString)
+        val lastDigitsGen  = Gen.listOfN(14, Gen.numChar).map(_.mkString)
+
+        for {
+          prefix      <- prefixGen
+          firstDigits <- firstDigitsGen
+          lastDigits  <- lastDigitsGen
+        } yield s"$prefix $firstDigits $lastDigits"
+      }
+
+      behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
+
+      behave like fieldThatBindsValidData(form, fieldName, ukimsNumberGenerator)
+
+    }
+
     "invalid UKIMS number" - {
 
       "invalid UKIMS number with invalid length" - {
