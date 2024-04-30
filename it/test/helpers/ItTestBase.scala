@@ -85,9 +85,10 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   def redirectUrl(response: WSResponse): Option[String] =
     response.header(HeaderNames.LOCATION)
+
   def callRoute[A](fakeRequest: FakeRequest[A], requiresAuth: Boolean = true)(implicit
-                                                                              app: Application,
-                                                                              w: Writeable[A]
+    app: Application,
+    w: Writeable[A]
   ): Future[Result] = {
     val errorHandler = app.errorHandler
 
