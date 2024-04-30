@@ -42,14 +42,14 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     new FakeAuthoriseAction(defaultBodyParser),
     new DataRetrievalActionImpl(sessionRepository),
     new DataRequiredActionImpl(),
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     checkYourAnswersView
   )
 
   "Check Your Answers Controller" - {
 
     "must return OK and the correct view for a onPageLoad with user answers set" in {
-      when(sessionRepository.get(any)).thenReturn(Future.successful(Some(UserAnswers("id"))))
+      when(sessionRepository.get(any)).thenReturn(Future.successful(Some(UserAnswers(userAnswersId))))
 
       val result = checkYourAnswersController.onPageLoad()(fakeRequest)
 

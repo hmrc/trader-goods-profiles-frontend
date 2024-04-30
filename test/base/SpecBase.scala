@@ -28,7 +28,8 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
+import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -43,14 +44,16 @@ trait SpecBase
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
+  implicit val messagesApi: MessagesApi = stubMessagesApi()
   val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
 
   val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
+  //TODO delete this
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

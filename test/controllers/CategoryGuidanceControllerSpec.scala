@@ -27,7 +27,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
   private val categoryGuidanceView: CategoryGuidanceView = app.injector.instanceOf[CategoryGuidanceView]
 
   private val categoryGuidanceController = new CategoryGuidanceController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     categoryGuidanceView
   )
@@ -40,7 +40,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual categoryGuidanceView()(fakeRequest, stubMessages()).toString()
+      contentAsString(result) mustEqual categoryGuidanceView()(fakeRequest, messages).toString()
 
     }
 
