@@ -28,9 +28,9 @@ GET         /niphl-question                              controllers.NiphlQuesti
 
 POST        /niphl-question                              controllers.NiphlQuestionController.onSubmit
 
-GET         /niphl-number                                controllers.NiphlsNumberController.onPageLoad
+GET         /niphl-number                                controllers.NiphlNumberController.onPageLoad
 
-POST        /niphl-number                                controllers.NiphlsNumberController.onSubmit
+POST        /niphl-number                                controllers.NiphlNumberController.onSubmit
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 

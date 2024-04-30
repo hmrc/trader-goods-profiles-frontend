@@ -17,19 +17,19 @@
 package controllers
 
 import controllers.actions.AuthoriseAction
-import forms.NiphlsNumberFormProvider
+import forms.NiphlNumberFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.NiphlsNumberView
+import views.html.NiphlNumberView
 
 import javax.inject.Inject
 
-class NiphlsNumberController @Inject() (
+class NiphlNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: NiphlsNumberView,
-  formProvider: NiphlsNumberFormProvider
+  view: NiphlNumberView,
+  formProvider: NiphlNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
 

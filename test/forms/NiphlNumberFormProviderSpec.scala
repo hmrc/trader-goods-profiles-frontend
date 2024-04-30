@@ -17,14 +17,14 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
-import generators.NiphlsNumberGenerator
+import generators.NiphlNumberGenerator
 import play.api.data.FormError
 
-class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumberGenerator {
-  private val formProvider = new NiphlsNumberFormProvider()
+class NiphlNumberFormProviderSpec extends StringFieldBehaviours with NiphlNumberGenerator {
+  private val formProvider = new NiphlNumberFormProvider()
   private val form         = formProvider()
-  private val wrongFormat  = "niphlsNumber.error.wrongFormat"
-  private val requiredKey  = "niphlsNumber.error.notSupplied"
+  private val wrongFormat  = "niphlNumber.error.wrongFormat"
+  private val requiredKey  = "niphlNumber.error.notSupplied"
 
   ".value" - {
 
@@ -42,33 +42,33 @@ class NiphlsNumberFormProviderSpec extends StringFieldBehaviours with NiphlsNumb
       }
 
       "one letter and 4 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsAlphaNumericGenerator(1, 4), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlAlphaNumericGenerator(1, 4), wrongFormat)
       }
 
       "one letter and 6 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsAlphaNumericGenerator(1, 6), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlAlphaNumericGenerator(1, 6), wrongFormat)
       }
 
       "three letters and 5 numbers" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlsAlphaNumericGenerator(3, 5), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, niphlAlphaNumericGenerator(3, 5), wrongFormat)
       }
 
     }
 
     "accepts" - {
       "4 to 6 digits" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsNumericGenerator(1000, 999999))
+        behave like fieldThatBindsValidData(form, fieldName, niphlNumericGenerator(1000, 999999))
       }
 
       "one letter and 5 numbers" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericGenerator(1, 5))
+        behave like fieldThatBindsValidData(form, fieldName, niphlAlphaNumericGenerator(1, 5))
       }
 
       "two letters and 5 numbers" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericGenerator(2, 5))
+        behave like fieldThatBindsValidData(form, fieldName, niphlAlphaNumericGenerator(2, 5))
       }
-      "valid NIPHLS number with spaces" - {
-        behave like fieldThatBindsValidData(form, fieldName, niphlsAlphaNumericWithSpacesGenerator(2, 5))
+      "valid NIPHL number with spaces" - {
+        behave like fieldThatBindsValidData(form, fieldName, niphlAlphaNumericWithSpacesGenerator(2, 5))
       }
     }
 

@@ -21,12 +21,12 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class NiphlsNumberControllerISpec extends ItTestBase {
+class NiphlNumberControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.NiphlsNumberController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.NiphlNumberController.onPageLoad.url}"
 
-  "Niphls number controller" should {
+  "Niphl number controller" should {
 
     "redirect you to unauthorised page when auth fails" in {
 

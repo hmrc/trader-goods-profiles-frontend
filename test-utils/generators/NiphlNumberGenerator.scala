@@ -18,9 +18,9 @@ package generators
 
 import org.scalacheck.Gen
 
-trait NiphlsNumberGenerator extends Generators {
+trait NiphlNumberGenerator extends Generators {
 
-  def niphlsAlphaNumericGenerator(letterCount: Int, numberCount: Int): Gen[String] = {
+  def niphlAlphaNumericGenerator(letterCount: Int, numberCount: Int): Gen[String] = {
 
     val letter  = Gen.listOfN(letterCount, Gen.alphaChar).map(_.mkString)
     val numbers = Gen.listOfN(numberCount, Gen.numChar).map(_.mkString)
@@ -31,7 +31,7 @@ trait NiphlsNumberGenerator extends Generators {
     } yield s"$letter$numbers"
   }
 
-  def niphlsAlphaNumericWithSpacesGenerator(letterCount: Int, numberCount: Int): Gen[String] = {
+  def niphlAlphaNumericWithSpacesGenerator(letterCount: Int, numberCount: Int): Gen[String] = {
 
     val letter  = Gen.listOfN(letterCount, Gen.alphaChar).map(_.mkString)
     val numbers = Gen.listOfN(numberCount, Gen.numChar).map(_.mkString)
@@ -42,6 +42,6 @@ trait NiphlsNumberGenerator extends Generators {
     } yield s"$letter $numbers"
   }
 
-  def niphlsNumericGenerator(min: Int, max: Int): Gen[String] =
+  def niphlNumericGenerator(min: Int, max: Int): Gen[String] =
     intsInRange(min, max)
 }
