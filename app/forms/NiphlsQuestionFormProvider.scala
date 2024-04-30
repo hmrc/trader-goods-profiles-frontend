@@ -19,8 +19,8 @@ package forms
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class NirmsQuestionFormProvider extends Mappings {
+class NiphlsQuestionFormProvider extends Mappings {
 
-  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.error.notSelected"))
+  def apply(): Form[Boolean] = Form("value" -> boolean("niphlsQuestion.radio.notSelected"))
 
 }

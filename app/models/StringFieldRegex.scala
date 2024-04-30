@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import forms.mappings.Mappings
-import play.api.data.Form
+object StringFieldRegex {
+  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
 
-class NirmsQuestionFormProvider extends Mappings {
-
-  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.error.notSelected"))
-
+  val niphlsNumberRegex: String = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
 }

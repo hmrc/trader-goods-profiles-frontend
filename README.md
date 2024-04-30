@@ -31,7 +31,11 @@ Run this to get code coverage report: `sbt coverageReport`
 
 ### Formatting
 
-Run this to format scala files : `scalafmt`
+Run this to check all scala files are formatted: `sbt scalafmtCheckAll`
+
+Run this to format non-test scala files: `sbt scalafmt`
+
+Run this to format test scala files: `sbt test:scalafmt`
 
 ### License
 

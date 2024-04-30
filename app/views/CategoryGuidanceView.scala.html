@@ -25,13 +25,15 @@
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("profileSetup.title")),
+    pageTitle    = titleNoForm(messages("categoryGuidance.title")),
     showBackLink = true
 ) {
     @heading1(messages("categoryGuidance.h1"))
     @paragraph(Html(messages("categoryGuidance.p1")))
     @paragraph(Html(messages("categoryGuidance.p2")))
     @paragraph(Html(messages("categoryGuidance.p3")))
+    @paragraph(Html(messages("categoryGuidance.p4")))
+    @paragraph(Html(messages("categoryGuidance.p5")))
 
     @formHelper(action = CategoryGuidanceController.onSubmit) {
         @govukButton(

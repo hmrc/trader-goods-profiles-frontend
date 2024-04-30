@@ -19,8 +19,14 @@ package forms
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class NirmsQuestionFormProvider extends Mappings {
+import javax.inject.Inject
 
-  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.error.notSelected"))
+class NirmsNumberFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "nirmsNumber" -> text("nirmsNumber.error.required")
+        .verifying(regexp("RMS-?(GB|NI)-?[0-9]{6}", "nirmsNumber.error.invalidFormat"))
+    )
 
 }

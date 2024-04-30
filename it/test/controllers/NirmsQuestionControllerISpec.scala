@@ -25,7 +25,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port$appRouteContext/nirms-question"
+  private val url = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad.url}"
 
   "NIRMS question controller" should {
 
@@ -51,7 +51,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       response.status mustBe OK
     }
 
-    "redirects to dummy controller when submitting valid data" in {
+    "redirects to NirmsNumberController when submitting valid data with yes" in {
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -60,7 +60,19 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
+    }
+
+    "redirects to NiphlsQuestionController when submitting valid data with no" in {
+      authorisedUser
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(Map("value" -> "false")))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NiphlsQuestionController.onPageLoad.url)
     }
 
     "returns bad request when submitting no data" in {

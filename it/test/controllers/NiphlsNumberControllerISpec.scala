@@ -17,19 +17,19 @@
 package controllers
 
 import helpers.ItTestBase
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class CategoryGuidanceControllerISpec extends ItTestBase {
-
+class NiphlsNumberControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.CategoryGuidanceController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.NiphlsNumberController.onPageLoad.url}"
 
-  "Category Guidance controller" should {
+  "Niphls number controller" should {
 
-    "redirects you to unauthorised page when auth fails" in {
+    "redirect you to unauthorised page when auth fails" in {
+
       noEnrolment
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -39,9 +39,11 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       response.status mustBe SEE_OTHER
 
       redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+
     }
 
     "loads page" in {
+
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -49,18 +51,45 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe OK
+
     }
 
-    "returns redirect when submitting" in {
+    //TODO: Should change Dummy controller to actual when it becomes available
+    "redirect to dummy controller when submitting valid data" in {
+
+      authorisedUser
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(Map("value" -> "ab12345")))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+
+    }
+
+    "return bad request when submitting invalid data" in {
+
+      authorisedUser
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(Map("value" -> "123")))
+
+      response.status mustBe BAD_REQUEST
+
+    }
+    "return bad request when submitting no data" in {
+
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
       val response = await(request.post(""))
 
-      response.status mustBe SEE_OTHER
+      response.status mustBe BAD_REQUEST
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
     }
   }
 }

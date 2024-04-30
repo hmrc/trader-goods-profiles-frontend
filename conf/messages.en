@@ -44,6 +44,8 @@ categoryGuidance.h1 = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
 categoryGuidance.p2 = We’ll ask you questions about waivers that you hold and then tell you what category your goods are. If the commodity code has too many waivers for us to list, we might ask you for an 8 or 10 digit commodity code.
 categoryGuidance.p3 = You’ll need to know the certificate number or name of any waivers you have for your goods. If you get a new waiver, you’ll be able to change this later.
+categoryGuidance.p4 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classes as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
+categoryGuidance.p5 = You’ll need to know the certificate number or name of any waivers you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new waiver, you’ll be able to change this later.
 
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
@@ -68,13 +70,48 @@ profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to 
 profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about {0}.
 profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
+ukimsNumber.title = UK Internal Market Scheme number
+ukimsNumber.h1 = UK Internal Market Scheme number
+ukimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
+ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by your EORI number, then 14 numbers.
+ukimsNumber.heading = What is your UKIMS number?
+ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
+ukimsNumber.linkText = I am not UKIMS registered
+ukimsNumber.error.required = Enter your UKIMS number
+ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
+
 nirmsQuestion.title = Northern Ireland Retail Movement Scheme (NIRMS)
 nirmsQuestion.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
 nirmsQuestion.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
 nirmsQuestion.p2 = Find out more about {0}.
 nirmsQuestion.p2.linkText = which products can be moved under NIRMS
 nirmsQuestion.h2 = Are you NIRMS registered?
-nirmsQuestion.radio.notSelected = Select if you are NIRMS registered
+nirmsQuestion.error.notSelected = Select if you are NIRMS registered
+
+nirmsNumber.title = Northern Ireland Retail Movement Scheme number
+nirmsNumber.heading = What is your NIRMS number?
+nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
+nirmsNumber.error.required = Enter your NIRMS number
+nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
+
+niphlsQuestion.title = Northern Ireland plant health label (NIPHL)
+niphlsQuestion.h1 = Northern Ireland plant health label (NIPHL)
+niphlsQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
+niphlsQuestion.p2 = Find out more about {0}.
+niphlsQuestion.p2.linkText = moving plants from Great Britain to Northern Ireland
+niphlsQuestion.h2 = Are you NIPHL registered?
+niphlsQuestion.radio.notSelected = Select if you are NIPHL registered
+
+niphlsNumber.title = NIPHL reference
+niphlsNumber.h1 = NIPHL registration number
+niphlsNumber.p1 = NIPHL registration numbers have several formats. They could be:
+niphlsNumber.li1 = 4 to 6 numbers
+niphlsNumber.li2 = start with one letter, then 5 numbers
+niphlsNumber.li3 = start with 2 letters, then 5 numbers
+niphlsNumber.h2 = What is your NIPHL registration number?
+niphlsNumber.hint = For example, 612345, S12345 or SN12345
+niphlsNumber.error.notSupplied = Enter your NIPHL registration number.
+niphlsNumber.error.wrongFormat = Enter your NIPHL registration number in the correct format.
 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers

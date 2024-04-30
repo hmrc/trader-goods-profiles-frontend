@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -28,23 +30,20 @@
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("nirmsQuestion.title")),
+    pageTitle    = titleNoForm(messages("niphlsQuestion.title")),
     showBackLink = true,
-    backLinkUrl = controllers.routes.UkimsNumberController.onPageLoad.url
+    backLinkUrl = controllers.routes.NirmsNumberController.onPageLoad.url
 ) {
-    @heading1(messages("nirmsQuestion.h1"))
-    @paragraph(Html(messages("nirmsQuestion.p1")))
-    @paragraph(Html(messages("nirmsQuestion.p2", link(messages("nirmsQuestion.p2.linkText"),
-            "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"))
-    ))
+    @heading1(messages("niphlsQuestion.h1"))
+    @paragraph(Html(messages("niphlsQuestion.p1")))
+    @paragraph(Html(messages("niphlsQuestion.p2",
+        link(messages("niphlsQuestion.p2.linkText"),"https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"))))
 
-    @heading2(messages("nirmsQuestion.h2"))
-
-    @formHelper(action = NirmsQuestionController.onSubmit) {
+    @formHelper(action = NiphlsQuestionController.onSubmit) {
         @govukRadios(
           RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "nirmsQuestion.h1", classes = "govuk-visually-hidden")
+                legend = Legend(messages("niphlsQuestion.h2")).asPageHeading(Medium)
             )
         )
 

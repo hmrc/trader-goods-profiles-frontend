@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings.helpers
 
-import forms.mappings.Mappings
-import play.api.data.Form
+object RemoveWhitespace {
 
-class NirmsQuestionFormProvider extends Mappings {
-
-  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.error.notSelected"))
+  def removeWhitespace: String => String = _.filterNot(_.isWhitespace)
 
 }

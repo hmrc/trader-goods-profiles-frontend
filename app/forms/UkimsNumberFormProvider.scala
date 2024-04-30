@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package navigation
+package forms
 
-import play.api.mvc.Call
-import pages._
-import models.{Mode, UserAnswers}
+import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex
+import play.api.data.Form
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+import javax.inject.Inject
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-    desiredRoute
+class UkimsNumberFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "ukimsNumber" -> text("ukimsNumber.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
+    )
 }

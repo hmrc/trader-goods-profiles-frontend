@@ -43,7 +43,7 @@ class ProfileSetupControllerSpec extends SpecBase {
     "must redirect onSubmit" in {
       val result = profileSetupController.onSubmit(fakeRequest)
       status(result) mustEqual SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad.url)
     }
 
   }

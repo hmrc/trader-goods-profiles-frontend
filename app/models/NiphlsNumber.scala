@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import forms.mappings.Mappings
-import play.api.data.Form
-
-class NirmsQuestionFormProvider extends Mappings {
-
-  def apply(): Form[Boolean] = Form("value" -> boolean("nirmsQuestion.error.notSelected"))
-
-}
+case class NiphlsNumber(value: String)
