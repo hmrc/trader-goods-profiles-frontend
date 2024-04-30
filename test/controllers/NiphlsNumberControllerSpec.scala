@@ -26,7 +26,11 @@ import forms.NiphlsNumberFormProvider
 import generators.NiphlsNumberGenerator
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
+import scala.concurrent.ExecutionContext
+
 class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NiphlsNumberFormProvider()
 
@@ -36,7 +40,9 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     niphlsNumberView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "NiphlsNumber Controller" - {
