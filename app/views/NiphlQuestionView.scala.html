@@ -30,20 +30,20 @@
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("niphlsQuestion.title")),
+    pageTitle    = titleNoForm(messages("niphlQuestion.title")),
     showBackLink = true,
     backLinkUrl = controllers.routes.NirmsNumberController.onPageLoad.url
 ) {
-    @heading1(messages("niphlsQuestion.h1"))
-    @paragraph(Html(messages("niphlsQuestion.p1")))
-    @paragraph(Html(messages("niphlsQuestion.p2",
-        link(messages("niphlsQuestion.p2.linkText"),"https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"))))
+    @heading1(messages("niphlQuestion.h1"))
+    @paragraph(Html(messages("niphlQuestion.p1")))
+    @paragraph(Html(messages("niphlQuestion.p2",
+        link(messages("niphlQuestion.p2.linkText"),"https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"))))
 
-    @formHelper(action = NiphlsQuestionController.onSubmit) {
+    @formHelper(action = NiphlQuestionController.onSubmit) {
         @govukRadios(
           RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(messages("niphlsQuestion.h2")).asPageHeading(Medium)
+                legend = Legend(messages("niphlQuestion.h2")).asPageHeading(Medium)
             )
         )
 

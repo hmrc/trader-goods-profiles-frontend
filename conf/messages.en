@@ -70,13 +70,13 @@ profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to 
 profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about {0}.
 profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
-niphlsQuestion.title = Northern Ireland plant health label (NIPHL)
-niphlsQuestion.h1 = Northern Ireland plant health label (NIPHL)
-niphlsQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
-niphlsQuestion.p2 = Find out more about {0}.
-niphlsQuestion.p2.linkText = moving plants from Great Britain to Northern Ireland
-niphlsQuestion.h2 = Are you NIPHL registered?
-niphlsQuestion.radio.notSelected = Select if you are NIPHL registered
+niphlQuestion.title = Northern Ireland plant health label (NIPHL)
+niphlQuestion.h1 = Northern Ireland plant health label (NIPHL)
+niphlQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
+niphlQuestion.p2 = Find out more about {0}.
+niphlQuestion.p2.linkText = moving plants from Great Britain to Northern Ireland
+niphlQuestion.h2 = Are you NIPHL registered?
+niphlQuestion.radio.notSelected = Select if you are NIPHL registered
 
 ukimsNumber.title = UK Internal Market Scheme number
 ukimsNumber.h1 = UK Internal Market Scheme number

@@ -44,7 +44,7 @@ class NirmsNumberController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.NiphlsQuestionController.onPageLoad.url)
+        _ => Redirect(routes.NiphlQuestionController.onPageLoad.url)
       )
   }
 }

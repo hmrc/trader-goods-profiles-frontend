@@ -24,9 +24,9 @@ GET         /nirms-number                                controllers.NirmsNumber
 
 POST        /nirms-number                                controllers.NirmsNumberController.onSubmit
 
-GET         /niphls-question                             controllers.NiphlsQuestionController.onPageLoad
+GET         /niphl-question                             controllers.NiphlQuestionController.onPageLoad
 
-POST        /niphls-question                             controllers.NiphlsQuestionController.onSubmit
+POST        /niphl-question                             controllers.NiphlQuestionController.onSubmit
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 

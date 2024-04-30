@@ -21,31 +21,31 @@ import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.NiphlsQuestionView
-import forms.NiphlsQuestionFormProvider
+import views.html.NiphlQuestionView
+import forms.NiphlQuestionFormProvider
 
-class NiphlsQuestionControllerSpec extends SpecBase {
+class NiphlQuestionControllerSpec extends SpecBase {
 
-  private val formProvider = new NiphlsQuestionFormProvider()
+  private val formProvider = new NiphlQuestionFormProvider()
 
-  private val niphlsQuestionView = app.injector.instanceOf[NiphlsQuestionView]
+  private val niphlQuestionView = app.injector.instanceOf[NiphlQuestionView]
 
-  private val niphlsQuestionController = new NiphlsQuestionController(
+  private val niphlQuestionController = new NiphlQuestionController(
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
-    niphlsQuestionView,
+    niphlQuestionView,
     formProvider
   )
 
-  "NiphlsQuestion Controller" - {
+  "NiphlQuestion Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = niphlsQuestionController.onPageLoad(fakeRequest)
+      val result = niphlQuestionController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlQuestionView(formProvider())(fakeRequest, stubMessages()).toString
 
     }
 
@@ -53,7 +53,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = niphlsQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -65,7 +65,7 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = niphlsQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -77,15 +77,15 @@ class NiphlsQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = niphlsQuestionController.onSubmit(fakeRequest)
+      val result = niphlQuestionController.onSubmit(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
 
-      pageContent must include("niphlsQuestion.radio.notSelected")
+      pageContent must include("niphlQuestion.radio.notSelected")
     }
   }
 }
