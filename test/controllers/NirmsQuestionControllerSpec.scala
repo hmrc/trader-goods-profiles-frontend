@@ -49,9 +49,21 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
     }
 
-    "must redirect on Submit when user selects yes or no" in {
+    "must redirect on Submit when user selects yes" in {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad.url)
+
+    }
+
+    "must redirect on Submit when user selects no" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
       val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
 

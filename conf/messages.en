@@ -91,6 +91,13 @@ nirmsQuestion.p2.linkText = which products can be moved under NIRMS
 nirmsQuestion.h2 = Are you NIRMS registered?
 nirmsQuestion.error.notSelected = Select if you are NIRMS registered
 
+nirmsNumber.title = Northern Ireland Retail Movement Scheme number
+nirmsNumber.heading = What is your NIRMS number?
+nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
+
+nirmsNumber.error.required = Enter your NIRMS number
+nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
+
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 
