@@ -21,7 +21,9 @@ import play.api.libs.json.{Json, OFormat}
 case class TraderGoodsProfile(
   ukimsNumber: Option[UkimsNumber] = None,
   hasNirms: Option[Boolean] = None,
-  nirmsNumber: Option[NirmsNumber] = None
+  nirmsNumber: Option[NirmsNumber] = None,
+  hasNiphls: Option[Boolean] = None,
+  niphlsNumber: Option[NiphlsNumber] = None
 )
 
 object TraderGoodsProfile {
