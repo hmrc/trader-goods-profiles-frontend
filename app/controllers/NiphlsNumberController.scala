@@ -35,7 +35,8 @@ class NiphlsNumberController @Inject() (
   formProvider: NiphlsNumberFormProvider,
   sessionRequest: SessionRequestAction,
   sessionService: SessionService
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   private val form = formProvider()
@@ -45,7 +46,7 @@ class NiphlsNumberController @Inject() (
 
     optionalNiphlsNumber match {
       case Some(niphlsNumber) => Ok(view(form.fill(niphlsNumber.value)))
-      case None => Ok(view(form))
+      case None               => Ok(view(form))
     }
   }
 
@@ -60,10 +61,12 @@ class NiphlsNumberController @Inject() (
 
           val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
-          sessionService.updateUserAnswers(updatedUserAnswers).fold(
-            sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-            success => Redirect(routes.DummyController.onPageLoad.url)
-          )
+          sessionService
+            .updateUserAnswers(updatedUserAnswers)
+            .fold(
+              sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+              success => Redirect(routes.DummyController.onPageLoad.url)
+            )
         }
       )
   }
