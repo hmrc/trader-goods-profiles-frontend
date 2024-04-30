@@ -44,7 +44,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
 
     "loads page" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -57,7 +57,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -71,7 +71,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
 
     "return bad request when submitting invalid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -82,7 +82,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
     }
     "return bad request when submitting no data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
