@@ -13,8 +13,6 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
 
   val viewPackageName                                   = "views"
   val layoutClasses                                     = Seq(classOf[Layout])
-  val appConfig: FrontendAppConfig                      = app.injector.instanceOf[FrontendAppConfig]
-  //implicit val arbConfig: Arbitrary[FrontendAppConfig] = fixed(appConfig)
   val list: SummaryList                                 = SummaryListViewModel(rows = Seq.empty)
   implicit val arbSummaryList: Arbitrary[SummaryList]   = fixed(list)
   private val booleanForm: Form[Boolean]                = Form("value" -> boolean)
