@@ -27,9 +27,9 @@ class LinkSpec extends SpecBase {
 
       val linkComponent = app.injector.instanceOf[Link]
 
-      val a: HtmlFormat.Appendable = linkComponent("linkText", "link")
+      val linkHtml: HtmlFormat.Appendable = linkComponent("linkText", "link")
 
-      a.toString must endWith regex ".*\\S"
+      linkHtml.toString must endWith regex ".*\\S"
 
     }
 
