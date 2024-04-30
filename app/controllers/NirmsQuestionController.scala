@@ -69,7 +69,7 @@ class NirmsQuestionController @Inject() (
                 if (hasNirmsAnswer) {
                   Redirect(routes.NirmsNumberController.onPageLoad.url)
                 } else {
-                  Redirect(routes.NiphlsQuestionController.onPageLoad.url)
+                  Redirect(routes.NiphlQuestionController.onPageLoad.url)
                 }
             )
         }

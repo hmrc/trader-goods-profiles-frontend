@@ -63,7 +63,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
     }
 
-    "redirects to NiphlsQuestionController when submitting valid data with no" in {
+    "redirects to NiphlQuestionController when submitting valid data with no" in {
       authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -72,7 +72,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectUrl(response) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
     }
 
     "returns bad request when submitting no data" in {

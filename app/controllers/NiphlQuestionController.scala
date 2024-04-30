@@ -17,22 +17,22 @@
 package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
-import forms.NiphlsNumberFormProvider
-import models.NiphlsNumber
+import forms.NiphlQuestionFormProvider
+import models.TraderGoodsProfile
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.NiphlsNumberView
+import views.html.NiphlQuestionView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NiphlsNumberController @Inject() (
+class NiphlQuestionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: NiphlsNumberView,
-  formProvider: NiphlsNumberFormProvider,
+  view: NiphlQuestionView,
+  formProvider: NiphlQuestionFormProvider,
   sessionRequest: SessionRequestAction,
   sessionService: SessionService
 )(implicit ec: ExecutionContext)
@@ -42,11 +42,11 @@ class NiphlsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalNiphlsNumber = request.userAnswers.traderGoodsProfile.flatMap(_.niphlsNumber)
+    val optionalHasNiphl = request.userAnswers.traderGoodsProfile.flatMap(_.hasNiphl)
 
-    optionalNiphlsNumber match {
-      case Some(niphlsNumber) => Ok(view(form.fill(niphlsNumber.value)))
-      case None               => Ok(view(form))
+    optionalHasNiphl match {
+      case Some(hasNiphlAnswer) => Ok(view(form.fill(hasNiphlAnswer)))
+      case None                 => Ok(view(form))
     }
   }
 
@@ -55,9 +55,9 @@ class NiphlsNumberController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        niphlsNumber => {
+        hasNiphlAnswer => {
           val updatedTgpModelObject = request.userAnswers.traderGoodsProfile
-            .map(_.copy(niphlsNumber = Some(NiphlsNumber(niphlsNumber))))
+            .map(_.copy(hasNiphl = Some(hasNiphlAnswer)))
 
           val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
@@ -65,7 +65,12 @@ class NiphlsNumberController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.DummyController.onPageLoad.url)
+              success =>
+                if (hasNiphlAnswer) {
+                  Redirect(routes.NiphlNumberController.onPageLoad.url)
+                } else {
+                  Redirect(routes.DummyController.onPageLoad.url)
+                }
             )
         }
       )

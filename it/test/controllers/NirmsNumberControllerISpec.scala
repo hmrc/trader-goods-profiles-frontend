@@ -49,7 +49,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
     }
 
-    "redirect to NiphlsQuestionController when submitting valid data" in {
+    "redirect to NiphlQuestionController when submitting valid data" in {
 
       authorisedUserWithAnswers
 
@@ -59,11 +59,11 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
-    "redirect to NiphlsQuestionController when submitting valid data without hyphens" in {
+    "redirect to NiphlQuestionController when submitting valid data without hyphens" in {
 
       authorisedUserWithAnswers
 
@@ -73,7 +73,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 

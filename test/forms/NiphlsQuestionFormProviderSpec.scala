@@ -19,11 +19,11 @@ package forms
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.{Form, FormError}
 
-class NiphlsQuestionFormProviderSpec extends BooleanFieldBehaviours {
-  private val formProvider        = new NiphlsQuestionFormProvider()
+class NiphlQuestionFormProviderSpec extends BooleanFieldBehaviours {
+  private val formProvider        = new NiphlQuestionFormProvider()
   private val form: Form[Boolean] = formProvider()
   private val invalidKey          = "error.boolean"
-  private val requiredKey         = "niphlsQuestion.radio.notSelected"
+  private val requiredKey         = "niphlQuestion.radio.notSelected"
 
   ".value" - {
 

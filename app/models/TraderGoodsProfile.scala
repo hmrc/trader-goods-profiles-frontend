@@ -22,8 +22,8 @@ case class TraderGoodsProfile(
   ukimsNumber: Option[UkimsNumber] = None,
   hasNirms: Option[Boolean] = None,
   nirmsNumber: Option[NirmsNumber] = None,
-  hasNiphls: Option[Boolean] = None,
-  niphlsNumber: Option[NiphlsNumber] = None
+  hasNiphl: Option[Boolean] = None,
+  niphlNumber: Option[NiphlNumber] = None
 )
 
 object TraderGoodsProfile {

@@ -18,16 +18,16 @@ package forms
 
 import forms.mappings.Mappings
 import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex.niphlsNumberRegex
+import models.StringFieldRegex.niphlNumberRegex
 import play.api.data.Form
 
-class NiphlsNumberFormProvider extends Mappings {
+class NiphlNumberFormProvider extends Mappings {
 
   def apply(): Form[String] = Form(
-    "value" -> text("niphlsNumber.error.notSupplied")
+    "value" -> text("niphlNumber.error.notSupplied")
       .transform(removeWhitespace, identity[String])
       .verifying(
-        regexp(niphlsNumberRegex, "niphlsNumber.error.wrongFormat")
+        regexp(niphlNumberRegex, "niphlNumber.error.wrongFormat")
       )
   )
 
