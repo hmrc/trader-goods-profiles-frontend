@@ -52,6 +52,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     }
 
     "redirects to NirmsNumberController when submitting valid data with yes" in {
+
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -64,6 +65,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     }
 
     "redirects to NiphlQuestionController when submitting valid data with no" in {
+
       authorisedUser
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -84,6 +86,5 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe BAD_REQUEST
     }
-
   }
 }
