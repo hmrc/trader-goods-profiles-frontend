@@ -31,6 +31,8 @@ import play.api.test.FakeRequest
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
 
+import scala.concurrent.ExecutionContext
+
 trait SpecBase
     extends AnyFreeSpec
     with Matchers
@@ -39,6 +41,8 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience
     with GuiceOneAppPerSuite {
+
+  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
   val userAnswersId: String = "id"
 

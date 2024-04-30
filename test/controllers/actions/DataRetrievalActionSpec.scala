@@ -25,7 +25,6 @@ import play.api.test.FakeRequest
 import repositories.SessionRepository
 import models.{Eori, InternalId}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar {

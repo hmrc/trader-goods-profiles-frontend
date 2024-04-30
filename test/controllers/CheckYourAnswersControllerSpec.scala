@@ -17,41 +17,28 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalActionImpl, FakeAuthoriseAction}
-import models.UserAnswers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
+import controllers.actions.{DataRequiredActionImpl, FakeAuthoriseAction, FakeDataRetrievalAction}
 import play.api.test.Helpers._
-import repositories.SessionRepository
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   private val checkYourAnswersView: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
-  private val sessionRepository: SessionRepository = mock[SessionRepository]
-
-  //TODO needs to be updated when session action added to replace the dataretrieval / required actions
-  // Could make fake actions then but not doing it now because no point creating fake actions that will be deleted tomorrow
-  val checkYourAnswersController = new CheckYourAnswersController(
-    messagesApi,
-    new FakeAuthoriseAction(defaultBodyParser),
-    new DataRetrievalActionImpl(sessionRepository),
-    new DataRequiredActionImpl(),
-    messageComponentControllers,
-    checkYourAnswersView
-  )
 
   "Check Your Answers Controller" - {
 
     "must return OK and the correct view for a onPageLoad with user answers set" in {
-      when(sessionRepository.get(any)).thenReturn(Future.successful(Some(UserAnswers(userAnswersId))))
+      val checkYourAnswersControllerWithData = new CheckYourAnswersController(
+        messagesApi,
+        new FakeAuthoriseAction(defaultBodyParser),
+        new FakeDataRetrievalAction(Some(emptyUserAnswers)),
+        new DataRequiredActionImpl(),
+        messageComponentControllers,
+        checkYourAnswersView
+      )
 
-      val result = checkYourAnswersController.onPageLoad()(fakeRequest)
+      val result = checkYourAnswersControllerWithData.onPageLoad()(fakeRequest)
 
       val expectedList = SummaryListViewModel(
         rows = Seq.empty
@@ -65,9 +52,16 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must redirect to Journey Recovery for a onPageLoad if no existing data is found" in {
 
-      when(sessionRepository.get(any)).thenReturn(Future.successful(None))
+      val checkYourAnswersControllerWithNoData = new CheckYourAnswersController(
+        messagesApi,
+        new FakeAuthoriseAction(defaultBodyParser),
+        new FakeDataRetrievalAction(None),
+        new DataRequiredActionImpl(),
+        messageComponentControllers,
+        checkYourAnswersView
+      )
 
-      val result = checkYourAnswersController.onPageLoad()(fakeRequest)
+      val result = checkYourAnswersControllerWithNoData.onPageLoad()(fakeRequest)
 
       status(result) mustEqual SEE_OTHER
 

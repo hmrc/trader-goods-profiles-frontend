@@ -18,7 +18,6 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
-import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{JourneyRecoveryContinueView, JourneyRecoveryStartAgainView}
