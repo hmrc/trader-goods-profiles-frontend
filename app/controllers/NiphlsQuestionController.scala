@@ -17,25 +17,44 @@
 package controllers
 
 import controllers.actions.AuthoriseAction
+import forms.NiphlsQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CategoryGuidanceView
+import views.html.NiphlsQuestionView
 
 import javax.inject.Inject
 
-class CategoryGuidanceController @Inject() (
+class NiphlsQuestionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: CategoryGuidanceView
+  view: NiphlsQuestionView,
+  formProvider: NiphlsQuestionFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
 
+  private val form = formProvider()
+
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view())
+    Ok(view(form))
   }
-  // TODO replace dummy route
-  def onSubmit: Action[AnyContent]   = authorise { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
+
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+    //TODO saving session data
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        userResponse => {
+          val url = if (userResponse) {
+            //TODO change redirect to niphls number
+            routes.DummyController.onPageLoad.url
+          } else {
+            //TODO change redirect to page after niphls number in the journey
+            routes.DummyController.onPageLoad.url
+          }
+          Redirect(url)
+        }
+      )
   }
 }

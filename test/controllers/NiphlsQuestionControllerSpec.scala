@@ -21,41 +21,31 @@ import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.NirmsQuestionView
-import forms.NirmsQuestionFormProvider
+import views.html.NiphlsQuestionView
+import forms.NiphlsQuestionFormProvider
 
-import scala.concurrent.ExecutionContext
+class NiphlsQuestionControllerSpec extends SpecBase {
 
-class NirmsQuestionControllerSpec extends SpecBase {
+  private val formProvider = new NiphlsQuestionFormProvider()
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
+  private val niphlsQuestionView = app.injector.instanceOf[NiphlsQuestionView]
 
-  private val formProvider = new NirmsQuestionFormProvider()
-
-  private val nirmsQuestionView = app.injector.instanceOf[NirmsQuestionView]
-
-  private val nirmsQuestionController = new NirmsQuestionController(
+  private val niphlsQuestionController = new NiphlsQuestionController(
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
-    nirmsQuestionView,
-    formProvider,
-    sessionRequest,
-    sessionService
+    niphlsQuestionView,
+    formProvider
   )
 
-  "NirmsQuestion Controller" - {
-
-    nirmsQuestionController.onPageLoad(
-      fakeRequest
-    ) // TODO: MOCK Properly, Prepare some answers using sessionRequest and SessionService proper mocks.
+  "NiphlsQuestion Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = nirmsQuestionController.onPageLoad(fakeRequest)
+      val result = niphlsQuestionController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
 
     }
 
@@ -63,11 +53,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlsQuestionController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
 
     }
 
@@ -75,11 +65,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlsQuestionController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
 
     }
 
@@ -87,16 +77,15 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = nirmsQuestionController.onSubmit(fakeRequest)
+      val result = niphlsQuestionController.onSubmit(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
 
-      pageContent must include("nirmsQuestion.error.notSelected")
-
+      pageContent must include("niphlsQuestion.radio.notSelected")
     }
   }
 }

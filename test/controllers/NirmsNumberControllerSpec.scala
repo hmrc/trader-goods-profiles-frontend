@@ -60,8 +60,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       val result = nirmsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
-      //TO DO : Redirect needs to be changed to actual page when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
 
     }
 
@@ -72,8 +72,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       val result = nirmsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
-      //TO DO : Redirect needs to be changed to actual page when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
 
     }
 
@@ -84,8 +84,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       val result = nirmsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
-      //TO DO : Redirect needs to be changed to actual page when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
 
     }
 

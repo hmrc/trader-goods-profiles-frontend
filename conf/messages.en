@@ -70,16 +70,21 @@ profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to 
 profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about {0}.
 profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
+niphlsQuestion.title = Northern Ireland plant health label (NIPHL)
+niphlsQuestion.h1 = Northern Ireland plant health label (NIPHL)
+niphlsQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
+niphlsQuestion.p2 = Find out more about {0}.
+niphlsQuestion.p2.linkText = moving plants from Great Britain to Northern Ireland
+niphlsQuestion.h2 = Are you NIPHL registered?
+niphlsQuestion.radio.notSelected = Select if you are NIPHL registered
+
 ukimsNumber.title = UK Internal Market Scheme number
 ukimsNumber.h1 = UK Internal Market Scheme number
-
 ukimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
 ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by your EORI number, then 14 numbers.
 ukimsNumber.heading = What is your UKIMS number?
 ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
-
-
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
 
@@ -94,7 +99,6 @@ nirmsQuestion.error.notSelected = Select if you are NIRMS registered
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
 nirmsNumber.heading = What is your NIRMS number?
 nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
-
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
 

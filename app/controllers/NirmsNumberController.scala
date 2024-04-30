@@ -63,7 +63,7 @@ class NirmsNumberController @Inject() (
 
           sessionService.updateUserAnswers(updatedUserAnswers).value.map {
             case Left(sessionError) => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-            case Right(success)     => Redirect(routes.DummyController.onPageLoad.url)
+            case Right(success)     => Redirect(routes.NiphlsQuestionController.onPageLoad.url)
           }
         }
       )

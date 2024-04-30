@@ -49,8 +49,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
     }
 
-    //TODO: Should change Dummy controller to actual when it becomes available
-    "redirect to dummy controller when submitting valid data" in {
+    "redirect to NiphlsQuestionController when submitting valid data" in {
 
       authorisedUserWithAnswers
 
@@ -60,12 +59,11 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlsQuestionController.onPageLoad.url)
 
     }
 
-    //TODO: Should change Dummy controller to actual when it becomes available
-    "redirect to dummy controller when submitting valid data without hyphens" in {
+    "redirect to NiphlsQuestionController when submitting valid data without hyphens" in {
 
       authorisedUserWithAnswers
 
@@ -75,7 +73,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlsQuestionController.onPageLoad.url)
 
     }
 
