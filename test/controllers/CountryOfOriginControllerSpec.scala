@@ -51,9 +51,9 @@ class CountryOfOriginControllerSpec extends SpecBase {
 
     }
 
-    "must redirect on Submit when user enters correct country code number" in {
+    "must redirect on submit when user enters correct country code" in {
 
-      val validCountryCode = "XI47699357400020231115081800"
+      val validCountryCode = "GB"
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validCountryCode)
 
@@ -65,7 +65,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
 
     }
 
-    "must send bad request on Submit when user leave the field blank" in {
+    "must bad request on submit when user leave the field blank" in {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
@@ -77,13 +77,13 @@ class CountryOfOriginControllerSpec extends SpecBase {
 
     }
 
-    "must send bad request on Submit when user enters invalid ukims number" in {
+    "must bad request on submit when user enters an invalid country code" in {
 
-      val invalidUkimsNumber = "XIAA476993574000202311"
+      val invalidCountryCode = "1B£3"
 
-      val formWithErrors = formProvider().bind(Map(fieldName -> invalidUkimsNumber))
+      val formWithErrors = formProvider().bind(Map(fieldName -> invalidCountryCode))
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> invalidCountryCode)
 
       val result = countryOfOriginController.onSubmit(fakeRequestWithData)
 
