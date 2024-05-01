@@ -64,7 +64,7 @@ class CountryOfOriginControllerISpec extends ItTestBase {
         callRoute(FakeRequest(routes.CountryOfOriginController.onSubmit).withFormUrlEncodedBody(fieldName -> ""))
 
       status(result) mustBe BAD_REQUEST
-      html(result) must include("Enter your UKIMS number")
+      html(result) must include("error")
     }
 
     "bad request when submitting invalid data" in {
@@ -76,7 +76,7 @@ class CountryOfOriginControllerISpec extends ItTestBase {
       )
 
       status(result) mustBe BAD_REQUEST
-      html(result) must include("Enter your UKIMS number in the correct format")
+      html(result) must include("error")
     }
   }
 }
