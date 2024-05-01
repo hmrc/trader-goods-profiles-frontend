@@ -72,7 +72,7 @@ class AuthActionSpec extends SpecBase {
 
         val authAction =
           new AuthoriseActionImpl(new FakeFailingAuthConnector(new BearerTokenExpired), frontendAppConfig, mockParsers)
-        val result = await(authAction.invokeBlock(fakeRequest, block))
+        val result     = await(authAction.invokeBlock(fakeRequest, block))
 
         result.header.status mustBe SEE_OTHER
         result.header.headers(LOCATION) must startWith(loginUrl)
@@ -89,7 +89,7 @@ class AuthActionSpec extends SpecBase {
             frontendAppConfig,
             mockParsers
           )
-        val result = await(authAction.invokeBlock(fakeRequest, block))
+        val result     = await(authAction.invokeBlock(fakeRequest, block))
 
         result.header.status mustBe SEE_OTHER
         result.header.headers(LOCATION) mustBe routes.UnauthorisedController.onPageLoad.url

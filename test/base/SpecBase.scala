@@ -17,7 +17,7 @@
 package base
 
 import models.UserAnswers
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
@@ -35,7 +35,6 @@ trait SpecBase
     with TryValues
     with OptionValues
     with ScalaFutures
-    with IntegrationPatience
     with GuiceOneAppPerSuite {
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global

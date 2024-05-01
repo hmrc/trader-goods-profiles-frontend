@@ -32,8 +32,8 @@ import scala.concurrent.Future
 class AuthControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private val frontendAppConfig = mock[FrontendAppConfig]
-  private val signOutUrl = "signOutUrl"
-  private val exitSurvey = "exitSurvey"
+  private val signOutUrl        = "signOutUrl"
+  private val exitSurvey        = "exitSurvey"
 
   when(frontendAppConfig.signOutUrl) thenReturn signOutUrl
   when(frontendAppConfig.exitSurveyUrl) thenReturn exitSurvey
