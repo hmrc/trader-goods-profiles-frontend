@@ -41,7 +41,7 @@ class NiphlQuestionController @Inject() (
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalHasNiphl = request.userAnswers.traderGoodsProfile.flatMap(_.hasNiphl)
+    val optionalHasNiphl = request.userAnswers.traderGoodsProfile.hasNiphl
 
     optionalHasNiphl match {
       case Some(hasNiphlAnswer) => Ok(view(form.fill(hasNiphlAnswer)))
@@ -55,10 +55,8 @@ class NiphlQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         hasNiphlAnswer => {
-          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile
-            .map(_.copy(hasNiphl = Some(hasNiphlAnswer)))
-
-          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile.copy(hasNiphl = Some(hasNiphlAnswer))
+          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

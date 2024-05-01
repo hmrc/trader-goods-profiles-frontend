@@ -42,7 +42,7 @@ class UkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.flatMap(_.ukimsNumber)
+    val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.ukimsNumber
 
     optionalUkimsNumber match {
       case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value)))
@@ -56,10 +56,9 @@ class UkimsNumberController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         ukimsNumber => {
-          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile
-            .map(_.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber))))
-
-          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedTgpModelObject =
+            request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
+          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

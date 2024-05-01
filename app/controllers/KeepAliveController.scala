@@ -33,8 +33,8 @@ class KeepAliveController @Inject() (
     extends FrontendBaseController {
 
   def keepAlive: Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    request.userAnswers.traderGoodsProfile
-      .map { traderGoodsProfile =>
+    request.userAnswers.traderGoodsProfile.ukimsNumber
+      .map { ukims =>
         sessionRepository.keepAlive(request.userAnswers.id).map(_ => Ok)
       }
       .getOrElse(Future.successful(Ok))

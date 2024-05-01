@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{TraderGoodsProfile, UserAnswers}
+import models.{TraderGoodsProfile, UkimsNumber, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -39,7 +39,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
         when(mockSessionRepository.keepAlive(any())) thenReturn Future.successful(true)
 
-        val userAnswers = UserAnswers("idWithAnswers", Some(TraderGoodsProfile()))
+        val userAnswers = UserAnswers("idWithAnswers", TraderGoodsProfile(ukimsNumber = Some(UkimsNumber("testUkims"))))
         val application =
           applicationBuilder(userAnswers)
             .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
