@@ -17,59 +17,62 @@
 package controllers.helpers
 
 import controllers.routes
-import models.requests.DataRequest
-import play.api.mvc.AnyContent
+import models.TraderGoodsProfile
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
 class CheckYourAnswersHelper {
 
-  def createSummaryListRow(href: String, key: String, value: String): SummaryListRow = SummaryListRow(
+  private def createSummaryListRow(href: String, key: String, value: String): SummaryListRow = SummaryListRow(
     key = Key(HtmlContent(key)),
     value = Value(HtmlContent(value)),
     actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent("Change")))))
   )
 
-  def createOptionalSummaryListRow(href: String, key: String, value: Option[Any]): Option[SummaryListRow] =
+  private def createOptionalSummaryListRow(href: String, key: String, value: Option[Any]): Option[SummaryListRow] =
     if (value.isEmpty) {
       None
     } else {
       Some(createSummaryListRow(href, key, value.get.toString))
     }
 
-  def createOptionalYesNoSummaryListRow(href: String, key: String, value: Option[Boolean]): Option[SummaryListRow] =
+  private def createOptionalYesNoSummaryListRow(
+    href: String,
+    key: String,
+    value: Option[Boolean]
+  ): Option[SummaryListRow] =
     if (value.isEmpty) {
       None
     } else {
       Some(createSummaryListRow(href, key, if (value.get) "Yes" else "No"))
     }
 
-  def createSummaryList(request: DataRequest[AnyContent]): List[SummaryListRow] =
+  def createSummaryList(traderGoodsProfile: Option[TraderGoodsProfile]): List[SummaryListRow] =
     List(
       createOptionalSummaryListRow(
         routes.UkimsNumberController.onPageLoad.url,
         "UKIMS number",
-        request.userAnswers.traderGoodsProfile.flatMap(_.ukimsNumber)
+        traderGoodsProfile.flatMap(_.ukimsNumber)
       ),
       createOptionalYesNoSummaryListRow(
         routes.NirmsQuestionController.onPageLoad.url,
         "NIRMS registered",
-        request.userAnswers.traderGoodsProfile.flatMap(_.hasNirms)
+        traderGoodsProfile.flatMap(_.hasNirms)
       ),
       createOptionalSummaryListRow(
         routes.NirmsNumberController.onPageLoad.url,
         "NIRMS number",
-        request.userAnswers.traderGoodsProfile.flatMap(_.nirmsNumber)
+        traderGoodsProfile.flatMap(_.nirmsNumber)
       ),
       createOptionalYesNoSummaryListRow(
         routes.NiphlQuestionController.onPageLoad.url,
         "NIPHL registered",
-        request.userAnswers.traderGoodsProfile.flatMap(_.hasNiphl)
+        traderGoodsProfile.flatMap(_.hasNiphl)
       ),
       createOptionalSummaryListRow(
         routes.NiphlNumberController.onPageLoad.url,
         "NIPHL number",
-        request.userAnswers.traderGoodsProfile.flatMap(_.niphlNumber)
+        traderGoodsProfile.flatMap(_.niphlNumber)
       )
     ).flatten
 }
