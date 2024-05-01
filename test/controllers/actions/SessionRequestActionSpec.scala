@@ -46,7 +46,7 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
     val authRequest         = AuthorisedRequest(FakeRequest(), internalId, eori)
     val sessionService      = mock[SessionService]
     val repositoryThrowable = new Throwable("There was an error with sessionRepository")
-    val userAnswers         = UserAnswers(internalId.value, Some(TraderGoodsProfile()))
+    val userAnswers         = UserAnswers(internalId.value, TraderGoodsProfile())
 
     "when it is a new user" - {
 

@@ -23,7 +23,7 @@ import java.time.Instant
 
 final case class UserAnswers(
   id: String,
-  traderGoodsProfile: Option[TraderGoodsProfile] = None,
+  traderGoodsProfile: TraderGoodsProfile = TraderGoodsProfile(),
   lastUpdated: Instant = Instant.now
 )
 
@@ -35,24 +35,21 @@ object UserAnswers {
 
     (
       (__ \ "_id").read[String] and
-        (__ \ "traderGoodsProfile").readNullable[TraderGoodsProfile] and
+        (__ \ "traderGoodsProfile").read[TraderGoodsProfile] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
     )(UserAnswers.apply _)
   }
 
-  val writes: OWrites[UserAnswers] = {
+  private val writes: OWrites[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "_id").write[String] and
-        (__ \ "traderGoodsProfile").writeNullable[TraderGoodsProfile] and
+        (__ \ "traderGoodsProfile").write[TraderGoodsProfile] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
     )(unlift(UserAnswers.unapply))
   }
-
-//  val writes: OWrites[UserAnswers] = Json.writes[UserAnswers]
-//  val reads: Reads[UserAnswers]    = Json.reads[UserAnswers]
 
   implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)
 }
