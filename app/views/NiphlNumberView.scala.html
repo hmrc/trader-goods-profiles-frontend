@@ -18,41 +18,40 @@
 @import viewmodels.InputWidth.Fixed10
 
 @this(
-layout: templates.Layout,
-formHelper: FormWithCSRF,
-heading1: components.Heading1,
-heading2: components.Heading2,
-paragraph: components.Paragraph,
-unorderedList: components.UnorderedList,
-govukInput: GovukInput,
-govukButton: GovukButton
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    heading1: components.Heading1,
+    heading2: components.Heading2,
+    paragraph: components.Paragraph,
+    unorderedList: components.UnorderedList,
+    govukInput: GovukInput,
+    govukButton: GovukButton
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = titleNoForm(messages("niphlNumber.title")),
-showBackLink = true,
-backLinkUrl = controllers.routes.NiphlQuestionController.onPageLoad.url
+    pageTitle = titleNoForm(messages("niphlNumber.title")),
+    showBackLink = true,
+    backLinkUrl = controllers.routes.NiphlQuestionController.onPageLoad.url
 ) {
-@heading1(messages("niphlNumber.h1"))
-@paragraph(Html(messages("niphlNumber.p1")))
+    @heading1(messages("niphlNumber.h1"))
+    @paragraph(Html(messages("niphlNumber.p1")))
 
-@unorderedList(Seq(messages("niphlNumber.li1"), messages("niphlNumber.li2"), messages("niphlNumber.li3")))
-@heading2(messages("niphlNumber.h2"))
+    @unorderedList(Seq(messages("niphlNumber.li1"), messages("niphlNumber.li2"), messages("niphlNumber.li3")))
+    @heading2(messages("niphlNumber.h2"))
 
-@formHelper(action = NiphlNumberController.onSubmit) {niphls
+    @formHelper(action = NiphlNumberController.onSubmit) {
+        @govukInput(InputViewModel(
+            field = form("value"),
+            label = Label(content = "niphlNumber.h1", classes = "govuk-visually-hidden")
+        ).withHint(Hint(content = Text(messages("niphlNumber.hint"))))
+        .withWidth(Fixed10)
+        )
 
-@govukInput(InputViewModel(
-field = form("value"),
-label = Label(content = "niphlNumber.h1", classes = "govuk-visually-hidden")
-).withHint(Hint(content = Text(messages("niphlNumber.hint"))))
-.withWidth(Fixed10)
-)
-
-@govukButton(
-ButtonViewModel(messages("site.continue"))
-)
-}
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 
 }
