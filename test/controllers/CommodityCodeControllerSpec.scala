@@ -91,6 +91,8 @@ class CommodityCodeControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, stubMessages()).toString
 
+      contentAsString(result) must include("commodityCode.error.invalidFormat")
+
     }
 
     "must send bad request on Submit when user enters invalid commodity code format" in {
@@ -106,6 +108,8 @@ class CommodityCodeControllerSpec extends SpecBase {
       status(result) mustEqual BAD_REQUEST
 
       contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, stubMessages()).toString
+
+      contentAsString(result) must include("commodityCode.error.invalidFormat")
 
     }
   }
