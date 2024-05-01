@@ -29,6 +29,7 @@ class CountryOfOriginFormProvider @Inject() extends Mappings {
     Form(
       "countryOfOrigin" -> text("countryOfOrigin.error.required")
         .transform(removeWhitespace, identity[String])
+        .verifying("countryOfOrigin.error.lettersOnly", _.forall(_.isLetter))
         .verifying("countryOfOrigin.error.length", _.length == 2)
     )
 }
