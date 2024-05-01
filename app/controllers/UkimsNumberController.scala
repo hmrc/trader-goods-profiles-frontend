@@ -17,9 +17,11 @@
 package controllers
 
 import controllers.actions._
+import controllers.helpers.CheckYourAnswersHelper
 import forms.UkimsNumberFormProvider
 import models.UkimsNumber
 import play.api.i18n.I18nSupport
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -64,7 +66,15 @@ class UkimsNumberController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+              success =>
+                if (
+                  updatedUserAnswers.traderGoodsProfile.hasNirms.isDefined
+                  && updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined
+                ) {
+                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+                } else {
+                  Redirect(routes.NirmsQuestionController.onPageLoad.url)
+                }
             )
         }
       )

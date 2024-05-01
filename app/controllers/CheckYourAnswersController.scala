@@ -42,4 +42,9 @@ class CheckYourAnswersController @Inject() (
     Ok(view(list))
   }
 
+  // TODO replace dummy route and post session data
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+    Redirect(routes.DummyController.onPageLoad.url)
+  }
+
 }

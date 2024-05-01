@@ -17,7 +17,9 @@
 package controllers.helpers
 
 import controllers.routes
-import models.{TraderGoodsProfile, UkimsNumber}
+import models.TraderGoodsProfile
+import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
@@ -47,7 +49,25 @@ class CheckYourAnswersHelper {
       Some(createSummaryListRow(href, key, if (value.get) "Yes" else "No"))
     }
 
-  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] =
+  def redirectToCheckYourAnswersIfNeeded(traderGoodsProfile: TraderGoodsProfile, alternativeHref: String): Result = if (
+    traderGoodsProfile.ukimsNumber.isDefined
+    && traderGoodsProfile.hasNirms.isDefined
+    && traderGoodsProfile.hasNiphl.isDefined
+  ) {
+    Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+  } else {
+    Redirect(alternativeHref)
+  }
+  def getAppropriateUrl(traderGoodsProfile: TraderGoodsProfile, alternativeHref: String): String                  = if (
+    traderGoodsProfile.ukimsNumber.isDefined
+    && traderGoodsProfile.hasNirms.isDefined
+    && traderGoodsProfile.hasNiphl.isDefined
+  ) {
+    routes.CheckYourAnswersController.onPageLoad.url
+  } else {
+    alternativeHref
+  }
+  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow]                             =
     List(
       createOptionalSummaryListRow(
         routes.UkimsNumberController.onPageLoad.url,

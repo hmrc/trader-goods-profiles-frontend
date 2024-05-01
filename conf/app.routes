@@ -42,6 +42,8 @@ GET         /there-is-a-problem                          controllers.JourneyReco
 
 GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
 
+POST         /check-your-answers                          controllers.CheckYourAnswersController.onSubmit
+
 GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
 
 GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey

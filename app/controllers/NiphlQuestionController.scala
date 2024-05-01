@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
+import controllers.helpers.CheckYourAnswersHelper
 import forms.NiphlQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -55,7 +56,9 @@ class NiphlQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         hasNiphlAnswer => {
-          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile.copy(hasNiphl = Some(hasNiphlAnswer))
+          val niphlNumber           = if (hasNiphlAnswer) request.userAnswers.traderGoodsProfile.niphlNumber else None
+          val updatedTgpModelObject =
+            request.userAnswers.traderGoodsProfile.copy(hasNiphl = Some(hasNiphlAnswer), niphlNumber = niphlNumber)
           val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
           sessionService
@@ -63,7 +66,7 @@ class NiphlQuestionController @Inject() (
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
               success =>
-                if (hasNiphlAnswer) {
+                if (hasNiphlAnswer && niphlNumber.isEmpty) {
                   Redirect(routes.NiphlNumberController.onPageLoad.url)
                 } else {
                   Redirect(routes.CheckYourAnswersController.onPageLoad.url)

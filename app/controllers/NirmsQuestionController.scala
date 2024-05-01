@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
+import controllers.helpers.CheckYourAnswersHelper
 import forms.NirmsQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -55,7 +56,9 @@ class NirmsQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         hasNirmsAnswer => {
-          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile.copy(hasNirms = Some(hasNirmsAnswer))
+          val nirmsNumber           = if (hasNirmsAnswer) request.userAnswers.traderGoodsProfile.nirmsNumber else None
+          val updatedTgpModelObject =
+            request.userAnswers.traderGoodsProfile.copy(hasNirms = Some(hasNirmsAnswer), nirmsNumber = nirmsNumber)
 
           val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
@@ -64,8 +67,13 @@ class NirmsQuestionController @Inject() (
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
               success =>
-                if (hasNirmsAnswer) {
+                if (hasNirmsAnswer && nirmsNumber.isEmpty) {
                   Redirect(routes.NirmsNumberController.onPageLoad.url)
+                } else if (
+                  updatedUserAnswers.traderGoodsProfile.ukimsNumber.isDefined
+                  && updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined
+                ) {
+                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
                 } else {
                   Redirect(routes.NiphlQuestionController.onPageLoad.url)
                 }

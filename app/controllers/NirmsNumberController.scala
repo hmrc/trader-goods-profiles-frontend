@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions._
+import controllers.helpers.CheckYourAnswersHelper
 import forms.NirmsNumberFormProvider
 import models.NirmsNumber
 import play.api.i18n.I18nSupport
@@ -63,7 +64,15 @@ class NirmsNumberController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.NiphlQuestionController.onPageLoad.url)
+              success =>
+                if (
+                  updatedUserAnswers.traderGoodsProfile.ukimsNumber.isDefined
+                  && updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined
+                ) {
+                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+                } else {
+                  Redirect(routes.NiphlQuestionController.onPageLoad.url)
+                }
             )
         }
       )
