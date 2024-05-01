@@ -30,23 +30,17 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
 
     "createSummaryList" - {
 
-      "must return empty summary list when no trader goods profile" in {
-        val traderGoodsProfile: Option[TraderGoodsProfile] = None
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
-        summaryList mustBe Seq.empty
-      }
-
       "must return empty summary list when blank trader goods profile" in {
-        val traderGoodsProfile: Option[TraderGoodsProfile] = Some(TraderGoodsProfile())
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        val traderGoodsProfile: TraderGoodsProfile = TraderGoodsProfile()
+        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
         summaryList mustBe Seq.empty
       }
 
       "must return full summary list when trader goods profile has all fields" in {
-        val expected                                       = List(
+        val expected                               = List(
           SummaryListRow(
             Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent(UkimsNumber("11"))),
+            Value(HtmlContent("11")),
             "",
             Some(
               Actions(
@@ -68,7 +62,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
           ),
           SummaryListRow(
             Key(HtmlContent("NIRMS number"), ""),
-            Value(HtmlContent(NirmsNumber("22")), ""),
+            Value(HtmlContent("22"), ""),
             "",
             Some(
               Actions(
@@ -90,7 +84,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
           ),
           SummaryListRow(
             Key(HtmlContent("NIPHL number"), ""),
-            Value(HtmlContent(NiphlNumber("33")), ""),
+            Value(HtmlContent("33"), ""),
             "",
             Some(
               Actions(
@@ -100,7 +94,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             )
           )
         )
-        val traderGoodsProfile: Option[TraderGoodsProfile] = Some(
+        val traderGoodsProfile: TraderGoodsProfile =
           TraderGoodsProfile(
             Some(UkimsNumber("11")),
             Some(true),
@@ -108,10 +102,175 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(true),
             Some(NiphlNumber("33"))
           )
-        )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
-        summaryList mustBe Seq.empty
+        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        summaryList mustBe expected
       }
+
+      "must return valid summary list when trader goods profile has no for NIPHL" in {
+        val expected                               = List(
+          SummaryListRow(
+            Key(HtmlContent("UKIMS number")),
+            Value(HtmlContent("11")),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/ukims-number", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIRMS registered"), ""),
+            Value(HtmlContent("Yes"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/nirms-question", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIRMS number"), ""),
+            Value(HtmlContent("22"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/nirms-number", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIPHL registered"), ""),
+            Value(HtmlContent("No"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/niphl-question", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          )
+        )
+        val traderGoodsProfile: TraderGoodsProfile =
+          TraderGoodsProfile(
+            Some(UkimsNumber("11")),
+            Some(true),
+            Some(NirmsNumber("22")),
+            Some(false)
+          )
+        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        summaryList mustBe expected
+      }
+
+      "must return valid summary list when trader goods profile has no for NIRMS" in {
+        val expected                               = List(
+          SummaryListRow(
+            Key(HtmlContent("UKIMS number")),
+            Value(HtmlContent("11")),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/ukims-number", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIRMS registered"), ""),
+            Value(HtmlContent("No"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/nirms-question", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIPHL registered"), ""),
+            Value(HtmlContent("Yes"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/niphl-question", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIPHL number"), ""),
+            Value(HtmlContent("33"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/niphl-number", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          )
+        )
+        val traderGoodsProfile: TraderGoodsProfile =
+          TraderGoodsProfile(
+            Some(UkimsNumber("11")),
+            Some(false),
+            nirmsNumber = None,
+            Some(true),
+            Some(NiphlNumber("33"))
+          )
+        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        summaryList mustBe expected
+      }
+
+      "must return valid summary list when trader goods profile has 2 nos" in {
+        val expected                               = List(
+          SummaryListRow(
+            Key(HtmlContent("UKIMS number")),
+            Value(HtmlContent("11")),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/ukims-number", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIRMS registered"), ""),
+            Value(HtmlContent("No"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/nirms-question", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          ),
+          SummaryListRow(
+            Key(HtmlContent("NIPHL registered"), ""),
+            Value(HtmlContent("No"), ""),
+            "",
+            Some(
+              Actions(
+                "",
+                List(ActionItem("/trader-goods-profiles/niphl-question", HtmlContent("Change"), None, "", Map()))
+              )
+            )
+          )
+        )
+        val traderGoodsProfile: TraderGoodsProfile =
+          TraderGoodsProfile(
+            Some(UkimsNumber("11")),
+            Some(false),
+            nirmsNumber = None,
+            Some(false),
+            niphlNumber = None
+          )
+        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        summaryList mustBe expected
+      }
+
     }
   }
 }

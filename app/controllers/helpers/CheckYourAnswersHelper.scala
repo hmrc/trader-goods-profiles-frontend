@@ -17,7 +17,7 @@
 package controllers.helpers
 
 import controllers.routes
-import models.TraderGoodsProfile
+import models.{TraderGoodsProfile, UkimsNumber}
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
@@ -29,11 +29,11 @@ class CheckYourAnswersHelper {
     actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent("Change")))))
   )
 
-  private def createOptionalSummaryListRow(href: String, key: String, value: Option[Any]): Option[SummaryListRow] =
+  private def createOptionalSummaryListRow(href: String, key: String, value: Option[String]): Option[SummaryListRow] =
     if (value.isEmpty) {
       None
     } else {
-      Some(createSummaryListRow(href, key, value.get.toString))
+      Some(createSummaryListRow(href, key, value.get))
     }
 
   private def createOptionalYesNoSummaryListRow(
@@ -47,32 +47,41 @@ class CheckYourAnswersHelper {
       Some(createSummaryListRow(href, key, if (value.get) "Yes" else "No"))
     }
 
-  def createSummaryList(traderGoodsProfile: Option[TraderGoodsProfile]): List[SummaryListRow] =
+  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] =
     List(
       createOptionalSummaryListRow(
         routes.UkimsNumberController.onPageLoad.url,
         "UKIMS number",
-        traderGoodsProfile.flatMap(_.ukimsNumber)
+        traderGoodsProfile.ukimsNumber match {
+          case Some(x) => Some(x.value)
+          case None    => None
+        }
       ),
       createOptionalYesNoSummaryListRow(
         routes.NirmsQuestionController.onPageLoad.url,
         "NIRMS registered",
-        traderGoodsProfile.flatMap(_.hasNirms)
+        traderGoodsProfile.hasNirms
       ),
       createOptionalSummaryListRow(
         routes.NirmsNumberController.onPageLoad.url,
         "NIRMS number",
-        traderGoodsProfile.flatMap(_.nirmsNumber)
+        traderGoodsProfile.nirmsNumber match {
+          case Some(x) => Some(x.value)
+          case None    => None
+        }
       ),
       createOptionalYesNoSummaryListRow(
         routes.NiphlQuestionController.onPageLoad.url,
         "NIPHL registered",
-        traderGoodsProfile.flatMap(_.hasNiphl)
+        traderGoodsProfile.hasNiphl
       ),
       createOptionalSummaryListRow(
         routes.NiphlNumberController.onPageLoad.url,
         "NIPHL number",
-        traderGoodsProfile.flatMap(_.niphlNumber)
+        traderGoodsProfile.niphlNumber match {
+          case Some(x) => Some(x.value)
+          case None    => None
+        }
       )
     ).flatten
 }
