@@ -57,7 +57,8 @@ class NirmsNumberController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         nirmsNumber => {
           val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(nirmsNumber = Some(NirmsNumber(nirmsNumber)))
+            request.userAnswers.traderGoodsProfile
+              .copy(hasNirms = Some(true), nirmsNumber = Some(NirmsNumber(nirmsNumber)))
           val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
           sessionService

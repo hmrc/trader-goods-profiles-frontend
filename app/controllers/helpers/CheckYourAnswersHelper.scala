@@ -49,25 +49,7 @@ class CheckYourAnswersHelper {
       Some(createSummaryListRow(href, key, if (value.get) "Yes" else "No"))
     }
 
-  def redirectToCheckYourAnswersIfNeeded(traderGoodsProfile: TraderGoodsProfile, alternativeHref: String): Result = if (
-    traderGoodsProfile.ukimsNumber.isDefined
-    && traderGoodsProfile.hasNirms.isDefined
-    && traderGoodsProfile.hasNiphl.isDefined
-  ) {
-    Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-  } else {
-    Redirect(alternativeHref)
-  }
-  def getAppropriateUrl(traderGoodsProfile: TraderGoodsProfile, alternativeHref: String): String                  = if (
-    traderGoodsProfile.ukimsNumber.isDefined
-    && traderGoodsProfile.hasNirms.isDefined
-    && traderGoodsProfile.hasNiphl.isDefined
-  ) {
-    routes.CheckYourAnswersController.onPageLoad.url
-  } else {
-    alternativeHref
-  }
-  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow]                             =
+  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] =
     List(
       createOptionalSummaryListRow(
         routes.UkimsNumberController.onPageLoad.url,

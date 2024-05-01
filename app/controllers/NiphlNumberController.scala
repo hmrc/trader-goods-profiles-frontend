@@ -58,7 +58,8 @@ class NiphlNumberController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         niphlNumber => {
           val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(niphlNumber = Some(NiphlNumber(niphlNumber)))
+            request.userAnswers.traderGoodsProfile
+              .copy(hasNiphl = Some(true), niphlNumber = Some(NiphlNumber(niphlNumber)))
           val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
           sessionService
