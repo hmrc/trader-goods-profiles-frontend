@@ -38,7 +38,7 @@
 ) {
 
     @if(form.errors.nonEmpty) {
-    @govukErrorSummary(ErrorSummaryViewModel(form))
+        @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
     @heading1(messages("niphlNumber.h1"))
