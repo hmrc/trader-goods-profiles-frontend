@@ -60,7 +60,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
 
     }
 
-    "redirects to dummy controller when submitting valid data with no" in {
+    "redirects to CheckYoursAnswersController when submitting valid data with no" in {
       authorisedUserWithAnswers
 
       val result = callRoute(
@@ -69,7 +69,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 

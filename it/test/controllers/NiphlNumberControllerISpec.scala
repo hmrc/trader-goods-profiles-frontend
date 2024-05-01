@@ -54,8 +54,7 @@ class NiphlNumberControllerISpec extends ItTestBase {
 
     }
 
-    //TODO: Should change Dummy controller to actual when it becomes available
-    "redirect to dummy controller when submitting valid data" in {
+    "redirect to CheckYourAnswersController controller when submitting valid data" in {
 
       authorisedUserWithAnswers
 
@@ -65,7 +64,7 @@ class NiphlNumberControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 

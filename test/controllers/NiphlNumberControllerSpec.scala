@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext
 
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val formProvider = new NiphlNumberFormProvider()
 
@@ -66,8 +66,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
         status(result) mustEqual SEE_OTHER
 
-        //TODO point to real next page
-        redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
       }
 
       "with 2 letters and 5 numbers" in {

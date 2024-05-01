@@ -68,7 +68,7 @@ class NiphlQuestionController @Inject() (
                 if (hasNiphlAnswer) {
                   Redirect(routes.NiphlNumberController.onPageLoad.url)
                 } else {
-                  Redirect(routes.DummyController.onPageLoad.url)
+                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
                 }
             )
         }

@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val formProvider = new NiphlQuestionFormProvider()
 
@@ -75,7 +75,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 

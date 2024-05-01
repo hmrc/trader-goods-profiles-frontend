@@ -19,7 +19,6 @@ package base
 import cats.data.EitherT
 import controllers.actions._
 import models.errors.SessionError
-import models.requests.{AuthorisedRequest, DataRequest}
 import models.{InternalId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -34,7 +33,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.mvc.{ActionRefiner, AnyContentAsEmpty, PlayBodyParsers}
+import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 import services.SessionService
 
 import scala.concurrent.Future
@@ -60,7 +59,7 @@ trait SpecBase
 
   val sessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
 
-  val sessionService = mock[SessionService]
+  val sessionService: SessionService = mock[SessionService]
 
   when(sessionService.readUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
     Future.successful(Right(None))

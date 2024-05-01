@@ -65,7 +65,7 @@ class NiphlNumberController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.DummyController.onPageLoad.url)
+              success => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
             )
         }
       )
