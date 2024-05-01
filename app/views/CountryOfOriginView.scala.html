@@ -40,8 +40,8 @@
     @paragraph(Html(messages("countryOfOrigin.p1")))
 
     @unorderedList(Seq(
-        messages("countryOfOrigin.ul.item1")),
-        messages("countryOfOrigin.ul.item2"))
+        messages("countryOfOrigin.ul.item1"),
+        messages("countryOfOrigin.ul.item2")
     ))
 
     @formHelper(action = routes.CountryOfOriginController.onSubmit, Symbol("autoComplete") -> "off") {
@@ -54,11 +54,11 @@
             InputViewModel(
                     field = form("countryOfOrigin"),
                     label = LabelViewModel(messages("countryOfOrigin.inputHeading")).withSize(Medium)
-            ).withHint(Hint(content = Text(messages("countryOfOrigin.hint"))))
+            ).withHint(Hint(content = Text(messages("countryOfOrigin.hint"))).visuallyHidden)
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.saveAndContinue"))
         )
     }
 
