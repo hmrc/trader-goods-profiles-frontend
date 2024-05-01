@@ -39,13 +39,14 @@ class CountryOfOriginController @Inject()(
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data???
+    // TODO saving session data
+    // TODO redirect to correct page
 
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+        _ => Redirect(routes.DummyController.onPageLoad.url)
       )
   }
 }
