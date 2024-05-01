@@ -104,6 +104,7 @@ countryOfOrigin.h1 = What is the country of origin of the goods?
 countryOfOrigin.p1 = The origin of the goods:
 countryOfOrigin.ul.item1 = is where they have been grown, produced, or manufactured
 countryOfOrigin.ul.item2 = may not be the country where they are shipped or bought from
+countryOfOrigin.inputHeading = Pick a country
 countryOfOrigin.error.required = TODO errpr
 countryOfOrigin.error.length = TODO error
 countryOfOrigin.error.lettersOnly = TODO error
