@@ -23,21 +23,23 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
+import controllers.helpers.CheckYourAnswersHelper
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthoriseAction,
   getData: SessionRequestAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView
+  view: CheckYourAnswersView,
+  checkYourAnswersHelper: CheckYourAnswersHelper
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
     val list = SummaryListViewModel(
-      rows = Seq.empty
+      rows = checkYourAnswersHelper.createSummaryList(request)
     )
-
     Ok(view(list))
   }
+
 }
