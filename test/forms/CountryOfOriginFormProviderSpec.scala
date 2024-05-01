@@ -22,18 +22,18 @@ import play.api.data.{Form, FormError}
 
 class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
-  private val formProvider       = new CountryOfOriginFormProvider()
-  private val form: Form[String] = formProvider()
-  private val requiredErrorKey        = "countryOfOrigin.error.required"
-  private val lettersOnlyErrorKey   = "countryOfOrigin.error.lettersOnly"
-  private val lengthErrorKey   = "countryOfOrigin.error.length"
-  private val fieldName          = "countryOfOrigin"
+  private val formProvider        = new CountryOfOriginFormProvider()
+  private val form: Form[String]  = formProvider()
+  private val requiredErrorKey    = "countryOfOrigin.error.required"
+  private val lettersOnlyErrorKey = "countryOfOrigin.error.lettersOnly"
+  private val lengthErrorKey      = "countryOfOrigin.error.length"
+  private val fieldName           = "countryOfOrigin"
 
   ".countryOfOrigin" - {
 
     "valid country code" - {
       val validCountryCodeGenerator: Gen[String] = for {
-        chars <- Gen.listOfN(2, Gen.alphaChar)
+        chars     <- Gen.listOfN(2, Gen.alphaChar)
         addSpaces <- Gen.oneOf(true, false)
       } yield if (addSpaces) chars.mkString(" ") else chars.mkString
 
@@ -45,7 +45,7 @@ class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
       "country code with invalid length" - {
         val invalidLengthCountryCodeGenerator: Gen[String] = for {
-          chars <- Gen.listOfN(3, Gen.alphaChar)
+          chars     <- Gen.listOfN(3, Gen.alphaChar)
           addSpaces <- Gen.oneOf(true, false)
         } yield if (addSpaces) chars.mkString(" ") else chars.mkString
 
@@ -59,7 +59,7 @@ class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
       "country code containing non-alphabet characters" - {
         val invalidCountryCodeWithNumbersGenerator: Gen[String] = for {
-          chars <- Gen.listOfN(2, Gen.numChar)
+          chars     <- Gen.listOfN(2, Gen.numChar)
           addSpaces <- Gen.oneOf(true, false)
         } yield if (addSpaces) chars.mkString(" ") else chars.mkString
 
