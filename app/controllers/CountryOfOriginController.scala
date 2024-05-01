@@ -25,7 +25,7 @@ import views.html.CountryOfOriginView
 
 import javax.inject.Inject
 
-class CountryOfOriginController @Inject()(
+class CountryOfOriginController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: CountryOfOriginView,
