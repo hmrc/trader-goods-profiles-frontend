@@ -31,6 +31,8 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case signedOutView: SignedOutView                                 => render(signedOutView)
     case nirmsQuestionView: NirmsQuestionView                         => render(nirmsQuestionView)
     case ukimsNumberView: UkimsNumberView                             => render(ukimsNumberView)
+    case nirmsNumberView: NirmsNumberView                             => render(nirmsNumberView)
+    case commodityCodeView: CommodityCodeView                         => render(commodityCodeView)
   }
   runAccessibilityTests()
 }

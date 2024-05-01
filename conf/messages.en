@@ -98,6 +98,20 @@ nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by G
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
 
+commodityCode.title = Commodity code
+commodityCode.h1 = Commodity code
+
+commodityCode.p1 = Commodity codes are internationally recognised reference numbers. A commodity code describes a specific product when importing or exporting goods. You will use this code on any customs declarations.
+commodityCode.p2 = You can add commodity codes to TGP in 6, 8 or 10 digits.
+commodityCode.p3 = If you are not sure what the commodity code of your goods are, you can use the {0}.
+commodityCode.p3.linkText = Northern Ireland Online Tariff Tool
+commodityCode.heading = What is the commodity code for your goods?
+commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 87654321, 9876543211
+
+
+commodityCode.error.required = Enter a commodity code
+commodityCode.error.invalidFormat = Enter a commodity code in the correct format
+
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 

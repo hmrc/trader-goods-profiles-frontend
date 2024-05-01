@@ -25,7 +25,6 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
   private val form: Form[String] = formProvider()
   private val requiredKey        = "nirmsNumber.error.required"
   private val invalidKey         = "nirmsNumber.error.invalidFormat"
-  private val rmsRegex           = "RMS-?(GB|NI)-?[0-9]{6}"
 
   val nirmsNumberGenerator: Gen[String] = {
     val regionGen = Gen.oneOf("GB", "NI")
