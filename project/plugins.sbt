@@ -23,3 +23,5 @@ addSbtPlugin("net.ground5hark.sbt" % "sbt-concat" % "0.2.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.4")
 
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+
+addSbtPlugin("uk.gov.hmrc" % "sbt-accessibility-linter" % "0.39.0")
