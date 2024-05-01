@@ -27,8 +27,8 @@ class CountryOfOriginFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "countryOfOrigin" -> text("ukimsNumber.error.required")
+      "countryOfOrigin" -> text("countryOfOrigin.error.required")
         .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
+        .verifying("countryOfOrigin.error.length", _.length == 2)
     )
 }

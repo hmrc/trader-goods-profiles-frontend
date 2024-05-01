@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions._
-import forms.UkimsNumberFormProvider
+import forms.CountryOfOriginFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -29,7 +29,7 @@ class CountryOfOriginController @Inject()(
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: UkimsNumberView,
-  formProvider: UkimsNumberFormProvider
+  formProvider: CountryOfOriginFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
