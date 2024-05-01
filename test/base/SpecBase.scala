@@ -57,9 +57,7 @@ trait SpecBase
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
-  //TODO delete this
-  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
-
+  //TODO hmm think about this
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
