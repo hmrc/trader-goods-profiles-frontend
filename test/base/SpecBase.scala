@@ -58,11 +58,11 @@ trait SpecBase
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   //TODO hmm think about this
-  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
-    new GuiceApplicationBuilder()
-      .overrides(
-        bind[DataRequiredAction].to[DataRequiredActionImpl],
-        bind[AuthoriseAction].to[FakeAuthoriseAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
-      )
+//  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+//    new GuiceApplicationBuilder()
+//      .overrides(
+//        bind[DataRequiredAction].to[DataRequiredActionImpl],
+//        bind[AuthoriseAction].to[FakeAuthoriseAction],
+//        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+//      )
 }

@@ -32,8 +32,11 @@ import scala.concurrent.Future
 class AuthControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private val frontendAppConfig = mock[FrontendAppConfig]
-  when(frontendAppConfig.signOutUrl) thenReturn "signOutUrl"
-  when(frontendAppConfig.exitSurveyUrl) thenReturn "exitSurvey"
+  private val signOutUrl = "signOutUrl"
+  private val exitSurvey = "exitSurvey"
+
+  when(frontendAppConfig.signOutUrl) thenReturn signOutUrl
+  when(frontendAppConfig.exitSurveyUrl) thenReturn exitSurvey
 
   private val sessionRepository = mock[SessionRepository]
 
@@ -59,8 +62,8 @@ class AuthControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterE
 
       val result = authController.signOut()(fakeRequest)
 
-      val encodedContinueUrl  = URLEncoder.encode("exitSurvey", "UTF-8")
-      val expectedRedirectUrl = s"${"signOutUrl"}?continue=$encodedContinueUrl"
+      val encodedContinueUrl  = URLEncoder.encode(exitSurvey, "UTF-8")
+      val expectedRedirectUrl = s"$signOutUrl?continue=$encodedContinueUrl"
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result).value mustEqual expectedRedirectUrl
@@ -77,7 +80,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterE
       val result = authController.signOutNoSurvey()(fakeRequest)
 
       val encodedContinueUrl  = URLEncoder.encode(routes.SignedOutController.onPageLoad.url, "UTF-8")
-      val expectedRedirectUrl = s"${"signOutUrl"}?continue=$encodedContinueUrl"
+      val expectedRedirectUrl = s"$signOutUrl?continue=$encodedContinueUrl"
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result).value mustEqual expectedRedirectUrl
