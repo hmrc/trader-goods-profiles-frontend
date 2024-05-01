@@ -61,7 +61,6 @@ class UkimsNumberController @Inject() (
           val updatedTgpModelObject =
             request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
           val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
-
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
@@ -71,6 +70,9 @@ class UkimsNumberController @Inject() (
                   updatedUserAnswers.traderGoodsProfile.hasNirms.isDefined
                   && updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined
                 ) {
+                  println(updatedUserAnswers)
+                  println(updatedUserAnswers.traderGoodsProfile.hasNirms.isDefined)
+                  println(updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined)
                   Redirect(routes.CheckYourAnswersController.onPageLoad.url)
                 } else {
                   Redirect(routes.NirmsQuestionController.onPageLoad.url)

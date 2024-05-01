@@ -16,7 +16,7 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}

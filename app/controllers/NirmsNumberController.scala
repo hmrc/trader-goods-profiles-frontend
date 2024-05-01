@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions._
-import controllers.helpers.CheckYourAnswersHelper
 import forms.NirmsNumberFormProvider
 import models.NirmsNumber
 import play.api.i18n.I18nSupport

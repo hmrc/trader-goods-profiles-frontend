@@ -16,7 +16,7 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

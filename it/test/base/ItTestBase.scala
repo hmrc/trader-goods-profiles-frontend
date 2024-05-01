@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package helpers
+package base
 
 import controllers.routes
 import org.jsoup.Jsoup
@@ -66,15 +66,14 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
   private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
   def authorisedUserWithAnswers: OngoingStubbing[Future[Option[String] ~ Enrolments]] = {
-    val mock = when(authConnector.authorise(any, eqTo(authFetch))(any, any)).thenReturn(
+    val mock             = when(authConnector.authorise(any, eqTo(authFetch))(any, any)).thenReturn(
       Future.successful(authResult)
     )
     val client: WSClient = app.injector.instanceOf[WSClient]
-    val request = client.url(s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}")
+    val request          = client.url(s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}")
     await(request.get())
     mock
   }
-
 
   def noEnrolment: OngoingStubbing[Future[Option[String] ~ Enrolments]] = {
     val authResult = Some("internalId") and Enrolments(Set.empty)

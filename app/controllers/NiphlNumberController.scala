@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
-import controllers.helpers.CheckYourAnswersHelper
 import forms.NiphlNumberFormProvider
 import models.NiphlNumber
 import play.api.i18n.I18nSupport
