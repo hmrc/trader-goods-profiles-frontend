@@ -16,45 +16,63 @@
 
 package controllers
 
-import controllers.actions.AuthoriseAction
+import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NirmsQuestionFormProvider
+import models.TraderGoodsProfile
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsQuestionView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class NirmsQuestionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: NirmsQuestionView,
-  formProvider: NirmsQuestionFormProvider
-) extends FrontendBaseController
+  formProvider: NirmsQuestionFormProvider,
+  sessionRequest: SessionRequestAction,
+  sessionService: SessionService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalHasNirms = request.userAnswers.traderGoodsProfile.hasNirms
+
+    optionalHasNirms match {
+      case Some(hasNirmsAnswer) => Ok(view(form.fill(hasNirmsAnswer)))
+      case None                 => Ok(view(form))
+    }
   }
 
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data and change redirect
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        userResponse => {
-          val url = if (userResponse) {
-            routes.NirmsNumberController.onPageLoad.url
-          } else {
-            routes.DummyController.onPageLoad.url
-          }
-          Redirect(url)
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        hasNirmsAnswer => {
+          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile.copy(hasNirms = Some(hasNirmsAnswer))
+
+          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+
+          sessionService
+            .updateUserAnswers(updatedUserAnswers)
+            .fold(
+              sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+              success =>
+                if (hasNirmsAnswer) {
+                  Redirect(routes.NirmsNumberController.onPageLoad.url)
+                } else {
+                  Redirect(routes.NiphlQuestionController.onPageLoad.url)
+                }
+            )
         }
       )
-
   }
 
 }

@@ -24,6 +24,14 @@ GET         /nirms-number                                controllers.NirmsNumber
 
 POST        /nirms-number                                controllers.NirmsNumberController.onSubmit
 
+GET         /niphl-question                             controllers.NiphlQuestionController.onPageLoad
+
+POST        /niphl-question                              controllers.NiphlQuestionController.onSubmit
+
+GET         /niphl-number                                controllers.NiphlNumberController.onPageLoad
+
+POST        /niphl-number                                controllers.NiphlNumberController.onSubmit
+
 GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad
 
 POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(saveAndReturn: Boolean)
@@ -39,7 +47,9 @@ GET         /there-is-a-problem                          controllers.JourneyReco
 GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
 
 GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
+
 GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey
+
 GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad

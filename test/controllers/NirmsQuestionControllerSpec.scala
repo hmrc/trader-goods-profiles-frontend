@@ -24,7 +24,11 @@ import play.api.test.Helpers._
 import views.html.NirmsQuestionView
 import forms.NirmsQuestionFormProvider
 
+import scala.concurrent.ExecutionContext
+
 class NirmsQuestionControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NirmsQuestionFormProvider()
 
@@ -34,10 +38,16 @@ class NirmsQuestionControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "NirmsQuestion Controller" - {
+
+    nirmsQuestionController.onPageLoad(
+      fakeRequest
+    )
 
     "must return OK and the correct view for a GET" in {
 
@@ -69,7 +79,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -82,7 +92,9 @@ class NirmsQuestionControllerSpec extends SpecBase {
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
+
       pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+
       pageContent must include("nirmsQuestion.error.notSelected")
 
     }

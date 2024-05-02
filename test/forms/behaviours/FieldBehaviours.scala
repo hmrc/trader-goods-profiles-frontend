@@ -20,7 +20,7 @@ import forms.FormSpec
 import generators.Generators
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import play.api.data.{Field, Form, FormError}
+import play.api.data.{Form, FormError}
 
 trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Generators {
 
@@ -31,6 +31,21 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
         val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
         result.value.value mustBe dataItem
         result.errors mustBe empty
+      }
+    }
+
+  def fieldThatErrorsOnInvalidData(
+    form: Form[_],
+    fieldName: String,
+    invalidDataGenerator: Gen[String],
+    invalidError: String
+  ): Unit =
+    "error on invalid data" in {
+
+      forAll(invalidDataGenerator -> "invalidDataItem") { dataItem: String =>
+        val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
+        result.errors.size mustBe 1
+        result.errors.head.message mustBe invalidError
       }
     }
 

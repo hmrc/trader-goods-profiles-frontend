@@ -16,19 +16,28 @@
 
 package base
 
+import cats.data.EitherT
 import controllers.actions._
-import models.UserAnswers
+import models.errors.SessionError
+import models.requests.{AuthorisedRequest, DataRequest}
+import models.{InternalId, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
+import play.api.mvc.{ActionRefiner, AnyContentAsEmpty, PlayBodyParsers}
+import services.SessionService
+
+import scala.concurrent.Future
 
 trait SpecBase
     extends AnyFreeSpec
@@ -49,15 +58,30 @@ trait SpecBase
 
   val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
+  val sessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
+
+  val sessionService = mock[SessionService]
+
+  when(sessionService.readUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
+    Future.successful(Right(None))
+  )
+
+  when(sessionService.createUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Unit](
+    Future.successful(Right(()))
+  )
+
+  when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+    Future.successful(Right(()))
+  )
+
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(userAnswers: UserAnswers = emptyUserAnswers): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
-        bind[DataRequiredAction].to[DataRequiredActionImpl],
         bind[AuthoriseAction].to[FakeAuthoriseAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+        bind[SessionRequestAction].toInstance(new FakeSessionRequestAction(userAnswers))
       )
 }
