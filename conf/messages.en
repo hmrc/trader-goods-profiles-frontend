@@ -102,7 +102,7 @@ nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by G
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
 
-niphlNumber.title = NIPHL reference
+niphlNumber.title = NIPHL registration number
 niphlNumber.h1 = NIPHL registration number
 niphlNumber.p1 = NIPHL registration numbers have several formats. They could be:
 niphlNumber.li1 = 4 to 6 numbers
