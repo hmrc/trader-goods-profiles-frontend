@@ -40,22 +40,16 @@ class CheckYourAnswersHelper {
     href: String,
     key: String,
     value: Option[Boolean]
-  ): Option[SummaryListRow] =
-    if (value.isEmpty) {
-      None
-    } else {
-      Some(createSummaryListRow(href, key, if (value.get) "Yes" else "No"))
-    }
+  ): Option[SummaryListRow] = value.map { booleanValue =>
+    createSummaryListRow(href, key, if (booleanValue) "Yes" else "No")
+  }
 
   def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] =
     List(
       createOptionalSummaryListRow(
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
         "UKIMS number",
-        traderGoodsProfile.ukimsNumber match {
-          case Some(x) => Some(x.value)
-          case None    => None
-        }
+        traderGoodsProfile.ukimsNumber.map(_.value)
       ),
       createOptionalYesNoSummaryListRow(
         routes.NirmsQuestionController.onPageLoad(CheckMode).url,
@@ -65,10 +59,7 @@ class CheckYourAnswersHelper {
       createOptionalSummaryListRow(
         routes.NirmsNumberController.onPageLoad(CheckMode).url,
         "NIRMS number",
-        traderGoodsProfile.nirmsNumber match {
-          case Some(x) => Some(x.value)
-          case None    => None
-        }
+        traderGoodsProfile.nirmsNumber.map(_.value)
       ),
       createOptionalYesNoSummaryListRow(
         routes.NiphlQuestionController.onPageLoad(CheckMode).url,
@@ -78,10 +69,7 @@ class CheckYourAnswersHelper {
       createOptionalSummaryListRow(
         routes.NiphlNumberController.onPageLoad(CheckMode).url,
         "NIPHL number",
-        traderGoodsProfile.niphlNumber match {
-          case Some(x) => Some(x.value)
-          case None    => None
-        }
+        traderGoodsProfile.niphlNumber.map(_.value)
       )
     ).flatten
 }
