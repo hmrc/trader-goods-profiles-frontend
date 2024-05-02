@@ -17,19 +17,19 @@
 package controllers
 
 import controllers.actions.AuthoriseAction
-import forms.NiphlQuestionFormProvider
+import forms.NiphlNumberFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.NiphlQuestionView
+import views.html.NiphlNumberView
 
 import javax.inject.Inject
 
-class NiphlQuestionController @Inject() (
+class NiphlNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: NiphlQuestionView,
-  formProvider: NiphlQuestionFormProvider
+  view: NiphlNumberView,
+  formProvider: NiphlNumberFormProvider
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -40,20 +40,12 @@ class NiphlQuestionController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data
+    //TODO saving session data and change redirect
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        userResponse => {
-          val url = if (userResponse) {
-            routes.NiphlNumberController.onPageLoad.url
-          } else {
-            //TODO change redirect to page after niphl number in the journey
-            routes.DummyController.onPageLoad.url
-          }
-          Redirect(url)
-        }
+        _ => Redirect(routes.DummyController.onPageLoad.url)
       )
   }
 }

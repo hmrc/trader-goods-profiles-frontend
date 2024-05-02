@@ -16,8 +16,4 @@
 
 package models
 
-object StringFieldRegex {
-  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
-
-  val niphlNumberRegex: String = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
-}
+case class NiphlNumber(value: String)
