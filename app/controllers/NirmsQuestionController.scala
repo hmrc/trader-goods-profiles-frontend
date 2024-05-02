@@ -40,7 +40,7 @@ class NirmsQuestionController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data and change redirect
+    //TODO saving session data
     form
       .bindFromRequest()
       .fold(
@@ -49,7 +49,7 @@ class NirmsQuestionController @Inject() (
           val url = if (userResponse) {
             routes.NirmsNumberController.onPageLoad.url
           } else {
-            routes.DummyController.onPageLoad.url
+            routes.NiphlQuestionController.onPageLoad.url
           }
           Redirect(url)
         }

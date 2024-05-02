@@ -39,12 +39,12 @@ class NirmsNumberController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO: save session data and change redirect page when it becomes available
+    //TODO: save session data
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
+        _ => Redirect(routes.NiphlQuestionController.onPageLoad.url)
       )
   }
 }
