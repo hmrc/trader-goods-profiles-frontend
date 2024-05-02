@@ -1,4 +1,3 @@
-import config.FrontendAppConfig
 import org.scalacheck.Arbitrary
 import play.api.data.Forms._
 import play.api.data.Form
@@ -31,6 +30,9 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case signedOutView: SignedOutView                                 => render(signedOutView)
     case nirmsQuestionView: NirmsQuestionView                         => render(nirmsQuestionView)
     case ukimsNumberView: UkimsNumberView                             => render(ukimsNumberView)
+    case niphlQuestionView: NiphlQuestionView                         => render(niphlQuestionView)
+    case nirmsNumberView: NirmsNumberView                             => render(nirmsNumberView)
+    case niphlNumberView: NiphlNumberView                            => render(niphlNumberView)
   }
   runAccessibilityTests()
 }
