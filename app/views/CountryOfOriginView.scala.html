@@ -23,6 +23,7 @@
     formHelper: FormWithCSRF,
     govukInput: GovukInput,
     govukButton: GovukButton,
+    saveAndReturnLaterButton: components.SaveAndReturnLaterButton,
     govukErrorSummary: GovukErrorSummary,
     link: components.Link,
     unorderedList: components.UnorderedList
@@ -44,7 +45,7 @@
         messages("countryOfOrigin.ul.item2")
     ))
 
-    @formHelper(action = routes.CountryOfOriginController.onSubmit, Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.CountryOfOriginController.onSubmit(saveAndReturn = false), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -60,6 +61,7 @@
         @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
         )
+        @saveAndReturnLaterButton(routes.CountryOfOriginController.onSubmit(saveAndReturn = true))
     }
 
 }

@@ -38,15 +38,20 @@ class CountryOfOriginController @Inject() (
     Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+  def onSubmit(saveAndReturn: Boolean): Action[AnyContent] = authorise { implicit request =>
     // TODO saving session data
     // TODO redirect to correct page
 
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
-      )
+    saveAndReturn match {
+      case true => Ok("ye")
+      case false => Ok("na")
+    }
+
+//    form
+//      .bindFromRequest()
+//      .fold(
+//        formWithErrors => BadRequest(view(formWithErrors)),
+//        _ => Redirect(routes.DummyController.onPageLoad.url)
+//      )
   }
 }
