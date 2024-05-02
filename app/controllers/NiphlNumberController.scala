@@ -16,35 +16,36 @@
 
 package controllers
 
-import controllers.actions._
-import forms.NirmsNumberFormProvider
-import models.{NirmsNumber, TraderGoodsProfile}
+import controllers.actions.{AuthoriseAction, SessionRequestAction}
+import forms.NiphlNumberFormProvider
+import models.NiphlNumber
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.NirmsNumberView
+import views.html.NiphlNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NirmsNumberController @Inject() (
+class NiphlNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: NirmsNumberView,
-  formProvider: NirmsNumberFormProvider,
+  view: NiphlNumberView,
+  formProvider: NiphlNumberFormProvider,
   sessionRequest: SessionRequestAction,
   sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
+
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalNirmsNumber = request.userAnswers.traderGoodsProfile.nirmsNumber
+    val optionalNiphlNumber = request.userAnswers.traderGoodsProfile.niphlNumber
 
-    optionalNirmsNumber match {
-      case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value)))
+    optionalNiphlNumber match {
+      case Some(niphlNumber) => Ok(view(form.fill(niphlNumber.value)))
       case None              => Ok(view(form))
     }
   }
@@ -54,16 +55,16 @@ class NirmsNumberController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        nirmsNumber => {
+        niphlNumber => {
           val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(nirmsNumber = Some(NirmsNumber(nirmsNumber)))
+            request.userAnswers.traderGoodsProfile.copy(niphlNumber = Some(NiphlNumber(niphlNumber)))
           val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.NiphlQuestionController.onPageLoad.url)
+              success => Redirect(routes.DummyController.onPageLoad.url)
             )
         }
       )

@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.{FakeAuthoriseAction, FakeDataRetrievalAction}
+import models.{TraderGoodsProfile, UkimsNumber, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -42,10 +43,12 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar with BeforeAndA
 
       "must keep the answers alive and return OK" in {
 
+        val userAnswers = UserAnswers("idWithAnswers", TraderGoodsProfile(ukimsNumber = Some(UkimsNumber("testUkims"))))
+
         val keepAliveControllerWithData = new KeepAliveController(
           messageComponentControllers,
           new FakeAuthoriseAction(defaultBodyParser),
-          new FakeDataRetrievalAction(Some(emptyUserAnswers)),
+          new FakeDataRetrievalAction(Some(userAnswers)),
           sessionRepository
         )
 
@@ -54,7 +57,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar with BeforeAndA
         val result = keepAliveControllerWithData.keepAlive()(fakeRequest)
 
         status(result) mustEqual OK
-        verify(sessionRepository, times(1)).keepAlive(emptyUserAnswers.id)
+        verify(sessionRepository, times(1)).keepAlive(userAnswers.id)
 
       }
     }

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-object StringFieldRegex {
-  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  val niphlNumberRegex: String = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
+class NiphlQuestionFormProvider extends Mappings {
+
+  def apply(): Form[Boolean] = Form("value" -> boolean("niphlQuestion.radio.notSelected"))
+
 }

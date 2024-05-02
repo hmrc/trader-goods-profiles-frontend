@@ -16,8 +16,16 @@
 
 package models
 
-object StringFieldRegex {
-  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
+import play.api.libs.json.{Json, OFormat}
 
-  val niphlNumberRegex: String = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
+case class TraderGoodsProfile(
+  ukimsNumber: Option[UkimsNumber] = None,
+  hasNirms: Option[Boolean] = None,
+  nirmsNumber: Option[NirmsNumber] = None,
+  hasNiphl: Option[Boolean] = None,
+  niphlNumber: Option[NiphlNumber] = None
+)
+
+object TraderGoodsProfile {
+  implicit val format: OFormat[models.TraderGoodsProfile] = Json.format[TraderGoodsProfile]
 }

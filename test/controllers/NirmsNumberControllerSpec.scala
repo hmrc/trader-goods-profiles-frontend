@@ -24,7 +24,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsNumberView
 
+import scala.concurrent.ExecutionContext
+
 class NirmsNumberControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider          = new NirmsNumberFormProvider()
   private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
@@ -32,7 +36,9 @@ class NirmsNumberControllerSpec extends SpecBase {
     messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsNumberView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "Nirms Number Controller" - {
@@ -55,7 +61,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -67,7 +73,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -79,7 +85,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 

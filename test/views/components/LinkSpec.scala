@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package views.components
 
-import models.UserAnswers
-import models.requests.{AuthorisedRequest, OptionalDataRequest}
+import base.SpecBase
+import play.twirl.api.HtmlFormat
+import views.html.components.Link
 
-import scala.concurrent.{ExecutionContext, Future}
+class LinkSpec extends SpecBase {
 
-class FakeDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends DataRetrievalAction {
+  "link html" - {
+    "should not have a space or new line at the end of the html" in {
 
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] =
-    Future(OptionalDataRequest(request.request, request.internalId.value, dataToReturn))
+      val linkComponent = app.injector.instanceOf[Link]
 
-  override protected implicit val executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+      val linkHtml: HtmlFormat.Appendable = linkComponent("linkText", "link")
+
+      linkHtml.toString must endWith regex ".*\\S"
+
+    }
+
+  }
+
 }

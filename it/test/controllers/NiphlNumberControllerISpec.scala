@@ -21,12 +21,12 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class NiphlsNumberControllerISpec extends ItTestBase {
+class NiphlNumberControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.NiphlsNumberController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.NiphlNumberController.onPageLoad.url}"
 
-  "Niphls number controller" should {
+  "Niphl number controller" should {
 
     "redirect you to unauthorised page when auth fails" in {
 
@@ -44,7 +44,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
 
     "loads page" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -57,7 +57,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -71,7 +71,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
 
     "return bad request when submitting invalid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -82,7 +82,7 @@ class NiphlsNumberControllerISpec extends ItTestBase {
     }
     "return bad request when submitting no data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 

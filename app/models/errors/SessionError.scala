@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package models.errors
 
-import forms.mappings.Mappings
-import play.api.data.Form
+trait SessionError
 
-class NiphlsQuestionFormProvider extends Mappings {
-
-  def apply(): Form[Boolean] = Form("value" -> boolean("niphlsQuestion.radio.notSelected"))
-
+object SessionError {
+  case class InternalUnexpectedError(thr: Throwable) extends SessionError
 }

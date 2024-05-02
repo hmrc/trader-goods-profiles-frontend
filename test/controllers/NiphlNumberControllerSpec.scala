@@ -24,30 +24,39 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.NiphlsNumberView
+import views.html.NiphlNumberView
+import forms.NiphlNumberFormProvider
+import generators.NiphlNumberGenerator
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
-class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
+import scala.concurrent.ExecutionContext
 
-  private val formProvider = new NiphlsNumberFormProvider()
+class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
-  private val niphlsNumberView = app.injector.instanceOf[NiphlsNumberView]
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
-  private val niphlsNumberController = new NiphlsNumberController(
+  private val formProvider = new NiphlNumberFormProvider()
+
+  private val niphlNumberView = app.injector.instanceOf[NiphlNumberView]
+
+  private val niphlNumberController = new NiphlNumberController(
     messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
-    niphlsNumberView,
-    formProvider
+    niphlNumberView,
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
-  "NiphlsNumber Controller" - {
+  "NiphlNumber Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = niphlsNumberController.onPageLoad(fakeRequest)
+      val result = niphlNumberController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlsNumberView(formProvider())(fakeRequest, messages).toString
+      contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -56,7 +65,7 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
       def testNiphlNumber(niphlNumber: String) = {
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> niphlNumber)
 
-        val result = niphlsNumberController.onSubmit(fakeRequestWithData)
+        val result = niphlNumberController.onSubmit(fakeRequestWithData)
 
         status(result) mustEqual SEE_OTHER
 
@@ -65,15 +74,15 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
       }
 
       "with 2 letters and 5 numbers" in {
-        forAll(niphlsAlphaNumericGenerator(2, 5))(niphlNumber => testNiphlNumber(niphlNumber))
+        forAll(niphlAlphaNumericGenerator(2, 5))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
       "with 1 letter and 5 numbers" in {
-        forAll(niphlsAlphaNumericGenerator(1, 5))(niphlNumber => testNiphlNumber(niphlNumber))
+        forAll(niphlAlphaNumericGenerator(1, 5))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
       "with 4 to 6 numbers" in {
-        forAll(niphlsNumericGenerator(1000, 999999))(niphlNumber => testNiphlNumber(niphlNumber))
+        forAll(niphlNumericGenerator(1000, 999999))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
     }
@@ -84,15 +93,15 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
       val fakeRequestWithData = FakeRequest()
 
-      val result = niphlsNumberController.onSubmit(fakeRequestWithData)
+      val result = niphlNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequestWithData, messages).toString
+      pageContent mustEqual niphlNumberView(formWithErrors)(fakeRequestWithData, messages).toString
 
-      pageContent must include("niphlsNumber.error.notSupplied")
+      pageContent must include("niphlNumber.error.notSupplied")
 
     }
 
@@ -102,15 +111,15 @@ class NiphlsNumberControllerSpec extends SpecBase with NiphlsNumberGenerator {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "A123")
 
-      val result = niphlsNumberController.onSubmit(fakeRequestWithData)
+      val result = niphlNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlsNumberView(formWithErrors)(fakeRequest, messages).toString
+      pageContent mustEqual niphlNumberView(formWithErrors)(fakeRequest, messages).toString
 
-      pageContent must include("niphlsNumber.error.wrongFormat")
+      pageContent must include("niphlNumber.error.wrongFormat")
 
     }
   }

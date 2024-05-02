@@ -16,4 +16,10 @@
 
 package models
 
-case class NiphlsNumber(value: String)
+import play.api.libs.json.{Json, OFormat}
+
+case class NirmsNumber(value: String)
+
+object NirmsNumber {
+  implicit val format: OFormat[NirmsNumber] = Json.format[NirmsNumber]
+}

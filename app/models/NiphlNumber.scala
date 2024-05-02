@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex.niphlsNumberRegex
-import play.api.data.Form
+import play.api.libs.json.{Json, OFormat}
 
-class NiphlsNumberFormProvider extends Mappings {
+case class NiphlNumber(value: String)
 
-  def apply(): Form[String] = Form(
-    "value" -> text("niphlsNumber.error.notSupplied")
-      .transform(removeWhitespace, identity[String])
-      .verifying(
-        regexp(niphlsNumberRegex, "niphlsNumber.error.wrongFormat")
-      )
-  )
-
+object NiphlNumber {
+  implicit val format: OFormat[NiphlNumber] = Json.format[NiphlNumber]
 }
