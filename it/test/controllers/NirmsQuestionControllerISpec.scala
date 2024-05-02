@@ -85,6 +85,5 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe BAD_REQUEST
     }
-
   }
 }

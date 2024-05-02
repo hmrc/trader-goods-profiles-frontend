@@ -22,17 +22,20 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
   implicit val arbBooleanForm: Arbitrary[Form[Boolean]] = fixed(booleanForm)
 
   override def renderViewByClass: PartialFunction[Any, Html] = {
-    case profileSetupView: ProfileSetupView                           => render(profileSetupView)
     case categoryGuidanceView: CategoryGuidanceView                   => render(categoryGuidanceView)
-    case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
     case errorTemplate: ErrorTemplate                                 => render(errorTemplate)
     case journeyRecoveryStartAgainView: JourneyRecoveryStartAgainView => render(journeyRecoveryStartAgainView)
     case journeyRecoveryContinueView: JourneyRecoveryContinueView     => render(journeyRecoveryContinueView)
     case unauthorisedView: UnauthorisedView                           => render(unauthorisedView)
-    case dummyView: DummyView                                         => render(dummyView)
     case signedOutView: SignedOutView                                 => render(signedOutView)
-    case nirmsQuestionView: NirmsQuestionView                         => render(nirmsQuestionView)
+    case profileSetupView: ProfileSetupView                           => render(profileSetupView)
     case ukimsNumberView: UkimsNumberView                             => render(ukimsNumberView)
+    case nirmsQuestionView: NirmsQuestionView                         => render(nirmsQuestionView)
+    case nirmsNumberView: NirmsNumberView                             => render(nirmsNumberView)
+    case niphlQuestionView: NiphlQuestionView                         => render(niphlQuestionView)
+    case niphlNumberView: NiphlNumberView                             => render(niphlNumberView)
+    case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
+    case dummyView: DummyView                                         => render(dummyView)
   }
   runAccessibilityTests()
 }

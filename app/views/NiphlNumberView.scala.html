@@ -25,7 +25,8 @@
     paragraph: components.Paragraph,
     unorderedList: components.UnorderedList,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukErrorSummary: GovukErrorSummary
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
@@ -34,6 +35,11 @@
      pageTitle = titleNoForm(messages("niphlNumber.title")),
      showBackLink = true
 ) {
+
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     @heading1(messages("niphlNumber.h1"))
     @paragraph(Html(messages("niphlNumber.p1")))
 
@@ -41,12 +47,11 @@
     @heading2(messages("niphlNumber.h2"))
 
     @formHelper(action = NiphlNumberController.onSubmit) {
-
         @govukInput(InputViewModel(
             field = form("value"),
             label = Label(content = "niphlNumber.h1", classes = "govuk-visually-hidden")
-            ).withHint(Hint(content = Text(messages("niphlNumber.hint"))))
-            .withWidth(Fixed10)
+        ).withHint(Hint(content = Text(messages("niphlNumber.hint"))))
+        .withWidth(Fixed10)
         )
 
         @govukButton(
