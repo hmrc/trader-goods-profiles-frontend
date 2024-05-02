@@ -18,18 +18,13 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
-import forms.NiphlsQuestionFormProvider
+import forms.NiphlQuestionFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
-import forms.NiphlQuestionFormProvider
-
-import scala.concurrent.ExecutionContext
 
 class NiphlQuestionControllerSpec extends SpecBase {
-
-  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NiphlQuestionFormProvider()
 

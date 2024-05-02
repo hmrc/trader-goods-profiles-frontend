@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SessionRequestActionSpec extends SpecBase with MockitoSugar {
-  class Harness(sessionService: SessionService) extends SessionRequestActionImpl(sessionService) {
+  class Harness(sessionService: SessionService) extends SessionRequestActionImpl(sessionService)(ec) {
     def callRefine[A](
       request: AuthorisedRequest[A]
     ): Future[Either[Result, DataRequest[A]]] = refine(request)

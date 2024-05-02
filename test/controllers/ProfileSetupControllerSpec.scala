@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeAuthoriseAction
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
 import views.html.ProfileSetupView
@@ -29,6 +29,7 @@ class ProfileSetupControllerSpec extends SpecBase {
   private val profileSetupController = new ProfileSetupController(
     messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
+    new FakeSessionRequestAction(emptyUserAnswers),
     profileSetupView
   )
 

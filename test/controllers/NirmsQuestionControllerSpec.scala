@@ -24,11 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
 
-import scala.concurrent.ExecutionContext
-
 class NirmsQuestionControllerSpec extends SpecBase {
-
-  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NirmsQuestionFormProvider()
 

@@ -52,7 +52,7 @@ trait SpecBase
     with ScalaFutures
     with GuiceOneAppPerSuite {
 
-  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   val userAnswersId: String = "id"
 
@@ -67,7 +67,7 @@ trait SpecBase
 
   val sessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
 
-  val sessionService = mock[SessionService]
+  val sessionService: SessionService = mock[SessionService]
 
   when(sessionService.readUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
     Future.successful(Right(None))

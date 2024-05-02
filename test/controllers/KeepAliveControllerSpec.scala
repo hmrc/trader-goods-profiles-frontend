@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.{FakeAuthoriseAction, FakeDataRetrievalAction}
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import models.{TraderGoodsProfile, UkimsNumber, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -48,7 +48,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar with BeforeAndA
         val keepAliveControllerWithData = new KeepAliveController(
           messageComponentControllers,
           new FakeAuthoriseAction(defaultBodyParser),
-          new FakeDataRetrievalAction(Some(userAnswers)),
+          new FakeSessionRequestAction(userAnswers),
           sessionRepository
         )
 
@@ -69,7 +69,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar with BeforeAndA
         val keepAliveControllerWithData = new KeepAliveController(
           messageComponentControllers,
           new FakeAuthoriseAction(defaultBodyParser),
-          new FakeDataRetrievalAction(None),
+          new FakeSessionRequestAction(emptyUserAnswers),
           sessionRepository
         )
 

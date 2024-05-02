@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.{DataRequiredActionImpl, FakeAuthoriseAction, FakeDataRetrievalAction}
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import play.api.test.Helpers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
@@ -32,8 +32,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val checkYourAnswersControllerWithData = new CheckYourAnswersController(
         messagesApi,
         new FakeAuthoriseAction(defaultBodyParser),
-        new FakeDataRetrievalAction(Some(emptyUserAnswers)),
-        new DataRequiredActionImpl(),
+        new FakeSessionRequestAction(emptyUserAnswers),
         messageComponentControllers,
         checkYourAnswersView
       )
@@ -50,23 +49,5 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     }
 
-    "must redirect to Journey Recovery for a onPageLoad if no existing data is found" in {
-
-      val checkYourAnswersControllerWithNoData = new CheckYourAnswersController(
-        messagesApi,
-        new FakeAuthoriseAction(defaultBodyParser),
-        new FakeDataRetrievalAction(None),
-        new DataRequiredActionImpl(),
-        messageComponentControllers,
-        checkYourAnswersView
-      )
-
-      val result = checkYourAnswersControllerWithNoData.onPageLoad()(fakeRequest)
-
-      status(result) mustEqual SEE_OTHER
-
-      redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-
-    }
   }
 }
