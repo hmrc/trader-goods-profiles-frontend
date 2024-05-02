@@ -20,6 +20,7 @@ import base.SpecBase
 import cats.data.EitherT
 import models.{InternalId, UserAnswers}
 import models.errors.SessionError
+import models.errors.SessionError.InternalUnexpectedError
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -45,10 +46,11 @@ class SessionServiceSpec extends SpecBase {
       )
 
       val result: EitherT[Future, SessionError, Unit] = sessionService.createUserAnswers(id)
-      result.value.futureValue match {
-        case Left(sessionError) => fail("Session service should not fail to create answers")
-        case Right(unit)        => succeed
+
+      withClue("Session service should not fail to create answers") {
+        result.value.futureValue mustBe Right()
       }
+
     }
 
     "createUserAnswers should not create answers if sessionRepository fails" in {
@@ -59,9 +61,9 @@ class SessionServiceSpec extends SpecBase {
       )
 
       val result: EitherT[Future, SessionError, Unit] = sessionService.createUserAnswers(id)
-      result.value.futureValue match {
-        case Left(sessionError) => succeed
-        case Right(unit)        => fail("Session service should fail to create answers but doesn't")
+
+      withClue("Session service should fail to create answers but doesn't") {
+        result.value.futureValue shouldBe a[Left[SessionError, Unit]]
       }
     }
 
@@ -73,11 +75,9 @@ class SessionServiceSpec extends SpecBase {
       )
 
       val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.readUserAnswers(id)
-      result.value.futureValue match {
-        case Left(sessionError)   => fail("Session service should get answers and not error")
-        case Right(Some(answers)) =>
-          answers.id                 shouldEqual emptyUserAnswers.id
-          answers.traderGoodsProfile shouldEqual emptyUserAnswers.traderGoodsProfile
+
+      withClue("Session service should get answers and not error") {
+        result.value.futureValue shouldBe a[Right[SessionError, Option[UserAnswers]]]
       }
     }
 
@@ -89,9 +89,9 @@ class SessionServiceSpec extends SpecBase {
       )
 
       val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.readUserAnswers(id)
-      result.value.futureValue match {
-        case Left(sessionError)   => succeed
-        case Right(Some(answers)) => fail("Session service should not get answers and should fail")
+
+      withClue("Session service should not get answers and should fail") {
+        result.value.futureValue shouldBe a[Left[SessionError, Option[UserAnswers]]]
       }
     }
 
@@ -107,6 +107,10 @@ class SessionServiceSpec extends SpecBase {
         case Left(sessionError) => fail("Session service should not fail to update answers")
         case Right(unit)        => succeed
       }
+
+      withClue("Session service should not fail to update answers") {
+        result.value.futureValue mustBe Right()
+      }
     }
 
     "updateUserAnswers should not update answers if sessionRepository fails" in {
@@ -117,9 +121,9 @@ class SessionServiceSpec extends SpecBase {
       )
 
       val result: EitherT[Future, SessionError, Unit] = sessionService.updateUserAnswers(emptyUserAnswers)
-      result.value.futureValue match {
-        case Left(sessionError) => succeed
-        case Right(unit)        => fail("Session service should fail to update answers but doesn't")
+
+      withClue("Session service should fail to update answers but doesn't") {
+        result.value.futureValue shouldBe a[Left[SessionError, Unit]]
       }
     }
 

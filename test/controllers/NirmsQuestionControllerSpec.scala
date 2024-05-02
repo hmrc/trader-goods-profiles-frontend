@@ -47,7 +47,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
     nirmsQuestionController.onPageLoad(
       fakeRequest
-    ) // TODO: MOCK Properly, Prepare some answers using sessionRequest and SessionService proper mocks.
+    )
 
     "must return OK and the correct view for a GET" in {
 
