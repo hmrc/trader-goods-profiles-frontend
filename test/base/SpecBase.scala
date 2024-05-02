@@ -45,7 +45,7 @@ trait SpecBase
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   implicit val messagesApi: MessagesApi = stubMessagesApi()
-  val messages: Messages = messagesApi.preferred(fakeRequest)
+  val messages: Messages                = messagesApi.preferred(fakeRequest)
 
   lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
 

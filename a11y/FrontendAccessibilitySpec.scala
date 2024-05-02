@@ -11,7 +11,7 @@ import views.html.auth.SignedOutView
 class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
 
   val viewPackageName                                   = "views"
-  val layoutClasses                                     = Seq(classOf[Layout])
+  val layoutClasses: Seq[Class[Layout]]                 = Seq(classOf[Layout])
   val list: SummaryList                                 = SummaryListViewModel(rows = Seq.empty)
   implicit val arbSummaryList: Arbitrary[SummaryList]   = fixed(list)
   private val booleanForm: Form[Boolean]                = Form("value" -> boolean)
@@ -32,7 +32,8 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case ukimsNumberView: UkimsNumberView                             => render(ukimsNumberView)
     case niphlQuestionView: NiphlQuestionView                         => render(niphlQuestionView)
     case nirmsNumberView: NirmsNumberView                             => render(nirmsNumberView)
-    case niphlNumberView: NiphlNumberView                            => render(niphlNumberView)
+    case niphlNumberView: NiphlNumberView                             => render(niphlNumberView)
+    case homepageView: HomepageView                                   => render(homepageView)
   }
   runAccessibilityTests()
 }
