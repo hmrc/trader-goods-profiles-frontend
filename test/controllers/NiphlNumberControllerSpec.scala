@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import views.html.NiphlNumberView
 import forms.NiphlNumberFormProvider
 import generators.NiphlNumberGenerator
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
 import scala.concurrent.ExecutionContext
@@ -118,6 +118,17 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
       pageContent must include("niphlNumber.error.wrongFormat")
 
+    }
+    "CheckMode" - {
+      "must return OK and the correct view for a GET" in {
+
+        val result = niphlNumberController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, stubMessages()).toString
+
+      }
     }
   }
 }

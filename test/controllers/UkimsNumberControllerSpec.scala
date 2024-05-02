@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.UkimsNumberFormProvider
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -111,6 +111,35 @@ class UkimsNumberControllerSpec extends SpecBase {
         stubMessages()
       ).toString
 
+    }
+
+    "CheckMode" - {
+      "must return OK and the correct view for a GET" in {
+
+        val result = ukimsNumberController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual ukimsNumberView(formProvider(), CheckMode)(
+          fakeRequest,
+          stubMessages()
+        ).toString
+
+      }
+
+      "must redirect on Submit when user enters correct Ukims number" in {
+
+        val validUkimsNumber = "XI47699357400020231115081800"
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+
+        val result = ukimsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
     }
   }
 }

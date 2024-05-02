@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
 import play.api.test.FakeRequest
@@ -130,6 +130,56 @@ class NirmsNumberControllerSpec extends SpecBase {
       contentAsString(result) must include("nirmsNumber.error.required")
 
     }
-  }
 
+    "CheckMode" - {
+      "must return OK and the correct view for a GET" in {
+
+        val result = nirmsNumberController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual nirmsNumberView(formProvider(), CheckMode)(
+          fakeRequest,
+          stubMessages()
+        ).toString
+
+      }
+
+      "must redirect on Submit when user enters correct Nirms number (GB region)" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+
+        val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+
+      "must redirect on Submit when user enters correct Nirms number (NI region)" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-NI-123456")
+
+        val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+
+      "must redirect on Submit when user enters correct Nirms number without hyphens" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+
+        val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+    }
+  }
 }
