@@ -1,4 +1,4 @@
-import config.FrontendAppConfig
+import models.{CheckMode, Mode, NormalMode}
 import org.scalacheck.Arbitrary
 import play.api.data.Forms._
 import play.api.data.Form
@@ -15,6 +15,8 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
   val layoutClasses                                     = Seq(classOf[Layout])
   val list: SummaryList                                 = SummaryListViewModel(rows = Seq.empty)
   implicit val arbSummaryList: Arbitrary[SummaryList]   = fixed(list)
+  val mode: Mode                                        = NormalMode
+  implicit val arbMode: Arbitrary[Mode]                 = fixed(mode)
   private val booleanForm: Form[Boolean]                = Form("value" -> boolean)
   implicit val arbForm: Arbitrary[Form[_]]              = fixed(booleanForm)
   implicit val arbBooleanForm: Arbitrary[Form[Boolean]] = fixed(booleanForm)

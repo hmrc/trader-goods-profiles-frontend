@@ -12,28 +12,28 @@ POST        /profile-setup                               controllers.ProfileSetu
 
 GET         /ukims-number                                controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST        /ukims-number                                controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /ukims-number/check                                controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /ukims-number/check                                controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /ukims-number/check                          controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /ukims-number/check                          controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /nirms-question                              controllers.NirmsQuestionController.onPageLoad(mode: Mode = NormalMode)
 POST        /nirms-question                              controllers.NirmsQuestionController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-question/check                              controllers.NirmsQuestionController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-question/check                              controllers.NirmsQuestionController.onSubmit(mode: Mode = CheckMode)
+GET         /nirms-question/check                        controllers.NirmsQuestionController.onPageLoad(mode: Mode = CheckMode)
+POST        /nirms-question/check                        controllers.NirmsQuestionController.onSubmit(mode: Mode = CheckMode)
 
 GET         /nirms-number                                controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST        /nirms-number                                controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-number/check                                controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-number/check                                controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /nirms-number/check                          controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /nirms-number/check                          controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /niphl-question                              controllers.NiphlQuestionController.onPageLoad(mode: Mode = NormalMode)
 POST        /niphl-question                              controllers.NiphlQuestionController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-question/check                                controllers.NiphlQuestionController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-question/check                                controllers.NiphlQuestionController.onSubmit(mode: Mode = CheckMode)
+GET         /niphl-question/check                        controllers.NiphlQuestionController.onPageLoad(mode: Mode = CheckMode)
+POST        /niphl-question/check                        controllers.NiphlQuestionController.onSubmit(mode: Mode = CheckMode)
 
 
 GET         /niphl-number                                controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
 POST        /niphl-number                                controllers.NiphlNumberController.onSubmit
-GET         /niphl-number/check                                controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
+GET         /niphl-number/check                          controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
