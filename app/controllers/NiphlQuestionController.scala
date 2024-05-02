@@ -16,43 +16,59 @@
 
 package controllers
 
-import controllers.actions.AuthoriseAction
+import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NiphlQuestionFormProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NiphlQuestionView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class NiphlQuestionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: NiphlQuestionView,
-  formProvider: NiphlQuestionFormProvider
-) extends FrontendBaseController
+  formProvider: NiphlQuestionFormProvider,
+  sessionRequest: SessionRequestAction,
+  sessionService: SessionService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalHasNiphl = request.userAnswers.traderGoodsProfile.hasNiphl
+
+    optionalHasNiphl match {
+      case Some(hasNiphlAnswer) => Ok(view(form.fill(hasNiphlAnswer)))
+      case None                 => Ok(view(form))
+    }
   }
 
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        userResponse => {
-          val url = if (userResponse) {
-            routes.NiphlNumberController.onPageLoad.url
-          } else {
-            //TODO change redirect to page after niphl number in the journey
-            routes.DummyController.onPageLoad.url
-          }
-          Redirect(url)
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        hasNiphlAnswer => {
+          val updatedTgpModelObject = request.userAnswers.traderGoodsProfile.copy(hasNiphl = Some(hasNiphlAnswer))
+          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+
+          sessionService
+            .updateUserAnswers(updatedUserAnswers)
+            .fold(
+              sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+              success =>
+                if (hasNiphlAnswer) {
+                  Redirect(routes.NiphlNumberController.onPageLoad.url)
+                } else {
+                  Redirect(routes.DummyController.onPageLoad.url)
+                }
+            )
         }
       )
   }

@@ -24,7 +24,11 @@ import play.api.test.Helpers._
 import views.html.NiphlQuestionView
 import forms.NiphlQuestionFormProvider
 
+import scala.concurrent.ExecutionContext
+
 class NiphlQuestionControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NiphlQuestionFormProvider()
 
@@ -34,7 +38,9 @@ class NiphlQuestionControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     niphlQuestionView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "NiphlQuestion Controller" - {

@@ -18,34 +18,56 @@ package controllers
 
 import controllers.actions._
 import forms.UkimsNumberFormProvider
+import models.{TraderGoodsProfile, UkimsNumber}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class UkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: UkimsNumberView,
-  formProvider: UkimsNumberFormProvider
-) extends FrontendBaseController
+  formProvider: UkimsNumberFormProvider,
+  sessionRequest: SessionRequestAction,
+  sessionService: SessionService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
+
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.ukimsNumber
+
+    optionalUkimsNumber match {
+      case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value)))
+      case None              => Ok(view(form))
+    }
   }
 
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO saving session data???
-
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        ukimsNumber => {
+          val updatedTgpModelObject =
+            request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
+          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+
+          sessionService
+            .updateUserAnswers(updatedUserAnswers)
+            .fold(
+              sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+              success => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+            )
+        }
       )
   }
+
 }

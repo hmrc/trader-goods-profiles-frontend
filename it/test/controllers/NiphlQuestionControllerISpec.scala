@@ -37,7 +37,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     }
 
     "loads page" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
 
@@ -48,7 +48,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     }
 
     "redirects to NiphlNumberController when submitting valid data with yes" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
@@ -61,7 +61,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     }
 
     "redirects to dummy controller when submitting valid data with no" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
@@ -74,7 +74,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     }
 
     "returns bad request when submitting no data" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")

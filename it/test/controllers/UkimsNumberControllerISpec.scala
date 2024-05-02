@@ -40,7 +40,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
     "loads page" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad))
 
@@ -54,7 +54,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       val validUkimsNumber = "XI47699357400020231115081800"
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> validUkimsNumber)
@@ -68,7 +68,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
     "returns bad request when submitting no data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result =
         callRoute(FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> ""))
@@ -81,7 +81,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
     "returns bad request when submitting invalid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val invalidUkimsNumber = "XI4769935740002023111508"
 

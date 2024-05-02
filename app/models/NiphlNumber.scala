@@ -16,4 +16,10 @@
 
 package models
 
+import play.api.libs.json.{Json, OFormat}
+
 case class NiphlNumber(value: String)
+
+object NiphlNumber {
+  implicit val format: OFormat[NiphlNumber] = Json.format[NiphlNumber]
+}
