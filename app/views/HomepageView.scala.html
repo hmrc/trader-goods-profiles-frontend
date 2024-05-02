@@ -32,13 +32,17 @@
     @paragraph(Html(messages("homepage.p1")))
 
     @heading2(messages("homepage.h2.1"))
-    @paragraph(link(messages("homepage.p2.linkText"), "todo"))
-    @paragraph(link(messages("homepage.p3.linkText"), "todo"))
+    @*TODO correct link when defined by design*@
+    @paragraph(link(messages("homepage.p2.linkText"), routes.DummyController.onPageLoad.url))
+    @*TODO correct link when defined by design*@
+    @paragraph(link(messages("homepage.p3.linkText"), routes.DummyController.onPageLoad.url))
 
     @heading2(messages("homepage.h2.2"))
-    @paragraph(link(messages("homepage.p4.linkText"), "todo"))
+    @*TODO correct link when defined by design*@
+    @paragraph(link(messages("homepage.p4.linkText"), routes.DummyController.onPageLoad.url))
 
     @heading2(messages("homepage.h2.3"))
-    @paragraph(link(messages("homepage.p5.linkText"), "todo"))
+    @*TODO correct link when defined by design*@
+    @paragraph(link(messages("homepage.p5.linkText"), routes.DummyController.onPageLoad.url))
 
 }

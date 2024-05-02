@@ -38,8 +38,8 @@ class HomepageController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
 
-    val testConnector = routerConnector.setUpProfile
-    println("CCCCCCC" + testConnector)
+    //val testConnector = routerConnector.setUpProfile
+    //println("CCCCCCC" + testConnector)
 
     Ok(view())
   }
