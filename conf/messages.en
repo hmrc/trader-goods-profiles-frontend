@@ -116,6 +116,8 @@ niphlNumber.error.wrongFormat = Enter your NIPHL registration number in the corr
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 
+homepage.title = Homepage
+
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
