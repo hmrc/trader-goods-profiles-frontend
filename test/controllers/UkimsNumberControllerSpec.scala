@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.UkimsNumberFormProvider
+import models.NormalMode
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -28,7 +29,7 @@ import scala.concurrent.ExecutionContext
 
 class UkimsNumberControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val formProvider = new UkimsNumberFormProvider()
 
@@ -47,17 +48,20 @@ class UkimsNumberControllerSpec extends SpecBase {
 
   "Ukims Number Controller" - {
 
-    ukimsNumberController.onPageLoad(
+    ukimsNumberController.onPageLoad(NormalMode)(
       fakeRequest
     ) // TODO: MOCK Properly, Prepare some answers using sessionRequest and SessionService proper mocks.
 
     "must return OK and the correct view for a GET" in {
 
-      val result = ukimsNumberController.onPageLoad(fakeRequest)
+      val result = ukimsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual ukimsNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual ukimsNumberView(formProvider(), NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
     }
 
@@ -67,11 +71,11 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
 
-      val result = ukimsNumberController.onSubmit(fakeRequestWithData)
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -79,11 +83,14 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = ukimsNumberController.onSubmit(fakeRequest)
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
     }
 
@@ -95,11 +102,14 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
 
-      val result = ukimsNumberController.onSubmit(fakeRequestWithData)
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
     }
   }

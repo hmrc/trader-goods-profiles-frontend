@@ -17,9 +17,7 @@
 package controllers.helpers
 
 import controllers.routes
-import models.TraderGoodsProfile
-import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
+import models.{CheckMode, TraderGoodsProfile}
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
@@ -52,7 +50,7 @@ class CheckYourAnswersHelper {
   def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] =
     List(
       createOptionalSummaryListRow(
-        routes.UkimsNumberController.onPageLoad.url,
+        routes.UkimsNumberController.onPageLoad(CheckMode).url,
         "UKIMS number",
         traderGoodsProfile.ukimsNumber match {
           case Some(x) => Some(x.value)
@@ -60,12 +58,12 @@ class CheckYourAnswersHelper {
         }
       ),
       createOptionalYesNoSummaryListRow(
-        routes.NirmsQuestionController.onPageLoad.url,
+        routes.NirmsQuestionController.onPageLoad(CheckMode).url,
         "NIRMS registered",
         traderGoodsProfile.hasNirms
       ),
       createOptionalSummaryListRow(
-        routes.NirmsNumberController.onPageLoad.url,
+        routes.NirmsNumberController.onPageLoad(CheckMode).url,
         "NIRMS number",
         traderGoodsProfile.nirmsNumber match {
           case Some(x) => Some(x.value)
@@ -73,12 +71,12 @@ class CheckYourAnswersHelper {
         }
       ),
       createOptionalYesNoSummaryListRow(
-        routes.NiphlQuestionController.onPageLoad.url,
+        routes.NiphlQuestionController.onPageLoad(CheckMode).url,
         "NIPHL registered",
         traderGoodsProfile.hasNiphl
       ),
       createOptionalSummaryListRow(
-        routes.NiphlNumberController.onPageLoad.url,
+        routes.NiphlNumberController.onPageLoad(CheckMode).url,
         "NIPHL number",
         traderGoodsProfile.niphlNumber match {
           case Some(x) => Some(x.value)

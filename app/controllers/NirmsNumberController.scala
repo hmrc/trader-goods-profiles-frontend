@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions._
 import forms.NirmsNumberFormProvider
-import models.NirmsNumber
+import models.{CheckMode, Mode, NirmsNumber, NormalMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -40,20 +40,20 @@ class NirmsNumberController @Inject() (
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalNirmsNumber = request.userAnswers.traderGoodsProfile.nirmsNumber
 
     optionalNirmsNumber match {
-      case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value)))
-      case None              => Ok(view(form))
+      case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value), mode))
+      case None              => Ok(view(form, mode))
     }
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         nirmsNumber => {
           val updatedTgpModelObject =
             request.userAnswers.traderGoodsProfile
@@ -65,13 +65,9 @@ class NirmsNumberController @Inject() (
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
               success =>
-                if (
-                  updatedUserAnswers.traderGoodsProfile.ukimsNumber.isDefined
-                  && updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined
-                ) {
-                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                } else {
-                  Redirect(routes.NiphlQuestionController.onPageLoad.url)
+                mode match {
+                  case NormalMode => Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
+                  case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
                 }
             )
         }

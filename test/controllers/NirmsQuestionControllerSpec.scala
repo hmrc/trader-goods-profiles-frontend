@@ -23,12 +23,13 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
 import forms.NirmsQuestionFormProvider
+import models.NormalMode
 
 import scala.concurrent.ExecutionContext
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val formProvider = new NirmsQuestionFormProvider()
 
@@ -45,17 +46,20 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
   "NirmsQuestion Controller" - {
 
-    nirmsQuestionController.onPageLoad(
+    nirmsQuestionController.onPageLoad(NormalMode)(
       fakeRequest
     ) // TODO: MOCK Properly, Prepare some answers using sessionRequest and SessionService proper mocks.
 
     "must return OK and the correct view for a GET" in {
 
-      val result = nirmsQuestionController.onPageLoad(fakeRequest)
+      val result = nirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider(), NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
     }
 
@@ -63,11 +67,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad(NormalMode).url)
 
     }
 
@@ -75,11 +79,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -87,13 +91,13 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = nirmsQuestionController.onSubmit(fakeRequest)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual nirmsQuestionView(formWithErrors, NormalMode)(fakeRequest, stubMessages()).toString
 
       pageContent must include("nirmsQuestion.error.notSelected")
 

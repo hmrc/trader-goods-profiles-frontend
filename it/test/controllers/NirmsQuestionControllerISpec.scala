@@ -17,6 +17,7 @@
 package controllers
 
 import base.ItTestBase
+import models.NormalMode
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -25,7 +26,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad(NormalMode).url}"
 
   "NIRMS question controller" should {
 
@@ -60,7 +61,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
+      redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad(NormalMode).url)
     }
 
     "redirects to NiphlQuestionController when submitting valid data with no" in {
@@ -72,7 +73,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectUrl(response) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
     }
 
     "returns bad request when submitting no data" in {

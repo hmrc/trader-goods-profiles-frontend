@@ -17,6 +17,7 @@
 package controllers
 
 import base.ItTestBase
+import models.NormalMode
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -31,7 +32,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad(NormalMode)))
 
       status(result) mustBe SEE_OTHER
 
@@ -42,7 +43,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad(NormalMode)))
 
       status(result) mustBe OK
 
@@ -57,12 +58,13 @@ class UkimsNumberControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+        FakeRequest(routes.UkimsNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(fieldName -> validUkimsNumber)
       )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NirmsQuestionController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -71,7 +73,9 @@ class UkimsNumberControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result =
-        callRoute(FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> ""))
+        callRoute(
+          FakeRequest(routes.UkimsNumberController.onSubmit(NormalMode)).withFormUrlEncodedBody(fieldName -> "")
+        )
 
       status(result) mustBe BAD_REQUEST
 
@@ -86,7 +90,8 @@ class UkimsNumberControllerISpec extends ItTestBase {
       val invalidUkimsNumber = "XI4769935740002023111508"
 
       val result = callRoute(
-        FakeRequest(routes.UkimsNumberController.onSubmit).withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
+        FakeRequest(routes.UkimsNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
       )
 
       status(result) mustBe BAD_REQUEST

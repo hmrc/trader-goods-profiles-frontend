@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NiphlNumberFormProvider
-import models.NiphlNumber
+import models.{Mode, NiphlNumber}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -41,7 +41,7 @@ class NiphlNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalNiphlNumber = request.userAnswers.traderGoodsProfile.niphlNumber
 
     optionalNiphlNumber match {

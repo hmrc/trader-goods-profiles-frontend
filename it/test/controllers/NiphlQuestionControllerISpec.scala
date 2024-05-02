@@ -17,6 +17,7 @@
 package controllers
 
 import base.ItTestBase
+import models.NormalMode
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
@@ -28,7 +29,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(NormalMode)))
 
       status(result) mustBe SEE_OTHER
 
@@ -39,7 +40,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     "loads page" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(NormalMode)))
 
       status(result) mustBe OK
 
@@ -51,12 +52,12 @@ class NiphlQuestionControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
+        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "true")
       )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
 
     }
 
@@ -64,7 +65,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
+        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "false")
       )
 
       status(result) mustBe SEE_OTHER
@@ -77,7 +78,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")
+        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "")
       )
 
       status(result) mustBe BAD_REQUEST

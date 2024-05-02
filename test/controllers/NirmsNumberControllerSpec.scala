@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
+import models.NormalMode
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
 import play.api.test.FakeRequest
@@ -28,7 +29,7 @@ import scala.concurrent.ExecutionContext
 
 class NirmsNumberControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   private val formProvider          = new NirmsNumberFormProvider()
   private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
@@ -45,11 +46,14 @@ class NirmsNumberControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = nirmsNumberController.onPageLoad(fakeRequest)
+      val result = nirmsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formProvider(), NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
     }
 
@@ -57,11 +61,11 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -69,11 +73,11 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-NI-123456")
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -81,11 +85,11 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -97,11 +101,14 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> inCorrectnirmsNumber)
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
       contentAsString(result) must include("nirmsNumber.error.invalidFormat")
 
@@ -111,11 +118,14 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = nirmsNumberController.onSubmit(fakeRequest)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
       contentAsString(result) must include("nirmsNumber.error.required")
 

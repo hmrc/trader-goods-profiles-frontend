@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.NormalMode
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -54,7 +55,7 @@ class ProfileSetupControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
       }
     }
   }

@@ -23,6 +23,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
 import forms.NiphlQuestionFormProvider
+import models.NormalMode
 
 import scala.concurrent.ExecutionContext
 
@@ -47,11 +48,14 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = niphlQuestionController.onPageLoad(fakeRequest)
+      val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlQuestionView(formProvider(), NormalMode)(
+        fakeRequest,
+        stubMessages()
+      ).toString
 
     }
 
@@ -59,11 +63,11 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
 
     }
 
@@ -71,7 +75,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -83,13 +87,13 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = niphlQuestionController.onSubmit(fakeRequest)
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlQuestionView(formWithErrors, NormalMode)(fakeRequest, stubMessages()).toString
 
       pageContent must include("niphlQuestion.radio.notSelected")
     }

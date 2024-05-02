@@ -17,8 +17,8 @@
 package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
-import controllers.helpers.CheckYourAnswersHelper
 import forms.NirmsQuestionFormProvider
+import models.{CheckMode, Mode, NormalMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -41,20 +41,20 @@ class NirmsQuestionController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalHasNirms = request.userAnswers.traderGoodsProfile.hasNirms
 
     optionalHasNirms match {
-      case Some(hasNirmsAnswer) => Ok(view(form.fill(hasNirmsAnswer)))
-      case None                 => Ok(view(form))
+      case Some(hasNirmsAnswer) => Ok(view(form.fill(hasNirmsAnswer), mode))
+      case None                 => Ok(view(form, mode))
     }
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         hasNirmsAnswer => {
           val nirmsNumber           = if (hasNirmsAnswer) request.userAnswers.traderGoodsProfile.nirmsNumber else None
           val updatedTgpModelObject =
@@ -67,15 +67,19 @@ class NirmsQuestionController @Inject() (
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
               success =>
-                if (hasNirmsAnswer && nirmsNumber.isEmpty) {
-                  Redirect(routes.NirmsNumberController.onPageLoad.url)
-                } else if (
-                  updatedUserAnswers.traderGoodsProfile.ukimsNumber.isDefined
-                  && updatedUserAnswers.traderGoodsProfile.hasNiphl.isDefined
-                ) {
-                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                } else {
-                  Redirect(routes.NiphlQuestionController.onPageLoad.url)
+                mode match {
+                  case NormalMode =>
+                    if (hasNirmsAnswer && nirmsNumber.isEmpty) {
+                      Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
+                    } else {
+                      Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
+                    }
+                  case CheckMode  =>
+                    if (hasNirmsAnswer && nirmsNumber.isEmpty) {
+                      Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
+                    } else {
+                      Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+                    }
                 }
             )
         }
