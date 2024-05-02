@@ -17,7 +17,7 @@
 package controllers
 
 import base.ItTestBase
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -26,7 +26,7 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
   private val fieldName = "ukimsNumber"
 
-  "Ukims number controller" should {
+  "UkimsNumberController" should {
 
     "redirects you to unauthorised page when auth fails" in {
 
@@ -98,6 +98,38 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       html(result) must include("Enter your UKIMS number in the correct format")
 
+    }
+
+    "CheckMode" should {
+
+      "loads page" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad(CheckMode)))
+
+        status(result) mustBe OK
+
+        html(result) must include("What is your UKIMS number?")
+
+      }
+
+      "redirects to NIRMS Question controller when submitting valid data" in {
+
+        val validUkimsNumber = "XI47699357400020231115081800"
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.UkimsNumberController.onSubmit(CheckMode))
+            .withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
     }
   }
 }

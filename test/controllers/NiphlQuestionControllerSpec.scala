@@ -44,7 +44,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
     sessionService
   )
 
-  "NiphlQuestion Controller" - {
+  "NiphlQuestionController" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -99,6 +99,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
     }
 
     "CheckMode" - {
+
       "must return OK and the correct view for a GET" in {
 
         val result = niphlQuestionController.onPageLoad(CheckMode)(fakeRequest)

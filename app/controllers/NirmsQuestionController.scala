@@ -69,7 +69,7 @@ class NirmsQuestionController @Inject() (
               success =>
                 mode match {
                   case NormalMode =>
-                    if (hasNirmsAnswer && nirmsNumber.isEmpty) {
+                    if (hasNirmsAnswer) {
                       Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
                     } else {
                       Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)

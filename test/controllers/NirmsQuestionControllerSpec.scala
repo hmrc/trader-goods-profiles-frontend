@@ -44,7 +44,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
     sessionService
   )
 
-  "NirmsQuestion Controller" - {
+  "NirmsQuestionController" - {
 
     nirmsQuestionController.onPageLoad(NormalMode)(
       fakeRequest
@@ -104,6 +104,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
     }
 
     "CheckMode" - {
+
       "must return OK and the correct view for a GET" in {
 
         val result = nirmsQuestionController.onPageLoad(CheckMode)(fakeRequest)

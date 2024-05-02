@@ -17,14 +17,14 @@
 package controllers
 
 import base.ItTestBase
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
 class NirmsNumberControllerISpec extends ItTestBase {
 
-  "Nirms number controller" should {
+  "NirmsNumberController" should {
 
     "redirect you to unauthorised page when auth fails" in {
 
@@ -122,6 +122,50 @@ class NirmsNumberControllerISpec extends ItTestBase {
       html(result) must include("Enter your NIRMS number")
 
     }
-  }
 
+    "CheckMode" should {
+
+      "loads page" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(CheckMode)))
+
+        status(result) mustBe OK
+
+        html(result) must include("What is your NIRMS number?")
+
+      }
+
+      "redirect to NiphlQuestionController when submitting valid data" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.NirmsNumberController.onSubmit(CheckMode))
+            .withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+
+      "redirect to NiphlQuestionController when submitting valid data without hyphens" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.NirmsNumberController.onSubmit(CheckMode))
+            .withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+    }
+  }
 }

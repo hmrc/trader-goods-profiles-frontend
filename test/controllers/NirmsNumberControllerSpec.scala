@@ -42,7 +42,7 @@ class NirmsNumberControllerSpec extends SpecBase {
     sessionService
   )
 
-  "Nirms Number Controller" - {
+  "NirmsNumberController" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -132,6 +132,7 @@ class NirmsNumberControllerSpec extends SpecBase {
     }
 
     "CheckMode" - {
+
       "must return OK and the correct view for a GET" in {
 
         val result = nirmsNumberController.onPageLoad(CheckMode)(fakeRequest)

@@ -46,7 +46,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
     sessionService
   )
 
-  "NiphlNumber Controller" - {
+  "NiphlNumberController" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -120,6 +120,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
     }
     "CheckMode" - {
+
       "must return OK and the correct view for a GET" in {
 
         val result = niphlNumberController.onPageLoad(CheckMode)(fakeRequest)

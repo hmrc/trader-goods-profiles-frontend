@@ -104,6 +104,5 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
     }
-
   }
 }

@@ -17,7 +17,7 @@
 package controllers
 
 import base.ItTestBase
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -26,14 +26,15 @@ class NirmsQuestionControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad(NormalMode).url}"
+  private val normalUrl = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad(NormalMode).url}"
+  private val checkUrl  = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad(CheckMode).url}"
 
-  "NIRMS question controller" should {
+  "NirmsQuestion Controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
       val response = await(request.get())
 
@@ -45,7 +46,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     "loads page" in {
       authorisedUserWithAnswers
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
       val response = await(request.get())
 
@@ -55,7 +56,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     "redirects to NirmsNumberController when submitting valid data with yes" in {
       authorisedUserWithAnswers
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
       val response = await(request.post(Map("value" -> "true")))
 
@@ -67,7 +68,7 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     "redirects to NiphlQuestionController when submitting valid data with no" in {
       authorisedUserWithAnswers
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
       val response = await(request.post(Map("value" -> "false")))
 
@@ -79,11 +80,48 @@ class NirmsQuestionControllerISpec extends ItTestBase {
     "returns bad request when submitting no data" in {
       authorisedUserWithAnswers
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
       val response = await(request.post(""))
 
       response.status mustBe BAD_REQUEST
+    }
+
+    "CheckMode" should {
+
+      "loads page" in {
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.get())
+
+        response.status mustBe OK
+      }
+
+      "redirects to NirmsNumberController when submitting valid data with yes" in {
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.post(Map("value" -> "true")))
+
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad(CheckMode).url)
+      }
+
+      "redirects to NiphlQuestionController when submitting valid data with no" in {
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.post(Map("value" -> "false")))
+
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+      }
     }
   }
 }

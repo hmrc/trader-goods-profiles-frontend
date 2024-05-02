@@ -66,7 +66,7 @@ class NiphlQuestionController @Inject() (
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
               success =>
-                if (hasNiphlAnswer && niphlNumber.isEmpty) {
+                if (hasNiphlAnswer) {
                   Redirect(routes.NiphlNumberController.onPageLoad(mode).url)
                 } else {
                   Redirect(routes.CheckYourAnswersController.onPageLoad.url)

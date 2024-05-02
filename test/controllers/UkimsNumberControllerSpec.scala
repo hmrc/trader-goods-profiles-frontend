@@ -46,7 +46,7 @@ class UkimsNumberControllerSpec extends SpecBase {
     sessionService
   )
 
-  "Ukims Number Controller" - {
+  "UkimsNumberController" - {
 
     ukimsNumberController.onPageLoad(NormalMode)(
       fakeRequest
@@ -114,6 +114,7 @@ class UkimsNumberControllerSpec extends SpecBase {
     }
 
     "CheckMode" - {
+
       "must return OK and the correct view for a GET" in {
 
         val result = ukimsNumberController.onPageLoad(CheckMode)(fakeRequest)
