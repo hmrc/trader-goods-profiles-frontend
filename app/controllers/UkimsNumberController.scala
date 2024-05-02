@@ -58,6 +58,7 @@ class UkimsNumberController @Inject() (
           val updatedTgpModelObject =
             request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
           val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(

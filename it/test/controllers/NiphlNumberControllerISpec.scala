@@ -55,7 +55,7 @@ class NiphlNumberControllerISpec extends ItTestBase {
 
     }
 
-    "redirect to CheckYourAnswersController controller when submitting valid data" in {
+    "redirect to CheckYourAnswersController when submitting valid data" in {
 
       authorisedUserWithAnswers
 

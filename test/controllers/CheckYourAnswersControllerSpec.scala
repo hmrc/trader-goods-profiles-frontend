@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import controllers.helpers.CheckYourAnswersHelper
-import models.{TraderGoodsProfile, UkimsNumber}
+import models.TraderGoodsProfile
 import org.mockito.ArgumentMatchers.any
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._

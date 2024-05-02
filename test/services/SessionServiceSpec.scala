@@ -20,7 +20,6 @@ import base.SpecBase
 import cats.data.EitherT
 import models.{InternalId, UserAnswers}
 import models.errors.SessionError
-import models.errors.SessionError.InternalUnexpectedError
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -63,7 +62,7 @@ class SessionServiceSpec extends SpecBase {
       val result: EitherT[Future, SessionError, Unit] = sessionService.createUserAnswers(id)
 
       withClue("Session service should fail to create answers but doesn't") {
-        result.value.futureValue shouldBe a[Left[SessionError, Unit]]
+        result.value.futureValue shouldBe a[Left[_, Unit]]
       }
     }
 
@@ -77,7 +76,7 @@ class SessionServiceSpec extends SpecBase {
       val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.readUserAnswers(id)
 
       withClue("Session service should get answers and not error") {
-        result.value.futureValue shouldBe a[Right[SessionError, Option[UserAnswers]]]
+        result.value.futureValue shouldBe a[Right[_, Option[UserAnswers]]]
       }
     }
 
@@ -91,7 +90,7 @@ class SessionServiceSpec extends SpecBase {
       val result: EitherT[Future, SessionError, Option[UserAnswers]] = sessionService.readUserAnswers(id)
 
       withClue("Session service should not get answers and should fail") {
-        result.value.futureValue shouldBe a[Left[SessionError, Option[UserAnswers]]]
+        result.value.futureValue shouldBe a[Left[_, Option[UserAnswers]]]
       }
     }
 
@@ -123,7 +122,7 @@ class SessionServiceSpec extends SpecBase {
       val result: EitherT[Future, SessionError, Unit] = sessionService.updateUserAnswers(emptyUserAnswers)
 
       withClue("Session service should fail to update answers but doesn't") {
-        result.value.futureValue shouldBe a[Left[SessionError, Unit]]
+        result.value.futureValue shouldBe a[Left[_, Unit]]
       }
     }
 
