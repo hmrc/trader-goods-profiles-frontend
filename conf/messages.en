@@ -116,7 +116,7 @@ niphlNumber.error.wrongFormat = Enter your NIPHL registration number in the corr
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 
-homepage.title = Homepage
+homepage.title = Trader Goods Profile homepage
 homepage.h1 = Trader Goods Profile homepage
 homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
 homepage.h2.1 = Goods records
