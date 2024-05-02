@@ -53,15 +53,16 @@
 
         @govukInput(
             InputViewModel(
-                    field = form("countryOfOrigin"),
-                    label = LabelViewModel(messages("countryOfOrigin.inputHeading")).withSize(Medium)
+                field = form("countryOfOrigin"),
+                label = LabelViewModel(messages("countryOfOrigin.inputHeading")).withSize(Medium)
             ).withHint(Hint(content = Text(messages("countryOfOrigin.hint"))).visuallyHidden)
         )
 
         @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
         )
-        @saveAndReturnLaterButton(routes.CountryOfOriginController.onSubmit(saveAndReturn = true))
+
+        @saveAndReturnLaterButton(routes.CountryOfOriginController.onSubmit(saveAndReturn = true).url)
     }
 
 }

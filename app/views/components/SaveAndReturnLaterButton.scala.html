@@ -16,8 +16,11 @@
 
 @this(govukButton: GovukButton)
 
-@(target: Call)(implicit messages: Messages)
+@(saveAndReturnActionUrl: String)(implicit messages: Messages)
 
 @govukButton(
-    ButtonViewModel("site.saveAndReturnLater").preventingDoubleClick().asSecondaryButton()
+ ButtonViewModel(messages("site.saveAndReturnLater"))
+  .asSecondaryButton()
+  .withAttribute(("formaction", saveAndReturnActionUrl))
 )
+
