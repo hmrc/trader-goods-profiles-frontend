@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions._
 import forms.NirmsNumberFormProvider
-import models.{NirmsNumber, TraderGoodsProfile}
+import models.NirmsNumber
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -41,7 +41,7 @@ class NirmsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalNirmsNumber = request.userAnswers.traderGoodsProfile.nirmsNumber
+    val optionalNirmsNumber = request.userAnswers.maintainProfileAnswers.nirmsNumber
 
     optionalNirmsNumber match {
       case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value)))
@@ -55,9 +55,9 @@ class NirmsNumberController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         nirmsNumber => {
-          val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(nirmsNumber = Some(NirmsNumber(nirmsNumber)))
-          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedMaintainProfileAnswers =
+            request.userAnswers.maintainProfileAnswers.copy(nirmsNumber = Some(NirmsNumber(nirmsNumber)))
+          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

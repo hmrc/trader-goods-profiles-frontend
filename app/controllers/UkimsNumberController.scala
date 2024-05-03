@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions._
 import forms.UkimsNumberFormProvider
-import models.{TraderGoodsProfile, UkimsNumber}
+import models.UkimsNumber
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -42,7 +42,7 @@ class UkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.ukimsNumber
+    val optionalUkimsNumber = request.userAnswers.maintainProfileAnswers.ukimsNumber
 
     optionalUkimsNumber match {
       case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value)))
@@ -56,9 +56,9 @@ class UkimsNumberController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         ukimsNumber => {
-          val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
-          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedMaintainProfileAnswers =
+            request.userAnswers.maintainProfileAnswers.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
+          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
