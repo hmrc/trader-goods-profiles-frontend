@@ -23,53 +23,55 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
 class CheckYourAnswersHelper {
 
-  private def createSummaryListRow(href: String, key: String, value: String): SummaryListRow = SummaryListRow(
-    key = Key(HtmlContent(key)),
-    value = Value(HtmlContent(value)),
-    actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent("Change")))))
-  )
-
-  private def createOptionalSummaryListRow(href: String, key: String, value: Option[String]): Option[SummaryListRow] =
-    if (value.isEmpty) {
-      None
-    } else {
-      Some(createSummaryListRow(href, key, value.get))
+  private def createSummaryListRow(key: String, href: String, value: Option[Any]): Option[SummaryListRow] = {
+    val changeText = "Change"
+    value.flatMap {
+      case stringValue: String   =>
+        Some(
+          SummaryListRow(
+            key = Key(HtmlContent(key)),
+            value = Value(HtmlContent(stringValue)),
+            actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent(changeText)))))
+          )
+        )
+      case booleanValue: Boolean =>
+        Some(
+          SummaryListRow(
+            key = Key(HtmlContent(key)),
+            value = Value(HtmlContent(if (booleanValue) "Yes" else "No")),
+            actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent(changeText)))))
+          )
+        )
+      case _                     => None
     }
-
-  private def createOptionalYesNoSummaryListRow(
-    href: String,
-    key: String,
-    value: Option[Boolean]
-  ): Option[SummaryListRow] = value.map { booleanValue =>
-    createSummaryListRow(href, key, if (booleanValue) "Yes" else "No")
   }
-
-  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] =
-    List(
-      createOptionalSummaryListRow(
-        routes.UkimsNumberController.onPageLoad(CheckMode).url,
+  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] = {
+    val summaryData: Seq[(String, String, Option[Any])] = Seq(
+      (
         "UKIMS number",
+        routes.UkimsNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.ukimsNumber.map(_.value)
       ),
-      createOptionalYesNoSummaryListRow(
-        routes.NirmsQuestionController.onPageLoad(CheckMode).url,
-        "NIRMS registered",
-        traderGoodsProfile.hasNirms
-      ),
-      createOptionalSummaryListRow(
-        routes.NirmsNumberController.onPageLoad(CheckMode).url,
+      ("NIRMS registered", routes.NirmsQuestionController.onPageLoad(CheckMode).url, traderGoodsProfile.hasNirms),
+      (
         "NIRMS number",
+        routes.NirmsNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.nirmsNumber.map(_.value)
       ),
-      createOptionalYesNoSummaryListRow(
-        routes.NiphlQuestionController.onPageLoad(CheckMode).url,
-        "NIPHL registered",
-        traderGoodsProfile.hasNiphl
-      ),
-      createOptionalSummaryListRow(
-        routes.NiphlNumberController.onPageLoad(CheckMode).url,
+      ("NIPHL registered", routes.NiphlQuestionController.onPageLoad(CheckMode).url, traderGoodsProfile.hasNiphl),
+      (
         "NIPHL number",
+        routes.NiphlNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.niphlNumber.map(_.value)
       )
-    ).flatten
+    )
+
+    summaryData
+      .map { case (key, url, value) =>
+        createSummaryListRow(key, url, value)
+      }
+      .flatten
+      .toList
+  }
+
 }
