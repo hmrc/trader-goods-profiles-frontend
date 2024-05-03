@@ -1,4 +1,3 @@
-import config.FrontendAppConfig
 import org.scalacheck.Arbitrary
 import play.api.data.Forms._
 import play.api.data.Form
