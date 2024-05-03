@@ -20,20 +20,16 @@ import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.Helpers._
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import views.html.NirmsNumberView
 
-import scala.concurrent.ExecutionContext
-
 class NirmsNumberControllerSpec extends SpecBase {
-
-  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider          = new NirmsNumberFormProvider()
   private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
   private val nirmsNumberController = new NirmsNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsNumberView,
     formProvider,
@@ -49,7 +45,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, messages).toString
 
     }
 

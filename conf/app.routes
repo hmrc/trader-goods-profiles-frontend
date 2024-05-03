@@ -32,6 +32,10 @@ GET         /niphl-number                                controllers.NiphlNumber
 
 POST        /niphl-number                                controllers.NiphlNumberController.onSubmit
 
+GET         /commodity-code                              controllers.CommodityCodeController.onPageLoad
+
+POST        /commodity-code                              controllers.CommodityCodeController.onSubmit
+
 GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad
 
 POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(saveAndReturn: Boolean)

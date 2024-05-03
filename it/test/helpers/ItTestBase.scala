@@ -62,7 +62,7 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   private val authFetch               = Retrievals.internalId and Retrievals.authorisedEnrolments
   private val ourEnrolment: Enrolment =
-    Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
+    Enrolment("HMRC-CUS-ORG").withIdentifier("EORINumber", Gen.alphaNumStr.sample.get)
   private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
   def authorisedUserWithAnswers = {

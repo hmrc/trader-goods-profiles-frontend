@@ -28,8 +28,6 @@ import scala.concurrent.ExecutionContext
 
 class CountryOfOriginControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global;
-
   private val formProvider        = new CountryOfOriginFormProvider()
   private val fieldName           = "countryOfOrigin"
   private val countryOfOriginView = app.injector.instanceOf[CountryOfOriginView]

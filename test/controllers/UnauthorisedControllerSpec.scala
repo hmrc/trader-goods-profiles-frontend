@@ -25,7 +25,7 @@ class UnauthorisedControllerSpec extends SpecBase {
   private val unauthorisedView = app.injector.instanceOf[UnauthorisedView]
 
   private val unauthorisedController = new UnauthorisedController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     unauthorisedView
   )
 
@@ -37,7 +37,7 @@ class UnauthorisedControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual unauthorisedView()(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual unauthorisedView()(fakeRequest, messages).toString
     }
   }
 }

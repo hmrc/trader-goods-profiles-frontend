@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NirmsQuestionFormProvider
-import models.MaintainProfileAnswers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -56,10 +55,9 @@ class NirmsQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         hasNirmsAnswer => {
-          val updatedMaintainProfileAnswers =
-            request.userAnswers.maintainProfileAnswers.copy(hasNirms = Some(hasNirmsAnswer))
+          val updatedTgpModelObject = request.userAnswers.maintainProfileAnswers.copy(hasNirms = Some(hasNirmsAnswer))
 
-          val updatedUserAnswers = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
+          val updatedUserAnswers = request.userAnswers.copy(maintainProfileAnswers = updatedTgpModelObject)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

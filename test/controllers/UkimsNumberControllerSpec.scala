@@ -24,11 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.UkimsNumberView
 
-import scala.concurrent.ExecutionContext
-
 class UkimsNumberControllerSpec extends SpecBase {
-
-  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new UkimsNumberFormProvider()
 
@@ -37,7 +33,7 @@ class UkimsNumberControllerSpec extends SpecBase {
   private val ukimsNumberView = app.injector.instanceOf[UkimsNumberView]
 
   private val ukimsNumberController = new UkimsNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     ukimsNumberView,
     formProvider,
@@ -57,7 +53,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual ukimsNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual ukimsNumberView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -83,7 +79,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, messages).toString
 
     }
 
@@ -99,7 +95,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, messages).toString
 
     }
   }
