@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
-import models.{TraderGoodsProfile, UkimsNumber, UserAnswers}
+import models.{MaintainProfileAnswers, UkimsNumber, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -43,7 +43,8 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar with BeforeAndA
 
       "must keep the answers alive and return OK" in {
 
-        val userAnswers = UserAnswers("idWithAnswers", TraderGoodsProfile(ukimsNumber = Some(UkimsNumber("testUkims"))))
+        val userAnswers =
+          UserAnswers("idWithAnswers", MaintainProfileAnswers(ukimsNumber = Some(UkimsNumber("testUkims"))))
 
         val keepAliveControllerWithData = new KeepAliveController(
           messageComponentControllers,
