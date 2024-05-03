@@ -36,6 +36,10 @@ GET         /commodity-code                              controllers.CommodityCo
 
 POST        /commodity-code                              controllers.CommodityCodeController.onSubmit
 
+GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad
+
+POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(saveAndReturn: Boolean)
+
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
