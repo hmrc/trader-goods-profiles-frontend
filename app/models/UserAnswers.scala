@@ -23,7 +23,8 @@ import java.time.Instant
 
 final case class UserAnswers(
   id: String,
-  traderGoodsProfile: TraderGoodsProfile = TraderGoodsProfile(),
+  maintainProfileAnswers: MaintainProfileAnswers = MaintainProfileAnswers(),
+  categorisationAnswers: CategorisationAnswers = CategorisationAnswers(),
   lastUpdated: Instant = Instant.now
 )
 
@@ -35,7 +36,8 @@ object UserAnswers {
 
     (
       (__ \ "_id").read[String] and
-        (__ \ "traderGoodsProfile").read[TraderGoodsProfile] and
+        (__ \ "maintainProfileAnswers").read[MaintainProfileAnswers] and
+        (__ \ "categorisationAnswers").read[CategorisationAnswers] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
     )(UserAnswers.apply _)
   }
@@ -46,7 +48,8 @@ object UserAnswers {
 
     (
       (__ \ "_id").write[String] and
-        (__ \ "traderGoodsProfile").write[TraderGoodsProfile] and
+        (__ \ "maintainProfileAnswers").write[MaintainProfileAnswers] and
+        (__ \ "categorisationAnswers").write[CategorisationAnswers] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
     )(unlift(UserAnswers.unapply))
   }

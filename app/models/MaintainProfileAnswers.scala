@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class TraderGoodsProfile(
+case class MaintainProfileAnswers(
   ukimsNumber: Option[UkimsNumber] = None,
   hasNirms: Option[Boolean] = None,
   nirmsNumber: Option[NirmsNumber] = None,
@@ -26,6 +26,6 @@ case class TraderGoodsProfile(
   niphlNumber: Option[NiphlNumber] = None
 )
 
-object TraderGoodsProfile {
-  implicit val format: OFormat[models.TraderGoodsProfile] = Json.format[TraderGoodsProfile]
+object MaintainProfileAnswers {
+  implicit val format: OFormat[models.MaintainProfileAnswers] = Json.format[MaintainProfileAnswers]
 }

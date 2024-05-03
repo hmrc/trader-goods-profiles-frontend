@@ -18,38 +18,56 @@ package controllers
 
 import controllers.actions._
 import forms.CountryOfOriginFormProvider
+import models.CountryOfOrigin
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CountryOfOriginView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CountryOfOriginController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: CountryOfOriginView,
-  formProvider: CountryOfOriginFormProvider
-) extends FrontendBaseController
+  formProvider: CountryOfOriginFormProvider,
+  sessionRequest: SessionRequestAction,
+  sessionService: SessionService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalCountryOfOrigin = request.userAnswers.categorisationAnswers.countryOfOrigin
+
+    optionalCountryOfOrigin match {
+      case Some(countryOfOrigin) => Ok(view(form.fill(countryOfOrigin.value)))
+      case None                  => Ok(view(form))
+    }
   }
 
-  def onSubmit(saveAndReturn: Boolean = false): Action[AnyContent] = authorise { implicit request =>
-    // TODO saving session data
-    // TODO redirect to correct page
-    // saveAndReturn match {
-    //   case true => Ok("it works for if they click that")
-    //   case false => Ok("it works for if they use the regular one")
-    // }
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
-      )
+  def onSubmit(saveAndReturn: Boolean = false): Action[AnyContent] = (authorise andThen sessionRequest).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          countryOfOrigin => {
+            val updatedCategorisationAnswers =
+              request.userAnswers.categorisationAnswers.copy(countryOfOrigin = Some(CountryOfOrigin(countryOfOrigin)))
+            val updatedUserAnswers           = request.userAnswers.copy(categorisationAnswers = updatedCategorisationAnswers)
+
+            sessionService
+              .updateUserAnswers(updatedUserAnswers)
+              .fold(
+                sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+                // TODO redirect to correct page
+                success => Redirect(routes.NiphlQuestionController.onPageLoad.url)
+              )
+          }
+        )
   }
 }
