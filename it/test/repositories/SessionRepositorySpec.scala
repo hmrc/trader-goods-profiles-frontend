@@ -17,7 +17,7 @@
 package repositories
 
 import config.FrontendAppConfig
-import models.{InternalId, MaintainProfileAnswers, UserAnswers}
+import models.{CategorisationAnswers, InternalId, MaintainProfileAnswers, UserAnswers}
 import org.mockito.Mockito.when
 import org.mongodb.scala.model.Filters
 import org.scalatest.OptionValues
@@ -43,7 +43,7 @@ class SessionRepositorySpec
   private val instant          = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
-  private val userAnswers = UserAnswers("id", MaintainProfileAnswers(), Instant.ofEpochSecond(1))
+  private val userAnswers = UserAnswers("id", MaintainProfileAnswers(), CategorisationAnswers(), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1

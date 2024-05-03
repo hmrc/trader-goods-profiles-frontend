@@ -37,7 +37,7 @@ class CountryOfOriginControllerISpec extends ItTestBase {
     }
 
     "ok on loading page" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(FakeRequest(routes.CountryOfOriginController.onPageLoad))
 
@@ -46,11 +46,11 @@ class CountryOfOriginControllerISpec extends ItTestBase {
     }
 
     "redirect to dummy controller when submitting valid data" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val validCountryCode = "GB"
       val result = callRoute(
-        FakeRequest(routes.CountryOfOriginController.onSubmit).withFormUrlEncodedBody(fieldName -> validCountryCode)
+        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false)).withFormUrlEncodedBody(fieldName -> validCountryCode)
       )
 
       status(result) mustBe SEE_OTHER
@@ -58,21 +58,21 @@ class CountryOfOriginControllerISpec extends ItTestBase {
     }
 
     "bad request when submitting no data" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result =
-        callRoute(FakeRequest(routes.CountryOfOriginController.onSubmit).withFormUrlEncodedBody(fieldName -> ""))
+        callRoute(FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false)).withFormUrlEncodedBody(fieldName -> ""))
 
       status(result) mustBe BAD_REQUEST
       html(result) must include("error")
     }
 
     "bad request when submitting invalid data" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val invalidCountryCode = "3S2@"
       val result = callRoute(
-        FakeRequest(routes.CountryOfOriginController.onSubmit).withFormUrlEncodedBody(fieldName -> invalidCountryCode)
+        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false)).withFormUrlEncodedBody(fieldName -> invalidCountryCode)
       )
 
       status(result) mustBe BAD_REQUEST

@@ -65,7 +65,7 @@ class CountryOfOriginController @Inject() (
               .fold(
                 sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
                 // TODO redirect to correct page
-                success => Redirect(routes.NiphlQuestionController.onPageLoad.url)
+                success => Redirect(routes.DummyController.onPageLoad.url)
               )
           }
         )

@@ -24,7 +24,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CountryOfOriginView
 
+import scala.concurrent.ExecutionContext
+
 class CountryOfOriginControllerSpec extends SpecBase {
+
+  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider        = new CountryOfOriginFormProvider()
   private val fieldName           = "countryOfOrigin"
@@ -34,7 +38,9 @@ class CountryOfOriginControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     countryOfOriginView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "Country Of Origin Controller" - {
@@ -49,7 +55,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
     "must redirect on submit when user enters correct country code" in {
       val validCountryCode    = "GB"
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validCountryCode)
-      val result              = countryOfOriginController.onSubmit(fakeRequestWithData)
+      val result              = countryOfOriginController.onSubmit()(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
@@ -57,7 +63,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
 
     "must bad request on submit when user leave the field blank" in {
       val formWithErrors = formProvider().bind(Map.empty[String, String])
-      val result         = countryOfOriginController.onSubmit(fakeRequest)
+      val result         = countryOfOriginController.onSubmit()(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
       contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, stubMessages()).toString
@@ -68,7 +74,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val invalidCountryCode  = "1B£3"
       val formWithErrors      = formProvider().bind(Map(fieldName -> invalidCountryCode))
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> invalidCountryCode)
-      val result              = countryOfOriginController.onSubmit(fakeRequestWithData)
+      val result              = countryOfOriginController.onSubmit()(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
       contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, stubMessages()).toString
