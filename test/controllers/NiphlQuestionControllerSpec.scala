@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
+import forms.NiphlQuestionFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
-import forms.NiphlQuestionFormProvider
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
@@ -31,21 +31,23 @@ class NiphlQuestionControllerSpec extends SpecBase {
   private val niphlQuestionView = app.injector.instanceOf[NiphlQuestionView]
 
   private val niphlQuestionController = new NiphlQuestionController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     niphlQuestionView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "NiphlQuestion Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for an onPageLoad" in {
 
       val result = niphlQuestionController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlQuestionView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -83,7 +85,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlQuestionView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("niphlQuestion.radio.notSelected")
     }

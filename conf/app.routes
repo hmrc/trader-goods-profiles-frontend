@@ -24,7 +24,7 @@ GET         /nirms-number                                controllers.NirmsNumber
 
 POST        /nirms-number                                controllers.NirmsNumberController.onSubmit
 
-GET         /niphl-question                              controllers.NiphlQuestionController.onPageLoad
+GET         /niphl-question                             controllers.NiphlQuestionController.onPageLoad
 
 POST        /niphl-question                              controllers.NiphlQuestionController.onSubmit
 

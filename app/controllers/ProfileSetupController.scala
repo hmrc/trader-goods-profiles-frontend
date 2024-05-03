@@ -16,7 +16,8 @@
 
 package controllers
 
-import controllers.actions.AuthoriseAction
+import controllers.actions.{AuthoriseAction, SessionRequestAction}
+
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -26,15 +27,16 @@ import views.html.ProfileSetupView
 class ProfileSetupController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
+  sessionRequest: SessionRequestAction,
   view: ProfileSetupView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     Ok(view())
   }
-  // TODO replace dummy route and create session data
-  def onSubmit: Action[AnyContent]   = authorise { implicit request =>
+
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     Redirect(routes.UkimsNumberController.onPageLoad.url)
   }
 }

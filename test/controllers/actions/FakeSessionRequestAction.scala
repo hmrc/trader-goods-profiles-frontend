@@ -16,22 +16,17 @@
 
 package controllers.actions
 
-import javax.inject.Inject
-import models.requests.{AuthorisedRequest, OptionalDataRequest}
-import play.api.mvc.ActionTransformer
-import repositories.SessionRepository
+import models.UserAnswers
+import models.requests.{AuthorisedRequest, DataRequest}
+import play.api.mvc.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalActionImpl @Inject() (
-  val sessionRepository: SessionRepository
-)(implicit val executionContext: ExecutionContext)
-    extends DataRetrievalAction {
+class FakeSessionRequestAction(dataToReturn: UserAnswers) extends SessionRequestAction {
 
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] =
-    sessionRepository.get(request.internalId.value).map {
-      OptionalDataRequest(request.request, request.internalId.value, _)
-    }
+  override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, DataRequest[A]]] =
+    Future(Right(DataRequest(request.request, request.internalId, dataToReturn, request.eori)))
+
+  override protected implicit val executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 }
-
-trait DataRetrievalAction extends ActionTransformer[AuthorisedRequest, OptionalDataRequest]

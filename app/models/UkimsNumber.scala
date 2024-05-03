@@ -18,8 +18,8 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class InternalId(value: String)
+case class UkimsNumber(value: String)
 
-object InternalId {
-  implicit val format: OFormat[models.InternalId] = Json.format[InternalId]
+object UkimsNumber {
+  implicit val format: OFormat[UkimsNumber] = Json.format[UkimsNumber]
 }

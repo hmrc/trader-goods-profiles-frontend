@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package models.errors
 
-import models.UserAnswers
-import models.requests.{AuthorisedRequest, OptionalDataRequest}
+trait SessionError
 
-import scala.concurrent.{ExecutionContext, Future}
-
-class FakeDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends DataRetrievalAction {
-
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[OptionalDataRequest[A]] =
-    Future(OptionalDataRequest(request.request, request.internalId.value, dataToReturn))
-
-  override protected implicit val executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+object SessionError {
+  case class InternalUnexpectedError(thr: Throwable) extends SessionError
 }
