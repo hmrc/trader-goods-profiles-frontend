@@ -31,7 +31,7 @@ class HomepageControllerISpec extends ItTestBase {
 
     "load page" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 

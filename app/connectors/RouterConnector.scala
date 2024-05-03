@@ -17,20 +17,23 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.Eori
+import models.router.responses.SetUpProfileResponse
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class RouterConnector @Inject()(
                        appConfig: FrontendAppConfig,
                        httpClientV2: HttpClientV2
                      ) extends BaseConnector {
 
-  def setUpProfile(implicit ec: ExecutionContext, hc: HeaderCarrier) = {
+  def setUpProfile(eori: Eori)(implicit ec: ExecutionContext, hc: HeaderCarrier) = {
 
-    val url = s"http://localhost:10903/customs/traders/good-profiles/"
+    val routerService = appConfig.tgpRouter
+    val url = s"${routerService.baseUrl}/customs/traders/good-profiles"
 
     // Create request to send - jsony stuff
     // TODO pass in user answers
@@ -38,15 +41,11 @@ class RouterConnector @Inject()(
 
     // Do the request - httpy stuff
 
-
     // Get the response - jsony stuff
 
-    //TODO app config the url
-
-    //TODO pass in eori
-    httpClientV2.put(url"$url/eeori")
+    httpClientV2.put(url"$url/${eori.value}")
       .execute[HttpResponse]
-      //TODO get response in correct format??
+     // .executeAndDeserialise[SetUpProfileResponse]
 
 
     // TODO unit tests

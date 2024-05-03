@@ -18,9 +18,10 @@ package controllers
 
 import connectors.RouterConnector
 import controllers.actions.AuthoriseAction
+import models.router.responses.SetUpProfileResponse
+import scala.util.{Failure, Success}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomepageView
 
@@ -38,8 +39,13 @@ class HomepageController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
 
-    //val testConnector = routerConnector.setUpProfile
-    //println("CCCCCCC" + testConnector)
+    val testConnector = routerConnector.setUpProfile(request.eori)
+    println("CCCCCCC" + testConnector)
+
+    testConnector.onComplete {
+      case Success(yay) => println(s"yay CCC $yay")
+      case Failure(t) => println("An error has occurred: " + t.getMessage)
+    }
 
     Ok(view())
   }

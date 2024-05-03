@@ -24,8 +24,6 @@ import play.api.http.Status.OK
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status, stubMessages}
 import views.html.HomepageView
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class HomepageControllerSpec extends SpecBase {
 
   val homepageView: HomepageView = app.injector.instanceOf[HomepageView]
