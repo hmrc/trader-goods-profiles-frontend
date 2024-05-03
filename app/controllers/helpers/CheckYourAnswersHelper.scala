@@ -52,13 +52,21 @@ class CheckYourAnswersHelper {
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.ukimsNumber.map(_.value)
       ),
-      ("NIRMS registered", routes.NirmsQuestionController.onPageLoad(CheckMode).url, traderGoodsProfile.hasNirms),
+      (
+        "NIRMS registered",
+        routes.NirmsQuestionController.onPageLoad(CheckMode).url,
+        traderGoodsProfile.hasNirms
+      ),
       (
         "NIRMS number",
         routes.NirmsNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.nirmsNumber.map(_.value)
       ),
-      ("NIPHL registered", routes.NiphlQuestionController.onPageLoad(CheckMode).url, traderGoodsProfile.hasNiphl),
+      (
+        "NIPHL registered",
+        routes.NiphlQuestionController.onPageLoad(CheckMode).url,
+        traderGoodsProfile.hasNiphl
+      ),
       (
         "NIPHL number",
         routes.NiphlNumberController.onPageLoad(CheckMode).url,
