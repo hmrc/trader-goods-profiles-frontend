@@ -67,7 +67,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
     }
 
-    "must send bad request on Submit when user leave the field blank" in {
+    "must bad request on Submit when user leave the field blank" in {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
@@ -79,7 +79,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
     }
 
-    "must send bad request on Submit when user enters invalid commodity code" in {
+    "must bad request on Submit when commodity code is not one of {6,8,10} digits" in {
 
       val inValidCommodityCode = "10987654321"
 
@@ -97,7 +97,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
     }
 
-    "must send bad request on Submit when user enters invalid commodity code format" in {
+    "must bad request on Submit when user enters invalid commodity code format" in {
 
       val inValidCommodityCode = "ACCBDGDD"
 
