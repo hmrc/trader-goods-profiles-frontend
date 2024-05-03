@@ -53,7 +53,7 @@ trait SpecBase
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val messages: Messages = messagesApi.preferred(fakeRequest)
+  implicit val messages: Messages = messagesApi.preferred(fakeRequest)
 
   val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 

@@ -29,6 +29,7 @@ import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.i18n.Messages
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
   val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
@@ -86,7 +87,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         rows = summaryList
       )
 
-      when(mockCheckYourAnswersHelper.createSummaryList(any[TraderGoodsProfile])) thenReturn summaryList
+      when(mockCheckYourAnswersHelper.createSummaryList(any[TraderGoodsProfile])(any())) thenReturn summaryList
 
       val result = checkYourAnswersController.onPageLoad()(fakeRequest)
 
