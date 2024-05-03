@@ -17,44 +17,37 @@
 package controllers
 
 import base.SpecBase
-import play.api.test.FakeRequest
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import play.api.test.Helpers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
+  private val checkYourAnswersView: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
+
   "Check Your Answers Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a onPageLoad with user answers set" in {
+      val checkYourAnswersControllerWithData = new CheckYourAnswersController(
+        messagesApi,
+        new FakeAuthoriseAction(defaultBodyParser),
+        new FakeSessionRequestAction(emptyUserAnswers),
+        messageComponentControllers,
+        checkYourAnswersView
+      )
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val result = checkYourAnswersControllerWithData.onPageLoad()(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+      val expectedList = SummaryListViewModel(
+        rows = Seq.empty
+      )
 
-        val result = route(application, request).value
+      status(result) mustEqual OK
 
-        val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(Seq.empty)
+      contentAsString(result) mustEqual checkYourAnswersView(expectedList)(fakeRequest, messages).toString
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
-      }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
   }
 }

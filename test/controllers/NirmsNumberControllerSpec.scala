@@ -20,8 +20,8 @@ import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.Helpers._
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import views.html.NirmsNumberView
 
 class NirmsNumberControllerSpec extends SpecBase {
@@ -29,10 +29,12 @@ class NirmsNumberControllerSpec extends SpecBase {
   private val formProvider          = new NirmsNumberFormProvider()
   private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
   private val nirmsNumberController = new NirmsNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsNumberView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "Nirms Number Controller" - {
@@ -43,7 +45,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -54,8 +56,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       val result = nirmsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
-      //TO DO : Redirect needs to be changed to actual page when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -66,8 +68,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       val result = nirmsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
-      //TO DO : Redirect needs to be changed to actual page when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -78,8 +80,8 @@ class NirmsNumberControllerSpec extends SpecBase {
       val result = nirmsNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
-      //TO DO : Redirect needs to be changed to actual page when available
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 

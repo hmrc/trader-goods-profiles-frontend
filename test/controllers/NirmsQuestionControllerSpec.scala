@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
+import forms.NirmsQuestionFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
-import forms.NirmsQuestionFormProvider
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -31,13 +31,19 @@ class NirmsQuestionControllerSpec extends SpecBase {
   private val nirmsQuestionView = app.injector.instanceOf[NirmsQuestionView]
 
   private val nirmsQuestionController = new NirmsQuestionController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "NirmsQuestion Controller" - {
+
+    nirmsQuestionController.onPageLoad(
+      fakeRequest
+    )
 
     "must return OK and the correct view for a GET" in {
 
@@ -45,7 +51,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -69,7 +75,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
 
     }
 
@@ -82,7 +88,9 @@ class NirmsQuestionControllerSpec extends SpecBase {
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
-      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+
+      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, messages).toString
+
       pageContent must include("nirmsQuestion.error.notSelected")
 
     }

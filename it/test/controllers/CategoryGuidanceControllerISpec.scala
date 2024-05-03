@@ -42,7 +42,7 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
     }
 
     "loads page" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
@@ -52,7 +52,7 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
     }
 
     "returns redirect when submitting" in {
-      authorisedUser
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 

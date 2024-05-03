@@ -16,6 +16,7 @@
 
 package helpers
 
+import controllers.routes
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
@@ -31,7 +32,7 @@ import play.api.Application
 import play.api.http._
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.api.test._
@@ -64,10 +65,14 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
     Enrolment("HMRC-CUS-ORG").withIdentifier("EORINumber", Gen.alphaNumStr.sample.get)
   private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
-  def authorisedUser: OngoingStubbing[Future[Option[String] ~ Enrolments]] =
+  def authorisedUserWithAnswers = {
     when(authConnector.authorise(any, eqTo(authFetch))(any, any)).thenReturn(
       Future.successful(authResult)
     )
+    val client: WSClient = app.injector.instanceOf[WSClient]
+    val request = client.url(s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}")
+    await(request.get())
+  }
 
   def noEnrolment: OngoingStubbing[Future[Option[String] ~ Enrolments]] = {
     val authResult = Some("internalId") and Enrolments(Set.empty)
