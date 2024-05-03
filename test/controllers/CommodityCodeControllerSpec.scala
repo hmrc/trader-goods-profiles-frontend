@@ -36,7 +36,9 @@ class CommodityCodeControllerSpec extends SpecBase {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     commodityCodeView,
-    formProvider
+    formProvider,
+    sessionRequest,
+    sessionService
   )
 
   "Commodity Code   Controller" - {

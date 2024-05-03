@@ -16,37 +16,55 @@
 
 package controllers
 
-import controllers.actions.AuthoriseAction
+import controllers.actions._
 import forms.CommodityCodeFormProvider
+import models.CommodityCode
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CommodityCodeView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CommodityCodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: CommodityCodeView,
-  formProvider: CommodityCodeFormProvider
-) extends FrontendBaseController
+  formProvider: CommodityCodeFormProvider,
+  sessionRequest: SessionRequestAction,
+  sessionService: SessionService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalCommodityCode = request.userAnswers.categorisationAnswers.commodityCode
+    optionalCommodityCode match {
+      case Some(commodityCode) => Ok(view(form.fill(commodityCode.value)))
+      case None                => Ok(view(form))
+    }
   }
 
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    //TODO - session data handling
-    //TODO - change redirect when it becomes becomes available
-
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
-        _ => Redirect(routes.DummyController.onPageLoad.url)
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        commodityCode => {
+          val updatedCategorisationAnswers =
+            request.userAnswers.categorisationAnswers.copy(commodityCode = Some(CommodityCode(commodityCode)))
+          val updatedUserAnswers           = request.userAnswers.copy(categorisationAnswers = updatedCategorisationAnswers)
+          //TODO - change redirect when it becomes becomes available
+          sessionService
+            .updateUserAnswers(updatedUserAnswers)
+            .fold(
+              sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
+              success => Redirect(routes.DummyController.onPageLoad.url)
+            )
+        }
       )
   }
 
