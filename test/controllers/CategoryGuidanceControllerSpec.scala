@@ -24,10 +24,10 @@ import views.html.CategoryGuidanceView
 
 class CategoryGuidanceControllerSpec extends SpecBase {
 
-  val categoryGuidanceView: CategoryGuidanceView = app.injector.instanceOf[CategoryGuidanceView]
+  private val categoryGuidanceView: CategoryGuidanceView = app.injector.instanceOf[CategoryGuidanceView]
 
-  val categoryGuidanceController = new CategoryGuidanceController(
-    stubMessagesControllerComponents(),
+  private val categoryGuidanceController = new CategoryGuidanceController(
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     categoryGuidanceView
   )
@@ -40,7 +40,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual categoryGuidanceView()(fakeRequest, stubMessages()).toString()
+      contentAsString(result) mustEqual categoryGuidanceView()(fakeRequest, messages).toString()
 
     }
 

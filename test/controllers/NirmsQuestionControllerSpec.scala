@@ -18,24 +18,20 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
+import forms.NirmsQuestionFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
-import forms.NirmsQuestionFormProvider
-
-import scala.concurrent.ExecutionContext
 
 class NirmsQuestionControllerSpec extends SpecBase {
-
-  implicit val ec: ExecutionContext = ExecutionContext.global;
 
   private val formProvider = new NirmsQuestionFormProvider()
 
   private val nirmsQuestionView = app.injector.instanceOf[NirmsQuestionView]
 
   private val nirmsQuestionController = new NirmsQuestionController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
     formProvider,
@@ -55,7 +51,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -93,7 +89,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("nirmsQuestion.error.notSelected")
 
