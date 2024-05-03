@@ -36,7 +36,8 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
     val list = SummaryListViewModel(
-      rows = checkYourAnswersHelper.createSummaryList(request.userAnswers.traderGoodsProfile)
+      rows =
+        checkYourAnswersHelper.createSummaryList(request.userAnswers.traderGoodsProfile)(messagesApi.preferred(request))
     )
     Ok(view(list))
   }

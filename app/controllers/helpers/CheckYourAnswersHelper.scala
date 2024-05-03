@@ -18,13 +18,15 @@ package controllers.helpers
 
 import controllers.routes
 import models.{CheckMode, TraderGoodsProfile}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
-class CheckYourAnswersHelper {
-
-  private def createSummaryListRow(key: String, href: String, value: Option[Any]): Option[SummaryListRow] = {
-    val changeText = "Change"
+class CheckYourAnswersHelper() {
+  private def createSummaryListRow(key: String, href: String, value: Option[Any])(implicit
+    messages: Messages
+  ): Option[SummaryListRow] = {
+    val changeText = messages("site.change")
     value.flatMap {
       case stringValue: String   =>
         Some(
@@ -45,7 +47,7 @@ class CheckYourAnswersHelper {
       case _                     => None
     }
   }
-  def createSummaryList(traderGoodsProfile: TraderGoodsProfile): List[SummaryListRow] = {
+  def createSummaryList(traderGoodsProfile: TraderGoodsProfile)(implicit messages: Messages): List[SummaryListRow] = {
     val summaryData: Seq[(String, String, Option[Any])] = Seq(
       (
         "UKIMS number",
