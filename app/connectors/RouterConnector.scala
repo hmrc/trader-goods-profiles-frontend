@@ -43,9 +43,10 @@ class RouterConnector @Inject()(
 
     // Get the response - jsony stuff
 
-    httpClientV2.put(url"$url/${eori.value}")
-      .execute[HttpResponse]
-     // .executeAndDeserialise[SetUpProfileResponse]
+    //todo: cleanup after
+    val something = httpClientV2.put(url"$url/${eori.value}")
+
+    something.executeAndDeserialise[SetUpProfileResponse]
 
 
     // TODO unit tests

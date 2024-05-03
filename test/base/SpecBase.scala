@@ -33,6 +33,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyPa
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
 import services.SessionService
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,6 +46,8 @@ trait SpecBase
     with GuiceOneAppPerSuite {
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   val userAnswersId: String = "id"
 

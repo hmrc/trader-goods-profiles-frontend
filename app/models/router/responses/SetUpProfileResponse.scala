@@ -19,7 +19,7 @@ package models.router.responses
 import play.api.libs.json.{Json, OFormat}
 
 case class SetUpProfileResponse (
-                                  eori: String,
+                                  EORI: String,
                                   ukimsNumber: String,
                                   nirmsNumber: String,
                                   niphlNumber: String
