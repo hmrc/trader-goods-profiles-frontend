@@ -39,7 +39,7 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
     "loads page" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(FakeRequest(routes.CommodityCodeController.onPageLoad))
 
@@ -52,7 +52,7 @@ class CommodityCodeControllerISpec extends ItTestBase {
     //TODO: Should change Dummy controller to actual when it becomes available
     "redirect to dummy controller when submitting valid data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> "654321")
@@ -66,7 +66,7 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
     "return bad request when submitting invalid format" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
 
       val result = callRoute(
         FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> "ABCDEF")
@@ -80,7 +80,7 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
     "return bad request when submitting incorrect data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
       val result = callRoute(
         FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> "10987654321")
       )
@@ -93,7 +93,7 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
     "return bad request when submitting no data" in {
 
-      authorisedUser
+      authorisedUserWithAnswers
       val result =
         callRoute(FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> ""))
 
