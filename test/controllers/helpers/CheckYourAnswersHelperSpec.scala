@@ -45,7 +45,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -56,7 +58,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -67,7 +71,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -78,7 +84,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -89,7 +97,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           )
@@ -115,7 +125,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -126,7 +138,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -137,7 +151,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -148,7 +164,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           )
@@ -173,7 +191,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -184,7 +204,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -195,7 +217,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -206,7 +230,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           )
@@ -232,7 +258,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -243,7 +271,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           ),
@@ -254,7 +284,9 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(
               Actions(
                 "",
-                List(ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map()))
+                List(
+                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
+                )
               )
             )
           )

@@ -60,9 +60,10 @@ trait ItTestBase extends PlaySpec with GuiceOneServerPerSuite {
 
   override implicit lazy val app: Application = appBuilder.build()
 
+  val generatedEori: String = Gen.alphaNumStr.sample.get
   private val authFetch               = Retrievals.internalId and Retrievals.authorisedEnrolments
   private val ourEnrolment: Enrolment =
-    Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", Gen.alphaNumStr.sample.get)
+    Enrolment("HMRC-CUS-ORG").withIdentifier("fake-identifier", generatedEori)
   private val authResult              = Some("internalId") and Enrolments(Set(ourEnrolment))
 
   def authorisedUserWithAnswers = {

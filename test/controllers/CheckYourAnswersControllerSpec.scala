@@ -17,30 +17,39 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import controllers.helpers.CheckYourAnswersHelper
-import models.TraderGoodsProfile
+import models.{Eori, TraderGoodsProfile}
+import models.errors.RouterError
 import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchersSugar.eqTo
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Actions, HtmlContent, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.i18n.Messages
+import services.RouterService
+
+import scala.concurrent.Future
+import scala.concurrent.Future.successful
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
-  val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
-  val mockCheckYourAnswersHelper: CheckYourAnswersHelper = mock[CheckYourAnswersHelper]
+  private val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
+  private val mockCheckYourAnswersHelper: CheckYourAnswersHelper = mock[CheckYourAnswersHelper]
+  private val routerService                                      = mock[RouterService]
 
-  val checkYourAnswersController = new CheckYourAnswersController(
+  private val checkYourAnswersController = new CheckYourAnswersController(
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     checkYourAnswersView,
     sessionRequest,
-    mockCheckYourAnswersHelper
+    mockCheckYourAnswersHelper,
+    routerService
   )
 
   "CheckYourAnswersController" - {
@@ -97,13 +106,34 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     }
 
-    "must redirect on Submit" in {
+    "must redirect to homepage when successful on Submit" in {
+
+      when(routerService.setUpProfile(any, any)(any))
+        .thenReturn(EitherT[Future, RouterError, Unit](successful(Right())))
+
+      val result = checkYourAnswersController.onSubmit()(fakeRequest)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.HomepageController.onPageLoad.url)
+
+      withClue("Ensure correct data is sent to router service") {
+        verify(routerService).setUpProfile(eqTo(Eori("eori")), eqTo(emptyUserAnswers.traderGoodsProfile))(any)
+      }
+
+    }
+
+    "must redirect to dummy page when error on Submit" in {
+
+      when(routerService.setUpProfile(any, any)(any))
+        .thenReturn(EitherT[Future, RouterError, Unit](successful(Left(RouterError("error", Some(BAD_REQUEST))))))
 
       val result = checkYourAnswersController.onSubmit()(fakeRequest)
 
       status(result) mustEqual SEE_OTHER
 
       redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+
     }
   }
 }

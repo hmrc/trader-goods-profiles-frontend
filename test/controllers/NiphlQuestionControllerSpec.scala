@@ -24,6 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
 import forms.NiphlQuestionFormProvider
+import models.{CheckMode, NormalMode}
 
 import scala.concurrent.ExecutionContext
 

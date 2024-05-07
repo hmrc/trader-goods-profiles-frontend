@@ -16,21 +16,28 @@
 
 package controllers
 
+import cats.data.EitherT
+import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.Inject
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
 import controllers.helpers.CheckYourAnswersHelper
+import services.RouterService
+import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
+
+import scala.concurrent.Future
 
 class CheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
   view: CheckYourAnswersView,
   getData: SessionRequestAction,
-  checkYourAnswersHelper: CheckYourAnswersHelper
+  checkYourAnswersHelper: CheckYourAnswersHelper,
+  routerService: RouterService
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -43,8 +50,15 @@ class CheckYourAnswersController @Inject() (
   }
 
   // TODO replace dummy route and post session data
-  def onSubmit: Action[AnyContent] = authorise { implicit request =>
-    Redirect(routes.DummyController.onPageLoad.url)
+  def onSubmit: Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+
+    routerService
+      .setUpProfile(request.eori, request.userAnswers.traderGoodsProfile)
+      .fold(
+      error => Redirect(routes.DummyController.onPageLoad.url), //TODO actual error page
+      success => Redirect(routes.HomepageController.onPageLoad.url)
+    )(catsStdInstancesForFuture(defaultExecutionContext))
+
   }
 
 }

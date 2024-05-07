@@ -16,15 +16,34 @@
 
 package controllers
 
-import base.ItTestBase
-import play.api.http.Status.{OK, SEE_OTHER}
+import base.{ItTestBase, WireMockServerSpec}
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, put, stubFor, urlEqualTo}
+import play.api.http.Status.{BAD_REQUEST, NO_CONTENT, OK, SEE_OTHER}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import uk.gov.hmrc.http.test.WireMockSupport
 
-class CheckYourAnswersControllerISpec extends ItTestBase {
+class CheckYourAnswersControllerISpec extends ItTestBase with WireMockServerSpec {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
   private val url = s"http://localhost:$port${routes.CheckYourAnswersController.onPageLoad.url}"
+
+  lazy private val baseWireMockUrl = s"http://$wireMockHost:$wireMockPort"
+
+  override def appBuilder: GuiceApplicationBuilder = {
+
+    wireMock.start()
+    WireMock.configureFor(wireMockHost, wireMockPort)
+
+    super.appBuilder.configure(
+      //  WireMock.configureFor(wireHost, wireMock.port())
+
+      "microservice.services.trader-goods-profile-router.host" -> wireMockHost,
+      "microservice.services.trader-goods-profile-router.port" -> wireMockPort,
+    )
+  }
 
   "CheckYourAnswersController" should {
 
@@ -54,7 +73,38 @@ class CheckYourAnswersControllerISpec extends ItTestBase {
 
     }
 
-    "redirect to dummy controller when submitting valid data" in {
+    "redirect to homepage controller when submitting valid data is successful" in {
+
+      stubFor(
+        put(urlEqualTo(s"/customs/traders/good-profiles/$generatedEori"))
+          .willReturn(
+            aResponse()
+              .withStatus(NO_CONTENT)
+          )
+      )
+
+      authorisedUserWithAnswers
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(""))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.HomepageController.onPageLoad.url)
+
+    }
+
+    "redirect to dummy controller when submitting data is unsuccessful" in {
+
+      stubFor(
+        put(urlEqualTo(s"/customs/traders/good-profiles/$generatedEori"))
+          .willReturn(
+            aResponse()
+              .withStatus(BAD_REQUEST)
+              .withBody("Bad times")
+          )
+      )
 
       authorisedUserWithAnswers
 
@@ -67,6 +117,7 @@ class CheckYourAnswersControllerISpec extends ItTestBase {
       redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
 
     }
+
 
   }
 }

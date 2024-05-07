@@ -22,9 +22,11 @@ import models.router.requests.SetUpProfileRequest
 import models.{Eori, NiphlNumber, NirmsNumber, ServiceDetails, TraderGoodsProfile, UkimsNumber}
 import org.mockito.ArgumentMatchers.{any, anyInt}
 import org.mockito.ArgumentMatchersSugar.eqTo
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{reset, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.http.Status.{BAD_REQUEST, NO_CONTENT, OK}
+import play.api.libs.json.Json
 import play.api.test.Helpers.{await, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
@@ -32,32 +34,29 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
-class RouterConnectorSpec extends SpecBase {
+class RouterConnectorSpec extends SpecBase with BeforeAndAfterEach {
   private val appConfig      = mock[FrontendAppConfig]
   private val httpClient     = mock[HttpClientV2]
   private val requestBuilder = mock[RequestBuilder]
 
   private val routerConnector = new RouterConnector(appConfig, httpClient)
 
-  private val userEnteredData = TraderGoodsProfile(
-    Some(UkimsNumber("ukims")),
-    Some(true),
-    Some(NirmsNumber("nirms")),
-    Some(true),
-    Some(NiphlNumber("niphl"))
-  )
-
-  private val expectedRouterRequest = SetUpProfileRequest(
+  private val requestData = SetUpProfileRequest(
     "eori",
     Some("ukims"),
     Some("nirms"),
     Some("niphl")
   )
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    reset(httpClient, requestBuilder)
+  }
+
   "Router Connector" - {
     "setUpProfile" - {
       "must return response when successful" in {
-
 
         when(appConfig.tgpRouter).thenReturn(ServiceDetails("http", "host", 1))
         when(httpClient.put(any)(any)).thenReturn(requestBuilder)
@@ -66,37 +65,21 @@ class RouterConnectorSpec extends SpecBase {
         when(requestBuilder.execute[HttpResponse](any, any))
           .thenReturn(successful(HttpResponse(NO_CONTENT, "")))
 
-        val result = await(
+        val result =
           routerConnector.setUpProfile(
             Eori("eori"),
-            userEnteredData
+            requestData
           )
-        )
 
-        result mustBe Right()
+        await(result.value) mustBe Right()
 
         withClue("should have submitted the expected request") {
-          verify(requestBuilder.withBody(eqTo(expectedRouterRequest))(any, any, any))
+          verify(requestBuilder).withBody(eqTo(Json.toJson(requestData)))(any, any, any)
         }
 
       }
 
-      "must return an Upstream Error if router returns one" in {
-
-        val userEnteredData = TraderGoodsProfile(
-          Some(UkimsNumber("ukims")),
-          Some(true),
-          Some(NirmsNumber("nirms")),
-          Some(true),
-          Some(NiphlNumber("niphl"))
-        )
-
-        val expectedRouterRequest = SetUpProfileRequest(
-          "eori",
-          Some("ukims"),
-          Some("nirms"),
-          Some("niphl")
-        )
+      "must return an error if router returns one" in {
 
         when(appConfig.tgpRouter).thenReturn(ServiceDetails("http", "host", 1))
         when(httpClient.put(any)(any)).thenReturn(requestBuilder)
@@ -105,25 +88,22 @@ class RouterConnectorSpec extends SpecBase {
         when(requestBuilder.execute[HttpResponse](any, any))
           .thenReturn(successful(HttpResponse(BAD_REQUEST, "Bad json")))
 
-        val result = await(
+        val result =
           routerConnector.setUpProfile(
             Eori("eori"),
-            userEnteredData
+            requestData
           )
-        )
 
-        result match {
-          case Left(error) => {
-            error.getMessage() must include("Bad json")
-            error.statusCode mustBe BAD_REQUEST
-          }
-          case Right(_) => fail()
+        await(result.value) match {
+          case Left(error) =>
+            error.errorMsg must include("Bad json")
+            error.status mustBe Some(BAD_REQUEST)
+          case Right(_)    => fail()
         }
 
       }
 
-      //TODO finish test
-      "must return an Upstream Error if exception thrown by http client" in {
+      "must return an Error if exception thrown by HTTP client" in {
 
         when(appConfig.tgpRouter).thenReturn(ServiceDetails("http", "host", 1))
         when(httpClient.put(any)(any)).thenReturn(requestBuilder)
@@ -132,19 +112,17 @@ class RouterConnectorSpec extends SpecBase {
         when(requestBuilder.execute[HttpResponse](any, any))
           .thenReturn(failed(new RuntimeException("request failed")))
 
-        val result = await(
+        val result =
           routerConnector.setUpProfile(
             Eori("eori"),
-            userEnteredData
+            requestData
           )
-        )
 
-        result match {
-          case Left(error) => {
-            error.getMessage() must include("request failed")
-            error.statusCode mustBe 0
-          }
-          case Right(_) => fail()
+        await(result.value) match {
+          case Left(error) =>
+            error.errorMsg must include("request failed")
+            error.status mustBe None
+          case Right(_)    => fail()
         }
 
       }

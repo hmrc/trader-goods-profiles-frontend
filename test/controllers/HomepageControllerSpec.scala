@@ -29,14 +29,10 @@ class HomepageControllerSpec extends SpecBase {
 
   val homepageView: HomepageView = app.injector.instanceOf[HomepageView]
 
-  //TODO remove
-  val routerConnector = mock[RouterConnector]
-
   val homepageController = new HomepageController(
     messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     homepageView,
-    routerConnector,
     new FakeSessionRequestAction(emptyUserAnswers)
   )
 

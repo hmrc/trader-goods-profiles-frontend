@@ -16,11 +16,13 @@
 
 package connectors
 
+import cats.data.EitherT
 import config.FrontendAppConfig
 import models.router.requests.SetUpProfileRequest
-import models.{Eori, TraderGoodsProfile}
+import models.Eori
+import models.errors.RouterError
 import play.api.Logging
-import play.api.http.Status.isSuccessful
+import play.api.http.Status.{OK, isSuccessful}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -36,24 +38,17 @@ class RouterConnector @Inject() (
     with Logging {
 
   //TODO make service to call this connector!
-
-  def setUpProfile(eori: Eori, traderGoodsProfile: TraderGoodsProfile)(implicit
+  def setUpProfile(eori: Eori, setUpProfileRequest: SetUpProfileRequest)(implicit
     ec: ExecutionContext,
     hc: HeaderCarrier
-  ): Future[Either[UpstreamErrorResponse, Unit]] = {
+  ): EitherT[Future, RouterError, Unit] = {
 
     val routerService = appConfig.tgpRouter
-    val url           = s"${routerService.baseUrl}/customs/traders/good-profiles"
-    val requestItem   = SetUpProfileRequest(
-      eori.value,
-      traderGoodsProfile.ukimsNumber.map(_.value),
-      traderGoodsProfile.nirmsNumber.map(_.value),
-      traderGoodsProfile.niphlNumber.map(_.value)
-    )
+    val url           = s"${routerService.baseUrl}/customs/traders/good-profiles/${eori.value}"
 
-    httpClientV2
-      .put(url"$url/${eori.value}")
-      .withBody(Json.toJson(requestItem))
+    EitherT(httpClientV2
+      .put(url"$url")
+      .withBody(Json.toJson(setUpProfileRequest))
       .execute
       .flatMap(httpResponse => handleProfileSetUpResponse(eori, url, httpResponse))
       .recover { case NonFatal(exception) =>
@@ -61,8 +56,8 @@ class RouterConnector @Inject() (
           s"[RouterConnector] - Error occurred when submitting Trader Goods Profile data for EORI ${eori.value}: ${exception.getMessage}"
         )
 
-        Left(UpstreamErrorResponse("Failed to submit Trader Goods Profile data", 0))
-      }
+        Left(RouterError(s"Failed to submit Trader Goods Profile data: ${exception.getMessage}", None))
+      })
 
     // TODO unit tests
     // success
@@ -85,11 +80,9 @@ class RouterConnector @Inject() (
       )
       Future.successful(
         Left(
-          UpstreamErrorResponse(
+          RouterError(
             upstreamResponseMessage("PUT", url, httpResponse.status, httpResponse.body),
-            httpResponse.status,
-            httpResponse.status,
-            httpResponse.headers
+            Some(httpResponse.status)
           )
         )
       )

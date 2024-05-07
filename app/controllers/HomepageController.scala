@@ -32,20 +32,11 @@ class HomepageController @Inject() (
                                      val controllerComponents: MessagesControllerComponents,
                                      authorise: AuthoriseAction,
                                      view: HomepageView,
-                                     routerConnector: RouterConnector,
                                      getSession: SessionRequestAction
                                    )(implicit ec: ExecutionContext) extends FrontendBaseController
   with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getSession) { implicit request =>
-
-    val testConnector = routerConnector.setUpProfile(request.eori, request.userAnswers.traderGoodsProfile)
-    println("CCCCCCC" + testConnector)
-
-    testConnector.onComplete {
-      case Success(yay) => println(s"yay CCC $yay")
-      case Failure(t) => println("An error has occurred: " + t.getMessage)
-    }
 
     Ok(view())
   }
