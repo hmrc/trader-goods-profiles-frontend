@@ -121,8 +121,8 @@ commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 8765432
 commodityCode.error.required = Enter a commodity code
 commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 
-countryOfOrigin.title = What is the country of origin of the goods?
-countryOfOrigin.h1 = What is the country of origin of the goods?
+countryOfOrigin.title = Country of origin
+countryOfOrigin.h1 = Country of origin
 countryOfOrigin.p1 = The origin of the goods:
 countryOfOrigin.ul.item1 = is where they have been grown, produced, or manufactured
 countryOfOrigin.ul.item2 = may not be the country where they are shipped or bought from
