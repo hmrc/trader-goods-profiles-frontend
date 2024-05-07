@@ -58,7 +58,7 @@ class NiphlNumberController @Inject() (
         niphlNumber => {
           val updatedMaintainProfileAnswers =
             request.userAnswers.maintainProfileAnswers
-              .copy(hasNiphl = Some(true), niphlNumber = Some(NiphlNumber(niphlNumber)))
+              .copy(niphlNumber = Some(NiphlNumber(niphlNumber)))
           val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService

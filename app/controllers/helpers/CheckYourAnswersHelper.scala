@@ -23,36 +23,25 @@ import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
 class CheckYourAnswersHelper() {
-  private def createSummaryListRow(key: String, href: String, value: Option[Any])(implicit
+
+  def changeToYesOrNo(boolean: Boolean)(implicit messages: Messages): String =
+    if (boolean) messages("site.yes") else messages("site.no")
+
+  private def createSummaryListRow(key: String, href: String, value: Option[String])(implicit
     messages: Messages
-  ): Option[SummaryListRow] = {
-    val changeText = messages("site.change")
-    val yesText    = messages("site.yes")
-    val noText     = messages("site.no")
-    value.flatMap {
-      case stringValue: String   =>
-        Some(
-          SummaryListRow(
-            key = Key(HtmlContent(key)),
-            value = Value(HtmlContent(stringValue)),
-            actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent(changeText)))))
-          )
-        )
-      case booleanValue: Boolean =>
-        Some(
-          SummaryListRow(
-            key = Key(HtmlContent(key)),
-            value = Value(HtmlContent(if (booleanValue) yesText else noText)),
-            actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent(changeText)))))
-          )
-        )
-      case _                     => None
-    }
+  ): Option[SummaryListRow] = value.flatMap { anyValue =>
+    Some(
+      SummaryListRow(
+        key = Key(HtmlContent(key)),
+        value = Value(HtmlContent(anyValue)),
+        actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent(messages("site.change"))))))
+      )
+    )
   }
   def createSummaryList(
     traderGoodsProfile: MaintainProfileAnswers
-  )(implicit messages: Messages): List[SummaryListRow] = {
-    val summaryData: List[(String, String, Option[Any])] = List(
+  )(implicit messages: Messages): Seq[SummaryListRow] = {
+    val summaryData: Seq[(String, String, Option[String])] = Seq(
       (
         "UKIMS number",
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
@@ -61,7 +50,7 @@ class CheckYourAnswersHelper() {
       (
         "NIRMS registered",
         routes.NirmsQuestionController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.hasNirms
+        traderGoodsProfile.hasNirms.map(changeToYesOrNo)
       ),
       (
         "NIRMS number",
@@ -71,7 +60,7 @@ class CheckYourAnswersHelper() {
       (
         "NIPHL registered",
         routes.NiphlQuestionController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.hasNiphl
+        traderGoodsProfile.hasNiphl.map(changeToYesOrNo)
       ),
       (
         "NIPHL number",

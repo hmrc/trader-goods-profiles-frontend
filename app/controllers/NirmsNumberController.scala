@@ -57,7 +57,7 @@ class NirmsNumberController @Inject() (
         nirmsNumber => {
           val updatedMaintainProfileAnswers =
             request.userAnswers.maintainProfileAnswers
-              .copy(hasNirms = Some(true), nirmsNumber = Some(NirmsNumber(nirmsNumber)))
+              .copy(nirmsNumber = Some(NirmsNumber(nirmsNumber)))
           val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
