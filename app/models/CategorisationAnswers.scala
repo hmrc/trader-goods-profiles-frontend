@@ -16,8 +16,13 @@
 
 package models
 
-object StringFieldRegex {
-  val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
-  val ukimsNumberRegex: String         = "^(GB|XI)[0-9]{12}[0-9]{14}$"
-  val niphlNumberRegex: String         = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
+import play.api.libs.json.{Json, OFormat}
+
+case class CategorisationAnswers(
+  commodityCode: Option[CommodityCode] = None,
+  countryOfOrigin: Option[CountryOfOrigin] = None
+)
+
+object CategorisationAnswers {
+  implicit val format: OFormat[models.CategorisationAnswers] = Json.format[CategorisationAnswers]
 }

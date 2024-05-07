@@ -17,7 +17,7 @@
 package controllers.helpers
 
 import base.SpecBase
-import models.{NiphlNumber, NirmsNumber, TraderGoodsProfile, UkimsNumber}
+import models.{MaintainProfileAnswers, MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber}
 import viewmodels.govuk.SummaryListFluency
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
@@ -31,13 +31,13 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
     "createSummaryList" - {
 
       "must return empty summary list when blank trader goods profile" in {
-        val traderGoodsProfile: TraderGoodsProfile = TraderGoodsProfile()
-        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        val maintainProfileAnswers: MaintainProfileAnswers = MaintainProfileAnswers()
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
         summaryList mustBe Seq.empty
       }
 
       "must return full summary list when trader goods profile has all fields" in {
-        val expected                               = List(
+        val expected                                       = List(
           SummaryListRow(
             Key(HtmlContent("UKIMS number")),
             Value(HtmlContent("11")),
@@ -94,20 +94,20 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             )
           )
         )
-        val traderGoodsProfile: TraderGoodsProfile =
-          TraderGoodsProfile(
+        val maintainProfileAnswers: MaintainProfileAnswers =
+          MaintainProfileAnswers(
             Some(UkimsNumber("11")),
             Some(true),
             Some(NirmsNumber("22")),
             Some(true),
             Some(NiphlNumber("33"))
           )
-        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
         summaryList mustBe expected
       }
 
       "must return valid summary list when trader goods profile has no for NIPHL" in {
-        val expected                               = List(
+        val expected                                       = List(
           SummaryListRow(
             Key(HtmlContent("UKIMS number")),
             Value(HtmlContent("11")),
@@ -153,19 +153,19 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             )
           )
         )
-        val traderGoodsProfile: TraderGoodsProfile =
-          TraderGoodsProfile(
+        val maintainProfileAnswers: MaintainProfileAnswers =
+          MaintainProfileAnswers(
             Some(UkimsNumber("11")),
             Some(true),
             Some(NirmsNumber("22")),
             Some(false)
           )
-        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
         summaryList mustBe expected
       }
 
       "must return valid summary list when trader goods profile has no for NIRMS" in {
-        val expected                               = List(
+        val expected                                       = List(
           SummaryListRow(
             Key(HtmlContent("UKIMS number")),
             Value(HtmlContent("11")),
@@ -211,20 +211,20 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             )
           )
         )
-        val traderGoodsProfile: TraderGoodsProfile =
-          TraderGoodsProfile(
+        val maintainProfileAnswers: MaintainProfileAnswers =
+          MaintainProfileAnswers(
             Some(UkimsNumber("11")),
             Some(false),
             nirmsNumber = None,
             Some(true),
             Some(NiphlNumber("33"))
           )
-        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
         summaryList mustBe expected
       }
 
       "must return valid summary list when trader goods profile has 2 nos" in {
-        val expected                               = List(
+        val expected                                       = List(
           SummaryListRow(
             Key(HtmlContent("UKIMS number")),
             Value(HtmlContent("11")),
@@ -259,15 +259,15 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             )
           )
         )
-        val traderGoodsProfile: TraderGoodsProfile =
-          TraderGoodsProfile(
+        val maintainProfileAnswers: MaintainProfileAnswers =
+          MaintainProfileAnswers(
             Some(UkimsNumber("11")),
             Some(false),
             nirmsNumber = None,
             Some(false),
             niphlNumber = None
           )
-        val summaryList                            = checkYourAnswersHelper.createSummaryList(traderGoodsProfile)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
         summaryList mustBe expected
       }
 

@@ -20,7 +20,7 @@ import base.SpecBase
 import cats.data.EitherT
 import controllers.routes
 import models.errors.SessionError
-import models.{Eori, InternalId, TraderGoodsProfile, UserAnswers}
+import models.{Eori, InternalId, MaintainProfileAnswers, UserAnswers}
 import models.requests.{AuthorisedRequest, DataRequest}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Result
@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SessionRequestActionSpec extends SpecBase with MockitoSugar {
-  class Harness(sessionService: SessionService) extends SessionRequestActionImpl(sessionService) {
+  class Harness(sessionService: SessionService) extends SessionRequestActionImpl(sessionService)(ec) {
     def callRefine[A](
       request: AuthorisedRequest[A]
     ): Future[Either[Result, DataRequest[A]]] = refine(request)
@@ -46,7 +46,7 @@ class SessionRequestActionSpec extends SpecBase with MockitoSugar {
     val authRequest         = AuthorisedRequest(FakeRequest(), internalId, eori)
     val sessionService      = mock[SessionService]
     val repositoryThrowable = new Throwable("There was an error with sessionRepository")
-    val userAnswers         = UserAnswers(internalId.value, TraderGoodsProfile())
+    val userAnswers         = UserAnswers(internalId.value, MaintainProfileAnswers())
 
     "when it is a new user" - {
 

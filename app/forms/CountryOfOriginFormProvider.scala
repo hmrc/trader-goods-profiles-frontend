@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.{Json, OFormat}
+import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex
+import play.api.data.Form
 
-case class TraderGoodsProfile(
-  ukimsNumber: Option[UkimsNumber] = None,
-  hasNirms: Option[Boolean] = None,
-  nirmsNumber: Option[NirmsNumber] = None,
-  hasNiphl: Option[Boolean] = None,
-  niphlNumber: Option[NiphlNumber] = None
-)
+import javax.inject.Inject
 
-object TraderGoodsProfile {
-  implicit val format: OFormat[models.TraderGoodsProfile] = Json.format[TraderGoodsProfile]
+class CountryOfOriginFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "countryOfOrigin" -> text("countryOfOrigin.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying("countryOfOrigin.error.lettersOnly", _.forall(_.isLetter))
+        .verifying("countryOfOrigin.error.length", _.length == 2)
+    )
 }

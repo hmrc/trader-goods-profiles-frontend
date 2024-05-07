@@ -17,7 +17,7 @@
 package controllers.helpers
 
 import controllers.routes
-import models.{CheckMode, TraderGoodsProfile}
+import models.{CheckMode, MaintainProfileAnswers}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
@@ -47,7 +47,9 @@ class CheckYourAnswersHelper() {
       case _                     => None
     }
   }
-  def createSummaryList(traderGoodsProfile: TraderGoodsProfile)(implicit messages: Messages): List[SummaryListRow] = {
+  def createSummaryList(
+    traderGoodsProfile: MaintainProfileAnswers
+  )(implicit messages: Messages): List[SummaryListRow] = {
     val summaryData: Seq[(String, String, Option[Any])] = Seq(
       (
         "UKIMS number",

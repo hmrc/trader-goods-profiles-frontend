@@ -17,57 +17,52 @@
 package controllers
 
 import controllers.actions._
-import forms.UkimsNumberFormProvider
-import models.{CheckMode, Mode, NormalMode, UkimsNumber}
+import forms.CommodityCodeFormProvider
+import models.CommodityCode
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.UkimsNumberView
+import views.html.CommodityCodeView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkimsNumberController @Inject() (
+class CommodityCodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: UkimsNumberView,
-  formProvider: UkimsNumberFormProvider,
+  view: CommodityCodeView,
+  formProvider: CommodityCodeFormProvider,
   sessionRequest: SessionRequestAction,
   sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalUkimsNumber = request.userAnswers.maintainProfileAnswers.ukimsNumber
-    optionalUkimsNumber match {
-      case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value), mode))
-      case None              => Ok(view(form, mode))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalCommodityCode = request.userAnswers.categorisationAnswers.commodityCode
+    optionalCommodityCode match {
+      case Some(commodityCode) => Ok(view(form.fill(commodityCode.value)))
+      case None                => Ok(view(form))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        ukimsNumber => {
-          val updatedTgpModelObject =
-            request.userAnswers.maintainProfileAnswers.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
-          val updatedUserAnswers    = request.userAnswers.copy(maintainProfileAnswers = updatedTgpModelObject)
-
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        commodityCode => {
+          val updatedCategorisationAnswers =
+            request.userAnswers.categorisationAnswers.copy(commodityCode = Some(CommodityCode(commodityCode)))
+          val updatedUserAnswers           = request.userAnswers.copy(categorisationAnswers = updatedCategorisationAnswers)
+          //TODO - change redirect when it becomes becomes available
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success =>
-                mode match {
-                  case NormalMode => Redirect(routes.NirmsQuestionController.onPageLoad(mode).url)
-                  case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                }
+              success => Redirect(routes.DummyController.onPageLoad.url)
             )
         }
       )

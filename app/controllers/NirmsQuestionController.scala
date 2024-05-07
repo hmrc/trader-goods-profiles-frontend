@@ -42,7 +42,7 @@ class NirmsQuestionController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalHasNirms = request.userAnswers.traderGoodsProfile.hasNirms
+    val optionalHasNirms = request.userAnswers.maintainProfileAnswers.hasNirms
 
     optionalHasNirms match {
       case Some(hasNirmsAnswer) => Ok(view(form.fill(hasNirmsAnswer), mode))
@@ -56,11 +56,11 @@ class NirmsQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         hasNirmsAnswer => {
-          val nirmsNumber           = if (hasNirmsAnswer) request.userAnswers.traderGoodsProfile.nirmsNumber else None
+          val nirmsNumber           = if (hasNirmsAnswer) request.userAnswers.maintainProfileAnswers.nirmsNumber else None
           val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(hasNirms = Some(hasNirmsAnswer), nirmsNumber = nirmsNumber)
+            request.userAnswers.maintainProfileAnswers.copy(hasNirms = Some(hasNirmsAnswer), nirmsNumber = nirmsNumber)
 
-          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedUserAnswers = request.userAnswers.copy(maintainProfileAnswers = updatedTgpModelObject)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
