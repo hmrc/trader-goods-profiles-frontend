@@ -23,6 +23,10 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
+import forms.NirmsQuestionFormProvider
+import models.{CheckMode, NormalMode}
+
+import scala.concurrent.ExecutionContext
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -39,19 +43,22 @@ class NirmsQuestionControllerSpec extends SpecBase {
     sessionService
   )
 
-  "NirmsQuestion Controller" - {
+  "NirmsQuestionController" - {
 
-    nirmsQuestionController.onPageLoad(
+    nirmsQuestionController.onPageLoad(NormalMode)(
       fakeRequest
     )
 
     "must return OK and the correct view for a GET" in {
 
-      val result = nirmsQuestionController.onPageLoad(fakeRequest)
+      val result = nirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, messages).toString
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider(), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
     }
 
@@ -59,11 +66,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad(NormalMode).url)
 
     }
 
@@ -71,11 +78,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -83,16 +90,56 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = nirmsQuestionController.onSubmit(fakeRequest)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, messages).toString
+      pageContent mustEqual nirmsQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
 
       pageContent must include("nirmsQuestion.error.notSelected")
 
+    }
+
+    "CheckMode" - {
+
+      "must return OK and the correct view for a GET" in {
+
+        val result = nirmsQuestionController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual nirmsQuestionView(formProvider(), CheckMode)(
+          fakeRequest,
+          stubMessages()
+        ).toString
+
+      }
+
+      "must redirect on Submit when user selects yes" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+        val result = nirmsQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad(CheckMode).url)
+
+      }
+
+      "must redirect on Submit when user selects no" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
+
+        val result = nirmsQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
     }
   }
 }

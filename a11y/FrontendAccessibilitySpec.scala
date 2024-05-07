@@ -1,3 +1,4 @@
+import models.{CheckMode, Mode, NormalMode}
 import org.scalacheck.Arbitrary
 import play.api.data.Forms._
 import play.api.data.Form
@@ -14,26 +15,28 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
   val layoutClasses: Seq[Class[Layout]]                 = Seq(classOf[Layout])
   val list: SummaryList                                 = SummaryListViewModel(rows = Seq.empty)
   implicit val arbSummaryList: Arbitrary[SummaryList]   = fixed(list)
+  val mode: Mode                                        = NormalMode
+  implicit val arbMode: Arbitrary[Mode]                 = fixed(mode)
   private val booleanForm: Form[Boolean]                = Form("value" -> boolean)
   implicit val arbForm: Arbitrary[Form[_]]              = fixed(booleanForm)
   implicit val arbBooleanForm: Arbitrary[Form[Boolean]] = fixed(booleanForm)
 
   override def renderViewByClass: PartialFunction[Any, Html] = {
-    case profileSetupView: ProfileSetupView                           => render(profileSetupView)
     case categoryGuidanceView: CategoryGuidanceView                   => render(categoryGuidanceView)
-    case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
     case errorTemplate: ErrorTemplate                                 => render(errorTemplate)
     case journeyRecoveryStartAgainView: JourneyRecoveryStartAgainView => render(journeyRecoveryStartAgainView)
     case journeyRecoveryContinueView: JourneyRecoveryContinueView     => render(journeyRecoveryContinueView)
     case unauthorisedView: UnauthorisedView                           => render(unauthorisedView)
-    case dummyView: DummyView                                         => render(dummyView)
     case signedOutView: SignedOutView                                 => render(signedOutView)
-    case nirmsQuestionView: NirmsQuestionView                         => render(nirmsQuestionView)
+    case profileSetupView: ProfileSetupView                           => render(profileSetupView)
     case ukimsNumberView: UkimsNumberView                             => render(ukimsNumberView)
-    case niphlQuestionView: NiphlQuestionView                         => render(niphlQuestionView)
+    case nirmsQuestionView: NirmsQuestionView                         => render(nirmsQuestionView)
     case nirmsNumberView: NirmsNumberView                             => render(nirmsNumberView)
+    case niphlQuestionView: NiphlQuestionView                         => render(niphlQuestionView)
     case niphlNumberView: NiphlNumberView                             => render(niphlNumberView)
+    case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
     case homepageView: HomepageView                                   => render(homepageView)
+    case dummyView: DummyView                                         => render(dummyView)
   }
   runAccessibilityTests()
 }

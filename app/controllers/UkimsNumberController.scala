@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions._
 import forms.UkimsNumberFormProvider
+import models.{CheckMode, Mode, NormalMode, UkimsNumber}
 import models.UkimsNumber
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -41,20 +42,19 @@ class UkimsNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.ukimsNumber
-
     optionalUkimsNumber match {
-      case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value)))
-      case None              => Ok(view(form))
+      case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value), mode))
+      case None              => Ok(view(form, mode))
     }
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         ukimsNumber => {
           val updatedTgpModelObject =
             request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
@@ -64,7 +64,11 @@ class UkimsNumberController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.NirmsQuestionController.onPageLoad.url)
+              success =>
+                mode match {
+                  case NormalMode => Redirect(routes.NirmsQuestionController.onPageLoad(mode).url)
+                  case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+                }
             )
         }
       )

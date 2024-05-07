@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
+import models.NormalMode
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
 import views.html.ProfileSetupView
@@ -44,7 +45,7 @@ class ProfileSetupControllerSpec extends SpecBase {
     "must redirect onSubmit" in {
       val result = profileSetupController.onSubmit(fakeRequest)
       status(result) mustEqual SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
     }
 
   }

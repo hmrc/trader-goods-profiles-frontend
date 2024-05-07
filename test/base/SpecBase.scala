@@ -18,6 +18,7 @@ package base
 
 import cats.data.EitherT
 import controllers.actions._
+import models.errors.SessionError
 import models.{InternalId, UserAnswers}
 import models.errors.SessionError
 import org.mockito.ArgumentMatchers.any
@@ -32,6 +33,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
+import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 import services.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -54,7 +56,7 @@ trait SpecBase
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   implicit val messagesApi: MessagesApi = stubMessagesApi()
-  val messages: Messages                = messagesApi.preferred(fakeRequest)
+  implicit val messages: Messages                = messagesApi.preferred(fakeRequest)
 
   lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
 

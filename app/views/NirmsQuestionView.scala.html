@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import models.Mode
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -25,12 +27,11 @@
     link: components.Link
 )
 
-@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle    = titleNoForm(messages("nirmsQuestion.title")),
-    showBackLink = true,
-    backLinkUrl = controllers.routes.UkimsNumberController.onPageLoad.url
+    showBackLink = true
 ) {
     @heading1(messages("nirmsQuestion.h1"))
     @paragraph(Html(messages("nirmsQuestion.p1")))
@@ -40,7 +41,7 @@
 
     @heading2(messages("nirmsQuestion.h2"))
 
-    @formHelper(action = NirmsQuestionController.onSubmit) {
+    @formHelper(action = NirmsQuestionController.onSubmit(mode)) {
         @govukRadios(
           RadiosViewModel.yesNo(
                 field = form("value"),

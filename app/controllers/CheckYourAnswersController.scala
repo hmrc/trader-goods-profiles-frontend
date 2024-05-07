@@ -18,26 +18,33 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
+import controllers.helpers.CheckYourAnswersHelper
 
 class CheckYourAnswersController @Inject() (
-  override val messagesApi: MessagesApi,
-  authorise: AuthoriseAction,
-  getData: SessionRequestAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView
+  authorise: AuthoriseAction,
+  view: CheckYourAnswersView,
+  getData: SessionRequestAction,
+  checkYourAnswersHelper: CheckYourAnswersHelper
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
     val list = SummaryListViewModel(
-      rows = Seq.empty
+      rows =
+        checkYourAnswersHelper.createSummaryList(request.userAnswers.traderGoodsProfile)(messagesApi.preferred(request))
     )
-
     Ok(view(list))
   }
+
+  // TODO replace dummy route and post session data
+  def onSubmit: Action[AnyContent] = authorise { implicit request =>
+    Redirect(routes.DummyController.onPageLoad.url)
+  }
+
 }

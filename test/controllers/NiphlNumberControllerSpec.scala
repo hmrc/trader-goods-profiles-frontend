@@ -25,6 +25,12 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlNumberView
+import forms.NiphlNumberFormProvider
+import generators.NiphlNumberGenerator
+import models.{CheckMode, NormalMode}
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
+import scala.concurrent.ExecutionContext
 
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
@@ -41,11 +47,11 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
     sessionService
   )
 
-  "NiphlNumber Controller" - {
+  "NiphlNumberController" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = niphlNumberController.onPageLoad(fakeRequest)
+      val result = niphlNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
@@ -62,8 +68,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
         status(result) mustEqual SEE_OTHER
 
-        //TODO point to real next page
-        redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
       }
 
       "with 2 letters and 5 numbers" in {
@@ -114,6 +119,18 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
       pageContent must include("niphlNumber.error.wrongFormat")
 
+    }
+    "CheckMode" - {
+
+      "must return OK and the correct view for a GET" in {
+
+        val result = niphlNumberController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, stubMessages()).toString
+
+      }
     }
   }
 }
