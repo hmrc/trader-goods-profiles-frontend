@@ -52,7 +52,7 @@ class CheckYourAnswersHelper() {
   def createSummaryList(
     traderGoodsProfile: MaintainProfileAnswers
   )(implicit messages: Messages): List[SummaryListRow] = {
-    val summaryData: Seq[(String, String, Option[Any])] = Seq(
+    val summaryData: List[(String, String, Option[Any])] = List(
       (
         "UKIMS number",
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
@@ -82,7 +82,7 @@ class CheckYourAnswersHelper() {
 
     summaryData.flatMap { case (key, url, value) =>
       createSummaryListRow(key, url, value)
-    }.toList
+    }
   }
 
 }
