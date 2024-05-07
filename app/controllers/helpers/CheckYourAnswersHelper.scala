@@ -27,6 +27,8 @@ class CheckYourAnswersHelper() {
     messages: Messages
   ): Option[SummaryListRow] = {
     val changeText = messages("site.change")
+    val yesText    = messages("site.yes")
+    val noText     = messages("site.no")
     value.flatMap {
       case stringValue: String   =>
         Some(
@@ -40,7 +42,7 @@ class CheckYourAnswersHelper() {
         Some(
           SummaryListRow(
             key = Key(HtmlContent(key)),
-            value = Value(HtmlContent(if (booleanValue) "Yes" else "No")),
+            value = Value(HtmlContent(if (booleanValue) yesText else noText)),
             actions = Some(Actions(items = Seq(ActionItem(href, HtmlContent(changeText)))))
           )
         )
