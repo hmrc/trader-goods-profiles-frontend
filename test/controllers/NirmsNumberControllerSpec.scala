@@ -29,12 +29,10 @@ import scala.concurrent.ExecutionContext
 
 class NirmsNumberControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global
-
   private val formProvider          = new NirmsNumberFormProvider()
   private val nirmsNumberView       = app.injector.instanceOf[NirmsNumberView]
   private val nirmsNumberController = new NirmsNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsNumberView,
     formProvider,
@@ -52,7 +50,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsNumberView(formProvider(), NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
     }
@@ -107,7 +105,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
       contentAsString(result) must include("nirmsNumber.error.invalidFormat")
@@ -124,7 +122,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
       contentAsString(result) must include("nirmsNumber.error.required")
@@ -141,7 +139,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual nirmsNumberView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }

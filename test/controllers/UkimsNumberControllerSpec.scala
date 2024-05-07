@@ -29,8 +29,6 @@ import scala.concurrent.ExecutionContext
 
 class UkimsNumberControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global
-
   private val formProvider = new UkimsNumberFormProvider()
 
   private val fieldName = "ukimsNumber"
@@ -38,7 +36,7 @@ class UkimsNumberControllerSpec extends SpecBase {
   private val ukimsNumberView = app.injector.instanceOf[UkimsNumberView]
 
   private val ukimsNumberController = new UkimsNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     ukimsNumberView,
     formProvider,
@@ -60,7 +58,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual ukimsNumberView(formProvider(), NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
     }
@@ -89,7 +87,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual ukimsNumberView(formWithErrors, NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
     }
@@ -108,7 +106,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual ukimsNumberView(formWithErrors, NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
     }
@@ -123,7 +121,7 @@ class UkimsNumberControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual ukimsNumberView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }

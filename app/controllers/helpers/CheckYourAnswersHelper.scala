@@ -18,7 +18,7 @@ package controllers.helpers
 
 import controllers.routes
 import models.{CheckMode, MaintainProfileAnswers}
-import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
@@ -78,12 +78,9 @@ class CheckYourAnswersHelper() {
       )
     )
 
-    summaryData
-      .map { case (key, url, value) =>
-        createSummaryListRow(key, url, value)
-      }
-      .flatten
-      .toList
+    summaryData.flatMap { case (key, url, value) =>
+      createSummaryListRow(key, url, value)
+    }.toList
   }
 
 }

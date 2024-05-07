@@ -36,6 +36,8 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case niphlNumberView: NiphlNumberView                             => render(niphlNumberView)
     case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
     case dummyView: DummyView                                         => render(dummyView)
+    case commodityCodeView: CommodityCodeView                         => render(commodityCodeView)
+    case countryOfOriginView: CountryOfOriginView                     => render(countryOfOriginView)
   }
   runAccessibilityTests()
 }

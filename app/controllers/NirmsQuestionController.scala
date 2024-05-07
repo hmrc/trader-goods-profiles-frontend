@@ -56,11 +56,11 @@ class NirmsQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         hasNirmsAnswer => {
-          val nirmsNumber           = if (hasNirmsAnswer) request.userAnswers.maintainProfileAnswers.nirmsNumber else None
-          val updatedTgpModelObject =
+          val nirmsNumber                   = if (hasNirmsAnswer) request.userAnswers.maintainProfileAnswers.nirmsNumber else None
+          val updatedMaintainProfileAnswers =
             request.userAnswers.maintainProfileAnswers.copy(hasNirms = Some(hasNirmsAnswer), nirmsNumber = nirmsNumber)
 
-          val updatedUserAnswers = request.userAnswers.copy(maintainProfileAnswers = updatedTgpModelObject)
+          val updatedUserAnswers = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

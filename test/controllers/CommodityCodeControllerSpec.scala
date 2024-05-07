@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
-import forms.{CommodityCodeFormProvider, UkimsNumberFormProvider}
+import forms.CommodityCodeFormProvider
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.{CommodityCodeView, UkimsNumberView}
+import views.html.CommodityCodeView
 
 class CommodityCodeControllerSpec extends SpecBase {
 
@@ -33,7 +33,7 @@ class CommodityCodeControllerSpec extends SpecBase {
   private val commodityCodeView = app.injector.instanceOf[CommodityCodeView]
 
   private val commodityCodeController = new CommodityCodeController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     commodityCodeView,
     formProvider,
@@ -49,7 +49,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual commodityCodeView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual commodityCodeView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -75,7 +75,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, messages).toString
 
     }
 
@@ -91,7 +91,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, messages).toString
 
       contentAsString(result) must include("commodityCode.error.invalidFormat")
 
@@ -109,7 +109,7 @@ class CommodityCodeControllerSpec extends SpecBase {
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, messages).toString
 
       contentAsString(result) must include("commodityCode.error.invalidFormat")
 

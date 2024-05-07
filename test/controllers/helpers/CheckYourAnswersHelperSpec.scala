@@ -17,7 +17,7 @@
 package controllers.helpers
 
 import base.SpecBase
-import models.{MaintainProfileAnswers, MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber}
+import models.{MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber}
 import viewmodels.govuk.SummaryListFluency
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
@@ -32,7 +32,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
 
       "must return empty summary list when blank trader goods profile" in {
         val maintainProfileAnswers: MaintainProfileAnswers = MaintainProfileAnswers()
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe Seq.empty
       }
 
@@ -102,7 +102,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(true),
             Some(NiphlNumber("33"))
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe expected
       }
 
@@ -160,7 +160,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(NirmsNumber("22")),
             Some(false)
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe expected
       }
 
@@ -219,7 +219,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(true),
             Some(NiphlNumber("33"))
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe expected
       }
 
@@ -267,7 +267,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(false),
             niphlNumber = None
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe expected
       }
 

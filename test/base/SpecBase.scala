@@ -22,19 +22,19 @@ import models.errors.SessionError
 import models.{InternalId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 import services.SessionService
+import play.api.mvc.MessagesControllerComponents
+import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
+import scala.concurrent.ExecutionContext
 
 import scala.concurrent.Future
 
@@ -44,16 +44,19 @@ trait SpecBase
     with TryValues
     with OptionValues
     with ScalaFutures
-    with IntegrationPatience
     with GuiceOneAppPerSuite {
+
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   val userAnswersId: String = "id"
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messagesApi: MessagesApi = stubMessagesApi()
 
-  implicit val messages: Messages = messagesApi.preferred(fakeRequest)
+  val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
 
   val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
@@ -75,12 +78,4 @@ trait SpecBase
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
-  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
-
-  protected def applicationBuilder(userAnswers: UserAnswers = emptyUserAnswers): GuiceApplicationBuilder =
-    new GuiceApplicationBuilder()
-      .overrides(
-        bind[AuthoriseAction].to[FakeAuthoriseAction],
-        bind[SessionRequestAction].toInstance(new FakeSessionRequestAction(userAnswers))
-      )
 }

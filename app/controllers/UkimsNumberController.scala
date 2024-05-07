@@ -55,9 +55,9 @@ class UkimsNumberController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         ukimsNumber => {
-          val updatedTgpModelObject =
+          val updatedMaintainProfileAnswers =
             request.userAnswers.maintainProfileAnswers.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
-          val updatedUserAnswers    = request.userAnswers.copy(maintainProfileAnswers = updatedTgpModelObject)
+          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

@@ -17,46 +17,43 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import models.NormalMode
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.ProfileSetupView
 
 class ProfileSetupControllerSpec extends SpecBase {
 
+  private val profileSetupView = app.injector.instanceOf[ProfileSetupView]
+
+  private val profileSetupController = new ProfileSetupController(
+    messageComponentControllers,
+    new FakeAuthoriseAction(defaultBodyParser),
+    new FakeSessionRequestAction(emptyUserAnswers),
+    profileSetupView
+  )
+
   "Profile Setup Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view onPageLoad" in {
 
-      val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
+      val result = profileSetupController.onPageLoad(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad.url)
+      status(result) mustEqual OK
 
-        val result = route(application, request).value
+      contentAsString(result) mustEqual profileSetupView()(fakeRequest, messages).toString
 
-        val view = application.injector.instanceOf[ProfileSetupView]
-
-        status(result) mustEqual OK
-
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
     }
 
     "must redirect on Submit" in {
 
-      val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
+      val result = profileSetupController.onSubmit(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit.url)
+      status(result) mustEqual SEE_OTHER
 
-        val result = route(application, request).value
+      redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
 
-        status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
-      }
     }
   }
 }

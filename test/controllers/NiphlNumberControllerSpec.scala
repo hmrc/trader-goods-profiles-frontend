@@ -31,14 +31,12 @@ import scala.concurrent.ExecutionContext
 
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global
-
   private val formProvider = new NiphlNumberFormProvider()
 
   private val niphlNumberView = app.injector.instanceOf[NiphlNumberView]
 
   private val niphlNumberController = new NiphlNumberController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     niphlNumberView,
     formProvider,
@@ -54,7 +52,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, messages).toString
 
     }
 
@@ -96,7 +94,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlNumberView(formWithErrors)(fakeRequestWithData, stubMessages()).toString
+      pageContent mustEqual niphlNumberView(formWithErrors)(fakeRequestWithData, messages).toString
 
       pageContent must include("niphlNumber.error.notSupplied")
 
@@ -114,7 +112,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlNumberView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("niphlNumber.error.wrongFormat")
 
@@ -127,7 +125,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
         status(result) mustEqual OK
 
-        contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, stubMessages()).toString
+        contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, messages).toString
 
       }
     }

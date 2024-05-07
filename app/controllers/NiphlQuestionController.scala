@@ -56,10 +56,10 @@ class NiphlQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         hasNiphlAnswer => {
-          val niphlNumber           = if (hasNiphlAnswer) request.userAnswers.maintainProfileAnswers.niphlNumber else None
-          val updatedTgpModelObject =
+          val niphlNumber                   = if (hasNiphlAnswer) request.userAnswers.maintainProfileAnswers.niphlNumber else None
+          val updatedMaintainProfileAnswers =
             request.userAnswers.maintainProfileAnswers.copy(hasNiphl = Some(hasNiphlAnswer), niphlNumber = niphlNumber)
-          val updatedUserAnswers    = request.userAnswers.copy(maintainProfileAnswers = updatedTgpModelObject)
+          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)

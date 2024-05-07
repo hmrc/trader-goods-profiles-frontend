@@ -29,14 +29,12 @@ import scala.concurrent.ExecutionContext
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global
-
   private val formProvider = new NiphlQuestionFormProvider()
 
   private val niphlQuestionView = app.injector.instanceOf[NiphlQuestionView]
 
   private val niphlQuestionController = new NiphlQuestionController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     niphlQuestionView,
     formProvider,
@@ -54,7 +52,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual niphlQuestionView(formProvider(), NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
     }
@@ -93,7 +91,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlQuestionView(formWithErrors, NormalMode)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual niphlQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
 
       pageContent must include("niphlQuestion.radio.notSelected")
     }
@@ -108,7 +106,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual niphlQuestionView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }

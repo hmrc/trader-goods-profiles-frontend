@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import controllers.helpers.CheckYourAnswersHelper
-import models.TraderGoodsProfile
+import models.MaintainProfileAnswers
 import org.mockito.ArgumentMatchers.any
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
@@ -29,14 +29,13 @@ import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.i18n.Messages
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
   val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
   val mockCheckYourAnswersHelper: CheckYourAnswersHelper = mock[CheckYourAnswersHelper]
 
   val checkYourAnswersController = new CheckYourAnswersController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     checkYourAnswersView,
     sessionRequest,
@@ -87,13 +86,13 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         rows = summaryList
       )
 
-      when(mockCheckYourAnswersHelper.createSummaryList(any[TraderGoodsProfile])(any())) thenReturn summaryList
+      when(mockCheckYourAnswersHelper.createSummaryList(any[MaintainProfileAnswers])(any())) thenReturn summaryList
 
       val result = checkYourAnswersController.onPageLoad()(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual checkYourAnswersView(list)(fakeRequest, stubMessages()).toString()
+      contentAsString(result) mustEqual checkYourAnswersView(list)(fakeRequest, messages).toString()
 
     }
 

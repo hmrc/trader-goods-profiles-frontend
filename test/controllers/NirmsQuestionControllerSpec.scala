@@ -29,14 +29,12 @@ import scala.concurrent.ExecutionContext
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
-  implicit val ec: ExecutionContext = ExecutionContext.global
-
   private val formProvider = new NirmsQuestionFormProvider()
 
   private val nirmsQuestionView = app.injector.instanceOf[NirmsQuestionView]
 
   private val nirmsQuestionController = new NirmsQuestionController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
     formProvider,
@@ -58,7 +56,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsQuestionView(formProvider(), NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
     }
@@ -97,7 +95,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual nirmsQuestionView(formWithErrors, NormalMode)(fakeRequest, stubMessages()).toString
+      pageContent mustEqual nirmsQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
 
       pageContent must include("nirmsQuestion.error.notSelected")
 
@@ -113,7 +111,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual nirmsQuestionView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }
