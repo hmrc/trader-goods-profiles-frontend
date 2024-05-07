@@ -25,8 +25,6 @@ import views.html.NiphlQuestionView
 import forms.NiphlQuestionFormProvider
 import models.{CheckMode, NormalMode}
 
-import scala.concurrent.ExecutionContext
-
 class NiphlQuestionControllerSpec extends SpecBase {
 
   private val formProvider = new NiphlQuestionFormProvider()
@@ -38,13 +36,13 @@ class NiphlQuestionControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     niphlQuestionView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
   "NiphlQuestionController" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -54,6 +52,49 @@ class NiphlQuestionControllerSpec extends SpecBase {
         fakeRequest,
         messages
       ).toString
+
+    }
+
+    "must return OK and the full view for a GET" in {
+
+      val fullNiphlQuestionController = new NiphlQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        niphlQuestionView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullNiphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual niphlQuestionView(formProvider().fill(true), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      val badNiphlQuestionController = new NiphlQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        niphlQuestionView,
+        formProvider,
+        emptySessionRequest,
+        badSessionService
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val result = badNiphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 

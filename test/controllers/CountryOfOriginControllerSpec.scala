@@ -35,17 +35,54 @@ class CountryOfOriginControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     countryOfOriginView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
   "Country Of Origin Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
       val result = countryOfOriginController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
       contentAsString(result) mustEqual countryOfOriginView(formProvider())(fakeRequest, messages).toString
+    }
+
+    "must return OK and the full view for a GET" in {
+      val fullCommodityCodeController = new CountryOfOriginController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        countryOfOriginView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullCommodityCodeController.onPageLoad(fakeRequest)
+
+      status(result) mustEqual OK
+      contentAsString(result) mustEqual countryOfOriginView(formProvider().fill("GB"))(
+        fakeRequest,
+        messages
+      ).toString
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+      val badCommodityCodeController = new CountryOfOriginController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        countryOfOriginView,
+        formProvider,
+        emptySessionRequest,
+        badSessionService
+      )
+
+      val validCountryCode    = "GB"
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validCountryCode)
+      val result              = badCommodityCodeController.onSubmit()(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
     }
 
     "must redirect on submit when user enters correct country code" in {

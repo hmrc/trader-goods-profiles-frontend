@@ -25,8 +25,6 @@ import play.api.test.Helpers._
 import play.api.test.FakeRequest
 import views.html.NirmsNumberView
 
-import scala.concurrent.ExecutionContext
-
 class NirmsNumberControllerSpec extends SpecBase {
 
   private val formProvider          = new NirmsNumberFormProvider()
@@ -36,13 +34,13 @@ class NirmsNumberControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsNumberView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
   "NirmsNumberController" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = nirmsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -52,6 +50,49 @@ class NirmsNumberControllerSpec extends SpecBase {
         fakeRequest,
         messages
       ).toString
+
+    }
+
+    "must return OK and the full view for a GET" in {
+
+      val fullNirmsNumberController = new NirmsNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsNumberView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullNirmsNumberController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual nirmsNumberView(formProvider().fill("anything"), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      val badNirmsNumberController = new NirmsNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsNumberView,
+        formProvider,
+        emptySessionRequest,
+        badSessionService
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+
+      val result = badNirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 

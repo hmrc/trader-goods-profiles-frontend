@@ -18,7 +18,6 @@ package forms
 
 import forms.mappings.Mappings
 import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
 import play.api.data.Form
 
 import javax.inject.Inject

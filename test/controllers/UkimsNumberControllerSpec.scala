@@ -25,8 +25,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.UkimsNumberView
 
-import scala.concurrent.ExecutionContext
-
 class UkimsNumberControllerSpec extends SpecBase {
 
   private val formProvider = new UkimsNumberFormProvider()
@@ -40,7 +38,7 @@ class UkimsNumberControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     ukimsNumberView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
@@ -50,13 +48,35 @@ class UkimsNumberControllerSpec extends SpecBase {
       fakeRequest
     )
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = ukimsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual ukimsNumberView(formProvider(), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must return OK and the full view for a GET" in {
+
+      val fullUkimsNumberController = new UkimsNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        ukimsNumberView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullUkimsNumberController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual ukimsNumberView(formProvider().fill("anything"), NormalMode)(
         fakeRequest,
         messages
       ).toString
@@ -74,6 +94,29 @@ class UkimsNumberControllerSpec extends SpecBase {
       status(result) mustEqual SEE_OTHER
 
       redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      val badUkimsNumberController = new UkimsNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        ukimsNumberView,
+        formProvider,
+        emptySessionRequest,
+        badSessionService
+      )
+
+      val validUkimsNumber = "XI47699357400020231115081800"
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+
+      val result = badUkimsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 

@@ -25,8 +25,6 @@ import views.html.NirmsQuestionView
 import forms.NirmsQuestionFormProvider
 import models.{CheckMode, NormalMode}
 
-import scala.concurrent.ExecutionContext
-
 class NirmsQuestionControllerSpec extends SpecBase {
 
   private val formProvider = new NirmsQuestionFormProvider()
@@ -38,7 +36,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
@@ -48,7 +46,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
       fakeRequest
     )
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = nirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -58,6 +56,49 @@ class NirmsQuestionControllerSpec extends SpecBase {
         fakeRequest,
         messages
       ).toString
+
+    }
+
+    "must return OK and the full view for a GET" in {
+
+      val fullNirmsQuestionController = new NirmsQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsQuestionView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullNirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider().fill(true), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      val badNirmsQuestionController = new NirmsQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsQuestionView,
+        formProvider,
+        emptySessionRequest,
+        badSessionService
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val result = badNirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 

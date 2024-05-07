@@ -37,19 +37,61 @@ class CommodityCodeControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     commodityCodeView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
   "Commodity Code   Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = commodityCodeController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual commodityCodeView(formProvider())(fakeRequest, messages).toString
+
+    }
+
+    "must return OK and the full view for a GET" in {
+
+      val fullCommodityCodeController = new CommodityCodeController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        commodityCodeView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullCommodityCodeController.onPageLoad(fakeRequest)
+
+      status(result) mustEqual OK
+      contentAsString(result) mustEqual commodityCodeView(formProvider().fill("anything"))(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      val badCommodityCodeController = new CommodityCodeController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        commodityCodeView,
+        formProvider,
+        emptySessionRequest,
+        badSessionService
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> "654321")
+
+      val result = badCommodityCodeController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 
