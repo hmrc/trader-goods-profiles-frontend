@@ -17,42 +17,46 @@
 package controllers
 
 import helpers.ItTestBase
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
-class CategoryGuidanceControllerISpec extends ItTestBase {
+class ProfileSetupControllerISpec extends ItTestBase {
+  "profile setup controller" should {
 
-  "Category Guidance controller" should {
+    "redirect you to unauthorised page when auth fails" in {
 
-    "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.CategoryGuidanceController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.ProfileSetupController.onPageLoad))
 
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+
     }
 
     "loads page" in {
+
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.CategoryGuidanceController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.ProfileSetupController.onPageLoad))
 
       status(result) mustBe OK
 
-      html(result) must include("Categorisation")
+      html(result) must include("Setting up your profile")
+
     }
 
     "returns redirect when submitting" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.CategoryGuidanceController.onSubmit))
+      val result = callRoute(FakeRequest(routes.ProfileSetupController.onSubmit))
 
       status(result) mustBe SEE_OTHER
-      // TODO - Change to actual controller when available
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+
+      redirectLocation(result) mustBe Some(routes.UkimsNumberController.onPageLoad.url)
     }
   }
+
 }

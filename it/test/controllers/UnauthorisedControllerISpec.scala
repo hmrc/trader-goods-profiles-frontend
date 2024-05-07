@@ -17,25 +17,22 @@
 package controllers
 
 import helpers.ItTestBase
-import play.api.http.Status.OK
-import play.api.libs.ws.{WSClient, WSRequest}
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
 class UnauthorisedControllerISpec extends ItTestBase {
-
-  lazy val client: WSClient = app.injector.instanceOf[WSClient]
-
-  private val url = s"http://localhost:$port$appRouteContext/unauthorised"
 
   "Unauthorised controller" should {
 
     "loads page" in {
 
-      val request: WSRequest = client.url(url).withFollowRedirects(false)
+      val result = callRoute(FakeRequest(routes.UnauthorisedController.onPageLoad))
 
-      val response = await(request.get())
+      status(result) mustBe OK
 
-      response.status mustBe OK
+      html(result) must include("There is a problem")
+
     }
   }
 }

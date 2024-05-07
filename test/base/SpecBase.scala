@@ -16,33 +16,25 @@
 
 package base
 
-import models.UserAnswers
-import org.scalatest.concurrent.ScalaFutures
 import cats.data.EitherT
 import controllers.actions._
-import models.errors.SessionError
-import models.requests.{AuthorisedRequest, DataRequest}
 import models.{InternalId, UserAnswers}
+import models.errors.SessionError
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.Application
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
-
-import scala.concurrent.ExecutionContext
-import play.api.mvc.{ActionRefiner, AnyContentAsEmpty, PlayBodyParsers}
 import services.SessionService
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -82,5 +74,4 @@ trait SpecBase
   )
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-
 }
