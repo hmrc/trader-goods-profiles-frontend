@@ -17,12 +17,19 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeAuthoriseAction
+import cats.data.EitherT
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import forms.NirmsQuestionFormProvider
+import models.errors.SessionError
+import models.{MaintainProfileAnswers, NirmsNumber, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
+
+import scala.concurrent.Future
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -52,6 +59,40 @@ class NirmsQuestionControllerSpec extends SpecBase {
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, messages).toString
+
+    }
+
+    "must return OK and the correct view when there's a nirms question in the session data" in {
+
+      val hasNirms = true
+
+      val ukimsNumber = None
+
+      val profileAnswers = MaintainProfileAnswers(
+        ukimsNumber = ukimsNumber,
+        hasNirms = Some(hasNirms)
+      )
+
+      val expectedPreFilledForm = formProvider().fill(hasNirms)
+
+      val userAnswerMock = UserAnswers(userAnswersId, maintainProfileAnswers = profileAnswers)
+
+      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
+
+      val nirmsQuestionController = new NirmsQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsQuestionView,
+        formProvider,
+        fakeSessionRequest,
+        sessionService
+      )
+
+      val result = nirmsQuestionController.onPageLoad(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual nirmsQuestionView(expectedPreFilledForm)(fakeRequest, messages).toString
 
     }
 
@@ -92,6 +133,23 @@ class NirmsQuestionControllerSpec extends SpecBase {
       pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("nirmsQuestion.error.notSelected")
+
+    }
+
+    "must redirect on Submit when session fails" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val unexpectedError = new Exception("Session error")
+
+      when(sessionService.updateUserAnswers(any[UserAnswers]))
+        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
+
+      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
   }

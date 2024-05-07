@@ -17,12 +17,19 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeAuthoriseAction
+import cats.data.EitherT
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import forms.NirmsNumberFormProvider
+import models.errors.SessionError
+import models.{MaintainProfileAnswers, NiphlNumber, NirmsNumber, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsNumberView
+
+import scala.concurrent.Future
 
 class NirmsNumberControllerSpec extends SpecBase {
 
@@ -46,6 +53,44 @@ class NirmsNumberControllerSpec extends SpecBase {
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, messages).toString
+
+    }
+
+    "must return OK and the correct view when there's a nirms number in the session data" in {
+
+      val validNirmsNumber = "RMS-GB-123456"
+
+      val nirmsNumber = NirmsNumber(validNirmsNumber)
+
+      val ukimsNumber = None
+      val hasNirms    = None
+
+      val profileAnswers = MaintainProfileAnswers(
+        ukimsNumber = ukimsNumber,
+        hasNirms = hasNirms,
+        nirmsNumber = Some(nirmsNumber)
+      )
+
+      val expectedPreFilledForm = formProvider().fill(validNirmsNumber)
+
+      val userAnswerMock = UserAnswers(userAnswersId, maintainProfileAnswers = profileAnswers)
+
+      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
+
+      val nirmsNumberController = new NirmsNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsNumberView,
+        formProvider,
+        fakeSessionRequest,
+        sessionService
+      )
+
+      val result = nirmsNumberController.onPageLoad(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual nirmsNumberView(expectedPreFilledForm)(fakeRequest, messages).toString
 
     }
 
@@ -114,6 +159,23 @@ class NirmsNumberControllerSpec extends SpecBase {
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
 
       contentAsString(result) must include("nirmsNumber.error.required")
+
+    }
+
+    "must redirect on Submit when session fails" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+
+      val unexpectedError = new Exception("Session error")
+
+      when(sessionService.updateUserAnswers(any[UserAnswers]))
+        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
+
+      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
   }

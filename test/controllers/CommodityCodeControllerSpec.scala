@@ -17,12 +17,19 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeAuthoriseAction
+import cats.data.EitherT
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import forms.{CommodityCodeFormProvider, UkimsNumberFormProvider}
+import models.errors.SessionError
+import models.{CategorisationAnswers, CommodityCode, MaintainProfileAnswers, UkimsNumber, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.{CommodityCodeView, UkimsNumberView}
+
+import scala.concurrent.Future
 
 class CommodityCodeControllerSpec extends SpecBase {
 
@@ -50,6 +57,37 @@ class CommodityCodeControllerSpec extends SpecBase {
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual commodityCodeView(formProvider())(fakeRequest, stubMessages()).toString
+
+    }
+
+    "must return OK and the correct view when there's a commodity number" in {
+
+      val validCommodityCode = "654321"
+
+      val commodityCode = CommodityCode(validCommodityCode)
+
+      val categorisationAnswers = CategorisationAnswers(commodityCode = Some(commodityCode))
+
+      val expectedPreFilledForm = formProvider().fill(validCommodityCode)
+
+      val userAnswerMock = UserAnswers(userAnswersId, categorisationAnswers = categorisationAnswers)
+
+      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
+
+      val commodityCodeController = new CommodityCodeController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        commodityCodeView,
+        formProvider,
+        fakeSessionRequest,
+        sessionService
+      )
+
+      val result = commodityCodeController.onPageLoad(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual commodityCodeView(expectedPreFilledForm)(fakeRequest, messages).toString
 
     }
 
@@ -112,6 +150,23 @@ class CommodityCodeControllerSpec extends SpecBase {
       contentAsString(result) mustEqual commodityCodeView(formWithErrors)(fakeRequest, stubMessages()).toString
 
       contentAsString(result) must include("commodityCode.error.invalidFormat")
+
+    }
+
+    "must redirect on Submit when session fails" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> "654321")
+
+      val unexpectedError = new Exception("Session error")
+
+      when(sessionService.updateUserAnswers(any[UserAnswers]))
+        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
+
+      val result = commodityCodeController.onSubmit()(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
   }

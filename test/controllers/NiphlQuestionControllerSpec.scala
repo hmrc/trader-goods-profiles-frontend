@@ -17,12 +17,19 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeAuthoriseAction
+import cats.data.EitherT
+import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
 import forms.NiphlQuestionFormProvider
+import models.errors.SessionError
+import models.{MaintainProfileAnswers, NiphlNumber, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
+
+import scala.concurrent.Future
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
@@ -48,6 +55,46 @@ class NiphlQuestionControllerSpec extends SpecBase {
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual niphlQuestionView(formProvider())(fakeRequest, messages).toString
+
+    }
+
+    "must return OK and the correct view when there's a niphl question in the session data" in {
+
+      val value = true
+
+      val hasNiphl = value
+
+      val ukimsNumber = None
+      val hasNirms    = None
+      val nirmsNumber = None
+
+      val profileAnswers = MaintainProfileAnswers(
+        ukimsNumber = ukimsNumber,
+        hasNirms = hasNirms,
+        nirmsNumber = nirmsNumber,
+        hasNiphl = Some(hasNiphl)
+      )
+
+      val expectedPreFilledForm = formProvider().fill(value)
+
+      val userAnswerMock = UserAnswers(userAnswersId, maintainProfileAnswers = profileAnswers)
+
+      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
+
+      val niphlQuestionController = new NiphlQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        niphlQuestionView,
+        formProvider,
+        fakeSessionRequest,
+        sessionService
+      )
+
+      val result = niphlQuestionController.onPageLoad(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual niphlQuestionView(expectedPreFilledForm)(fakeRequest, messages).toString
 
     }
 
@@ -88,6 +135,23 @@ class NiphlQuestionControllerSpec extends SpecBase {
       pageContent mustEqual niphlQuestionView(formWithErrors)(fakeRequest, messages).toString
 
       pageContent must include("niphlQuestion.radio.notSelected")
+    }
+
+    "must redirect on Submit when session fails" in {
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val unexpectedError = new Exception("Session error")
+
+      when(sessionService.updateUserAnswers(any[UserAnswers]))
+        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
+
+      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+
     }
   }
 }
