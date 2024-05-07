@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NirmsQuestionFormProvider
-import models.TraderGoodsProfile
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService

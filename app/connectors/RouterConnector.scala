@@ -17,37 +17,52 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.Eori
-import models.router.responses.SetUpProfileResponse
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import models.router.requests.SetUpProfileRequest
+import models.{Eori, TraderGoodsProfile}
+import play.api.Logging
+import play.api.http.Status.isSuccessful
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
-class RouterConnector @Inject()(
-                       appConfig: FrontendAppConfig,
-                       httpClientV2: HttpClientV2
-                     ) extends BaseConnector {
+class RouterConnector @Inject() (
+  appConfig: FrontendAppConfig,
+  httpClientV2: HttpClientV2
+) extends BaseConnector
+    with Logging {
 
-  def setUpProfile(eori: Eori)(implicit ec: ExecutionContext, hc: HeaderCarrier) = {
+  //TODO make service to call this connector!
+
+  def setUpProfile(eori: Eori, traderGoodsProfile: TraderGoodsProfile)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): Future[Either[UpstreamErrorResponse, Unit]] = {
 
     val routerService = appConfig.tgpRouter
-    val url = s"${routerService.baseUrl}/customs/traders/good-profiles"
+    val url           = s"${routerService.baseUrl}/customs/traders/good-profiles"
+    val requestItem   = SetUpProfileRequest(
+      eori.value,
+      traderGoodsProfile.ukimsNumber.map(_.value),
+      traderGoodsProfile.nirmsNumber.map(_.value),
+      traderGoodsProfile.niphlNumber.map(_.value)
+    )
 
-    // Create request to send - jsony stuff
-    // TODO pass in user answers
-    // TODO Make a pretty JSON
+    httpClientV2
+      .put(url"$url/${eori.value}")
+      .withBody(Json.toJson(requestItem))
+      .execute
+      .flatMap(httpResponse => handleProfileSetUpResponse(eori, url, httpResponse))
+      .recover { case NonFatal(exception) =>
+        logger.error(
+          s"[RouterConnector] - Error occurred when submitting Trader Goods Profile data for EORI ${eori.value}: ${exception.getMessage}"
+        )
 
-    // Do the request - httpy stuff
-
-    // Get the response - jsony stuff
-
-    //todo: cleanup after
-    val something = httpClientV2.put(url"$url/${eori.value}")
-
-    something.executeAndDeserialise[SetUpProfileResponse]
-
+        Left(UpstreamErrorResponse("Failed to submit Trader Goods Profile data", 0))
+      }
 
     // TODO unit tests
     // success
@@ -58,4 +73,25 @@ class RouterConnector @Inject()(
     // Wiremock?
 
   }
+
+  private def handleProfileSetUpResponse(eori: Eori, url: String, httpResponse: HttpResponse) =
+    if (isSuccessful(httpResponse.status)) {
+      logger.info(s"[RouterConnector] - Successfully submitted Trader Goods Profile data for EORI ${eori.value}")
+      Future.successful(Right())
+    } else {
+      //TODO check this log message is sensible
+      logger.warn(
+        s"[RouterConnector] - Error occurred when submitting Trader Goods Profile data for EORI ${eori.value}: ${httpResponse.body}"
+      )
+      Future.successful(
+        Left(
+          UpstreamErrorResponse(
+            upstreamResponseMessage("PUT", url, httpResponse.status, httpResponse.body),
+            httpResponse.status,
+            httpResponse.status,
+            httpResponse.headers
+          )
+        )
+      )
+    }
 }

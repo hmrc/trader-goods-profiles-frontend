@@ -17,8 +17,8 @@
 package controllers
 
 import connectors.RouterConnector
-import controllers.actions.AuthoriseAction
-import models.router.responses.SetUpProfileResponse
+import controllers.actions.{AuthoriseAction, SessionRequestAction}
+
 import scala.util.{Failure, Success}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -26,20 +26,20 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomepageView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.impl.Promise
+import scala.concurrent.ExecutionContext
 
 class HomepageController @Inject() (
                                      val controllerComponents: MessagesControllerComponents,
                                      authorise: AuthoriseAction,
                                      view: HomepageView,
-                                     routerConnector: RouterConnector
+                                     routerConnector: RouterConnector,
+                                     getSession: SessionRequestAction
                                    )(implicit ec: ExecutionContext) extends FrontendBaseController
   with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+  def onPageLoad: Action[AnyContent] = (authorise andThen getSession) { implicit request =>
 
-    val testConnector = routerConnector.setUpProfile(request.eori)
+    val testConnector = routerConnector.setUpProfile(request.eori, request.userAnswers.traderGoodsProfile)
     println("CCCCCCC" + testConnector)
 
     testConnector.onComplete {

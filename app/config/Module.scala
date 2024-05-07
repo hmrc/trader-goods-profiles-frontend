@@ -17,7 +17,6 @@
 package config
 
 import com.google.inject.AbstractModule
-import connectors.RouterConnector
 import controllers.actions._
 
 import java.time.{Clock, ZoneOffset}

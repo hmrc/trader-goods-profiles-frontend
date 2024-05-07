@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package models.router.responses
+package models.router.requests
 
 import play.api.libs.json.{Json, OFormat}
+import play.api.libs.ws.DefaultBodyWritables
 
-case class SetUpProfileResponse (
-                                  EORI: String,
-                                  ukimsNumber: String,
-                                  nirmsNumber: String,
-                                  niphlNumber: String
-                                )
+case class SetUpProfileRequest(
+  actorId: String,
+  ukimsNumber: Option[String],
+  nirmsNumber: Option[String],
+  niphlNumber: Option[String]
+) extends DefaultBodyWritables
 
-object SetUpProfileResponse{
-  implicit val format: OFormat[SetUpProfileResponse] = Json.format[SetUpProfileResponse]
+object SetUpProfileRequest {
+  implicit val format: OFormat[SetUpProfileRequest] = Json.format[SetUpProfileRequest]
 }
