@@ -17,11 +17,17 @@
 package controllers
 
 import base.ItTestBase
+import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
+import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers._
 
 class CountryOfOriginControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+  private val url           = s"http://localhost:$port${routes.CountryOfOriginController.onPageLoad.url}"
+  private val submitUrl     =
+    s"http://localhost:$port${routes.CountryOfOriginController.onSubmit(saveAndReturn = false).url}"
 
   private val fieldName = "countryOfOrigin"
 
@@ -30,58 +36,69 @@ class CountryOfOriginControllerISpec extends ItTestBase {
     "redirect to unauthorised page when authorisation fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.CountryOfOriginController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      val response = await(request.get())
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "ok on loading page" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.CountryOfOriginController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe OK
-      html(result) must include("country")
+      val response = await(request.get())
+
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Country of origin"))
     }
 
     "redirect to dummy controller when submitting valid data" in {
       authorisedUserWithAnswers
 
-      val validCountryCode = "GB"
-      val result           = callRoute(
-        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false))
-          .withFormUrlEncodedBody(fieldName -> validCountryCode)
-      )
+      val request: WSRequest = client.url(submitUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      val response = await(request.post(Map(fieldName -> "GB")))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+
     }
 
     "bad request when submitting no data" in {
       authorisedUserWithAnswers
 
-      val result =
-        callRoute(
-          FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false))
-            .withFormUrlEncodedBody(fieldName -> "")
-        )
+      val request: WSRequest = client.url(submitUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
-      html(result) must include("error")
+      val response = await(request.post(Map(fieldName -> "")))
+
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("error"))
+
     }
 
     "bad request when submitting invalid data" in {
       authorisedUserWithAnswers
 
-      val invalidCountryCode = "3S2@"
-      val result             = callRoute(
-        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false))
-          .withFormUrlEncodedBody(fieldName -> invalidCountryCode)
-      )
+      val request: WSRequest = client.url(submitUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
-      html(result) must include("error")
+      val response = await(request.post(Map(fieldName -> "3S2@")))
+
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("error"))
     }
   }
 }

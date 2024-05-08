@@ -16,23 +16,31 @@
 
 package controllers
 
-import helpers.ItTestBase
-import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import base.ItTestBase
+import models.NormalMode
+import org.jsoup.Jsoup
+import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers._
 
 class ProfileSetupControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private val url = s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}"
   "profile setup controller" should {
 
     "redirect you to unauthorised page when auth fails" in {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.ProfileSetupController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
     }
 
@@ -40,22 +48,28 @@ class ProfileSetupControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.ProfileSetupController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("Setting up your profile")
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Setting up your profile"))
 
     }
 
     "returns redirect when submitting" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.ProfileSetupController.onSubmit))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(""))
 
-      redirectLocation(result) mustBe Some(routes.UkimsNumberController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
     }
   }
 

@@ -17,42 +17,57 @@
 package controllers
 
 import base.ItTestBase
+import org.jsoup.Jsoup
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers._
 
 class CategoryGuidanceControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private val url = s"http://localhost:$port${routes.CategoryGuidanceController.onPageLoad.url}"
 
   "Category Guidance controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.CategoryGuidanceController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.CategoryGuidanceController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("Categorisation")
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Categorisation"))
     }
 
+    // TODO - Change to actual controller when available
     "returns redirect when submitting" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.CategoryGuidanceController.onSubmit))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
-      // TODO - Change to actual controller when available
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      val response = await(request.post(""))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+
     }
   }
 }

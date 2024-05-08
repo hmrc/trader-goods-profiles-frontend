@@ -139,7 +139,7 @@ class MessagesSpec extends SpecBase {
     "niphlNumber.error.notSupplied",
     "niphlNumber.error.wrongFormat",
     "checkYourAnswers.title",
-    "checkYourAnswers.heading",
+    "checkYourAnswers.h1",
     "journeyRecovery.continue.title",
     "journeyRecovery.continue.heading",
     "journeyRecovery.continue.guidance",

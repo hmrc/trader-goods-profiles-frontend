@@ -18,72 +18,85 @@ package controllers
 
 import base.ItTestBase
 import models.{CheckMode, NormalMode}
+import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers._
 
 class NiphlQuestionControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+  private val normalUrl     = s"http://localhost:$port${routes.NiphlQuestionController.onPageLoad(NormalMode).url}"
+  private val checkUrl      = s"http://localhost:$port${routes.NiphlQuestionController.onPageLoad(CheckMode).url}"
 
   "NiphlQuestionController" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(NormalMode)))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
     }
 
     "loads page" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(NormalMode)))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("Are you NIPHL registered?")
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Are you NIPHL registered?"))
 
     }
 
     "redirects to NiphlNumberController when submitting valid data with yes" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "true")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("value" -> "true")))
 
-      redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
 
     }
 
     "redirects to CheckYoursAnswersController when submitting valid data with no" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "false")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("value" -> "false")))
 
-      redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 
     "returns bad request when submitting no data" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(Map("value" -> "")))
 
-      html(result) must include("Select if you are NIPHL registered")
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Select if you are NIPHL registered"))
 
     }
 
@@ -92,37 +105,41 @@ class NiphlQuestionControllerISpec extends ItTestBase {
       "loads page" in {
         authorisedUserWithAnswers
 
-        val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(CheckMode)))
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe OK
+        val response = await(request.get())
 
-        html(result) must include("Are you NIPHL registered?")
+        response.status mustBe OK
+
+        val document = Jsoup.parse(response.body)
+
+        assert(document.text().contains("Are you NIPHL registered?"))
 
       }
 
       "redirects to NiphlNumberController when submitting valid data with yes" in {
         authorisedUserWithAnswers
 
-        val result = callRoute(
-          FakeRequest(routes.NiphlQuestionController.onSubmit(CheckMode)).withFormUrlEncodedBody("value" -> "true")
-        )
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe SEE_OTHER
+        val response = await(request.post(Map("value" -> "true")))
 
-        redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad(CheckMode).url)
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.NiphlNumberController.onPageLoad(CheckMode).url)
 
       }
 
       "redirects to CheckYoursAnswersController when submitting valid data with no" in {
         authorisedUserWithAnswers
 
-        val result = callRoute(
-          FakeRequest(routes.NiphlQuestionController.onSubmit(CheckMode)).withFormUrlEncodedBody("value" -> "false")
-        )
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe SEE_OTHER
+        val response = await(request.post(Map("value" -> "false")))
 
-        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
       }
     }

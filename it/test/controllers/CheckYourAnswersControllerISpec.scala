@@ -17,6 +17,7 @@
 package controllers
 
 import base.ItTestBase
+import org.jsoup.Jsoup
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -51,6 +52,10 @@ class CheckYourAnswersControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Check your answers"))
 
     }
 

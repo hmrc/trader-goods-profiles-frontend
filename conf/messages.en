@@ -107,8 +107,8 @@ niphlNumber.li2 = start with one letter, then 5 numbers
 niphlNumber.li3 = start with 2 letters, then 5 numbers
 niphlNumber.h2 = What is your NIPHL registration number?
 niphlNumber.hint = For example, 612345, S12345 or SN12345
-niphlNumber.error.notSupplied = Enter your NIPHL registration number.
-niphlNumber.error.wrongFormat = Enter your NIPHL registration number in the correct format.
+niphlNumber.error.notSupplied = Enter your NIPHL registration number
+niphlNumber.error.wrongFormat = Enter your NIPHL registration number in the correct format
 
 commodityCode.title = Commodity code
 commodityCode.h1 = Commodity code

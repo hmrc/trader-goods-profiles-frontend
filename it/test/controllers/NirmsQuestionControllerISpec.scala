@@ -18,6 +18,7 @@ package controllers
 
 import base.ItTestBase
 import models.{CheckMode, NormalMode}
+import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -51,6 +52,10 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Are you NIRMS registered?"))
     }
 
     "redirects to NirmsNumberController when submitting valid data with yes" in {
@@ -85,6 +90,10 @@ class NirmsQuestionControllerISpec extends ItTestBase {
       val response = await(request.post(""))
 
       response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Select if you are NIRMS registered"))
     }
 
     "CheckMode" should {
@@ -97,6 +106,10 @@ class NirmsQuestionControllerISpec extends ItTestBase {
         val response = await(request.get())
 
         response.status mustBe OK
+
+        val document = Jsoup.parse(response.body)
+
+        assert(document.text().contains("Are you NIRMS registered?"))
       }
 
       "redirects to NirmsNumberController when submitting valid data with yes" in {
