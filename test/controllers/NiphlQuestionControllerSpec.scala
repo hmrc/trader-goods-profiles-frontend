@@ -17,13 +17,19 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
 import forms.NiphlQuestionFormProvider
-import models.{CheckMode, NormalMode}
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+
+import scala.concurrent.Future
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
@@ -36,13 +42,13 @@ class NiphlQuestionControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     niphlQuestionView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
   "NiphlQuestionController" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -55,7 +61,49 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
     }
 
+    "must return OK and the full view for a GET" in {
+
+      val fullNiphlQuestionController = new NiphlQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        niphlQuestionView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullNiphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual niphlQuestionView(formProvider().fill(true), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+
+    }
+
     "must redirect on Submit when user selects yes" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
@@ -68,6 +116,10 @@ class NiphlQuestionControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user selects no" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
@@ -111,6 +163,10 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       "must redirect on Submit when user selects yes" in {
 
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
         val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
@@ -122,6 +178,10 @@ class NiphlQuestionControllerSpec extends SpecBase {
       }
 
       "must redirect on Submit when user selects no" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
 
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 

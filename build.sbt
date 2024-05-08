@@ -35,7 +35,7 @@ lazy val microservice = (project in file("."))
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
       ".*Routes.*;.*viewmodels.govuk.*;",
     ScoverageKeys.coverageMinimumStmtTotal := 90,
-    ScoverageKeys.coverageFailOnMinimum := false,
+    ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
@@ -70,4 +70,7 @@ lazy val it =
     .enablePlugins(PlayScala)
     .dependsOn(microservice % "test->test")
 
-addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it/test;scalastyle;coverageReport")
+addCommandAlias(
+  "runAllChecks",
+  ";clean;compile;scalafmtCheckAll;coverage;test;it/test;a11y:test;scalastyle;coverageReport"
+)

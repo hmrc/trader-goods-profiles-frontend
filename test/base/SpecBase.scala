@@ -19,7 +19,7 @@ package base
 import cats.data.EitherT
 import controllers.actions._
 import models.errors.SessionError
-import models.{InternalId, UserAnswers}
+import models.{CategorisationAnswers, CommodityCode, CountryOfOrigin, InternalId, MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
@@ -34,8 +34,8 @@ import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 import services.SessionService
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
-import scala.concurrent.ExecutionContext
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 trait SpecBase
@@ -60,7 +60,23 @@ trait SpecBase
 
   val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
 
-  val sessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
+  val emptySessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
+
+  private val categorisationAnswers =
+    CategorisationAnswers(Some(CommodityCode("anything")), Some(CountryOfOrigin("GB")))
+
+  private val maintainProfileAnswers =
+    MaintainProfileAnswers(
+      Some(UkimsNumber("anything")),
+      Some(true),
+      Some(NirmsNumber("anything")),
+      Some(true),
+      Some(NiphlNumber("anything"))
+    )
+
+  private val fullUserAnswers = UserAnswers("id", maintainProfileAnswers, categorisationAnswers)
+
+  val fullSessionRequest = new FakeSessionRequestAction(fullUserAnswers)
 
   val sessionService: SessionService = mock[SessionService]
 
@@ -69,10 +85,6 @@ trait SpecBase
   )
 
   when(sessionService.createUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Unit](
-    Future.successful(Right(()))
-  )
-
-  when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
     Future.successful(Right(()))
   )
 

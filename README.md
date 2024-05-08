@@ -27,9 +27,7 @@ Run this to check integration tests: `sbt it/test`
 
 Run this to check accessibility tests: `sbt clean a11y:test`
 
-Run this to check code coverage: `sbt clean coverage test`
-
-Run this to get code coverage report: `sbt coverageReport`
+Run this to check all code coverage and get report: `sbt clean coverage test it/test a11y:test coverageReport`
 
 ### Formatting
 
