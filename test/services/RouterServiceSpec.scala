@@ -19,9 +19,9 @@ package services
 import base.SpecBase
 import cats.data.EitherT
 import connectors.RouterConnector
-import models.{Eori, NiphlNumber, NirmsNumber, TraderGoodsProfile, UkimsNumber}
 import models.errors.RouterError
 import models.router.requests.SetUpProfileRequest
+import models.{Eori, MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.{verify, when}
@@ -34,9 +34,9 @@ class RouterServiceSpec extends SpecBase {
 
   private val connector = mock[RouterConnector]
 
-  private val routerService      = new RouterService(connector)
-  private val eori               = Eori("eori")
-  private val traderGoodsProfile = TraderGoodsProfile(
+  private val routerService          = new RouterService(connector)
+  private val eori                   = Eori("eori")
+  private val maintainProfileAnswers = MaintainProfileAnswers(
     Some(UkimsNumber("ukims")),
     Some(true),
     Some(NirmsNumber("nirms")),
@@ -59,7 +59,7 @@ class RouterServiceSpec extends SpecBase {
         val connectorResponse = EitherT[Future, RouterError, Unit](successful(Right()))
         when(connector.setUpProfile(any, any)(any, any)).thenReturn(connectorResponse)
 
-        val result = routerService.setUpProfile(eori, traderGoodsProfile)
+        val result = routerService.setUpProfile(eori, maintainProfileAnswers)
 
         result mustBe connectorResponse
 
@@ -74,7 +74,7 @@ class RouterServiceSpec extends SpecBase {
         val connectorResponse = EitherT[Future, RouterError, Unit](successful(Left(RouterError("blah", None))))
         when(connector.setUpProfile(any, any)(any, any)).thenReturn(connectorResponse)
 
-        val result = routerService.setUpProfile(eori, traderGoodsProfile)
+        val result = routerService.setUpProfile(eori, maintainProfileAnswers)
 
         result mustBe connectorResponse
 

@@ -48,7 +48,7 @@ class CheckYourAnswersController @Inject() (
 
   def onSubmit: Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     routerService
-      .setUpProfile(request.eori, request.userAnswers.traderGoodsProfile)
+      .setUpProfile(request.eori, request.userAnswers.maintainProfileAnswers)
       .fold(
         error => Redirect(routes.DummyController.onPageLoad.url), //TODO redirect to actual error page
         success => Redirect(routes.HomepageController.onPageLoad.url)

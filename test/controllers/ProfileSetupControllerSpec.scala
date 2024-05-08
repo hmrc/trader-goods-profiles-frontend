@@ -52,6 +52,5 @@ class ProfileSetupControllerSpec extends SpecBase {
       redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
     }
 
-    }
   }
 }

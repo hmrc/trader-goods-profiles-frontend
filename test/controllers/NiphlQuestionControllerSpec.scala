@@ -18,8 +18,6 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
-import forms.NiphlQuestionFormProvider
-import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -27,89 +25,33 @@ import views.html.NiphlQuestionView
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
-import forms.NiphlQuestionFormProvider
-import models.{CheckMode, NormalMode}
+  import forms.NiphlQuestionFormProvider
+  import models.{CheckMode, NormalMode}
 
-import scala.concurrent.ExecutionContext
+  class NiphlQuestionControllerSpec extends SpecBase {
 
-class NiphlQuestionControllerSpec extends SpecBase {
+    private val formProvider = new NiphlQuestionFormProvider()
 
-  private val formProvider = new NiphlQuestionFormProvider()
+    private val niphlQuestionView = app.injector.instanceOf[NiphlQuestionView]
 
-  private val niphlQuestionView = app.injector.instanceOf[NiphlQuestionView]
+    private val niphlQuestionController = new NiphlQuestionController(
+      messageComponentControllers,
+      new FakeAuthoriseAction(defaultBodyParser),
+      niphlQuestionView,
+      formProvider,
+      sessionRequest,
+      sessionService
+    )
 
-  private val niphlQuestionController = new NiphlQuestionController(
-    messageComponentControllers,
-    new FakeAuthoriseAction(defaultBodyParser),
-    niphlQuestionView,
-    formProvider,
-    sessionRequest,
-    sessionService
-  )
-
-  "NiphlQuestionController" - {
-
-    "must return OK and the correct view for a GET" in {
-
-      val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
-
-      status(result) mustEqual OK
-
-      contentAsString(result) mustEqual niphlQuestionView(formProvider(), NormalMode)(
-        fakeRequest,
-        messages
-      ).toString
-
-    }
-
-    "must redirect on Submit when user selects yes" in {
-
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
-
-      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
-
-      status(result) mustEqual SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
-
-    }
-
-    "must redirect on Submit when user selects no" in {
-
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
-
-      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
-
-      status(result) mustEqual SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-
-    }
-
-    "must send bad request on Submit when user doesn't select yes or no" in {
-
-      val formWithErrors = formProvider().bind(Map.empty[String, String])
-
-      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequest)
-
-      status(result) mustEqual BAD_REQUEST
-
-      val pageContent = contentAsString(result)
-
-      pageContent mustEqual niphlQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
-
-      pageContent must include("niphlQuestion.radio.notSelected")
-    }
-
-    "CheckMode" - {
+    "NiphlQuestionController" - {
 
       "must return OK and the correct view for a GET" in {
 
-        val result = niphlQuestionController.onPageLoad(CheckMode)(fakeRequest)
+        val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) mustEqual OK
 
-        contentAsString(result) mustEqual niphlQuestionView(formProvider(), CheckMode)(
+        contentAsString(result) mustEqual niphlQuestionView(formProvider(), NormalMode)(
           fakeRequest,
           messages
         ).toString
@@ -120,11 +62,11 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-        val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+        val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(CheckMode).url)
+        redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
 
       }
 
@@ -132,12 +74,67 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-        val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+        val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
+      }
+
+      "must send bad request on Submit when user doesn't select yes or no" in {
+
+        val formWithErrors = formProvider().bind(Map.empty[String, String])
+
+        val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequest)
+
+        status(result) mustEqual BAD_REQUEST
+
+        val pageContent = contentAsString(result)
+
+        pageContent mustEqual niphlQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
+
+        pageContent must include("niphlQuestion.radio.notSelected")
+      }
+
+      "CheckMode" - {
+
+        "must return OK and the correct view for a GET" in {
+
+          val result = niphlQuestionController.onPageLoad(CheckMode)(fakeRequest)
+
+          status(result) mustEqual OK
+
+          contentAsString(result) mustEqual niphlQuestionView(formProvider(), CheckMode)(
+            fakeRequest,
+            messages
+          ).toString
+
+        }
+
+        "must redirect on Submit when user selects yes" in {
+
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+          val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(CheckMode).url)
+
+        }
+
+        "must redirect on Submit when user selects no" in {
+
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
+
+          val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+        }
       }
     }
   }

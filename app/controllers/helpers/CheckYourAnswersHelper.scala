@@ -39,33 +39,33 @@ class CheckYourAnswersHelper() {
     )
   }
   def createSummaryList(
-    traderGoodsProfile: MaintainProfileAnswers
+    maintainProfileAnswers: MaintainProfileAnswers
   )(implicit messages: Messages): Seq[SummaryListRow] = {
     val summaryData: Seq[(String, String, Option[String])] = Seq(
       (
-        "UKIMS number",
+        messages("checkYourAnswers.heading.ukimsNumber"),
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.ukimsNumber.map(_.value)
+        maintainProfileAnswers.ukimsNumber.map(_.value)
       ),
       (
-        "NIRMS registered",
+        messages("checkYourAnswers.heading.nirmsRegistered"),
         routes.NirmsQuestionController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.hasNirms.map(changeToYesOrNo)
+        maintainProfileAnswers.hasNirms.map(changeToYesOrNo)
       ),
       (
-        "NIRMS number",
+        messages("checkYourAnswers.heading.nirmsNumber"),
         routes.NirmsNumberController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.nirmsNumber.map(_.value)
+        maintainProfileAnswers.nirmsNumber.map(_.value)
       ),
       (
-        "NIPHL registered",
+        messages("checkYourAnswers.heading.niphlRegistered"),
         routes.NiphlQuestionController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.hasNiphl.map(changeToYesOrNo)
+        maintainProfileAnswers.hasNiphl.map(changeToYesOrNo)
       ),
       (
-        "NIPHL number",
+        messages("checkYourAnswers.heading.niphlNumber"),
         routes.NiphlNumberController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.niphlNumber.map(_.value)
+        maintainProfileAnswers.niphlNumber.map(_.value)
       )
     )
 

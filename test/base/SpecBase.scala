@@ -23,23 +23,17 @@ import models.{InternalId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
 import play.api.test.FakeRequest
-import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
-import services.SessionService
-import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
-import scala.concurrent.ExecutionContext
 
 import scala.concurrent.{ExecutionContext, Future}
 

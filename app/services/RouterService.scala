@@ -20,7 +20,7 @@ import cats.data.EitherT
 import connectors.RouterConnector
 import models.errors.RouterError
 import models.router.requests.SetUpProfileRequest
-import models.{Eori, TraderGoodsProfile}
+import models.{Eori, MaintainProfileAnswers}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -28,15 +28,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RouterService @Inject() (connector: RouterConnector)(implicit ec: ExecutionContext) {
 
-  def setUpProfile(eori: Eori, traderGoodsProfile: TraderGoodsProfile)(implicit
+  def setUpProfile(eori: Eori, maintainProfileAnswers: MaintainProfileAnswers)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, RouterError, Unit] = {
 
     val requestItem = SetUpProfileRequest(
       eori.value,
-      traderGoodsProfile.ukimsNumber.map(_.value),
-      traderGoodsProfile.nirmsNumber.map(_.value),
-      traderGoodsProfile.niphlNumber.map(_.value)
+      maintainProfileAnswers.ukimsNumber.map(_.value),
+      maintainProfileAnswers.nirmsNumber.map(_.value),
+      maintainProfileAnswers.niphlNumber.map(_.value)
     )
 
     connector.setUpProfile(eori, requestItem)

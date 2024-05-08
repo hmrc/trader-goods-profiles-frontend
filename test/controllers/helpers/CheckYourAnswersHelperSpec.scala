@@ -18,20 +18,11 @@ package controllers.helpers
 
 import base.SpecBase
 import models.{MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber}
-import org.mockito.Mockito.when
-import play.api.i18n.Messages
-import viewmodels.govuk.SummaryListFluency
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
-import org.scalatestplus.mockito.MockitoSugar.mock
+import viewmodels.govuk.SummaryListFluency
 
 class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
-
-  val fakeMessages: Messages = mock[Messages]
-
-  when(fakeMessages("site.change")) thenReturn "Change"
-  when(fakeMessages("site.yes")) thenReturn "Yes"
-  when(fakeMessages("site.no")) thenReturn "No"
 
   "CheckYourAnswersHelper" - {
 
@@ -41,7 +32,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
 
       "must return empty summary list when blank trader goods profile" in {
         val maintainProfileAnswers: MaintainProfileAnswers = MaintainProfileAnswers()
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe Seq.empty
       }
 
@@ -54,7 +45,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(true),
             Some(NiphlNumber("33"))
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe create5RowTable()
       }
 
@@ -66,7 +57,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(NirmsNumber("22")),
             Some(false)
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe create4RowTableNoNiphl()
       }
 
@@ -79,7 +70,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(true),
             Some(NiphlNumber("33"))
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe create4RowTableNoNirms()
       }
 
@@ -92,187 +83,183 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(false),
             niphlNumber = None
           )
-        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
+        val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(messages)
         summaryList mustBe create3RowTable()
       }
 
     }
   }
   def create5RowTable(): Seq[SummaryListRow] = Seq(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-    ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS number"), ""),
-            Value(HtmlContent("22"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL number"), ""),
-            Value(HtmlContent("33"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
           )
         )
-
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Value(HtmlContent("site.yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.nirmsNumber"), ""),
+      Value(HtmlContent("22"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Value(HtmlContent("site.yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.niphlNumber"), ""),
+      Value(HtmlContent("33"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    )
+  )
 
   def create4RowTableNoNirms(): Seq[SummaryListRow] = Seq(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-      Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
-
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
           )
         )
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("NIPHL number"), ""),
+      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Value(HtmlContent("site.no"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Value(HtmlContent("site.yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.niphlNumber"), ""),
       Value(HtmlContent("33"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("site.change"), None, "", Map())
           )
         )
-        def create4RowTableNoNiphl(): Seq[SummaryListRow] = Seq(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
-
+      )
+    )
+  )
+  def create4RowTableNoNiphl(): Seq[SummaryListRow] = Seq(
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
           )
         )
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("NIRMS number"), ""),
+      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Value(HtmlContent("site.yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.nirmsNumber"), ""),
       Value(HtmlContent("22"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-      Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
-
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Value(HtmlContent("site.no"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
           )
         )
       )
@@ -280,42 +267,41 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
   )
 
   def create3RowTable(): Seq[SummaryListRow] = Seq(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
     ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
-
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Value(HtmlContent("site.no"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("site.change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Value(HtmlContent("site.no"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("site.change"), None, "", Map())
           )
         )
       )

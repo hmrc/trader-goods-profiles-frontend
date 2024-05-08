@@ -20,9 +20,8 @@ import base.SpecBase
 import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import controllers.helpers.CheckYourAnswersHelper
+import models.{Eori, MaintainProfileAnswers}
 import models.errors.RouterError
-import models.{Eori, TraderGoodsProfile}
-import models.MaintainProfileAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.{verify, when}
@@ -37,8 +36,6 @@ import views.html.CheckYourAnswersView
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
   private val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
@@ -120,7 +117,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       redirectLocation(result) shouldBe Some(routes.HomepageController.onPageLoad.url)
 
       withClue("Ensure correct data is sent to router service") {
-        verify(routerService).setUpProfile(eqTo(Eori("eori")), eqTo(emptyUserAnswers.traderGoodsProfile))(any)
+        verify(routerService).setUpProfile(eqTo(Eori("eori")), eqTo(emptyUserAnswers.maintainProfileAnswers))(any)
       }
 
     }

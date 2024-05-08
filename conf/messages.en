@@ -130,10 +130,16 @@ countryOfOrigin.inputHeading = Pick a country
 countryOfOrigin.error.required = TODO error
 countryOfOrigin.error.length = TODO error
 countryOfOrigin.error.lettersOnly = TODO error
+
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.h1 = Check Your Answers
 checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
 checkYourAnswers.warning = You need to make sure these details are correct. Any declarations you use TGP to create, will not be valid if they are wrong.
+checkYourAnswers.heading.ukimsNumber = UKIMS number
+checkYourAnswers.heading.nirmsRegistered = NIRMS registered
+checkYourAnswers.heading.nirmsNumber = NIRMS number
+checkYourAnswers.heading.niphlRegistered = NIPHL registered
+checkYourAnswers.heading.niphlNumber = NIPHL number
 
 homepage.title = Trader Goods Profile homepage
 homepage.h1 = Trader Goods Profile homepage
