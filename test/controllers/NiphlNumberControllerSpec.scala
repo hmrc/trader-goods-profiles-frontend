@@ -17,15 +17,21 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.NiphlNumberFormProvider
 import generators.NiphlNumberGenerator
-import models.{CheckMode, NormalMode}
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlNumberView
+
+import scala.concurrent.Future
 
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
@@ -38,19 +44,57 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
     new FakeAuthoriseAction(defaultBodyParser),
     niphlNumberView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
   "NiphlNumberController" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = niphlNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
       contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, messages).toString
+
+    }
+
+    "must return OK and the full view for a GET" in {
+
+      val fullNiphlNumberController = new NiphlNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        niphlNumberView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullNiphlNumberController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual niphlNumberView(formProvider().fill("anything"))(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "1234")
+
+      val result = niphlNumberController.onSubmit(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 
@@ -67,14 +111,29 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
       }
 
       "with 2 letters and 5 numbers" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         forAll(niphlAlphaNumericGenerator(2, 5))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
       "with 1 letter and 5 numbers" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         forAll(niphlAlphaNumericGenerator(1, 5))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
       "with 4 to 6 numbers" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         forAll(niphlNumericGenerator(1000, 999999))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 

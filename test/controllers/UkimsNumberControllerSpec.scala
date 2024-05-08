@@ -17,13 +17,19 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.UkimsNumberFormProvider
-import models.{CheckMode, NormalMode}
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.UkimsNumberView
+
+import scala.concurrent.Future
 
 class UkimsNumberControllerSpec extends SpecBase {
 
@@ -38,7 +44,7 @@ class UkimsNumberControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     ukimsNumberView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
@@ -48,7 +54,7 @@ class UkimsNumberControllerSpec extends SpecBase {
       fakeRequest
     )
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = ukimsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -61,7 +67,33 @@ class UkimsNumberControllerSpec extends SpecBase {
 
     }
 
+    "must return OK and the full view for a GET" in {
+
+      val fullUkimsNumberController = new UkimsNumberController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        ukimsNumberView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullUkimsNumberController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual ukimsNumberView(formProvider().fill("anything"), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
     "must redirect on Submit when user enters correct Ukims number" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val validUkimsNumber = "XI47699357400020231115081800"
 
@@ -72,6 +104,24 @@ class UkimsNumberControllerSpec extends SpecBase {
       status(result) mustEqual SEE_OTHER
 
       redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
+      )
+
+      val validUkimsNumber = "XI47699357400020231115081800"
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
 
     }
 
@@ -125,6 +175,10 @@ class UkimsNumberControllerSpec extends SpecBase {
       }
 
       "must redirect on Submit when user enters correct Ukims number" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
 
         val validUkimsNumber = "XI47699357400020231115081800"
 

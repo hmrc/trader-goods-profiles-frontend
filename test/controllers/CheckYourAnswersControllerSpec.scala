@@ -46,7 +46,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     stubMessagesControllerComponents(),
     new FakeAuthoriseAction(defaultBodyParser),
     checkYourAnswersView,
-    sessionRequest,
+    emptySessionRequest,
     mockCheckYourAnswersHelper,
     routerService
   )

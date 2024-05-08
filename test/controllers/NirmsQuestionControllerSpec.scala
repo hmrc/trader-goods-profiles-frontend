@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsQuestionFormProvider
 import models.{CheckMode, NormalMode}
@@ -24,6 +25,13 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
+import forms.NirmsQuestionFormProvider
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+
+import scala.concurrent.Future
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -36,7 +44,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
     new FakeAuthoriseAction(defaultBodyParser),
     nirmsQuestionView,
     formProvider,
-    sessionRequest,
+    emptySessionRequest,
     sessionService
   )
 
@@ -46,7 +54,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
       fakeRequest
     )
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the empty view for a GET" in {
 
       val result = nirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -59,7 +67,49 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
     }
 
+    "must return OK and the full view for a GET" in {
+
+      val fullNirmsQuestionController = new NirmsQuestionController(
+        messageComponentControllers,
+        new FakeAuthoriseAction(defaultBodyParser),
+        nirmsQuestionView,
+        formProvider,
+        fullSessionRequest,
+        sessionService
+      )
+
+      val result = fullNirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
+
+      status(result) mustEqual OK
+
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider().fill(true), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
+
+    }
+
+    "must redirect on Submit to error page when there is a session error" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
+      )
+
+      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+
+    }
+
     "must redirect on Submit when user selects yes" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
@@ -72,6 +122,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user selects no" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
@@ -116,6 +170,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       "must redirect on Submit when user selects yes" in {
 
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
         val result = nirmsQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
@@ -127,6 +185,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
       }
 
       "must redirect on Submit when user selects no" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
 
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
