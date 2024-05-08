@@ -32,6 +32,11 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
   when(fakeMessages("site.change")) thenReturn "Change"
   when(fakeMessages("site.yes")) thenReturn "Yes"
   when(fakeMessages("site.no")) thenReturn "No"
+  when(fakeMessages("checkYourAnswers.ukimsNumber")) thenReturn "UKIMS number"
+  when(fakeMessages("checkYourAnswers.nirmsNumber")) thenReturn "NIRMS number"
+  when(fakeMessages("checkYourAnswers.nirmsRegistered")) thenReturn "NIRMS registered"
+  when(fakeMessages("checkYourAnswers.niphlNumber")) thenReturn "NIPHL number"
+  when(fakeMessages("checkYourAnswers.niphlRegistered")) thenReturn "NIPHL registered"
 
   "CheckYourAnswersHelper" - {
 
