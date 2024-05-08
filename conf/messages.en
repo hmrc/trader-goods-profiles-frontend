@@ -139,12 +139,7 @@ checkYourAnswers.nirmsNumber = NIRMS number
 checkYourAnswers.nirmsRegistered = NIRMS registered
 checkYourAnswers.niphlNumber = NIPHL number
 checkYourAnswers.niphlRegistered = NIPHL registered
-
-checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
-checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
-checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
-
-checkYourAnswers.warning = You need to make sure these details are correct. Any declarations you use TGP to create, will not be valid if they are wrong.
+checkYourAnswers.warning = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
