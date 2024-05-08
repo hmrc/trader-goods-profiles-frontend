@@ -16,9 +16,9 @@
 
 package controllers.helpers
 
-import controllers.routes
 import models.{CheckMode, MaintainProfileAnswers}
 import play.api.i18n.Messages
+import controllers.routes
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
@@ -43,27 +43,27 @@ class CheckYourAnswersHelper() {
   )(implicit messages: Messages): Seq[SummaryListRow] = {
     val summaryData: Seq[(String, String, Option[String])] = Seq(
       (
-        "UKIMS number",
+        messages("checkYourAnswers.ukimsNumber"),
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.ukimsNumber.map(_.value)
       ),
       (
-        "NIRMS registered",
+        messages("checkYourAnswers.nirmsRegistered"),
         routes.NirmsQuestionController.onPageLoad(CheckMode).url,
         traderGoodsProfile.hasNirms.map(changeToYesOrNo)
       ),
       (
-        "NIRMS number",
+        messages("checkYourAnswers.nirmsNumber"),
         routes.NirmsNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.nirmsNumber.map(_.value)
       ),
       (
-        "NIPHL registered",
+        messages("checkYourAnswers.niphlRegistered"),
         routes.NiphlQuestionController.onPageLoad(CheckMode).url,
         traderGoodsProfile.hasNiphl.map(changeToYesOrNo)
       ),
       (
-        "NIPHL number",
+        messages("checkYourAnswers.niphlNumber"),
         routes.NiphlNumberController.onPageLoad(CheckMode).url,
         traderGoodsProfile.niphlNumber.map(_.value)
       )
