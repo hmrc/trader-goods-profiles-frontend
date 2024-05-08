@@ -22,7 +22,8 @@ import models.router.requests.SetUpProfileRequest
 import models.{Eori, ServiceDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
-import org.mockito.Mockito.{reset, verify, when}
+import org.mockito.Mockito.{verify, when}
+import org.mockito.MockitoSugar.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.http.Status.{BAD_REQUEST, OK}

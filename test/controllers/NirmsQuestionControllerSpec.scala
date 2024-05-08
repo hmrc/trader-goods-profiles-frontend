@@ -20,16 +20,14 @@ import base.SpecBase
 import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsQuestionFormProvider
-import models.{CheckMode, NormalMode}
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.NirmsQuestionView
-import forms.NirmsQuestionFormProvider
 import models.errors.SessionError
 import models.{CheckMode, NormalMode, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import views.html.NirmsQuestionView
 
 import scala.concurrent.Future
 

@@ -28,11 +28,11 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
   import forms.NiphlQuestionFormProvider
   import models.errors.SessionError
-import models.{CheckMode, NormalMode, UserAnswers}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+  import models.{CheckMode, NormalMode, UserAnswers}
+  import org.mockito.ArgumentMatchers.any
+  import org.mockito.Mockito.when
 
-import scala.concurrent.Future
+  import scala.concurrent.Future
 
   class NiphlQuestionControllerSpec extends SpecBase {
 
@@ -66,49 +66,49 @@ import scala.concurrent.Future
 
       "must return OK and the full view for a GET" in {
 
-      val fullNiphlQuestionController = new NiphlQuestionController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        niphlQuestionView,
-        formProvider,
-        fullSessionRequest,
-        sessionService
-      )
+        val fullNiphlQuestionController = new NiphlQuestionController(
+          messageComponentControllers,
+          new FakeAuthoriseAction(defaultBodyParser),
+          niphlQuestionView,
+          formProvider,
+          fullSessionRequest,
+          sessionService
+        )
 
-      val result = fullNiphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
+        val result = fullNiphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
-      status(result) mustEqual OK
+        status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlQuestionView(formProvider().fill(true), NormalMode)(
-        fakeRequest,
-        messages
-      ).toString
+        contentAsString(result) mustEqual niphlQuestionView(formProvider().fill(true), NormalMode)(
+          fakeRequest,
+          messages
+        ).toString
 
-    }
+      }
 
-    "must redirect on Submit to error page when there is a session error" in {
-
-      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
-      )
-
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
-
-      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
-
-      status(result) mustEqual SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
-
-    }
-
-    "must redirect on Submit when user selects yes" in {
+      "must redirect on Submit to error page when there is a session error" in {
 
         when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-        Future.successful(Right(()))
-      )
+          Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
+        )
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+        val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+
+      }
+
+      "must redirect on Submit when user selects yes" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
         val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
@@ -121,10 +121,10 @@ import scala.concurrent.Future
       "must redirect on Submit when user selects no" in {
 
         when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-        Future.successful(Right(()))
-      )
+          Future.successful(Right(()))
+        )
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
         val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
@@ -167,10 +167,10 @@ import scala.concurrent.Future
         "must redirect on Submit when user selects yes" in {
 
           when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-          Future.successful(Right(()))
-        )
+            Future.successful(Right(()))
+          )
 
-        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
           val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
 
@@ -183,10 +183,10 @@ import scala.concurrent.Future
         "must redirect on Submit when user selects no" in {
 
           when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-          Future.successful(Right(()))
-        )
+            Future.successful(Right(()))
+          )
 
-        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
+          val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
           val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
 
