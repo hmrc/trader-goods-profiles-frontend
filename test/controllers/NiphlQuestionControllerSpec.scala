@@ -25,8 +25,6 @@ import views.html.NiphlQuestionView
 import forms.NiphlQuestionFormProvider
 import models.{CheckMode, NormalMode}
 
-import scala.concurrent.ExecutionContext
-
 class NiphlQuestionControllerSpec extends SpecBase {
 
   private val formProvider = new NiphlQuestionFormProvider()

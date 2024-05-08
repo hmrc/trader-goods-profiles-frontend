@@ -27,8 +27,6 @@ import generators.NiphlNumberGenerator
 import models.{CheckMode, NormalMode}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
-import scala.concurrent.ExecutionContext
-
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
   private val formProvider = new NiphlNumberFormProvider()

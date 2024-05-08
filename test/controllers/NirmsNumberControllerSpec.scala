@@ -25,8 +25,6 @@ import play.api.test.Helpers._
 import play.api.test.FakeRequest
 import views.html.NirmsNumberView
 
-import scala.concurrent.ExecutionContext
-
 class NirmsNumberControllerSpec extends SpecBase {
 
   private val formProvider          = new NirmsNumberFormProvider()

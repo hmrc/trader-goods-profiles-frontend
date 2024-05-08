@@ -25,8 +25,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.UkimsNumberView
 
-import scala.concurrent.ExecutionContext
-
 class UkimsNumberControllerSpec extends SpecBase {
 
   private val formProvider = new UkimsNumberFormProvider()
