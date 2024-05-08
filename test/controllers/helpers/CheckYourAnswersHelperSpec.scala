@@ -91,7 +91,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
   }
   def create5RowTable(): Seq[SummaryListRow] = Seq(
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Key(HtmlContent("checkYourAnswers.ukimsNumber")),
       Value(HtmlContent("11")),
       "",
       Some(
@@ -104,7 +104,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.nirmsRegistered"), ""),
       Value(HtmlContent("site.yes"), ""),
       "",
       Some(
@@ -117,7 +117,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.nirmsNumber"), ""),
+      Key(HtmlContent("checkYourAnswers.nirmsNumber"), ""),
       Value(HtmlContent("22"), ""),
       "",
       Some(
@@ -130,7 +130,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.niphlRegistered"), ""),
       Value(HtmlContent("site.yes"), ""),
       "",
       Some(
@@ -143,7 +143,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.niphlNumber"), ""),
+      Key(HtmlContent("checkYourAnswers.niphlNumber"), ""),
       Value(HtmlContent("33"), ""),
       "",
       Some(
@@ -159,7 +159,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
 
   def create4RowTableNoNirms(): Seq[SummaryListRow] = Seq(
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Key(HtmlContent("checkYourAnswers.ukimsNumber")),
       Value(HtmlContent("11")),
       "",
       Some(
@@ -172,7 +172,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.nirmsRegistered"), ""),
       Value(HtmlContent("site.no"), ""),
       "",
       Some(
@@ -185,7 +185,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.niphlRegistered"), ""),
       Value(HtmlContent("site.yes"), ""),
       "",
       Some(
@@ -198,7 +198,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.niphlNumber"), ""),
+      Key(HtmlContent("checkYourAnswers.niphlNumber"), ""),
       Value(HtmlContent("33"), ""),
       "",
       Some(
@@ -213,7 +213,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
   )
   def create4RowTableNoNiphl(): Seq[SummaryListRow] = Seq(
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Key(HtmlContent("checkYourAnswers.ukimsNumber")),
       Value(HtmlContent("11")),
       "",
       Some(
@@ -226,7 +226,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.nirmsRegistered"), ""),
       Value(HtmlContent("site.yes"), ""),
       "",
       Some(
@@ -239,7 +239,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.nirmsNumber"), ""),
+      Key(HtmlContent("checkYourAnswers.nirmsNumber"), ""),
       Value(HtmlContent("22"), ""),
       "",
       Some(
@@ -252,7 +252,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.niphlRegistered"), ""),
       Value(HtmlContent("site.no"), ""),
       "",
       Some(
@@ -268,7 +268,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
 
   def create3RowTable(): Seq[SummaryListRow] = Seq(
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.ukimsNumber")),
+      Key(HtmlContent("checkYourAnswers.ukimsNumber")),
       Value(HtmlContent("11")),
       "",
       Some(
@@ -281,7 +281,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.nirmsRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.nirmsRegistered"), ""),
       Value(HtmlContent("site.no"), ""),
       "",
       Some(
@@ -294,7 +294,7 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       )
     ),
     SummaryListRow(
-      Key(HtmlContent("checkYourAnswers.heading.niphlRegistered"), ""),
+      Key(HtmlContent("checkYourAnswers.niphlRegistered"), ""),
       Value(HtmlContent("site.no"), ""),
       "",
       Some(

@@ -40,7 +40,8 @@ class CheckYourAnswersController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  private implicit val functorFuture: MonadThrow[Future] with CoflatMap[Future] with Monad[Future] = catsStdInstancesForFuture(defaultExecutionContext)
+  private implicit val functorFuture: MonadThrow[Future] with CoflatMap[Future] with Monad[Future] =
+    catsStdInstancesForFuture(defaultExecutionContext)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
     val list = SummaryListViewModel(
