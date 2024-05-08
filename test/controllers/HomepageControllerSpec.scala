@@ -17,12 +17,9 @@
 package controllers
 
 import base.SpecBase
-import connectors.RouterConnector
 import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
-import models.{TraderGoodsProfile, UserAnswers}
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.http.Status.OK
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status, stubMessages}
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import views.html.HomepageView
 
 class HomepageControllerSpec extends SpecBase {

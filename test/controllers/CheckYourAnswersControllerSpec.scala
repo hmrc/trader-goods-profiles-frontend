@@ -20,20 +20,19 @@ import base.SpecBase
 import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import controllers.helpers.CheckYourAnswersHelper
-import models.{Eori, TraderGoodsProfile}
 import models.errors.RouterError
+import models.{Eori, TraderGoodsProfile}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
+import org.mockito.Mockito.{verify, when}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.Helpers._
-import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Actions, HtmlContent, SummaryListRow, Value}
+import services.RouterService
+import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
-import org.mockito.Mockito.{verify, when}
-import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.i18n.Messages
-import services.RouterService
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful

@@ -18,14 +18,14 @@ package connectors
 
 import cats.data.EitherT
 import config.FrontendAppConfig
-import models.router.requests.SetUpProfileRequest
 import models.Eori
 import models.errors.RouterError
+import models.router.requests.SetUpProfileRequest
 import play.api.Logging
-import play.api.http.Status.{OK, isSuccessful}
+import play.api.http.Status.isSuccessful
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,6 @@ class RouterConnector @Inject() (
 ) extends BaseConnector
     with Logging {
 
-  //TODO make service to call this connector!
   def setUpProfile(eori: Eori, setUpProfileRequest: SetUpProfileRequest)(implicit
     ec: ExecutionContext,
     hc: HeaderCarrier
@@ -46,26 +45,20 @@ class RouterConnector @Inject() (
     val routerService = appConfig.tgpRouter
     val url           = s"${routerService.baseUrl}/customs/traders/good-profiles/${eori.value}"
 
-    EitherT(httpClientV2
-      .put(url"$url")
-      .withBody(Json.toJson(setUpProfileRequest))
-      .execute
-      .flatMap(httpResponse => handleProfileSetUpResponse(eori, url, httpResponse))
-      .recover { case NonFatal(exception) =>
-        logger.error(
-          s"[RouterConnector] - Error occurred when submitting Trader Goods Profile data for EORI ${eori.value}: ${exception.getMessage}"
-        )
+    EitherT(
+      httpClientV2
+        .put(url"$url")
+        .withBody(Json.toJson(setUpProfileRequest))
+        .execute
+        .flatMap(httpResponse => handleProfileSetUpResponse(eori, url, httpResponse))
+        .recover { case NonFatal(exception) =>
+          logger.error(
+            s"[RouterConnector] - Error occurred when submitting Trader Goods Profile data for EORI ${eori.value}: ${exception.getMessage}"
+          )
 
-        Left(RouterError(s"Failed to submit Trader Goods Profile data: ${exception.getMessage}", None))
-      })
-
-    // TODO unit tests
-    // success
-    // error handling
-
-    // TODO IT?
-    // Update them to mock the connector??
-    // Wiremock?
+          Left(RouterError(s"Failed to submit Trader Goods Profile data: ${exception.getMessage}", None))
+        }
+    )
 
   }
 
@@ -74,7 +67,6 @@ class RouterConnector @Inject() (
       logger.info(s"[RouterConnector] - Successfully submitted Trader Goods Profile data for EORI ${eori.value}")
       Future.successful(Right())
     } else {
-      //TODO check this log message is sensible
       logger.warn(
         s"[RouterConnector] - Error occurred when submitting Trader Goods Profile data for EORI ${eori.value}: ${httpResponse.body}"
       )

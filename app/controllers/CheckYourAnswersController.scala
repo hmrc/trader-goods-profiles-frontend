@@ -16,20 +16,16 @@
 
 package controllers
 
-import cats.data.EitherT
 import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.Inject
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
+import controllers.helpers.CheckYourAnswersHelper
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.RouterService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
-import controllers.helpers.CheckYourAnswersHelper
-import services.RouterService
-import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse, UpstreamErrorResponse}
-
-import scala.concurrent.Future
 
 class CheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
@@ -49,15 +45,13 @@ class CheckYourAnswersController @Inject() (
     Ok(view(list))
   }
 
-  // TODO replace dummy route and post session data
   def onSubmit: Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-
     routerService
       .setUpProfile(request.eori, request.userAnswers.traderGoodsProfile)
       .fold(
-      error => Redirect(routes.DummyController.onPageLoad.url), //TODO actual error page
-      success => Redirect(routes.HomepageController.onPageLoad.url)
-    )(catsStdInstancesForFuture(defaultExecutionContext))
+        error => Redirect(routes.DummyController.onPageLoad.url), //TODO redirect to actual error page
+        success => Redirect(routes.HomepageController.onPageLoad.url)
+      )(catsStdInstancesForFuture(defaultExecutionContext))
 
   }
 

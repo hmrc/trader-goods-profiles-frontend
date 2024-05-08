@@ -16,28 +16,23 @@
 
 package controllers
 
-import connectors.RouterConnector
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
-
-import scala.util.{Failure, Success}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomepageView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class HomepageController @Inject() (
-                                     val controllerComponents: MessagesControllerComponents,
-                                     authorise: AuthoriseAction,
-                                     view: HomepageView,
-                                     getSession: SessionRequestAction
-                                   )(implicit ec: ExecutionContext) extends FrontendBaseController
-  with I18nSupport {
+  val controllerComponents: MessagesControllerComponents,
+  authorise: AuthoriseAction,
+  view: HomepageView,
+  getSession: SessionRequestAction
+) extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getSession) { implicit request =>
-
     Ok(view())
   }
 

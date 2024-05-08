@@ -21,15 +21,16 @@ import connectors.RouterConnector
 import models.errors.RouterError
 import models.router.requests.SetUpProfileRequest
 import models.{Eori, TraderGoodsProfile}
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RouterService @Inject() (connector: RouterConnector)
-                              (implicit ec: ExecutionContext) {
+class RouterService @Inject() (connector: RouterConnector)(implicit ec: ExecutionContext) {
 
-  def setUpProfile(eori: Eori, traderGoodsProfile: TraderGoodsProfile)(implicit hc: HeaderCarrier): EitherT[Future, RouterError, Unit] = {
+  def setUpProfile(eori: Eori, traderGoodsProfile: TraderGoodsProfile)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, RouterError, Unit] = {
 
     val requestItem = SetUpProfileRequest(
       eori.value,

@@ -19,7 +19,6 @@ package controllers
 import controllers.actions._
 import forms.UkimsNumberFormProvider
 import models.{CheckMode, Mode, NormalMode, UkimsNumber}
-import models.UkimsNumber
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService

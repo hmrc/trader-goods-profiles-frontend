@@ -1,4 +1,4 @@
-import models.{CheckMode, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import org.scalacheck.Arbitrary
 import play.api.data.Forms._
 import play.api.data.Form

@@ -18,7 +18,7 @@ package controllers.helpers
 
 import controllers.routes
 import models.{CheckMode, TraderGoodsProfile}
-import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 

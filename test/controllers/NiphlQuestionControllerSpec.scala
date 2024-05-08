@@ -19,14 +19,11 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.NiphlQuestionFormProvider
+import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
-import forms.NiphlQuestionFormProvider
-import models.{CheckMode, NormalMode}
-
-import scala.concurrent.ExecutionContext
 
 class NiphlQuestionControllerSpec extends SpecBase {
 

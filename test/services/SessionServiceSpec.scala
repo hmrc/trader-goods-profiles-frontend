@@ -18,15 +18,15 @@ package services
 
 import base.SpecBase
 import cats.data.EitherT
-import models.{InternalId, UserAnswers}
 import models.errors.SessionError
+import models.{InternalId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
 import repositories.SessionRepository
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 class SessionServiceSpec extends SpecBase {
 
   "Session Service" - {

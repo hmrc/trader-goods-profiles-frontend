@@ -16,51 +16,6 @@
 
 package connectors
 
-import play.api.http.Status.OK
-import play.api.libs.json.{JsResult, Reads}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HttpErrorFunctions, HttpResponse, UpstreamErrorResponse}
-import uk.gov.hmrc.http.client.RequestBuilder
+import uk.gov.hmrc.http.HttpErrorFunctions
 
-import scala.concurrent.{ExecutionContext, Future}
-
-trait BaseConnector extends HttpErrorFunctions {
-
-  implicit class HttpResponseHelpers(response: HttpResponse) {
-
-    def as[A](implicit reads: Reads[A]): Future[A] =
-      response.json
-        .validate[A]
-        .map(result => Future.successful(result))
-        .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-
-    def error[A]: Future[A] =
-      Future.failed(UpstreamErrorResponse(response.body, response.status))
-
-  }
-
-  implicit class RequestBuilderHelpers(requestBuilder: RequestBuilder) {
-    def executeAndDeserialise[T](implicit ec: ExecutionContext, reads: Reads[T]): Future[T] = {
-      val anything = requestBuilder.execute[HttpResponse]
-        anything.flatMap { response =>
-          response.status match {
-            case OK => response.as[T]
-            case _  =>
-              response.error
-          }
-        }
-    }
-
-    def executeAndExpect(expected: Int)(implicit ec: ExecutionContext): Future[Unit] =
-      requestBuilder
-        .execute[HttpResponse]
-        .flatMap { response =>
-          response.status match {
-            case `expected` => Future.successful(())
-            case _          => response.error
-          }
-        }
-
-  }
-
-}
+trait BaseConnector extends HttpErrorFunctions
