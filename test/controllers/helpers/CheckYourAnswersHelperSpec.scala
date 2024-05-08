@@ -46,67 +46,6 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
       }
 
       "must return full summary list when trader goods profile has all fields" in {
-        val expected                                       = List(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS number"), ""),
-            Value(HtmlContent("22"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL number"), ""),
-            Value(HtmlContent("33"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          )
-        )
         val maintainProfileAnswers: MaintainProfileAnswers =
           MaintainProfileAnswers(
             Some(UkimsNumber("11")),
@@ -116,60 +55,10 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(NiphlNumber("33"))
           )
         val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
-        summaryList mustBe expected
+        summaryList mustBe create5RowTable()
       }
 
       "must return valid summary list when trader goods profile has no for NIPHL" in {
-        val expected                                       = List(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS number"), ""),
-            Value(HtmlContent("22"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          )
-        )
         val maintainProfileAnswers: MaintainProfileAnswers =
           MaintainProfileAnswers(
             Some(UkimsNumber("11")),
@@ -178,60 +67,10 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(false)
           )
         val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
-        summaryList mustBe expected
+        summaryList mustBe create4RowTableNoNiphl()
       }
 
       "must return valid summary list when trader goods profile has no for NIRMS" in {
-        val expected                                       = List(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-            Value(HtmlContent("Yes"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL number"), ""),
-            Value(HtmlContent("33"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          )
-        )
         val maintainProfileAnswers: MaintainProfileAnswers =
           MaintainProfileAnswers(
             Some(UkimsNumber("11")),
@@ -241,49 +80,10 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             Some(NiphlNumber("33"))
           )
         val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
-        summaryList mustBe expected
+        summaryList mustBe create4RowTableNoNirms()
       }
 
       "must return valid summary list when trader goods profile has 2 nos" in {
-        val expected                                       = List(
-          SummaryListRow(
-            Key(HtmlContent("UKIMS number")),
-            Value(HtmlContent("11")),
-            "",
-            Some(
-              Actions(
-                "",
-                List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIRMS registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          ),
-          SummaryListRow(
-            Key(HtmlContent("NIPHL registered"), ""),
-            Value(HtmlContent("No"), ""),
-            "",
-            Some(
-              Actions(
-                "",
-                List(
-                  ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
-                )
-              )
-            )
-          )
-        )
         val maintainProfileAnswers: MaintainProfileAnswers =
           MaintainProfileAnswers(
             Some(UkimsNumber("11")),
@@ -293,9 +93,211 @@ class CheckYourAnswersHelperSpec extends SpecBase with SummaryListFluency {
             niphlNumber = None
           )
         val summaryList                                    = checkYourAnswersHelper.createSummaryList(maintainProfileAnswers)(fakeMessages)
-        summaryList mustBe expected
+        summaryList mustBe create3RowTable()
       }
 
     }
   }
+  def create5RowTable(): Seq[SummaryListRow] = Seq(
+    SummaryListRow(
+      Key(HtmlContent("UKIMS number")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIRMS registered"), ""),
+      Value(HtmlContent("Yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIRMS number"), ""),
+      Value(HtmlContent("22"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIPHL registered"), ""),
+      Value(HtmlContent("Yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIPHL number"), ""),
+      Value(HtmlContent("33"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    )
+  )
+
+  def create4RowTableNoNirms(): Seq[SummaryListRow] = Seq(
+    SummaryListRow(
+      Key(HtmlContent("UKIMS number")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIRMS registered"), ""),
+      Value(HtmlContent("No"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIPHL registered"), ""),
+      Value(HtmlContent("Yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIPHL number"), ""),
+      Value(HtmlContent("33"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/niphl-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    )
+  )
+  def create4RowTableNoNiphl(): Seq[SummaryListRow] = Seq(
+    SummaryListRow(
+      Key(HtmlContent("UKIMS number")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIRMS registered"), ""),
+      Value(HtmlContent("Yes"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIRMS number"), ""),
+      Value(HtmlContent("22"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/nirms-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIPHL registered"), ""),
+      Value(HtmlContent("No"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    )
+  )
+
+  def create3RowTable(): Seq[SummaryListRow] = Seq(
+    SummaryListRow(
+      Key(HtmlContent("UKIMS number")),
+      Value(HtmlContent("11")),
+      "",
+      Some(
+        Actions(
+          "",
+          List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIRMS registered"), ""),
+      Value(HtmlContent("No"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    ),
+    SummaryListRow(
+      Key(HtmlContent("NIPHL registered"), ""),
+      Value(HtmlContent("No"), ""),
+      "",
+      Some(
+        Actions(
+          "",
+          List(
+            ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map())
+          )
+        )
+      )
+    )
+  )
 }
