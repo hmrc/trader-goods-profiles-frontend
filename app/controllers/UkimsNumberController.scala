@@ -43,9 +43,10 @@ class UkimsNumberController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalUkimsNumber = request.userAnswers.maintainProfileAnswers.ukimsNumber
+    val url                 = getBacklinkUrl(mode)
     optionalUkimsNumber match {
-      case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value), mode))
-      case None              => Ok(view(form, mode))
+      case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value), mode, url))
+      case None              => Ok(view(form, mode, url))
     }
   }
 
@@ -53,7 +54,10 @@ class UkimsNumberController @Inject() (
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        formWithErrors => {
+          val url = getBacklinkUrl(mode)
+          Future.successful(BadRequest(view(formWithErrors, mode, url)))
+        },
         ukimsNumber => {
           val updatedMaintainProfileAnswers =
             request.userAnswers.maintainProfileAnswers.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
@@ -73,4 +77,10 @@ class UkimsNumberController @Inject() (
     case NormalMode => Redirect(routes.NirmsQuestionController.onPageLoad(mode).url)
     case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
   }
+
+  private def getBacklinkUrl(mode: Mode): String =
+    mode match {
+      case NormalMode => routes.ProfileSetupController.onPageLoad.url
+      case CheckMode  => routes.CheckYourAnswersController.onPageLoad.url
+    }
 }

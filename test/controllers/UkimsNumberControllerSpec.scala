@@ -119,7 +119,9 @@ class UkimsNumberControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
 
-        contentAsString(result) mustEqual ukimsNumberView(formProvider(), CheckMode)(
+        val backLinkUrl = routes.CheckYourAnswersController.onPageLoad.url
+
+        contentAsString(result) mustEqual ukimsNumberView(formProvider(), CheckMode, backLinkUrl)(
           fakeRequest,
           messages
         ).toString

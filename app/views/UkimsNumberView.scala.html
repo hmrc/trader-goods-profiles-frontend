@@ -28,11 +28,12 @@
     link: components.Link
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, backLink: String = controllers.routes.ProfileSetupController.onPageLoad.url)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle    = titleNoForm(messages("ukimsNumber.title")),
-    showBackLink = true
+    showBackLink = true,
+    backLinkUrl = backLink
 ) {
     @heading1(messages("ukimsNumber.h1"))
 
