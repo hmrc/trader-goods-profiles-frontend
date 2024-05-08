@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package queries
+package models
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
 
-import scala.util.{Success, Try}
+class ModeSpec extends AnyFreeSpec with Matchers {
 
-sealed trait Query {
+  ".jsLiteral.to" - {
 
-  def path: JsPath
-}
+    "must return NormalMode" in {
+      Mode.jsLiteral.to(NormalMode) mustBe "NormalMode"
+    }
 
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
-    Success(userAnswers)
+    "must return CheckMode" in {
+      Mode.jsLiteral.to(CheckMode) mustBe "CheckMode"
+    }
+  }
 }
