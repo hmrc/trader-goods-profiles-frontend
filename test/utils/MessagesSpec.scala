@@ -150,13 +150,25 @@ class MessagesSpec extends SpecBase {
 
   "All message files" - {
     "must have a non-empty message for each key" in {
-      assertNonEmptyNonTemporaryValues("en", englishMessages)
+      englishMessages match {
+        case Some(messages) => assertNonEmptyNonTemporaryValues("en", messages)
+        case None           => fail(s"Missing messages for 'en'")
+      }
     }
     "must have no unescaped single quotes in value" in {
-      assertCorrectUseOfQuotes("en", englishMessages)
+
+      englishMessages match {
+        case Some(messages) => assertCorrectUseOfQuotes("en", messages)
+        case None           => fail(s"Missing messages for 'en'")
+      }
     }
     "must not have missing keys" in {
-      assertNoMissingKeys("en", englishMessages, serviceMessageKeys)
+
+      englishMessages match {
+        case Some(messages) => assertNoMissingKeys("en", messages, serviceMessageKeys)
+        case None           => fail(s"Missing messages for 'en'")
+      }
+
     }
 
   }
@@ -183,8 +195,9 @@ class MessagesSpec extends SpecBase {
     }
   }
 
-  private lazy val englishMessages: Map[String, String] = getExpectedMessages("en") -- commonMessageKeys
+  private lazy val englishMessages: Option[Map[String, String]] =
+    getExpectedMessages("en").map(_ -- commonMessageKeys)
 
-  private def getExpectedMessages(languageCode: String) =
-    messagesAPI.messages.getOrElse(languageCode, throw new Exception(s"Missing messages for $languageCode"))
+  private def getExpectedMessages(languageCode: String): Option[Map[String, String]] =
+    messagesAPI.messages.get(languageCode)
 }
