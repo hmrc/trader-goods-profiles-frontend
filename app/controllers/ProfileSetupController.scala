@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
+import models.NormalMode
 
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
@@ -37,6 +38,6 @@ class ProfileSetupController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    Redirect(routes.UkimsNumberController.onPageLoad.url)
+    Redirect(routes.UkimsNumberController.onPageLoad(NormalMode).url)
   }
 }

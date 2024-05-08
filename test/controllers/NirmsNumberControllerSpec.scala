@@ -19,10 +19,13 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
+import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.test.FakeRequest
 import views.html.NirmsNumberView
+
+import scala.concurrent.ExecutionContext
 
 class NirmsNumberControllerSpec extends SpecBase {
 
@@ -37,15 +40,18 @@ class NirmsNumberControllerSpec extends SpecBase {
     sessionService
   )
 
-  "Nirms Number Controller" - {
+  "NirmsNumberController" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val result = nirmsNumberController.onPageLoad(fakeRequest)
+      val result = nirmsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsNumberView(formProvider())(fakeRequest, messages).toString
+      contentAsString(result) mustEqual nirmsNumberView(formProvider(), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
     }
 
@@ -53,11 +59,11 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -65,11 +71,11 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-NI-123456")
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -77,11 +83,11 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -93,11 +99,14 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> inCorrectnirmsNumber)
 
-      val result = nirmsNumberController.onSubmit(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
       contentAsString(result) must include("nirmsNumber.error.invalidFormat")
 
@@ -107,15 +116,69 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = nirmsNumberController.onSubmit(fakeRequest)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual nirmsNumberView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
       contentAsString(result) must include("nirmsNumber.error.required")
 
     }
-  }
 
+    "CheckMode" - {
+
+      "must return OK and the correct view for a GET" in {
+
+        val result = nirmsNumberController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual nirmsNumberView(formProvider(), CheckMode)(
+          fakeRequest,
+          messages
+        ).toString
+
+      }
+
+      "must redirect on Submit when user enters correct Nirms number (GB region)" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+
+        val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+
+      "must redirect on Submit when user enters correct Nirms number (NI region)" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-NI-123456")
+
+        val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+
+      "must redirect on Submit when user enters correct Nirms number without hyphens" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+
+        val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+    }
+  }
 }

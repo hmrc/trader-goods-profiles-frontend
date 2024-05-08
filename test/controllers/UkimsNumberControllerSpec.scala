@@ -19,10 +19,13 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeAuthoriseAction
 import forms.UkimsNumberFormProvider
+import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.UkimsNumberView
+
+import scala.concurrent.ExecutionContext
 
 class UkimsNumberControllerSpec extends SpecBase {
 
@@ -41,19 +44,22 @@ class UkimsNumberControllerSpec extends SpecBase {
     sessionService
   )
 
-  "Ukims Number Controller" - {
+  "UkimsNumberController" - {
 
-    ukimsNumberController.onPageLoad(
+    ukimsNumberController.onPageLoad(NormalMode)(
       fakeRequest
     )
 
     "must return OK and the correct view for a GET" in {
 
-      val result = ukimsNumberController.onPageLoad(fakeRequest)
+      val result = ukimsNumberController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual ukimsNumberView(formProvider())(fakeRequest, messages).toString
+      contentAsString(result) mustEqual ukimsNumberView(formProvider(), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
     }
 
@@ -63,11 +69,11 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
 
-      val result = ukimsNumberController.onSubmit(fakeRequestWithData)
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -75,11 +81,14 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = ukimsNumberController.onSubmit(fakeRequest)
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, messages).toString
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
     }
 
@@ -91,12 +100,45 @@ class UkimsNumberControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
 
-      val result = ukimsNumberController.onSubmit(fakeRequestWithData)
+      val result = ukimsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
 
-      contentAsString(result) mustEqual ukimsNumberView(formWithErrors)(fakeRequest, messages).toString
+      contentAsString(result) mustEqual ukimsNumberView(formWithErrors, NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
+    }
+
+    "CheckMode" - {
+
+      "must return OK and the correct view for a GET" in {
+
+        val result = ukimsNumberController.onPageLoad(CheckMode)(fakeRequest)
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual ukimsNumberView(formProvider(), CheckMode)(
+          fakeRequest,
+          messages
+        ).toString
+
+      }
+
+      "must redirect on Submit when user enters correct Ukims number" in {
+
+        val validUkimsNumber = "XI47699357400020231115081800"
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validUkimsNumber)
+
+        val result = ukimsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
     }
   }
 }

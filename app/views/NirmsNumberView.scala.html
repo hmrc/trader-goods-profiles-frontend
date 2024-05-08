@@ -16,7 +16,7 @@
 
 @import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
-
+@import models.Mode
 
 @this(
         layout: templates.Layout,
@@ -28,16 +28,15 @@
 )
 
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle    = titleNoForm(messages("nirmsNumber.title")),
-    showBackLink = true,
-    backLinkUrl = controllers.routes.NirmsQuestionController.onPageLoad.url
+    showBackLink = true
 ) {
 
 
-    @formHelper(action = routes.NirmsNumberController.onSubmit, Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.NirmsNumberController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

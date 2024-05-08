@@ -17,37 +17,92 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
+import controllers.actions.FakeAuthoriseAction
+import controllers.helpers.CheckYourAnswersHelper
+import models.MaintainProfileAnswers
+import org.mockito.ArgumentMatchers.any
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Actions, HtmlContent, SummaryListRow, Value}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
+  val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
+  val mockCheckYourAnswersHelper: CheckYourAnswersHelper = mock[CheckYourAnswersHelper]
 
-  private val checkYourAnswersView: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
+  val checkYourAnswersController = new CheckYourAnswersController(
+    messageComponentControllers,
+    new FakeAuthoriseAction(defaultBodyParser),
+    checkYourAnswersView,
+    sessionRequest,
+    mockCheckYourAnswersHelper
+  )
 
-  "Check Your Answers Controller" - {
+  "CheckYourAnswersController" - {
 
-    "must return OK and the correct view for a onPageLoad with user answers set" in {
-      val checkYourAnswersControllerWithData = new CheckYourAnswersController(
-        messagesApi,
-        new FakeAuthoriseAction(defaultBodyParser),
-        new FakeSessionRequestAction(emptyUserAnswers),
-        messageComponentControllers,
-        checkYourAnswersView
+    "must return OK and the correct view for a GET" in {
+
+      val summaryList = List(
+        SummaryListRow(
+          Key(HtmlContent("UKIMS number")),
+          Value(HtmlContent("11")),
+          "",
+          Some(
+            Actions(
+              "",
+              List(ActionItem("/trader-goods-profiles/ukims-number/check", HtmlContent("Change"), None, "", Map()))
+            )
+          )
+        ),
+        SummaryListRow(
+          Key(HtmlContent("NIRMS registered"), ""),
+          Value(HtmlContent("No"), ""),
+          "",
+          Some(
+            Actions(
+              "",
+              List(ActionItem("/trader-goods-profiles/nirms-question/check", HtmlContent("Change"), None, "", Map()))
+            )
+          )
+        ),
+        SummaryListRow(
+          Key(HtmlContent("NIPHL registered"), ""),
+          Value(HtmlContent("No"), ""),
+          "",
+          Some(
+            Actions(
+              "",
+              List(ActionItem("/trader-goods-profiles/niphl-question/check", HtmlContent("Change"), None, "", Map()))
+            )
+          )
+        )
       )
 
-      val result = checkYourAnswersControllerWithData.onPageLoad()(fakeRequest)
-
-      val expectedList = SummaryListViewModel(
-        rows = Seq.empty
+      val list = SummaryListViewModel(
+        rows = summaryList
       )
+
+      when(mockCheckYourAnswersHelper.createSummaryList(any[MaintainProfileAnswers])(any())) thenReturn summaryList
+
+      val result = checkYourAnswersController.onPageLoad()(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual checkYourAnswersView(expectedList)(fakeRequest, messages).toString
+      contentAsString(result) mustEqual checkYourAnswersView(list)(fakeRequest, messages).toString()
 
     }
 
+    "must redirect on Submit" in {
+
+      val result = checkYourAnswersController.onSubmit()(fakeRequest)
+
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+    }
   }
 }

@@ -24,8 +24,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CountryOfOriginView
 
-import scala.concurrent.ExecutionContext
-
 class CountryOfOriginControllerSpec extends SpecBase {
 
   private val formProvider        = new CountryOfOriginFormProvider()
@@ -33,7 +31,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
   private val countryOfOriginView = app.injector.instanceOf[CountryOfOriginView]
 
   private val countryOfOriginController = new CountryOfOriginController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     countryOfOriginView,
     formProvider,
@@ -47,7 +45,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val result = countryOfOriginController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
-      contentAsString(result) mustEqual countryOfOriginView(formProvider())(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual countryOfOriginView(formProvider())(fakeRequest, messages).toString
     }
 
     "must redirect on submit when user enters correct country code" in {
@@ -64,7 +62,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val result         = countryOfOriginController.onSubmit()(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
-      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, messages).toString
 
     }
 
@@ -75,7 +73,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val result              = countryOfOriginController.onSubmit()(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
-      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, messages).toString
     }
   }
 }

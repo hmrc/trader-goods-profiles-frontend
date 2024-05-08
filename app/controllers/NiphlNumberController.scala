@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NiphlNumberFormProvider
-import models.NiphlNumber
+import models.{Mode, NiphlNumber}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -41,7 +41,7 @@ class NiphlNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
     val optionalNiphlNumber = request.userAnswers.maintainProfileAnswers.niphlNumber
 
     optionalNiphlNumber match {
@@ -57,14 +57,15 @@ class NiphlNumberController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         niphlNumber => {
           val updatedMaintainProfileAnswers =
-            request.userAnswers.maintainProfileAnswers.copy(niphlNumber = Some(NiphlNumber(niphlNumber)))
+            request.userAnswers.maintainProfileAnswers
+              .copy(niphlNumber = Some(NiphlNumber(niphlNumber)))
           val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => Redirect(routes.DummyController.onPageLoad.url)
+              success => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
             )
         }
       )

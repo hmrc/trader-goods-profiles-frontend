@@ -16,20 +16,21 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
 class NirmsNumberControllerISpec extends ItTestBase {
 
-  "Nirms number controller" should {
+  "NirmsNumberController" should {
 
     "redirect you to unauthorised page when auth fails" in {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(NormalMode)))
 
       status(result) mustBe SEE_OTHER
 
@@ -41,7 +42,7 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(NormalMode)))
 
       status(result) mustBe OK
 
@@ -54,12 +55,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
       )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -68,12 +70,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
       )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -82,7 +85,8 @@ class NirmsNumberControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456")
+        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456")
       )
 
       status(result) mustBe BAD_REQUEST
@@ -95,7 +99,8 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
       val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> "AB2343534")
+        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody("nirmsNumber" -> "AB2343534")
       )
 
       status(result) mustBe BAD_REQUEST
@@ -108,13 +113,59 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
       val result =
-        callRoute(FakeRequest(routes.NirmsNumberController.onSubmit).withFormUrlEncodedBody("nirmsNumber" -> ""))
+        callRoute(
+          FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode)).withFormUrlEncodedBody("nirmsNumber" -> "")
+        )
 
       status(result) mustBe BAD_REQUEST
 
       html(result) must include("Enter your NIRMS number")
 
     }
-  }
 
+    "CheckMode" should {
+
+      "loads page" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(CheckMode)))
+
+        status(result) mustBe OK
+
+        html(result) must include("What is your NIRMS number?")
+
+      }
+
+      "redirect to NiphlQuestionController when submitting valid data" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.NirmsNumberController.onSubmit(CheckMode))
+            .withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+
+      "redirect to NiphlQuestionController when submitting valid data without hyphens" in {
+
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.NirmsNumberController.onSubmit(CheckMode))
+            .withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+    }
+  }
 }

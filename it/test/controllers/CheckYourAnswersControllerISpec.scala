@@ -21,15 +21,15 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class CategoryGuidanceControllerISpec extends ItTestBase {
-
+class CheckYourAnswersControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.CategoryGuidanceController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.CheckYourAnswersController.onPageLoad.url}"
 
-  "Category Guidance controller" should {
+  "CheckYourAnswersController" should {
 
-    "redirects you to unauthorised page when auth fails" in {
+    "redirect you to unauthorised page when auth fails" in {
+
       noEnrolment
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -39,9 +39,11 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       response.status mustBe SEE_OTHER
 
       redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+
     }
 
     "loads page" in {
+
       authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -49,9 +51,11 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       val response = await(request.get())
 
       response.status mustBe OK
+
     }
 
-    "returns redirect when submitting" in {
+    "redirect to dummy controller when submitting valid data" in {
+
       authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -61,6 +65,8 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       response.status mustBe SEE_OTHER
 
       redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+
     }
+
   }
 }

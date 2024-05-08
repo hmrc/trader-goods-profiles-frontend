@@ -131,7 +131,9 @@ countryOfOrigin.error.required = TODO error
 countryOfOrigin.error.length = TODO error
 countryOfOrigin.error.lettersOnly = TODO error
 checkYourAnswers.title = Check Your Answers
-checkYourAnswers.heading = Check Your Answers
+checkYourAnswers.h1 = Check Your Answers
+checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
+checkYourAnswers.warning = You need to make sure these details are correct. Any declarations you use TGP to create, will not be valid if they are wrong.
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
