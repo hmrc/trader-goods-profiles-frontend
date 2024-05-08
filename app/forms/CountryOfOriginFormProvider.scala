@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-object StringFieldRegex {
-  val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
-  val ukimsNumberRegex: String         = "^(GB|XI)[0-9]{12}[0-9]{14}$"
-  val niphlNumberRegex: String         = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
+import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import play.api.data.Form
+
+import javax.inject.Inject
+
+class CountryOfOriginFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "countryOfOrigin" -> text("countryOfOrigin.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying("countryOfOrigin.error.lettersOnly", _.forall(_.isLetter))
+        .verifying("countryOfOrigin.error.length", _.length == 2)
+    )
 }

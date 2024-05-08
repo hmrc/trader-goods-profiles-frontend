@@ -34,7 +34,7 @@
 
 )
 
-@(pageTitle: String, backLinkUrl: String = "", showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -72,7 +72,7 @@
     }
 
     @if(showBackLink) {
-        @govukBackLink(BackLinkViewModel(href = backLinkUrl).withCssClass("js-visible"))
+        @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
     }
 }
 

@@ -37,6 +37,8 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
     case homepageView: HomepageView                                   => render(homepageView)
     case dummyView: DummyView                                         => render(dummyView)
+    case commodityCodeView: CommodityCodeView                         => render(commodityCodeView)
+    case countryOfOriginView: CountryOfOriginView                     => render(countryOfOriginView)
   }
   runAccessibilityTests()
 }

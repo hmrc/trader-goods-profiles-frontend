@@ -21,9 +21,11 @@ import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
 import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.test.FakeRequest
 import views.html.NirmsNumberView
+
+import scala.concurrent.ExecutionContext
 
 class NirmsNumberControllerSpec extends SpecBase {
 
@@ -103,7 +105,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
       contentAsString(result) must include("nirmsNumber.error.invalidFormat")
@@ -120,7 +122,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       contentAsString(result) mustEqual nirmsNumberView(formWithErrors, NormalMode)(
         fakeRequest,
-        stubMessages()
+        messages
       ).toString
 
       contentAsString(result) must include("nirmsNumber.error.required")
@@ -137,7 +139,7 @@ class NirmsNumberControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual nirmsNumberView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }

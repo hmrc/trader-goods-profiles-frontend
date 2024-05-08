@@ -27,6 +27,13 @@ import views.html.NiphlQuestionView
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
+import forms.NiphlQuestionFormProvider
+import models.{CheckMode, NormalMode}
+
+import scala.concurrent.ExecutionContext
+
+class NiphlQuestionControllerSpec extends SpecBase {
+
   private val formProvider = new NiphlQuestionFormProvider()
 
   private val niphlQuestionView = app.injector.instanceOf[NiphlQuestionView]
@@ -42,7 +49,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
   "NiphlQuestionController" - {
 
-    "must return OK and the correct view for an onPageLoad" in {
+    "must return OK and the correct view for a GET" in {
 
       val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
@@ -104,7 +111,7 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual niphlQuestionView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }

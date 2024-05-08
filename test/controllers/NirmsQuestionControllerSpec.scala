@@ -24,6 +24,13 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
+import forms.NirmsQuestionFormProvider
+import models.{CheckMode, NormalMode}
+
+import scala.concurrent.ExecutionContext
+
+class NirmsQuestionControllerSpec extends SpecBase {
+
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -109,7 +116,7 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
         contentAsString(result) mustEqual nirmsQuestionView(formProvider(), CheckMode)(
           fakeRequest,
-          stubMessages()
+          messages
         ).toString
 
       }

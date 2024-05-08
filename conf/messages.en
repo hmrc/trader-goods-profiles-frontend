@@ -6,6 +6,8 @@ site.change = Change
 site.no = No
 site.yes = Yes
 site.continue = Continue
+site.saveAndContinue = Save and continue
+site.saveAndReturnLater = Save and return later
 site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
@@ -40,7 +42,6 @@ error.summary.title = There is a problem
 
 categoryGuidance.title = Categorisation
 categoryGuidance.h1 = Categorisation
-
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
 categoryGuidance.p2 = We’ll ask you questions about waivers that you hold and then tell you what category your goods are. If the commodity code has too many waivers for us to list, we might ask you for an 8 or 10 digit commodity code.
 categoryGuidance.p3 = You’ll need to know the certificate number or name of any waivers you have for your goods. If you get a new waiver, you’ll be able to change this later.
@@ -49,21 +50,17 @@ categoryGuidance.p5 = You’ll need to know the certificate number or name of an
 
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
-
 profileSetup.body.intro = We’re going to ask you some questions, then for some information depending on your answers.
-
 profileSetup.ukims.h2 = UK Internal Market Scheme (UKIMS)
 profileSetup.p1 = The trader who is registering for a Trader Goods Profile must be UKIMS registered. You’ll need your UKIMS numbers to set up your profile.
 profileSetup.p2 = If you’ve applied to UKIMS, HMRC will have sent you a letter with your UKIMS authorisation number.
 profileSetup.p3 = If you are not UKIMS registered, you can check here to find out {0}.
 profileSetup.p3.linkText = who can apply to UKIMS
-
 profileSetup.nirms.h2 = Northern Ireland Retail Movement Scheme (NIRMS)
 profileSetup.p4 = Businesses responsible for selling or facilitating the movement of food for final consumption in Northern Ireland are eligible to benefit from the NIRMS arrangements.
 profileSetup.p5 = NIRMS registered traders can add their NIRMS authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIRMS.
 profileSetup.p6 = NIRMS authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIRMS authorised, find out about {0}.
 profileSetup.p6.linkText = the Northern Ireland Retail Movement Scheme
-
 profileSetup.niphl.h2 = Northern Ireland plant health label (NIPHL)
 profileSetup.p7 = The NIPHL scheme is a way for growers and traders in Great Britain (England, Scotland and Wales) to move certain products to Northern Ireland.
 profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIPHL.
@@ -102,7 +99,7 @@ nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by G
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
 
-niphlNumber.title = NIPHL reference
+niphlNumber.title = NIPHL registration number
 niphlNumber.h1 = NIPHL registration number
 niphlNumber.p1 = NIPHL registration numbers have several formats. They could be:
 niphlNumber.li1 = 4 to 6 numbers
@@ -113,6 +110,26 @@ niphlNumber.hint = For example, 612345, S12345 or SN12345
 niphlNumber.error.notSupplied = Enter your NIPHL registration number.
 niphlNumber.error.wrongFormat = Enter your NIPHL registration number in the correct format.
 
+commodityCode.title = Commodity code
+commodityCode.h1 = Commodity code
+commodityCode.p1 = Commodity codes are internationally recognised reference numbers. A commodity code describes a specific product when importing or exporting goods. You will use this code on any customs declarations.
+commodityCode.p2 = You can add commodity codes to TGP in 6, 8 or 10 digits.
+commodityCode.p3 = If you are not sure what the commodity code of your goods are, you can use the {0}.
+commodityCode.p3.linkText = Northern Ireland Online Tariff Tool
+commodityCode.heading = What is the commodity code for your goods?
+commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 87654321, 9876543211
+commodityCode.error.required = Enter a commodity code
+commodityCode.error.invalidFormat = Enter a commodity code in the correct format
+
+countryOfOrigin.title = Country of origin
+countryOfOrigin.h1 = Country of origin
+countryOfOrigin.p1 = The origin of the goods:
+countryOfOrigin.ul.item1 = is where they have been grown, produced, or manufactured
+countryOfOrigin.ul.item2 = may not be the country where they are shipped or bought from
+countryOfOrigin.inputHeading = Pick a country
+countryOfOrigin.error.required = TODO error
+countryOfOrigin.error.length = TODO error
+countryOfOrigin.error.lettersOnly = TODO error
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.h1 = Check Your Answers
 checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL

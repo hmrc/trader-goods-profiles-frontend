@@ -17,22 +17,22 @@
 package controllers
 
 import controllers.actions._
-import forms.NirmsNumberFormProvider
-import models.{CheckMode, Mode, NirmsNumber, NormalMode}
+import forms.CommodityCodeFormProvider
+import models.CommodityCode
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.NirmsNumberView
+import views.html.CommodityCodeView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NirmsNumberController @Inject() (
+class CommodityCodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
-  view: NirmsNumberView,
-  formProvider: NirmsNumberFormProvider,
+  view: CommodityCodeView,
+  formProvider: CommodityCodeFormProvider,
   sessionRequest: SessionRequestAction,
   sessionService: SessionService
 )(implicit ec: ExecutionContext)
@@ -40,38 +40,32 @@ class NirmsNumberController @Inject() (
     with I18nSupport {
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalNirmsNumber = request.userAnswers.maintainProfileAnswers.nirmsNumber
-
-    optionalNirmsNumber match {
-      case Some(nirmsNumber) => Ok(view(form.fill(nirmsNumber.value), mode))
-      case None              => Ok(view(form, mode))
+  def onPageLoad: Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
+    val optionalCommodityCode = request.userAnswers.categorisationAnswers.commodityCode
+    optionalCommodityCode match {
+      case Some(commodityCode) => Ok(view(form.fill(commodityCode.value)))
+      case None                => Ok(view(form))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
+  def onSubmit: Action[AnyContent] = (authorise andThen sessionRequest).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        nirmsNumber => {
-          val updatedMaintainProfileAnswers =
-            request.userAnswers.maintainProfileAnswers
-              .copy(nirmsNumber = Some(NirmsNumber(nirmsNumber)))
-          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
-
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        commodityCode => {
+          val updatedCategorisationAnswers =
+            request.userAnswers.categorisationAnswers.copy(commodityCode = Some(CommodityCode(commodityCode)))
+          val updatedUserAnswers           = request.userAnswers.copy(categorisationAnswers = updatedCategorisationAnswers)
+          //TODO - change redirect when it becomes becomes available
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => navigate(mode)
+              success => Redirect(routes.DummyController.onPageLoad.url)
             )
         }
       )
   }
 
-  private def navigate(mode: Mode) = mode match {
-    case NormalMode => Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
-    case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-  }
 }

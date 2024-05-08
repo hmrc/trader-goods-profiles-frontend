@@ -22,10 +22,15 @@ import forms.NiphlNumberFormProvider
 import generators.NiphlNumberGenerator
 import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlNumberView
+import forms.NiphlNumberFormProvider
+import generators.NiphlNumberGenerator
+import models.{CheckMode, NormalMode}
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
+import scala.concurrent.ExecutionContext
 
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
@@ -123,7 +128,7 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
         status(result) mustEqual OK
 
-        contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, stubMessages()).toString
+        contentAsString(result) mustEqual niphlNumberView(formProvider())(fakeRequest, messages).toString
 
       }
     }

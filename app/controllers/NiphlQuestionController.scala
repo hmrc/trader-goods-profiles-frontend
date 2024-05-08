@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NiphlQuestionFormProvider
-import models.Mode
+import models.{CheckMode, Mode, NirmsNumber, NormalMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -42,7 +42,7 @@ class NiphlQuestionController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalHasNiphl = request.userAnswers.traderGoodsProfile.hasNiphl
+    val optionalHasNiphl = request.userAnswers.maintainProfileAnswers.hasNiphl
 
     optionalHasNiphl match {
       case Some(hasNiphlAnswer) => Ok(view(form.fill(hasNiphlAnswer), mode))
@@ -56,23 +56,24 @@ class NiphlQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         hasNiphlAnswer => {
-          val niphlNumber           = if (hasNiphlAnswer) request.userAnswers.traderGoodsProfile.niphlNumber else None
-          val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(hasNiphl = Some(hasNiphlAnswer), niphlNumber = niphlNumber)
-          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val niphlNumber                   = if (hasNiphlAnswer) request.userAnswers.maintainProfileAnswers.niphlNumber else None
+          val updatedMaintainProfileAnswers =
+            request.userAnswers.maintainProfileAnswers.copy(hasNiphl = Some(hasNiphlAnswer), niphlNumber = niphlNumber)
+          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success =>
-                if (hasNiphlAnswer) {
-                  Redirect(routes.NiphlNumberController.onPageLoad(mode).url)
-                } else {
-                  Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                }
+              success => navigate(mode, hasNiphlAnswer)
             )
         }
       )
+  }
+
+  private def navigate(mode: Mode, hasNiphlAnswer: Boolean) = if (hasNiphlAnswer) {
+    Redirect(routes.NiphlNumberController.onPageLoad(mode).url)
+  } else {
+    Redirect(routes.CheckYourAnswersController.onPageLoad.url)
   }
 }

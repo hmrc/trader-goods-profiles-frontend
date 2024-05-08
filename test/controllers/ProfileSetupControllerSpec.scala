@@ -37,17 +37,21 @@ class ProfileSetupControllerSpec extends SpecBase {
   "Profile Setup Controller" - {
 
     "must return OK and the correct view onPageLoad" in {
+
       val result = profileSetupController.onPageLoad(fakeRequest)
+
       status(result) mustEqual OK
+
       contentAsString(result) mustEqual profileSetupView()(fakeRequest, messages).toString
+
     }
 
-    "must redirect onSubmit" in {
+    "must redirect on Submit" in {
       val result = profileSetupController.onSubmit(fakeRequest)
       status(result) mustEqual SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
     }
 
+    }
   }
-
 }

@@ -22,6 +22,7 @@ import controllers.actions.FakeAuthoriseAction
 import controllers.helpers.CheckYourAnswersHelper
 import models.errors.RouterError
 import models.{Eori, TraderGoodsProfile}
+import models.MaintainProfileAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.{verify, when}
@@ -36,6 +37,8 @@ import views.html.CheckYourAnswersView
 
 import scala.concurrent.Future
 import scala.concurrent.Future.successful
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
   private val checkYourAnswersView: CheckYourAnswersView         = app.injector.instanceOf[CheckYourAnswersView]
@@ -95,13 +98,13 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         rows = summaryList
       )
 
-      when(mockCheckYourAnswersHelper.createSummaryList(any[TraderGoodsProfile])(any())) thenReturn summaryList
+      when(mockCheckYourAnswersHelper.createSummaryList(any[MaintainProfileAnswers])(any())) thenReturn summaryList
 
       val result = checkYourAnswersController.onPageLoad()(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual checkYourAnswersView(list)(fakeRequest, stubMessages()).toString()
+      contentAsString(result) mustEqual checkYourAnswersView(list)(fakeRequest, messages).toString()
 
     }
 

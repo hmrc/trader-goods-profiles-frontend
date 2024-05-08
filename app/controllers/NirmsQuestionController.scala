@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NirmsQuestionFormProvider
-import models.{CheckMode, Mode, NormalMode}
+import models.{CheckMode, Mode, NirmsNumber, NormalMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -42,7 +42,7 @@ class NirmsQuestionController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalHasNirms = request.userAnswers.traderGoodsProfile.hasNirms
+    val optionalHasNirms = request.userAnswers.maintainProfileAnswers.hasNirms
 
     optionalHasNirms match {
       case Some(hasNirmsAnswer) => Ok(view(form.fill(hasNirmsAnswer), mode))
@@ -56,34 +56,34 @@ class NirmsQuestionController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         hasNirmsAnswer => {
-          val nirmsNumber           = if (hasNirmsAnswer) request.userAnswers.traderGoodsProfile.nirmsNumber else None
-          val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(hasNirms = Some(hasNirmsAnswer), nirmsNumber = nirmsNumber)
+          val nirmsNumber                   = if (hasNirmsAnswer) request.userAnswers.maintainProfileAnswers.nirmsNumber else None
+          val updatedMaintainProfileAnswers =
+            request.userAnswers.maintainProfileAnswers.copy(hasNirms = Some(hasNirmsAnswer), nirmsNumber = nirmsNumber)
 
-          val updatedUserAnswers = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedUserAnswers = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success =>
-                mode match {
-                  case NormalMode =>
-                    if (hasNirmsAnswer) {
-                      Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
-                    } else {
-                      Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
-                    }
-                  case CheckMode  =>
-                    if (hasNirmsAnswer && nirmsNumber.isEmpty) {
-                      Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
-                    } else {
-                      Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                    }
-                }
+              success => navigate(mode, hasNirmsAnswer, nirmsNumber)
             )
         }
       )
   }
 
+  private def navigate(mode: Mode, hasNirmsAnswer: Boolean, nirmsNumber: Option[NirmsNumber]) = mode match {
+    case NormalMode =>
+      if (hasNirmsAnswer) {
+        Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
+      } else {
+        Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
+      }
+    case CheckMode  =>
+      if (hasNirmsAnswer && nirmsNumber.isEmpty) {
+        Redirect(routes.NirmsNumberController.onPageLoad(mode).url)
+      } else {
+        Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+      }
+  }
 }

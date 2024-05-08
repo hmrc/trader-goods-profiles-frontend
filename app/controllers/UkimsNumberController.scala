@@ -42,7 +42,7 @@ class UkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen sessionRequest) { implicit request =>
-    val optionalUkimsNumber = request.userAnswers.traderGoodsProfile.ukimsNumber
+    val optionalUkimsNumber = request.userAnswers.maintainProfileAnswers.ukimsNumber
     optionalUkimsNumber match {
       case Some(ukimsNumber) => Ok(view(form.fill(ukimsNumber.value), mode))
       case None              => Ok(view(form, mode))
@@ -55,22 +55,22 @@ class UkimsNumberController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         ukimsNumber => {
-          val updatedTgpModelObject =
-            request.userAnswers.traderGoodsProfile.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
-          val updatedUserAnswers    = request.userAnswers.copy(traderGoodsProfile = updatedTgpModelObject)
+          val updatedMaintainProfileAnswers =
+            request.userAnswers.maintainProfileAnswers.copy(ukimsNumber = Some(UkimsNumber(ukimsNumber)))
+          val updatedUserAnswers            = request.userAnswers.copy(maintainProfileAnswers = updatedMaintainProfileAnswers)
 
           sessionService
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success =>
-                mode match {
-                  case NormalMode => Redirect(routes.NirmsQuestionController.onPageLoad(mode).url)
-                  case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                }
+              success => navigate(mode)
             )
         }
       )
   }
 
+  private def navigate(mode: Mode) = mode match {
+    case NormalMode => Redirect(routes.NirmsQuestionController.onPageLoad(mode).url)
+    case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+  }
 }

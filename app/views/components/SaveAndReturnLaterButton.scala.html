@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package models
+@this(govukButton: GovukButton)
 
-object StringFieldRegex {
-  val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
-  val ukimsNumberRegex: String         = "^(GB|XI)[0-9]{12}[0-9]{14}$"
-  val niphlNumberRegex: String         = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
-}
+@(saveAndReturnActionUrl: String)(implicit messages: Messages)
+
+@govukButton(
+ ButtonViewModel(messages("site.saveAndReturnLater"))
+  .asSecondaryButton()
+  .withAttribute(("formaction", saveAndReturnActionUrl))
+)
+
