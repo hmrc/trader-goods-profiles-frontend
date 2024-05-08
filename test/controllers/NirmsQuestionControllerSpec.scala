@@ -27,8 +27,6 @@ import views.html.NirmsQuestionView
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
-  class NirmsQuestionControllerSpec extends SpecBase {
-
     private val formProvider = new NirmsQuestionFormProvider()
 
     private val nirmsQuestionView = app.injector.instanceOf[NirmsQuestionView]
@@ -142,4 +140,3 @@ class NirmsQuestionControllerSpec extends SpecBase {
       }
     }
   }
-}
