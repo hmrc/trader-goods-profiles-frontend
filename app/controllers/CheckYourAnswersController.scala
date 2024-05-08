@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.{CoflatMap, Monad, MonadThrow}
 import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.Inject
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
@@ -27,6 +28,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
 
+import scala.concurrent.Future
+
 class CheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthoriseAction,
@@ -36,6 +39,8 @@ class CheckYourAnswersController @Inject() (
   routerService: RouterService
 ) extends FrontendBaseController
     with I18nSupport {
+
+  private implicit val functorFuture: MonadThrow[Future] with CoflatMap[Future] with Monad[Future] = catsStdInstancesForFuture(defaultExecutionContext)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
     val list = SummaryListViewModel(
@@ -52,7 +57,7 @@ class CheckYourAnswersController @Inject() (
       .fold(
         error => Redirect(routes.DummyController.onPageLoad.url), //TODO redirect to actual error page
         success => Redirect(routes.HomepageController.onPageLoad.url)
-      )(catsStdInstancesForFuture(defaultExecutionContext))
+      )
 
   }
 
