@@ -16,12 +16,17 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 class NiphlNumberControllerISpec extends ItTestBase {
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private val normalUrl = s"http://localhost:$port${routes.NiphlNumberController.onPageLoad(NormalMode).url}"
+  private val checkUrl  = s"http://localhost:$port${routes.NiphlNumberController.onPageLoad(CheckMode).url}"
 
   "Niphl number controller" should {
 
@@ -29,11 +34,13 @@ class NiphlNumberControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NiphlNumberController.onPageLoad))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
     }
 
@@ -41,26 +48,25 @@ class NiphlNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NiphlNumberController.onPageLoad))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("What is your NIPHL registration number?")
+      response.status mustBe OK
 
     }
 
-    //TODO: Should change Dummy controller to actual when it becomes available
-    "redirect to dummy controller when submitting valid data" in {
+    "redirect to CheckYourAnswersController when submitting valid data" in {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NiphlNumberController.onSubmit).withFormUrlEncodedBody("value" -> "ab12345")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("value" -> "ab12345")))
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 
@@ -68,27 +74,38 @@ class NiphlNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NiphlNumberController.onSubmit).withFormUrlEncodedBody("value" -> "123")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(Map("value" -> "123")))
 
-      html(result) must include("Enter your NIPHL registration number in the correct format.")
+      response.status mustBe BAD_REQUEST
 
     }
     "return bad request when submitting no data" in {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NiphlNumberController.onSubmit).withFormUrlEncodedBody("value" -> "")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(""))
 
-      html(result) must include("Enter your NIPHL registration number.")
+      response.status mustBe BAD_REQUEST
 
+    }
+
+    "CheckMode" should {
+
+      "loads page" in {
+
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.get())
+
+        response.status mustBe OK
+
+      }
     }
   }
 }

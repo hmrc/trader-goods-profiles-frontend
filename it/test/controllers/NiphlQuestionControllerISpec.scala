@@ -16,19 +16,20 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 
 class NiphlQuestionControllerISpec extends ItTestBase {
 
-  "NIPHL question controller" should {
+  "NiphlQuestionController" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(NormalMode)))
 
       status(result) mustBe SEE_OTHER
 
@@ -39,7 +40,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
     "loads page" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad))
+      val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(NormalMode)))
 
       status(result) mustBe OK
 
@@ -51,25 +52,25 @@ class NiphlQuestionControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
+        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "true")
       )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
 
     }
 
-    "redirects to dummy controller when submitting valid data with no" in {
+    "redirects to CheckYoursAnswersController when submitting valid data with no" in {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
+        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "false")
       )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 
@@ -77,7 +78,7 @@ class NiphlQuestionControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result = callRoute(
-        FakeRequest(routes.NiphlQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")
+        FakeRequest(routes.NiphlQuestionController.onSubmit(NormalMode)).withFormUrlEncodedBody("value" -> "")
       )
 
       status(result) mustBe BAD_REQUEST
@@ -86,5 +87,44 @@ class NiphlQuestionControllerISpec extends ItTestBase {
 
     }
 
+    "CheckMode" should {
+
+      "loads page" in {
+        authorisedUserWithAnswers
+
+        val result = callRoute(FakeRequest(routes.NiphlQuestionController.onPageLoad(CheckMode)))
+
+        status(result) mustBe OK
+
+        html(result) must include("Are you NIPHL registered?")
+
+      }
+
+      "redirects to NiphlNumberController when submitting valid data with yes" in {
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.NiphlQuestionController.onSubmit(CheckMode)).withFormUrlEncodedBody("value" -> "true")
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.NiphlNumberController.onPageLoad(CheckMode).url)
+
+      }
+
+      "redirects to CheckYoursAnswersController when submitting valid data with no" in {
+        authorisedUserWithAnswers
+
+        val result = callRoute(
+          FakeRequest(routes.NiphlQuestionController.onSubmit(CheckMode)).withFormUrlEncodedBody("value" -> "false")
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
+    }
   }
 }

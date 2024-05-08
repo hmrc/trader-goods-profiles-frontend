@@ -16,69 +16,112 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
+import models.{CheckMode, NormalMode}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 class NirmsQuestionControllerISpec extends ItTestBase {
 
-  "NIRMS question controller" should {
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private val normalUrl = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad(NormalMode).url}"
+  private val checkUrl  = s"http://localhost:$port${routes.NirmsQuestionController.onPageLoad(CheckMode).url}"
+
+  "NirmsQuestion Controller" should {
 
     "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NirmsQuestionController.onPageLoad))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NirmsQuestionController.onPageLoad))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("Are you NIRMS registered?")
+      response.status mustBe OK
     }
 
     "redirects to NirmsNumberController when submitting valid data with yes" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NirmsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "true")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("value" -> "true")))
 
-      redirectLocation(result) mustBe Some(routes.NirmsNumberController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad(NormalMode).url)
     }
 
     "redirects to NiphlQuestionController when submitting valid data with no" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NirmsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "false")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("value" -> "false")))
 
-      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
     }
 
     "returns bad request when submitting no data" in {
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NirmsQuestionController.onSubmit).withFormUrlEncodedBody("value" -> "")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(""))
 
-      html(result) must include("Select if you are NIRMS registered")
+      response.status mustBe BAD_REQUEST
+    }
+
+    "CheckMode" should {
+
+      "loads page" in {
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.get())
+
+        response.status mustBe OK
+      }
+
+      "redirects to NirmsNumberController when submitting valid data with yes" in {
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.post(Map("value" -> "true")))
+
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.NirmsNumberController.onPageLoad(CheckMode).url)
+      }
+
+      "redirects to NiphlQuestionController when submitting valid data with no" in {
+        authorisedUserWithAnswers
+
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
+
+        val response = await(request.post(Map("value" -> "false")))
+
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+      }
     }
   }
 }

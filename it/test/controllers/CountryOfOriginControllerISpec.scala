@@ -16,7 +16,7 @@
 
 package controllers
 
-import helpers.ItTestBase
+import base.ItTestBase
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -49,8 +49,9 @@ class CountryOfOriginControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val validCountryCode = "GB"
-      val result = callRoute(
-        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false)).withFormUrlEncodedBody(fieldName -> validCountryCode)
+      val result           = callRoute(
+        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false))
+          .withFormUrlEncodedBody(fieldName -> validCountryCode)
       )
 
       status(result) mustBe SEE_OTHER
@@ -61,7 +62,10 @@ class CountryOfOriginControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val result =
-        callRoute(FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false)).withFormUrlEncodedBody(fieldName -> ""))
+        callRoute(
+          FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false))
+            .withFormUrlEncodedBody(fieldName -> "")
+        )
 
       status(result) mustBe BAD_REQUEST
       html(result) must include("error")
@@ -71,8 +75,9 @@ class CountryOfOriginControllerISpec extends ItTestBase {
       authorisedUserWithAnswers
 
       val invalidCountryCode = "3S2@"
-      val result = callRoute(
-        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false)).withFormUrlEncodedBody(fieldName -> invalidCountryCode)
+      val result             = callRoute(
+        FakeRequest(routes.CountryOfOriginController.onSubmit(saveAndReturn = false))
+          .withFormUrlEncodedBody(fieldName -> invalidCountryCode)
       )
 
       status(result) mustBe BAD_REQUEST

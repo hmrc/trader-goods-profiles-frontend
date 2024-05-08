@@ -18,23 +18,25 @@ package base
 
 import cats.data.EitherT
 import controllers.actions._
-import models.{InternalId, UserAnswers}
 import models.errors.SessionError
+import models.{InternalId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar.mock
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
+import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
 import services.SessionService
+import play.api.mvc.MessagesControllerComponents
+import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
+import scala.concurrent.ExecutionContext
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait SpecBase
     extends AnyFreeSpec
@@ -51,7 +53,8 @@ trait SpecBase
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   implicit val messagesApi: MessagesApi = stubMessagesApi()
-  val messages: Messages                = messagesApi.preferred(fakeRequest)
+
+  val messages: Messages = messagesApi.preferred(fakeRequest)
 
   lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
 
@@ -74,4 +77,5 @@ trait SpecBase
   )
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
 }

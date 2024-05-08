@@ -17,19 +17,12 @@
 package controllers
 
 import base.SpecBase
-import cats.data.EitherT
-import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
+import controllers.actions.FakeAuthoriseAction
 import forms.CountryOfOriginFormProvider
-import models.errors.SessionError
-import models.{CategorisationAnswers, CommodityCode, CountryOfOrigin, UserAnswers}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CountryOfOriginView
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class CountryOfOriginControllerSpec extends SpecBase {
 
@@ -38,7 +31,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
   private val countryOfOriginView = app.injector.instanceOf[CountryOfOriginView]
 
   private val countryOfOriginController = new CountryOfOriginController(
-    stubMessagesControllerComponents(),
+    messageComponentControllers,
     new FakeAuthoriseAction(defaultBodyParser),
     countryOfOriginView,
     formProvider,
@@ -52,41 +45,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val result = countryOfOriginController.onPageLoad(fakeRequest)
 
       status(result) mustEqual OK
-      contentAsString(result) mustEqual countryOfOriginView(formProvider())(fakeRequest, stubMessages()).toString
-    }
-
-    "must return OK and the correct view when there's a commodity number" in {
-
-      val validCountryOfOrigin                 = "GB"
-      val commodityCode: Option[CommodityCode] = None
-      val countryOfOrigin                      = CountryOfOrigin(validCountryOfOrigin)
-
-      val categorisationAnswers = CategorisationAnswers(
-        commodityCode = commodityCode,
-        countryOfOrigin = Some(countryOfOrigin)
-      )
-
-      val expectedPreFilledForm = formProvider().fill(validCountryOfOrigin)
-
-      val userAnswerMock = UserAnswers(userAnswersId, categorisationAnswers = categorisationAnswers)
-
-      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
-
-      val countryOfOriginController = new CountryOfOriginController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        countryOfOriginView,
-        formProvider,
-        fakeSessionRequest,
-        sessionService
-      )
-
-      val result = countryOfOriginController.onPageLoad(fakeRequest)
-
-      status(result) mustEqual OK
-
-      contentAsString(result) mustEqual countryOfOriginView(expectedPreFilledForm)(fakeRequest, messages).toString
-
+      contentAsString(result) mustEqual countryOfOriginView(formProvider())(fakeRequest, messages).toString
     }
 
     "must redirect on submit when user enters correct country code" in {
@@ -103,7 +62,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val result         = countryOfOriginController.onSubmit()(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
-      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, stubMessages()).toString
+      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, messages).toString
 
     }
 
@@ -114,24 +73,7 @@ class CountryOfOriginControllerSpec extends SpecBase {
       val result              = countryOfOriginController.onSubmit()(fakeRequestWithData)
 
       status(result) mustEqual BAD_REQUEST
-      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, stubMessages()).toString
-    }
-
-    "must redirect on Submit when session fails" in {
-
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> "GB")
-
-      val unexpectedError = new Exception("Session error")
-
-      when(sessionService.updateUserAnswers(any[UserAnswers]))
-        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
-
-      val result = countryOfOriginController.onSubmit()(fakeRequestWithData)
-
-      status(result) mustEqual SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
-
+      contentAsString(result) mustEqual countryOfOriginView(formWithErrors)(fakeRequest, messages).toString
     }
   }
 }

@@ -17,19 +17,13 @@
 package controllers
 
 import base.SpecBase
-import cats.data.EitherT
-import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
-import forms.NirmsQuestionFormProvider
-import models.errors.SessionError
-import models.{MaintainProfileAnswers, NirmsNumber, UserAnswers}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
-
-import scala.concurrent.Future
+import forms.NirmsQuestionFormProvider
+import models.{CheckMode, NormalMode}
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -46,53 +40,22 @@ class NirmsQuestionControllerSpec extends SpecBase {
     sessionService
   )
 
-  "NirmsQuestion Controller" - {
+  "NirmsQuestionController" - {
 
-    nirmsQuestionController.onPageLoad(
+    nirmsQuestionController.onPageLoad(NormalMode)(
       fakeRequest
     )
 
     "must return OK and the correct view for a GET" in {
 
-      val result = nirmsQuestionController.onPageLoad(fakeRequest)
+      val result = nirmsQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual nirmsQuestionView(formProvider())(fakeRequest, messages).toString
-
-    }
-
-    "must return OK and the correct view when there's a nirms question in the session data" in {
-
-      val hasNirms = true
-
-      val ukimsNumber = None
-
-      val profileAnswers = MaintainProfileAnswers(
-        ukimsNumber = ukimsNumber,
-        hasNirms = Some(hasNirms)
-      )
-
-      val expectedPreFilledForm = formProvider().fill(hasNirms)
-
-      val userAnswerMock = UserAnswers(userAnswersId, maintainProfileAnswers = profileAnswers)
-
-      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
-
-      val nirmsQuestionController = new NirmsQuestionController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        nirmsQuestionView,
-        formProvider,
-        fakeSessionRequest,
-        sessionService
-      )
-
-      val result = nirmsQuestionController.onPageLoad(fakeRequest)
-
-      status(result) mustEqual OK
-
-      contentAsString(result) mustEqual nirmsQuestionView(expectedPreFilledForm)(fakeRequest, messages).toString
+      contentAsString(result) mustEqual nirmsQuestionView(formProvider(), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
     }
 
@@ -100,11 +63,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad(NormalMode).url)
 
     }
 
@@ -112,11 +75,11 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -124,33 +87,56 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = nirmsQuestionController.onSubmit(fakeRequest)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual nirmsQuestionView(formWithErrors)(fakeRequest, messages).toString
+      pageContent mustEqual nirmsQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
 
       pageContent must include("nirmsQuestion.error.notSelected")
 
     }
 
-    "must redirect on Submit when session fails" in {
+    "CheckMode" - {
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+      "must return OK and the correct view for a GET" in {
 
-      val unexpectedError = new Exception("Session error")
+        val result = nirmsQuestionController.onPageLoad(CheckMode)(fakeRequest)
 
-      when(sessionService.updateUserAnswers(any[UserAnswers]))
-        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
+        status(result) mustEqual OK
 
-      val result = nirmsQuestionController.onSubmit(fakeRequestWithData)
+        contentAsString(result) mustEqual nirmsQuestionView(formProvider(), CheckMode)(
+          fakeRequest,
+          messages
+        ).toString
 
-      status(result) mustEqual SEE_OTHER
+      }
 
-      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+      "must redirect on Submit when user selects yes" in {
 
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+        val result = nirmsQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.NirmsNumberController.onPageLoad(CheckMode).url)
+
+      }
+
+      "must redirect on Submit when user selects no" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
+
+        val result = nirmsQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
     }
   }
 }

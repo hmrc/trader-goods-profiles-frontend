@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package forms
+@this()
 
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import play.api.data.Form
+@(content: Html)
 
-import javax.inject.Inject
-
-class CountryOfOriginFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "countryOfOrigin" -> text("countryOfOrigin.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying("countryOfOrigin.error.lettersOnly", _.forall(_.isLetter))
-        .verifying("countryOfOrigin.error.length", _.length == 2)
-    )
-}
+<div class="govuk-warning-text">
+ <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+ <strong class="govuk-warning-text__text">
+  <span class="govuk-visually-hidden">Warning</span>
+  @content
+ </strong>
+</div>

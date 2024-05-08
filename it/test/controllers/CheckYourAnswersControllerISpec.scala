@@ -17,25 +17,56 @@
 package controllers
 
 import base.ItTestBase
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
-class UnauthorisedControllerISpec extends ItTestBase {
-
+class CheckYourAnswersControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port$appRouteContext/unauthorised"
+  private val url = s"http://localhost:$port${routes.CheckYourAnswersController.onPageLoad.url}"
 
-  "Unauthorised controller" should {
+  "CheckYourAnswersController" should {
+
+    "redirect you to unauthorised page when auth fails" in {
+
+      noEnrolment
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.get())
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+
+    }
 
     "loads page" in {
+
+      authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 
       val response = await(request.get())
 
       response.status mustBe OK
+
     }
+
+    "redirect to dummy controller when submitting valid data" in {
+
+      authorisedUserWithAnswers
+
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
+
+      val response = await(request.post(""))
+
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
+
+    }
+
   }
 }

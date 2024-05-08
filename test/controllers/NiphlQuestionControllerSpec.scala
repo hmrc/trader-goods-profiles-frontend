@@ -17,19 +17,13 @@
 package controllers
 
 import base.SpecBase
-import cats.data.EitherT
-import controllers.actions.{FakeAuthoriseAction, FakeSessionRequestAction}
-import forms.NiphlQuestionFormProvider
-import models.errors.SessionError
-import models.{MaintainProfileAnswers, NiphlNumber, UserAnswers}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NiphlQuestionView
-
-import scala.concurrent.Future
+import forms.NiphlQuestionFormProvider
+import models.{CheckMode, NormalMode}
 
 class NiphlQuestionControllerSpec extends SpecBase {
 
@@ -46,55 +40,18 @@ class NiphlQuestionControllerSpec extends SpecBase {
     sessionService
   )
 
-  "NiphlQuestion Controller" - {
+  "NiphlQuestionController" - {
 
-    "must return OK and the correct view for an onPageLoad" in {
+    "must return OK and the correct view for a GET" in {
 
-      val result = niphlQuestionController.onPageLoad(fakeRequest)
-
-      status(result) mustEqual OK
-
-      contentAsString(result) mustEqual niphlQuestionView(formProvider())(fakeRequest, messages).toString
-
-    }
-
-    "must return OK and the correct view when there's a niphl question in the session data" in {
-
-      val value = true
-
-      val hasNiphl = value
-
-      val ukimsNumber = None
-      val hasNirms    = None
-      val nirmsNumber = None
-
-      val profileAnswers = MaintainProfileAnswers(
-        ukimsNumber = ukimsNumber,
-        hasNirms = hasNirms,
-        nirmsNumber = nirmsNumber,
-        hasNiphl = Some(hasNiphl)
-      )
-
-      val expectedPreFilledForm = formProvider().fill(value)
-
-      val userAnswerMock = UserAnswers(userAnswersId, maintainProfileAnswers = profileAnswers)
-
-      val fakeSessionRequest = new FakeSessionRequestAction(userAnswerMock)
-
-      val niphlQuestionController = new NiphlQuestionController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        niphlQuestionView,
-        formProvider,
-        fakeSessionRequest,
-        sessionService
-      )
-
-      val result = niphlQuestionController.onPageLoad(fakeRequest)
+      val result = niphlQuestionController.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustEqual OK
 
-      contentAsString(result) mustEqual niphlQuestionView(expectedPreFilledForm)(fakeRequest, messages).toString
+      contentAsString(result) mustEqual niphlQuestionView(formProvider(), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
 
     }
 
@@ -102,11 +59,11 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(NormalMode).url)
 
     }
 
@@ -114,11 +71,11 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
-      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DummyController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
     }
 
@@ -126,32 +83,55 @@ class NiphlQuestionControllerSpec extends SpecBase {
 
       val formWithErrors = formProvider().bind(Map.empty[String, String])
 
-      val result = niphlQuestionController.onSubmit(fakeRequest)
+      val result = niphlQuestionController.onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustEqual BAD_REQUEST
 
       val pageContent = contentAsString(result)
 
-      pageContent mustEqual niphlQuestionView(formWithErrors)(fakeRequest, messages).toString
+      pageContent mustEqual niphlQuestionView(formWithErrors, NormalMode)(fakeRequest, messages).toString
 
       pageContent must include("niphlQuestion.radio.notSelected")
     }
 
-    "must redirect on Submit when session fails" in {
+    "CheckMode" - {
 
-      val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+      "must return OK and the correct view for a GET" in {
 
-      val unexpectedError = new Exception("Session error")
+        val result = niphlQuestionController.onPageLoad(CheckMode)(fakeRequest)
 
-      when(sessionService.updateUserAnswers(any[UserAnswers]))
-        .thenReturn(EitherT.leftT[Future, Unit](SessionError.InternalUnexpectedError(unexpectedError)))
+        status(result) mustEqual OK
 
-      val result = niphlQuestionController.onSubmit(fakeRequestWithData)
+        contentAsString(result) mustEqual niphlQuestionView(formProvider(), CheckMode)(
+          fakeRequest,
+          messages
+        ).toString
 
-      status(result) mustEqual SEE_OTHER
+      }
 
-      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+      "must redirect on Submit when user selects yes" in {
 
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
+
+        val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.NiphlNumberController.onPageLoad(CheckMode).url)
+
+      }
+
+      "must redirect on Submit when user selects no" in {
+
+        val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
+
+        val result = niphlQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+
+      }
     }
   }
 }

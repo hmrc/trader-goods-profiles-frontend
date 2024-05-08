@@ -121,8 +121,8 @@ commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 8765432
 commodityCode.error.required = Enter a commodity code
 commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 
-countryOfOrigin.title = What is the country of origin of the goods?
-countryOfOrigin.h1 = What is the country of origin of the goods?
+countryOfOrigin.title = Country of origin
+countryOfOrigin.h1 = Country of origin
 countryOfOrigin.p1 = The origin of the goods:
 countryOfOrigin.ul.item1 = is where they have been grown, produced, or manufactured
 countryOfOrigin.ul.item2 = may not be the country where they are shipped or bought from
@@ -130,8 +130,16 @@ countryOfOrigin.inputHeading = Pick a country
 countryOfOrigin.error.required = TODO error
 countryOfOrigin.error.length = TODO error
 countryOfOrigin.error.lettersOnly = TODO error
-checkYourAnswers.title = Check Your Answers
-checkYourAnswers.heading = Check Your Answers
+
+checkYourAnswers.title = Check your answers
+checkYourAnswers.h1 = Check your answers
+checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
+checkYourAnswers.ukimsNumber = UKIMS number
+checkYourAnswers.nirmsNumber = NIRMS number
+checkYourAnswers.nirmsRegistered = NIRMS registered
+checkYourAnswers.niphlNumber = NIPHL number
+checkYourAnswers.niphlRegistered = NIPHL registered
+checkYourAnswers.warning = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
