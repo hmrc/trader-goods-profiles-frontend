@@ -17,13 +17,19 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.NirmsNumberFormProvider
-import models.{CheckMode, NormalMode}
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.Helpers._
 import play.api.test.FakeRequest
 import views.html.NirmsNumberView
+
+import scala.concurrent.Future
 
 class NirmsNumberControllerSpec extends SpecBase {
 
@@ -77,18 +83,13 @@ class NirmsNumberControllerSpec extends SpecBase {
 
     "must redirect on Submit to error page when there is a session error" in {
 
-      val badNirmsNumberController = new NirmsNumberController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        nirmsNumberView,
-        formProvider,
-        emptySessionRequest,
-        badSessionService
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
       )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
 
-      val result = badNirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
+      val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -97,6 +98,10 @@ class NirmsNumberControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user enters correct Nirms number (GB region)" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
 
@@ -110,6 +115,10 @@ class NirmsNumberControllerSpec extends SpecBase {
 
     "must redirect on Submit when user enters correct Nirms number (NI region)" in {
 
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
+
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-NI-123456")
 
       val result = nirmsNumberController.onSubmit(NormalMode)(fakeRequestWithData)
@@ -121,6 +130,10 @@ class NirmsNumberControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user enters correct Nirms number without hyphens" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
 
@@ -187,6 +200,10 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       "must redirect on Submit when user enters correct Nirms number (GB region)" in {
 
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
 
         val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
@@ -199,6 +216,10 @@ class NirmsNumberControllerSpec extends SpecBase {
 
       "must redirect on Submit when user enters correct Nirms number (NI region)" in {
 
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMS-NI-123456")
 
         val result = nirmsNumberController.onSubmit(CheckMode)(fakeRequestWithData)
@@ -210,6 +231,10 @@ class NirmsNumberControllerSpec extends SpecBase {
       }
 
       "must redirect on Submit when user enters correct Nirms number without hyphens" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
 
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
 

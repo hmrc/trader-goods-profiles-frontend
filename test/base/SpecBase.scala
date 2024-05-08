@@ -88,23 +88,6 @@ trait SpecBase
     Future.successful(Right(()))
   )
 
-  when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-    Future.successful(Right(()))
-  )
-
-  val badSessionService: SessionService = mock[SessionService]
-
-  when(badSessionService.readUserAnswers(any[InternalId])) thenReturn
-    EitherT[Future, SessionError, Option[UserAnswers]](Future.successful(Right(None)))
-
-  when(badSessionService.createUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Unit](
-    Future.successful(Right(()))
-  )
-
-  when(badSessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
-    Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
-  )
-
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
 }

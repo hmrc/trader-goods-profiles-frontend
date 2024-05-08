@@ -17,13 +17,19 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.NirmsQuestionView
 import forms.NirmsQuestionFormProvider
-import models.{CheckMode, NormalMode}
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+
+import scala.concurrent.Future
 
 class NirmsQuestionControllerSpec extends SpecBase {
 
@@ -83,18 +89,13 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
     "must redirect on Submit to error page when there is a session error" in {
 
-      val badNirmsQuestionController = new NirmsQuestionController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        nirmsQuestionView,
-        formProvider,
-        emptySessionRequest,
-        badSessionService
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
       )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
-      val result = badNirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
+      val result = nirmsQuestionController.onSubmit(NormalMode)(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -103,6 +104,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user selects yes" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
@@ -115,6 +120,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user selects no" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 
@@ -159,6 +168,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
 
       "must redirect on Submit when user selects yes" in {
 
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "true")
 
         val result = nirmsQuestionController.onSubmit(CheckMode)(fakeRequestWithData)
@@ -170,6 +183,10 @@ class NirmsQuestionControllerSpec extends SpecBase {
       }
 
       "must redirect on Submit when user selects no" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
 
         val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "false")
 

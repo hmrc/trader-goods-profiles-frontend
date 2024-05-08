@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
@@ -24,8 +25,13 @@ import play.api.test.Helpers._
 import views.html.NiphlNumberView
 import forms.NiphlNumberFormProvider
 import generators.NiphlNumberGenerator
-import models.{CheckMode, NormalMode}
+import models.errors.SessionError
+import models.{CheckMode, NormalMode, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+
+import scala.concurrent.Future
 
 class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
@@ -78,18 +84,13 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
 
     "must redirect on Submit to error page when there is a session error" in {
 
-      val badNiphlNumberController = new NiphlNumberController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        niphlNumberView,
-        formProvider,
-        emptySessionRequest,
-        badSessionService
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
       )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody("value" -> "1234")
 
-      val result = badNiphlNumberController.onSubmit(fakeRequestWithData)
+      val result = niphlNumberController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -110,14 +111,29 @@ class NiphlNumberControllerSpec extends SpecBase with NiphlNumberGenerator {
       }
 
       "with 2 letters and 5 numbers" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         forAll(niphlAlphaNumericGenerator(2, 5))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
       "with 1 letter and 5 numbers" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         forAll(niphlAlphaNumericGenerator(1, 5))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 
       "with 4 to 6 numbers" in {
+
+        when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+          Future.successful(Right(()))
+        )
+
         forAll(niphlNumericGenerator(1000, 999999))(niphlNumber => testNiphlNumber(niphlNumber))
       }
 

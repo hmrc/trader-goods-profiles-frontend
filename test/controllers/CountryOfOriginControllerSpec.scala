@@ -17,12 +17,19 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.CountryOfOriginFormProvider
+import models.UserAnswers
+import models.errors.SessionError
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CountryOfOriginView
+
+import scala.concurrent.Future
 
 class CountryOfOriginControllerSpec extends SpecBase {
 
@@ -68,24 +75,23 @@ class CountryOfOriginControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit to error page when there is a session error" in {
-      val badCommodityCodeController = new CountryOfOriginController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        countryOfOriginView,
-        formProvider,
-        emptySessionRequest,
-        badSessionService
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
       )
 
       val validCountryCode    = "GB"
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validCountryCode)
-      val result              = badCommodityCodeController.onSubmit()(fakeRequestWithData)
+      val result              = countryOfOriginController.onSubmit()(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
     }
 
     "must redirect on submit when user enters correct country code" in {
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
+
       val validCountryCode    = "GB"
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> validCountryCode)
       val result              = countryOfOriginController.onSubmit()(fakeRequestWithData)

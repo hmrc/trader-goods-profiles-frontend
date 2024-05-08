@@ -17,12 +17,19 @@
 package controllers
 
 import base.SpecBase
+import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
 import forms.CommodityCodeFormProvider
+import models.UserAnswers
+import models.errors.SessionError
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CommodityCodeView
+
+import scala.concurrent.Future
 
 class CommodityCodeControllerSpec extends SpecBase {
 
@@ -76,18 +83,13 @@ class CommodityCodeControllerSpec extends SpecBase {
 
     "must redirect on Submit to error page when there is a session error" in {
 
-      val badCommodityCodeController = new CommodityCodeController(
-        messageComponentControllers,
-        new FakeAuthoriseAction(defaultBodyParser),
-        commodityCodeView,
-        formProvider,
-        emptySessionRequest,
-        badSessionService
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Left(SessionError.InternalUnexpectedError(new Error("session error"))))
       )
 
       val fakeRequestWithData = FakeRequest().withFormUrlEncodedBody(fieldName -> "654321")
 
-      val result = badCommodityCodeController.onSubmit(fakeRequestWithData)
+      val result = commodityCodeController.onSubmit(fakeRequestWithData)
 
       status(result) mustEqual SEE_OTHER
 
@@ -96,6 +98,10 @@ class CommodityCodeControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit when user enters correct commodity code" in {
+
+      when(sessionService.updateUserAnswers(any[UserAnswers])) thenReturn EitherT[Future, SessionError, Unit](
+        Future.successful(Right(()))
+      )
 
       val validCommodityCode = "654321"
 
