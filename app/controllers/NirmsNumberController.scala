@@ -64,13 +64,14 @@ class NirmsNumberController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success =>
-                mode match {
-                  case NormalMode => Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
-                  case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
-                }
+              success => navigate(mode)
             )
         }
       )
+  }
+
+  private def navigate(mode: Mode) = mode match {
+    case NormalMode => Redirect(routes.NiphlQuestionController.onPageLoad(mode).url)
+    case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad.url)
   }
 }
