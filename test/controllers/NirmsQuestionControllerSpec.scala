@@ -25,8 +25,6 @@ import views.html.NirmsQuestionView
 import forms.NirmsQuestionFormProvider
 import models.{CheckMode, NormalMode}
 
-import scala.concurrent.ExecutionContext
-
 class NirmsQuestionControllerSpec extends SpecBase {
 
   private val formProvider = new NirmsQuestionFormProvider()

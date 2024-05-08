@@ -29,8 +29,6 @@ import org.mockito.Mockito.when
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SessionRequestActionSpec extends SpecBase with MockitoSugar {

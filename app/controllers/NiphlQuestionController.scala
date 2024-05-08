@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{AuthoriseAction, SessionRequestAction}
 import forms.NiphlQuestionFormProvider
-import models.{CheckMode, Mode, NirmsNumber, NormalMode}
+import models.{CheckMode, Mode, NiphlNumber, NormalMode}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -65,15 +65,24 @@ class NiphlQuestionController @Inject() (
             .updateUserAnswers(updatedUserAnswers)
             .fold(
               sessionError => Redirect(routes.JourneyRecoveryController.onPageLoad().url),
-              success => navigate(mode, hasNiphlAnswer)
+              success => navigate(mode, hasNiphlAnswer, niphlNumber)
             )
         }
       )
   }
 
-  private def navigate(mode: Mode, hasNiphlAnswer: Boolean) = if (hasNiphlAnswer) {
-    Redirect(routes.NiphlNumberController.onPageLoad(mode).url)
-  } else {
-    Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+  private def navigate(mode: Mode, hasNiphlAnswer: Boolean, niphlNumber: Option[NiphlNumber]) = mode match {
+    case NormalMode =>
+      if (hasNiphlAnswer) {
+        Redirect(routes.NiphlNumberController.onPageLoad(mode).url)
+      } else {
+        Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+      }
+    case CheckMode  =>
+      if (hasNiphlAnswer && niphlNumber.isEmpty) {
+        Redirect(routes.NiphlNumberController.onPageLoad(mode).url)
+      } else {
+        Redirect(routes.CheckYourAnswersController.onPageLoad.url)
+      }
   }
 }
