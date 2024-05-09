@@ -45,7 +45,6 @@ class CheckYourAnswersController @Inject() (
     catsStdInstancesForFuture(defaultExecutionContext)
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData andThen validate) { implicit request =>
-
     val list = SummaryListViewModel(
       rows = checkYourAnswersHelper.createSummaryList(request.userAnswers.maintainProfileAnswers)(
         messagesApi.preferred(request)
