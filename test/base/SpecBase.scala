@@ -16,78 +16,37 @@
 
 package base
 
-import cats.data.EitherT
 import controllers.actions._
-import models.errors.SessionError
-import models.{CategorisationAnswers, CommodityCode, CountryOfOrigin, InternalId, MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber, UserAnswers}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatest.concurrent.ScalaFutures
+import models.UserAnswers
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import org.scalatestplus.mockito.MockitoSugar.mock
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
-
-import services.SessionService
-import uk.gov.hmrc.http.HeaderCarrier
-import scala.concurrent.{ExecutionContext, Future}
 
 trait SpecBase
-    extends AnyFreeSpec
+  extends AnyFreeSpec
     with Matchers
     with TryValues
     with OptionValues
     with ScalaFutures
-    with GuiceOneAppPerSuite {
-
-  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+    with IntegrationPatience {
 
   val userAnswersId: String = "id"
 
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  def emptyUserAnswers : UserAnswers = UserAnswers(userAnswersId)
 
-  implicit val messagesApi: MessagesApi = stubMessagesApi()
-  implicit val messages: Messages       = messagesApi.preferred(fakeRequest)
+  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
-
-  val defaultBodyParser: PlayBodyParsers = app.injector.instanceOf[PlayBodyParsers]
-
-  val emptySessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
-
-  private val categorisationAnswers =
-    CategorisationAnswers(Some(CommodityCode("anything")), Some(CountryOfOrigin("GB")))
-
-  private val maintainProfileAnswers =
-    MaintainProfileAnswers(
-      Some(UkimsNumber("anything")),
-      Some(true),
-      Some(NirmsNumber("anything")),
-      Some(true),
-      Some(NiphlNumber("anything"))
-    )
-
-  private val fullUserAnswers = UserAnswers("id", maintainProfileAnswers, categorisationAnswers)
-
-  val fullSessionRequest = new FakeSessionRequestAction(fullUserAnswers)
-
-  val sessionService: SessionService = mock[SessionService]
-
-  when(sessionService.readUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Option[UserAnswers]](
-    Future.successful(Right(None))
-  )
-
-  when(sessionService.createUserAnswers(any[InternalId])) thenReturn EitherT[Future, SessionError, Unit](
-    Future.successful(Right(()))
-  )
-
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-
+  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(
+        bind[DataRequiredAction].to[DataRequiredActionImpl],
+        bind[IdentifierAction].to[FakeIdentifierAction],
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+      )
 }

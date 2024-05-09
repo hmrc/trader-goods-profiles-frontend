@@ -16,50 +16,30 @@
 
 package controllers
 
-import cats.{CoflatMap, Monad, MonadThrow}
-import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.Inject
-import controllers.actions.{AuthoriseAction, SessionRequestAction}
-import controllers.helpers.CheckYourAnswersHelper
-import play.api.i18n.I18nSupport
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RouterService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
 
-import scala.concurrent.Future
+class CheckYourAnswersController @Inject()(
+                                            override val messagesApi: MessagesApi,
+                                            identify: IdentifierAction,
+                                            getData: DataRetrievalAction,
+                                            requireData: DataRequiredAction,
+                                            val controllerComponents: MessagesControllerComponents,
+                                            view: CheckYourAnswersView
+                                          ) extends FrontendBaseController with I18nSupport {
 
-class CheckYourAnswersController @Inject() (
-  val controllerComponents: MessagesControllerComponents,
-  authorise: AuthoriseAction,
-  view: CheckYourAnswersView,
-  getData: SessionRequestAction,
-  checkYourAnswersHelper: CheckYourAnswersHelper,
-  routerService: RouterService
-) extends FrontendBaseController
-    with I18nSupport {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
 
-  private implicit val functorFuture: MonadThrow[Future] with CoflatMap[Future] with Monad[Future] =
-    catsStdInstancesForFuture(defaultExecutionContext)
-
-  def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
-    val list = SummaryListViewModel(
-      rows = checkYourAnswersHelper.createSummaryList(request.userAnswers.maintainProfileAnswers)(
-        messagesApi.preferred(request)
-      )
-    )
-    Ok(view(list))
-  }
-
-  def onSubmit: Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    routerService
-      .setUpProfile(request.eori, request.userAnswers.maintainProfileAnswers)
-      .fold(
-        error => Redirect(routes.DummyController.onPageLoad.url), //TODO redirect to actual error page
-        success => Redirect(routes.HomepageController.onPageLoad.url)
+      val list = SummaryListViewModel(
+        rows = Seq.empty
       )
 
+      Ok(view(list))
   }
-
 }

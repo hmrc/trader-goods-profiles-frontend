@@ -16,27 +16,14 @@
 
 @this(
     layout: templates.Layout,
-    heading1: components.Heading1,
-    heading2: components.Heading2,
-    govukSummaryList: GovukSummaryList,
-    warning: components.Warning,
-    formHelper: FormWithCSRF,
-    govukButton: GovukButton
+    govukSummaryList: GovukSummaryList
 )
 
 @(list: SummaryList)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleNoForm(messages("checkYourAnswers.title")),
-    showBackLink = true
-) {
-    @heading1(messages("checkYourAnswers.h1"))
-    @heading2(messages("checkYourAnswers.h2"))
+@layout(pageTitle = titleNoForm(messages("checkYourAnswers.title"))) {
+
+    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+
     @govukSummaryList(list)
-    @warning(Html(messages("checkYourAnswers.warning")))
-    @formHelper(action = CheckYourAnswersController.onSubmit) {
-        @govukButton(
-            ButtonViewModel(messages("site.continue"))
-        )
-    }
 }

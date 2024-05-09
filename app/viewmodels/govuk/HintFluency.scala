@@ -39,8 +39,5 @@ trait HintFluency {
 
     def withAttribute(attribute: (String, String)): Hint =
       hint.copy(attributes = hint.attributes + attribute)
-
-    def visuallyHidden(): Hint =
-      hint.copy().withCssClass("govuk-visually-hidden")
   }
 }
