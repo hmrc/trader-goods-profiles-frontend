@@ -30,18 +30,25 @@ class ValidateMaintainProfileAnswersActionImpl @Inject() (implicit val execution
 
   override protected def refine[A](request: DataRequest[A]): Future[Either[Result, DataRequest[A]]] =
     request.userAnswers.maintainProfileAnswers match {
+      // TODO change to appropriate error page
       case x if x.ukimsNumber.isEmpty                                 =>
         Future.successful(Left(Redirect(routes.UkimsNumberController.onPageLoad(CheckMode))))
+      // TODO change to appropriate error page
       case x if x.hasNirms.isEmpty                                    =>
         Future.successful(Left(Redirect(routes.NirmsQuestionController.onPageLoad(CheckMode))))
+      // TODO change to appropriate error page
       case x if x.nirmsNumber.isEmpty && x.hasNirms.contains(true)    =>
         Future.successful(Left(Redirect(routes.NirmsNumberController.onPageLoad(CheckMode))))
+      // TODO change to appropriate error page
       case x if x.hasNiphl.isEmpty                                    =>
         Future.successful(Left(Redirect(routes.NiphlQuestionController.onPageLoad(CheckMode))))
+      // TODO change to appropriate error page
       case x if x.niphlNumber.isEmpty && x.hasNiphl.contains(true)    =>
         Future.successful(Left(Redirect(routes.NiphlNumberController.onPageLoad(CheckMode))))
+      // TODO change to appropriate error page
       case x if x.hasNirms.contains(false) && x.nirmsNumber.isDefined =>
         Future.successful(Left(Redirect(routes.DummyController.onPageLoad)))
+      // TODO change to appropriate error page
       case x if x.hasNiphl.contains(false) && x.niphlNumber.isDefined =>
         Future.successful(Left(Redirect(routes.DummyController.onPageLoad)))
       case _                                                          => Future.successful(Right(request))
