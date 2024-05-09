@@ -12,7 +12,7 @@ import views.html.auth.SignedOutView
 class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
 
   val viewPackageName                                   = "views"
-  val layoutClasses                                     = Seq(classOf[Layout])
+  val layoutClasses: Seq[Class[Layout]]                 = Seq(classOf[Layout])
   val list: SummaryList                                 = SummaryListViewModel(rows = Seq.empty)
   implicit val arbSummaryList: Arbitrary[SummaryList]   = fixed(list)
   val mode: Mode                                        = NormalMode
@@ -35,6 +35,7 @@ class FrontendAccessibilitySpec extends AutomaticAccessibilitySpec {
     case niphlQuestionView: NiphlQuestionView                         => render(niphlQuestionView)
     case niphlNumberView: NiphlNumberView                             => render(niphlNumberView)
     case checkYourAnswersView: CheckYourAnswersView                   => render(checkYourAnswersView)
+    case homepageView: HomepageView                                   => render(homepageView)
     case dummyView: DummyView                                         => render(dummyView)
     case commodityCodeView: CommodityCodeView                         => render(commodityCodeView)
     case countryOfOriginView: CountryOfOriginView                     => render(countryOfOriginView)

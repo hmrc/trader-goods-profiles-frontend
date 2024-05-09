@@ -23,20 +23,19 @@ import models.{CategorisationAnswers, CommodityCode, CountryOfOrigin, InternalId
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar.mock
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, PlayBodyParsers}
 import play.api.test.FakeRequest
-import play.api.mvc.{AnyContentAsEmpty, PlayBodyParsers}
-import services.SessionService
-import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers.{stubMessagesApi, stubMessagesControllerComponents}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import services.SessionService
+import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{ExecutionContext, Future}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -48,13 +47,14 @@ trait SpecBase
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
   val userAnswersId: String = "id"
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   implicit val messagesApi: MessagesApi = stubMessagesApi()
-
-  val messages: Messages = messagesApi.preferred(fakeRequest)
+  implicit val messages: Messages       = messagesApi.preferred(fakeRequest)
 
   lazy val messageComponentControllers: MessagesControllerComponents = stubMessagesControllerComponents()
 

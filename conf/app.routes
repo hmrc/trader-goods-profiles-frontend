@@ -35,6 +35,8 @@ GET         /niphl-number                                controllers.NiphlNumber
 POST        /niphl-number                                controllers.NiphlNumberController.onSubmit
 GET         /niphl-number/check                          controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
 
+GET         /homepage                                    controllers.HomepageController.onPageLoad
+
 GET         /commodity-code                              controllers.CommodityCodeController.onPageLoad
 POST        /commodity-code                              controllers.CommodityCodeController.onSubmit
 

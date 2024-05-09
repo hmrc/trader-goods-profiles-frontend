@@ -17,7 +17,7 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
-import models.EnrolmentConfig
+import models.{EnrolmentConfig, ServiceDetails}
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
@@ -55,4 +55,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val cacheTtl: Int = configuration.get[Int]("mongodb.timeToLiveInSeconds")
 
   val tgpEnrolmentIdentifier: EnrolmentConfig = configuration.get[EnrolmentConfig]("enrolment-config")
+
+  val tgpRouter: ServiceDetails = configuration.get[ServiceDetails]("microservice.services.trader-goods-profile-router")
 }

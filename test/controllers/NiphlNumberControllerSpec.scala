@@ -19,17 +19,17 @@ package controllers
 import base.SpecBase
 import cats.data.EitherT
 import controllers.actions.FakeAuthoriseAction
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.NiphlNumberView
 import forms.NiphlNumberFormProvider
 import generators.NiphlNumberGenerator
 import models.errors.SessionError
 import models.{CheckMode, NormalMode, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import views.html.NiphlNumberView
 
 import scala.concurrent.Future
 
