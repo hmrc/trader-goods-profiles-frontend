@@ -20,15 +20,16 @@ import base.SpecBase
 import cats.data.EitherT
 import controllers.routes
 import models.errors.SessionError
-import models.{Eori, InternalId, MaintainProfileAnswers, UserAnswers}
 import models.requests.{AuthorisedRequest, DataRequest}
+import models.{Eori, InternalId, MaintainProfileAnswers, UserAnswers}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Result
-import services.SessionService
-import org.mockito.Mockito.when
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import services.SessionService
+
 import scala.concurrent.Future
 
 class SessionRequestActionSpec extends SpecBase with MockitoSugar {
