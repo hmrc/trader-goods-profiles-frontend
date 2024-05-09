@@ -45,9 +45,5 @@ trait LabelFluency {
 
     def forAttr(attr: String): Label =
       label.copy(forAttr = Some(attr))
-
-    def withSize(size: LabelSize = LabelSize.Medium): Label =
-      label
-        .withCssClass(size.toString)
   }
 }
