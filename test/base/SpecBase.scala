@@ -62,7 +62,9 @@ trait SpecBase
 
   val emptySessionRequest = new FakeSessionRequestAction(emptyUserAnswers)
 
-  private val categorisationAnswers =
+  val fakeValidateAction = new FakeValidateMaintainUserAnswersAction(emptyUserAnswers)
+
+  val categorisationAnswers: CategorisationAnswers =
     CategorisationAnswers(Some(CommodityCode("anything")), Some(CountryOfOrigin("GB")))
 
   private val maintainProfileAnswers =
@@ -74,7 +76,7 @@ trait SpecBase
       Some(NiphlNumber("anything"))
     )
 
-  private val fullUserAnswers = UserAnswers("id", maintainProfileAnswers, categorisationAnswers)
+  val fullUserAnswers: UserAnswers = UserAnswers("id", maintainProfileAnswers, categorisationAnswers)
 
   val fullSessionRequest = new FakeSessionRequestAction(fullUserAnswers)
 

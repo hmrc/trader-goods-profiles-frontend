@@ -39,6 +39,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     new FakeAuthoriseAction(defaultBodyParser),
     checkYourAnswersView,
     emptySessionRequest,
+    fakeValidateAction,
     mockCheckYourAnswersHelper
   )
 

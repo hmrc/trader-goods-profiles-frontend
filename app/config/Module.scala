@@ -25,6 +25,10 @@ class Module extends AbstractModule {
 
   override def configure(): Unit = {
 
+    bind(classOf[ValidateMaintainProfileAnswersAction])
+      .to(classOf[ValidateMaintainProfileAnswersActionImpl])
+      .asEagerSingleton()
+
     bind(classOf[SessionRequestAction]).to(classOf[SessionRequestActionImpl]).asEagerSingleton()
 
     // For session based storage instead of cred based, change to SessionIdentifierAction

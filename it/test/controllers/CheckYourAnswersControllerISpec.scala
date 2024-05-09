@@ -17,12 +17,21 @@
 package controllers
 
 import base.ItTestBase
+import models.{CategorisationAnswers, CommodityCode, CountryOfOrigin, MaintainProfileAnswers, NiphlNumber, NirmsNumber, UkimsNumber, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchersSugar.eqTo
+import org.mockito.Mockito.when
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import repositories.SessionRepository
+
+import scala.concurrent.Future
 
 class CheckYourAnswersControllerISpec extends ItTestBase {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private lazy val repo = app.injector.instanceOf[SessionRepository]
 
   private val url = s"http://localhost:$port${routes.CheckYourAnswersController.onPageLoad.url}"
 
@@ -45,6 +54,22 @@ class CheckYourAnswersControllerISpec extends ItTestBase {
     "loads page" in {
 
       authorisedUserWithAnswers
+
+      val categorisationAnswers =
+        CategorisationAnswers(Some(CommodityCode("anything")), Some(CountryOfOrigin("GB")))
+
+      val maintainProfileAnswers =
+        MaintainProfileAnswers(
+          Some(UkimsNumber("anything")),
+          Some(true),
+          Some(NirmsNumber("anything")),
+          Some(true),
+          Some(NiphlNumber("anything"))
+        )
+
+      val fullUserAnswers = UserAnswers("internalId", maintainProfileAnswers, categorisationAnswers)
+
+      await(repo.set(fullUserAnswers))
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
 

@@ -17,7 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.{AuthoriseAction, SessionRequestAction}
+import controllers.actions.{AuthoriseAction, SessionRequestAction, ValidateMaintainProfileAnswersAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -30,11 +30,12 @@ class CheckYourAnswersController @Inject() (
   authorise: AuthoriseAction,
   view: CheckYourAnswersView,
   getData: SessionRequestAction,
+  validate: ValidateMaintainProfileAnswersAction,
   checkYourAnswersHelper: CheckYourAnswersHelper
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen getData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen getData andThen validate) { implicit request =>
     val list = SummaryListViewModel(
       rows = checkYourAnswersHelper.createSummaryList(request.userAnswers.maintainProfileAnswers)(
         messagesApi.preferred(request)
