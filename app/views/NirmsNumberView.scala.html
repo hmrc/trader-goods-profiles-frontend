@@ -14,21 +14,28 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
+@import models.Mode
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
-    govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukErrorSummary: GovukErrorSummary
 )
+
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("nirmsNumber.title"))) {
+@layout(
+    pageTitle    = titleNoForm(messages("nirmsNumber.title")),
+    showBackLink = true
+) {
 
-    @formHelper(action = routes.NirmsNumberController.onSubmit(mode)) {
+
+    @formHelper(action = routes.NirmsNumberController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -36,14 +43,15 @@
 
         @govukInput(
             InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("nirmsNumber.heading")).asPageHeading()
-            )
-            .withWidth(Full)
+                field = form("nirmsNumber"),
+                label = LabelViewModel(messages("nirmsNumber.heading")).asPageHeading(Large)
+            ).withHint(Hint(content = Text(messages("nirmsNumber.hint"))))
+            .withWidth(Fixed10)
         )
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )
     }
+
 }
