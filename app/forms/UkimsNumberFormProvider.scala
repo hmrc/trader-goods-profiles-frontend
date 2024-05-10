@@ -26,6 +26,6 @@ class UkimsNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("ukimsNumber.error.required")
-        .verifying(maxLength(100, "ukimsNumber.error.invalidFormat"))
+        .verifying(maxLength(100, "ukimsNumber.error.length"))
     )
 }
