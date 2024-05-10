@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -26,6 +28,12 @@
 
 @layout(pageTitle = title(form, messages("hasNiphl.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("hasNiphl.heading")</h1>
+    <p class="govuk-body">@messages("hasNiphl.p1")</p>
+    <p class="govuk-body">@messages("hasNiphl.p2")
+        <a class="govuk-link" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland">@messages("hasNiphl.p2.linkText")</a>.
+    </p>
+
     @formHelper(action = routes.HasNiphlController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
@@ -35,7 +43,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("hasNiphl.heading")).asPageHeading()
+                legend = Legend(messages("hasNiphl.h2")).asPageHeading(Medium)
             )
         )
 
