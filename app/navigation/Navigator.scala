@@ -24,20 +24,37 @@ import pages._
 import models._
 
 @Singleton
-class Navigator @Inject()() {
+class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case _ => _ => routes.IndexController.onPageLoad
+    case UkimsNumberPage => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case HasNirmsPage    =>
+      userAnswers =>
+        if (userAnswers.get(HasNirmsPage).contains(true)) {
+          routes.NirmsNumberController.onPageLoad(NormalMode)
+        } else {
+          routes.HasNiphlController.onPageLoad(NormalMode)
+        }
+    case NirmsNumberPage => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case HasNiphlPage    =>
+      userAnswers =>
+        if (userAnswers.get(HasNiphlPage).contains(true)) {
+          routes.NiphlNumberController.onPageLoad(NormalMode)
+        } else {
+          routes.CheckYourAnswersController.onPageLoad
+        }
+    case NiphlNumberPage => _ => routes.CheckYourAnswersController.onPageLoad
+    case _               => _ => routes.IndexController.onPageLoad
   }
 
-  private val checkRouteMap: Page => UserAnswers => Call = {
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad
+  private val checkRouteMap: Page => UserAnswers => Call = { case _ =>
+    _ => routes.CheckYourAnswersController.onPageLoad
   }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
       normalRoutes(page)(userAnswers)
-    case CheckMode =>
+    case CheckMode  =>
       checkRouteMap(page)(userAnswers)
   }
 }
