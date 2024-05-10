@@ -35,10 +35,10 @@ POST       /niphlNumber                        controllers.NiphlNumberController
 GET        /changeNiphlNumber                  controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /changeNiphlNumber                  controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET        /nirmsNumber                        controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST       /nirmsNumber                        controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET        /changeNirmsNumber                  controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeNirmsNumber                  controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
+GET        /nirms-number                        controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /nirms-number                        controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /nirms-number/check                  controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /nirms-number/check                  controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET        /profileSetup                       controllers.ProfileSetupController.onPageLoad()
 POST       /profileSetup                       controllers.ProfileSetupController.onSubmit()
