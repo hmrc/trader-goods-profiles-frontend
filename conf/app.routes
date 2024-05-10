@@ -41,6 +41,7 @@ GET        /changeNirmsNumber                  controllers.NirmsNumberController
 POST       /changeNirmsNumber                  controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET        /profileSetup                       controllers.ProfileSetupController.onPageLoad()
+POST       /profileSetup                       controllers.ProfileSetupController.onSubmit()
 
 GET        /ukimsNumber                        controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /ukimsNumber                        controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)

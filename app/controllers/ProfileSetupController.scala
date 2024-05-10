@@ -17,23 +17,43 @@
 package controllers
 
 import controllers.actions._
+import models.{NormalMode, UserAnswers}
+import navigation.Navigator
+import pages.ProfileSetupPage
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ProfileSetupView
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class ProfileSetupController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: ProfileSetupView
-                                     ) extends FrontendBaseController with I18nSupport {
+                                       view: ProfileSetupView,
+                                       navigator: Navigator,
+                                       sessionRepository: SessionRepository
+                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
       Ok(view())
+  }
+
+  def onSubmit: Action[AnyContent] = (identify andThen getData).async {
+    implicit request =>
+      request.userAnswers.map { answers =>
+        Future.successful(Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers)))
+      }.getOrElse {
+        val answers = UserAnswers(request.userId)
+        sessionRepository.set(answers).map { _ =>
+          Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers))
+        }
+      }
   }
 }

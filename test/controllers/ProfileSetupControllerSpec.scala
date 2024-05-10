@@ -17,27 +17,100 @@
 package controllers
 
 import base.SpecBase
+import models.UserAnswers
+import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.inject.bind
+import play.api.libs.json.Json
+import play.api.mvc.Call
+import repositories.SessionRepository
 import views.html.ProfileSetupView
 
-class ProfileSetupControllerSpec extends SpecBase {
+import scala.concurrent.Future
+
+class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
   "ProfileSetup Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "for a GET" - {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      "must return OK and the correct view" in {
 
-      running(application) {
-        val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad().url)
+        val application = applicationBuilder(userAnswers = None).build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad().url)
 
-        val view = application.injector.instanceOf[ProfileSetupView]
+          val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+          val view = application.injector.instanceOf[ProfileSetupView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view()(request, messages(application)).toString
+        }
+      }
+    }
+
+    "for a POST" - {
+
+      val onwardRoute = Call("", "")
+
+      "must redirect to the next page when the user already has user answers" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+          verify(mockSessionRepository, never()).set(any())
+        }
+      }
+
+      "must create user answers then redirect to the next page when the user does not have answers" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+        val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionRepository.set(captor.capture())).thenReturn(Future.successful(true))
+
+        val application =
+          applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockSessionRepository, times(1)).set(any())
+
+          val savedAnswers = captor.getValue
+          savedAnswers.id mustEqual "id"
+          savedAnswers.data mustEqual Json.obj()
+        }
       }
     }
   }
