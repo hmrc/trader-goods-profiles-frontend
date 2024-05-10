@@ -16,8 +16,10 @@
 
 package models
 
+import cats.data.{IorNec, NonEmptyChain}
+import cats.implicits._
 import play.api.libs.json._
-import queries.{Gettable, Settable}
+import queries.{Gettable, Query, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -31,6 +33,9 @@ final case class UserAnswers(
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
+
+  def getIor[A](page: Gettable[A])(implicit rds: Reads[A]): IorNec[Query, A] =
+    get(page).toRightIor(NonEmptyChain.one(page))
 
   def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
 
