@@ -47,3 +47,39 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+hasNiphl.title = hasNiphl
+hasNiphl.heading = hasNiphl
+hasNiphl.checkYourAnswersLabel = hasNiphl
+hasNiphl.error.required = Select yes if hasNiphl
+hasNiphl.change.hidden = HasNiphl
+
+hasNirms.title = hasNirms
+hasNirms.heading = hasNirms
+hasNirms.checkYourAnswersLabel = hasNirms
+hasNirms.error.required = Select yes if hasNirms
+hasNirms.change.hidden = HasNirms
+
+niphlNumber.title = niphlNumber
+niphlNumber.heading = niphlNumber
+niphlNumber.checkYourAnswersLabel = niphlNumber
+niphlNumber.error.required = Enter niphlNumber
+niphlNumber.error.length = NiphlNumber must be 100 characters or less
+niphlNumber.change.hidden = NiphlNumber
+
+nirmsNumber.title = nirmsNumber
+nirmsNumber.heading = nirmsNumber
+nirmsNumber.checkYourAnswersLabel = nirmsNumber
+nirmsNumber.error.required = Enter nirmsNumber
+nirmsNumber.error.length = NirmsNumber must be 100 characters or less
+nirmsNumber.change.hidden = NirmsNumber
+
+profileSetup.title = profileSetup
+profileSetup.heading = profileSetup
+
+ukimsNumber.title = ukimsNumber
+ukimsNumber.heading = ukimsNumber
+ukimsNumber.checkYourAnswersLabel = ukimsNumber
+ukimsNumber.error.required = Enter ukimsNumber
+ukimsNumber.error.length = UkimsNumber must be 100 characters or less
+ukimsNumber.change.hidden = UkimsNumber
