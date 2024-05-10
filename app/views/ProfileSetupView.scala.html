@@ -16,7 +16,8 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -24,4 +25,11 @@
 @layout(pageTitle = titleNoForm(messages("profileSetup.title"))) {
 
     <h1 class="govuk-heading-xl">@messages("profileSetup.heading")</h1>
+
+@formHelper(action = routes.ProfileSetupController.onSubmit()) {
+
+    @govukButton(
+        ButtonViewModel(messages("site.continue"))
+        )
+    }
 }

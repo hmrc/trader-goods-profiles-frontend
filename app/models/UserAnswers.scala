@@ -63,6 +63,11 @@ final case class UserAnswers(
         page.cleanup(None, updatedAnswers)
     }
   }
+
+  def isDefined(gettable: Gettable[_]): Boolean =
+    Reads.optionNoError(Reads.at[JsValue](gettable.path)).reads(data)
+      .map(_.isDefined)
+      .getOrElse(false)
 }
 
 object UserAnswers {
