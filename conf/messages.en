@@ -54,7 +54,7 @@ hasNiphl.p1 = Growers and traders can move goods to Northern Ireland using the N
 hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
-hasNiphl.checkYourAnswersLabel = hasNiphl
+hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select yes if hasNiphl
 hasNiphl.change.hidden = HasNiphl
 
@@ -72,7 +72,7 @@ niphlNumber.li2 = start with one letter, then 5 numbers
 niphlNumber.li3 = start with 2 letters, then 5 numbers
 niphlNumber.h2 = What is your NIPHL registration number?
 niphlNumber.hint = For example, 612345, S12345 or SN12345
-niphlNumber.checkYourAnswersLabel = niphlNumber
+niphlNumber.checkYourAnswersLabel = NIPHL number
 niphlNumber.error.required = Enter niphlNumber
 niphlNumber.error.length = NiphlNumber must be 100 characters or less
 niphlNumber.change.hidden = NiphlNumber
