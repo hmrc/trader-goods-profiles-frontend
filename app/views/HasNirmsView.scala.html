@@ -19,12 +19,23 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    link: components.Link
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasNirms.title"))) {
+    <h1 class="govuk-heading-l">@messages("hasNirms.h1")</h1>
+
+    <p class="govuk-body">@messages("hasNirms.p1")</p>
+
+    <p class="govuk-body">
+        @Html(messages("hasNirms.p2", link(messages("hasNirms.p2.linkText"),
+        "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility")))
+    </p>
+
+    <h2 class="govuk-heading-m">@messages("hasNirms.h2")</h2>
 
     @formHelper(action = routes.HasNirmsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -35,7 +46,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("hasNirms.heading")).asPageHeading()
+                legend = Legend(content = "hasNirms.h1", classes = "govuk-visually-hidden")
             )
         )
 

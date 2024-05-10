@@ -54,11 +54,15 @@ hasNiphl.checkYourAnswersLabel = hasNiphl
 hasNiphl.error.required = Select yes if hasNiphl
 hasNiphl.change.hidden = HasNiphl
 
-hasNirms.title = hasNirms
-hasNirms.heading = hasNirms
-hasNirms.checkYourAnswersLabel = hasNirms
-hasNirms.error.required = Select yes if hasNirms
-hasNirms.change.hidden = HasNirms
+hasNirms.title = Northern Ireland Retail Movement Scheme number
+hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
+hasNirms.h2 = Are you NIRMS registered?
+hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
+hasNirms.p2 = Find out more about {0}.
+hasNirms.p2.linkText = which products can be moved under NIRMS
+hasNirms.checkYourAnswersLabel = NIRMS registered
+hasNirms.error.required = Select if you are NIRMS registered
+hasNirms.change.hidden = NIRMS registered
 
 niphlNumber.title = niphlNumber
 niphlNumber.heading = niphlNumber
