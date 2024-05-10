@@ -2,46 +2,7 @@
 
 ->          /hmrc-frontend                               hmrcfrontend.Routes
 
-GET         /dummy                                       controllers.DummyController.onPageLoad
-
-GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad
-POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
-
-GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad
-POST        /profile-setup                               controllers.ProfileSetupController.onSubmit
-
-GET         /ukims-number                                controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /ukims-number                                controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /ukims-number/check                          controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /ukims-number/check                          controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
-
-GET         /nirms-question                              controllers.NirmsQuestionController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-question                              controllers.NirmsQuestionController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-question/check                        controllers.NirmsQuestionController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-question/check                        controllers.NirmsQuestionController.onSubmit(mode: Mode = CheckMode)
-
-GET         /nirms-number                                controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-number                                controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-number/check                          controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-number/check                          controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
-
-GET         /niphl-question                              controllers.NiphlQuestionController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-question                              controllers.NiphlQuestionController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-question/check                        controllers.NiphlQuestionController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-question/check                        controllers.NiphlQuestionController.onSubmit(mode: Mode = CheckMode)
-
-
-GET         /niphl-number                                controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-number                                controllers.NiphlNumberController.onSubmit
-GET         /niphl-number/check                          controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
-
-GET         /homepage                                    controllers.HomepageController.onPageLoad
-
-GET         /commodity-code                              controllers.CommodityCodeController.onPageLoad
-POST        /commodity-code                              controllers.CommodityCodeController.onSubmit
-
-GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad
-POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(saveAndReturn: Boolean)
+GET         /                                            controllers.IndexController.onPageLoad
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
@@ -51,8 +12,7 @@ GET         /refresh-session                             controllers.KeepAliveCo
 
 GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /cya-nirms-niphls                            controllers.CheckYourAnswersController.onPageLoad
-POST        /cya-nirms-niphls                            controllers.CheckYourAnswersController.onSubmit
+GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
 
 GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
 GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey

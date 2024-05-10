@@ -17,7 +17,7 @@
 package repositories
 
 import config.FrontendAppConfig
-import models.{CategorisationAnswers, InternalId, MaintainProfileAnswers, UserAnswers}
+import models.UserAnswers
 import org.mockito.Mockito.when
 import org.mongodb.scala.model.Filters
 import org.scalatest.OptionValues
@@ -25,6 +25,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
 import java.time.{Clock, Instant, ZoneId}
@@ -32,7 +33,7 @@ import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionRepositorySpec
-    extends AnyFreeSpec
+  extends AnyFreeSpec
     with Matchers
     with DefaultPlayMongoRepositorySupport[UserAnswers]
     with ScalaFutures
@@ -40,19 +41,18 @@ class SessionRepositorySpec
     with OptionValues
     with MockitoSugar {
 
-  private val instant          = Instant.now.truncatedTo(ChronoUnit.MILLIS)
+  private val instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
-  private val userAnswers =
-    UserAnswers("id", MaintainProfileAnswers(), CategorisationAnswers(), Instant.ofEpochSecond(1))
+  private val userAnswers = UserAnswers("id", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1
 
   protected override val repository = new SessionRepository(
     mongoComponent = mongoComponent,
-    appConfig = mockAppConfig,
-    clock = stubClock
+    appConfig      = mockAppConfig,
+    clock          = stubClock
   )
 
   ".set" - {
@@ -77,7 +77,7 @@ class SessionRepositorySpec
 
         insert(userAnswers).futureValue
 
-        val result         = repository.get(InternalId(userAnswers.id)).futureValue
+        val result         = repository.get(userAnswers.id).futureValue
         val expectedResult = userAnswers copy (lastUpdated = instant)
 
         result.value mustEqual expectedResult
@@ -88,7 +88,7 @@ class SessionRepositorySpec
 
       "must return None" in {
 
-        repository.get(InternalId("id that does not exist")).futureValue must not be defined
+        repository.get("id that does not exist").futureValue must not be defined
       }
     }
   }
@@ -102,7 +102,7 @@ class SessionRepositorySpec
       val result = repository.clear(userAnswers.id).futureValue
 
       result mustEqual true
-      repository.get(InternalId(userAnswers.id)).futureValue must not be defined
+      repository.get(userAnswers.id).futureValue must not be defined
     }
 
     "must return true when there is no record to remove" in {

@@ -31,10 +31,10 @@ lazy val microservice = (project in file("."))
       "controllers.routes._",
       "viewmodels.govuk.all._"
     ),
-    PlayKeys.playDefaultPort := 9000,
+    PlayKeys.playDefaultPort := 10905,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
       ".*Routes.*;.*viewmodels.govuk.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 90,
+    ScoverageKeys.coverageMinimumStmtTotal := 78,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
@@ -49,11 +49,9 @@ lazy val microservice = (project in file("."))
     // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" ->
-        group(
-          Seq(
-            "javascripts/app.js"
-          )
-        )
+        group(Seq(
+          "javascripts/app.js"
+        ))
     ),
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)
@@ -61,16 +59,10 @@ lazy val microservice = (project in file("."))
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork := true,
-  unmanagedSourceDirectories += baseDirectory.value / "test-utils",
-  scalafmtOnCompile := true
+  unmanagedSourceDirectories += baseDirectory.value / "test-utils"
 )
 
 lazy val it =
   (project in file("it"))
     .enablePlugins(PlayScala)
     .dependsOn(microservice % "test->test")
-
-addCommandAlias(
-  "runAllChecks",
-  ";clean;compile;scalafmtCheckAll;coverage;test;it/test;a11y:test;scalastyle;coverageReport"
-)

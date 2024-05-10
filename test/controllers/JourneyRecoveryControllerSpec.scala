@@ -17,37 +17,32 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeAuthoriseAction
-import play.api.test.Helpers.{status, _}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{JourneyRecoveryContinueView, JourneyRecoveryStartAgainView}
 
 class JourneyRecoveryControllerSpec extends SpecBase {
-
-  private val journeyRecoveryContinueView   = app.injector.instanceOf[JourneyRecoveryContinueView]
-  private val journeyRecoveryStartAgainView = app.injector.instanceOf[JourneyRecoveryStartAgainView]
-
-  private val journeyRecoveryController = new JourneyRecoveryController(
-    messageComponentControllers,
-    new FakeAuthoriseAction(defaultBodyParser),
-    journeyRecoveryContinueView,
-    journeyRecoveryStartAgainView
-  )
 
   "JourneyRecovery Controller" - {
 
     "when a relative continue Url is supplied" - {
 
       "must return OK and the continue view" in {
-        val continueUrl = RedirectUrl("/foo")
-        val result      = journeyRecoveryController.onPageLoad(Some(continueUrl))(fakeRequest)
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual journeyRecoveryContinueView(continueUrl.unsafeValue)(
-          fakeRequest,
-          messages
-        ).toString
+        val application = applicationBuilder(userAnswers = None).build()
 
+        running(application) {
+          val continueUrl = RedirectUrl("/foo")
+          val request     = FakeRequest(GET, routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url)
+
+          val result = route(application, request).value
+
+          val continueView = application.injector.instanceOf[JourneyRecoveryContinueView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual continueView(continueUrl.unsafeValue)(request, messages(application)).toString
+        }
       }
     }
 
@@ -55,15 +50,19 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the start again view" in {
 
-        val continueUrl = RedirectUrl("https://foo.com")
-        val result      = journeyRecoveryController.onPageLoad(Some(continueUrl))(fakeRequest)
+        val application = applicationBuilder(userAnswers = None).build()
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual journeyRecoveryStartAgainView()(
-          fakeRequest,
-          messages
-        ).toString
+        running(application) {
+          val continueUrl = RedirectUrl("https://foo.com")
+          val request     = FakeRequest(GET, routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url)
 
+          val result = route(application, request).value
+
+          val startAgainView = application.injector.instanceOf[JourneyRecoveryStartAgainView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual startAgainView()(request, messages(application)).toString
+        }
       }
     }
 
@@ -71,14 +70,18 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the start again view" in {
 
-        val result = journeyRecoveryController.onPageLoad()(fakeRequest)
+        val application = applicationBuilder(userAnswers = None).build()
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual journeyRecoveryStartAgainView()(
-          fakeRequest,
-          messages
-        ).toString
+        running(application) {
+          val request = FakeRequest(GET, routes.JourneyRecoveryController.onPageLoad().url)
 
+          val result = route(application, request).value
+
+          val startAgainView = application.injector.instanceOf[JourneyRecoveryStartAgainView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual startAgainView()(request, messages(application)).toString
+        }
       }
     }
   }

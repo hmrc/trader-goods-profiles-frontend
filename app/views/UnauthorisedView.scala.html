@@ -15,20 +15,17 @@
  *@
 
 @this(
-    layout: templates.Layout,
-    paragraph: components.Paragraph,
-    heading1: components.Heading1,
-    link: components.Link
+    layout: templates.Layout
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleNoForm(messages("unauthorised.title")),
-    timeout   = false,
-    showBackLink = false
+    timeout   = false
 ) {
-    @heading1(messages("unauthorised.heading"))
-    @paragraph(Html(messages("unauthorised.p1")))
-    @paragraph(Html(messages("unauthorised.p2", link(messages("unauthorised.p2.linkText"), controllers.auth.routes.AuthController.signOut.url))))
+
+    <h1 class="govuk-heading-xl">@messages("unauthorised.heading")</h1>
+
+    <p class="govuk-body">@messages("unauthorised.guidance")</p>
 }

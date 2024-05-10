@@ -1,4 +1,4 @@
-service.name = Trader Goods Profile
+service.name = trader-goods-profiles-frontend
 
 site.back = Back
 site.remove = Remove
@@ -6,8 +6,6 @@ site.change = Change
 site.no = No
 site.yes = Yes
 site.continue = Continue
-site.saveAndContinue = Save and continue
-site.saveAndReturnLater = Save and return later
 site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
@@ -25,132 +23,16 @@ timeout.message = For security reasons, you will be signed out of this service i
 timeout.keepAlive = Stay signed in
 timeout.signOut = Sign out
 
-error.prefix = Error:
-error.boolean = Please give an answer
-error.invalid_date = Give a correct date
-error.date.day_blank = Enter a day
-error.date.day_invalid = Give a correct day using numbers 1 to 31
-error.date.month_blank = Enter a month
-error.date.month_invalid = Give a correct month using numbers 1 to 12
-error.date.year_blank = Enter a year
-error.date.year_invalid = Give a correct year
-error.integer = Give an answer in whole numbers
-error.non_numeric = Give a value using only numbers
-error.number = Please enter a valid number
-error.required = Please enter a value
+error.title.prefix = Error:
+error.prefix = Error
 error.summary.title = There is a problem
 
-categoryGuidance.title = Categorisation
-categoryGuidance.h1 = Categorisation
-categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
-categoryGuidance.p2 = We’ll ask you questions about waivers that you hold and then tell you what category your goods are. If the commodity code has too many waivers for us to list, we might ask you for an 8 or 10 digit commodity code.
-categoryGuidance.p3 = You’ll need to know the certificate number or name of any waivers you have for your goods. If you get a new waiver, you’ll be able to change this later.
-categoryGuidance.p4 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classes as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
-categoryGuidance.p5 = You’ll need to know the certificate number or name of any waivers you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new waiver, you’ll be able to change this later.
+index.title = trader-goods-profiles-frontend
+index.heading = trader-goods-profiles-frontend
+index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-profileSetup.title = Setting up your profile
-profileSetup.h1 = Setting up your profile
-profileSetup.body.intro = We’re going to ask you some questions, then for some information depending on your answers.
-profileSetup.ukims.h2 = UK Internal Market Scheme (UKIMS)
-profileSetup.p1 = The trader who is registering for a Trader Goods Profile must be UKIMS registered. You’ll need your UKIMS numbers to set up your profile.
-profileSetup.p2 = If you’ve applied to UKIMS, HMRC will have sent you a letter with your UKIMS authorisation number.
-profileSetup.p3 = If you are not UKIMS registered, you can check here to find out {0}.
-profileSetup.p3.linkText = who can apply to UKIMS
-profileSetup.nirms.h2 = Northern Ireland Retail Movement Scheme (NIRMS)
-profileSetup.p4 = Businesses responsible for selling or facilitating the movement of food for final consumption in Northern Ireland are eligible to benefit from the NIRMS arrangements.
-profileSetup.p5 = NIRMS registered traders can add their NIRMS authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIRMS.
-profileSetup.p6 = NIRMS authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIRMS authorised, find out about {0}.
-profileSetup.p6.linkText = the Northern Ireland Retail Movement Scheme
-profileSetup.niphl.h2 = Northern Ireland plant health label (NIPHL)
-profileSetup.p7 = The NIPHL scheme is a way for growers and traders in Great Britain (England, Scotland and Wales) to move certain products to Northern Ireland.
-profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIPHL.
-profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about {0}.
-profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
-
-niphlQuestion.title = Northern Ireland plant health label (NIPHL)
-niphlQuestion.h1 = Northern Ireland plant health label (NIPHL)
-niphlQuestion.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
-niphlQuestion.p2 = Find out more about {0}.
-niphlQuestion.p2.linkText = moving plants from Great Britain to Northern Ireland
-niphlQuestion.h2 = Are you NIPHL registered?
-niphlQuestion.radio.notSelected = Select if you are NIPHL registered
-
-ukimsNumber.title = UK Internal Market Scheme number
-ukimsNumber.h1 = UK Internal Market Scheme number
-ukimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
-ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by your EORI number, then 14 numbers.
-ukimsNumber.heading = What is your UKIMS number?
-ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
-ukimsNumber.linkText = I am not UKIMS registered
-ukimsNumber.error.required = Enter your UKIMS number
-ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
-
-nirmsQuestion.title = Northern Ireland Retail Movement Scheme (NIRMS)
-nirmsQuestion.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
-nirmsQuestion.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
-nirmsQuestion.p2 = Find out more about {0}.
-nirmsQuestion.p2.linkText = which products can be moved under NIRMS
-nirmsQuestion.h2 = Are you NIRMS registered?
-nirmsQuestion.error.notSelected = Select if you are NIRMS registered
-
-nirmsNumber.title = Northern Ireland Retail Movement Scheme number
-nirmsNumber.heading = What is your NIRMS number?
-nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
-nirmsNumber.error.required = Enter your NIRMS number
-nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
-
-niphlNumber.title = NIPHL registration number
-niphlNumber.h1 = NIPHL registration number
-niphlNumber.p1 = NIPHL registration numbers have several formats. They could be:
-niphlNumber.li1 = 4 to 6 numbers
-niphlNumber.li2 = start with one letter, then 5 numbers
-niphlNumber.li3 = start with 2 letters, then 5 numbers
-niphlNumber.h2 = What is your NIPHL registration number?
-niphlNumber.hint = For example, 612345, S12345 or SN12345
-niphlNumber.error.notSupplied = Enter your NIPHL registration number.
-niphlNumber.error.wrongFormat = Enter your NIPHL registration number in the correct format.
-
-commodityCode.title = Commodity code
-commodityCode.h1 = Commodity code
-commodityCode.p1 = Commodity codes are internationally recognised reference numbers. A commodity code describes a specific product when importing or exporting goods. You will use this code on any customs declarations.
-commodityCode.p2 = You can add commodity codes to TGP in 6, 8 or 10 digits.
-commodityCode.p3 = If you are not sure what the commodity code of your goods are, you can use the {0}.
-commodityCode.p3.linkText = Northern Ireland Online Tariff Tool
-commodityCode.heading = What is the commodity code for your goods?
-commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 87654321, 9876543211
-commodityCode.error.required = Enter a commodity code
-commodityCode.error.invalidFormat = Enter a commodity code in the correct format
-
-countryOfOrigin.title = Country of origin
-countryOfOrigin.h1 = Country of origin
-countryOfOrigin.p1 = The origin of the goods:
-countryOfOrigin.ul.item1 = is where they have been grown, produced, or manufactured
-countryOfOrigin.ul.item2 = may not be the country where they are shipped or bought from
-countryOfOrigin.inputHeading = Pick a country
-countryOfOrigin.error.required = TODO error
-countryOfOrigin.error.length = TODO error
-countryOfOrigin.error.lettersOnly = TODO error
-
-checkYourAnswers.title = Check your answers
-checkYourAnswers.h1 = Check your answers
-checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
-checkYourAnswers.ukimsNumber = UKIMS number
-checkYourAnswers.nirmsNumber = NIRMS number
-checkYourAnswers.nirmsRegistered = NIRMS registered
-checkYourAnswers.niphlNumber = NIPHL number
-checkYourAnswers.niphlRegistered = NIPHL registered
-checkYourAnswers.warning = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
-
-homepage.title = Trader Goods Profile homepage
-homepage.h1 = Trader Goods Profile homepage
-homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
-homepage.h2.1 = Goods records
-homepage.p2.linkText = View or update your goods records
-homepage.p3.linkText = Create a new goods record
-homepage.h2.2 = Ask for advice
-homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
-homepage.h2.3 = Manage your profile
-homepage.p5.linkText = Manage your profile details
+checkYourAnswers.title = Check Your Answers
+checkYourAnswers.heading = Check Your Answers
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -163,8 +45,5 @@ signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
 signedOut.guidance = We did not save your answers.
 
-unauthorised.title = There is a problem
-unauthorised.heading = There is a problem
-unauthorised.p1 = The details signed in to GOV.UK do not have a Trader Goods Profile.
-unauthorised.p2 = If you have a Trader Goods Profile, {0} and sign in with the correct details.
-unauthorised.p2.linkText = sign out
+unauthorised.title = You can’t access this service with this account
+unauthorised.heading = You can’t access this service with this account

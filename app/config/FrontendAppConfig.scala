@@ -17,10 +17,10 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
-import models.{EnrolmentConfig, ServiceDetails}
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
+
 import uk.gov.hmrc.http.StringContextOps
 @Singleton
 class FrontendAppConfig @Inject() (configuration: Configuration) {
@@ -28,7 +28,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val host: String    = configuration.get[String]("host")
   val appName: String = configuration.get[String]("appName")
 
-  private val contactHost                  = configuration.get[String]("contact-frontend.host")
+  private val contactHost = configuration.get[String]("contact-frontend.host")
   private val contactFormServiceIdentifier = "trader-goods-profiles-frontend"
 
   def feedbackUrl(implicit request: RequestHeader): java.net.URL =
@@ -53,8 +53,4 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
   val cacheTtl: Int = configuration.get[Int]("mongodb.timeToLiveInSeconds")
-
-  val tgpEnrolmentIdentifier: EnrolmentConfig = configuration.get[EnrolmentConfig]("enrolment-config")
-
-  val tgpRouter: ServiceDetails = configuration.get[ServiceDetails]("microservice.services.trader-goods-profile-router")
 }
