@@ -74,8 +74,24 @@ nirmsNumber.error.required = Enter nirmsNumber
 nirmsNumber.error.length = NirmsNumber must be 100 characters or less
 nirmsNumber.change.hidden = NirmsNumber
 
-profileSetup.title = profileSetup
-profileSetup.heading = profileSetup
+profileSetup.title = Setting up your profile
+profileSetup.h1 = Setting up your profile
+profileSetup.intro = We’re going to ask you some questions, then for some information depending on your answers.
+profileSetup.ukims.h2 = UK Internal Market Scheme (UKIMS)
+profileSetup.p1 = The trader who is registering for a Trader Goods Profile must be UKIMS registered. You’ll need your UKIMS numbers to set up your profile.
+profileSetup.p2 = If you’ve applied to UKIMS, HMRC will have sent you a letter with your UKIMS authorisation number.
+profileSetup.p3 = If you are not UKIMS registered, you can check here to find out
+profileSetup.p3.linkText = who can apply to UKIMS
+profileSetup.nirms.h2 = Northern Ireland Retail Movement Scheme (NIRMS)
+profileSetup.p4 = Businesses responsible for selling or facilitating the movement of food for final consumption in Northern Ireland are eligible to benefit from the NIRMS arrangements.
+profileSetup.p5 = NIRMS registered traders can add their NIRMS authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIRMS.
+profileSetup.p6 = NIRMS authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIRMS authorised, find out about
+profileSetup.p6.linkText = the Northern Ireland Retail Movement Scheme
+profileSetup.niphl.h2 = Northern Ireland plant health label (NIPHL)
+profileSetup.p7 = The NIPHL scheme is a way for growers and traders in Great Britain (England, Scotland and Wales) to move certain products to Northern Ireland.
+profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIPHL.
+profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about
+profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
 ukimsNumber.title = ukimsNumber
 ukimsNumber.heading = ukimsNumber

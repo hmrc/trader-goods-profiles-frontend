@@ -22,14 +22,42 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("profileSetup.title"))) {
+@layout(pageTitle = titleNoForm(messages("profileSetup.title")), showBackLink = false) {
 
-    <h1 class="govuk-heading-xl">@messages("profileSetup.heading")</h1>
+    <h1 class="govuk-heading-xl">@messages("profileSetup.h1")</h1>
 
-@formHelper(action = routes.ProfileSetupController.onSubmit()) {
+    <p class="govuk-body">@messages("profileSetup.intro")</p>
 
-    @govukButton(
-        ButtonViewModel(messages("site.continue"))
-        )
+    <h2 class="govuk-heading-m">@messages("profileSetup.ukims.h2")</h2>
+    <p class="govuk-body">@messages("profileSetup.p1")</p>
+    <p class="govuk-body">@messages("profileSetup.p2")</p>
+    <p class="govuk-body">
+        @messages("profileSetup.p3")
+        <a target="_self" href="https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland" class="govuk-link" >@messages("profileSetup.p3.linkText")</a>.
+    </p>
+
+    <h2 class="govuk-heading-m">@messages("profileSetup.nirms.h2")</h2>
+    <p class="govuk-body">@messages("profileSetup.p4")</p>
+    <p class="govuk-body">@messages("profileSetup.p5")</p>
+    <p class="govuk-body">
+        @messages("profileSetup.p6")
+        <a target="_self" href="https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments" class="govuk-link" >@messages("profileSetup.p6.linkText")</a>.
+    </p>
+
+    <h2 class="govuk-heading-m">@messages("profileSetup.niphl.h2")</h2>
+    <p class="govuk-body">@messages("profileSetup.p7")</p>
+    <p class="govuk-body">@messages("profileSetup.p8")</p>
+    <p class="govuk-body">
+        @messages("profileSetup.p9")
+        <a target="_self" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland" class="govuk-link" >@messages("profileSetup.p9.linkText")</a>.
+    </p>
+
+    @formHelper(action = routes.ProfileSetupController.onSubmit()) {
+        @govukButton(ButtonViewModel(messages("site.continue")))
     }
 }
+
+
+
+
+
