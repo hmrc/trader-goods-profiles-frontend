@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.InputWidth._
+@import viewmodels.LabelSize._
 
 @this(
     layout: templates.Layout,
@@ -28,7 +29,11 @@
 
 @layout(pageTitle = title(form, messages("ukimsNumber.title"))) {
 
-    @formHelper(action = routes.UkimsNumberController.onSubmit(mode)) {
+    <h1 class="govuk-heading-l">@messages("ukimsNumber.h1")</h1>
+    <p class="govuk-body">@messages("ukimsNumber.p1")</p>
+    <p class="govuk-body">@messages("ukimsNumber.p2")</p>
+
+    @formHelper(action = routes.UkimsNumberController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -37,13 +42,17 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("ukimsNumber.heading")).asPageHeading()
-            )
-            .withWidth(Full)
+                label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
+            ).withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
         )
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )
     }
+
+    <p class="govuk-body">
+        <a href="TODO" class="govuk-link">@messages("ukimsNumber.linkText")</a>
+    </p>
+
 }

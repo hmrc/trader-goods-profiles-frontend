@@ -43,7 +43,7 @@ POST       /changeNirmsNumber                  controllers.NirmsNumberController
 GET        /profileSetup                       controllers.ProfileSetupController.onPageLoad()
 POST       /profileSetup                       controllers.ProfileSetupController.onSubmit()
 
-GET        /ukimsNumber                        controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST       /ukimsNumber                        controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET        /changeUkimsNumber                  controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeUkimsNumber                  controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+GET        /ukims-number                        controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /ukims-number                        controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /ukims-number/check                  controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /ukims-number/check                  controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
