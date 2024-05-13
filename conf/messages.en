@@ -112,6 +112,5 @@ ukimsNumber.hint = For example, XI47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.length = UkimsNumber must be 100 characters or less
-ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
 ukimsNumber.checkYourAnswersLabel = ukimsNumber
 ukimsNumber.change.hidden = UkimsNumber
