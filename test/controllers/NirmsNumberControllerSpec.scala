@@ -95,7 +95,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", "RMS-GB-123456"))
 
         val result = route(application, request).value
 
