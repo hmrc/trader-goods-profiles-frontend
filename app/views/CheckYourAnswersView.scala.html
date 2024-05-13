@@ -23,7 +23,14 @@
 
 @layout(pageTitle = titleNoForm(messages("checkYourAnswers.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
-
+    <h1 class="govuk-heading-l">@messages("checkYourAnswers.h1")</h1>
+    <h2 class="govuk-heading-m">@messages("checkYourAnswers.h2")</h2>
     @govukSummaryList(list)
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">@messages("checkYourAnswers.warning")</span>
+            @messages("checkYourAnswers.warningText")
+        </strong>
+    </div>
 }
