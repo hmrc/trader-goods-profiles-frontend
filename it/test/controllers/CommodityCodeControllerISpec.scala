@@ -17,11 +17,15 @@
 package controllers
 
 import base.ItTestBase
+import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 class CommodityCodeControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+  private val url           = s"http://localhost:$port${routes.CommodityCodeController.onPageLoad.url}"
 
   "commodity code controller" should {
 
@@ -29,11 +33,13 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.CommodityCodeController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
     }
 
@@ -41,11 +47,15 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.CommodityCodeController.onPageLoad))
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("What is the commodity code for your goods?")
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("What is the commodity code for your goods?"))
 
     }
 
@@ -54,13 +64,13 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> "654321")
-      )
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("commodityCode" -> "654321")))
 
-      redirectLocation(result) mustBe Some(routes.DummyController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
 
     }
 
@@ -68,38 +78,47 @@ class CommodityCodeControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> "ABCDEF")
-      )
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(Map("commodityCode" -> "ABCDEF")))
 
-      html(result) must include("Enter a commodity code in the correct format")
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter a commodity code in the correct format"))
 
     }
 
     "return bad request when submitting incorrect data" in {
 
       authorisedUserWithAnswers
-      val result = callRoute(
-        FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> "10987654321")
-      )
 
-      status(result) mustBe BAD_REQUEST
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      html(result) must include("Enter a commodity code in the correct format")
+      val response = await(request.post(Map("commodityCode" -> "10987654321")))
+
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter a commodity code in the correct format"))
 
     }
 
     "return bad request when submitting no data" in {
 
       authorisedUserWithAnswers
-      val result =
-        callRoute(FakeRequest(routes.CommodityCodeController.onSubmit).withFormUrlEncodedBody("commodityCode" -> ""))
 
-      status(result) mustBe BAD_REQUEST
+      val request: WSRequest = client.url(url).withFollowRedirects(false)
 
-      html(result) must include("Enter a commodity code")
+      val response = await(request.post(Map("commodityCode" -> "")))
+
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter a commodity code"))
 
     }
   }

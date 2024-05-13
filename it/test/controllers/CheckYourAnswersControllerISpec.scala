@@ -16,11 +16,15 @@
 
 package controllers
 
+
+
+
 import base.{ItTestBase, WireMockServerSpec}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, put, stubFor, urlEqualTo}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.inject.guice.GuiceApplicationBuilder
+import org.jsoup.Jsoup
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
@@ -66,6 +70,10 @@ class CheckYourAnswersControllerISpec extends ItTestBase with WireMockServerSpec
       val response = await(request.get())
 
       response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Check your answers"))
 
     }
 

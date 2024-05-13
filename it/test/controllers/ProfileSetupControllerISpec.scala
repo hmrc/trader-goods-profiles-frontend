@@ -17,20 +17,21 @@
 package controllers
 
 import base.ItTestBase
+import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers._
 
-class CategoryGuidanceControllerISpec extends ItTestBase {
+class ProfileSetupControllerISpec extends ItTestBase {
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  private val url = s"http://localhost:$port${routes.CategoryGuidanceController.onPageLoad.url}"
+  private val url = s"http://localhost:$port${routes.ProfileSetupController.onPageLoad.url}"
+  "profile setup controller" should {
 
-  "Category Guidance controller" should {
+    "redirect you to unauthorised page when auth fails" in {
 
-    "redirects you to unauthorised page when auth fails" in {
       noEnrolment
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -40,9 +41,11 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
       response.status mustBe SEE_OTHER
 
       redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+
     }
 
     "loads page" in {
+
       authorisedUserWithAnswers
 
       val request: WSRequest = client.url(url).withFollowRedirects(false)
@@ -53,10 +56,10 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
 
       val document = Jsoup.parse(response.body)
 
-      assert(document.text().contains("Categorisation"))
+      assert(document.text().contains("Setting up your profile"))
+
     }
 
-    // TODO - Change to actual controller when available
     "returns redirect when submitting" in {
       authorisedUserWithAnswers
 
@@ -66,8 +69,8 @@ class CategoryGuidanceControllerISpec extends ItTestBase {
 
       response.status mustBe SEE_OTHER
 
-      redirectUrl(response) mustBe Some(routes.DummyController.onPageLoad.url)
-
+      redirectUrl(response) mustBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
     }
   }
+
 }

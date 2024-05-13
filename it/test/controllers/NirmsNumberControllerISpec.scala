@@ -18,11 +18,17 @@ package controllers
 
 import base.ItTestBase
 import models.{CheckMode, NormalMode}
+import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers._
 
 class NirmsNumberControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private val normalUrl = s"http://localhost:$port${routes.NirmsNumberController.onPageLoad(NormalMode).url}"
+  private val checkUrl  = s"http://localhost:$port${routes.NirmsNumberController.onPageLoad(CheckMode).url}"
 
   "NirmsNumberController" should {
 
@@ -30,11 +36,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(NormalMode)))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
 
     }
 
@@ -42,11 +50,15 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(NormalMode)))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("What is your NIRMS number?")
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("What is your NIRMS number?"))
 
     }
 
@@ -54,14 +66,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("nirmsNumber" -> "RMS-GB-123456")))
 
-      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -69,14 +80,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map("nirmsNumber" -> "RMSGB123456")))
 
-      redirectLocation(result) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NiphlQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -84,42 +94,47 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody("nirmsNumber" -> "ABC-GF-123456")
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(Map("nirmsNumber" -> "ABC-GB-123456")))
 
-      html(result) must include("Enter your NIRMS number in the correct format")
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter your NIRMS number in the correct format"))
 
     }
 
     "return bad request when submitting incorrect format" in {
 
       authorisedUserWithAnswers
-      val result = callRoute(
-        FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody("nirmsNumber" -> "AB2343534")
-      )
 
-      status(result) mustBe BAD_REQUEST
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      html(result) must include("Enter your NIRMS number in the correct format")
+      val response = await(request.post(Map("nirmsNumber" -> "ABCGB123456")))
+
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter your NIRMS number in the correct format"))
 
     }
 
     "return bad request when submitting no data" in {
 
       authorisedUserWithAnswers
-      val result =
-        callRoute(
-          FakeRequest(routes.NirmsNumberController.onSubmit(NormalMode)).withFormUrlEncodedBody("nirmsNumber" -> "")
-        )
 
-      status(result) mustBe BAD_REQUEST
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      html(result) must include("Enter your NIRMS number")
+      val response = await(request.post(Map("nirmsNumber" -> "")))
+
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter your NIRMS number"))
 
     }
 
@@ -129,11 +144,15 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
         authorisedUserWithAnswers
 
-        val result = callRoute(FakeRequest(routes.NirmsNumberController.onPageLoad(CheckMode)))
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe OK
+        val response = await(request.get())
 
-        html(result) must include("What is your NIRMS number?")
+        response.status mustBe OK
+
+        val document = Jsoup.parse(response.body)
+
+        assert(document.text().contains("What is your NIRMS number?"))
 
       }
 
@@ -141,14 +160,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
         authorisedUserWithAnswers
 
-        val result = callRoute(
-          FakeRequest(routes.NirmsNumberController.onSubmit(CheckMode))
-            .withFormUrlEncodedBody("nirmsNumber" -> "RMS-GB-123456")
-        )
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe SEE_OTHER
+        val response = await(request.post(Map("nirmsNumber" -> "RMS-GB-123456")))
 
-        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
       }
 
@@ -156,14 +174,13 @@ class NirmsNumberControllerISpec extends ItTestBase {
 
         authorisedUserWithAnswers
 
-        val result = callRoute(
-          FakeRequest(routes.NirmsNumberController.onSubmit(CheckMode))
-            .withFormUrlEncodedBody("nirmsNumber" -> "RMSGB123456")
-        )
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe SEE_OTHER
+        val response = await(request.post(Map("nirmsNumber" -> "RMSGB123456")))
 
-        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
       }
     }

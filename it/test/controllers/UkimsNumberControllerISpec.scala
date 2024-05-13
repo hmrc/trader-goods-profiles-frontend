@@ -18,11 +18,17 @@ package controllers
 
 import base.ItTestBase
 import models.{CheckMode, NormalMode}
+import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.test.FakeRequest
+import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.Helpers._
 
 class UkimsNumberControllerISpec extends ItTestBase {
+
+  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+
+  private val normalUrl = s"http://localhost:$port${routes.UkimsNumberController.onPageLoad(NormalMode).url}"
+  private val checkUrl  = s"http://localhost:$port${routes.UkimsNumberController.onPageLoad(CheckMode).url}"
 
   private val fieldName = "ukimsNumber"
 
@@ -32,39 +38,42 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       noEnrolment
 
-      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad(NormalMode)))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.get())
 
-      redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
     }
 
     "loads page" in {
 
       authorisedUserWithAnswers
 
-      val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad(NormalMode)))
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe OK
+      val response = await(request.get())
 
-      html(result) must include("What is your UKIMS number?")
+      response.status mustBe OK
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("What is your UKIMS number?"))
 
     }
 
     "redirects to NIRMS Question controller when submitting valid data" in {
 
-      val validUkimsNumber = "XI47699357400020231115081800"
-
       authorisedUserWithAnswers
 
-      val result = callRoute(
-        FakeRequest(routes.UkimsNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(fieldName -> validUkimsNumber)
-      )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe SEE_OTHER
+      val response = await(request.post(Map(fieldName -> "XI47699357400020231115081800")))
 
-      redirectLocation(result) mustBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
+      response.status mustBe SEE_OTHER
+
+      redirectUrl(response) mustBe Some(routes.NirmsQuestionController.onPageLoad(NormalMode).url)
 
     }
 
@@ -72,14 +81,15 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val result =
-        callRoute(
-          FakeRequest(routes.UkimsNumberController.onSubmit(NormalMode)).withFormUrlEncodedBody(fieldName -> "")
-        )
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      status(result) mustBe BAD_REQUEST
+      val response = await(request.post(Map(fieldName -> "")))
 
-      html(result) must include("Enter your UKIMS number")
+      response.status mustBe BAD_REQUEST
+
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter your UKIMS number"))
 
     }
 
@@ -87,16 +97,15 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
       authorisedUserWithAnswers
 
-      val invalidUkimsNumber = "XI4769935740002023111508"
+      val request: WSRequest = client.url(normalUrl).withFollowRedirects(false)
 
-      val result = callRoute(
-        FakeRequest(routes.UkimsNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(fieldName -> invalidUkimsNumber)
-      )
+      val response = await(request.post(Map(fieldName -> "XI4769935740002023111508")))
 
-      status(result) mustBe BAD_REQUEST
+      response.status mustBe BAD_REQUEST
 
-      html(result) must include("Enter your UKIMS number in the correct format")
+      val document = Jsoup.parse(response.body)
+
+      assert(document.text().contains("Enter your UKIMS number in the correct format"))
 
     }
 
@@ -106,28 +115,29 @@ class UkimsNumberControllerISpec extends ItTestBase {
 
         authorisedUserWithAnswers
 
-        val result = callRoute(FakeRequest(routes.UkimsNumberController.onPageLoad(CheckMode)))
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe OK
+        val response = await(request.get())
 
-        html(result) must include("What is your UKIMS number?")
+        response.status mustBe OK
+
+        val document = Jsoup.parse(response.body)
+
+        assert(document.text().contains("What is your UKIMS number?"))
 
       }
 
-      "redirects to NIRMS Question controller when submitting valid data" in {
-
-        val validUkimsNumber = "XI47699357400020231115081800"
+      "redirects to Check Your Answers controller when submitting valid data" in {
 
         authorisedUserWithAnswers
 
-        val result = callRoute(
-          FakeRequest(routes.UkimsNumberController.onSubmit(CheckMode))
-            .withFormUrlEncodedBody(fieldName -> validUkimsNumber)
-        )
+        val request: WSRequest = client.url(checkUrl).withFollowRedirects(false)
 
-        status(result) mustBe SEE_OTHER
+        val response = await(request.post(Map(fieldName -> "XI47699357400020231115081800")))
 
-        redirectLocation(result) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+        response.status mustBe SEE_OTHER
+
+        redirectUrl(response) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
 
       }
     }
