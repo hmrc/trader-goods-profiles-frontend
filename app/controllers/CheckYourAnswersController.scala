@@ -17,7 +17,10 @@
 package controllers
 
 import com.google.inject.Inject
+import connectors.RouterConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import logging.Logging
+import models.TraderProfile
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -25,14 +28,18 @@ import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSum
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
 
+import scala.concurrent.{ExecutionContext, Future}
+
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
                                             identify: IdentifierAction,
                                             getData: DataRetrievalAction,
                                             requireData: DataRequiredAction,
                                             val controllerComponents: MessagesControllerComponents,
-                                            view: CheckYourAnswersView
-                                          ) extends FrontendBaseController with I18nSupport {
+                                            view: CheckYourAnswersView,
+                                            routerConnector: RouterConnector
+                                          )(implicit ec: ExecutionContext)
+  extends FrontendBaseController with I18nSupport with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -50,5 +57,22 @@ class CheckYourAnswersController @Inject()(
       Ok(view(list))
   }
 
-  // TODO Add onSubmit
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+
+      val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
+
+      val errors = maybeErrors.map { errors =>
+        errors.toChain.toList.map(_.path).mkString(", ")
+      }.getOrElse("")
+
+      maybeModel.map { model =>
+        routerConnector.submitTraderProfile(model).map { _ =>
+          Redirect(routes.HomePageController.onPageLoad())
+        }
+      }.getOrElse {
+        logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
+        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+      }
+  }
 }
