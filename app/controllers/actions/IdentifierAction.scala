@@ -47,7 +47,7 @@ class AuthenticatedIdentifierAction @Inject()(
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    val predicates = Enrolment(config.tgpEnrolmentIdentifier.key) and AffinityGroup.Agent
+    val predicates = Enrolment(config.tgpEnrolmentIdentifier.key) and (AffinityGroup.Organisation or AffinityGroup.Individual)
 
     authorised(predicates)
       .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
