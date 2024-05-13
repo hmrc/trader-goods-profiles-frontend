@@ -23,6 +23,7 @@ import models.requests.DataRequest
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
@@ -40,11 +41,21 @@ class CheckYourAnswersController @Inject()(
                                             view: CheckYourAnswersView
                                           ) extends FrontendBaseController with I18nSupport {
 
+  val continueUrl = RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)
+  val missingAnswersRedirect = Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  val incorrectAnswersRedirect = Redirect(routes.JourneyRecoveryController.onPageLoad())
+
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      validateUserAnswers(request.userAnswers) match {
-        case Right(true) =>
+      request.userAnswers match {
+        case x if missingUkimsNumber(x)
+          || missingHasNirms(x)
+          || missingNirmsNumber(x)
+          || missingHasNiphl(x)
+          || missingNiphlNumber(x)
+        => missingAnswersRedirect
+        case x if incorrectHasNirms(x) || incorrectHasNiphl(x) => incorrectAnswersRedirect
+        case _ => {
           val list = SummaryListViewModel(
             rows = Seq(
               UkimsNumberSummary.row(request.userAnswers),
@@ -55,26 +66,18 @@ class CheckYourAnswersController @Inject()(
             ).flatten
           )
           Ok(view(list))
+        }
       }
   }
 
-  def validateUserAnswers(userAnswers: UserAnswers): Either[Result, Boolean] = userAnswers match {
-    case x if x.get(UkimsNumberPage).isEmpty =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)))))
-    case x if x.get(HasNirmsPage).isEmpty =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)))))
-    case x if x.get(HasNiphlPage).isEmpty =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)))))
-    case x if x.get(HasNirmsPage).contains(true) && x.get(NirmsNumberPage).isEmpty =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)))))
-    case x if x.get(HasNiphlPage).contains(true) && x.get(NiphlNumberPage).isEmpty =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)))))
-    case x if x.get(HasNirmsPage).isEmpty && x.get(NirmsNumberPage).isDefined =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-    case x if x.get(HasNiphlPage).isEmpty && x.get(NiphlNumberPage).isDefined =>
-      Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-    case _ => Right(true)
-  }
+
+  def missingUkimsNumber(userAnswers: UserAnswers): Boolean = userAnswers.get(UkimsNumberPage).isEmpty
+  def missingHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).isEmpty
+  def missingNirmsNumber(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).contains(true) && userAnswers.get(NirmsNumberPage).isEmpty
+  def missingHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).isEmpty
+  def missingNiphlNumber(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).contains(true) && userAnswers.get(NiphlNumberPage).isEmpty
+  def incorrectHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).isEmpty && userAnswers.get(NirmsNumberPage).isDefined
+  def incorrectHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).isEmpty && userAnswers.get(NiphlNumberPage).isDefined
 
   // TODO Add onSubmit
 }

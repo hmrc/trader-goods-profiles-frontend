@@ -17,8 +17,13 @@
 package controllers
 
 import base.SpecBase
+import models.UserAnswers
+import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import play.api.i18n.Messages.implicitMessagesProviderToMessages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import viewmodels.checkAnswers
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -26,9 +31,13 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "Check Your Answers Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET with valid minimal data" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(UkimsNumberPage, "1").success.value
+        .set(HasNirmsPage, false).success.value
+        .set(HasNiphlPage, false).success.value
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -36,7 +45,45 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(Seq.empty)
+        val list = SummaryListViewModel(
+          rows = Seq(
+            UkimsNumberSummary.row(userAnswers)(messages(application)),
+            HasNirmsSummary.row(userAnswers)(messages(application)),
+            HasNiphlSummary.row(userAnswers)(messages(application))
+          ).flatten
+        )
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+      }
+    }
+
+
+    "must return OK and the correct view for a GET with valid data including optional" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(UkimsNumberPage, "1").success.value
+        .set(HasNirmsPage, true).success.value
+        .set(NirmsNumberPage, "2").success.value
+        .set(HasNirmsPage, true).success.value
+        .set(NiphlNumberPage, "3").success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CheckYourAnswersView]
+        val list = SummaryListViewModel(
+          rows = Seq(
+            UkimsNumberSummary.row(userAnswers)(messages(application)),
+            HasNirmsSummary.row(userAnswers)(messages(application)),
+            NirmsNumberSummary.row(userAnswers)(messages(application)),
+            HasNiphlSummary.row(userAnswers)(messages(application)),
+            NiphlNumberSummary.row(userAnswers)(messages(application))
+          ).flatten
+        )
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(list)(request, messages(application)).toString
