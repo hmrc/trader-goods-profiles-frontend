@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.InputWidth._
+@import viewmodels.InputWidth.Fixed10
 
 @this(
     layout: templates.Layout,
@@ -28,6 +29,17 @@
 
 @layout(pageTitle = title(form, messages("niphlNumber.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("niphlNumber.heading")</h1>
+    <p class="govuk-body">@messages("niphlNumber.p1")</p>
+
+    <ul class="govuk-body">
+        <li>@messages("niphlNumber.li1")</li>
+        <li>@messages("niphlNumber.li2")</li>
+        <li>@messages("niphlNumber.li3")</li>
+    </ul>
+
+    <h2 class="govuk-heading-m">@messages("niphlNumber.h2")</h2>
+
     @formHelper(action = routes.NiphlNumberController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
@@ -37,9 +49,9 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("niphlNumber.heading")).asPageHeading()
-            )
-            .withWidth(Full)
+                label = Label(content = "niphlNumber.h2", classes = "govuk-visually-hidden")
+            ).withHint(Hint(content = Text(messages("niphlNumber.hint"))))
+            .withWidth(Fixed10)
         )
 
         @govukButton(

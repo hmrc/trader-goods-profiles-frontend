@@ -1,4 +1,4 @@
-service.name = trader-goods-profiles-frontend
+service.name = Trader Goods Profile
 
 site.back = Back
 site.remove = Remove
@@ -48,9 +48,13 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
-hasNiphl.title = hasNiphl
-hasNiphl.heading = hasNiphl
-hasNiphl.checkYourAnswersLabel = hasNiphl
+hasNiphl.title = Northern Ireland plant health label (NIPHL)
+hasNiphl.heading = Northern Ireland plant health label (NIPHL)
+hasNiphl.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
+hasNiphl.p2 = Find out more about
+hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
+hasNiphl.h2 = Are you NIPHL registered?
+hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select yes if hasNiphl
 hasNiphl.change.hidden = HasNiphl
 
@@ -60,9 +64,15 @@ hasNirms.checkYourAnswersLabel = hasNirms
 hasNirms.error.required = Select yes if hasNirms
 hasNirms.change.hidden = HasNirms
 
-niphlNumber.title = niphlNumber
-niphlNumber.heading = niphlNumber
-niphlNumber.checkYourAnswersLabel = niphlNumber
+niphlNumber.title = NIPHL registration number
+niphlNumber.heading = NIPHL registration number
+niphlNumber.p1 = NIPHL registration numbers have several formats. They could be:
+niphlNumber.li1 = 4 to 6 numbers
+niphlNumber.li2 = start with one letter, then 5 numbers
+niphlNumber.li3 = start with 2 letters, then 5 numbers
+niphlNumber.h2 = What is your NIPHL registration number?
+niphlNumber.hint = For example, 612345, S12345 or SN12345
+niphlNumber.checkYourAnswersLabel = NIPHL number
 niphlNumber.error.required = Enter niphlNumber
 niphlNumber.error.length = NiphlNumber must be 100 characters or less
 niphlNumber.change.hidden = NiphlNumber
