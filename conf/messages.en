@@ -31,8 +31,11 @@ index.title = trader-goods-profiles-frontend
 index.heading = trader-goods-profiles-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-checkYourAnswers.title = Check Your Answers
-checkYourAnswers.heading = Check Your Answers
+checkYourAnswers.title = Check your answers
+checkYourAnswers.h1 = Check your answers
+checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
+checkYourAnswers.warning = Warning
+checkYourAnswers.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -60,7 +63,7 @@ hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select if you are NIPHL registered
-hasNiphl.change.hidden = HasNiphl
+hasNiphl.change.hidden = NIPHL registered
 
 hasNirms.title = Northern Ireland Retail Movement Scheme number
 hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
@@ -83,7 +86,7 @@ niphlNumber.hint = For example, 612345, S12345 or SN12345
 niphlNumber.checkYourAnswersLabel = NIPHL number
 niphlNumber.error.required = Enter niphlNumber
 niphlNumber.error.length = NiphlNumber must be 100 characters or less
-niphlNumber.change.hidden = NiphlNumber
+niphlNumber.change.hidden = NIPHL number
 
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
 nirmsNumber.heading = What is your NIRMS number?
@@ -121,8 +124,8 @@ ukimsNumber.hint = For example, XI47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.length = UkimsNumber must be 100 characters or less
-ukimsNumber.checkYourAnswersLabel = ukimsNumber
-ukimsNumber.change.hidden = UkimsNumber
+ukimsNumber.checkYourAnswersLabel = UKIMS Number
+ukimsNumber.change.hidden = UKIMS Number
 
 categoryGuidance.title = categoryGuidance
 categoryGuidance.heading = categoryGuidance
