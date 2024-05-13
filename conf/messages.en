@@ -63,7 +63,7 @@ hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select yes if hasNiphl
-hasNiphl.change.hidden = HasNiphl
+hasNiphl.change.hidden = NIPHL registered
 
 hasNirms.title = Northern Ireland Retail Movement Scheme number
 hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
@@ -73,7 +73,7 @@ hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
 hasNirms.checkYourAnswersLabel = NIRMS registered
 hasNirms.error.required = Select if you are NIRMS registered
-hasNirms.change.hidden = HasNirms
+hasNirms.change.hidden = NIRMS registered
 
 niphlNumber.title = NIPHL registration number
 niphlNumber.heading = NIPHL registration number
@@ -86,7 +86,7 @@ niphlNumber.hint = For example, 612345, S12345 or SN12345
 niphlNumber.checkYourAnswersLabel = NIPHL number
 niphlNumber.error.required = Enter niphlNumber
 niphlNumber.error.length = NiphlNumber must be 100 characters or less
-niphlNumber.change.hidden = NiphlNumber
+niphlNumber.change.hidden = NIPHL number
 
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
 nirmsNumber.heading = What is your NIRMS number?
@@ -94,7 +94,7 @@ nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by G
 nirmsNumber.checkYourAnswersLabel = NIRMS number
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
-nirmsNumber.change.hidden = NirmsNumber
+nirmsNumber.change.hidden = NIRMS number
 
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
@@ -125,7 +125,7 @@ ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.length = UkimsNumber must be 100 characters or less
 ukimsNumber.checkYourAnswersLabel = UKIMS Number
-ukimsNumber.change.hidden = UkimsNumber
+ukimsNumber.change.hidden = UKIMS Number
 
 categoryGuidance.title = categoryGuidance
 categoryGuidance.heading = categoryGuidance
