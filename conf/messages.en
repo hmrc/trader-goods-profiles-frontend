@@ -59,8 +59,8 @@ hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = NIPHL registered
-hasNiphl.error.required = Select yes if hasNiphl
-hasNiphl.change.hidden = HasNiphl
+hasNiphl.error.required = Select if you are NIRMS registered
+hasNiphl.change.hidden = NIPHL registered
 
 hasNirms.title = Northern Ireland Retail Movement Scheme number
 hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
@@ -81,9 +81,9 @@ niphlNumber.li3 = start with 2 letters, then 5 numbers
 niphlNumber.h2 = What is your NIPHL registration number?
 niphlNumber.hint = For example, 612345, S12345 or SN12345
 niphlNumber.checkYourAnswersLabel = NIPHL number
-niphlNumber.error.required = Enter niphlNumber
-niphlNumber.error.length = NiphlNumber must be 100 characters or less
-niphlNumber.change.hidden = NiphlNumber
+niphlNumber.error.required = Enter your NIPHL registration number
+niphlNumber.error.invalidFormat = Enter your NIPHL registration number in the correct format
+niphlNumber.change.hidden = NIPHL number
 
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
 nirmsNumber.heading = What is your NIRMS number?
