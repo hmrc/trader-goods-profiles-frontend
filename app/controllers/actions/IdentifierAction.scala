@@ -49,8 +49,6 @@ class AuthenticatedIdentifierAction @Inject()(
 
     authorised(Enrolment(config.tgpEnrolmentIdentifier.key))
       .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
-            x => {println("CCCCC " + x)
-              x match {
         case Some(internalId) ~ authorisedEnrolments =>
           authorisedEnrolments
             .getEnrolment(config.tgpEnrolmentIdentifier.key)
@@ -59,7 +57,7 @@ class AuthenticatedIdentifierAction @Inject()(
                 block(IdentifierRequest(request, internalId, enrolment.value))
               case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
-      }}} recover {
+      } recover {
       case _: NoActiveSession =>
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
