@@ -18,7 +18,7 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.helper.RemoveWhitespace.removeWhitespace
 import play.api.data.Form
 
 class NiphlNumberFormProvider @Inject() extends Mappings {
