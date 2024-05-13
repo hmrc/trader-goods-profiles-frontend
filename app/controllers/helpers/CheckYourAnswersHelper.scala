@@ -39,33 +39,33 @@ class CheckYourAnswersHelper() {
     )
   }
   def createSummaryList(
-    traderGoodsProfile: MaintainProfileAnswers
+    maintainProfileAnswers: MaintainProfileAnswers
   )(implicit messages: Messages): Seq[SummaryListRow] = {
     val summaryData: Seq[(String, String, Option[String])] = Seq(
       (
         messages("checkYourAnswers.ukimsNumber"),
         routes.UkimsNumberController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.ukimsNumber.map(_.value)
+        maintainProfileAnswers.ukimsNumber.map(_.value)
       ),
       (
         messages("checkYourAnswers.nirmsRegistered"),
         routes.NirmsQuestionController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.hasNirms.map(changeToYesOrNo)
+        maintainProfileAnswers.hasNirms.map(changeToYesOrNo)
       ),
       (
         messages("checkYourAnswers.nirmsNumber"),
         routes.NirmsNumberController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.nirmsNumber.map(_.value)
+        maintainProfileAnswers.nirmsNumber.map(_.value)
       ),
       (
         messages("checkYourAnswers.niphlRegistered"),
         routes.NiphlQuestionController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.hasNiphl.map(changeToYesOrNo)
+        maintainProfileAnswers.hasNiphl.map(changeToYesOrNo)
       ),
       (
         messages("checkYourAnswers.niphlNumber"),
         routes.NiphlNumberController.onPageLoad(CheckMode).url,
-        traderGoodsProfile.niphlNumber.map(_.value)
+        maintainProfileAnswers.niphlNumber.map(_.value)
       )
     )
 

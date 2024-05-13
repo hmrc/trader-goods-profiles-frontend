@@ -47,13 +47,10 @@ class ProfileSetupControllerSpec extends SpecBase {
     }
 
     "must redirect on Submit" in {
-
       val result = profileSetupController.onSubmit(fakeRequest)
-
       status(result) mustEqual SEE_OTHER
-
       redirectLocation(result) shouldBe Some(routes.UkimsNumberController.onPageLoad(NormalMode).url)
-
     }
+
   }
 }

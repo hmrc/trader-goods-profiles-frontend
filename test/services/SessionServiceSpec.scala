@@ -18,24 +18,23 @@ package services
 
 import base.SpecBase
 import cats.data.EitherT
-import models.{InternalId, UserAnswers}
 import models.errors.SessionError
+import models.{InternalId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
 import repositories.SessionRepository
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 class SessionServiceSpec extends SpecBase {
 
   "Session Service" - {
 
-    implicit val ec: ExecutionContext = ExecutionContext.global
-    val mockSessionRepository         = mock[SessionRepository]
-    val sessionService                = new SessionService(mockSessionRepository)
-    val id                            = InternalId("id")
-    val repositoryThrowable           = new Throwable("There was an error with sessionRepository")
+    val mockSessionRepository = mock[SessionRepository]
+    val sessionService        = new SessionService(mockSessionRepository)
+    val id                    = InternalId("id")
+    val repositoryThrowable   = new Throwable("There was an error with sessionRepository")
 
     "createUserAnswers should create answers if sessionRepository does not fail" in {
       when(
