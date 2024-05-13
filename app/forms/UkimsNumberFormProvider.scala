@@ -21,3 +21,13 @@ import forms.mappings.Mappings
 import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
 import models.StringFieldRegex
 import play.api.data.Form
+
+class UkimsNumberFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("ukimsNumber.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
+    )
+}
