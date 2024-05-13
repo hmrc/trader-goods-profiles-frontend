@@ -19,6 +19,7 @@ package models
 import cats.data.{Ior, IorNec}
 import cats.implicits._
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import play.api.libs.json.{Json, OFormat}
 import queries.Query
 
 final case class TraderProfile(
@@ -28,6 +29,8 @@ final case class TraderProfile(
                               )
 
 object TraderProfile {
+
+  implicit lazy val format: OFormat[TraderProfile] = Json.format
 
   def build(answers: UserAnswers): IorNec[Query, TraderProfile] =
     (
