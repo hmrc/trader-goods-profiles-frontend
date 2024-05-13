@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+object StringFieldRegex {
+  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
+
+}

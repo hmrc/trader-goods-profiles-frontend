@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings.helpers
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+object RemoveWhitespace {
+
+  def removeWhitespace: String => String = _.filterNot(_.isWhitespace)
+
+}
