@@ -20,28 +20,28 @@ GET         /account/signed-out                          controllers.auth.Signed
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
 
-GET        /hasNiphl                        controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
-POST       /hasNiphl                        controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasNiphl                  controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasNiphl                  controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
+GET        /niphl-question                        controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
+POST       /niphl-question                        controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
+GET        /niphl-question/check                  controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
+POST       /niphl-question/check                  controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
 
 GET        /hasNirms                        controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
 POST       /hasNirms                        controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
 GET        /changeHasNirms                  controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
 POST       /changeHasNirms                  controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /niphlNumber                        controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
-POST       /niphlNumber                        controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
-GET        /changeNiphlNumber                  controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeNiphlNumber                  controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
+GET        /niphl-number                        controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /niphl-number                        controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /niphl-number/check                  controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /niphl-number/check                  controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET        /nirmsNumber                        controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /nirmsNumber                        controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /changeNirmsNumber                  controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /changeNirmsNumber                  controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET        /profileSetup                       controllers.ProfileSetupController.onPageLoad()
-POST       /profileSetup                       controllers.ProfileSetupController.onSubmit()
+GET        /profile-setup                      controllers.ProfileSetupController.onPageLoad()
+POST       /profile-setup                      controllers.ProfileSetupController.onSubmit()
 
 GET        /ukims-number                        controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /ukims-number                        controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)

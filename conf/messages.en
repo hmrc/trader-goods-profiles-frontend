@@ -1,4 +1,4 @@
-service.name = trader-goods-profiles-frontend
+service.name = Trader Goods Profile
 
 site.back = Back
 site.remove = Remove
@@ -48,9 +48,13 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
-hasNiphl.title = hasNiphl
-hasNiphl.heading = hasNiphl
-hasNiphl.checkYourAnswersLabel = hasNiphl
+hasNiphl.title = Northern Ireland plant health label (NIPHL)
+hasNiphl.heading = Northern Ireland plant health label (NIPHL)
+hasNiphl.p1 = Growers and traders can move goods to Northern Ireland using the Northern Ireland plant health label (NIPHL) scheme.
+hasNiphl.p2 = Find out more about
+hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
+hasNiphl.h2 = Are you NIPHL registered?
+hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select yes if hasNiphl
 hasNiphl.change.hidden = HasNiphl
 
@@ -60,9 +64,15 @@ hasNirms.checkYourAnswersLabel = hasNirms
 hasNirms.error.required = Select yes if hasNirms
 hasNirms.change.hidden = HasNirms
 
-niphlNumber.title = niphlNumber
-niphlNumber.heading = niphlNumber
-niphlNumber.checkYourAnswersLabel = niphlNumber
+niphlNumber.title = NIPHL registration number
+niphlNumber.heading = NIPHL registration number
+niphlNumber.p1 = NIPHL registration numbers have several formats. They could be:
+niphlNumber.li1 = 4 to 6 numbers
+niphlNumber.li2 = start with one letter, then 5 numbers
+niphlNumber.li3 = start with 2 letters, then 5 numbers
+niphlNumber.h2 = What is your NIPHL registration number?
+niphlNumber.hint = For example, 612345, S12345 or SN12345
+niphlNumber.checkYourAnswersLabel = NIPHL number
 niphlNumber.error.required = Enter niphlNumber
 niphlNumber.error.length = NiphlNumber must be 100 characters or less
 niphlNumber.change.hidden = NiphlNumber
@@ -74,8 +84,24 @@ nirmsNumber.error.required = Enter nirmsNumber
 nirmsNumber.error.length = NirmsNumber must be 100 characters or less
 nirmsNumber.change.hidden = NirmsNumber
 
-profileSetup.title = profileSetup
-profileSetup.heading = profileSetup
+profileSetup.title = Setting up your profile
+profileSetup.h1 = Setting up your profile
+profileSetup.intro = We’re going to ask you some questions, then for some information depending on your answers.
+profileSetup.ukims.h2 = UK Internal Market Scheme (UKIMS)
+profileSetup.p1 = The trader who is registering for a Trader Goods Profile must be UKIMS registered. You’ll need your UKIMS numbers to set up your profile.
+profileSetup.p2 = If you’ve applied to UKIMS, HMRC will have sent you a letter with your UKIMS authorisation number.
+profileSetup.p3 = If you are not UKIMS registered, you can check here to find out
+profileSetup.p3.linkText = who can apply to UKIMS
+profileSetup.nirms.h2 = Northern Ireland Retail Movement Scheme (NIRMS)
+profileSetup.p4 = Businesses responsible for selling or facilitating the movement of food for final consumption in Northern Ireland are eligible to benefit from the NIRMS arrangements.
+profileSetup.p5 = NIRMS registered traders can add their NIRMS authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIRMS.
+profileSetup.p6 = NIRMS authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIRMS authorised, find out about
+profileSetup.p6.linkText = the Northern Ireland Retail Movement Scheme
+profileSetup.niphl.h2 = Northern Ireland plant health label (NIPHL)
+profileSetup.p7 = The NIPHL scheme is a way for growers and traders in Great Britain (England, Scotland and Wales) to move certain products to Northern Ireland.
+profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIPHL.
+profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about
+profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 
 ukimsNumber.title = UK Internal Market Scheme number
 ukimsNumber.h1 = UK Internal Market Scheme number
