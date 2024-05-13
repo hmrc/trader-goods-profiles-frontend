@@ -62,7 +62,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(NiphlNumberPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(NiphlNumberPage, "SN12345").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -74,7 +74,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("SN12345"), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -95,7 +95,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, niphlNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", "SN12345"))
 
         val result = route(application, request).value
 
@@ -104,7 +104,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    "must return a Bad Request and errors when no data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -114,6 +114,26 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[NiphlNumberView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must return a Bad Request and errors when incorrect data format is submitted" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, niphlNumberRoute)
+            .withFormUrlEncodedBody(("value", "abc"))
+
+        val boundForm = form.bind(Map("value" -> "abc"))
 
         val view = application.injector.instanceOf[NiphlNumberView]
 
