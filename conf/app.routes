@@ -47,3 +47,17 @@ GET         /ukims-number                                controllers.UkimsNumber
 POST        /ukims-number                                controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
 GET         /ukims-number/check                          controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /ukims-number/check                          controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET         /categoryGuidance                            controllers.CategoryGuidanceController.onPageLoad()
+
+GET         /commodityCode                               controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST        /commodityCode                               controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET         /changeCommodityCode                         controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeCommodityCode                         controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+
+GET         /countryOfOrigin                             controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
+POST        /countryOfOrigin                             controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
+GET         /changeCountryOfOrigin                       controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeCountryOfOrigin                       controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
+
+GET         /homePage                                    controllers.HomePageController.onPageLoad()
