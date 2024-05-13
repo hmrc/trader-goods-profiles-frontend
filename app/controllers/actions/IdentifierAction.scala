@@ -20,11 +20,13 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.routes
 import models.requests.IdentifierRequest
+import play.api.Logging
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,39 +38,34 @@ class AuthenticatedIdentifierAction @Inject()(
                                                config: FrontendAppConfig,
                                                val parser: BodyParsers.Default
                                              )
-                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
+                                             (implicit val executionContext: ExecutionContext)
+  extends IdentifierAction
+  with AuthorisedFunctions
+  with Logging {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised().retrieve(Retrievals.internalId) {
-      _.map {
-        internalId => block(IdentifierRequest(request, internalId))
-      }.getOrElse(throw new UnauthorizedException("Unable to retrieve internal Id"))
-    } recover {
+    authorised(Enrolment(config.tgpEnrolmentIdentifier.key))
+      .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
+            x => {println("CCCCC " + x)
+              x match {
+        case Some(internalId) ~ authorisedEnrolments =>
+          authorisedEnrolments
+            .getEnrolment(config.tgpEnrolmentIdentifier.key)
+            .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
+              case Some(enrolment) =>
+                block(IdentifierRequest(request, internalId, enrolment.value))
+              case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+          }
+      }}} recover {
       case _: NoActiveSession =>
+        logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException =>
+        logger.info("Authorisation failure: No enrolments found for TGP. Redirecting to UnauthorisedController")
         Redirect(routes.UnauthorisedController.onPageLoad)
-    }
-  }
-}
-
-class SessionIdentifierAction @Inject()(
-                                         val parser: BodyParsers.Default
-                                       )
-                                       (implicit val executionContext: ExecutionContext) extends IdentifierAction {
-
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
-    hc.sessionId match {
-      case Some(session) =>
-        block(IdentifierRequest(request, session.value))
-      case None =>
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
   }
 }
