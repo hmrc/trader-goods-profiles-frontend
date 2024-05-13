@@ -114,3 +114,23 @@ ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.length = UkimsNumber must be 100 characters or less
 ukimsNumber.checkYourAnswersLabel = ukimsNumber
 ukimsNumber.change.hidden = UkimsNumber
+
+categoryGuidance.title = categoryGuidance
+categoryGuidance.heading = categoryGuidance
+
+commodityCode.title = commodityCode
+commodityCode.heading = commodityCode
+commodityCode.checkYourAnswersLabel = commodityCode
+commodityCode.error.required = Enter commodityCode
+commodityCode.error.length = CommodityCode must be 100 characters or less
+commodityCode.change.hidden = CommodityCode
+
+countryOfOrigin.title = countryOfOrigin
+countryOfOrigin.heading = countryOfOrigin
+countryOfOrigin.checkYourAnswersLabel = countryOfOrigin
+countryOfOrigin.error.required = Enter countryOfOrigin
+countryOfOrigin.error.length = CountryOfOrigin must be 100 characters or less
+countryOfOrigin.change.hidden = CountryOfOrigin
+
+homePage.title = homePage
+homePage.heading = homePage
