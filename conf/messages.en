@@ -31,8 +31,11 @@ index.title = trader-goods-profiles-frontend
 index.heading = trader-goods-profiles-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-checkYourAnswers.title = Check Your Answers
-checkYourAnswers.heading = Check Your Answers
+checkYourAnswers.title = Check your answers
+checkYourAnswers.h1 = Check your answers
+checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
+checkYourAnswers.warning = Warning
+checkYourAnswers.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -70,7 +73,7 @@ hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
 hasNirms.checkYourAnswersLabel = NIRMS registered
 hasNirms.error.required = Select if you are NIRMS registered
-hasNirms.change.hidden = NIRMS registered
+hasNirms.change.hidden = HasNirms
 
 niphlNumber.title = NIPHL registration number
 niphlNumber.heading = NIPHL registration number
@@ -91,7 +94,7 @@ nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by G
 nirmsNumber.checkYourAnswersLabel = NIRMS number
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
-nirmsNumber.change.hidden = NIRMS number
+nirmsNumber.change.hidden = NirmsNumber
 
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
@@ -121,7 +124,7 @@ ukimsNumber.hint = For example, XI47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.length = UkimsNumber must be 100 characters or less
-ukimsNumber.checkYourAnswersLabel = ukimsNumber
+ukimsNumber.checkYourAnswersLabel = UKIMS Number
 ukimsNumber.change.hidden = UkimsNumber
 
 categoryGuidance.title = categoryGuidance
