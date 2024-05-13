@@ -59,7 +59,7 @@ hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = NIPHL registered
-hasNiphl.error.required = Select yes if hasNiphl
+hasNiphl.error.required = Select if you are NIPHL registered
 hasNiphl.change.hidden = HasNiphl
 
 hasNirms.title = Northern Ireland Retail Movement Scheme number
