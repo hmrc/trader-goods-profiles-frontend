@@ -58,11 +58,15 @@ hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select yes if hasNiphl
 hasNiphl.change.hidden = HasNiphl
 
-hasNirms.title = hasNirms
-hasNirms.heading = hasNirms
-hasNirms.checkYourAnswersLabel = hasNirms
-hasNirms.error.required = Select yes if hasNirms
-hasNirms.change.hidden = HasNirms
+hasNirms.title = Northern Ireland Retail Movement Scheme number
+hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
+hasNirms.h2 = Are you NIRMS registered?
+hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
+hasNirms.p2 = Find out more about
+hasNirms.p2.linkText = which products can be moved under NIRMS
+hasNirms.checkYourAnswersLabel = NIRMS registered
+hasNirms.error.required = Select if you are NIRMS registered
+hasNirms.change.hidden = NIRMS registered
 
 niphlNumber.title = NIPHL registration number
 niphlNumber.heading = NIPHL registration number
@@ -77,12 +81,13 @@ niphlNumber.error.required = Enter niphlNumber
 niphlNumber.error.length = NiphlNumber must be 100 characters or less
 niphlNumber.change.hidden = NiphlNumber
 
-nirmsNumber.title = nirmsNumber
-nirmsNumber.heading = nirmsNumber
-nirmsNumber.checkYourAnswersLabel = nirmsNumber
-nirmsNumber.error.required = Enter nirmsNumber
-nirmsNumber.error.length = NirmsNumber must be 100 characters or less
-nirmsNumber.change.hidden = NirmsNumber
+nirmsNumber.title = Northern Ireland Retail Movement Scheme number
+nirmsNumber.heading = What is your NIRMS number?
+nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
+nirmsNumber.checkYourAnswersLabel = NIRMS number
+nirmsNumber.error.required = Enter your NIRMS number
+nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
+nirmsNumber.change.hidden = NIRMS number
 
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
