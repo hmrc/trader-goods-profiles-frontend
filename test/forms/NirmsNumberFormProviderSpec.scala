@@ -17,37 +17,49 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
-import play.api.data.FormError
+import org.scalacheck.Gen
+import play.api.data.{Form, FormError}
 
 class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
+  private val formProvider       = new NirmsNumberFormProvider()
+  private val form: Form[String] = formProvider()
+  private val requiredKey        = "nirmsNumber.error.required"
+  private val invalidKey         = "nirmsNumber.error.invalidFormat"
 
-  val requiredKey = "nirmsNumber.error.required"
-  val lengthKey = "nirmsNumber.error.length"
-  val maxLength = 100
+  val nirmsNumberGenerator: Gen[String] = {
+    val regionGen = Gen.oneOf("GB", "NI")
+    val digitsGen = Gen.listOfN(6, Gen.numChar).map(_.mkString)
+    val hyphenGen = Gen.oneOf("", "-")
 
-  val form = new NirmsNumberFormProvider()()
+    for {
+      region  <- regionGen
+      digits  <- digitsGen
+      hyphen1 <- hyphenGen
+      hyphen2 <- hyphenGen
+    } yield s"RMS$hyphen1$region$hyphen2$digits"
+  }
 
-  ".value" - {
+  val nonNirmsNumberGenerator: Gen[String] = {
+    val invalidRegionGen = Gen.alphaStr.suchThat(s => s != "GB" && s != "NI" && s.nonEmpty)
+    val invalidDigitsGen = for {
+      length <- Gen.choose(1, 10)
+      digits <- Gen.listOfN(length, Gen.oneOf(Gen.alphaChar, Gen.numChar))
+    } yield digits.mkString
+
+    Gen.oneOf(
+      invalidRegionGen.map(region => s"RMS-$region-123456"),
+      invalidDigitsGen.map(digits => s"RMS-GB-$digits")
+    )
+  }
+
+  ".nirmsNumber" - {
 
     val fieldName = "value"
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+    behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGenerator)
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+    behave like fieldThatErrorsOnInvalidData(form, fieldName, nonNirmsNumberGenerator, FormError(fieldName, invalidKey))
   }
 }

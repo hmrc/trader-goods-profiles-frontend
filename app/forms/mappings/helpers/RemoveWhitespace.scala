@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings.helpers
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import play.api.data.Form
+object RemoveWhitespace {
 
-class NirmsNumberFormProvider @Inject() extends Mappings {
+  def removeWhitespace: String => String = _.filterNot(_.isWhitespace)
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("nirmsNumber.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp("RMS-?(GB|NI)-?[0-9]{6}", "nirmsNumber.error.invalidFormat"))
-    )
 }
