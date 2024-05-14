@@ -105,6 +105,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
       "must redirect to Journey Recovery if no answers are found" in {
 
         val application = applicationBuilder(Some(emptyUserAnswers)).build()
+        val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
         running(application) {
           val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -112,7 +113,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
 
       }
     }
@@ -171,6 +172,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[RouterConnector]
+          val continueUrl = RedirectUrl("/trader-goods-profiles" + routes.ProfileSetupController.onPageLoad().url)
 
           val application =
             applicationBuilder(userAnswers = Some(UserAnswers("")))
@@ -183,7 +185,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
             verify(mockConnector, never()).submitTraderProfile(any())(any())
           }
         }

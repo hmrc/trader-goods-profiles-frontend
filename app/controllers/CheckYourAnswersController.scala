@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.data
 import com.google.inject.Inject
 import connectors.RouterConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
@@ -24,7 +25,8 @@ import models.TraderProfile
 import models.{NormalMode, UserAnswers}
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import queries.Query
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
@@ -49,10 +51,6 @@ class CheckYourAnswersController @Inject()(
 
       val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
 
-      val errors = maybeErrors.map { errors =>
-        errors.toChain.toList.map(_.path).mkString(", ")
-      }.getOrElse("")
-
       maybeModel.map { _ =>
         val list = SummaryListViewModel(
           rows = Seq(
@@ -65,8 +63,7 @@ class CheckYourAnswersController @Inject()(
         )
         Ok(view(list))
       }.getOrElse {
-        logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
-        Redirect(routes.JourneyRecoveryController.onPageLoad())
+        logErrorsAndContinue(maybeErrors)
       }
   }
 
@@ -78,17 +75,23 @@ class CheckYourAnswersController @Inject()(
 
       val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
 
-      val errors = maybeErrors.map { errors =>
-        errors.toChain.toList.map(_.path).mkString(", ")
-      }.getOrElse("")
-
       maybeModel.map { model =>
         routerConnector.submitTraderProfile(model).map { _ =>
           Redirect(routes.HomePageController.onPageLoad())
         }
       }.getOrElse {
-        logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        Future.successful(logErrorsAndContinue(maybeErrors))
       }
+  }
+
+  def listErrors(maybeErrors: Option[data.NonEmptyChain[Query]]): String = maybeErrors.map { errors =>
+    errors.toChain.toList.map(_.path).mkString(", ")
+  }.getOrElse("")
+
+  def logErrorsAndContinue(maybeErrors: Option[data.NonEmptyChain[Query]]): Result = {
+    val errors = listErrors(maybeErrors)
+    val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+    logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

@@ -16,7 +16,9 @@
 
 @this(
     layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+    govukSummaryList: GovukSummaryList,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton
 )
 
 @(list: SummaryList)(implicit request: Request[_], messages: Messages)
@@ -33,4 +35,8 @@
             @messages("checkYourAnswers.warningText")
         </strong>
     </div>
+
+    @formHelper(action = routes.CheckYourAnswersController.onSubmit) {
+        @govukButton(ButtonViewModel(messages("site.continue")))
+    }
 }
