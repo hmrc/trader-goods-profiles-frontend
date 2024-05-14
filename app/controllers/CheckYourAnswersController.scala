@@ -21,12 +21,9 @@ import com.google.inject.Inject
 import connectors.RouterConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.TraderProfile
-import models.{NormalMode, UserAnswers}
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import models.{TraderProfile, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
-import queries.Query
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
@@ -67,9 +64,6 @@ class CheckYourAnswersController @Inject()(
       }
   }
 
-  def incorrectHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).contains(false) && userAnswers.get(NirmsNumberPage).isDefined
-  def incorrectHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).contains(false) && userAnswers.get(NiphlNumberPage).isDefined
-
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
@@ -84,9 +78,9 @@ class CheckYourAnswersController @Inject()(
       }
   }
 
-  def logErrorsAndContinue(maybeErrors: Option[data.NonEmptyChain[Query]]): Result = {
+  def logErrorsAndContinue(maybeErrors: Option[data.NonEmptyChain[ValidationError]]): Result = {
     val errors = maybeErrors.map { errors =>
-      errors.toChain.toList.map(_.path).mkString(", ")
+      errors.toChain.toList.map(_.message).mkString(", ")
     }.getOrElse("")
 
     val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)

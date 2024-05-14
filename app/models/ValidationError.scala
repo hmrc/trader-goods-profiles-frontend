@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+import queries.Query
 
-class CommodityCodeFormProvider @Inject() extends Mappings {
+sealed trait ValidationError {
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("commodityCode.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.commodityCodeFormatRegex, "commodityCode.error.invalidFormat"))
-    )
+  val query: Query
+  val message: String
+}
+
+final case class PageMissing(query: Query) extends ValidationError {
+
+  val message: String = s"Page missing: ${query.path}"
+}
+
+final case class UnexpectedPage(query: Query) extends ValidationError {
+
+  val message: String = s"Unexpected page: ${query.path}"
 }

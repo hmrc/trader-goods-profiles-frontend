@@ -17,37 +17,46 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
-import play.api.data.FormError
+import org.scalacheck.Gen
+import play.api.data.{Form, FormError}
 
 class CommodityCodeFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "commodityCode.error.required"
-  val lengthKey = "commodityCode.error.length"
-  val maxLength = 100
+  private val requiredKey        = "commodityCode.error.required"
+  private val invalidKey         = "commodityCode.error.invalidFormat"
 
-  val form = new CommodityCodeFormProvider()()
+  private val formProvider       = new CommodityCodeFormProvider()
+  private val form: Form[String] = formProvider()
 
-  ".value" - {
+  private val fieldName          = "value"
 
-    val fieldName = "value"
+  val validCommodityCodeGenerator: Gen[String] = {
+    val validLengthsGen = Gen.oneOf(6, 8, 10)
+    validLengthsGen.flatMap(length => Gen.listOfN(length, Gen.numChar).map(_.mkString))
+  }
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
+  val invalidCommodityCodeGenerator: Gen[String] = {
+    val invalidLengthGen = Gen.choose(1, 12).suchThat(len => len != 6 && len != 8 && len != 10)
+    val invalidCharsGen  = Gen.alphaNumStr.suchThat(_.exists(!_.isDigit))
+
+    Gen.oneOf(
+      invalidLengthGen.flatMap(length => Gen.listOfN(length, Gen.numChar).map(_.mkString)),
+      Gen.oneOf(6, 8, 10).flatMap(length => Gen.listOfN(length, invalidCharsGen).map(_.mkString)),
+      invalidLengthGen.flatMap(length => Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString))
     )
+  }
 
-    behave like fieldWithMaxLength(
+  ".commodityCode" - {
+
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
+
+    behave like fieldThatBindsValidData(form, fieldName, validCommodityCodeGenerator)
+
+    behave like fieldThatErrorsOnInvalidData(
       form,
       fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      invalidCommodityCodeGenerator,
+      FormError(fieldName, invalidKey)
     )
   }
 }
