@@ -40,7 +40,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
     "for a GET" - {
 
-      "must return OK and the correct view with valid non-optional data" in {
+      "must return OK and the correct view with valid mandatory data" in {
 
         val userAnswers = UserAnswers(userAnswersId)
           .set(UkimsNumberPage, "1").success.value
