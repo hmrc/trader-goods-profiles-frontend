@@ -18,15 +18,17 @@ package controllers
 
 import base.SpecBase
 import connectors.RouterConnector
-import models.{TraderProfile, UserAnswers}
+import models.{NormalMode, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlPage, HasNirmsPage, UkimsNumberPage}
+import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.test.FakeRequest
 import play.api.inject.bind
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -38,9 +40,14 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
     "for a GET" - {
 
-      "must return OK and the correct view" in {
+      "must return OK and the correct view with valid non-optional data" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1").success.value
+          .set(HasNirmsPage, false).success.value
+          .set(HasNiphlPage, false).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -48,16 +55,56 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CheckYourAnswersView]
-          val list = SummaryListViewModel(Seq.empty)
+          val list = SummaryListViewModel(
+            rows = Seq(
+              UkimsNumberSummary.row(userAnswers)(messages(application)),
+              HasNirmsSummary.row(userAnswers)(messages(application)),
+              NirmsNumberSummary.row(userAnswers)(messages(application)),
+              HasNiphlSummary.row(userAnswers)(messages(application)),
+              NiphlNumberSummary.row(userAnswers)(messages(application))
+            ).flatten
+          )
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
         }
       }
 
-      "must redirect to Journey Recovery if no existing data is found" in {
+      "must return OK and the correct view with all data (including optional)" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1").success.value
+          .set(HasNirmsPage, true).success.value
+          .set(NirmsNumberPage, "2").success.value
+          .set(HasNiphlPage, true).success.value
+          .set(NiphlNumberPage, "3").success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CheckYourAnswersView]
+          val list = SummaryListViewModel(
+            rows = Seq(
+              UkimsNumberSummary.row(userAnswers)(messages(application)),
+              HasNirmsSummary.row(userAnswers)(messages(application)),
+              NirmsNumberSummary.row(userAnswers)(messages(application)),
+              HasNiphlSummary.row(userAnswers)(messages(application)),
+              NiphlNumberSummary.row(userAnswers)(messages(application))
+            ).flatten
+          )
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Journey Recovery if no answers are found" in {
+
+        val application = applicationBuilder(Some(emptyUserAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -66,9 +113,24 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
+
       }
     }
+
+    "must redirect to Journey Recovery if no existing data is found" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+  }
 
     "for a POST" - {
 

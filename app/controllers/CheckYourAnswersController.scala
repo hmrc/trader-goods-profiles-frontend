@@ -21,12 +21,10 @@ import connectors.RouterConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.TraderProfile
-import models.{CheckMode, NormalMode, UserAnswers}
-import models.requests.DataRequest
+import models.{NormalMode, UserAnswers}
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
@@ -46,42 +44,34 @@ class CheckYourAnswersController @Inject()(
                                           )(implicit ec: ExecutionContext)
   extends FrontendBaseController with I18nSupport with Logging {
 
-  private val continueUrl = RedirectUrl(routes.UkimsNumberController.onPageLoad(NormalMode).url)
-  private val missingAnswersRedirect = Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  private val incorrectAnswersRedirect = Redirect(routes.JourneyRecoveryController.onPageLoad())
-
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers match {
-        case x if missingUkimsNumber(x)
-          || missingHasNirms(x)
-          || missingNirmsNumber(x)
-          || missingHasNiphl(x)
-          || missingNiphlNumber(x)
-        => missingAnswersRedirect
-        case x if incorrectHasNirms(x) || incorrectHasNiphl(x) => incorrectAnswersRedirect
-        case _ =>
-          val list = SummaryListViewModel(
-            rows = Seq(
-              UkimsNumberSummary.row(request.userAnswers),
-              HasNirmsSummary.row(request.userAnswers),
-              NirmsNumberSummary.row(request.userAnswers),
-              HasNiphlSummary.row(request.userAnswers),
-              NiphlNumberSummary.row(request.userAnswers)
-            ).flatten
-          )
-          Ok(view(list))
+
+      val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
+
+      val errors = maybeErrors.map { errors =>
+        errors.toChain.toList.map(_.path).mkString(", ")
+      }.getOrElse("")
+
+      maybeModel.map { _ =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            UkimsNumberSummary.row(request.userAnswers),
+            HasNirmsSummary.row(request.userAnswers),
+            NirmsNumberSummary.row(request.userAnswers),
+            HasNiphlSummary.row(request.userAnswers),
+            NiphlNumberSummary.row(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list))
+      }.getOrElse {
+        logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
+        Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
   }
 
-
-  def missingUkimsNumber(userAnswers: UserAnswers): Boolean = userAnswers.get(UkimsNumberPage).isEmpty
-  def missingHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).isEmpty
-  def missingNirmsNumber(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).contains(true) && userAnswers.get(NirmsNumberPage).isEmpty
-  def missingHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).isEmpty
-  def missingNiphlNumber(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).contains(true) && userAnswers.get(NiphlNumberPage).isEmpty
-  def incorrectHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).isEmpty && userAnswers.get(NirmsNumberPage).isDefined
-  def incorrectHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).isEmpty && userAnswers.get(NiphlNumberPage).isDefined
+  def incorrectHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).contains(false)  && userAnswers.get(NirmsNumberPage).isDefined
+  def incorrectHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).contains(false)  && userAnswers.get(NiphlNumberPage).isDefined
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
