@@ -25,8 +25,8 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNiphlPage, HasNirmsPage, UkimsNumberPage}
-import play.api.test.FakeRequest
 import play.api.inject.bind
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
@@ -127,6 +127,32 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           }
         }
       }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers =
+          emptyUserAnswers
+            .set(UkimsNumberPage, "1").success.value
+            .set(HasNirmsPage, false).success.value
+            .set(HasNiphlPage, false).success.value
+
+        val mockConnector = mock[RouterConnector]
+        when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[RouterConnector].toInstance(mockConnector))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
 
       "must redirect to Journey Recovery if no existing data is found" in {
 
