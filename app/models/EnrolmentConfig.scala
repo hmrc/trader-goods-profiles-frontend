@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-package models.requests
+package models
 
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.{ConfigLoader, Configuration}
 
-case class IdentifierRequest[A] (request: Request[A], userId: String, eori: String) extends WrappedRequest[A](request)
+case class EnrolmentConfig(key: String, identifier: String)
+
+object EnrolmentConfig {
+
+  implicit lazy val configLoader: ConfigLoader[EnrolmentConfig] = ConfigLoader { config => prefix =>
+    val enrolmentConfig = Configuration(config).get[Configuration](prefix)
+    val key             = enrolmentConfig.get[String]("enrolment-key")
+    val id              = enrolmentConfig.get[String]("enrolment-identifier")
+
+    EnrolmentConfig(key, id)
+  }
+}
