@@ -45,10 +45,8 @@ class CheckYourAnswersController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
-
-      maybeModel.map { _ =>
+      TraderProfile.build(request.userAnswers) match {
+        case Right(_) =>
         val list = SummaryListViewModel(
           rows = Seq(
             UkimsNumberSummary.row(request.userAnswers),
@@ -59,33 +57,28 @@ class CheckYourAnswersController @Inject()(
           ).flatten
         )
         Ok(view(list))
-      }.getOrElse {
-        logErrorsAndContinue(maybeErrors)
+        case Left(errors) => logErrorsAndContinue(errors)
       }
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
-
-      maybeModel.map { model =>
+      TraderProfile.build(request.userAnswers) match {
+        case Right(model) =>
         routerConnector.submitTraderProfile(model).map { _ =>
           Redirect(routes.HomePageController.onPageLoad())
         }
-      }.getOrElse {
-        Future.successful(logErrorsAndContinue(maybeErrors))
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }
   }
 
-  def logErrorsAndContinue(maybeErrors: Option[data.NonEmptyChain[ValidationError]]): Result = {
-    val errors = maybeErrors.map { errors =>
-      errors.toChain.toList.map(_.message).mkString(", ")
-    }.getOrElse("")
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
-    logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
+    logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

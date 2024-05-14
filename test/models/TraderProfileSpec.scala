@@ -16,10 +16,12 @@
 
 package models
 
+import org.scalatest.Inside.inside
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import pages._
+
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -37,10 +39,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlPage, true).success.value
             .set(NiphlNumberPage, "3").success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val result = TraderProfile.build(answers)
 
-        data.value mustEqual TraderProfile("1", Some("2"), Some("3"))
-        errors must not be defined
+        result mustEqual Right(TraderProfile("1", Some("2"), Some("3")))
       }
 
       "and all optional data is missing" in {
@@ -51,10 +52,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, false).success.value
             .set(HasNiphlPage, false).success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val result = TraderProfile.build(answers)
 
-        data.value mustEqual TraderProfile("1", None, None)
-        errors must not be defined
+        result mustEqual Right(TraderProfile("1", None, None))
       }
     }
 
@@ -64,14 +64,15 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers = UserAnswers("id")
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val result = TraderProfile.build(answers)
 
-        data must not be defined
-        errors.value.toChain.toList must contain theSameElementsAs Seq(
-          PageMissing(UkimsNumberPage),
-          PageMissing(HasNirmsPage),
-          PageMissing(HasNiphlPage)
-        )
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(UkimsNumberPage),
+            PageMissing(HasNirmsPage),
+            PageMissing(HasNiphlPage)
+          )
+        }
       }
 
       "when the user said they have a Nirms number but it is missing" in {
@@ -82,10 +83,11 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, true).success.value
             .set(HasNiphlPage, false).success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val result = TraderProfile.build(answers)
 
-        data must not be defined
-        errors.value.toChain.toList must contain only PageMissing(NirmsNumberPage)
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NirmsNumberPage)
+        }
       }
 
       "when the user said they have a Niphl number but it is missing" in {
@@ -96,10 +98,11 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, false).success.value
             .set(HasNiphlPage, true).success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val result = TraderProfile.build(answers)
 
-        data must not be defined
-        errors.value.toChain.toList must contain only PageMissing(NiphlNumberPage)
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NiphlNumberPage)
+        }
       }
 
       "when the user said they don't have optional data but it is present" in {
@@ -112,13 +115,14 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlPage, false).success.value
             .set(NiphlNumberPage, "3").success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val result = TraderProfile.build(answers)
 
-        data must not be defined
-        errors.value.toChain.toList must contain theSameElementsAs Seq(
-          UnexpectedPage(NirmsNumberPage),
-          UnexpectedPage(NiphlNumberPage)
-        )
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(NirmsNumberPage),
+            UnexpectedPage(NiphlNumberPage)
+          )
+        }
       }
     }
   }

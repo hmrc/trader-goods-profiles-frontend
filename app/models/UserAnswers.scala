@@ -16,7 +16,7 @@
 
 package models
 
-import cats.data.{IorNec, NonEmptyChain}
+import cats.data.{EitherNec, IorNec, NonEmptyChain}
 import cats.implicits._
 import play.api.libs.json._
 import queries.{Gettable, Query, Settable}
@@ -34,8 +34,8 @@ final case class UserAnswers(
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
 
-  def getIor[A](page: Gettable[A])(implicit rds: Reads[A]): IorNec[ValidationError, A] =
-    get(page).toRightIor(NonEmptyChain.one(PageMissing(page)))
+  def getEither[A](page: Gettable[A])(implicit rds: Reads[A]): EitherNec[ValidationError, A] =
+    get(page).map(Right(_)).getOrElse(Left(NonEmptyChain.one(PageMissing(page))))
 
   def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
 

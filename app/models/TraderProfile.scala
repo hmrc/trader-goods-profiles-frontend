@@ -16,7 +16,7 @@
 
 package models
 
-import cats.data.{Ior, IorNec, NonEmptyChain}
+import cats.data.{EitherNec, Ior, IorNec, NonEmptyChain}
 import cats.implicits._
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.libs.json.{Json, OFormat}
@@ -31,26 +31,24 @@ object TraderProfile {
 
   implicit lazy val format: OFormat[TraderProfile] = Json.format
 
-  def build(answers: UserAnswers): IorNec[ValidationError, TraderProfile] =
+  def build(answers: UserAnswers): EitherNec[ValidationError, TraderProfile] =
     (
-      answers.getIor(UkimsNumberPage),
+      answers.getEither(UkimsNumberPage),
       getNirms(answers),
       getNiphl(answers)
     ).parMapN(TraderProfile.apply)
 
-  private def getNirms(answers: UserAnswers): IorNec[ValidationError, Option[String]] =
-    answers.getIor(HasNirmsPage).flatMap {
-      case true  =>
-        answers.getIor(NirmsNumberPage).map(Some(_))
-      case false =>
-        if (answers.isDefined(NirmsNumberPage)) Ior.Left(NonEmptyChain.one(UnexpectedPage(NirmsNumberPage))) else Ior.Right(None)
+  private def getNirms(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
+    answers.getEither(HasNirmsPage) match {
+      case Right(true) => answers.getEither(NirmsNumberPage).map(Some(_))
+      case Right(false) => if(answers.isDefined(NirmsNumberPage)) Left(NonEmptyChain.one(UnexpectedPage(NirmsNumberPage))) else Right(None)
+      case Left(errors) => Left(errors)
     }
 
-  private def getNiphl(answers: UserAnswers): IorNec[ValidationError, Option[String]] =
-    answers.getIor(HasNiphlPage).flatMap {
-      case true  =>
-        answers.getIor(NiphlNumberPage).map(Some(_))
-      case false =>
-        if (answers.isDefined(NiphlNumberPage)) Ior.Left(NonEmptyChain.one(UnexpectedPage(NiphlNumberPage))) else Ior.Right(None)
+  private def getNiphl(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
+    answers.getEither(HasNiphlPage) match {
+      case Right(true)  => answers.getEither(NiphlNumberPage).map(Some(_))
+      case Right(false)  => if (answers.isDefined(NiphlNumberPage)) Left(NonEmptyChain.one(UnexpectedPage(NiphlNumberPage))) else Right(None)
+      case Left(errors) =>  Left(errors)
     }
 }
