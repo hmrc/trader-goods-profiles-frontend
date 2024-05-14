@@ -57,9 +57,9 @@ POST        /commodity-code                               controllers.CommodityC
 GET         /commodity-code/check                         controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
 POST        /commodity-code/check                         controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
 
-GET         /countryOfOrigin                             controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
-POST        /countryOfOrigin                             controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
-GET         /changeCountryOfOrigin                       controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeCountryOfOrigin                       controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
+GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
+POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
+GET         /country-of-origin/check                     controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
+POST        /country-of-origin/check                     controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
 
 GET         /homePage                                    controllers.HomePageController.onPageLoad()
