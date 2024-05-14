@@ -67,8 +67,8 @@ class CheckYourAnswersController @Inject()(
       }
   }
 
-  def incorrectHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).contains(false)  && userAnswers.get(NirmsNumberPage).isDefined
-  def incorrectHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).contains(false)  && userAnswers.get(NiphlNumberPage).isDefined
+  def incorrectHasNirms(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNirmsPage).contains(false) && userAnswers.get(NirmsNumberPage).isDefined
+  def incorrectHasNiphl(userAnswers: UserAnswers): Boolean = userAnswers.get(HasNiphlPage).contains(false) && userAnswers.get(NiphlNumberPage).isDefined
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
@@ -84,13 +84,13 @@ class CheckYourAnswersController @Inject()(
       }
   }
 
-  def listErrors(maybeErrors: Option[data.NonEmptyChain[Query]]): String = maybeErrors.map { errors =>
-    errors.toChain.toList.map(_.path).mkString(", ")
-  }.getOrElse("")
-
   def logErrorsAndContinue(maybeErrors: Option[data.NonEmptyChain[Query]]): Result = {
-    val errors = listErrors(maybeErrors)
+    val errors = maybeErrors.map { errors =>
+      errors.toChain.toList.map(_.path).mkString(", ")
+    }.getOrElse("")
+
     val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+
     logger.warn(s"Unable to create Trader profile.  Missing pages: $errors")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
