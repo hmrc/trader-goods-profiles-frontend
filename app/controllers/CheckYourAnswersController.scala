@@ -60,14 +60,14 @@ class CheckYourAnswersController @Inject()(
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
+      val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers, request.eori).pad
 
       val errors = maybeErrors.map { errors =>
         errors.toChain.toList.map(_.path).mkString(", ")
       }.getOrElse("")
 
       maybeModel.map { model =>
-        routerConnector.submitTraderProfile(model).map { _ =>
+        routerConnector.submitTraderProfile(model, request.eori).map { _ =>
           Redirect(routes.HomePageController.onPageLoad())
         }
       }.getOrElse {

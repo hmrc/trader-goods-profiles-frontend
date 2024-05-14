@@ -144,5 +144,13 @@ countryOfOrigin.error.required = Enter countryOfOrigin
 countryOfOrigin.error.length = CountryOfOrigin must be 100 characters or less
 countryOfOrigin.change.hidden = CountryOfOrigin
 
-homePage.title = homePage
-homePage.heading = homePage
+homepage.title = Homepage
+homepage.h1 = Trader Goods Profile homepage
+homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
+homepage.h2.1 = Goods records
+homepage.p2.linkText = View or update your goods records
+homepage.p3.linkText = Create a new goods record
+homepage.h2.2 = Ask for advice
+homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
+homepage.h2.3 = Manage your profile
+homepage.p5.linkText = Manage your profile details

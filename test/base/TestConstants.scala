@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package logging
+package base
 
-import org.slf4j.{Logger, LoggerFactory}
+object TestConstants {
+  val testEori: String = "eori"
 
-trait Logging {
-
-  protected val logger: Logger =
-    LoggerFactory.getLogger("application." + getClass.getCanonicalName)
 }

@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
 import connectors.RouterConnector
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
@@ -83,7 +84,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
               .set(HasNiphlPage, false).success.value
 
           val mockConnector = mock[RouterConnector]
-          when(mockConnector.submitTraderProfile(any())(any())).thenReturn(Future.successful(Done))
+          when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -95,11 +96,11 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
             val result = route(application, request).value
 
-            val expectedPayload = TraderProfile("1", None, None)
+            val expectedPayload = TraderProfile(testEori, "1", None, None)
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
-            verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload))(any())
+            verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
           }
         }
       }
@@ -122,7 +123,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-            verify(mockConnector, never()).submitTraderProfile(any())(any())
+            verify(mockConnector, never()).submitTraderProfile(any(), any())(any())
           }
         }
       }

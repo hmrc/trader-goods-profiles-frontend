@@ -87,11 +87,19 @@ trait Generators extends ModelGenerators {
   def nonEmptyString: Gen[String] =
     arbitrary[String] suchThat (_.nonEmpty)
 
+  def nonEmptyChar: Gen[Char] =
+    arbitrary[Char] suchThat (!_.isWhitespace)
+
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
       chars <- listOfN(length, arbitrary[Char])
     } yield chars.mkString
+
+  def stringsWithMaxLengthNonEmpty(maxLength: Int): Gen[String] =
+    for {
+      maxLength <- stringsWithMaxLength(maxLength).suchThat(!_.isBlank)
+    } yield maxLength
 
   def stringsLongerThan(minLength: Int): Gen[String] = for {
     maxLength <- (minLength * 2).max(100)

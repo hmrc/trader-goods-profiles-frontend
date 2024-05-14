@@ -16,6 +16,7 @@
 
 package models
 
+import base.TestConstants.testEori
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -37,9 +38,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlPage, true).success.value
             .set(NiphlNumberPage, "3").success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val (errors, data) = TraderProfile.build(answers, testEori).pad
 
-        data.value mustEqual TraderProfile("1", Some("2"), Some("3"))
+        data.value mustEqual TraderProfile(testEori, "1", Some("2"), Some("3"))
         errors must not be defined
       }
 
@@ -51,9 +52,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, false).success.value
             .set(HasNiphlPage, false).success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val (errors, data) = TraderProfile.build(answers, testEori).pad
 
-        data.value mustEqual TraderProfile("1", None, None)
+        data.value mustEqual TraderProfile(testEori, "1", None, None)
         errors must not be defined
       }
     }
@@ -64,7 +65,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers = UserAnswers("id")
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val (errors, data) = TraderProfile.build(answers, testEori).pad
 
         data must not be defined
         errors.value.toChain.toList must contain theSameElementsAs Seq(
@@ -82,7 +83,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, true).success.value
             .set(HasNiphlPage, false).success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val (errors, data) = TraderProfile.build(answers, testEori).pad
 
         data must not be defined
         errors.value.toChain.toList must contain only NirmsNumberPage
@@ -96,7 +97,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, false).success.value
             .set(HasNiphlPage, true).success.value
 
-        val (errors, data) = TraderProfile.build(answers).pad
+        val (errors, data) = TraderProfile.build(answers, testEori).pad
 
         data must not be defined
         errors.value.toChain.toList must contain only NiphlNumberPage

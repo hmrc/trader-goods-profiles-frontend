@@ -16,6 +16,8 @@
 
 package controllers.actions
 
+import base.TestConstants.testEori
+
 import javax.inject.Inject
 import models.requests.IdentifierRequest
 import play.api.mvc._
@@ -25,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FakeIdentifierAction @Inject()(bodyParsers: PlayBodyParsers) extends IdentifierAction {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] =
-    block(IdentifierRequest(request, "id", "eori"))
+    block(IdentifierRequest(request, "id", testEori))
 
   override def parser: BodyParser[AnyContent] =
     bodyParsers.default

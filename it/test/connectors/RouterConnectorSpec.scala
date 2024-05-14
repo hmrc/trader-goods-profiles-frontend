@@ -16,6 +16,7 @@
 
 package connectors
 
+import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.TraderProfile
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -47,20 +48,20 @@ class RouterConnectorSpec
 
     "must submit a trader profile" in {
 
-      val traderProfile = TraderProfile("1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        put(urlEqualTo("/trader-goods-profiles-router/customs/traders/good-profiles"))
+        put(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/good-profiles/$testEori"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(ok())
       )
 
-      connector.submitTraderProfile(traderProfile).futureValue
+      connector.submitTraderProfile(traderProfile, testEori).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
 
-      val traderProfile = TraderProfile("1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori,"1", Some("2"), None)
 
       wireMockServer.stubFor(
         put(urlEqualTo("/trader-goods-profiles-router/customs/traders/good-profiles"))
@@ -68,7 +69,7 @@ class RouterConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.submitTraderProfile(traderProfile).failed.futureValue
+      connector.submitTraderProfile(traderProfile, testEori).failed.futureValue
     }
   }
 }

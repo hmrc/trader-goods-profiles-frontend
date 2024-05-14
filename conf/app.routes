@@ -61,4 +61,4 @@ POST        /countryOfOrigin                             controllers.CountryOfOr
 GET         /changeCountryOfOrigin                       controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
 POST        /changeCountryOfOrigin                       controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
 
-GET         /homePage                                    controllers.HomePageController.onPageLoad()
+GET         /homepage                                    controllers.HomePageController.onPageLoad()

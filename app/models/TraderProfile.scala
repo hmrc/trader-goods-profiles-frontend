@@ -23,6 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 import queries.Query
 
 final case class TraderProfile(
+                                actorId: String,
                                 ukimsNumber: String,
                                 nirmsNumber: Option[String],
                                 niphlNumber: Option[String]
@@ -32,8 +33,9 @@ object TraderProfile {
 
   implicit lazy val format: OFormat[TraderProfile] = Json.format
 
-  def build(answers: UserAnswers): IorNec[Query, TraderProfile] =
+  def build(answers: UserAnswers, eori: String): IorNec[Query, TraderProfile] =
     (
+      Ior.Right(eori),
       answers.getIor(UkimsNumberPage),
       getNirms(answers),
       getNiphl(answers)
