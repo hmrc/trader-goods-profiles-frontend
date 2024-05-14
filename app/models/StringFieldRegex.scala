@@ -18,5 +18,5 @@ package models
 
 object StringFieldRegex {
   val ukimsNumberRegex: String = "^(GB|XI)UKIM[0-9]{12}[0-9]{14}$"
-
+  val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
 }
