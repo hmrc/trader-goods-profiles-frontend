@@ -16,7 +16,8 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -24,4 +25,15 @@
 @layout(pageTitle = titleNoForm(messages("categoryGuidance.title"))) {
 
     <h1 class="govuk-heading-xl">@messages("categoryGuidance.heading")</h1>
+    <p class="govuk-body">@messages("categoryGuidance.p1")</p>
+    <p class="govuk-body">@messages("categoryGuidance.p2")</p>
+    <p class="govuk-body">@messages("categoryGuidance.p3")</p>
+    <p class="govuk-body">@messages("categoryGuidance.p4")</p>
+    <p class="govuk-body">@messages("categoryGuidance.p5")</p>
+
+    @formHelper(action = CategoryGuidanceController.onSubmit) {
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }

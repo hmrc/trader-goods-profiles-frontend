@@ -36,4 +36,9 @@ class CategoryGuidanceController @Inject()(
     implicit request =>
       Ok(view())
   }
+
+  // TODO replace index route
+  def onSubmit: Action[AnyContent]   = (identify andThen getData) { implicit request =>
+    Redirect(routes.IndexController.onPageLoad.url)
+  }
 }
