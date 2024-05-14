@@ -95,7 +95,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", "XI47699357400020231115081800"))
+            .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
 
         val result = route(application, request).value
 

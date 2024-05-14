@@ -41,7 +41,7 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
           prefix      <- prefixGen
           firstDigits <- firstDigitsGen
           lastDigits  <- lastDigitsGen
-        } yield s"$prefix$firstDigits$lastDigits"
+        } yield s"$prefix UKIM$firstDigits$lastDigits"
       }
 
       behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
@@ -61,7 +61,7 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
           prefix      <- prefixGen
           firstDigits <- firstDigitsGen
           lastDigits  <- lastDigitsGen
-        } yield s"$prefix $firstDigits $lastDigits"
+        } yield s"$prefix UKIM $firstDigits $lastDigits"
       }
 
       behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
@@ -84,7 +84,7 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
             prefix      <- prefixGen
             firstDigits <- firstDigitsGen
             lastDigits  <- lastDigitsGen
-          } yield s"$prefix$firstDigits$lastDigits"
+          } yield s"$prefix UKIM$firstDigits$lastDigits"
         }
 
         behave like fieldThatErrorsOnInvalidData(
@@ -106,7 +106,7 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
             prefix      <- prefixGen
             firstDigits <- firstDigitsGen
             lastDigits  <- lastDigitsGen
-          } yield s"$prefix$firstDigits$lastDigits"
+          } yield s"$prefix UKIM$firstDigits$lastDigits"
         }
 
         behave like fieldThatErrorsOnInvalidData(
@@ -129,7 +129,7 @@ class UkimsNumberFormProviderSpec extends StringFieldBehaviours {
             prefix      <- prefixGen
             firstDigits <- firstDigitsGen
             lastDigits  <- lastDigitsGen
-          } yield s"$prefix$firstDigits$lastDigits"
+          } yield s"$prefix UKIM$firstDigits$lastDigits"
         }
 
         behave like fieldThatErrorsOnInvalidData(
