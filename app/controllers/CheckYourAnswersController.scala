@@ -63,7 +63,7 @@ class CheckYourAnswersController @Inject()(
       val (maybeErrors, maybeModel) = TraderProfile.build(request.userAnswers).pad
 
       val errors = maybeErrors.map { errors =>
-        errors.toChain.toList.map(_.path).mkString(", ")
+        errors.toChain.toList.map(_.message).mkString(", ")
       }.getOrElse("")
 
       maybeModel.map { model =>

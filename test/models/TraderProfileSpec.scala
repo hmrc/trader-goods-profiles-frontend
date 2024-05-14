@@ -68,9 +68,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         data must not be defined
         errors.value.toChain.toList must contain theSameElementsAs Seq(
-          UkimsNumberPage,
-          HasNirmsPage,
-          HasNiphlPage
+          PageMissing(UkimsNumberPage),
+          PageMissing(HasNirmsPage),
+          PageMissing(HasNiphlPage)
         )
       }
 
@@ -85,7 +85,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         val (errors, data) = TraderProfile.build(answers).pad
 
         data must not be defined
-        errors.value.toChain.toList must contain only NirmsNumberPage
+        errors.value.toChain.toList must contain only PageMissing(NirmsNumberPage)
       }
 
       "when the user said they have a Niphl number but it is missing" in {
@@ -99,7 +99,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         val (errors, data) = TraderProfile.build(answers).pad
 
         data must not be defined
-        errors.value.toChain.toList must contain only NiphlNumberPage
+        errors.value.toChain.toList must contain only PageMissing(NiphlNumberPage)
       }
     }
   }
