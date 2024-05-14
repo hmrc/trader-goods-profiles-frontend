@@ -101,6 +101,25 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         data must not be defined
         errors.value.toChain.toList must contain only PageMissing(NiphlNumberPage)
       }
+
+      "when the user said they don't have optional data but it is present" in {
+
+        val answers =
+          UserAnswers("id")
+            .set(UkimsNumberPage, "1").success.value
+            .set(HasNirmsPage, false).success.value
+            .set(NirmsNumberPage, "2").success.value
+            .set(HasNiphlPage, false).success.value
+            .set(NiphlNumberPage, "3").success.value
+
+        val (errors, data) = TraderProfile.build(answers).pad
+
+        data must not be defined
+        errors.value.toChain.toList must contain theSameElementsAs Seq(
+          UnexpectedPage(NirmsNumberPage),
+          UnexpectedPage(NiphlNumberPage)
+        )
+      }
     }
   }
 }

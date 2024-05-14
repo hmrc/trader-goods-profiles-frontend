@@ -16,7 +16,7 @@
 
 package models
 
-import cats.data.{Ior, IorNec}
+import cats.data.{Ior, IorNec, NonEmptyChain}
 import cats.implicits._
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.libs.json.{Json, OFormat}
@@ -40,13 +40,17 @@ object TraderProfile {
 
   private def getNirms(answers: UserAnswers): IorNec[ValidationError, Option[String]] =
     answers.getIor(HasNirmsPage).flatMap {
-      case true  => answers.getIor(NirmsNumberPage).map(Some(_))
-      case false => Ior.Right(None)
+      case true  =>
+        answers.getIor(NirmsNumberPage).map(Some(_))
+      case false =>
+        if (answers.isDefined(NirmsNumberPage)) Ior.Left(NonEmptyChain.one(UnexpectedPage(NirmsNumberPage))) else Ior.Right(None)
     }
 
   private def getNiphl(answers: UserAnswers): IorNec[ValidationError, Option[String]] =
     answers.getIor(HasNiphlPage).flatMap {
-      case true  => answers.getIor(NiphlNumberPage).map(Some(_))
-      case false => Ior.Right(None)
+      case true  =>
+        answers.getIor(NiphlNumberPage).map(Some(_))
+      case false =>
+        if (answers.isDefined(NiphlNumberPage)) Ior.Left(NonEmptyChain.one(UnexpectedPage(NiphlNumberPage))) else Ior.Right(None)
     }
 }
