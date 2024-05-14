@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.RouterConnector
-import models.{NormalMode, TraderProfile, UserAnswers}
+import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -172,7 +172,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[RouterConnector]
-          val continueUrl = RedirectUrl("/trader-goods-profiles" + routes.ProfileSetupController.onPageLoad().url)
+          val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
           val application =
             applicationBuilder(userAnswers = Some(UserAnswers("")))
