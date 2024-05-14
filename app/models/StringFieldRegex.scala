@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package forms.mappings.helpers
+package models
 
-object RemoveWhitespace {
-
-  def removeWhitespace: String => String = _.filterNot(_.isWhitespace)
+object StringFieldRegex {
+  val ukimsNumberRegex: String = "^(GB|XI)[0-9]{12}[0-9]{14}$"
 
 }

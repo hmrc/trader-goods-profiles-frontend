@@ -84,8 +84,8 @@ niphlNumber.li3 = start with 2 letters, then 5 numbers
 niphlNumber.h2 = What is your NIPHL registration number?
 niphlNumber.hint = For example, 612345, S12345 or SN12345
 niphlNumber.checkYourAnswersLabel = NIPHL number
-niphlNumber.error.required = Enter niphlNumber
-niphlNumber.error.length = NiphlNumber must be 100 characters or less
+niphlNumber.error.required = Enter your NIPHL registration number
+niphlNumber.error.invalidFormat = Enter your NIPHL registration number in the correct format
 niphlNumber.change.hidden = NIPHL number
 
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
@@ -123,7 +123,7 @@ ukimsNumber.heading = What is your UKIMS number?
 ukimsNumber.hint = For example, XI47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
-ukimsNumber.error.length = UkimsNumber must be 100 characters or less
+ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
 ukimsNumber.checkYourAnswersLabel = UKIMS Number
 ukimsNumber.change.hidden = UKIMS Number
 

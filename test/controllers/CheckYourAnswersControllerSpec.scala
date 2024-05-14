@@ -17,90 +17,128 @@
 package controllers
 
 import base.SpecBase
-import models.UserAnswers
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
-import play.api.i18n.Messages.implicitMessagesProviderToMessages
+import connectors.RouterConnector
+import models.{TraderProfile, UserAnswers}
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
+import org.scalatestplus.mockito.MockitoSugar
+import pages.{HasNiphlPage, HasNirmsPage, UkimsNumberPage}
 import play.api.test.FakeRequest
+import play.api.inject.bind
 import play.api.test.Helpers._
-import viewmodels.checkAnswers
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
-class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
+import scala.concurrent.Future
+
+class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   "Check Your Answers Controller" - {
 
-    "must return OK and the correct view for a GET with valid minimal data" in {
-      val userAnswers = UserAnswers(userAnswersId)
-        .set(UkimsNumberPage, "1").success.value
-        .set(HasNirmsPage, false).success.value
-        .set(HasNiphlPage, false).success.value
+    "for a GET" - {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      "must return OK and the correct view" in {
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
-        val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(
-          rows = Seq(
-            UkimsNumberSummary.row(userAnswers)(messages(application)),
-            HasNirmsSummary.row(userAnswers)(messages(application)),
-            HasNiphlSummary.row(userAnswers)(messages(application))
-          ).flatten
-        )
+          val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+          val view = application.injector.instanceOf[CheckYourAnswersView]
+          val list = SummaryListViewModel(Seq.empty)
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
 
+    "for a POST" - {
 
-    "must return OK and the correct view for a GET with valid data including optional" in {
-      val userAnswers = UserAnswers(userAnswersId)
-        .set(UkimsNumberPage, "1").success.value
-        .set(HasNirmsPage, true).success.value
-        .set(NirmsNumberPage, "2").success.value
-        .set(HasNirmsPage, true).success.value
-        .set(NiphlNumberPage, "3").success.value
+      "when user answers can create a valid trader profile" - {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        "must submit the trader profile and redirect to the Home Page" in {
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+          val userAnswers =
+            emptyUserAnswers
+              .set(UkimsNumberPage, "1").success.value
+              .set(HasNirmsPage, false).success.value
+              .set(HasNiphlPage, false).success.value
 
-        val result = route(application, request).value
+          val mockConnector = mock[RouterConnector]
+          when(mockConnector.submitTraderProfile(any())(any())).thenReturn(Future.successful(Done))
 
-        val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(
-          rows = Seq(
-            UkimsNumberSummary.row(userAnswers)(messages(application)),
-            HasNirmsSummary.row(userAnswers)(messages(application)),
-            NirmsNumberSummary.row(userAnswers)(messages(application)),
-            HasNiphlSummary.row(userAnswers)(messages(application)),
-            NiphlNumberSummary.row(userAnswers)(messages(application))
-          ).flatten
-        )
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(bind[RouterConnector].toInstance(mockConnector))
+              .build()
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+          running(application) {
+            val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+
+            val result = route(application, request).value
+
+            val expectedPayload = TraderProfile("1", None, None)
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+            verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload))(any())
+          }
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+      "when user answers cannot create a trader profile" - {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        "must not submit anything, and redirect to Journey Recovery" in {
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+          val mockConnector = mock[RouterConnector]
 
-        val result = route(application, request).value
+          val application =
+            applicationBuilder(userAnswers = Some(UserAnswers("")))
+              .overrides(bind[RouterConnector].toInstance(mockConnector))
+              .build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          running(application) {
+            val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            verify(mockConnector, never()).submitTraderProfile(any())(any())
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
   }

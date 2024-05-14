@@ -16,6 +16,7 @@
 
 package forms.behaviours
 
+import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 
 trait StringFieldBehaviours extends FieldBehaviours {
@@ -34,4 +35,19 @@ trait StringFieldBehaviours extends FieldBehaviours {
       }
     }
   }
+
+  def fieldThatErrorsOnInvalidData(
+                                    form: Form[_],
+                                    fieldName: String,
+                                    invalidDataGenerator: Gen[String],
+                                    invalidError: String
+                                  ): Unit =
+    "error on invalid data" in {
+
+      forAll(invalidDataGenerator -> "invalidDataItem") { dataItem: String =>
+        val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
+        result.errors.size mustBe 1
+        result.errors.head.message mustBe invalidError
+      }
+    }
 }

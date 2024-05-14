@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.mappings.helpers
+package models.helper
 
 object RemoveWhitespace {
 

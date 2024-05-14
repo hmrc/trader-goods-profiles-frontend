@@ -17,8 +17,8 @@
 package forms
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
+import models.helper.RemoveWhitespace.removeWhitespace
 import play.api.data.Form
 
 class NiphlNumberFormProvider @Inject() extends Mappings {
@@ -26,6 +26,7 @@ class NiphlNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("niphlNumber.error.required")
-        .verifying(maxLength(100, "niphlNumber.error.length"))
+        .transform(removeWhitespace, identity[String])
+        .verifying(regexp("^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$", "niphlNumber.error.invalidFormat"))
     )
 }
