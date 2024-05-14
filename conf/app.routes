@@ -49,7 +49,8 @@ POST        /ukims-number                                controllers.UkimsNumber
 GET         /ukims-number/check                          controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /ukims-number/check                          controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /categoryGuidance                            controllers.CategoryGuidanceController.onPageLoad()
+GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad()
+POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
 
 GET         /commodityCode                               controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
 POST        /commodityCode                               controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)

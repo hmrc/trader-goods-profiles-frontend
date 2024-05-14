@@ -40,5 +40,20 @@ class CategoryGuidanceControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
+
+    "must redirect to the categorisation page when the user click continue button" in {
+
+      val application = applicationBuilder().build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit.url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        // TODO replace index route
+        redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+      }
+    }
   }
 }
