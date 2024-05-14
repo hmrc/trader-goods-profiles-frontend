@@ -135,12 +135,16 @@ categoryGuidance.p3 = You’ll need to know the certificate number or name of an
 categoryGuidance.p4 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classes as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
 categoryGuidance.p5 = You’ll need to know the certificate number or name of any waivers you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new waiver, you’ll be able to change this later.
 
-commodityCode.title = commodityCode
-commodityCode.heading = commodityCode
-commodityCode.checkYourAnswersLabel = commodityCode
-commodityCode.error.required = Enter commodityCode
-commodityCode.error.length = CommodityCode must be 100 characters or less
-commodityCode.change.hidden = CommodityCode
+commodityCode.title = Commodity code
+commodityCode.h1 = Commodity code
+commodityCode.p1 = Commodity codes are internationally recognised reference numbers. A commodity code describes a specific product when importing or exporting goods. You will use this code on any customs declarations.
+commodityCode.p2 = You can add commodity codes to TGP in 6, 8 or 10 digits.
+commodityCode.p3 = If you are not sure what the commodity code of your goods are, you can use the
+commodityCode.p3.linkText = Northern Ireland Online Tariff Tool
+commodityCode.heading = What is the commodity code for your goods?
+commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 87654321, 9876543211
+commodityCode.error.required = Enter a commodity code
+commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 
 countryOfOrigin.title = countryOfOrigin
 countryOfOrigin.heading = countryOfOrigin

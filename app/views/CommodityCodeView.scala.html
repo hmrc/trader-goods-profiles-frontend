@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
+@import viewmodels.LabelSize._
+@import models.Mode
 
 @this(
     layout: templates.Layout,
@@ -28,6 +29,14 @@
 
 @layout(pageTitle = title(form, messages("commodityCode.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("commodityCode.h1")</h1>
+    <p class="govuk-body">@messages("commodityCode.p1")</p>
+    <p class="govuk-body">@messages("commodityCode.p2")</p>
+    <p class="govuk-body">
+        @messages("commodityCode.p3")
+        <a class="govuk-link" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity">@messages("commodityCode.p3.linkText")</a>.
+    </p>
+
     @formHelper(action = routes.CommodityCodeController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
@@ -37,9 +46,8 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("commodityCode.heading")).asPageHeading()
-            )
-            .withWidth(Full)
+                label = LabelViewModel(messages("commodityCode.heading")).withSize(Medium)
+            ).withHint(Hint(content = Text(messages("commodityCode.hint"))))
         )
 
         @govukButton(
