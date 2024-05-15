@@ -124,8 +124,8 @@ ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
-ukimsNumber.checkYourAnswersLabel = UKIMS Number
-ukimsNumber.change.hidden = UKIMS Number
+ukimsNumber.checkYourAnswersLabel = UKIMS number
+ukimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation

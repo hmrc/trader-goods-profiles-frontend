@@ -35,12 +35,12 @@ import scala.concurrent.Future
 
 class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new CommodityCodeFormProvider()
-  val form = formProvider()
+  private val form = formProvider()
 
-  lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode).url
+  private lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode).url
 
   "CommodityCode Controller" - {
 
