@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package forms
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton
+)
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+@()(implicit request: Request[_], messages: Messages)
 
-class CommodityCodeFormProvider @Inject() extends Mappings {
+@layout(pageTitle = titleNoForm(messages("createRecordStart.title"))) {
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("commodityCode.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.commodityCodeFormatRegex, "commodityCode.error.invalidFormat"))
-    )
+    <h1 class="govuk-heading-xl">@messages("createRecordStart.heading")</h1>
 }

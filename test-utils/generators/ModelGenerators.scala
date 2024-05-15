@@ -17,8 +17,12 @@
 package generators
 
 import models._
-import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryCategory1Assesments: Arbitrary[Category1Assesments] =
+    Arbitrary {
+      Gen.oneOf(Category1Assesments.values)
+    }
 }

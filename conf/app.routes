@@ -49,16 +49,41 @@ POST        /ukims-number                                controllers.UkimsNumber
 GET         /ukims-number/check                          controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /ukims-number/check                          controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /categoryGuidance                            controllers.CategoryGuidanceController.onPageLoad()
+GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad()
+POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
 
-GET         /commodityCode                               controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
-POST        /commodityCode                               controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
-GET         /changeCommodityCode                         controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeCommodityCode                         controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+GET         /commodity-code                               controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST        /commodity-code                               controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET         /commodity-code/check                         controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST        /commodity-code/check                         controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
 
-GET         /countryOfOrigin                             controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
-POST        /countryOfOrigin                             controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
-GET         /changeCountryOfOrigin                       controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeCountryOfOrigin                       controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
+GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
+POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
+GET         /country-of-origin/check                     controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
+POST        /country-of-origin/check                     controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
 
 GET         /homepage                                    controllers.HomePageController.onPageLoad()
+
+GET        /category1Assesments                        controllers.Category1AssesmentsController.onPageLoad(mode: Mode = NormalMode)
+POST       /category1Assesments                        controllers.Category1AssesmentsController.onSubmit(mode: Mode = NormalMode)
+GET        /changeCategory1Assesments                  controllers.Category1AssesmentsController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeCategory1Assesments                  controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /createRecordStart                       controllers.CreateRecordStartController.onPageLoad()
+
+GET        /createRecordSuccess                       controllers.CreateRecordSuccessController.onPageLoad()
+
+GET        /goodsDescription                        controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST       /goodsDescription                        controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET        /changeGoodsDescription                  controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeGoodsDescription                  controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+
+GET        /hasCorrectGoods                        controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
+POST       /hasCorrectGoods                        controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
+GET        /changeHasCorrectGoods                  controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeHasCorrectGoods                  controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /hasGoodsDescription                        controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST       /hasGoodsDescription                        controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET        /changeHasGoodsDescription                  controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeHasGoodsDescription                  controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)

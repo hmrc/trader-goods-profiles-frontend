@@ -17,43 +17,43 @@
 package controllers
 
 import base.SpecBase
-import forms.UkimsNumberFormProvider
+import forms.GoodsDescriptionFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.UkimsNumberPage
+import pages.GoodsDescriptionPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.UkimsNumberView
+import views.html.GoodsDescriptionView
 
 import scala.concurrent.Future
 
-class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
+class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new UkimsNumberFormProvider()
+  val formProvider = new GoodsDescriptionFormProvider()
   private val form = formProvider()
 
-  private lazy val ukimsNumberRoute = routes.UkimsNumberController.onPageLoad(NormalMode).url
+  private lazy val goodsDescriptionRoute = routes.GoodsDescriptionController.onPageLoad(NormalMode).url
 
-  "UkimsNumber Controller" - {
+  "GoodsDescription Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, ukimsNumberRoute)
+        val request = FakeRequest(GET, goodsDescriptionRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[UkimsNumberView]
+        val view = application.injector.instanceOf[GoodsDescriptionView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -62,14 +62,14 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(UkimsNumberPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, ukimsNumberRoute)
+        val request = FakeRequest(GET, goodsDescriptionRoute)
 
-        val view = application.injector.instanceOf[UkimsNumberView]
+        val view = application.injector.instanceOf[GoodsDescriptionView]
 
         val result = route(application, request).value
 
@@ -94,8 +94,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
+          FakeRequest(POST, goodsDescriptionRoute)
+            .withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
 
@@ -110,12 +110,12 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, ukimsNumberRoute)
+          FakeRequest(POST, goodsDescriptionRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[UkimsNumberView]
+        val view = application.injector.instanceOf[GoodsDescriptionView]
 
         val result = route(application, request).value
 
@@ -129,7 +129,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, ukimsNumberRoute)
+        val request = FakeRequest(GET, goodsDescriptionRoute)
 
         val result = route(application, request).value
 
@@ -144,7 +144,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, ukimsNumberRoute)
+          FakeRequest(POST, goodsDescriptionRoute)
             .withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value

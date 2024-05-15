@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
+@import models.Mode
+@import viewmodels.LabelSize._
 
 @this(
     layout: templates.Layout,
@@ -28,6 +29,14 @@
 
 @layout(pageTitle = title(form, messages("countryOfOrigin.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("countryOfOrigin.h1")</h1>
+    <p class="govuk-body">@messages("countryOfOrigin.p1")</p>
+    <p class="govuk-body">
+        @messages("countryOfOrigin.p2")
+        <a class="govuk-link" target="_blank" href="https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin">@messages("countryOfOrigin.p2.linkText")</a>.
+    </p>
+
+
     @formHelper(action = routes.CountryOfOriginController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
@@ -37,9 +46,8 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("countryOfOrigin.heading")).asPageHeading()
+                label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
             )
-            .withWidth(Full)
         )
 
         @govukButton(

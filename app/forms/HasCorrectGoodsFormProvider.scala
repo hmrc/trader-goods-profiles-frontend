@@ -17,17 +17,14 @@
 package forms
 
 import javax.inject.Inject
+
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
 import play.api.data.Form
 
-class CommodityCodeFormProvider @Inject() extends Mappings {
+class HasCorrectGoodsFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] =
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> text("commodityCode.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.commodityCodeFormatRegex, "commodityCode.error.invalidFormat"))
+      "value" -> boolean("hasCorrectGoods.error.required")
     )
 }

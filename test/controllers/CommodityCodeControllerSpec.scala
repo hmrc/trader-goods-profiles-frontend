@@ -35,12 +35,12 @@ import scala.concurrent.Future
 
 class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new CommodityCodeFormProvider()
-  val form = formProvider()
+  private val form = formProvider()
 
-  lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode).url
+  private lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode).url
 
   "CommodityCode Controller" - {
 
@@ -62,7 +62,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "654321").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -74,7 +74,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("654321"), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -95,7 +95,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", "654321"))
 
         val result = route(application, request).value
 
@@ -114,6 +114,26 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[CommodityCodeView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must return a Bad Request and errors when incorrect data format is submitted" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, commodityCodeRoute)
+            .withFormUrlEncodedBody(("value", "abc"))
+
+        val boundForm = form.bind(Map("value" -> "abc"))
 
         val view = application.injector.instanceOf[CommodityCodeView]
 

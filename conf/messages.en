@@ -118,31 +118,41 @@ profileSetup.p9.linkText = Moving plants from Great Britain to Northern Ireland
 ukimsNumber.title = UK Internal Market Scheme number
 ukimsNumber.h1 = UK Internal Market Scheme number
 ukimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
-ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by your EORI number, then 14 numbers.
+ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by UKIM, your EORI number without the GB or XI, then 14 numbers.
 ukimsNumber.heading = What is your UKIMS number?
-ukimsNumber.hint = For example, XI47699357400020231115081800
+ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
-ukimsNumber.checkYourAnswersLabel = UKIMS Number
-ukimsNumber.change.hidden = UKIMS Number
+ukimsNumber.checkYourAnswersLabel = UKIMS number
+ukimsNumber.change.hidden = UKIMS number
 
-categoryGuidance.title = categoryGuidance
-categoryGuidance.heading = categoryGuidance
+categoryGuidance.title = Categorisation
+categoryGuidance.heading = Categorisation
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
+categoryGuidance.p2 = We’ll ask you questions about waivers that you hold and then tell you what category your goods are. If the commodity code has too many waivers for us to list, we might ask you for an 8 or 10 digit commodity code.
+categoryGuidance.p3 = You’ll need to know the certificate number or name of any waivers you have for your goods. If you get a new waiver, you’ll be able to change this later.
+categoryGuidance.p4 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classes as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
+categoryGuidance.p5 = You’ll need to know the certificate number or name of any waivers you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new waiver, you’ll be able to change this later.
 
-commodityCode.title = commodityCode
-commodityCode.heading = commodityCode
-commodityCode.checkYourAnswersLabel = commodityCode
-commodityCode.error.required = Enter commodityCode
-commodityCode.error.length = CommodityCode must be 100 characters or less
-commodityCode.change.hidden = CommodityCode
+commodityCode.title = Commodity code
+commodityCode.h1 = Commodity code
+commodityCode.p1 = Commodity codes are internationally recognised reference numbers. A commodity code describes a specific product when importing or exporting goods. You will use this code on any customs declarations.
+commodityCode.p2 = You can add commodity codes to TGP in 6, 8 or 10 digits.
+commodityCode.p3 = If you are not sure what the commodity code of your goods are, you can use the
+commodityCode.p3.linkText = Northern Ireland Online Tariff Tool
+commodityCode.heading = What is the commodity code for your goods?
+commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 87654321, 9876543211
+commodityCode.error.required = Enter a commodity code
+commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 
-countryOfOrigin.title = countryOfOrigin
-countryOfOrigin.heading = countryOfOrigin
-countryOfOrigin.checkYourAnswersLabel = countryOfOrigin
-countryOfOrigin.error.required = Enter countryOfOrigin
-countryOfOrigin.error.length = CountryOfOrigin must be 100 characters or less
-countryOfOrigin.change.hidden = CountryOfOrigin
+countryOfOrigin.title = Country of origin
+countryOfOrigin.h1 = Country of origin
+countryOfOrigin.p1 = Country of origin refers to the country where the goods were mostly or wholly manufactured, grown or modified. It is used for labelling purposes and affects duty rates.
+countryOfOrigin.p2 = If the country of origin is different to the country of departure when the goods are declared at the border, the regulations, tax and duties may differ from the guidance on this service.
+countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens in new tab)
+countryOfOrigin.heading = What is the country of origin of the goods?
+countryOfOrigin.error.required = Enter the country of origin
 
 homepage.title = Trader Goods Profile homepage
 homepage.h1 = Trader Goods Profile homepage
@@ -154,3 +164,36 @@ homepage.h2.2 = Ask for advice
 homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
 homepage.h2.3 = Manage your profile
 homepage.p5.linkText = Manage your profile details
+
+category1Assesments.title = category1Assesments
+category1Assesments.heading = category1Assesments
+category1Assesments.option1 = Option 1
+category1Assesments.option2 = Option 2
+category1Assesments.checkYourAnswersLabel = category1Assesments
+category1Assesments.error.required = Select category1Assesments
+category1Assesments.change.hidden = Category1Assesments
+
+createRecordStart.title = createRecordStart
+createRecordStart.heading = createRecordStart
+
+createRecordSuccess.title = createRecordSuccess
+createRecordSuccess.heading = createRecordSuccess
+
+goodsDescription.title = goodsDescription
+goodsDescription.heading = goodsDescription
+goodsDescription.checkYourAnswersLabel = goodsDescription
+goodsDescription.error.required = Enter goodsDescription
+goodsDescription.error.length = GoodsDescription must be 512 characters or less
+goodsDescription.change.hidden = GoodsDescription
+
+hasCorrectGoods.title = hasCorrectGoods
+hasCorrectGoods.heading = hasCorrectGoods
+hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
+hasCorrectGoods.error.required = Select yes if hasCorrectGoods
+hasCorrectGoods.change.hidden = HasCorrectGoods
+
+hasGoodsDescription.title = hasGoodsDescription
+hasGoodsDescription.heading = hasGoodsDescription
+hasGoodsDescription.checkYourAnswersLabel = hasGoodsDescription
+hasGoodsDescription.error.required = Select yes if hasGoodsDescription
+hasGoodsDescription.change.hidden = HasGoodsDescription

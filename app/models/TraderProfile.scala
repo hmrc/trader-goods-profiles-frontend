@@ -16,11 +16,10 @@
 
 package models
 
-import cats.data.{Ior, IorNec}
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, QuestionPage, UkimsNumberPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.Query
 
 final case class TraderProfile(
                                 actorId: String,
@@ -33,23 +32,28 @@ object TraderProfile {
 
   implicit lazy val format: OFormat[TraderProfile] = Json.format
 
-  def build(answers: UserAnswers, eori: String): IorNec[Query, TraderProfile] =
+  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, TraderProfile] =
     (
       Ior.Right(eori),
-      answers.getIor(UkimsNumberPage),
+      answers.getPageValue(UkimsNumberPage),
       getNirms(answers),
       getNiphl(answers)
     ).parMapN(TraderProfile.apply)
 
-  private def getNirms(answers: UserAnswers): IorNec[Query, Option[String]] =
-    answers.getIor(HasNirmsPage).flatMap {
-      case true  => answers.getIor(NirmsNumberPage).map(Some(_))
-      case false => Ior.Right(None)
-    }
+  private def getNirms(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
+    getNumber(answers, HasNirmsPage, NirmsNumberPage)
 
-  private def getNiphl(answers: UserAnswers): IorNec[Query, Option[String]] =
-    answers.getIor(HasNiphlPage).flatMap {
-      case true  => answers.getIor(NiphlNumberPage).map(Some(_))
-      case false => Ior.Right(None)
+  private def getNiphl(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
+    getNumber(answers, HasNiphlPage, NiphlNumberPage)
+
+  private def getNumber(
+                         answers: UserAnswers,
+                         questionPage: QuestionPage[Boolean],
+                         numberPage: QuestionPage[String]
+                       ): EitherNec[ValidationError, Option[String]] =
+    answers.getPageValue(questionPage) match {
+      case Right(true)  => answers.getPageValue(numberPage).map(Some(_))
+      case Right(false)  => answers.unexpectedValueDefined(answers, numberPage)
+      case Left(errors) =>  Left(errors)
     }
 }

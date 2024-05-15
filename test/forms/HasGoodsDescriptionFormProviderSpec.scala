@@ -16,18 +16,30 @@
 
 package forms
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-class CommodityCodeFormProvider @Inject() extends Mappings {
+class HasGoodsDescriptionFormProviderSpec extends BooleanFieldBehaviours {
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("commodityCode.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.commodityCodeFormatRegex, "commodityCode.error.invalidFormat"))
+  val requiredKey = "hasGoodsDescription.error.required"
+  val invalidKey = "error.boolean"
+
+  val form = new HasGoodsDescriptionFormProvider()()
+
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
     )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

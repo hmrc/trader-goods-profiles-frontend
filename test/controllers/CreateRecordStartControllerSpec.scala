@@ -19,40 +19,25 @@ package controllers
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CategoryGuidanceView
+import views.html.CreateRecordStartView
 
-class CategoryGuidanceControllerSpec extends SpecBase {
+class CreateRecordStartControllerSpec extends SpecBase {
 
-  "CategoryGuidance Controller" - {
+  "CreateRecordStart Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CreateRecordStartController.onPageLoad().url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CategoryGuidanceView]
+        val view = application.injector.instanceOf[CreateRecordStartView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to the categorisation page when the user click continue button" in {
-
-      val application = applicationBuilder().build()
-
-      running(application) {
-        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit.url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        // TODO replace index route
-        redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
       }
     }
   }

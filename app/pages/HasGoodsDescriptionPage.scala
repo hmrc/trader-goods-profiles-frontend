@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
-import models.StringFieldRegex
-import play.api.data.Form
+import play.api.libs.json.JsPath
 
-class CommodityCodeFormProvider @Inject() extends Mappings {
+case object HasGoodsDescriptionPage extends QuestionPage[Boolean] {
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("commodityCode.error.required")
-        .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.commodityCodeFormatRegex, "commodityCode.error.invalidFormat"))
-    )
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "hasGoodsDescription"
 }
