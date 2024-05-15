@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout
-)
+package controllers.actions
 
-@()(implicit request: Request[_], messages: Messages)
+import models.UserAnswers
+import models.requests.{DataRequest, IdentifierRequest}
 
-@layout(
-    pageTitle = titleNoForm(messages("unauthorised.title")),
-    timeout   = false,
-    showBackLink = false
-) {
+import scala.concurrent.{ExecutionContext, Future}
 
-    <h1 class="govuk-heading-l">@messages("unauthorised.heading")</h1>
+class FakeDataRetrievalOrCreateAction extends DataRetrievalOrCreateAction {
 
-    <p class="govuk-body">@messages("unauthorised.p1")</p>
-    <p class="govuk-body">@messages("unauthorised.p2.part1") <a href="@controllers.auth.routes.AuthController.signOut.url" class="govuk-link" >@messages("unauthorised.p2.linkText")</a> @messages("unauthorised.p2.part2")</p>
+  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
+    Future(DataRequest(request.request, request.userId, request.eori, UserAnswers("id")))
+
+  override protected implicit val executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 }
