@@ -25,22 +25,24 @@ import repositories.SessionRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalOrCreateActionImpl @Inject()(
-                                         val sessionRepository: SessionRepository
-                                       )(implicit val executionContext: ExecutionContext) extends DataRetrievalOrCreateAction {
+class DataRetrievalOrCreateActionImpl @Inject() (
+  val sessionRepository: SessionRepository
+)(implicit val executionContext: ExecutionContext)
+    extends DataRetrievalOrCreateAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
+  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
     sessionRepository.get(request.userId).flatMap { opt =>
-      opt.map { answers =>
-        Future.successful(DataRequest(request.request, request.userId, request.eori, answers))
-      }.getOrElse {
-        val answers = UserAnswers(request.userId)
-        sessionRepository.set(answers).map { _ =>
-          DataRequest(request.request, request.userId, request.eori, answers)
+      opt
+        .map { answers =>
+          Future.successful(DataRequest(request.request, request.userId, request.eori, answers))
         }
-      }
+        .getOrElse {
+          val answers = UserAnswers(request.userId)
+          sessionRepository.set(answers).map { _ =>
+            DataRequest(request.request, request.userId, request.eori, answers)
+          }
+        }
     }
-  }
 }
 
 trait DataRetrievalOrCreateAction extends ActionTransformer[IdentifierRequest, DataRequest]

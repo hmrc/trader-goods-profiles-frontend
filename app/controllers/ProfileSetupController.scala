@@ -17,18 +17,16 @@
 package controllers
 
 import controllers.actions._
-import models.{NormalMode, UserAnswers}
+import models.NormalMode
 import navigation.Navigator
 import pages.ProfileSetupPage
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ProfileSetupView
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class ProfileSetupController @Inject() (
   override val messagesApi: MessagesApi,
@@ -38,7 +36,7 @@ class ProfileSetupController @Inject() (
   view: ProfileSetupView,
   navigator: Navigator,
   requireData: DataRequiredAction,
-                                       getOrCreate: DataRetrievalOrCreateAction
+  getOrCreate: DataRetrievalOrCreateAction
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
