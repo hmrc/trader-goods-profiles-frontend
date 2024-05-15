@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 
 class RouterConnectorSpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -61,7 +61,7 @@ class RouterConnectorSpec
 
     "must return a failed future when the server returns an error" in {
 
-      val traderProfile = TraderProfile(testEori,"1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
         put(urlEqualTo("/trader-goods-profiles-router/customs/traders/good-profiles"))

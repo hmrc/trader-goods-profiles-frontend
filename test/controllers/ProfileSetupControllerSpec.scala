@@ -85,7 +85,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
       "must create user answers then redirect to the next page when the user does not have answers" in {
 
-        val mockSessionRepository = mock[SessionRepository]
+        val mockSessionRepository               = mock[SessionRepository]
         val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionRepository.set(captor.capture())).thenReturn(Future.successful(true))
 

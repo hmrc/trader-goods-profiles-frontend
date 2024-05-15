@@ -56,9 +56,15 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
       "must return OK and the correct view with valid mandatory data" in {
 
         val userAnswers = UserAnswers(userAnswersId)
-          .set(UkimsNumberPage, "1").success.value
-          .set(HasNirmsPage, false).success.value
-          .set(HasNiphlPage, false).success.value
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, false)
+          .success
+          .value
+          .set(HasNiphlPage, false)
+          .success
+          .value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -78,11 +84,21 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
       "must return OK and the correct view with all data (including optional)" in {
 
         val userAnswers = UserAnswers(userAnswersId)
-          .set(UkimsNumberPage, "1").success.value
-          .set(HasNirmsPage, true).success.value
-          .set(NirmsNumberPage, "2").success.value
-          .set(HasNiphlPage, true).success.value
-          .set(NiphlNumberPage, "3").success.value
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, true)
+          .success
+          .value
+          .set(NirmsNumberPage, "2")
+          .success
+          .value
+          .set(HasNiphlPage, true)
+          .success
+          .value
+          .set(NiphlNumberPage, "3")
+          .success
+          .value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -112,23 +128,23 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
 
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
-
-    "must redirect to Journey Recovery if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-  }
 
     "for a POST" - {
 
@@ -138,9 +154,15 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
           val userAnswers =
             emptyUserAnswers
-              .set(UkimsNumberPage, "1").success.value
-              .set(HasNirmsPage, false).success.value
-              .set(HasNiphlPage, false).success.value
+              .set(UkimsNumberPage, "1")
+              .success
+              .value
+              .set(HasNirmsPage, false)
+              .success
+              .value
+              .set(HasNiphlPage, false)
+              .success
+              .value
 
           val mockConnector = mock[RouterConnector]
           when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
@@ -169,7 +191,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[RouterConnector]
-          val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+          val continueUrl   = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
           val application =
             applicationBuilder(userAnswers = Some(UserAnswers("")))
@@ -192,12 +214,19 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
         val userAnswers =
           emptyUserAnswers
-            .set(UkimsNumberPage, "1").success.value
-            .set(HasNirmsPage, false).success.value
-            .set(HasNiphlPage, false).success.value
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, false)
+            .success
+            .value
+            .set(HasNiphlPage, false)
+            .success
+            .value
 
         val mockConnector = mock[RouterConnector]
-        when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+        when(mockConnector.submitTraderProfile(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
@@ -212,7 +241,6 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           }
         }
       }
-
 
       "must redirect to Journey Recovery if no existing data is found" in {
 

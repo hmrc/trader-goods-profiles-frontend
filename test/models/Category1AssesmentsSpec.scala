@@ -32,10 +32,8 @@ class Category1AssesmentsSpec extends AnyFreeSpec with Matchers with ScalaCheckP
 
       val gen = Gen.oneOf(Category1Assesments.values)
 
-      forAll(gen) {
-        category1Assesments =>
-
-          JsString(category1Assesments.toString).validate[Category1Assesments].asOpt.value mustEqual category1Assesments
+      forAll(gen) { category1Assesments =>
+        JsString(category1Assesments.toString).validate[Category1Assesments].asOpt.value mustEqual category1Assesments
       }
     }
 
@@ -43,10 +41,8 @@ class Category1AssesmentsSpec extends AnyFreeSpec with Matchers with ScalaCheckP
 
       val gen = arbitrary[String] suchThat (!Category1Assesments.values.map(_.toString).contains(_))
 
-      forAll(gen) {
-        invalidValue =>
-
-          JsString(invalidValue).validate[Category1Assesments] mustEqual JsError("error.invalid")
+      forAll(gen) { invalidValue =>
+        JsString(invalidValue).validate[Category1Assesments] mustEqual JsError("error.invalid")
       }
     }
 
@@ -54,10 +50,8 @@ class Category1AssesmentsSpec extends AnyFreeSpec with Matchers with ScalaCheckP
 
       val gen = Gen.oneOf(Category1Assesments.values)
 
-      forAll(gen) {
-        category1Assesments =>
-
-          Json.toJson(category1Assesments) mustEqual JsString(category1Assesments.toString)
+      forAll(gen) { category1Assesments =>
+        Json.toJson(category1Assesments) mustEqual JsString(category1Assesments.toString)
       }
     }
   }

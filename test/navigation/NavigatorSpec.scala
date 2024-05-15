@@ -37,12 +37,15 @@ class NavigatorSpec extends SpecBase {
 
       "must go from ProfileSetupPage to UkimsNumberPage" in {
 
-        navigator.nextPage(ProfileSetupPage, NormalMode, UserAnswers("id")) mustBe routes.UkimsNumberController.onPageLoad(NormalMode)
+        navigator.nextPage(ProfileSetupPage, NormalMode, UserAnswers("id")) mustBe routes.UkimsNumberController
+          .onPageLoad(NormalMode)
       }
 
       "must go from UkimsNumberPage to HasNirmsPage" in {
 
-        navigator.nextPage(UkimsNumberPage, NormalMode, UserAnswers("id")) mustBe routes.HasNirmsController.onPageLoad(NormalMode)
+        navigator.nextPage(UkimsNumberPage, NormalMode, UserAnswers("id")) mustBe routes.HasNirmsController.onPageLoad(
+          NormalMode
+        )
       }
 
       "must go from HasNirmsPage" - {
@@ -50,7 +53,9 @@ class NavigatorSpec extends SpecBase {
         "to NirmsNumberPage when answer is Yes" in {
 
           val answers = UserAnswers("id").set(HasNirmsPage, true).success.value
-          navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.NirmsNumberController.onPageLoad(NormalMode)
+          navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.NirmsNumberController.onPageLoad(
+            NormalMode
+          )
         }
 
         "to HasNiphlPage when answer is No" in {
@@ -62,7 +67,9 @@ class NavigatorSpec extends SpecBase {
 
       "must go from NirmsNumberPage to HasNiphlPage" in {
 
-        navigator.nextPage(NirmsNumberPage, NormalMode, UserAnswers("id")) mustBe routes.HasNiphlController.onPageLoad(NormalMode)
+        navigator.nextPage(NirmsNumberPage, NormalMode, UserAnswers("id")) mustBe routes.HasNiphlController.onPageLoad(
+          NormalMode
+        )
       }
 
       "must go from HasNiphlPage" - {
@@ -70,7 +77,9 @@ class NavigatorSpec extends SpecBase {
         "to NiphlNumberPage when answer is Yes" in {
 
           val answers = UserAnswers("id").set(HasNiphlPage, true).success.value
-          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.NiphlNumberController.onPageLoad(NormalMode)
+          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.NiphlNumberController.onPageLoad(
+            NormalMode
+          )
         }
 
         "to CheckYourAnswersPage when answer is No" in {
@@ -82,22 +91,33 @@ class NavigatorSpec extends SpecBase {
 
       "must go from NiphlNumberPage to CheckYourAnswersPage" in {
 
-        navigator.nextPage(NiphlNumberPage, NormalMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(
+          NiphlNumberPage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
     }
 
     "in Check mode" - {
 
-
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(
+          UnknownPage,
+          CheckMode,
+          UserAnswers("id")
+        ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
       "must go from UkimsNumberPage to CheckYourAnswersPage" in {
 
-        navigator.nextPage(UkimsNumberPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(
+          UkimsNumberPage,
+          CheckMode,
+          UserAnswers("id")
+        ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
       "must go from HasNirmsPage" - {
@@ -107,12 +127,15 @@ class NavigatorSpec extends SpecBase {
           "to NirmsNumberPage when NirmsNumberPage is empty" in {
 
             val answers = UserAnswers("id").set(HasNirmsPage, true).success.value
-            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.NirmsNumberController.onPageLoad(CheckMode)
+            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.NirmsNumberController.onPageLoad(
+              CheckMode
+            )
           }
 
           "to CheckYourAnswers when NirmsNumberPage is answered" in {
 
-            val answers = UserAnswers("id").set(HasNirmsPage, true).success.value.set(NirmsNumberPage, "1234").success.value
+            val answers =
+              UserAnswers("id").set(HasNirmsPage, true).success.value.set(NirmsNumberPage, "1234").success.value
             navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
           }
         }
@@ -125,7 +148,11 @@ class NavigatorSpec extends SpecBase {
 
       "must go from NirmsNumberPage to CheckYourAnswersPage" in {
 
-        navigator.nextPage(NirmsNumberPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(
+          NirmsNumberPage,
+          CheckMode,
+          UserAnswers("id")
+        ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
       "must go from HasNiphlPage" - {
@@ -135,12 +162,15 @@ class NavigatorSpec extends SpecBase {
           "to NiphlNumberPage when NiphlNumberPage is empty" in {
 
             val answers = UserAnswers("id").set(HasNiphlPage, true).success.value
-            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.NiphlNumberController.onPageLoad(CheckMode)
+            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.NiphlNumberController.onPageLoad(
+              CheckMode
+            )
           }
 
           "to CheckYourAnswers when NiphlNumberPage is answered" in {
 
-            val answers = UserAnswers("id").set(HasNiphlPage, true).success.value.set(NiphlNumberPage, "1234").success.value
+            val answers =
+              UserAnswers("id").set(HasNiphlPage, true).success.value.set(NiphlNumberPage, "1234").success.value
             navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
           }
         }
@@ -154,7 +184,11 @@ class NavigatorSpec extends SpecBase {
 
       "must go from NiphlNumberPage to CheckYourAnswersPage" in {
 
-        navigator.nextPage(NiphlNumberPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(
+          NiphlNumberPage,
+          CheckMode,
+          UserAnswers("id")
+        ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
     }
   }

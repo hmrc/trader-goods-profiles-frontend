@@ -22,7 +22,7 @@ import play.api.data.FormError
 class HasNiphlFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "hasNiphl.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new HasNiphlFormProvider()()
 
