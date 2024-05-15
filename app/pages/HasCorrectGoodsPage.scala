@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import models._
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.libs.json.JsPath
 
-trait ModelGenerators {
+case object HasCorrectGoodsPage extends QuestionPage[Boolean] {
 
-  implicit lazy val arbitraryCategory1Assesments: Arbitrary[Category1Assesments] =
-    Arbitrary {
-      Gen.oneOf(Category1Assesments.values)
-    }
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "hasCorrectGoods"
 }

@@ -156,3 +156,36 @@ countryOfOrigin.error.required = Enter the country of origin
 
 homePage.title = homePage
 homePage.heading = homePage
+
+category1Assesments.title = category1Assesments
+category1Assesments.heading = category1Assesments
+category1Assesments.option1 = Option 1
+category1Assesments.option2 = Option 2
+category1Assesments.checkYourAnswersLabel = category1Assesments
+category1Assesments.error.required = Select category1Assesments
+category1Assesments.change.hidden = Category1Assesments
+
+createRecordStart.title = createRecordStart
+createRecordStart.heading = createRecordStart
+
+createRecordSuccess.title = createRecordSuccess
+createRecordSuccess.heading = createRecordSuccess
+
+goodsDescription.title = goodsDescription
+goodsDescription.heading = goodsDescription
+goodsDescription.checkYourAnswersLabel = goodsDescription
+goodsDescription.error.required = Enter goodsDescription
+goodsDescription.error.length = GoodsDescription must be 512 characters or less
+goodsDescription.change.hidden = GoodsDescription
+
+hasCorrectGoods.title = hasCorrectGoods
+hasCorrectGoods.heading = hasCorrectGoods
+hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
+hasCorrectGoods.error.required = Select yes if hasCorrectGoods
+hasCorrectGoods.change.hidden = HasCorrectGoods
+
+hasGoodsDescription.title = hasGoodsDescription
+hasGoodsDescription.heading = hasGoodsDescription
+hasGoodsDescription.checkYourAnswersLabel = hasGoodsDescription
+hasGoodsDescription.error.required = Select yes if hasGoodsDescription
+hasGoodsDescription.change.hidden = HasGoodsDescription

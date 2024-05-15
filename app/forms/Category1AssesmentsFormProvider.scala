@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models._
-import org.scalacheck.{Arbitrary, Gen}
+import javax.inject.Inject
 
-trait ModelGenerators {
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.Category1Assesments
 
-  implicit lazy val arbitraryCategory1Assesments: Arbitrary[Category1Assesments] =
-    Arbitrary {
-      Gen.oneOf(Category1Assesments.values)
-    }
+class Category1AssesmentsFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Category1Assesments] =
+    Form(
+      "value" -> enumerable[Category1Assesments]("category1Assesments.error.required")
+    )
 }

@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models._
-import org.scalacheck.{Arbitrary, Gen}
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-trait ModelGenerators {
+class HasCorrectGoodsFormProviderSpec extends BooleanFieldBehaviours {
 
-  implicit lazy val arbitraryCategory1Assesments: Arbitrary[Category1Assesments] =
-    Arbitrary {
-      Gen.oneOf(Category1Assesments.values)
-    }
+  val requiredKey = "hasCorrectGoods.error.required"
+  val invalidKey = "error.boolean"
+
+  val form = new HasCorrectGoodsFormProvider()()
+
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }
