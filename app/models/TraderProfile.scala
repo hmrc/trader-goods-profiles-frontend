@@ -22,11 +22,11 @@ import pages._
 import play.api.libs.json.{Json, OFormat}
 
 final case class TraderProfile(
-                                actorId: String,
-                                ukimsNumber: String,
-                                nirmsNumber: Option[String],
-                                niphlNumber: Option[String]
-                              )
+  actorId: String,
+  ukimsNumber: String,
+  nirmsNumber: Option[String],
+  niphlNumber: Option[String]
+)
 
 object TraderProfile {
 
@@ -47,13 +47,13 @@ object TraderProfile {
     getNumber(answers, HasNiphlPage, NiphlNumberPage)
 
   private def getNumber(
-                         answers: UserAnswers,
-                         questionPage: QuestionPage[Boolean],
-                         numberPage: QuestionPage[String]
-                       ): EitherNec[ValidationError, Option[String]] =
+    answers: UserAnswers,
+    questionPage: QuestionPage[Boolean],
+    numberPage: QuestionPage[String]
+  ): EitherNec[ValidationError, Option[String]] =
     answers.getPageValue(questionPage) match {
       case Right(true)  => answers.getPageValue(numberPage).map(Some(_))
-      case Right(false)  => answers.unexpectedValueDefined(answers, numberPage)
-      case Left(errors) =>  Left(errors)
+      case Right(false) => answers.unexpectedValueDefined(answers, numberPage)
+      case Left(errors) => Left(errors)
     }
 }

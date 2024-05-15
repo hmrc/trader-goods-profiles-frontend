@@ -30,26 +30,28 @@ import views.html.ProfileSetupView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ProfileSetupController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ProfileSetupView,
-                                       navigator: Navigator,
-                                       sessionRepository: SessionRepository
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class ProfileSetupController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: ProfileSetupView,
+  navigator: Navigator,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
-    implicit request =>
-      Ok(view())
+  def onPageLoad: Action[AnyContent] = (identify andThen getData) { implicit request =>
+    Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData).async {
-    implicit request =>
-      request.userAnswers.map { answers =>
+  def onSubmit: Action[AnyContent] = (identify andThen getData).async { implicit request =>
+    request.userAnswers
+      .map { answers =>
         Future.successful(Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers)))
-      }.getOrElse {
+      }
+      .getOrElse {
         val answers = UserAnswers(request.userId)
         sessionRepository.set(answers).map { _ =>
           Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers))
