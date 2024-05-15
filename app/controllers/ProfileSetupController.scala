@@ -41,12 +41,12 @@ class ProfileSetupController @Inject()(
                                        getOrCreate: DataRetrievalOrCreateAction
                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate) {
     implicit request =>
       Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getOrCreate andThen requireData) {
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
   }
