@@ -16,9 +16,9 @@
 
 package models
 
-import cats.data.{EitherNec, Ior, IorNec, NonEmptyChain}
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, QuestionPage, UkimsNumberPage}
 import play.api.libs.json.{Json, OFormat}
 
 final case class TraderProfile(
@@ -33,22 +33,25 @@ object TraderProfile {
 
   def build(answers: UserAnswers): EitherNec[ValidationError, TraderProfile] =
     (
-      answers.getEither(UkimsNumberPage),
+      answers.getPageValue(UkimsNumberPage),
       getNirms(answers),
       getNiphl(answers)
     ).parMapN(TraderProfile.apply)
 
   private def getNirms(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
-    answers.getEither(HasNirmsPage) match {
-      case Right(true) => answers.getEither(NirmsNumberPage).map(Some(_))
-      case Right(false) => if(answers.isDefined(NirmsNumberPage)) Left(NonEmptyChain.one(UnexpectedPage(NirmsNumberPage))) else Right(None)
-      case Left(errors) => Left(errors)
-    }
+    getNumber(answers, HasNirmsPage, NirmsNumberPage)
 
   private def getNiphl(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
-    answers.getEither(HasNiphlPage) match {
-      case Right(true)  => answers.getEither(NiphlNumberPage).map(Some(_))
-      case Right(false)  => if (answers.isDefined(NiphlNumberPage)) Left(NonEmptyChain.one(UnexpectedPage(NiphlNumberPage))) else Right(None)
+    getNumber(answers, HasNiphlPage, NiphlNumberPage)
+
+  private def getNumber(
+                         answers: UserAnswers,
+                         questionPage: QuestionPage[Boolean],
+                         numberPage: QuestionPage[String]
+                       ): EitherNec[ValidationError, Option[String]] =
+    answers.getPageValue(questionPage) match {
+      case Right(true)  => answers.getPageValue(numberPage).map(Some(_))
+      case Right(false)  => answers.unexpectedValueDefined(answers, numberPage)
       case Left(errors) =>  Left(errors)
     }
 }

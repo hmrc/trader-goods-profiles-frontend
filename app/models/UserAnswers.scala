@@ -18,6 +18,7 @@ package models
 
 import cats.data.{EitherNec, IorNec, NonEmptyChain}
 import cats.implicits._
+import pages.{Page, QuestionPage}
 import play.api.libs.json._
 import queries.{Gettable, Query, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -34,8 +35,11 @@ final case class UserAnswers(
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
 
-  def getEither[A](page: Gettable[A])(implicit rds: Reads[A]): EitherNec[ValidationError, A] =
+  def getPageValue[A](page: Gettable[A])(implicit rds: Reads[A]): EitherNec[ValidationError, A] =
     get(page).map(Right(_)).getOrElse(Left(NonEmptyChain.one(PageMissing(page))))
+
+  def unexpectedValueDefined(answers: UserAnswers, page: Gettable[_]): EitherNec[ValidationError, Option[Nothing]] =
+    if (answers.isDefined(page)) Left(NonEmptyChain.one(UnexpectedPage(page))) else Right(None)
 
   def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
 

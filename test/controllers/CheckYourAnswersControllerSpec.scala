@@ -24,9 +24,11 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import play.api.Application
 import play.api.test.FakeRequest
 import play.api.inject.bind
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
@@ -37,6 +39,16 @@ import scala.concurrent.Future
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   "Check Your Answers Controller" - {
+
+    def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
+      rows = Seq(
+        UkimsNumberSummary.row(userAnswers)(messages(app)),
+        HasNirmsSummary.row(userAnswers)(messages(app)),
+        NirmsNumberSummary.row(userAnswers)(messages(app)),
+        HasNiphlSummary.row(userAnswers)(messages(app)),
+        NiphlNumberSummary.row(userAnswers)(messages(app))
+      ).flatten
+    )
 
     "for a GET" - {
 
@@ -55,15 +67,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CheckYourAnswersView]
-          val list = SummaryListViewModel(
-            rows = Seq(
-              UkimsNumberSummary.row(userAnswers)(messages(application)),
-              HasNirmsSummary.row(userAnswers)(messages(application)),
-              NirmsNumberSummary.row(userAnswers)(messages(application)),
-              HasNiphlSummary.row(userAnswers)(messages(application)),
-              NiphlNumberSummary.row(userAnswers)(messages(application))
-            ).flatten
-          )
+          val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
@@ -87,15 +91,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CheckYourAnswersView]
-          val list = SummaryListViewModel(
-            rows = Seq(
-              UkimsNumberSummary.row(userAnswers)(messages(application)),
-              HasNirmsSummary.row(userAnswers)(messages(application)),
-              NirmsNumberSummary.row(userAnswers)(messages(application)),
-              HasNiphlSummary.row(userAnswers)(messages(application)),
-              NiphlNumberSummary.row(userAnswers)(messages(application))
-            ).flatten
-          )
+          val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
