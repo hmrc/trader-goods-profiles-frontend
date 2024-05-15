@@ -17,6 +17,7 @@
 package controllers.actions
 
 import base.SpecBase
+import base.TestConstants.testEori
 import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
 import org.mockito.Mockito._
@@ -43,7 +44,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         when(sessionRepository.get("id")) thenReturn Future(None)
         val action = new Harness(sessionRepository)
 
-        val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "eori")).futureValue
+        val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", testEori)).futureValue
 
         result.userAnswers must not be defined
       }
@@ -57,7 +58,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         when(sessionRepository.get("id")) thenReturn Future(Some(UserAnswers("id")))
         val action = new Harness(sessionRepository)
 
-        val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "eori")).futureValue
+        val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", testEori)).futureValue
 
         result.userAnswers mustBe defined
       }

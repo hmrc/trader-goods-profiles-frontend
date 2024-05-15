@@ -15,13 +15,28 @@
  *@
 
 @this(
-        layout: templates.Layout,
-        govukButton: GovukButton
+        layout: templates.Layout
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("homePage.title"))) {
+@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}") {
 
-    <h1 class="govuk-heading-xl">@messages("homePage.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
+    <p class="govuk-body">@messages("homepage.p1")</p>
+
+    <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
+    @*TODO correct link when defined by design*@
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("homepage.p2.linkText")</a></p>
+    @*TODO correct link when defined by design*@
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("homepage.p3.linkText")</a></p>
+
+    <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
+    @*TODO correct link when defined by design*@
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("homepage.p4.linkText")</a></p>
+
+    <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
+    @*TODO correct link when defined by design*@
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("homepage.p5.linkText")</a></p>
+
 }

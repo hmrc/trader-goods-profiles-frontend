@@ -20,14 +20,14 @@ import base.SpecBase
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.ProfileSetupView
 

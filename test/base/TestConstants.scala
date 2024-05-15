@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package models.requests
+package base
 
-import play.api.mvc.{Request, WrappedRequest}
-import models.UserAnswers
+object TestConstants {
+  val testEori: String = "eori"
 
-case class OptionalDataRequest[A] (request: Request[A], userId: String, eori: String, userAnswers: Option[UserAnswers]) extends WrappedRequest[A](request)
-
-case class DataRequest[A] (request: Request[A], userId: String, eori: String, userAnswers: UserAnswers) extends WrappedRequest[A](request)
+}

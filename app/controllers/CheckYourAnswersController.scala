@@ -45,7 +45,7 @@ class CheckYourAnswersController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      TraderProfile.build(request.userAnswers) match {
+      TraderProfile.build(request.userAnswers, request.eori) match {
         case Right(_) =>
         val list = SummaryListViewModel(
           rows = Seq(
@@ -64,9 +64,9 @@ class CheckYourAnswersController @Inject()(
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      TraderProfile.build(request.userAnswers) match {
+      TraderProfile.build(request.userAnswers, request.eori) match {
         case Right(model) =>
-        routerConnector.submitTraderProfile(model).map { _ =>
+        routerConnector.submitTraderProfile(model, request.eori).map { _ =>
           Redirect(routes.HomePageController.onPageLoad())
         }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))

@@ -16,12 +16,13 @@
 
 package models
 
-import cats.data.{EitherNec, NonEmptyChain}
+import cats.data.EitherNec
 import cats.implicits._
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, QuestionPage, UkimsNumberPage}
+import pages._
 import play.api.libs.json.{Json, OFormat}
 
 final case class TraderProfile(
+                                actorId: String,
                                 ukimsNumber: String,
                                 nirmsNumber: Option[String],
                                 niphlNumber: Option[String]
@@ -31,8 +32,9 @@ object TraderProfile {
 
   implicit lazy val format: OFormat[TraderProfile] = Json.format
 
-  def build(answers: UserAnswers): EitherNec[ValidationError, TraderProfile] =
+  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, TraderProfile] =
     (
+      Right(eori),
       answers.getPageValue(UkimsNumberPage),
       getNirms(answers),
       getNiphl(answers)

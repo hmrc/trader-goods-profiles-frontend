@@ -62,7 +62,7 @@ POST        /country-of-origin                           controllers.CountryOfOr
 GET         /country-of-origin/check                     controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
 POST        /country-of-origin/check                     controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
 
-GET         /homePage                                    controllers.HomePageController.onPageLoad()
+GET         /homepage                                    controllers.HomePageController.onPageLoad()
 
 GET        /category1Assesments                        controllers.Category1AssesmentsController.onPageLoad(mode: Mode = NormalMode)
 POST       /category1Assesments                        controllers.Category1AssesmentsController.onSubmit(mode: Mode = NormalMode)

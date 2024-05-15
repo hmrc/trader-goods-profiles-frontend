@@ -17,6 +17,7 @@
 package models
 
 import org.scalatest.Inside.inside
+import base.TestConstants.testEori
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -39,9 +40,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlPage, true).success.value
             .set(NiphlNumberPage, "3").success.value
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile("1", Some("2"), Some("3")))
+        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3")))
       }
 
       "and all optional data is missing" in {
@@ -52,9 +53,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, false).success.value
             .set(HasNiphlPage, false).success.value
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile("1", None, None))
+        result mustEqual Right(TraderProfile(testEori, "1", None, None))
       }
     }
 
@@ -64,7 +65,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers = UserAnswers("id")
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -83,7 +84,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, true).success.value
             .set(HasNiphlPage, false).success.value
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(NirmsNumberPage)
@@ -98,7 +99,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsPage, false).success.value
             .set(HasNiphlPage, true).success.value
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(NiphlNumberPage)
@@ -115,7 +116,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlPage, false).success.value
             .set(NiphlNumberPage, "3").success.value
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
