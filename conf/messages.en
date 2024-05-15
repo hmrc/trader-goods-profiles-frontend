@@ -65,7 +65,7 @@ hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select if you are NIPHL registered
 hasNiphl.change.hidden = NIPHL registered
 
-hasNirms.title = Northern Ireland Retail Movement Scheme number
+hasNirms.title = Northern Ireland Retail Movement Scheme (NIRMS)
 hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
 hasNirms.h2 = Are you NIRMS registered?
 hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
@@ -122,7 +122,7 @@ ukimsNumber.p2 = A UKIMS number starts with GB or XI, followed by UKIM, your EOR
 ukimsNumber.heading = What is your UKIMS number?
 ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
-ukimsNumber.error.required = Enter your UKIMS number
+ukimsNumber.error.required =Enter your UKIMS number
 ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
 ukimsNumber.checkYourAnswersLabel = UKIMS number
 ukimsNumber.change.hidden = UKIMS number
