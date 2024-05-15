@@ -16,9 +16,9 @@
 
 package models
 
-import cats.data.{EitherNec, NonEmptyChain}
+import cats.data.EitherNec
 import cats.implicits._
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, QuestionPage, UkimsNumberPage}
+import pages._
 import play.api.libs.json.{Json, OFormat}
 
 final case class TraderProfile(
@@ -34,7 +34,7 @@ object TraderProfile {
 
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, TraderProfile] =
     (
-      Ior.Right(eori),
+      Right(eori),
       answers.getPageValue(UkimsNumberPage),
       getNirms(answers),
       getNiphl(answers)

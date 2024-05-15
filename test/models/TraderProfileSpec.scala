@@ -116,7 +116,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlPage, false).success.value
             .set(NiphlNumberPage, "3").success.value
 
-        val result = TraderProfile.build(answers)
+        val result = TraderProfile.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(

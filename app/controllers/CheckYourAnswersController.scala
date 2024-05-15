@@ -45,7 +45,7 @@ class CheckYourAnswersController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      TraderProfile.build(request.userAnswers) match {
+      TraderProfile.build(request.userAnswers, request.eori) match {
         case Right(_) =>
         val list = SummaryListViewModel(
           rows = Seq(
