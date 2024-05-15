@@ -38,7 +38,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new NirmsNumberFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val nirmsNumberRoute = routes.NirmsNumberController.onPageLoad(NormalMode).url
 

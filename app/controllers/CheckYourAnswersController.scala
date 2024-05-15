@@ -32,21 +32,22 @@ import views.html.CheckYourAnswersView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourAnswersController @Inject()(
-                                            override val messagesApi: MessagesApi,
-                                            identify: IdentifierAction,
-                                            getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: CheckYourAnswersView,
-                                            routerConnector: RouterConnector
-                                          )(implicit ec: ExecutionContext)
-  extends FrontendBaseController with I18nSupport with Logging {
+class CheckYourAnswersController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: CheckYourAnswersView,
+  routerConnector: RouterConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-      TraderProfile.build(request.userAnswers, request.eori) match {
-        case Right(_) =>
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.build(request.userAnswers, request.eori) match {
+      case Right(_)     =>
         val list = SummaryListViewModel(
           rows = Seq(
             UkimsNumberSummary.row(request.userAnswers),
@@ -57,20 +58,18 @@ class CheckYourAnswersController @Inject()(
           ).flatten
         )
         Ok(view(list))
-        case Left(errors) => logErrorsAndContinue(errors)
-      }
+      case Left(errors) => logErrorsAndContinue(errors)
+    }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-
-      TraderProfile.build(request.userAnswers, request.eori) match {
-        case Right(model) =>
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    TraderProfile.build(request.userAnswers, request.eori) match {
+      case Right(model) =>
         routerConnector.submitTraderProfile(model, request.eori).map { _ =>
           Redirect(routes.HomePageController.onPageLoad())
         }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
-      }
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+    }
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {

@@ -22,7 +22,7 @@ import play.api.data.FormError
 class HasNirmsFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "hasNirms.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new HasNirmsFormProvider()()
 

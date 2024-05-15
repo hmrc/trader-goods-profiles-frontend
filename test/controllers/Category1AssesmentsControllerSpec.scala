@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.Category1AssesmentsFormProvider
-import models.{NormalMode, Category1Assesments, UserAnswers}
+import models.{Category1Assesments, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -62,7 +62,8 @@ class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(Category1AssesmentsPage, Category1Assesments.values.head).success.value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(Category1AssesmentsPage, Category1Assesments.values.head).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -74,7 +75,10 @@ class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(Category1Assesments.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(Category1Assesments.values.head), NormalMode)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

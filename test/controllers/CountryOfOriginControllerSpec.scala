@@ -38,7 +38,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new CountryOfOriginFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoad(NormalMode).url
 

@@ -23,7 +23,6 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import pages._
 
-
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
   ".build" - {
@@ -34,11 +33,21 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers("id")
-            .set(UkimsNumberPage, "1").success.value
-            .set(HasNirmsPage, true).success.value
-            .set(NirmsNumberPage, "2").success.value
-            .set(HasNiphlPage, true).success.value
-            .set(NiphlNumberPage, "3").success.value
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, true)
+            .success
+            .value
+            .set(NirmsNumberPage, "2")
+            .success
+            .value
+            .set(HasNiphlPage, true)
+            .success
+            .value
+            .set(NiphlNumberPage, "3")
+            .success
+            .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -49,9 +58,15 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers("id")
-            .set(UkimsNumberPage, "1").success.value
-            .set(HasNirmsPage, false).success.value
-            .set(HasNiphlPage, false).success.value
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, false)
+            .success
+            .value
+            .set(HasNiphlPage, false)
+            .success
+            .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -80,9 +95,15 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers("id")
-            .set(UkimsNumberPage, "1").success.value
-            .set(HasNirmsPage, true).success.value
-            .set(HasNiphlPage, false).success.value
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, true)
+            .success
+            .value
+            .set(HasNiphlPage, false)
+            .success
+            .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -95,9 +116,15 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers("id")
-            .set(UkimsNumberPage, "1").success.value
-            .set(HasNirmsPage, false).success.value
-            .set(HasNiphlPage, true).success.value
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, false)
+            .success
+            .value
+            .set(HasNiphlPage, true)
+            .success
+            .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -110,11 +137,21 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers("id")
-            .set(UkimsNumberPage, "1").success.value
-            .set(HasNirmsPage, false).success.value
-            .set(NirmsNumberPage, "2").success.value
-            .set(HasNiphlPage, false).success.value
-            .set(NiphlNumberPage, "3").success.value
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, false)
+            .success
+            .value
+            .set(NirmsNumberPage, "2")
+            .success
+            .value
+            .set(HasNiphlPage, false)
+            .success
+            .value
+            .set(NiphlNumberPage, "3")
+            .success
+            .value
 
         val result = TraderProfile.build(answers, testEori)
 

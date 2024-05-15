@@ -26,13 +26,13 @@ class Category1AssesmentsFormProviderSpec extends OptionFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "category1Assesments.error.required"
 
     behave like optionsField[Category1Assesments](
       form,
       fieldName,
-      validValues  = Category1Assesments.values,
+      validValues = Category1Assesments.values,
       invalidError = FormError(fieldName, "error.invalid")
     )
 

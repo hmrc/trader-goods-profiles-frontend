@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
 class DataRetrievalOrCreateActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(sessionRepository: SessionRepository) extends  DataRetrievalOrCreateActionImpl(sessionRepository) {
+  class Harness(sessionRepository: SessionRepository) extends DataRetrievalOrCreateActionImpl(sessionRepository) {
     def callTransform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = transform(request)
   }
 
@@ -66,7 +66,7 @@ class DataRetrievalOrCreateActionSpec extends SpecBase with MockitoSugar {
       "must build a userAnswers object and add it to the request" in {
 
         val sessionRepository = mock[SessionRepository]
-        val answers = emptyUserAnswers
+        val answers           = emptyUserAnswers
 
         when(sessionRepository.get(userAnswersId)) thenReturn Future(Some(answers))
         val action = new Harness(sessionRepository)

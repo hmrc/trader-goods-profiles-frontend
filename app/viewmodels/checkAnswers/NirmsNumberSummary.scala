@@ -25,19 +25,17 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object NirmsNumberSummary  {
+object NirmsNumberSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(NirmsNumberPage).map {
-      answer =>
-
-        SummaryListRowViewModel(
-          key     = "nirmsNumber.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlFormat.escape(answer).toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
-          )
+    answers.get(NirmsNumberPage).map { answer =>
+      SummaryListRowViewModel(
+        key = "nirmsNumber.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(answer).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
+      )
     }
 }
