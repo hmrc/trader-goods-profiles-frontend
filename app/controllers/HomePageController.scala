@@ -17,23 +17,25 @@
 package controllers
 
 import controllers.actions._
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomePageView
 
+import scala.concurrent.ExecutionContext
+
 class HomePageController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       getOrCreate: DataRetrievalOrCreateAction,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: HomePageView
-                                     ) extends FrontendBaseController with I18nSupport {
+                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate) {
     implicit request =>
-      Ok(view())
+        Ok(view())
   }
 }
