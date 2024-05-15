@@ -37,23 +37,17 @@ class ProfileSetupController @Inject()(
                                        val controllerComponents: MessagesControllerComponents,
                                        view: ProfileSetupView,
                                        navigator: Navigator,
-                                       sessionRepository: SessionRepository
+                                       requireData: DataRequiredAction,
+                                       getOrCreate: DataRetrievalOrCreateAction
                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate andThen requireData) {
     implicit request =>
       Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit: Action[AnyContent] = (identify andThen getOrCreate andThen requireData) {
     implicit request =>
-      request.userAnswers.map { answers =>
-        Future.successful(Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers)))
-      }.getOrElse {
-        val answers = UserAnswers(request.userId)
-        sessionRepository.set(answers).map { _ =>
-          Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers))
-        }
-      }
+      Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
   }
 }
