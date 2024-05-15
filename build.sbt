@@ -32,9 +32,9 @@ lazy val microservice = (project in file("."))
       "viewmodels.govuk.all._"
     ),
     PlayKeys.playDefaultPort := 10905,
-    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
-      ".*Routes.*;.*viewmodels.govuk.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 78,
+    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;.*Routes.*;",
+    ScoverageKeys.coverageExcludedPackages := "views.*; viewmodels.* ",
+    ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
@@ -49,9 +49,11 @@ lazy val microservice = (project in file("."))
     // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" ->
-        group(Seq(
-          "javascripts/app.js"
-        ))
+        group(
+          Seq(
+            "javascripts/app.js"
+          )
+        )
     ),
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)
