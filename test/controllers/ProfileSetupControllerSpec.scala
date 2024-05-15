@@ -77,38 +77,6 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
           verify(mockSessionRepository, never()).set(any())
         }
       }
-
-//      "must create user answers then redirect to the next page when the user does not have answers" in {
-//
-//        val mockSessionRepository = mock[SessionRepository]
-//        val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-//        when(mockSessionRepository.set(captor.capture())).thenReturn(Future.successful(true))
-//
-//        val application =
-//          applicationBuilder(userAnswers = None)
-//            .overrides(
-//              bind[SessionRepository].toInstance(mockSessionRepository),
-//              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-//      bind[DataRetrievalOrCreateAction].toInstance(new FakeDataRetrievalOrCreateAction(userAnswers.value)),
-//
-//                  )
-//            .build()
-//
-//        running(application) {
-//          val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
-//
-//          val result = route(application, request).value
-//
-//          status(result) mustEqual SEE_OTHER
-//          redirectLocation(result).value mustEqual onwardRoute.url
-//
-//          verify(mockSessionRepository, times(1)).set(any())
-//
-//          val savedAnswers = captor.getValue
-//          savedAnswers.id mustEqual "id"
-//          savedAnswers.data mustEqual Json.obj()
-//        }
-//      }
     }
   }
 }
