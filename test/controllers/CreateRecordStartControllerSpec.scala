@@ -40,5 +40,20 @@ class CreateRecordStartControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
+//TODO - redirect it to trader reference when it is available
+    "must redirect to the index controller page when the user click continue button" in {
+
+      val application = applicationBuilder().build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+      }
+    }
   }
 }

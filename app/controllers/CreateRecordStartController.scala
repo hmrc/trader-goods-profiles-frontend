@@ -36,4 +36,9 @@ class CreateRecordStartController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Ok(view())
   }
+
+  // TODO change it to trader reference controller when it becomes available
+  def onSubmit: Action[AnyContent] = (identify andThen getData) { implicit request =>
+    Redirect(routes.IndexController.onPageLoad.url)
+  }
 }
