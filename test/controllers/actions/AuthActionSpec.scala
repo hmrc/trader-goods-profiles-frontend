@@ -25,11 +25,12 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class AuthActionSpec extends SpecBase {
 
@@ -206,6 +207,31 @@ class AuthActionSpec extends SpecBase {
         }
       }
     }
+
+    "the user's EORI number is empty" - {
+
+      "must redirect the user to the unauthorised page" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val authAction = new AuthenticatedIdentifierAction(
+            new FakeSuccessfulAuthConnector(""),
+            appConfig,
+            bodyParsers
+          )
+          val controller = new Harness(authAction)
+          val result     = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).value mustBe routes.UnauthorisedController.onPageLoad.url
+        }
+      }
+    }
+
   }
 }
 
@@ -217,4 +243,20 @@ class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends 
     ec: ExecutionContext
   ): Future[A] =
     Future.failed(exceptionToReturn)
+}
+
+class FakeSuccessfulAuthConnector @Inject() (eori: String) extends AuthConnector {
+  val serviceUrl: String = ""
+
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[A] = {
+    val authResponse = new ~(
+      Some("internalId"),
+      Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", eori)), "")))
+    )
+
+    Future.fromTry(Try(authResponse.asInstanceOf[A]))
+  }
 }

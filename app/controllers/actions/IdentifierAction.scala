@@ -57,9 +57,9 @@ class AuthenticatedIdentifierAction @Inject() (
           authorisedEnrolments
             .getEnrolment(config.tgpEnrolmentIdentifier.key)
             .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
-            case Some(enrolment) =>
+            case Some(enrolment) if !enrolment.value.isBlank =>
               block(IdentifierRequest(request, internalId, enrolment.value))
-            case None            => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+            case _                                           => throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
       } recover {
       case _: NoActiveSession        =>
