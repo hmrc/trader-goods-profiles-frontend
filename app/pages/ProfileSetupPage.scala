@@ -16,4 +16,14 @@
 
 package pages
 
-case object ProfileSetupPage extends Page
+import play.api.libs.json.JsPath
+
+import java.time.{Instant, LocalDateTime}
+
+case object ProfileSetupPage extends QuestionPage[Instant] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "profileJourneyStartTime"
+
+}

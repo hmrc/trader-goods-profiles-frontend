@@ -22,10 +22,13 @@ import navigation.Navigator
 import pages.ProfileSetupPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ProfileSetupView
 
+import java.time.Instant
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class ProfileSetupController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,15 +38,20 @@ class ProfileSetupController @Inject() (
   view: ProfileSetupView,
   navigator: Navigator,
   requireData: DataRequiredAction,
-  getOrCreate: DataRetrievalOrCreateAction
-) extends FrontendBaseController
+  getOrCreate: DataRetrievalOrCreateAction,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate) { implicit request =>
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    for{
+      updatedAnswers <- Future.fromTry(request.userAnswers.set(ProfileSetupPage, Instant.now))
+    _ <- sessionRepository.set(updatedAnswers)
+  } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
+
   }
 }
