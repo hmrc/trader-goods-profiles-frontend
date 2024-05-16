@@ -69,7 +69,9 @@ POST       /category1Assesments                        controllers.Category1Asse
 GET        /changeCategory1Assesments                  controllers.Category1AssesmentsController.onPageLoad(mode: Mode = CheckMode)
 POST       /changeCategory1Assesments                  controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /createRecordStart                       controllers.CreateRecordStartController.onPageLoad()
+GET        /create-record/create-record-start          controllers.CreateRecordStartController.onPageLoad()
+POST       /create-record/create-record-start          controllers.CreateRecordStartController.onSubmit()
+
 
 GET        /createRecordSuccess                       controllers.CreateRecordSuccessController.onPageLoad()
 
