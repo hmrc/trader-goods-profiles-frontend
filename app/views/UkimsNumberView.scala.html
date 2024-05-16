@@ -44,7 +44,9 @@
             InputViewModel(
                 field = form("value"),
                 label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
-            ).withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
+            )
+            .withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
+            .withWidth(InputWidth.Fixed30)
         )
 
         @govukButton(
