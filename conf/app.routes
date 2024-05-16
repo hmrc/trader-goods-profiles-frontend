@@ -73,7 +73,7 @@ GET        /create-record/create-record-start          controllers.CreateRecordS
 POST       /create-record/create-record-start          controllers.CreateRecordStartController.onSubmit()
 
 
-GET        /createRecordSuccess                       controllers.CreateRecordSuccessController.onPageLoad()
+GET        /create-record/create-record-success          controllers.CreateRecordSuccessController.onPageLoad()
 
 GET        /goodsDescription                        controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
 POST       /goodsDescription                        controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)

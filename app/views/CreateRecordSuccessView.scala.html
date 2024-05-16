@@ -16,12 +16,32 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukPanel : GovukPanel
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("createRecordSuccess.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("createRecordSuccess.heading")</h1>
+    @govukPanel(Panel(
+          title = messages("createRecordSuccess.h1")
+         )
+    )
+    <p class="govuk-body">@messages("createRecordSuccess.p1")</p>
+    <h2 class="govuk-heading-m">@messages("createRecordSuccess.h2")</h2>
+    <p class="govuk-body">@messages("createRecordSuccess.p2")</p>
+    <p class="govuk-body">@messages("createRecordSuccess.p3")</p>
+
+    <div class="govuk-button-group">
+        @govukButton(Button(
+        href = Some(routes.CategoryGuidanceController.onPageLoad().url),
+        content = messages("createRecordSuccess.primaryButton"))
+        )
+        @govukButton(Button(
+        href = Some(routes.HomePageController.onPageLoad().url),
+        content =  messages("createRecordSuccess.secondaryButton"),
+        classes = "govuk-button--secondary"
+        ))
+    </div>
 }

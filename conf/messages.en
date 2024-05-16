@@ -190,8 +190,14 @@ createRecordStart.p6 = Categorisation will let you know if your goods are eligib
 createRecordStart.p7 = To complete categorisation, you may need to know the conditions your goods move under.
 createRecordStart.p8 = You’ll need to complete categorisation before you can use the goods record on movements.
 
-createRecordSuccess.title = createRecordSuccess
-createRecordSuccess.heading = createRecordSuccess
+createRecordSuccess.title = You''ve created a goods record
+createRecordSuccess.h1 = You''ve created a goods record
+createRecordSuccess.p1 = We’ve added this record to your list of goods records.
+createRecordSuccess.h2 = Categorisation
+createRecordSuccess.p2 = You still need to categorise the goods before you can use it on movements.
+createRecordSuccess.p3 = You do not have to categorise the goods now. You can review the record from your list of goods records and start categorisation from there.
+createRecordSuccess.primaryButton = Categorise goods now
+createRecordSuccess.secondaryButton = Go to homepage
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
