@@ -38,7 +38,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasNirmsFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val hasNirmsRoute = routes.HasNirmsController.onPageLoad(NormalMode).url
 

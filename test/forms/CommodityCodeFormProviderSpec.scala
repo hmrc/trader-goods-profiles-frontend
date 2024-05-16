@@ -22,13 +22,13 @@ import play.api.data.{Form, FormError}
 
 class CommodityCodeFormProviderSpec extends StringFieldBehaviours {
 
-  private val requiredKey        = "commodityCode.error.required"
-  private val invalidKey         = "commodityCode.error.invalidFormat"
+  private val requiredKey = "commodityCode.error.required"
+  private val invalidKey  = "commodityCode.error.invalidFormat"
 
   private val formProvider       = new CommodityCodeFormProvider()
   private val form: Form[String] = formProvider()
 
-  private val fieldName          = "value"
+  private val fieldName = "value"
 
   val validCommodityCodeGenerator: Gen[String] = {
     val validLengthsGen = Gen.oneOf(6, 8, 10)

@@ -65,7 +65,7 @@ hasNiphl.checkYourAnswersLabel = NIPHL registered
 hasNiphl.error.required = Select if you are NIPHL registered
 hasNiphl.change.hidden = NIPHL registered
 
-hasNirms.title = Northern Ireland Retail Movement Scheme number
+hasNirms.title = Northern Ireland Retail Movement Scheme (NIRMS)
 hasNirms.h1 = Northern Ireland Retail Movement Scheme (NIRMS)
 hasNirms.h2 = Are you NIRMS registered?
 hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
@@ -124,8 +124,8 @@ ukimsNumber.hint = For example, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = I am not UKIMS registered
 ukimsNumber.error.required = Enter your UKIMS number
 ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
-ukimsNumber.checkYourAnswersLabel = UKIMS Number
-ukimsNumber.change.hidden = UKIMS Number
+ukimsNumber.checkYourAnswersLabel = UKIMS number
+ukimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
@@ -154,5 +154,46 @@ countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens
 countryOfOrigin.heading = What is the country of origin of the goods?
 countryOfOrigin.error.required = Enter the country of origin
 
-homePage.title = homePage
-homePage.heading = homePage
+homepage.title = Trader Goods Profile homepage
+homepage.h1 = Trader Goods Profile homepage
+homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
+homepage.h2.1 = Goods records
+homepage.p2.linkText = View or update your goods records
+homepage.p3.linkText = Create a new goods record
+homepage.h2.2 = Ask for advice
+homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
+homepage.h2.3 = Manage your profile
+homepage.p5.linkText = Manage your profile details
+
+category1Assesments.title = category1Assesments
+category1Assesments.heading = category1Assesments
+category1Assesments.option1 = Option 1
+category1Assesments.option2 = Option 2
+category1Assesments.checkYourAnswersLabel = category1Assesments
+category1Assesments.error.required = Select category1Assesments
+category1Assesments.change.hidden = Category1Assesments
+
+createRecordStart.title = createRecordStart
+createRecordStart.heading = createRecordStart
+
+createRecordSuccess.title = createRecordSuccess
+createRecordSuccess.heading = createRecordSuccess
+
+goodsDescription.title = goodsDescription
+goodsDescription.heading = goodsDescription
+goodsDescription.checkYourAnswersLabel = goodsDescription
+goodsDescription.error.required = Enter goodsDescription
+goodsDescription.error.length = GoodsDescription must be 512 characters or less
+goodsDescription.change.hidden = GoodsDescription
+
+hasCorrectGoods.title = hasCorrectGoods
+hasCorrectGoods.heading = hasCorrectGoods
+hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
+hasCorrectGoods.error.required = Select yes if hasCorrectGoods
+hasCorrectGoods.change.hidden = HasCorrectGoods
+
+hasGoodsDescription.title = hasGoodsDescription
+hasGoodsDescription.heading = hasGoodsDescription
+hasGoodsDescription.checkYourAnswersLabel = hasGoodsDescription
+hasGoodsDescription.error.required = Select yes if hasGoodsDescription
+hasGoodsDescription.change.hidden = HasGoodsDescription

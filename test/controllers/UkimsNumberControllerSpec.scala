@@ -35,12 +35,12 @@ import scala.concurrent.Future
 
 class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new UkimsNumberFormProvider()
-  val form = formProvider()
+  private val form = formProvider()
 
-  lazy val ukimsNumberRoute = routes.UkimsNumberController.onPageLoad(NormalMode).url
+  private lazy val ukimsNumberRoute = routes.UkimsNumberController.onPageLoad(NormalMode).url
 
   "UkimsNumber Controller" - {
 

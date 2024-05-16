@@ -27,12 +27,10 @@ case object HasNirmsPage extends QuestionPage[Boolean] {
 
   override def toString: String = "hasNirms"
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] = {
-
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
     userAnswers.get(HasNirmsPage) match {
       case Some(false) => userAnswers.remove(NirmsNumberPage)
-      case _ => super.cleanup(value, userAnswers)
+      case _           => super.cleanup(value, userAnswers)
     }
 
-  }
 }

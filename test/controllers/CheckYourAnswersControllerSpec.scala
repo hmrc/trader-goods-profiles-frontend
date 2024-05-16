@@ -17,16 +17,21 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
 import connectors.RouterConnector
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlPage, HasNirmsPage, UkimsNumberPage}
-import play.api.test.FakeRequest
+import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import play.api.Application
 import play.api.inject.bind
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -36,11 +41,32 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
   "Check Your Answers Controller" - {
 
+    def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
+      rows = Seq(
+        UkimsNumberSummary.row(userAnswers)(messages(app)),
+        HasNirmsSummary.row(userAnswers)(messages(app)),
+        NirmsNumberSummary.row(userAnswers)(messages(app)),
+        HasNiphlSummary.row(userAnswers)(messages(app)),
+        NiphlNumberSummary.row(userAnswers)(messages(app))
+      ).flatten
+    )
+
     "for a GET" - {
 
-      "must return OK and the correct view" in {
+      "must return OK and the correct view with valid mandatory data" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, false)
+          .success
+          .value
+          .set(HasNiphlPage, false)
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -48,10 +74,60 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CheckYourAnswersView]
-          val list = SummaryListViewModel(Seq.empty)
+          val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must return OK and the correct view with all data (including optional)" in {
+
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, true)
+          .success
+          .value
+          .set(NirmsNumberPage, "2")
+          .success
+          .value
+          .set(HasNiphlPage, true)
+          .success
+          .value
+          .set(NiphlNumberPage, "3")
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CheckYourAnswersView]
+          val list = createChangeList(userAnswers, application)
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Journey Recovery if no answers are found" in {
+
+        val application = applicationBuilder(Some(emptyUserAnswers)).build()
+        val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
         }
       }
 
@@ -78,12 +154,18 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
           val userAnswers =
             emptyUserAnswers
-              .set(UkimsNumberPage, "1").success.value
-              .set(HasNirmsPage, false).success.value
-              .set(HasNiphlPage, false).success.value
+              .set(UkimsNumberPage, "1")
+              .success
+              .value
+              .set(HasNirmsPage, false)
+              .success
+              .value
+              .set(HasNiphlPage, false)
+              .success
+              .value
 
           val mockConnector = mock[RouterConnector]
-          when(mockConnector.submitTraderProfile(any())(any())).thenReturn(Future.successful(Done))
+          when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -95,11 +177,11 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
             val result = route(application, request).value
 
-            val expectedPayload = TraderProfile("1", None, None)
+            val expectedPayload = TraderProfile(testEori, "1", None, None)
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
-            verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload))(any())
+            verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
           }
         }
       }
@@ -109,6 +191,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[RouterConnector]
+          val continueUrl   = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
           val application =
             applicationBuilder(userAnswers = Some(UserAnswers("")))
@@ -121,8 +204,40 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-            verify(mockConnector, never()).submitTraderProfile(any())(any())
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            verify(mockConnector, never()).submitTraderProfile(any(), any())(any())
+          }
+        }
+      }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers =
+          emptyUserAnswers
+            .set(UkimsNumberPage, "1")
+            .success
+            .value
+            .set(HasNirmsPage, false)
+            .success
+            .value
+            .set(HasNiphlPage, false)
+            .success
+            .value
+
+        val mockConnector = mock[RouterConnector]
+        when(mockConnector.submitTraderProfile(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[RouterConnector].toInstance(mockConnector))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
           }
         }
       }
