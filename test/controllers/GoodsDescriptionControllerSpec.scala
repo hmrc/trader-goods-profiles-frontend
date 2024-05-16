@@ -93,7 +93,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
           )
           .build()
 
-      val length = 512;
+      val length              = 512;
       val description: String = Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString).sample.value
 
       running(application) {
@@ -132,7 +132,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      val invalidLength = 513;
+      val invalidLength              = 513;
       val invalidDescription: String = Gen.listOfN(invalidLength, Gen.alphaNumChar).map(_.mkString).sample.value
 
       running(application) {
