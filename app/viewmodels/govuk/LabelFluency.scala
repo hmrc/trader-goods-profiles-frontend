@@ -37,7 +37,7 @@ trait LabelFluency {
         .copy(isPageHeading = true)
         .withCssClass(size.toString)
 
-    def asSecondaryHeading(size: LabelSize = LabelSize.Large): Label =
+    def asSecondaryHeading(size: LabelSize = LabelSize.Medium): Label =
       label
         .copy(isPageHeading = false)
         .withCssClass(size.toString)
