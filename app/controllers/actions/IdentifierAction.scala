@@ -31,23 +31,25 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait IdentifierAction extends ActionBuilder[IdentifierRequest, AnyContent] with ActionFunction[Request, IdentifierRequest]
+trait IdentifierAction
+    extends ActionBuilder[IdentifierRequest, AnyContent]
+    with ActionFunction[Request, IdentifierRequest]
 
-class AuthenticatedIdentifierAction @Inject()(
-                                               override val authConnector: AuthConnector,
-                                               config: FrontendAppConfig,
-                                               val parser: BodyParsers.Default
-                                             )
-                                             (implicit val executionContext: ExecutionContext)
-  extends IdentifierAction
-  with AuthorisedFunctions
-  with Logging {
+class AuthenticatedIdentifierAction @Inject() (
+  override val authConnector: AuthConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends IdentifierAction
+    with AuthorisedFunctions
+    with Logging {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    val predicates = Enrolment(config.tgpEnrolmentIdentifier.key) and (AffinityGroup.Organisation or AffinityGroup.Individual)
+    val predicates =
+      Enrolment(config.tgpEnrolmentIdentifier.key) and (AffinityGroup.Organisation or AffinityGroup.Individual)
 
     authorised(predicates)
       .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
@@ -55,12 +57,12 @@ class AuthenticatedIdentifierAction @Inject()(
           authorisedEnrolments
             .getEnrolment(config.tgpEnrolmentIdentifier.key)
             .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
-              case Some(enrolment) =>
-                block(IdentifierRequest(request, internalId, enrolment.value))
-              case None => throw InsufficientEnrolments("Unable to retrieve Enrolment")
+            case Some(enrolment) if !enrolment.value.isBlank =>
+              block(IdentifierRequest(request, internalId, enrolment.value))
+            case _                                           => throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
       } recover {
-      case _: NoActiveSession =>
+      case _: NoActiveSession        =>
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException =>

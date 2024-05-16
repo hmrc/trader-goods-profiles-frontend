@@ -22,8 +22,8 @@ import play.api.data.FormError
 class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "countryOfOrigin.error.required"
-  val lengthKey = "countryOfOrigin.error.length"
-  val maxLength = 100
+  val lengthKey   = "countryOfOrigin.error.length"
+  val maxLength   = 100
 
   val form = new CountryOfOriginFormProvider()()
 

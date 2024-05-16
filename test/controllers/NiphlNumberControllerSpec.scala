@@ -38,7 +38,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new NiphlNumberFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val niphlNumberRoute = routes.NiphlNumberController.onPageLoad(NormalMode).url
 
@@ -74,7 +74,10 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("SN12345"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("SN12345"), NormalMode)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

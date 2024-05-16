@@ -35,7 +35,7 @@ class NiphlNumberFormProviderSpec extends StringFieldBehaviours with NiphlNumber
 
     "errors with" - {
       "less than 4 characters" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLength(3), wrongFormat)
+        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLengthNonEmpty(3), wrongFormat)
       }
 
       "more than 7 characters" - {

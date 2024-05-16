@@ -24,21 +24,19 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object HasNirmsSummary  {
+object HasNirmsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasNirmsPage).map {
-      answer =>
+    answers.get(HasNirmsPage).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
 
-        val value = if (answer) "site.yes" else "site.no"
-
-        SummaryListRowViewModel(
-          key     = "hasNirms.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = "hasNirms.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
+      )
     }
 }

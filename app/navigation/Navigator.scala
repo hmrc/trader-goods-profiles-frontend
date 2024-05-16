@@ -24,64 +24,74 @@ import pages._
 import models._
 
 @Singleton
-class Navigator @Inject()() {
+class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
-    case UkimsNumberPage => _ => routes.HasNirmsController.onPageLoad(NormalMode)
-    case HasNirmsPage => navigateFromHasNirms
-    case NirmsNumberPage => _ => routes.HasNiphlController.onPageLoad(NormalMode)
-    case HasNiphlPage => navigateFromHasNiphl
-    case NiphlNumberPage => _ => routes.CheckYourAnswersController.onPageLoad
-    case _ => _ => routes.IndexController.onPageLoad
+    case UkimsNumberPage  => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case HasNirmsPage     => navigateFromHasNirms
+    case NirmsNumberPage  => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case HasNiphlPage     => navigateFromHasNiphl
+    case NiphlNumberPage  => _ => routes.CheckYourAnswersController.onPageLoad
+    case _                => _ => routes.IndexController.onPageLoad
   }
 
-  private def navigateFromHasNirms(answers: UserAnswers): Call = {
-    answers.get(HasNirmsPage).map {
-      case true => routes.NirmsNumberController.onPageLoad(NormalMode)
-      case false => routes.HasNiphlController.onPageLoad(NormalMode)
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-  }
+  private def navigateFromHasNirms(answers: UserAnswers): Call =
+    answers
+      .get(HasNirmsPage)
+      .map {
+        case true  => routes.NirmsNumberController.onPageLoad(NormalMode)
+        case false => routes.HasNiphlController.onPageLoad(NormalMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasNiphl(answers: UserAnswers): Call = {
-    answers.get(HasNiphlPage).map {
-      case true => routes.NiphlNumberController.onPageLoad(NormalMode)
-      case false => routes.CheckYourAnswersController.onPageLoad
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-  }
+  private def navigateFromHasNiphl(answers: UserAnswers): Call =
+    answers
+      .get(HasNiphlPage)
+      .map {
+        case true  => routes.NiphlNumberController.onPageLoad(NormalMode)
+        case false => routes.CheckYourAnswersController.onPageLoad
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case HasNirmsPage => navigateFromHasNirmsCheck
     case HasNiphlPage => navigateFromHasNiphlCheck
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad
+    case _            => _ => routes.CheckYourAnswersController.onPageLoad
   }
 
-  private def navigateFromHasNirmsCheck(answers: UserAnswers): Call = {
-    answers.get(HasNirmsPage).map {
-      case true => if(answers.isDefined(NirmsNumberPage)) {
-        routes.CheckYourAnswersController.onPageLoad
-      } else {
-        routes.NirmsNumberController.onPageLoad(CheckMode)
+  private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
+    answers
+      .get(HasNirmsPage)
+      .map {
+        case true  =>
+          if (answers.isDefined(NirmsNumberPage)) {
+            routes.CheckYourAnswersController.onPageLoad
+          } else {
+            routes.NirmsNumberController.onPageLoad(CheckMode)
+          }
+        case false => routes.CheckYourAnswersController.onPageLoad
       }
-      case false => routes.CheckYourAnswersController.onPageLoad
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-  }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasNiphlCheck(answers: UserAnswers): Call = {
-    answers.get(HasNiphlPage).map {
-      case true => if(answers.isDefined(NiphlNumberPage)) {
-        routes.CheckYourAnswersController.onPageLoad
-      } else {
-        routes.NiphlNumberController.onPageLoad(CheckMode)
+  private def navigateFromHasNiphlCheck(answers: UserAnswers): Call =
+    answers
+      .get(HasNiphlPage)
+      .map {
+        case true  =>
+          if (answers.isDefined(NiphlNumberPage)) {
+            routes.CheckYourAnswersController.onPageLoad
+          } else {
+            routes.NiphlNumberController.onPageLoad(CheckMode)
+          }
+        case false => routes.CheckYourAnswersController.onPageLoad
       }
-      case false => routes.CheckYourAnswersController.onPageLoad
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-  }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
       normalRoutes(page)(userAnswers)
-    case CheckMode =>
+    case CheckMode  =>
       checkRouteMap(page)(userAnswers)
   }
 }

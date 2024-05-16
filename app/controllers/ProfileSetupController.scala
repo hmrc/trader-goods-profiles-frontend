@@ -17,43 +17,33 @@
 package controllers
 
 import controllers.actions._
-import models.{NormalMode, UserAnswers}
+import models.NormalMode
 import navigation.Navigator
 import pages.ProfileSetupPage
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ProfileSetupView
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
 
-class ProfileSetupController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ProfileSetupView,
-                                       navigator: Navigator,
-                                       sessionRepository: SessionRepository
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class ProfileSetupController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: ProfileSetupView,
+  navigator: Navigator,
+  requireData: DataRequiredAction,
+  getOrCreate: DataRetrievalOrCreateAction
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
-    implicit request =>
-      Ok(view())
+  def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate) { implicit request =>
+    Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData).async {
-    implicit request =>
-      request.userAnswers.map { answers =>
-        Future.successful(Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers)))
-      }.getOrElse {
-        val answers = UserAnswers(request.userId)
-        sessionRepository.set(answers).map { _ =>
-          Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, answers))
-        }
-      }
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
   }
 }
