@@ -19,6 +19,7 @@ package forms
 import javax.inject.Inject
 import forms.mappings.Mappings
 import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex
 import play.api.data.Form
 
 class NirmsNumberFormProvider @Inject() extends Mappings {
@@ -27,6 +28,6 @@ class NirmsNumberFormProvider @Inject() extends Mappings {
     Form(
       "value" -> text("nirmsNumber.error.required")
         .transform(removeWhitespace, identity[String])
-        .verifying(regexp("RMS-?(GB|NI)-?[0-9]{6}", "nirmsNumber.error.invalidFormat"))
+        .verifying(regexp(StringFieldRegex.nirmsRegex, "nirmsNumber.error.invalidFormat"))
     )
 }
