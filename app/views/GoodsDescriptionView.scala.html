@@ -15,12 +15,19 @@
  *@
 
 @import viewmodels.InputWidth._
+@import viewmodels._
+@import viewmodels.govuk.characterCount._
+@import play.api.data.Field
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.charactercount.CharacterCount
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
+    textArea: HmrcCharacterCount,
     govukButton: GovukButton
 )
 
@@ -34,12 +41,16 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukInput(
-            InputViewModel(
+        @textArea(
+            CharacterCountViewModel(
                 field = form("value"),
                 label = LabelViewModel(messages("goodsDescription.heading")).asPageHeading()
             )
-            .withWidth(Full)
+            .withRows(10)
+            .withMaxLength(512)
+            .withHint(Hint(content = HtmlContent("this is a hint")))
+            .withId("value")
+            .withThreshold(75)
         )
 
         @govukButton(
