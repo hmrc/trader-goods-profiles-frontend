@@ -22,6 +22,7 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar
 import pages.GoodsDescriptionPage
 import play.api.inject.bind
@@ -92,10 +93,13 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
           )
           .build()
 
+      val length = 512;
+      val description: String = Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString).sample.value
+
       running(application) {
         val request =
           FakeRequest(POST, goodsDescriptionRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", description))
 
         val result = route(application, request).value
 
@@ -104,7 +108,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    "must return a Bad Request and errors when no description is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -114,6 +118,29 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[GoodsDescriptionView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must return a Bad Request and errors when user submits a description longer than 512 characters" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      val invalidLength = 513;
+      val invalidDescription: String = Gen.listOfN(invalidLength, Gen.alphaNumChar).map(_.mkString).sample.value
+
+      running(application) {
+        val request =
+          FakeRequest(POST, goodsDescriptionRoute)
+            .withFormUrlEncodedBody(("value", invalidDescription))
+
+        val boundForm = form.bind(Map("value" -> invalidDescription))
 
         val view = application.injector.instanceOf[GoodsDescriptionView]
 
