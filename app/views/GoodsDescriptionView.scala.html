@@ -37,6 +37,10 @@
 
     @formHelper(action = routes.GoodsDescriptionController.onSubmit(mode)) {
 
+        <h1 class="govuk-heading-xl">@messages("goodsDescription.h1")</h1>
+        <p class="govuk-body">@messages("goodsDescription.p1")</p>
+        <p class="govuk-body">@messages("goodsDescription.p2")</p>
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
@@ -44,11 +48,11 @@
         @textArea(
             CharacterCountViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("goodsDescription.heading")).asPageHeading()
+                label = LabelViewModel(messages("goodsDescription.inputHeading")).asSecondaryHeading()
             )
             .withRows(10)
             .withMaxLength(512)
-            .withHint(Hint(content = HtmlContent("this is a hint")))
+            .withHint(Hint(content = HtmlContent(messages("goodsDescription.hint"))))
             .withId("value")
             .withThreshold(75)
         )

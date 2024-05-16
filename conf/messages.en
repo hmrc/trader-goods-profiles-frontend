@@ -179,12 +179,15 @@ createRecordStart.heading = createRecordStart
 createRecordSuccess.title = createRecordSuccess
 createRecordSuccess.heading = createRecordSuccess
 
-goodsDescription.title = goodsDescription
-goodsDescription.heading = goodsDescription
-goodsDescription.checkYourAnswersLabel = goodsDescription
-goodsDescription.error.required = Enter goodsDescription
-goodsDescription.error.length = GoodsDescription must be 512 characters or less
-goodsDescription.change.hidden = GoodsDescription
+goodsDescription.title = Goods description
+goodsDescription.heading = Goods description
+goodsDescription.p1 = A goods description is your description of the goods. This does not need to be unique to your Trader Goods Profile or any existing goods records.
+goodsDescription.p2 = The goods description also does not have to match tariff information.
+goodsDescription.hint = This can be up to 512 characters long.
+goodsDescription.checkYourAnswersLabel = Goods description
+goodsDescription.error.required = Enter the goods description
+goodsDescription.error.length = The goods description must be 512 characters or less
+goodsDescription.change.hidden = Goods description
 
 hasCorrectGoods.title = hasCorrectGoods
 hasCorrectGoods.heading = hasCorrectGoods
