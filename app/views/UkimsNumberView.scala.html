@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.LabelSize._
+@import viewmodels.InputWidth._
 @import models.Mode
 
 
@@ -44,7 +45,9 @@
             InputViewModel(
                 field = form("value"),
                 label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
-            ).withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
+            )
+            .withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
+            .withWidth(Fixed30)
         )
 
         @govukButton(
