@@ -97,6 +97,15 @@ class NavigatorSpec extends SpecBase {
           UserAnswers("id")
         ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
+
+      "must go from CommodityCodePage to HasCorrectGoodsPage" in {
+
+        navigator.nextPage(
+          CommodityCodePage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+      }
     }
 
     "in Check mode" - {

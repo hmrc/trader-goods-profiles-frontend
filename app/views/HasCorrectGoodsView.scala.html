@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -26,6 +28,14 @@
 
 @layout(pageTitle = title(form, messages("hasCorrectGoods.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("hasCorrectGoods.heading")</h1>
+
+    <p class="govuk-body">@messages("hasCorrectGoods.p1")</p>
+
+    <p class="govuk-body">
+        <a href="https://www.trade-tariff.service.gov.uk/find_commodity" class="govuk-link" >@messages("hasCorrectGoods.p2.linkText")</a>.
+    </p>
+
     @formHelper(action = routes.HasCorrectGoodsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
@@ -35,7 +45,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("hasCorrectGoods.heading")).asPageHeading()
+                legend = Legend(messages("hasCorrectGoods.h2")).asPageHeading(Medium)
             )
         )
 
