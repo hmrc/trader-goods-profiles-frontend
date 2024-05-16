@@ -176,8 +176,14 @@ category1Assesments.change.hidden = Category1Assesments
 createRecordStart.title = createRecordStart
 createRecordStart.heading = createRecordStart
 
-createRecordSuccess.title = createRecordSuccess
-createRecordSuccess.heading = createRecordSuccess
+createRecordSuccess.title = You''ve created a goods record
+createRecordSuccess.h1 = You''ve created a goods record
+createRecordSuccess.p1 = We’ve added this record to your list of goods records.
+createRecordSuccess.h2 = Categorisation
+createRecordSuccess.p2 = You still need to categorise the goods before you can use it on movements.
+createRecordSuccess.p3 = You do not have to categorise the goods now. You can review the record from your list of goods records and start categorisation from there.
+createRecordSuccess.primaryButton = Categorise goods now
+createRecordSuccess.secondaryButton = Go to homepage
 
 goodsDescription.title = goodsDescription
 goodsDescription.heading = goodsDescription
