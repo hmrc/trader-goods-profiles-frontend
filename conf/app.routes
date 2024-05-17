@@ -69,21 +69,23 @@ POST       /category1Assesments                        controllers.Category1Asse
 GET        /changeCategory1Assesments                  controllers.Category1AssesmentsController.onPageLoad(mode: Mode = CheckMode)
 POST       /changeCategory1Assesments                  controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /createRecordStart                       controllers.CreateRecordStartController.onPageLoad()
+GET        /create-record/create-record-start          controllers.CreateRecordStartController.onPageLoad()
+POST       /create-record/create-record-start          controllers.CreateRecordStartController.onSubmit()
 
-GET        /createRecordSuccess                       controllers.CreateRecordSuccessController.onPageLoad()
 
-GET        /goodsDescription                        controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST       /goodsDescription                        controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET        /changeGoodsDescription                  controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeGoodsDescription                  controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET        /create-record/create-record-success          controllers.CreateRecordSuccessController.onPageLoad()
+
+GET        /create-record/goods-description            controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST       /create-record/goods-description            controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET        /create-record/goods-description/check     controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST       /create-record/goods-description/check     controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
 
 GET        /create-record/commodity-code-result                        controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
 POST       /create-record/commodity-code-result                        controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
 GET        /create-record/commodity-code-result/check                  controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
 POST       /create-record/commodity-code-result/check                  controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /hasGoodsDescription                        controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST       /hasGoodsDescription                        controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasGoodsDescription                  controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasGoodsDescription                  controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET        /create-record/goods-description-question                   controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST       /create-record/goods-description-question                   controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET        /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST       /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)

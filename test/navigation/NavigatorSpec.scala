@@ -98,6 +98,46 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
+      "must go from HasGoodsDescriptionPage" - {
+
+        "to GoodsDescriptionPage when answer is Yes" in {
+
+          val answers = UserAnswers("id").set(HasGoodsDescriptionPage, true).success.value
+          navigator.nextPage(HasGoodsDescriptionPage, NormalMode, answers) mustBe routes.GoodsDescriptionController
+            .onPageLoad(
+              NormalMode
+            )
+        }
+
+        "to CountryOfOriginPage when answer is No" in {
+
+          val answers = UserAnswers("id").set(HasGoodsDescriptionPage, false).success.value
+          navigator.nextPage(HasGoodsDescriptionPage, NormalMode, answers) mustBe routes.CountryOfOriginController
+            .onPageLoad(NormalMode)
+        }
+
+        "to JourneyRecoveryPage when answer is not present" in {
+
+          val answers = UserAnswers("id")
+          navigator.nextPage(HasGoodsDescriptionPage, NormalMode, answers) mustBe routes.JourneyRecoveryController
+            .onPageLoad()
+        }
+      }
+
+      "must go from GoodsDescriptionPage" - {
+
+        "to CountryOfOriginPage" in {
+          navigator.nextPage(
+            GoodsDescriptionPage,
+            NormalMode,
+            UserAnswers("id")
+          ) mustBe routes.CountryOfOriginController.onPageLoad(
+            NormalMode
+          )
+        }
+
+      }
+
       "must go from CommodityCodePage to HasCorrectGoodsPage" in {
 
         navigator.nextPage(

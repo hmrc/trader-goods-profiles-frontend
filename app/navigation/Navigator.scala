@@ -27,15 +27,26 @@ import models._
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ProfileSetupPage  => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
-    case UkimsNumberPage   => _ => routes.HasNirmsController.onPageLoad(NormalMode)
-    case HasNirmsPage      => navigateFromHasNirms
-    case NirmsNumberPage   => _ => routes.HasNiphlController.onPageLoad(NormalMode)
-    case HasNiphlPage      => navigateFromHasNiphl
-    case NiphlNumberPage   => _ => routes.CheckYourAnswersController.onPageLoad
+    case ProfileSetupPage        => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
+    case UkimsNumberPage         => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case HasNirmsPage            => navigateFromHasNirms
+    case NirmsNumberPage         => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case HasNiphlPage            => navigateFromHasNiphl
+    case NiphlNumberPage         => _ => routes.CheckYourAnswersController.onPageLoad
+    case HasGoodsDescriptionPage => navigateFromHasGoodsDescription
+    case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
     case CommodityCodePage => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
-    case _                 => _ => routes.IndexController.onPageLoad
+    case _                       => _ => routes.IndexController.onPageLoad
   }
+
+  private def navigateFromHasGoodsDescription(answers: UserAnswers): Call =
+    answers
+      .get(HasGoodsDescriptionPage)
+      .map {
+        case true  => routes.GoodsDescriptionController.onPageLoad(NormalMode)
+        case false => routes.CountryOfOriginController.onPageLoad(NormalMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
     answers
