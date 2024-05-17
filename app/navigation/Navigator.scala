@@ -35,7 +35,7 @@ class Navigator @Inject() () {
     case NiphlNumberPage         => _ => routes.CheckYourAnswersController.onPageLoad
     case HasGoodsDescriptionPage => navigateFromHasGoodsDescription
     case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
-    case CommodityCodePage => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case CommodityCodePage       => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case _                       => _ => routes.IndexController.onPageLoad
   }
 
