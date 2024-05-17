@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package connectors.connectors
+package connectors
 
-import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.OttConnector
-import models.{Commodity, TraderProfile}
-import org.apache.pekko.http.scaladsl.model.HttpHeader.ParsingResult.Ok
+import models.Commodity
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 

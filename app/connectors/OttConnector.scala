@@ -20,9 +20,10 @@ import config.Service
 import models.{Commodity, TraderProfile}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.libs.json.Json
+import play.api.http.Status.OK
+import play.api.libs.json.{JsResult, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,9 +34,22 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
   private def ottUrl(commodityCode: String) =
     url"$baseUrl/ott/commodities/$commodityCode"
 
-  def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] =
+  def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] = {
+
     httpClient
       .get(ottUrl(commodityCode))
       .execute[HttpResponse]
-      .map(res => res.json.as[Commodity])
+      .flatMap { response =>
+        response.status match {
+          case OK =>
+            response.json
+              .validate[Commodity]
+              .map(result => Future.successful(result))
+              .recoverTotal(error => Future.failed(JsResult.Exception(error)))
+          case _  =>
+            Future.failed(UpstreamErrorResponse(response.body, response.status))
+        }
+      }
+  }
+
 }

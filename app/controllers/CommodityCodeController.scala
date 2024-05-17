@@ -16,19 +16,24 @@
 
 package controllers
 
+import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
+
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.CommodityCodePage
+import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CommodityCodeView
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class CommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
@@ -38,6 +43,7 @@ class CommodityCodeController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: CommodityCodeFormProvider,
+  ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
   view: CommodityCodeView
 )(implicit ec: ExecutionContext)
@@ -62,10 +68,17 @@ class CommodityCodeController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
-            for {
+            // save the commodity object
+            (for {
+              commodity      <- ottConnector.getCommodityCode(value)
               updatedAnswers <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswers))).recover {
+              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                //logger
+                val form2 = form.copy(errors = Seq(elems = FormError("value", "Not found")))
+                BadRequest(view(form2, mode))
+            }
         )
   }
 }
