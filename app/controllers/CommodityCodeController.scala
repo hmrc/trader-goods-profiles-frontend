@@ -19,7 +19,6 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
-
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
