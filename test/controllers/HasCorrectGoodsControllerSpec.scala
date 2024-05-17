@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.HasCorrectGoodsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -56,7 +56,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HasCorrectGoodsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, Commodity("code", "description"))(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -74,7 +77,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, Commodity("code", "description"))(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -120,7 +126,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, Commodity("code", "description"))(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
