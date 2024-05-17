@@ -91,7 +91,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.successful(
-        Commodity(any(), any())
+        Commodity("654321", "Description")
       )
 
       val application =
@@ -112,6 +112,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
       }
     }
 
@@ -142,9 +144,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "654321"))
+            .withFormUrlEncodedBody(("value", "abc"))
 
-        val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a real commodity code")))
+        val boundForm = form.bind(Map("value" -> "abc"))
 
         val view = application.injector.instanceOf[CommodityCodeView]
 
@@ -157,14 +159,24 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockOttConnector = mock[OttConnector]
+
+      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.failed(
+        UpstreamErrorResponse(" ", NOT_FOUND)
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
 
       running(application) {
         val request =
           FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "abc"))
+            .withFormUrlEncodedBody(("value", "654321"))
 
-        val boundForm = form.bind(Map("value" -> "abc"))
+        val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a real commodity code")))
 
         val view = application.injector.instanceOf[CommodityCodeView]
 
@@ -172,6 +184,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+
+        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
       }
     }
 
