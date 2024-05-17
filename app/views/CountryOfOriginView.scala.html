@@ -21,26 +21,41 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
 
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteCss
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteJavascript
+
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
     govukSelect: GovukSelect,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    hmrcStandardPage: HmrcStandardPage,
+    autocompleteCss: HmrcAccessibleAutocompleteCss,
+    autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("countryOfOrigin.title"))) {
-
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        banner =
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = Some(autocompleteCss()),
+            additionalScriptsBlock = Some(autocompleteJavascript())
+        )
+    )
+){
     <h1 class="govuk-heading-l">@messages("countryOfOrigin.h1")</h1>
     <p class="govuk-body">@messages("countryOfOrigin.p1")</p>
     <p class="govuk-body">
         @messages("countryOfOrigin.p2")
         <a class="govuk-link" target="_blank" href="https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin">@messages("countryOfOrigin.p2.linkText")</a>.
     </p>
-
 
     @formHelper(action = routes.CountryOfOriginController.onSubmit(mode)) {
 
