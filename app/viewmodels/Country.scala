@@ -28,6 +28,7 @@ object Country {
   implicit val format: OFormat[Country] = Json.format[Country]
 
   val allCountries: Seq[Country] = Seq(
+    Country("", "Place holder for no country selection"),
     Country("AF", "Afghanistan"),
     Country("AL", "Albania"),
     Country("DZ", "Algeria"),
