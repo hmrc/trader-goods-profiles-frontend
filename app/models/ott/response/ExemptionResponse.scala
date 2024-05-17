@@ -25,7 +25,7 @@ object ExemptionResponse {
 
   implicit lazy val reads: Reads[ExemptionResponse] = (
     (__ \ "id").read[String] and
-    (__ \ "type").read[ExemptionType]
+      (__ \ "type").read[ExemptionType]
   )(ExemptionResponse.apply _)
 }
 
