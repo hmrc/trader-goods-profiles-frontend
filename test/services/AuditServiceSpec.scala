@@ -29,6 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import org.apache.pekko.Done
 import org.scalatest.BeforeAndAfterEach
+import uk.gov.hmrc.auth.core.AffinityGroup
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -57,15 +58,15 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createSetUpProfileEvent(any(), any(), any())(any())).thenReturn(fakeAuditEvent)
 
       val traderProfile = TraderProfile(testEori, "", None, None)
-      val result        = await(auditService.auditProfileSetUp(traderProfile, startTime))
+      val result        = await(auditService.auditProfileSetUp(traderProfile, startTime, AffinityGroup.Individual))
 
       result mustBe Done
 
       withClue("Should have supplied the trader profile and time to the factory to create the event") {
-        verify(mockAuditFactory, times(1)).createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime))(any())
+        verify(mockAuditFactory, times(1)).createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime), eqTo(AffinityGroup.Individual))(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -80,15 +81,15 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createSetUpProfileEvent(any(), any(), any())(any())).thenReturn(fakeAuditEvent)
 
       val traderProfile = TraderProfile(testEori, "", None, None)
-      val result        = await(auditService.auditProfileSetUp(traderProfile, startTime))
+      val result        = await(auditService.auditProfileSetUp(traderProfile, startTime, AffinityGroup.Individual))
 
       result mustBe Done
 
       withClue("Should have supplied the trader profile to the factory to create the event") {
-        verify(mockAuditFactory, times(1)).createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime))(any())
+        verify(mockAuditFactory, times(1)).createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime), eqTo(AffinityGroup.Individual))(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -103,7 +104,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       intercept[RuntimeException] {
         val traderProfile = TraderProfile(testEori, "", None, None)
-        await(auditService.auditProfileSetUp(traderProfile, Some(Instant.now())))
+        await(auditService.auditProfileSetUp(traderProfile, Some(Instant.now()), AffinityGroup.Individual))
       }
 
     }

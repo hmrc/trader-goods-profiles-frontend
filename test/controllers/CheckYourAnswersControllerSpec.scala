@@ -30,6 +30,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, _}
 import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -175,7 +176,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val mockAuditService = mock[AuditService]
-          when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
+          when(mockAuditService.auditProfileSetUp(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -195,7 +196,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1)).auditProfileSetUp(eqTo(expectedPayload), eqTo(Some(startTime)))(any())
+              verify(mockAuditService, times(1)).auditProfileSetUp(eqTo(expectedPayload), eqTo(Some(startTime)), eqTo(AffinityGroup.Individual))(any())
             }
           }
         }
@@ -225,7 +226,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockConnector, never()).submitTraderProfile(any(), any())(any())
 
             withClue("must not try and submit an audit") {
-              verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
+              verify(mockAuditService, never()).auditProfileSetUp(any(), any(), any())(any())
             }
           }
         }
@@ -233,7 +234,6 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must let the play error handler deal with connector failure" in {
 
-        val startTime   = Instant.now()
         val userAnswers =
           emptyUserAnswers
             .set(UkimsNumberPage, "1")
@@ -282,7 +282,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
         val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditProfileSetUp(any(), any())(any()))
+        when(mockAuditService.auditProfileSetUp(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Audit failed")))
 
         val application =

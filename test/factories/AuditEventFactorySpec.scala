@@ -19,6 +19,7 @@ package factories
 import base.SpecBase
 import base.TestConstants.testEori
 import models.TraderProfile
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.Instant
@@ -37,15 +38,16 @@ class AuditEventFactorySpec extends SpecBase {
         val traderProfile =
           TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
 
-        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, Some(start))
+        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, Some(start), AffinityGroup.Individual)
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
         result.auditType mustBe "ProfileSetUp"
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 8
+        auditDetails.size mustBe 9
         auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("ukimsNumber") mustBe "XIUKIM47699357400020231115081800"
         auditDetails("hasNirms") mustBe "true"
         auditDetails("nirmsNumber") mustBe "RMS-GB-123456"
@@ -60,15 +62,16 @@ class AuditEventFactorySpec extends SpecBase {
 
         val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None)
 
-        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, Some(start))
+        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, Some(start), AffinityGroup.Individual)
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
         result.auditType mustBe "ProfileSetUp"
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 6
+        auditDetails.size mustBe 7
         auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("ukimsNumber") mustBe "XIUKIM47699357400020231115081800"
         auditDetails("hasNirms") mustBe "false"
         auditDetails.get("nirmsNumber") mustBe None

@@ -52,13 +52,13 @@ class AuthenticatedIdentifierAction @Inject() (
       Enrolment(config.tgpEnrolmentIdentifier.key) and (AffinityGroup.Organisation or AffinityGroup.Individual)
 
     authorised(predicates)
-      .retrieve(Retrievals.internalId and Retrievals.authorisedEnrolments) {
-        case Some(internalId) ~ authorisedEnrolments =>
+      .retrieve(Retrievals.internalId and Retrievals.affinityGroup and Retrievals.authorisedEnrolments) {
+        case Some(internalId) ~ Some(affinityGroup) ~ authorisedEnrolments =>
           authorisedEnrolments
             .getEnrolment(config.tgpEnrolmentIdentifier.key)
             .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
             case Some(enrolment) if !enrolment.value.isBlank =>
-              block(IdentifierRequest(request, internalId, enrolment.value))
+              block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup))
             case _                                           => throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
       } recover {

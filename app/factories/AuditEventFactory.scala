@@ -17,6 +17,7 @@
 package factories
 
 import models.TraderProfile
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
@@ -25,9 +26,10 @@ import java.time.Instant
 
 case class AuditEventFactory() {
 
-  def createSetUpProfileEvent(traderProfile: TraderProfile, startTime: Option[Instant])(implicit hc: HeaderCarrier): DataEvent = {
+  def createSetUpProfileEvent(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "eori" -> traderProfile.actorId,
+      "affinityGroup" -> affinityGroup.toString,
       "ukimsNumber" -> traderProfile.ukimsNumber,
       "hasNirms" -> traderProfile.nirmsNumber.isDefined.toString,
       "nirmsNumber" -> traderProfile.nirmsNumber.getOrElse(""),
