@@ -21,11 +21,15 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
 
+
+@import config.FrontendAppConfig
+
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteCss
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteJavascript
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(
     layout: templates.Layout,
@@ -36,14 +40,16 @@
     govukButton: GovukButton,
     hmrcStandardPage: HmrcStandardPage,
     autocompleteCss: HmrcAccessibleAutocompleteCss,
-    autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
+    autocompleteJavascript: HmrcAccessibleAutocompleteJavascript,
+    betaBanner: StandardBetaBanner,
+    appConfig: FrontendAppConfig,
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @hmrcStandardPage(
     HmrcStandardPageParams(
-        banner =
+        banners = Banners(phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))),
         templateOverrides = TemplateOverrides(
             additionalHeadBlock = Some(autocompleteCss()),
             additionalScriptsBlock = Some(autocompleteJavascript())
@@ -71,7 +77,7 @@
             )
             .asAccessibleAutocomplete(
                 Some(AccessibleAutocomplete(
-                    defaultValue = Some(""),
+                    defaultValue = None,
                     showAllValues = false,
                     autoSelect = false
                 ))
