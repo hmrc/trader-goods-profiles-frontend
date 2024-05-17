@@ -31,7 +31,7 @@ object CommodityCodeSummary {
     answers.get(CommodityCodePage).map { answer =>
       SummaryListRowViewModel(
         key = "commodityCode.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(answer).toString),
+        value = ValueViewModel(HtmlFormat.escape(answer.commodityCode).toString),
         actions = Seq(
           ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(messages("commodityCode.change.hidden"))

@@ -18,10 +18,11 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Commodity, Mode}
 import navigation.Navigator
-import pages.HasCorrectGoodsPage
+import pages.{CommodityCodePage, HasCorrectGoodsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -44,7 +45,8 @@ class HasCorrectGoodsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
+  private val form             = formProvider()
+  private val defaultCommodity = Commodity("Default Code", "Default Description")
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
@@ -52,7 +54,9 @@ class HasCorrectGoodsController @Inject() (
       case Some(value) => form.fill(value)
     }
 
-    Ok(view(preparedForm, mode))
+    val commodity = request.userAnswers.get(CommodityCodePage).getOrElse(defaultCommodity)
+
+    Ok(view(preparedForm, mode, commodity))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -60,7 +64,10 @@ class HasCorrectGoodsController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => {
+            val commodity = request.userAnswers.get(CommodityCodePage).getOrElse(defaultCommodity)
+            Future.successful(BadRequest(view(formWithErrors, mode, commodity)))
+          },
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsPage, value))
