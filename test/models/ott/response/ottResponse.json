@@ -1,23 +1,35 @@
 {
   "data": {
-    "id": "73253",
+    "id": "54267",
     "type": "goods_nomenclature",
     "attributes": {
-      "goods_nomenclature_sid": 73253,
-      "goods_nomenclature_item_id": "2924230000",
-      "description": "2-Acetamidobenzoic acid (N-acetylanthranilic acid) and its salts",
-      "formatted_description": "2-acetamidobenzoic acid (n-acetylanthranilic acid) and its salts",
-      "validity_start_date": "2002-01-01T00:00:00.000Z",
+      "goods_nomenclature_sid": 54267,
+      "goods_nomenclature_item_id": "9306210000",
+      "description": "Cartridges",
+      "formatted_description": "Cartridges",
+      "validity_start_date": "1972-01-01T00:00:00.000Z",
       "validity_end_date": null,
-      "description_plain": "2-acetamidobenzoic acid (n-acetylanthranilic acid) and its salts",
+      "description_plain": "Cartridges",
       "producline_suffix": "80",
-      "parent_sid": 36975
+      "parent_sid": 54266
     },
     "relationships": {
       "applicable_category_assessments": {
         "data": [
           {
-            "id": "3cc3087c722dabead8df05a86c9a5b79",
+            "id": "238dbab8cc5026c67757c7e05751f312",
+            "type": "category_assessment"
+          },
+          {
+            "id": "305033007ad8ddeb3b88ca5083f0c3d8",
+            "type": "category_assessment"
+          },
+          {
+            "id": "35b83129617060579e5793c173d0ce68",
+            "type": "category_assessment"
+          },
+          {
+            "id": "5af7b526d996cfab04d4eb0d181b0a4d",
             "type": "category_assessment"
           },
           {
@@ -36,15 +48,15 @@
       "ancestors": {
         "data": [
           {
-            "id": "36168",
+            "id": "54234",
             "type": "goods_nomenclature"
           },
           {
-            "id": "36969",
+            "id": "54264",
             "type": "goods_nomenclature"
           },
           {
-            "id": "36975",
+            "id": "54266",
             "type": "goods_nomenclature"
           }
         ]
@@ -56,17 +68,17 @@
   },
   "included": [
     {
-      "id": "R0501110",
+      "id": "R0312100",
       "type": "legal_act",
       "attributes": {
-        "validity_start_date": "2005-08-18T00:00:00.000Z",
+        "validity_start_date": "2003-05-23T00:00:00.000Z",
         "validity_end_date": null,
-        "officialjournal_number": "L 22",
-        "officialjournal_page": 1,
-        "published_date": "2005-01-26",
-        "regulation_code": "R0111/05",
-        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D22,YEAR_OJ%3D2005,PAGE_FIRST%3D0001\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
-        "description": "Surveillance import-export precursors",
+        "officialjournal_number": "L 169",
+        "officialjournal_page": 6,
+        "published_date": "2003-07-08",
+        "regulation_code": "R1210/03",
+        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D169,YEAR_OJ%3D2003,PAGE_FIRST%3D0006\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
+        "description": "mes. 465, 467 - IQ",
         "role": 1
       }
     },
@@ -86,38 +98,38 @@
       }
     },
     {
-      "id": "1011",
+      "id": "IQ",
       "type": "geographical_area",
       "attributes": {
-        "id": "1011",
-        "description": "ERGA OMNES",
-        "geographical_area_id": "1011",
-        "geographical_area_sid": 400
+        "id": "IQ",
+        "description": "Iraq",
+        "geographical_area_id": "IQ",
+        "geographical_area_sid": 269
       }
     },
     {
-      "id": "CD437",
+      "id": "8392",
+      "type": "additional_code",
+      "attributes": {
+        "code": "4061",
+        "description": "Arms, between 50 and 100 years old, other than those covered by the additional codes 4008, 4010, 4011, 4013, 4023, 4040 - 4048",
+        "formatted_description": "Arms, between 50 and 100 years old, other than those covered by the additional codes 4008, 4010, 4011, 4013, 4023, 4040 - 4048"
+      }
+    },
+    {
+      "id": "TM570",
       "type": "footnote",
       "attributes": {
-        "code": "CD437",
-        "description": "\"Import authorization\" and \"Specific import requirements\" - see Articles 20-25 of Regulation (EC) No 111/05 (OJ L 22) implemented by Regulation (EC) No 2015/1011 (OJ L 162).",
-        "formatted_description": "\"Import authorization\" and \"Specific import requirements\" - see Articles 20-25 of Regulation (EC) No 111/05 (OJ L 22) implemented by Regulation (EC) No 2015/1011 (OJ L 162)."
+        "code": "TM570",
+        "description": "The following shall be prohibited:\u003cbr/\u003ea) the import of or the introduction into the territory of the Community of, and\u003cbr/\u003eb) the dealing in, Iraqi cultural property and other items of archaeological, historical, cultural, rare scientific and religious importance, if they have been illegally removed from locations in Iraq, in particular, if:\u003cbr/\u003ei) the items form an integral part of either the public collections listed in the inventories of Iraqi museums, archives or libraries' conservation collection, or the inventories of Iraqi religious institutions, or\u003cbr/\u003eii) there exists reasonable suspicion that the goods have been removed from Iraq without the consent of their legitimate owner or have been removed in breach of Iraq's laws and regulations.\u003cbr/\u003eThese prohibitions shall not apply if it is shown that either:\u003cbr/\u003ea) the cultural items were exported from Iraq prior to 6 August 1990; or\u003cbr/\u003eb) the cultural items are being returned to Iraqi institutions in accordance with the objective of safe return as set out in paragraph 7 of UNSC Resolution 1483 (2003).",
+        "formatted_description": "The following shall be prohibited:\u003cbr/\u003ea) the import of or the introduction into the territory of the Community of, and\u003cbr/\u003eb) the dealing in, Iraqi cultural property and other items of archaeological, historical, cultural, rare scientific and religious importance, if they have been illegally removed from locations in Iraq, in particular, if:\u003cbr/\u003ei) the items form an integral part of either the public collections listed in the inventories of Iraqi museums, archives or libraries' conservation collection, or the inventories of Iraqi religious institutions, or\u003cbr/\u003eii) there exists reasonable suspicion that the goods have been removed from Iraq without the consent of their legitimate owner or have been removed in breach of Iraq's laws and regulations.\u003cbr/\u003eThese prohibitions shall not apply if it is shown that either:\u003cbr/\u003ea) the cultural items were exported from Iraq prior to 6 August 1990; or\u003cbr/\u003eb) the cultural items are being returned to Iraqi institutions in accordance with the objective of safe return as set out in paragraph 7 of UNSC Resolution 1483 (2003)."
       }
     },
     {
-      "id": "TM135",
-      "type": "footnote",
-      "attributes": {
-        "code": "TM135",
-        "description": "The surveillance does not apply to mixtures and natural products which contain scheduled substances and which are compounded in such a way that the scheduled substances cannot be easily used or extracted by readily applicable or economically viable means, to medicinal products as defined in point 2 of Article 1 of Directive 2001/83/EC of the European Parliament and of the Council and to veterinary medicinal products as defined in point 2 of Article 1 of Directive 2001/82/EC of the European Parliament and of the Council.",
-        "formatted_description": "The surveillance does not apply to mixtures and natural products which contain scheduled substances and which are compounded in such a way that the scheduled substances cannot be easily used or extracted by readily applicable or economically viable means, to medicinal products as defined in point 2 of Article 1 of Directive 2001/83/EC of the European Parliament and of the Council and to veterinary medicinal products as defined in point 2 of Article 1 of Directive 2001/82/EC of the European Parliament and of the Council."
-      }
-    },
-    {
-      "id": "3471074",
+      "id": "2524368",
       "type": "measure",
       "attributes": {
-        "effective_start_date": "2015-07-01T00:00:00.000Z",
+        "effective_start_date": "2003-05-23T00:00:00.000Z",
         "effective_end_date": null
       },
       "relationships": {
@@ -130,11 +142,7 @@
         "footnotes": {
           "data": [
             {
-              "id": "CD437",
-              "type": "footnote"
-            },
-            {
-              "id": "TM135",
+              "id": "TM570",
               "type": "footnote"
             }
           ]
@@ -142,30 +150,35 @@
       }
     },
     {
-      "id": "2.1",
+      "id": "1.1",
       "type": "theme",
       "attributes": {
-        "section": "2.1",
-        "theme": "Regulation (EC) No 273/2004 of the European Parliament and of the Council of 11 February 2004 on drug precursors",
-        "category": 2
+        "section": "1.1",
+        "theme": "restrictive measures in force based on Article 215 Treaty on the Functioning of the European Union, insofar as they relate to trade in goods between the Union and third countries;",
+        "category": 1
       }
     },
     {
-      "id": "3cc3087c722dabead8df05a86c9a5b79",
+      "id": "238dbab8cc5026c67757c7e05751f312",
       "type": "category_assessment",
       "relationships": {
         "exemptions": {
-          "data": []
+          "data": [
+            {
+              "id": "8392",
+              "type": "additional_code"
+            }
+          ]
         },
         "theme": {
           "data": {
-            "id": "2.1",
+            "id": "1.1",
             "type": "theme"
           }
         },
         "geographical_area": {
           "data": {
-            "id": "1011",
+            "id": "IQ",
             "type": "geographical_area"
           }
         },
@@ -180,14 +193,359 @@
         },
         "regulation": {
           "data": {
-            "id": "R0501110",
+            "id": "R0312100",
             "type": "legal_act"
           }
         },
         "measures": {
           "data": [
             {
-              "id": "3471074",
+              "id": "2524368",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "8440",
+      "type": "additional_code",
+      "attributes": {
+        "code": "4099",
+        "description": "Other than those mentioned in Regulation (EC) no 1210/2003 (OJ L 169): no restrictions",
+        "formatted_description": "Other than those mentioned in Regulation (EC) no 1210/2003 (OJ L 169): no restrictions"
+      }
+    },
+    {
+      "id": "2526744",
+      "type": "measure",
+      "attributes": {
+        "effective_start_date": "2003-05-23T00:00:00.000Z",
+        "effective_end_date": null
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "465",
+            "type": "measure_type"
+          }
+        },
+        "footnotes": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "305033007ad8ddeb3b88ca5083f0c3d8",
+      "type": "category_assessment",
+      "relationships": {
+        "exemptions": {
+          "data": [
+            {
+              "id": "8440",
+              "type": "additional_code"
+            }
+          ]
+        },
+        "theme": {
+          "data": {
+            "id": "1.1",
+            "type": "theme"
+          }
+        },
+        "geographical_area": {
+          "data": {
+            "id": "IQ",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": []
+        },
+        "measure_type": {
+          "data": {
+            "id": "465",
+            "type": "measure_type"
+          }
+        },
+        "regulation": {
+          "data": {
+            "id": "R0312100",
+            "type": "legal_act"
+          }
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "2526744",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "R1600440",
+      "type": "legal_act",
+      "attributes": {
+        "validity_start_date": "2016-01-20T00:00:00.000Z",
+        "validity_end_date": null,
+        "officialjournal_number": "L 12",
+        "officialjournal_page": 1,
+        "published_date": "2016-01-19",
+        "regulation_code": "R0044/16",
+        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D12,YEAR_OJ%3D2016,PAGE_FIRST%3D0001\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
+        "description": "COUNCIL REGULATION (EU) 2016/44 -  concerning restrictive measures in view of the situation in Libya and repealing Regulation (EU) No 204/2011",
+        "role": 1
+      }
+    },
+    {
+      "id": "711",
+      "type": "measure_type",
+      "attributes": {
+        "description": "Import control on restricted goods and technologies",
+        "measure_type_series_id": "B",
+        "measure_component_applicable_code": 2,
+        "order_number_capture_code": 2,
+        "trade_movement_code": 0,
+        "validity_end_date": null,
+        "validity_start_date": "2008-02-10T00:00:00.000Z",
+        "id": "711",
+        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions"
+      }
+    },
+    {
+      "id": "LY",
+      "type": "geographical_area",
+      "attributes": {
+        "id": "LY",
+        "description": "Libya",
+        "geographical_area_id": "LY",
+        "geographical_area_sid": 57
+      }
+    },
+    {
+      "id": "Y920",
+      "type": "certificate",
+      "attributes": {
+        "code": "Y920",
+        "certificate_type_code": "Y",
+        "certificate_code": "920",
+        "description": "Goods other than those described in the footnotes linked to the measure",
+        "formatted_description": "Goods other than those described in the footnotes linked to the measure"
+      }
+    },
+    {
+      "id": "CD995",
+      "type": "footnote",
+      "attributes": {
+        "code": "CD995",
+        "description": "If the declared goods are described in the footnotes linked to the measure, export/import is not allowed.",
+        "formatted_description": "If the declared goods are described in the footnotes linked to the measure, export/import is not allowed."
+      }
+    },
+    {
+      "id": "TM612",
+      "type": "footnote",
+      "attributes": {
+        "code": "TM612",
+        "description": "Ammunition specially designed for the firearms listed in 1.1 and specially designed components therefor (see the annex to the regulation containing the list of equipment which might be used for internal repression).",
+        "formatted_description": "Ammunition specially designed for the firearms listed in 1.1 and specially designed components therefor (see the annex to the regulation containing the list of equipment which might be used for internal repression)."
+      }
+    },
+    {
+      "id": "3474616",
+      "type": "measure",
+      "attributes": {
+        "effective_start_date": "2016-01-20T00:00:00.000Z",
+        "effective_end_date": null
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "711",
+            "type": "measure_type"
+          }
+        },
+        "footnotes": {
+          "data": [
+            {
+              "id": "CD995",
+              "type": "footnote"
+            },
+            {
+              "id": "TM612",
+              "type": "footnote"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "35b83129617060579e5793c173d0ce68",
+      "type": "category_assessment",
+      "relationships": {
+        "exemptions": {
+          "data": [
+            {
+              "id": "Y920",
+              "type": "certificate"
+            }
+          ]
+        },
+        "theme": {
+          "data": {
+            "id": "1.1",
+            "type": "theme"
+          }
+        },
+        "geographical_area": {
+          "data": {
+            "id": "LY",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": []
+        },
+        "measure_type": {
+          "data": {
+            "id": "711",
+            "type": "measure_type"
+          }
+        },
+        "regulation": {
+          "data": {
+            "id": "R1600440",
+            "type": "legal_act"
+          }
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "3474616",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "D1405120",
+      "type": "legal_act",
+      "attributes": {
+        "validity_start_date": "2014-08-01T00:00:00.000Z",
+        "validity_end_date": "2015-07-31T00:00:00.000Z",
+        "officialjournal_number": "L 229",
+        "officialjournal_page": 13,
+        "published_date": "2014-07-31",
+        "regulation_code": "D0512/14",
+        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D229,YEAR_OJ%3D2014,PAGE_FIRST%3D0013\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
+        "description": "COUNCIL DECISION 2014/512/CFSP of 31 July 2014 concerning restrictive measures in view of Russia's actions destabilising the situation in Ukraine",
+        "role": 1
+      }
+    },
+    {
+      "id": "707",
+      "type": "measure_type",
+      "attributes": {
+        "description": "Import control",
+        "measure_type_series_id": "B",
+        "measure_component_applicable_code": 0,
+        "order_number_capture_code": 2,
+        "trade_movement_code": 0,
+        "validity_end_date": null,
+        "validity_start_date": "2017-02-01T00:00:00.000Z",
+        "id": "707",
+        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions"
+      }
+    },
+    {
+      "id": "RU",
+      "type": "geographical_area",
+      "attributes": {
+        "id": "RU",
+        "description": "Russian Federation",
+        "geographical_area_id": "RU",
+        "geographical_area_sid": 199
+      }
+    },
+    {
+      "id": "TM839",
+      "type": "footnote",
+      "attributes": {
+        "code": "TM839",
+        "description": "The import, purchase or transport of arms and related materiel of all types, including weapons and ammunition, military vehicles and equipment, paramilitary equipment, and spare parts therefor, from Russia by nationals of Member States or using their flag vessels or aircraft, shall be prohibited (COUNCIL DECISION 2014/512/CFSP of 31 July 2014).\u003cbr/\u003eThe prohibitions shall be without prejudice to the execution of contracts or agreements concluded before 1 August 2014, and to the provision of spare parts and services necessary to the maintenance and safety of existing capabilities within the Union.\u003cbr/\u003e",
+        "formatted_description": "The import, purchase or transport of arms and related materiel of all types, including weapons and ammunition, military vehicles and equipment, paramilitary equipment, and spare parts therefor, from Russia by nationals of Member States or using their flag vessels or aircraft, shall be prohibited (COUNCIL DECISION 2014/512/CFSP of 31 July 2014).\u003cbr/\u003eThe prohibitions shall be without prejudice to the execution of contracts or agreements concluded before 1 August 2014, and to the provision of spare parts and services necessary to the maintenance and safety of existing capabilities within the Union.\u003cbr/\u003e"
+      }
+    },
+    {
+      "id": "3562481",
+      "type": "measure",
+      "attributes": {
+        "effective_start_date": "2017-03-31T00:00:00.000Z",
+        "effective_end_date": "2024-07-31T00:00:00.000Z"
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "707",
+            "type": "measure_type"
+          }
+        },
+        "footnotes": {
+          "data": [
+            {
+              "id": "TM839",
+              "type": "footnote"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "5af7b526d996cfab04d4eb0d181b0a4d",
+      "type": "category_assessment",
+      "relationships": {
+        "exemptions": {
+          "data": [
+            {
+              "id": "Y920",
+              "type": "certificate"
+            }
+          ]
+        },
+        "theme": {
+          "data": {
+            "id": "1.1",
+            "type": "theme"
+          }
+        },
+        "geographical_area": {
+          "data": {
+            "id": "RU",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": []
+        },
+        "measure_type": {
+          "data": {
+            "id": "707",
+            "type": "measure_type"
+          }
+        },
+        "regulation": {
+          "data": {
+            "id": "D1405120",
+            "type": "legal_act"
+          }
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "3562481",
               "type": "measure"
             }
           ]
@@ -255,7 +613,7 @@
       }
     },
     {
-      "id": "3945957",
+      "id": "3946020",
       "type": "measure",
       "attributes": {
         "effective_start_date": "2022-12-01T00:00:00.000Z",
@@ -276,15 +634,6 @@
             }
           ]
         }
-      }
-    },
-    {
-      "id": "1.1",
-      "type": "theme",
-      "attributes": {
-        "section": "1.1",
-        "theme": "restrictive measures in force based on Article 215 Treaty on the Functioning of the European Union, insofar as they relate to trade in goods between the Union and third countries;",
-        "category": 1
       }
     },
     {
@@ -329,7 +678,7 @@
         "measures": {
           "data": [
             {
-              "id": "3945957",
+              "id": "3946020",
               "type": "measure"
             }
           ]
@@ -387,7 +736,7 @@
       }
     },
     {
-      "id": "3929183",
+      "id": "3929246",
       "type": "measure",
       "attributes": {
         "effective_start_date": "2022-08-06T00:00:00.000Z",
@@ -452,7 +801,7 @@
         "measures": {
           "data": [
             {
-              "id": "3929183",
+              "id": "3929246",
               "type": "measure"
             }
           ]
@@ -460,12 +809,12 @@
       }
     },
     {
-      "id": "36168",
+      "id": "54234",
       "type": "goods_nomenclature",
       "attributes": {
-        "goods_nomenclature_sid": 36168,
-        "goods_nomenclature_item_id": "2900000000",
-        "description": "ORGANIC CHEMICALS",
+        "goods_nomenclature_sid": 54234,
+        "goods_nomenclature_item_id": "9300000000",
+        "description": "ARMS AND AMMUNITION; PARTS AND ACCESSORIES THEREOF",
         "number_indents": 0,
         "producline_suffix": "80",
         "validity_start_date": "1971-12-31T00:00:00.000Z",
@@ -474,31 +823,31 @@
       }
     },
     {
-      "id": "36969",
+      "id": "54264",
       "type": "goods_nomenclature",
       "attributes": {
-        "goods_nomenclature_sid": 36969,
-        "goods_nomenclature_item_id": "2924000000",
-        "description": "Carboxyamide-function compounds; amide-function compounds of carbonic acid",
+        "goods_nomenclature_sid": 54264,
+        "goods_nomenclature_item_id": "9306000000",
+        "description": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads",
         "number_indents": 0,
         "producline_suffix": "80",
         "validity_start_date": "1972-01-01T00:00:00.000Z",
         "validity_end_date": null,
-        "parent_sid": 36168
+        "parent_sid": 54234
       }
     },
     {
-      "id": "36975",
+      "id": "54266",
       "type": "goods_nomenclature",
       "attributes": {
-        "goods_nomenclature_sid": 36975,
-        "goods_nomenclature_item_id": "2924210000",
-        "description": "Cyclic amides (including cyclic carbamates) and their derivatives; salts thereof",
+        "goods_nomenclature_sid": 54266,
+        "goods_nomenclature_item_id": "9306210000",
+        "description": "Shotgun cartridges and parts thereof; air gun pellets",
         "number_indents": 1,
         "producline_suffix": "10",
         "validity_start_date": "1972-01-01T00:00:00.000Z",
         "validity_end_date": null,
-        "parent_sid": 36969
+        "parent_sid": 54264
       }
     }
   ]

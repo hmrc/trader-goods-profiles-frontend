@@ -20,14 +20,14 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
 
-class CertificateResponseSpec extends AnyFreeSpec with Matchers {
+class AdditionalCodeResponseSpec extends AnyFreeSpec with Matchers {
 
   ".reads" - {
 
     "must deserialise valid JSON" in {
 
       val json = Json.obj(
-        "type"       -> "certificate",
+        "type"       -> "additional_code",
         "id"         -> "1",
         "attributes" -> Json.obj(
           "code"        -> "abc",
@@ -35,8 +35,8 @@ class CertificateResponseSpec extends AnyFreeSpec with Matchers {
         )
       )
 
-      val result = json.validate[CertificateResponse]
-      result mustEqual JsSuccess(CertificateResponse("1", "abc", "foo"))
+      val result = json.validate[AdditionalCodeResponse]
+      result mustEqual JsSuccess(AdditionalCodeResponse("1", "abc", "foo"))
     }
   }
 }

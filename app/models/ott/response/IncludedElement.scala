@@ -29,6 +29,7 @@ object IncludedElement {
         case "category_assessment" => CategoryAssessmentResponse.reads.widen
         case "theme"               => ThemeResponse.reads.widen
         case "certificate"         => CertificateResponse.reads.widen
+        case "additional_code"     => AdditionalCodeResponse.reads.widen
         case _                     => Ignorable.reads.widen
       }
 }

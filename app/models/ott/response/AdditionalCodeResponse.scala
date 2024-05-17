@@ -16,27 +16,21 @@
 
 package models.ott.response
 
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{Reads, __}
 
-class CertificateResponseSpec extends AnyFreeSpec with Matchers {
+final case class AdditionalCodeResponse(
+                                         id: String,
+                                         code: String,
+                                         description: String
+                                       ) extends IncludedElement
 
-  ".reads" - {
+object AdditionalCodeResponse {
 
-    "must deserialise valid JSON" in {
-
-      val json = Json.obj(
-        "type"       -> "certificate",
-        "id"         -> "1",
-        "attributes" -> Json.obj(
-          "code"        -> "abc",
-          "description" -> "foo"
-        )
-      )
-
-      val result = json.validate[CertificateResponse]
-      result mustEqual JsSuccess(CertificateResponse("1", "abc", "foo"))
-    }
-  }
+  implicit lazy val reads: Reads[AdditionalCodeResponse] =
+    (
+      (__ \ "id").read[String] and
+      (__ \ "attributes" \ "code").read[String] and
+      (__ \ "attributes" \ "description").read[String]
+    )(AdditionalCodeResponse.apply _)
 }

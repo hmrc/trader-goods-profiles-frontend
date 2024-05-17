@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package models.ott
+package models.ott.response
 
-import models.ott.response.ExemptionResponse
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.{JsError, JsPath, JsSuccess, Json}
 
 class ExemptionResponseSpec extends AnyFreeSpec with Matchers {
 
   ".reads" - {
 
-    "must deserialise valid JSON" in {
+    "must deserialise valid JSON for a certificate" in {
 
       val json = Json.obj(
         "id"   -> "1",
@@ -33,7 +32,29 @@ class ExemptionResponseSpec extends AnyFreeSpec with Matchers {
       )
 
       val result = json.validate[ExemptionResponse]
-      result mustEqual JsSuccess(ExemptionResponse("1", "certificate"))
+      result mustEqual JsSuccess(ExemptionResponse("1", ExemptionType.Certificate))
+    }
+
+    "must deserialise valid JSON for an additional code" in {
+
+      val json = Json.obj(
+        "id"   -> "1",
+        "type" -> "additional_code"
+      )
+
+      val result = json.validate[ExemptionResponse]
+      result mustEqual JsSuccess(ExemptionResponse("1", ExemptionType.AdditionalCode))
+    }
+
+    "must fail to deserialise for any other type" in {
+
+      val json = Json.obj(
+        "id"   -> "1",
+        "type" -> "foo"
+      )
+
+      val result = json.validate[ExemptionResponse]
+      result mustEqual JsError(JsPath \ "type", "unable to parse exemption type")
     }
   }
 }

@@ -17,14 +17,28 @@
 package models.ott.response
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Reads, __}
+import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, __}
 
-final case class ExemptionResponse(id: String, exemptionType: String)
+final case class ExemptionResponse(id: String, exemptionType: ExemptionType)
 
 object ExemptionResponse {
 
   implicit lazy val reads: Reads[ExemptionResponse] = (
     (__ \ "id").read[String] and
-    (__ \ "type").read[String]
+    (__ \ "type").read[ExemptionType]
   )(ExemptionResponse.apply _)
+}
+
+sealed trait ExemptionType
+
+object ExemptionType {
+
+  case object Certificate extends ExemptionType
+  case object AdditionalCode extends ExemptionType
+
+  implicit lazy val reads: Reads[ExemptionType] = Reads {
+    case JsString("certificate")     => JsSuccess(Certificate)
+    case JsString("additional_code") => JsSuccess(AdditionalCode)
+    case _                           => JsError("unable to parse exemption type")
+  }
 }

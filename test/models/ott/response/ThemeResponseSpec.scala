@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package models.ott
+package models.ott.response
 
-import models.ott.response.ThemeResponse
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
