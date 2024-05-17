@@ -22,6 +22,7 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
+    govukSelect: GovukSelect,
     govukButton: GovukButton
 )
 
@@ -47,6 +48,21 @@
             InputViewModel(
                 field = form("value"),
                 label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
+            )
+        )
+
+        @govukSelect(
+            SelectViewModel(
+                field = form("country"),
+                items = Country.selectItems,
+                label = LabelViewModel(messages("agentCompanyDetails.agentCountry"))
+            )
+            .asAccessibleAutocomplete(
+                Some(AccessibleAutocomplete(
+                    defaultValue = Some(""),
+                    showAllValues = false,
+                    autoSelect = false
+                ))
             )
         )
 
