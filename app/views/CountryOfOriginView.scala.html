@@ -16,6 +16,10 @@
 
 @import models.Mode
 @import viewmodels.LabelSize._
+@import viewmodels.govuk.select._
+@import viewmodels.Country
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
 
 @this(
     layout: templates.Layout,
@@ -44,18 +48,11 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
-            )
-        )
-
         @govukSelect(
             SelectViewModel(
-                field = form("country"),
+                field = form("value"),
                 items = Country.selectItems,
-                label = LabelViewModel(messages("agentCompanyDetails.agentCountry"))
+                label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
             )
             .asAccessibleAutocomplete(
                 Some(AccessibleAutocomplete(
