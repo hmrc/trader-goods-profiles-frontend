@@ -75,8 +75,8 @@ GET        /createRecordSuccess                       controllers.CreateRecordSu
 
 GET        /create-record/goods-description            controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
 POST       /create-record/goods-description            controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET        /create-record/change-goods-description     controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST       /create-record/change-goods-description     controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET        /create-record/goods-description/check     controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST       /create-record/goods-description/check     controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
 
 GET        /hasCorrectGoods                        controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
 POST       /hasCorrectGoods                        controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
