@@ -1,0 +1,505 @@
+{
+  "data": {
+    "id": "73253",
+    "type": "goods_nomenclature",
+    "attributes": {
+      "goods_nomenclature_sid": 73253,
+      "goods_nomenclature_item_id": "2924230000",
+      "description": "2-Acetamidobenzoic acid (N-acetylanthranilic acid) and its salts",
+      "formatted_description": "2-acetamidobenzoic acid (n-acetylanthranilic acid) and its salts",
+      "validity_start_date": "2002-01-01T00:00:00.000Z",
+      "validity_end_date": null,
+      "description_plain": "2-acetamidobenzoic acid (n-acetylanthranilic acid) and its salts",
+      "producline_suffix": "80",
+      "parent_sid": 36975
+    },
+    "relationships": {
+      "applicable_category_assessments": {
+        "data": [
+          {
+            "id": "3cc3087c722dabead8df05a86c9a5b79",
+            "type": "category_assessment"
+          },
+          {
+            "id": "a67daf0acd83c3c0d5f4aba690f20ec1",
+            "type": "category_assessment"
+          },
+          {
+            "id": "9b9c6e21f30a4e137f016e6dfb9b939c",
+            "type": "category_assessment"
+          }
+        ]
+      },
+      "descendant_category_assessments": {
+        "data": []
+      },
+      "ancestors": {
+        "data": [
+          {
+            "id": "36168",
+            "type": "goods_nomenclature"
+          },
+          {
+            "id": "36969",
+            "type": "goods_nomenclature"
+          },
+          {
+            "id": "36975",
+            "type": "goods_nomenclature"
+          }
+        ]
+      },
+      "descendants": {
+        "data": []
+      }
+    }
+  },
+  "included": [
+    {
+      "id": "R0501110",
+      "type": "legal_act",
+      "attributes": {
+        "validity_start_date": "2005-08-18T00:00:00.000Z",
+        "validity_end_date": null,
+        "officialjournal_number": "L 22",
+        "officialjournal_page": 1,
+        "published_date": "2005-01-26",
+        "regulation_code": "R0111/05",
+        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D22,YEAR_OJ%3D2005,PAGE_FIRST%3D0001\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
+        "description": "Surveillance import-export precursors",
+        "role": 1
+      }
+    },
+    {
+      "id": "465",
+      "type": "measure_type",
+      "attributes": {
+        "description": "Restriction on entry into free circulation",
+        "measure_type_series_id": "B",
+        "measure_component_applicable_code": 2,
+        "order_number_capture_code": 2,
+        "trade_movement_code": 0,
+        "validity_end_date": null,
+        "validity_start_date": "1972-01-01T00:00:00.000Z",
+        "id": "465",
+        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions"
+      }
+    },
+    {
+      "id": "1011",
+      "type": "geographical_area",
+      "attributes": {
+        "id": "1011",
+        "description": "ERGA OMNES",
+        "geographical_area_id": "1011",
+        "geographical_area_sid": 400
+      }
+    },
+    {
+      "id": "CD437",
+      "type": "footnote",
+      "attributes": {
+        "code": "CD437",
+        "description": "\"Import authorization\" and \"Specific import requirements\" - see Articles 20-25 of Regulation (EC) No 111/05 (OJ L 22) implemented by Regulation (EC) No 2015/1011 (OJ L 162).",
+        "formatted_description": "\"Import authorization\" and \"Specific import requirements\" - see Articles 20-25 of Regulation (EC) No 111/05 (OJ L 22) implemented by Regulation (EC) No 2015/1011 (OJ L 162)."
+      }
+    },
+    {
+      "id": "TM135",
+      "type": "footnote",
+      "attributes": {
+        "code": "TM135",
+        "description": "The surveillance does not apply to mixtures and natural products which contain scheduled substances and which are compounded in such a way that the scheduled substances cannot be easily used or extracted by readily applicable or economically viable means, to medicinal products as defined in point 2 of Article 1 of Directive 2001/83/EC of the European Parliament and of the Council and to veterinary medicinal products as defined in point 2 of Article 1 of Directive 2001/82/EC of the European Parliament and of the Council.",
+        "formatted_description": "The surveillance does not apply to mixtures and natural products which contain scheduled substances and which are compounded in such a way that the scheduled substances cannot be easily used or extracted by readily applicable or economically viable means, to medicinal products as defined in point 2 of Article 1 of Directive 2001/83/EC of the European Parliament and of the Council and to veterinary medicinal products as defined in point 2 of Article 1 of Directive 2001/82/EC of the European Parliament and of the Council."
+      }
+    },
+    {
+      "id": "3471074",
+      "type": "measure",
+      "attributes": {
+        "effective_start_date": "2015-07-01T00:00:00.000Z",
+        "effective_end_date": null
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "465",
+            "type": "measure_type"
+          }
+        },
+        "footnotes": {
+          "data": [
+            {
+              "id": "CD437",
+              "type": "footnote"
+            },
+            {
+              "id": "TM135",
+              "type": "footnote"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "2.1",
+      "type": "theme",
+      "attributes": {
+        "section": "2.1",
+        "theme": "Regulation (EC) No 273/2004 of the European Parliament and of the Council of 11 February 2004 on drug precursors",
+        "category": 2
+      }
+    },
+    {
+      "id": "3cc3087c722dabead8df05a86c9a5b79",
+      "type": "category_assessment",
+      "relationships": {
+        "exemptions": {
+          "data": []
+        },
+        "theme": {
+          "data": {
+            "id": "2.1",
+            "type": "theme"
+          }
+        },
+        "geographical_area": {
+          "data": {
+            "id": "1011",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": []
+        },
+        "measure_type": {
+          "data": {
+            "id": "465",
+            "type": "measure_type"
+          }
+        },
+        "regulation": {
+          "data": {
+            "id": "R0501110",
+            "type": "legal_act"
+          }
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "3471074",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "R1406920",
+      "type": "legal_act",
+      "attributes": {
+        "validity_start_date": "2014-06-25T00:00:00.000Z",
+        "validity_end_date": null,
+        "officialjournal_number": "L 183",
+        "officialjournal_page": 9,
+        "published_date": "2014-06-24",
+        "regulation_code": "R0692/14",
+        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D183,YEAR_OJ%3D2014,PAGE_FIRST%3D0009\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
+        "description": "Council Regulation (EU) No 692/2014 of 23 June 2014 concerning restrictions on the import into the Union of goods originating in Crimea or Sevastopol, in response to the illegal annexation of Crimea and Sevastopol",
+        "role": 1
+      }
+    },
+    {
+      "id": "760",
+      "type": "measure_type",
+      "attributes": {
+        "description": "Import control",
+        "measure_type_series_id": "B",
+        "measure_component_applicable_code": 2,
+        "order_number_capture_code": 2,
+        "trade_movement_code": 0,
+        "validity_end_date": null,
+        "validity_start_date": "2014-02-01T00:00:00.000Z",
+        "id": "760",
+        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions"
+      }
+    },
+    {
+      "id": "UA",
+      "type": "geographical_area",
+      "attributes": {
+        "id": "UA",
+        "description": "Ukraine",
+        "geographical_area_id": "UA",
+        "geographical_area_sid": 388
+      }
+    },
+    {
+      "id": "Y997",
+      "type": "certificate",
+      "attributes": {
+        "code": "Y997",
+        "certificate_type_code": "Y",
+        "certificate_code": "997",
+        "description": "Goods not originating from or destined to Crimea or Sevastopol (Articles 2 and 2b.1 of Council Regulation (EU) No 692/2014)",
+        "formatted_description": "Goods not originating from or destined to Crimea or Sevastopol (Articles 2 and 2b.1 of Council Regulation (EU) No 692/2014)"
+      }
+    },
+    {
+      "id": "CD967",
+      "type": "footnote",
+      "attributes": {
+        "code": "CD967",
+        "description": "I. According to Council Regulation (EU) No 692/2014 (OJ L183, p. 9) it shall be prohibited to import into European Union goods originating in Crimea or Sevastopol. The prohibition shall not apply in respect of: (a) the execution until 26 September 2014, of trade contracts concluded before 25 June 2014, or of ancillary contracts necessary for the execution of such contracts, provided that the natural or legal persons, entity or body seeking to perform the contract have notified, at least 10 working days in advance, the activity or transaction to the competent authority of the Member State in which they are established. (b) goods originating in Crimea or Sevastopol which have been made available to the Ukrainian authorities for examination, for which compliance with the conditions conferring entitlement to preferential origin has been verified and for which a certificate of origin has been issued in accordance with Regulation (EU) No 978/2012 and Regulation (EU) No 374/2014 or in accordance with the EU-Ukraine Association Agreement. II. According to the Council Regulation (EU) No 1351/2014 (OJ L365, p. 46), the export of goods and technologies suited for use in the sectors of transport; telecommunications; energy; prospection, exploitation and production of oil, gas and mineral resources is prohibited: (a) to any natural or legal person, entity or body in Crimea or Sevastopol, or (b) for use in Crimea or Sevastopol. The prohibitions shall be without prejudice to the execution until 21 March 2015 of an obligation arising from a contract concluded before 20 December 2014, or by ancillary contracts necessary for the execution of such contracts, provided that the competent authority has been informed at least five working days in advance. When related to the use in Crimea or Sevastopol, the prohibitions do not apply where there are no reasonable grounds to determine that the goods and technology or the services are to be used in Crimea or Sevastopol.",
+        "formatted_description": "I. According to Council Regulation (EU) No 692/2014 (OJ L183, p. 9) it shall be prohibited to import into European Union goods originating in Crimea or Sevastopol. The prohibition shall not apply in respect of: (a) the execution until 26 September 2014, of trade contracts concluded before 25 June 2014, or of ancillary contracts necessary for the execution of such contracts, provided that the natural or legal persons, entity or body seeking to perform the contract have notified, at least 10 working days in advance, the activity or transaction to the competent authority of the Member State in which they are established. (b) goods originating in Crimea or Sevastopol which have been made available to the Ukrainian authorities for examination, for which compliance with the conditions conferring entitlement to preferential origin has been verified and for which a certificate of origin has been issued in accordance with Regulation (EU) No 978/2012 and Regulation (EU) No 374/2014 or in accordance with the EU-Ukraine Association Agreement. II. According to the Council Regulation (EU) No 1351/2014 (OJ L365, p. 46), the export of goods and technologies suited for use in the sectors of transport; telecommunications; energy; prospection, exploitation and production of oil, gas and mineral resources is prohibited: (a) to any natural or legal person, entity or body in Crimea or Sevastopol, or (b) for use in Crimea or Sevastopol. The prohibitions shall be without prejudice to the execution until 21 March 2015 of an obligation arising from a contract concluded before 20 December 2014, or by ancillary contracts necessary for the execution of such contracts, provided that the competent authority has been informed at least five working days in advance. When related to the use in Crimea or Sevastopol, the prohibitions do not apply where there are no reasonable grounds to determine that the goods and technology or the services are to be used in Crimea or Sevastopol."
+      }
+    },
+    {
+      "id": "3945957",
+      "type": "measure",
+      "attributes": {
+        "effective_start_date": "2022-12-01T00:00:00.000Z",
+        "effective_end_date": null
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "760",
+            "type": "measure_type"
+          }
+        },
+        "footnotes": {
+          "data": [
+            {
+              "id": "CD967",
+              "type": "footnote"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "1.1",
+      "type": "theme",
+      "attributes": {
+        "section": "1.1",
+        "theme": "restrictive measures in force based on Article 215 Treaty on the Functioning of the European Union, insofar as they relate to trade in goods between the Union and third countries;",
+        "category": 1
+      }
+    },
+    {
+      "id": "a67daf0acd83c3c0d5f4aba690f20ec1",
+      "type": "category_assessment",
+      "relationships": {
+        "exemptions": {
+          "data": [
+            {
+              "id": "Y997",
+              "type": "certificate"
+            }
+          ]
+        },
+        "theme": {
+          "data": {
+            "id": "1.1",
+            "type": "theme"
+          }
+        },
+        "geographical_area": {
+          "data": {
+            "id": "UA",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": []
+        },
+        "measure_type": {
+          "data": {
+            "id": "760",
+            "type": "measure_type"
+          }
+        },
+        "regulation": {
+          "data": {
+            "id": "R1406920",
+            "type": "legal_act"
+          }
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "3945957",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "R2202630",
+      "type": "legal_act",
+      "attributes": {
+        "validity_start_date": "2022-02-26T00:00:00.000Z",
+        "validity_end_date": null,
+        "officialjournal_number": "L 42I",
+        "officialjournal_page": 77,
+        "published_date": "2022-02-24",
+        "regulation_code": "R0263/22",
+        "regulation_url": "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077\u0026DB_COLL_OJ=oj-l\u0026type=advanced\u0026lang=en",
+        "description": "concerning restrictive measures in response to the recognition of the non-government controlled areas of the Donetsk and Luhansk oblasts of Ukraine and the ordering of Russian armed forces into those areas",
+        "role": 1
+      }
+    },
+    {
+      "id": "762",
+      "type": "measure_type",
+      "attributes": {
+        "description": "Import control",
+        "measure_type_series_id": "B",
+        "measure_component_applicable_code": 0,
+        "order_number_capture_code": 2,
+        "trade_movement_code": 0,
+        "validity_end_date": null,
+        "validity_start_date": "2022-02-26T00:00:00.000Z",
+        "id": "762",
+        "measure_type_series_description": "Entry into free circulation or exportation subject to conditions"
+      }
+    },
+    {
+      "id": "Y984",
+      "type": "certificate",
+      "attributes": {
+        "code": "Y984",
+        "certificate_type_code": "Y",
+        "certificate_code": "984",
+        "description": "Goods not originating from or not destined for the non-government controlled areas of Ukraine in the oblasts of Donetsk, Kherson, Luhansk and Zaporizhzhia",
+        "formatted_description": "Goods not originating from or not destined for the non-government controlled areas of Ukraine in the oblasts of Donetsk, Kherson, Luhansk and Zaporizhzhia"
+      }
+    },
+    {
+      "id": "CD860",
+      "type": "footnote",
+      "attributes": {
+        "code": "CD860",
+        "description": "According to Council Regulation (EU) 2022/263 (OJ L42I, p. 77): I. It shall be prohibited to import into the European Union goods originating in non-government controlled areas of the Donetsk, Kherson, Luhansk and Zaporizhzhia oblasts of Ukraine. The import prohibitions not apply in respect of: (a) the execution until 24 May 2022 of trade contracts concluded before 23 February 2022, or of ancillary contracts necessary for the execution of such contracts, provided that the natural or legal person, entity or body seeking to perform the contract has notified, at least 10 working days in advance, the activity or transaction to the competent authority of the Member State in which they are established; (b) goods originating in the specified territories which have been made available to the Ukrainian authorities for examination, for which compliance with the conditions conferring entitlement to preferential origin has been verified and for which a certificate of origin has been issued in accordance with the EU-Ukraine Association Agreement. II. It shall be prohibited to sell, supply, transfer or export goods and technology listed in Annex II to Council Regulation (EU) 2022/263: (a) to any natural or legal person, entity or body in the specified territories, or (b) for use in the specified territories. Annex II shall include certain goods and technologies suited for use in the following key sectors: (i) transport; (ii) telecommunications; (iii) energy; (iv) the prospecting, exploration and production of oil, gas and mineral resources. The prohibitions in point II above shall be without prejudice to the execution until 24 August 2022 of an obligation arising from a contract concluded before 23 February 2022, or from ancillary contracts necessary for the execution of such contracts, provided that the competent authority has been informed at least five working days in advance.",
+        "formatted_description": "According to Council Regulation (EU) 2022/263 (OJ L42I, p. 77): I. It shall be prohibited to import into the European Union goods originating in non-government controlled areas of the Donetsk, Kherson, Luhansk and Zaporizhzhia oblasts of Ukraine. The import prohibitions not apply in respect of: (a) the execution until 24 May 2022 of trade contracts concluded before 23 February 2022, or of ancillary contracts necessary for the execution of such contracts, provided that the natural or legal person, entity or body seeking to perform the contract has notified, at least 10 working days in advance, the activity or transaction to the competent authority of the Member State in which they are established; (b) goods originating in the specified territories which have been made available to the Ukrainian authorities for examination, for which compliance with the conditions conferring entitlement to preferential origin has been verified and for which a certificate of origin has been issued in accordance with the EU-Ukraine Association Agreement. II. It shall be prohibited to sell, supply, transfer or export goods and technology listed in Annex II to Council Regulation (EU) 2022/263: (a) to any natural or legal person, entity or body in the specified territories, or (b) for use in the specified territories. Annex II shall include certain goods and technologies suited for use in the following key sectors: (i) transport; (ii) telecommunications; (iii) energy; (iv) the prospecting, exploration and production of oil, gas and mineral resources. The prohibitions in point II above shall be without prejudice to the execution until 24 August 2022 of an obligation arising from a contract concluded before 23 February 2022, or from ancillary contracts necessary for the execution of such contracts, provided that the competent authority has been informed at least five working days in advance."
+      }
+    },
+    {
+      "id": "3929183",
+      "type": "measure",
+      "attributes": {
+        "effective_start_date": "2022-08-06T00:00:00.000Z",
+        "effective_end_date": null
+      },
+      "relationships": {
+        "measure_type": {
+          "data": {
+            "id": "762",
+            "type": "measure_type"
+          }
+        },
+        "footnotes": {
+          "data": [
+            {
+              "id": "CD860",
+              "type": "footnote"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "9b9c6e21f30a4e137f016e6dfb9b939c",
+      "type": "category_assessment",
+      "relationships": {
+        "exemptions": {
+          "data": [
+            {
+              "id": "Y984",
+              "type": "certificate"
+            }
+          ]
+        },
+        "theme": {
+          "data": {
+            "id": "1.1",
+            "type": "theme"
+          }
+        },
+        "geographical_area": {
+          "data": {
+            "id": "UA",
+            "type": "geographical_area"
+          }
+        },
+        "excluded_geographical_areas": {
+          "data": []
+        },
+        "measure_type": {
+          "data": {
+            "id": "762",
+            "type": "measure_type"
+          }
+        },
+        "regulation": {
+          "data": {
+            "id": "R2202630",
+            "type": "legal_act"
+          }
+        },
+        "measures": {
+          "data": [
+            {
+              "id": "3929183",
+              "type": "measure"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "36168",
+      "type": "goods_nomenclature",
+      "attributes": {
+        "goods_nomenclature_sid": 36168,
+        "goods_nomenclature_item_id": "2900000000",
+        "description": "ORGANIC CHEMICALS",
+        "number_indents": 0,
+        "producline_suffix": "80",
+        "validity_start_date": "1971-12-31T00:00:00.000Z",
+        "validity_end_date": null,
+        "parent_sid": null
+      }
+    },
+    {
+      "id": "36969",
+      "type": "goods_nomenclature",
+      "attributes": {
+        "goods_nomenclature_sid": 36969,
+        "goods_nomenclature_item_id": "2924000000",
+        "description": "Carboxyamide-function compounds; amide-function compounds of carbonic acid",
+        "number_indents": 0,
+        "producline_suffix": "80",
+        "validity_start_date": "1972-01-01T00:00:00.000Z",
+        "validity_end_date": null,
+        "parent_sid": 36168
+      }
+    },
+    {
+      "id": "36975",
+      "type": "goods_nomenclature",
+      "attributes": {
+        "goods_nomenclature_sid": 36975,
+        "goods_nomenclature_item_id": "2924210000",
+        "description": "Cyclic amides (including cyclic carbamates) and their derivatives; salts thereof",
+        "number_indents": 1,
+        "producline_suffix": "10",
+        "validity_start_date": "1972-01-01T00:00:00.000Z",
+        "validity_end_date": null,
+        "parent_sid": 36969
+      }
+    }
+  ]
+}
