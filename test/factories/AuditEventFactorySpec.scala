@@ -45,13 +45,11 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 9
+        auditDetails.size mustBe 7
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("ukimsNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("hasNirms") mustBe "true"
         auditDetails("nirmsNumber") mustBe "RMS-GB-123456"
-        auditDetails("hasNiphl") mustBe "true"
         auditDetails("niphlNumber") mustBe "612345"
         auditDetails("journeyStart") mustBe start.toString
         Instant.parse(auditDetails("journeyEnd")).isAfter(start) mustBe true
@@ -69,13 +67,11 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 7
+        auditDetails.size mustBe 5
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("ukimsNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("hasNirms") mustBe "false"
         auditDetails.get("nirmsNumber") mustBe None
-        auditDetails("hasNiphl") mustBe "false"
         auditDetails.get("niphlNumber") mustBe None
         auditDetails("journeyStart") mustBe start.toString
         Instant.parse(auditDetails("journeyEnd")).isAfter(start) mustBe true

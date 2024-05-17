@@ -33,9 +33,7 @@ case class AuditEventFactory() {
       "eori"          -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,
       "ukimsNumber"   -> traderProfile.ukimsNumber,
-      "hasNirms"      -> traderProfile.nirmsNumber.isDefined.toString,
       "nirmsNumber"   -> traderProfile.nirmsNumber.getOrElse(""),
-      "hasNiphl"      -> traderProfile.niphlNumber.isDefined.toString,
       "niphlNumber"   -> traderProfile.niphlNumber.getOrElse(""),
       "journeyStart"  -> startTime.getOrElse("").toString,
       "journeyEnd"    -> Instant.now().toString
