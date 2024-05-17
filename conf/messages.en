@@ -216,8 +216,12 @@ hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
 hasCorrectGoods.error.required = Select yes if hasCorrectGoods
 hasCorrectGoods.change.hidden = HasCorrectGoods
 
-hasGoodsDescription.title = hasGoodsDescription
-hasGoodsDescription.heading = hasGoodsDescription
-hasGoodsDescription.checkYourAnswersLabel = hasGoodsDescription
-hasGoodsDescription.error.required = Select yes if hasGoodsDescription
-hasGoodsDescription.change.hidden = HasGoodsDescription
+hasGoodsDescription.title = Goods description
+hasGoodsDescription.h1 = Goods description
+hasGoodsDescription.p1 = A goods description is a name you can give your records to help you identify and share them.
+hasGoodsDescription.p2 = The goods description does not need to be unique to your TGP.
+hasGoodsDescription.h2 = If you do not add a goods description
+hasGoodsDescription.p3 = We will create a goods description for you. This will be the country of origin, followed by the commodity code and then the trader reference.
+hasGoodsDescription.h3 = Do you want to add a personalised goods description?
+hasGoodsDescription.checkYourAnswersLabel = hasCorrectGoods
+hasGoodsDescription.error.required = confirm if you want to add a personalised goods description
