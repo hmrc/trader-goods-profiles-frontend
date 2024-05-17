@@ -20,15 +20,15 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 final case class ThemeResponse(
-                                id: String,
-                                category: Int
-                              ) extends IncludedElement
+  id: String,
+  category: Int
+) extends IncludedElement
 
 object ThemeResponse {
 
   implicit lazy val reads: Reads[ThemeResponse] =
     (
       (__ \ "id").read[String] and
-      (__ \ "attributes" \ "category").read[Int]
+        (__ \ "attributes" \ "category").read[Int]
     )(ThemeResponse.apply _)
 }

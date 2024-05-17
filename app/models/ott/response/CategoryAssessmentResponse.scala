@@ -20,17 +20,17 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 final case class CategoryAssessmentResponse(
-                                             id: String,
-                                             themeId: String,
-                                             exemptions: Seq[ExemptionResponse]
-                                           ) extends IncludedElement
+  id: String,
+  themeId: String,
+  exemptions: Seq[ExemptionResponse]
+) extends IncludedElement
 
 object CategoryAssessmentResponse {
 
   implicit lazy val reads: Reads[CategoryAssessmentResponse] =
     (
       (__ \ "id").read[String] and
-      (__ \ "relationships" \ "theme" \ "data" \ "id").read[String] and
-      (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]]
+        (__ \ "relationships" \ "theme" \ "data" \ "id").read[String] and
+        (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]]
     )(CategoryAssessmentResponse.apply _)
 }

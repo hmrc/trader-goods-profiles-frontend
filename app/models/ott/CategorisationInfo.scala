@@ -20,9 +20,9 @@ import cats.implicits.toTraverseOps
 import models.ott.response.OttResponse
 
 final case class CategorisationInfo(
-                                     commodityCode: String,
-                                     categoryAssessments: Seq[CategoryAssessment]
-                                   )
+  commodityCode: String,
+  categoryAssessments: Seq[CategoryAssessment]
+)
 
 object CategorisationInfo {
 

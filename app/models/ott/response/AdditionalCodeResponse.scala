@@ -20,17 +20,17 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.{Reads, __}
 
 final case class AdditionalCodeResponse(
-                                         id: String,
-                                         code: String,
-                                         description: String
-                                       ) extends IncludedElement
+  id: String,
+  code: String,
+  description: String
+) extends IncludedElement
 
 object AdditionalCodeResponse {
 
   implicit lazy val reads: Reads[AdditionalCodeResponse] =
     (
       (__ \ "id").read[String] and
-      (__ \ "attributes" \ "code").read[String] and
-      (__ \ "attributes" \ "description").read[String]
+        (__ \ "attributes" \ "code").read[String] and
+        (__ \ "attributes" \ "description").read[String]
     )(AdditionalCodeResponse.apply _)
 }

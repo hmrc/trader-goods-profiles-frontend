@@ -20,29 +20,29 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 final case class OttResponse(
-                              goodsNomenclature: GoodsNomenclatureResponse,
-                              categoryAssessmentRelationships: Seq[CategoryAssessmentRelationship],
-                              includedElements: Seq[IncludedElement]
-                            ) {
+  goodsNomenclature: GoodsNomenclatureResponse,
+  categoryAssessmentRelationships: Seq[CategoryAssessmentRelationship],
+  includedElements: Seq[IncludedElement]
+) {
 
   lazy val themes: Seq[ThemeResponse] = includedElements.flatMap {
     case t: ThemeResponse => Some(t)
-    case _ => None
+    case _                => None
   }
 
   lazy val categoryAssessments: Seq[CategoryAssessmentResponse] = includedElements.flatMap {
     case ca: CategoryAssessmentResponse => Some(ca)
-    case _ => None
+    case _                              => None
   }
 
   lazy val certificates: Seq[CertificateResponse] = includedElements.flatMap {
     case c: CertificateResponse => Some(c)
-    case _ => None
+    case _                      => None
   }
 
   lazy val additionalCodes: Seq[AdditionalCodeResponse] = includedElements.flatMap {
     case a: AdditionalCodeResponse => Some(a)
-    case _ => None
+    case _                         => None
   }
 }
 
@@ -50,7 +50,8 @@ object OttResponse {
 
   implicit lazy val reads: Reads[OttResponse] = (
     (__ \ "data").read[GoodsNomenclatureResponse] and
-    (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data").read[Seq[CategoryAssessmentRelationship]] and
-    (__ \ "included").read[Seq[IncludedElement]]
+      (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data")
+        .read[Seq[CategoryAssessmentRelationship]] and
+      (__ \ "included").read[Seq[IncludedElement]]
   )(OttResponse.apply _)
 }
