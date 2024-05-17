@@ -53,7 +53,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
         }
       }
       .recoverWith { case e: NotFoundException =>
-        Future.failed(UpstreamErrorResponse(" ", NOT_FOUND))
+        Future.failed(UpstreamErrorResponse("", NOT_FOUND))
       }
   }
 
