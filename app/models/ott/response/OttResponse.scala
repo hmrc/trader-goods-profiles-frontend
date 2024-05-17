@@ -35,7 +35,7 @@ final case class OttResponse(
     case _ => None
   }
 
-  lazy val certificates: Seq[CertificateResponse] = includedElements.flatMap {
+  lazy val exemptions: Seq[CertificateResponse] = includedElements.flatMap {
     case c: CertificateResponse => Some(c)
     case _ => None
   }

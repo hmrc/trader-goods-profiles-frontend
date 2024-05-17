@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-package models.ott.response
+package models.ott
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
-
-final case class GoodsNomenclatureResponse(
-                                            id: String,
-                                            commodityCode: String
-                                          )
-
-object GoodsNomenclatureResponse {
-
-  implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
-    (__ \ "id").read[String] and
-    (__ \ "attributes" \ "goods_nomenclature_item_id").read[String]
-  )(GoodsNomenclatureResponse.apply _)
-}
+final case class Exemption(id: String, code: String, description: String)
