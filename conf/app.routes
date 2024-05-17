@@ -89,3 +89,8 @@ GET        /create-record/goods-description-question                   controlle
 POST       /create-record/goods-description-question                   controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
 GET        /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
 POST       /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+
+GET        /update-record/goods-description-question                   controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST       /update-record/goods-description-question                   controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET        /update-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST       /update-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
