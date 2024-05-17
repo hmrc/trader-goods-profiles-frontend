@@ -26,17 +26,19 @@ import java.time.Instant
 
 case class AuditEventFactory() {
 
-  def createSetUpProfileEvent(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(implicit hc: HeaderCarrier): DataEvent = {
+  def createSetUpProfileEvent(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(
+    implicit hc: HeaderCarrier
+  ): DataEvent = {
     val auditDetails = Map(
-      "eori" -> traderProfile.actorId,
+      "eori"          -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,
-      "ukimsNumber" -> traderProfile.ukimsNumber,
-      "hasNirms" -> traderProfile.nirmsNumber.isDefined.toString,
-      "nirmsNumber" -> traderProfile.nirmsNumber.getOrElse(""),
-      "hasNiphl" -> traderProfile.niphlNumber.isDefined.toString,
-      "niphlNumber" -> traderProfile.niphlNumber.getOrElse(""),
-      "journeyStart" -> startTime.getOrElse("").toString,
-      "journeyEnd" -> Instant.now().toString
+      "ukimsNumber"   -> traderProfile.ukimsNumber,
+      "hasNirms"      -> traderProfile.nirmsNumber.isDefined.toString,
+      "nirmsNumber"   -> traderProfile.nirmsNumber.getOrElse(""),
+      "hasNiphl"      -> traderProfile.niphlNumber.isDefined.toString,
+      "niphlNumber"   -> traderProfile.niphlNumber.getOrElse(""),
+      "journeyStart"  -> startTime.getOrElse("").toString,
+      "journeyEnd"    -> Instant.now().toString
     ).filter(x => x._2.nonEmpty)
 
     DataEvent(

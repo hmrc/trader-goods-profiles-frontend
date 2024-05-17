@@ -16,8 +16,4 @@
 
 package pages
 
-import play.api.libs.json.JsPath
-
-import java.time.{Instant, LocalDateTime}
-
 case object ProfileSetupPage extends Page

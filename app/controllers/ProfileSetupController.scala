@@ -41,7 +41,8 @@ class ProfileSetupController @Inject() (
   requireData: DataRequiredAction,
   getOrCreate: DataRetrievalOrCreateAction,
   sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getOrCreate) { implicit request =>
@@ -49,10 +50,10 @@ class ProfileSetupController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    for{
+    for {
       updatedAnswers <- Future.fromTry(request.userAnswers.set(ProfileSetupStartTimeQuery, Instant.now))
-    _ <- sessionRepository.set(updatedAnswers)
-  } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
+      _              <- sessionRepository.set(updatedAnswers)
+    } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
 
   }
 }

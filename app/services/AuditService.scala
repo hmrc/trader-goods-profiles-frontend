@@ -23,7 +23,7 @@ import org.apache.pekko.Done
 import play.api.Logging
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,12 +32,14 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   ec: ExecutionContext
 ) extends Logging {
 
-  def auditProfileSetUp(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(implicit hc: HeaderCarrier): Future[Done] = {
+  def auditProfileSetUp(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
     val event = auditEventFactory.createSetUpProfileEvent(traderProfile, startTime, affinityGroup)
-    auditConnector.sendEvent(event).map(auditResult => {
+    auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"SetUpProfile audit event status: $auditResult")
       Done
-    })
+    }
   }
 
 }
