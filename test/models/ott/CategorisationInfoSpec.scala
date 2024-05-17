@@ -58,13 +58,17 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         includedElements = Seq(
           CategoryAssessmentResponse("assessmentId1", "themeId1", Nil),
           ThemeResponse("themeId1", 1),
-          CategoryAssessmentResponse("assessmentId2", "themeId2", Seq(
-            ExemptionResponse("exemptionId1", "certificate"),
-            ExemptionResponse("exemptionId2", "certificate")
-          )),
+          CategoryAssessmentResponse(
+            "assessmentId2",
+            "themeId2",
+            Seq(
+              ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+              ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+            )
+          ),
           ThemeResponse("themeId2", 2),
           CertificateResponse("exemptionId1", "code1", "description1"),
-          CertificateResponse("exemptionId2", "code2", "description2"),
+          AdditionalCodeResponse("exemptionId2", "code2", "description2"),
           ThemeResponse("ignoredTheme", 3),
           CertificateResponse("ignoredExemption", "code3", "description3")
         )
@@ -74,10 +78,14 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         commodityCode = "commodity code",
         categoryAssessments = Seq(
           CategoryAssessment("assessmentId1", 1, Nil),
-          CategoryAssessment("assessmentId2", 2, Seq(
-            Exemption("exemptionId1", "code1", "description1"),
-            Exemption("exemptionId2", "code2", "description2")
-          ))
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
         )
       )
 
@@ -112,7 +120,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
       CategorisationInfo.build(ottResponse) must not be defined
     }
 
-    "must return None when an exemption cannot be found" in {
+    "must return None when a certificate cannot be found" in {
 
       val ottResponse = OttResponse(
         goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code"),
@@ -120,12 +128,40 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           CategoryAssessmentRelationship("assessmentId1")
         ),
         includedElements = Seq(
-          CategoryAssessmentResponse("assessmentId1", "themeId1", Seq(
-            ExemptionResponse("exemptionId1", "certificate"),
-            ExemptionResponse("exemptionId2", "certificate")
-          )),
+          CategoryAssessmentResponse(
+            "assessmentId1",
+            "themeId1",
+            Seq(
+              ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+              ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+            )
+          ),
           ThemeResponse("themeId1", 1),
-          CertificateResponse("exemptionId1", "code1", "description1"),
+          AdditionalCodeResponse("exemptionId2", "code2", "description2")
+        )
+      )
+
+      CategorisationInfo.build(ottResponse) must not be defined
+    }
+
+    "must return None when an additional code cannot be found" in {
+
+      val ottResponse = OttResponse(
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code"),
+        categoryAssessmentRelationships = Seq(
+          CategoryAssessmentRelationship("assessmentId1")
+        ),
+        includedElements = Seq(
+          CategoryAssessmentResponse(
+            "assessmentId1",
+            "themeId1",
+            Seq(
+              ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+              ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+            )
+          ),
+          ThemeResponse("themeId1", 1),
+          CertificateResponse("exemptionId1", "code1", "description1")
         )
       )
 

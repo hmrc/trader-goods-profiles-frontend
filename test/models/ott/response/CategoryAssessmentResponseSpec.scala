@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package models.ott
+package models.ott.response
 
-import models.ott.response.{CategoryAssessmentResponse, ExemptionResponse}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
@@ -58,6 +57,10 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
               Json.obj(
                 "id"   -> "cert",
                 "type" -> "certificate"
+              ),
+              Json.obj(
+                "id"   -> "code",
+                "type" -> "additional_code"
               )
             )
           ),
@@ -71,7 +74,16 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
       )
 
       val result = json.validate[CategoryAssessmentResponse]
-      result mustEqual JsSuccess(CategoryAssessmentResponse("abc", "1", Seq(ExemptionResponse("cert", "certificate"))))
+      result mustEqual JsSuccess(
+        CategoryAssessmentResponse(
+          id = "abc",
+          themeId = "1",
+          exemptions = Seq(
+            ExemptionResponse("cert", ExemptionType.Certificate),
+            ExemptionResponse("code", ExemptionType.AdditionalCode)
+          )
+        )
+      )
     }
   }
 }

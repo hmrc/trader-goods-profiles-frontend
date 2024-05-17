@@ -17,7 +17,7 @@
 package models.ott
 
 import cats.implicits.toTraverseOps
-import models.ott.response.OttResponse
+import models.ott.response.{ExemptionType, OttResponse}
 
 final case class CategoryAssessment(
                                      id: String,
@@ -31,11 +31,20 @@ object CategoryAssessment {
     for {
       assessment <- ottResponse.categoryAssessments.find(_.id == id)
       theme      <- ottResponse.themes.find(_.id == assessment.themeId)
-      exemptions <- assessment.exemptions.map(x => buildExemption(x.id, ottResponse)).sequence
+      exemptions <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
     } yield CategoryAssessment(id, theme.category, exemptions)
 
-  def buildExemption(id: String, ottResponse: OttResponse): Option[Exemption] =
-    ottResponse.exemptions
-      .find(_.id == id)
-      .map(x => Exemption(x.id, x.code, x.description))
+  private def buildExemption(id: String, exemptionType: ExemptionType, ottResponse: OttResponse): Option[Exemption] = {
+    exemptionType match {
+      case ExemptionType.Certificate =>
+        ottResponse.certificates
+          .find(_.id == id)
+          .map(x => Certificate(x.id, x.code, x.description))
+
+      case ExemptionType.AdditionalCode =>
+        ottResponse.additionalCodes
+        .find(_.id == id)
+        .map(x => AdditionalCode(x.id, x.code, x.description))
+    }
+  }
 }

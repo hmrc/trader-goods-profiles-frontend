@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package models.ott
+package models.ott.response
 
-import models.ott.response.{CategoryAssessmentResponse, CertificateResponse, ExemptionResponse, Ignorable, IncludedElement, ThemeResponse}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
@@ -36,6 +35,10 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
               Json.obj(
                 "id"   -> "cert",
                 "type" -> "certificate"
+              ),
+              Json.obj(
+                "id"   -> "code",
+                "type" -> "additional_code"
               )
             )
           ),
@@ -49,7 +52,16 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
       )
 
       val result = json.validate[IncludedElement]
-      result mustEqual JsSuccess(CategoryAssessmentResponse("abc", "1", Seq(ExemptionResponse("cert", "certificate"))))
+      result mustEqual JsSuccess(
+        CategoryAssessmentResponse(
+          id = "abc",
+          themeId = "1",
+          exemptions = Seq(
+            ExemptionResponse("cert", ExemptionType.Certificate),
+            ExemptionResponse("code", ExemptionType.AdditionalCode)
+          )
+        )
+      )
     }
 
     "must deserialise a certificate" in {
@@ -65,6 +77,21 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
 
       val result = json.validate[IncludedElement]
       result mustEqual JsSuccess(CertificateResponse("1", "abc", "foo"))
+    }
+
+    "must deserialise an additional code" in {
+
+      val json = Json.obj(
+        "type"       -> "additional_code",
+        "id"         -> "1",
+        "attributes" -> Json.obj(
+          "code"        -> "abc",
+          "description" -> "foo"
+        )
+      )
+
+      val result = json.validate[IncludedElement]
+      result mustEqual JsSuccess(AdditionalCodeResponse("1", "abc", "foo"))
     }
 
     "must deserialise a theme" in {

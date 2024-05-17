@@ -16,4 +16,12 @@
 
 package models.ott
 
-final case class Exemption(id: String, code: String, description: String)
+sealed trait Exemption {
+
+  val id: String
+  val code: String
+  val description: String
+}
+
+final case class Certificate(id: String, code: String, description: String) extends Exemption
+final case class AdditionalCode(id: String, code: String, description: String) extends Exemption
