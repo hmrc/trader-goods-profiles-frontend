@@ -235,7 +235,7 @@ object Country {
       allCountries.map { country =>
         SelectItemViewModel(
           value = country.code,
-          text = country.name
+          text = s"${country.name} - ${country.code}"
         )
       }
 }
