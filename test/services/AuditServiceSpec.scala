@@ -66,7 +66,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the trader profile and time to the factory to create the event") {
-        verify(mockAuditFactory, times(1)).createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime), eqTo(AffinityGroup.Individual))(any())
+        verify(mockAuditFactory, times(1))
+          .createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime), eqTo(AffinityGroup.Individual))(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -89,7 +90,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the trader profile to the factory to create the event") {
-        verify(mockAuditFactory, times(1)).createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime), eqTo(AffinityGroup.Individual))(any())
+        verify(mockAuditFactory, times(1))
+          .createSetUpProfileEvent(eqTo(traderProfile), eqTo(startTime), eqTo(AffinityGroup.Individual))(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {

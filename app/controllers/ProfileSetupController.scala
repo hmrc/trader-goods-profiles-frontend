@@ -22,6 +22,7 @@ import navigation.Navigator
 import pages.ProfileSetupPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.ProfileSetupStartTimeQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ProfileSetupView
@@ -49,7 +50,7 @@ class ProfileSetupController @Inject() (
 
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     for{
-      updatedAnswers <- Future.fromTry(request.userAnswers.set(ProfileSetupPage, Instant.now))
+      updatedAnswers <- Future.fromTry(request.userAnswers.set(ProfileSetupStartTimeQuery, Instant.now))
     _ <- sessionRepository.set(updatedAnswers)
   } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
 

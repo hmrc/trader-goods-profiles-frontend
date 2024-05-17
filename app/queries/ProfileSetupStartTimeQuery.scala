@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
 import play.api.libs.json.JsPath
 
-import java.time.{Instant, LocalDateTime}
+import java.time.Instant
 
-case object ProfileSetupPage extends Page
+case object ProfileSetupStartTimeQuery extends Gettable[Instant] with Settable[Instant] {
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "profileJourneyStartTime"
+}

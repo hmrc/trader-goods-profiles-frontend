@@ -29,6 +29,7 @@ import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{await, _}
+import queries.ProfileSetupStartTimeQuery
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -168,7 +169,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
               .set(HasNiphlPage, false)
               .success
               .value
-              .set(ProfileSetupPage, startTime)
+              .set(ProfileSetupStartTimeQuery, startTime)
               .success
               .value
 
@@ -196,7 +197,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1)).auditProfileSetUp(eqTo(expectedPayload), eqTo(Some(startTime)), eqTo(AffinityGroup.Individual))(any())
+              verify(mockAuditService, times(1))
+                .auditProfileSetUp(eqTo(expectedPayload), eqTo(Some(startTime)), eqTo(AffinityGroup.Individual))(any())
             }
           }
         }
