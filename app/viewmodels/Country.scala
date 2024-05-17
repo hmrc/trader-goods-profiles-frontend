@@ -230,8 +230,8 @@ object Country {
       .find(_.code == countryCode)
       .getOrElse(Country(countryCode, "Unknown"))
 
-  def selectItems(implicit messages: Messages): Seq[SelectItem] =
-    SelectItem(value = None, text = messages("countrySelect.label")) +:
+  def selectItems: Seq[SelectItem] =
+    SelectItem(value = None) +:
       allCountries.map { country =>
         SelectItemViewModel(
           value = country.code,
