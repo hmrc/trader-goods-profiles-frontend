@@ -37,6 +37,8 @@
 
     <p class="govuk-body">@messages("hasGoodsDescription.p3")</p>
 
+    <h2 class="govuk-heading-m">@messages("hasGoodsDescription.h3")</h2>
+
     @formHelper(action = routes.HasGoodsDescriptionController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
@@ -46,7 +48,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(messages("hasGoodsDescription.h3")).asPageHeading(Medium)
+                legend = Legend(content = "hasGoodsDescription.h1", classes = "govuk-visually-hidden")
             )
         )
 
