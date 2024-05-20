@@ -46,13 +46,13 @@ class AuditEventFactorySpec extends SpecBase {
 
         val auditDetails = result.detail
         auditDetails.size mustBe 9
-        auditDetails("eori") mustBe testEori
+        auditDetails("EORINumber") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
-        auditDetails("ukimsNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("hasNirms") mustBe "true"
-        auditDetails("nirmsNumber") mustBe "RMS-GB-123456"
-        auditDetails("hasNiphl") mustBe "true"
-        auditDetails("niphlNumber") mustBe "612345"
+        auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
+        auditDetails("isNIRMSRegistered") mustBe "true"
+        auditDetails("NIRMSNumber") mustBe "RMS-GB-123456"
+        auditDetails("isNIPHLRegistered") mustBe "true"
+        auditDetails("NIPHLNumber") mustBe "612345"
         auditDetails("journeyStart") mustBe start.toString
         Instant.parse(auditDetails("journeyEnd")).isAfter(start) mustBe true
 
@@ -70,13 +70,13 @@ class AuditEventFactorySpec extends SpecBase {
 
         val auditDetails = result.detail
         auditDetails.size mustBe 7
-        auditDetails("eori") mustBe testEori
+        auditDetails("EORINumber") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
-        auditDetails("ukimsNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("hasNirms") mustBe "false"
-        auditDetails.get("nirmsNumber") mustBe None
-        auditDetails("hasNiphl") mustBe "false"
-        auditDetails.get("niphlNumber") mustBe None
+        auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
+        auditDetails("isNIRMSRegistered") mustBe "false"
+        auditDetails.get("NIRMSNumber") mustBe None
+        auditDetails("isNIPHLRegistered") mustBe "false"
+        auditDetails.get("NIPHLNumber") mustBe None
         auditDetails("journeyStart") mustBe start.toString
         Instant.parse(auditDetails("journeyEnd")).isAfter(start) mustBe true
 
