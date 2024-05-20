@@ -17,11 +17,10 @@
 package connectors
 
 import config.Service
-import models.{Commodity, TraderProfile}
-import org.apache.pekko.Done
+import models.Commodity
 import play.api.Configuration
 import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.libs.json.{JsResult, Json}
+import play.api.libs.json.JsResult
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
 
