@@ -34,12 +34,12 @@ class DataRetrievalOrCreateActionImpl @Inject() (
     sessionRepository.get(request.userId).flatMap { opt =>
       opt
         .map { answers =>
-          Future.successful(DataRequest(request.request, request.userId, request.eori, answers))
+          Future.successful(DataRequest(request.request, request.userId, request.eori, request.affinityGroup, answers))
         }
         .getOrElse {
           val answers = UserAnswers(request.userId)
           sessionRepository.set(answers).map { _ =>
-            DataRequest(request.request, request.userId, request.eori, answers)
+            DataRequest(request.request, request.userId, request.eori, request.affinityGroup, answers)
           }
         }
     }

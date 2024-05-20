@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package queries
 
-import models.UserAnswers
-import models.requests.{DataRequest, IdentifierRequest}
+import play.api.libs.json.JsPath
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.time.Instant
 
-class FakeDataRetrievalOrCreateAction extends DataRetrievalOrCreateAction {
+case object ProfileSetupStartTimeQuery extends Gettable[Instant] with Settable[Instant] {
+  override def path: JsPath = JsPath \ toString
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
-    Future(DataRequest(request.request, request.userId, request.eori, request.affinityGroup, UserAnswers("id")))
-
-  override protected implicit val executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+  override def toString: String = "profileJourneyStartTime"
 }

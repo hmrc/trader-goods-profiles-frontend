@@ -1,0 +1,51 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package factories
+
+import models.TraderProfile
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
+import uk.gov.hmrc.play.audit.model.DataEvent
+
+import java.time.Instant
+
+case class AuditEventFactory() {
+
+  def createSetUpProfileEvent(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(
+    implicit hc: HeaderCarrier
+  ): DataEvent = {
+    val auditDetails = Map(
+      "eori"          -> traderProfile.actorId,
+      "affinityGroup" -> affinityGroup.toString,
+      "ukimsNumber"   -> traderProfile.ukimsNumber,
+      "nirmsNumber"   -> traderProfile.nirmsNumber.getOrElse(""),
+      "niphlNumber"   -> traderProfile.niphlNumber.getOrElse(""),
+      "journeyStart"  -> startTime.getOrElse("").toString,
+      "journeyEnd"    -> Instant.now().toString
+    ).filter(x => x._2.nonEmpty)
+
+    DataEvent(
+      auditSource = "trader-goods-profiles-frontend",
+      auditType = "ProfileSetUp",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+
+  }
+
+}

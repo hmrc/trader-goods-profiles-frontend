@@ -24,9 +24,11 @@ import logging.Logging
 import models.{TraderProfile, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import queries.ProfileSetupStartTimeQuery
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
+import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
 
@@ -39,7 +41,8 @@ class CheckYourAnswersController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
-  routerConnector: RouterConnector
+  routerConnector: RouterConnector,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -65,9 +68,14 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
-        routerConnector.submitTraderProfile(model, request.eori).map { _ =>
-          Redirect(routes.HomePageController.onPageLoad())
+        routerConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
+          auditService
+            .auditProfileSetUp(model, request.userAnswers.get(ProfileSetupStartTimeQuery), request.affinityGroup)
+            .map { _ =>
+              Redirect(routes.HomePageController.onPageLoad())
+            }
         }
+
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
     }
   }
@@ -80,4 +88,5 @@ class CheckYourAnswersController @Inject() (
     logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
+
 }

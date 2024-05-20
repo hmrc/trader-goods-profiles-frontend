@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, verify}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -27,6 +27,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.ProfileSetupView
+
+import scala.concurrent.Future
 
 class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
@@ -58,6 +60,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to the next page when the user already has user answers" in {
 
         val mockSessionRepository = mock[SessionRepository]
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -74,7 +77,10 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockSessionRepository, never()).set(any())
+
+          withClue("Store the time the journey started") {
+            verify(mockSessionRepository, times(1)).set(any())
+          }
         }
       }
     }

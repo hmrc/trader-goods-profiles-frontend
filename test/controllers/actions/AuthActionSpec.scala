@@ -253,7 +253,7 @@ class FakeSuccessfulAuthConnector @Inject() (eori: String) extends AuthConnector
     ec: ExecutionContext
   ): Future[A] = {
     val authResponse = new ~(
-      Some("internalId"),
+      new ~(Some("internalId"), Some(AffinityGroup.Individual)),
       Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", eori)), "")))
     )
 
