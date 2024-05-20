@@ -66,6 +66,20 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect on GET to JourneyRecovery Page if user doesn't have commodity answer" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasCorrectGoodsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val commodity   = Commodity("654321", "Description")
@@ -117,6 +131,22 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, hasCorrectGoodsRoute)
+            .withFormUrlEncodedBody(("value", ""))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

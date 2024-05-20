@@ -45,8 +45,7 @@ class HasCorrectGoodsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form             = formProvider()
-  private val defaultCommodity = Commodity("Default Code", "Default Description")
+  private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
@@ -54,9 +53,10 @@ class HasCorrectGoodsController @Inject() (
       case Some(value) => form.fill(value)
     }
 
-    val commodity = request.userAnswers.get(CommodityCodePage).getOrElse(defaultCommodity)
-
-    Ok(view(preparedForm, mode, commodity))
+    request.userAnswers.get(CommodityCodePage) match {
+      case Some(commodity) => Ok(view(preparedForm, mode, commodity))
+      case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+    }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -64,10 +64,11 @@ class HasCorrectGoodsController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => {
-            val commodity = request.userAnswers.get(CommodityCodePage).getOrElse(defaultCommodity)
-            Future.successful(BadRequest(view(formWithErrors, mode, commodity)))
-          },
+          formWithErrors =>
+            request.userAnswers.get(CommodityCodePage) match {
+              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity)))
+              case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+            },
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsPage, value))
