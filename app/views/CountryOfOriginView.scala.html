@@ -49,6 +49,7 @@
 
 @hmrcStandardPage(
     HmrcStandardPageParams(
+        pageTitle = Some(title(form, messages("countryOfOrigin.title"))),
         banners = Banners(phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))),
         templateOverrides = TemplateOverrides(
             additionalHeadBlock = Some(autocompleteCss()),

@@ -28,7 +28,7 @@ object Country {
   implicit val format: OFormat[Country] = Json.format[Country]
 
   val allCountries: Seq[Country] = Seq(
-    Country("", "Place holder for no country selection"),
+    Country("", " "),
     Country("AF", "Afghanistan"),
     Country("AL", "Albania"),
     Country("DZ", "Algeria"),
@@ -236,7 +236,7 @@ object Country {
       allCountries.map { country =>
         SelectItemViewModel(
           value = country.code,
-          text = s"${country.name} - ${country.code}"
+          text = s"${country.name}"
         )
       }
 }
