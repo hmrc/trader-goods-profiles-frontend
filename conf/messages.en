@@ -145,6 +145,7 @@ commodityCode.heading = What is the commodity code for your goods?
 commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 87654321, 9876543211
 commodityCode.error.required = Enter a commodity code
 commodityCode.error.invalidFormat = Enter a commodity code in the correct format
+commodityCode.error.invalid = Enter a real commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
@@ -210,10 +211,13 @@ goodsDescription.error.required = Enter the goods description
 goodsDescription.error.length = The goods description must be 512 characters or less
 goodsDescription.change.hidden = Goods description
 
-hasCorrectGoods.title = hasCorrectGoods
-hasCorrectGoods.heading = hasCorrectGoods
+hasCorrectGoods.title = Results for {0}
+hasCorrectGoods.heading = Results for {0}
+hasCorrectGoods.p1 = Classification: {0}
+hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool
+hasCorrectGoods.h2 = Are these the correct goods?
+hasCorrectGoods.error.required = Select if these are the correct goods
 hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
-hasCorrectGoods.error.required = Select yes if hasCorrectGoods
 hasCorrectGoods.change.hidden = HasCorrectGoods
 
 hasGoodsDescription.title = Goods description

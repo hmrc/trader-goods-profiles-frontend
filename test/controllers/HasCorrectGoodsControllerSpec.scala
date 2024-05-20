@@ -18,12 +18,12 @@ package controllers
 
 import base.SpecBase
 import forms.HasCorrectGoodsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HasCorrectGoodsPage
+import pages.{CommodityCodePage, HasCorrectGoodsPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -46,7 +46,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers =
+        emptyUserAnswers.set(CommodityCodePage, Commodity("654321", "Description")).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, hasCorrectGoodsRoute)
@@ -56,13 +59,37 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HasCorrectGoodsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, Commodity("654321", "Description"))(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect on GET to JourneyRecovery Page if user doesn't have commodity answer" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasCorrectGoodsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
+      val commodity   = Commodity("654321", "Description")
+      val userAnswers = emptyUserAnswers
+        .set(HasCorrectGoodsPage, true)
+        .success
+        .value
+        .set(CommodityCodePage, commodity)
+        .success
+        .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -74,7 +101,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, commodity)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -104,9 +134,30 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, hasCorrectGoodsRoute)
+            .withFormUrlEncodedBody(("value", ""))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted" in {
+
+      val commodity = Commodity("654321", "Description")
+
+      val userAnswers =
+        emptyUserAnswers.set(CommodityCodePage, commodity).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
@@ -120,7 +171,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, commodity)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
