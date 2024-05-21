@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -22,9 +24,20 @@
     govukButton: GovukButton
 )
 
+
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasGoodsDescription.title"))) {
+
+    <h1 class="govuk-heading-l">@messages("hasGoodsDescription.h1")</h1>
+    <p class="govuk-body">@messages("hasGoodsDescription.p1")</p>
+    <p class="govuk-body">@messages("hasGoodsDescription.p2")</p>
+
+    <h2 class="govuk-heading-m">@messages("hasGoodsDescription.h2")</h2>
+
+    <p class="govuk-body">@messages("hasGoodsDescription.p3")</p>
+
+    <h2 class="govuk-heading-m">@messages("hasGoodsDescription.h3")</h2>
 
     @formHelper(action = routes.HasGoodsDescriptionController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -35,7 +48,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("hasGoodsDescription.heading")).asPageHeading()
+                legend = Legend(content = "hasGoodsDescription.h1", classes = "govuk-visually-hidden")
             )
         )
 

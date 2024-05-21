@@ -27,7 +27,6 @@ case class AuditEventFactory() {
   def createSetUpProfileEvent(traderProfile: TraderProfile, affinityGroup: AffinityGroup)(implicit
     hc: HeaderCarrier
   ): DataEvent = {
-
     val auditDetails = Map(
       "EORINumber"    -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,

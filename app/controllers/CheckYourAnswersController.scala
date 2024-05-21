@@ -68,9 +68,11 @@ class CheckYourAnswersController @Inject() (
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         routerConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
-          auditService.auditProfileSetUp(model, request.affinityGroup).map { _ =>
-            Redirect(routes.HomePageController.onPageLoad())
-          }
+          auditService
+            .auditProfileSetUp(model, request.affinityGroup)
+            .map { _ =>
+              Redirect(routes.HomePageController.onPageLoad())
+            }
         }
 
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))

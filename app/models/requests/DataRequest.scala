@@ -20,8 +20,18 @@ import play.api.mvc.{Request, WrappedRequest}
 import models.UserAnswers
 import uk.gov.hmrc.auth.core.AffinityGroup
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, eori: String, affinityGroup: AffinityGroup, userAnswers: Option[UserAnswers])
-    extends WrappedRequest[A](request)
+case class OptionalDataRequest[A](
+  request: Request[A],
+  userId: String,
+  eori: String,
+  affinityGroup: AffinityGroup,
+  userAnswers: Option[UserAnswers]
+) extends WrappedRequest[A](request)
 
-case class DataRequest[A](request: Request[A], userId: String, eori: String, affinityGroup: AffinityGroup, userAnswers: UserAnswers)
-    extends WrappedRequest[A](request)
+case class DataRequest[A](
+  request: Request[A],
+  userId: String,
+  eori: String,
+  affinityGroup: AffinityGroup,
+  userAnswers: UserAnswers
+) extends WrappedRequest[A](request)

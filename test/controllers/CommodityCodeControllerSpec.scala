@@ -17,18 +17,22 @@
 package controllers
 
 import base.SpecBase
+import connectors.OttConnector
 import forms.CommodityCodeFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.CommodityCodePage
+import play.api.data.FormError
+import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.CommodityCodeView
 
 import scala.concurrent.Future
@@ -62,7 +66,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "654321").success.value
+      val commodity   = Commodity("654321", "")
+      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, commodity).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -82,13 +87,19 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       val mockSessionRepository = mock[SessionRepository]
 
+      val mockOttConnector = mock[OttConnector]
+
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.successful(
+        Commodity("654321", "Description")
+      )
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[OttConnector].toInstance(mockOttConnector)
           )
           .build()
 
@@ -101,6 +112,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
       }
     }
 
@@ -141,6 +154,38 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
+
+      val mockOttConnector = mock[OttConnector]
+
+      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.failed(
+        UpstreamErrorResponse(" ", NOT_FOUND)
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, commodityCodeRoute)
+            .withFormUrlEncodedBody(("value", "654321"))
+
+        val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a real commodity code")))
+
+        val view = application.injector.instanceOf[CommodityCodeView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+
+        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
       }
     }
 

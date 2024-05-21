@@ -16,12 +16,38 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("createRecordStart.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("createRecordStart.heading")</h1>
+ <h1 class="govuk-heading-l">@messages("createRecordStart.h1")</h1>
+ <p class="govuk-body">@messages("createRecordStart.p1")</p>
+ <p class="govuk-body">@messages("createRecordStart.p2")</p>
+
+ <ul class="govuk-body">
+  <li>@messages("createRecordStart.p2.1")</li>
+  <li>@messages("createRecordStart.p2.2")</li>
+  <li>@messages("createRecordStart.p2.3")</li>
+  <li>@messages("createRecordStart.p2.4")</li>
+ </ul>
+
+ <h2 class="govuk-heading-m">@messages("createRecordStart.h2")</h2>
+
+ <p class="govuk-body">@messages("createRecordStart.p3")</p>
+ <p class="govuk-body">@messages("createRecordStart.p4")</p>
+
+ <h2 class="govuk-heading-m">@messages("createRecordStart.h3")</h2>
+
+ <p class="govuk-body">@messages("createRecordStart.p5")</p>
+ <p class="govuk-body">@messages("createRecordStart.p6")</p>
+ <p class="govuk-body">@messages("createRecordStart.p7")</p>
+ <p class="govuk-body">@messages("createRecordStart.p8")</p>
+
+ @formHelper(action = routes.CreateRecordStartController.onSubmit()) {
+  @govukButton(ButtonViewModel(messages("site.continue")))
+ }
 }

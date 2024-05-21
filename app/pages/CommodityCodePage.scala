@@ -16,11 +16,12 @@
 
 package pages
 
+import models.Commodity
 import play.api.libs.json.JsPath
 
-case object CommodityCodePage extends QuestionPage[String] {
+case object CommodityCodePage extends QuestionPage[Commodity] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "commodityCode"
+  override def toString: String = "commodity"
 }
