@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.HasCorrectGoodsFormProvider
-import models.{Commodity, NormalMode, UserAnswers}
+import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

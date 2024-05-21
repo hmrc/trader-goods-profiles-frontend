@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -77,10 +77,6 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-
-          withClue("Store the time the journey started") {
-            verify(mockSessionRepository, times(1)).set(any())
-          }
         }
       }
     }

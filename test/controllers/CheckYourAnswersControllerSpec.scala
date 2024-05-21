@@ -24,21 +24,19 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import pages._
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{await, _}
-import queries.ProfileSetupStartTimeQuery
+import play.api.test.Helpers._
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
+import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
@@ -156,7 +154,6 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
         "must submit the trader profile and redirect to the Home Page" in {
 
-          val startTime   = Instant.now()
           val userAnswers =
             emptyUserAnswers
               .set(UkimsNumberPage, "1")
@@ -168,15 +165,12 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
               .set(HasNiphlPage, false)
               .success
               .value
-              .set(ProfileSetupStartTimeQuery, startTime)
-              .success
-              .value
 
           val mockConnector = mock[RouterConnector]
           when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val mockAuditService = mock[AuditService]
-          when(mockAuditService.auditProfileSetUp(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+          when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -197,7 +191,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService, times(1))
-                .auditProfileSetUp(eqTo(expectedPayload), eqTo(Some(startTime)), eqTo(AffinityGroup.Individual))(any())
+                .auditProfileSetUp(eqTo(expectedPayload), eqTo(AffinityGroup.Individual))(any())
             }
           }
         }
@@ -227,7 +221,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockConnector, never()).submitTraderProfile(any(), any())(any())
 
             withClue("must not try and submit an audit") {
-              verify(mockAuditService, never()).auditProfileSetUp(any(), any(), any())(any())
+              verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
             }
           }
         }
@@ -283,7 +277,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
         val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditProfileSetUp(any(), any(), any())(any()))
+        when(mockAuditService.auditProfileSetUp(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Audit failed")))
 
         val application =

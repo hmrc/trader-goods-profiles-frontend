@@ -25,17 +25,16 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory: AuditEventFactory)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
-  def auditProfileSetUp(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(implicit
+  def auditProfileSetUp(traderProfile: TraderProfile, affinityGroup: AffinityGroup)(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createSetUpProfileEvent(traderProfile, startTime, affinityGroup)
+    val event = auditEventFactory.createSetUpProfileEvent(traderProfile, affinityGroup)
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"SetUpProfile audit event status: $auditResult")
       Done

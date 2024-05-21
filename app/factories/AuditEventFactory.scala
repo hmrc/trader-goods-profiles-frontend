@@ -22,22 +22,20 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
 
-import java.time.Instant
-
 case class AuditEventFactory() {
 
-  def createSetUpProfileEvent(traderProfile: TraderProfile, startTime: Option[Instant], affinityGroup: AffinityGroup)(
-    implicit hc: HeaderCarrier
+  def createSetUpProfileEvent(traderProfile: TraderProfile, affinityGroup: AffinityGroup)(implicit
+    hc: HeaderCarrier
   ): DataEvent = {
     val auditDetails = Map(
-      "eori"          -> traderProfile.actorId,
+      "EORINumber"    -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,
-      "ukimsNumber"   -> traderProfile.ukimsNumber,
-      "nirmsNumber"   -> traderProfile.nirmsNumber.getOrElse(""),
-      "niphlNumber"   -> traderProfile.niphlNumber.getOrElse(""),
-      "journeyStart"  -> startTime.getOrElse("").toString,
-      "journeyEnd"    -> Instant.now().toString
-    ).filter(x => x._2.nonEmpty)
+      "UKIMSNumber"   -> traderProfile.ukimsNumber
+    ) ++ writeOptional("isNIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++ writeOptional(
+      "isNIPHLRegistered",
+      "NIPHLNumber",
+      traderProfile.niphlNumber
+    )
 
     DataEvent(
       auditSource = "trader-goods-profiles-frontend",
@@ -45,7 +43,13 @@ case class AuditEventFactory() {
       tags = hc.toAuditTags(),
       detail = auditDetails
     )
-
   }
+
+  private def writeOptional(containsValueDescription: String, valueDescription: String, optionalValue: Option[String]) =
+    optionalValue
+      .map { value =>
+        Map(containsValueDescription -> "true", valueDescription -> value)
+      }
+      .getOrElse(Map(containsValueDescription -> "false"))
 
 }

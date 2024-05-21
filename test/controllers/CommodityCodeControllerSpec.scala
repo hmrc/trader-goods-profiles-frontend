@@ -22,7 +22,7 @@ import forms.CommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.CommodityCodePage
 import play.api.data.FormError
