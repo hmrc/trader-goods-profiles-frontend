@@ -124,18 +124,24 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
-      "must go from GoodsDescriptionPage" - {
+      "must go from GoodsDescriptionPage to CountryOfOriginPage" in {
+        navigator.nextPage(
+          GoodsDescriptionPage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.CountryOfOriginController.onPageLoad(
+          NormalMode
+        )
+      }
 
-        "to CountryOfOriginPage" in {
-          navigator.nextPage(
-            GoodsDescriptionPage,
-            NormalMode,
-            UserAnswers("id")
-          ) mustBe routes.CountryOfOriginController.onPageLoad(
-            NormalMode
-          )
-        }
-
+      "must go from CountryOfOriginPage to CommodityCodePage" in {
+        navigator.nextPage(
+          CountryOfOriginPage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.CommodityCodeController.onPageLoad(
+          NormalMode
+        )
       }
 
       "must go from CommodityCodePage to HasCorrectGoodsPage" in {

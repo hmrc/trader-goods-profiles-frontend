@@ -37,6 +37,12 @@ cyaNirmsNiphl.h2 = UKIMS, NIRMS and NIPHL
 cyaNirmsNiphl.warning = Warning
 cyaNirmsNiphl.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
+cyaCreateRecord.title = Check your answers
+cyaCreateRecord.h1 = Check your answers
+cyaCreateRecord.h2 = Goods Record
+cyaCreateRecord.warning = Warning
+cyaCreateRecord.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
