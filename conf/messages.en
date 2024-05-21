@@ -228,7 +228,7 @@ hasGoodsDescription.h2 = If you do not add a goods description
 hasGoodsDescription.p3 = We will create a goods description for you. This will be the country of origin, followed by the commodity code and then the trader reference.
 hasGoodsDescription.h3 = Do you want to add a personalised goods description?
 hasGoodsDescription.checkYourAnswersLabel = hasCorrectGoods
-hasGoodsDescription.error.required = confirm if you want to add a personalised goods description
+hasGoodsDescription.error.required = Confirm if you want to add a personalised goods description
 
 traderReference.title = Trader reference
 traderReference.h1 = Trader reference
