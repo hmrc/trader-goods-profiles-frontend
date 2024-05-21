@@ -30,5 +30,7 @@ object CategorisationInfo {
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
-      .map(CategorisationInfo(ott.goodsNomenclature.commodityCode, _))
+      .map { assessments =>
+        CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted)
+      }
 }

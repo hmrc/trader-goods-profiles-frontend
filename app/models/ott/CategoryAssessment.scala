@@ -23,7 +23,13 @@ final case class CategoryAssessment(
   id: String,
   category: Int,
   exemptions: Seq[Exemption]
-)
+) extends Ordered[CategoryAssessment] {
+
+  import scala.math.Ordered.orderingToOrdered
+
+  override def compare(that: CategoryAssessment): Int =
+    (this.category, this.exemptions.size) compare (that.category, that.exemptions.size)
+}
 
 object CategoryAssessment {
 
