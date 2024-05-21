@@ -22,12 +22,8 @@ import models.TraderProfile
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.Instant
-
 class AuditEventFactorySpec extends SpecBase {
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
-
-  private val start = Instant.now()
 
   "audit event factory" - {
 
@@ -38,31 +34,7 @@ class AuditEventFactorySpec extends SpecBase {
         val traderProfile =
           TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
 
-        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, Some(start), AffinityGroup.Individual)
-
-        result.auditSource mustBe "trader-goods-profiles-frontend"
-        result.auditType mustBe "ProfileSetUp"
-        result.tags.isEmpty mustBe false
-
-        val auditDetails = result.detail
-        auditDetails.size mustBe 9
-        auditDetails("EORINumber") mustBe testEori
-        auditDetails("affinityGroup") mustBe "Individual"
-        auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("isNIRMSRegistered") mustBe "true"
-        auditDetails("NIRMSNumber") mustBe "RMS-GB-123456"
-        auditDetails("isNIPHLRegistered") mustBe "true"
-        auditDetails("NIPHLNumber") mustBe "612345"
-        auditDetails("journeyStart") mustBe start.toString
-        Instant.parse(auditDetails("journeyEnd")).isAfter(start) mustBe true
-
-      }
-
-      "create event when all optionals are not supplied" in {
-
-        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None)
-
-        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, Some(start), AffinityGroup.Individual)
+        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, AffinityGroup.Individual)
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
         result.auditType mustBe "ProfileSetUp"
@@ -73,12 +45,32 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails("EORINumber") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
+        auditDetails("isNIRMSRegistered") mustBe "true"
+        auditDetails("NIRMSNumber") mustBe "RMS-GB-123456"
+        auditDetails("isNIPHLRegistered") mustBe "true"
+        auditDetails("NIPHLNumber") mustBe "612345"
+
+      }
+
+      "create event when all optionals are not supplied" in {
+
+        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None)
+
+        val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "ProfileSetUp"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 5
+        auditDetails("EORINumber") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+        auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
         auditDetails("isNIRMSRegistered") mustBe "false"
         auditDetails.get("NIRMSNumber") mustBe None
         auditDetails("isNIPHLRegistered") mustBe "false"
         auditDetails.get("NIPHLNumber") mustBe None
-        auditDetails("journeyStart") mustBe start.toString
-        Instant.parse(auditDetails("journeyEnd")).isAfter(start) mustBe true
 
       }
 

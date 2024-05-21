@@ -22,12 +22,9 @@ import connectors.RouterConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.{TraderProfile, ValidationError}
-import pages.ProfileSetupPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.ProfileSetupStartTimeQuery
 import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -71,7 +68,7 @@ class CheckYourAnswersController @Inject() (
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         routerConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
-          auditService.auditProfileSetUp(model, request.userAnswers.get(ProfileSetupStartTimeQuery), request.affinityGroup).map { _ =>
+          auditService.auditProfileSetUp(model, request.affinityGroup).map { _ =>
             Redirect(routes.HomePageController.onPageLoad())
           }
         }
