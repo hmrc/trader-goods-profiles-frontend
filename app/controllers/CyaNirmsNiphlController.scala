@@ -30,17 +30,17 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
-import views.html.CheckYourAnswersView
+import views.html.CyaNirmsNiphlView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourAnswersController @Inject() (
+class CyaNirmsNiphlController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView,
+  view: CyaNirmsNiphlView,
   routerConnector: RouterConnector,
   auditService: AuditService
 )(implicit ec: ExecutionContext)

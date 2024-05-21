@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 
 import javax.inject.Inject
-import models.{Commodity, Mode}
+import models.Mode
 import navigation.Navigator
 import pages.{CommodityCodePage, HasCorrectGoodsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}

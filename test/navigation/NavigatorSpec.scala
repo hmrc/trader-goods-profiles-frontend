@@ -82,20 +82,20 @@ class NavigatorSpec extends SpecBase {
           )
         }
 
-        "to CheckYourAnswersPage when answer is No" in {
+        "to CyaNirmsNiphl when answer is No" in {
 
           val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
-          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
+          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
         }
       }
 
-      "must go from NiphlNumberPage to CheckYourAnswersPage" in {
+      "must go from NiphlNumberPage to CyaNirmsNiphl" in {
 
         navigator.nextPage(
           NiphlNumberPage,
           NormalMode,
           UserAnswers("id")
-        ) mustBe routes.CheckYourAnswersController.onPageLoad
+        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
       }
 
       "must go from HasGoodsDescriptionPage" - {
@@ -147,7 +147,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
       }
 
-      "must go from HasCorrectGoodsPage to CheckYourAnswersPage" in {
+      "must go from HasCorrectGoodsPage to ???" in {
 
         // TODO
         navigator.nextPage(
@@ -160,23 +160,23 @@ class NavigatorSpec extends SpecBase {
 
     "in Check mode" - {
 
-      "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
+      "must go from a page that doesn't exist in the edit route map to CyaNirmsNiphl" in {
 
         case object UnknownPage extends Page
         navigator.nextPage(
           UnknownPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CheckYourAnswersController.onPageLoad
+        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
       }
 
-      "must go from UkimsNumberPage to CheckYourAnswersPage" in {
+      "must go from UkimsNumberPage to CyaNirmsNiphl" in {
 
         navigator.nextPage(
           UkimsNumberPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CheckYourAnswersController.onPageLoad
+        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
       }
 
       "must go from HasNirmsPage" - {
@@ -191,27 +191,27 @@ class NavigatorSpec extends SpecBase {
             )
           }
 
-          "to CheckYourAnswers when NirmsNumberPage is answered" in {
+          "to CyaNirmsNiphl when NirmsNumberPage is answered" in {
 
             val answers =
               UserAnswers("id").set(HasNirmsPage, true).success.value.set(NirmsNumberPage, "1234").success.value
-            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
+            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
           }
         }
-        "to CheckYourAnswersPage when answer is No" in {
+        "to CyaNirmsNiphl when answer is No" in {
 
           val answers = UserAnswers("id").set(HasNirmsPage, false).success.value
-          navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
+          navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
         }
       }
 
-      "must go from NirmsNumberPage to CheckYourAnswersPage" in {
+      "must go from NirmsNumberPage to CyaNirmsNiphl" in {
 
         navigator.nextPage(
           NirmsNumberPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CheckYourAnswersController.onPageLoad
+        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
       }
 
       "must go from HasNiphlPage" - {
@@ -226,28 +226,28 @@ class NavigatorSpec extends SpecBase {
             )
           }
 
-          "to CheckYourAnswers when NiphlNumberPage is answered" in {
+          "to CyaNirmsNiphl when NiphlNumberPage is answered" in {
 
             val answers =
               UserAnswers("id").set(HasNiphlPage, true).success.value.set(NiphlNumberPage, "1234").success.value
-            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
+            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
           }
         }
 
-        "to CheckYourAnswersPage when answer is No" in {
+        "to CyaNirmsNiphl when answer is No" in {
 
           val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
-          navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
+          navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
         }
       }
 
-      "must go from NiphlNumberPage to CheckYourAnswersPage" in {
+      "must go from NiphlNumberPage to CyaNirmsNiphl" in {
 
         navigator.nextPage(
           NiphlNumberPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CheckYourAnswersController.onPageLoad
+        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
       }
     }
   }
