@@ -89,3 +89,8 @@ GET        /create-record/goods-description-question                   controlle
 POST       /create-record/goods-description-question                   controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
 GET        /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
 POST       /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+
+GET        /trader-reference                        controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST       /trader-reference                        controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
+GET        /trader-reference/check                  controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST       /trader-reference/check                  controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
