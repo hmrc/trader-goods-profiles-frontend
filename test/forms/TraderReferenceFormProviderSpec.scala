@@ -23,7 +23,7 @@ class TraderReferenceFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "traderReference.error.required"
   val lengthKey   = "traderReference.error.length"
-  val maxLength   = 100
+  val maxLength   = 512
 
   val form = new TraderReferenceFormProvider()()
 
