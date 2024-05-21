@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.NormalMode
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CreateRecordStartView
@@ -40,8 +41,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
-//TODO - redirect it to trader reference when it is available
-    "must redirect to the index controller page when the user click continue button" in {
+    "must redirect to the trader reference controller page when the user click continue button" in {
 
       val application = applicationBuilder().build()
 
@@ -52,7 +52,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+        redirectLocation(result).value mustEqual routes.TraderReferenceController.onPageLoad(NormalMode).url
       }
     }
   }

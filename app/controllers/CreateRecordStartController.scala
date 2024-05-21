@@ -17,11 +17,12 @@
 package controllers
 
 import controllers.actions._
-import javax.inject.Inject
+import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CreateRecordStartView
+import javax.inject.Inject
 
 class CreateRecordStartController @Inject() (
   override val messagesApi: MessagesApi,
@@ -37,8 +38,7 @@ class CreateRecordStartController @Inject() (
     Ok(view())
   }
 
-  // TODO change it to trader reference controller when it becomes available
   def onSubmit: Action[AnyContent] = (identify andThen getData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad.url)
+    Redirect(routes.TraderReferenceController.onPageLoad(NormalMode))
   }
 }

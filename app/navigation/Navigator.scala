@@ -33,8 +33,10 @@ class Navigator @Inject() () {
     case NirmsNumberPage         => _ => routes.HasNiphlController.onPageLoad(NormalMode)
     case HasNiphlPage            => navigateFromHasNiphl
     case NiphlNumberPage         => _ => routes.CyaNirmsNiphlController.onPageLoad
+    case TraderReferencePage     => _ => routes.HasGoodsDescriptionController.onPageLoad(NormalMode)
     case HasGoodsDescriptionPage => navigateFromHasGoodsDescription
     case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
+    case CountryOfOriginPage     => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
     case CommodityCodePage       => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage     => _ => routes.CyaCreateRecordController.onPageLoad
     case _                       => _ => routes.IndexController.onPageLoad
