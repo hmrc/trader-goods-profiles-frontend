@@ -88,5 +88,4 @@ class CyaNirmsNiphlController @Inject() (
     logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
-
 }

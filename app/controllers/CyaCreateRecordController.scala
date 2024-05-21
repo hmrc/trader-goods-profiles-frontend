@@ -16,11 +16,14 @@
 
 package controllers
 
+import cats.data
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.{GoodsRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
@@ -37,10 +40,14 @@ class CyaCreateRecordController @Inject() (
     with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val list = SummaryListViewModel(
-      rows = Seq.empty
-    )
-    Ok(view(list))
+    GoodsRecord.build(request.userAnswers, request.eori) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq.empty
+        )
+        Ok(view(list))
+      case Left(errors) => logErrorsAndContinue(errors)
+    }
   }
 
   // TODO redirect to correct location
@@ -48,4 +55,12 @@ class CyaCreateRecordController @Inject() (
     Redirect(routes.IndexController.onPageLoad)
   }
 
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+    val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+
+    logger.warn(s"Unable to create Goods Record.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
 }

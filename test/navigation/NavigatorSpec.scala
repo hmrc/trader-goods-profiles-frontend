@@ -147,14 +147,13 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
       }
 
-      "must go from HasCorrectGoodsPage to ???" in {
+      "must go from HasCorrectGoodsPage to CyaCreateRecord" in {
 
-        // TODO
         navigator.nextPage(
           HasCorrectGoodsPage,
           NormalMode,
           UserAnswers("id")
-        ) mustBe routes.IndexController.onPageLoad
+        ) mustBe routes.CyaCreateRecordController.onPageLoad
       }
     }
 

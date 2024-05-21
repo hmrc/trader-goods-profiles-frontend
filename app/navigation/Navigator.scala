@@ -36,6 +36,7 @@ class Navigator @Inject() () {
     case HasGoodsDescriptionPage => navigateFromHasGoodsDescription
     case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
     case CommodityCodePage       => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case HasCorrectGoodsPage     => _ => routes.CyaCreateRecordController.onPageLoad
     case _                       => _ => routes.IndexController.onPageLoad
   }
 

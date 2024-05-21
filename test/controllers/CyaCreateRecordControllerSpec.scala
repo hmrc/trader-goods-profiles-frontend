@@ -17,9 +17,12 @@
 package controllers
 
 import base.SpecBase
+import models.{Commodity, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar
+import pages._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCreateRecordView
 
@@ -29,9 +32,21 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
     "for a GET" - {
 
-      "must return OK and the correct view" in {
+      "must return OK and the correct view with valid mandatory data" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodePage, Commodity("654321", "Description"))
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(HasGoodsDescriptionPage, false)
+            .success
+            .value
+
+        val application = applicationBuilder(userAnswers = Some(answers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
@@ -48,22 +63,85 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
       }
 
-      "for a POST" - {
+      "must return OK and the correct view with all data (including optional)" in {
 
-        "must redirect to ???" in {
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(CommodityCodePage, Commodity("654321", "Description"))
+          .success
+          .value
+          .set(CountryOfOriginPage, "1")
+          .success
+          .value
+          .set(HasGoodsDescriptionPage, true)
+          .success
+          .value
+          .set(GoodsDescriptionPage, "2")
+          .success
+          .value
 
-          val application =
-            applicationBuilder(userAnswers = Some(emptyUserAnswers))
-              .build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
 
-            val result = route(application, request).value
+          val result = route(application, request).value
 
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
-          }
+          val view = application.injector.instanceOf[CyaCreateRecordView]
+          val list = SummaryListViewModel(
+            rows = Seq.empty
+          )
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Journey Recovery if no answers are found" in {
+
+        val application = applicationBuilder(Some(emptyUserAnswers)).build()
+        val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+    }
+
+    "for a POST" - {
+
+      "must redirect to ???" in {
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
         }
       }
     }
