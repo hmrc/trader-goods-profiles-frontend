@@ -93,6 +93,88 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
       result.value mustEqual expectedResult
     }
 
+    "must order its assessments in order of category (lowest first) then number of exemptions (lowest first)" in {
+
+      val ottResponse = OttResponse(
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code"),
+        categoryAssessmentRelationships = Seq(
+          CategoryAssessmentRelationship("assessmentId1"),
+          CategoryAssessmentRelationship("assessmentId2"),
+          CategoryAssessmentRelationship("assessmentId3"),
+          CategoryAssessmentRelationship("assessmentId4")
+        ),
+        includedElements = Seq(
+          CategoryAssessmentResponse(
+            "assessmentId1",
+            "themeId1",
+            Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate))
+          ),
+          CategoryAssessmentResponse(
+            "assessmentId2",
+            "themeId2",
+            Seq(
+              ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+              ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+            )
+          ),
+          CategoryAssessmentResponse(
+            "assessmentId3",
+            "themeId1",
+            Seq(
+              ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+              ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+            )
+          ),
+          CategoryAssessmentResponse(
+            "assessmentId4",
+            "themeId2",
+            Nil
+          ),
+          ThemeResponse("themeId1", 1),
+          ThemeResponse("themeId2", 2),
+          CertificateResponse("exemptionId1", "code1", "description1"),
+          AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+          ThemeResponse("ignoredTheme", 3),
+          CertificateResponse("ignoredExemption", "code3", "description3")
+        )
+      )
+
+      val expectedResult = CategorisationInfo(
+        commodityCode = "commodity code",
+        categoryAssessments = Seq(
+          CategoryAssessment(
+            "assessmentId1",
+            1,
+            Seq(Certificate("exemptionId1", "code1", "description1"))
+          ),
+          CategoryAssessment(
+            "assessmentId3",
+            1,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          ),
+          CategoryAssessment(
+            "assessmentId4",
+            2,
+            Nil
+          ),
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+        )
+      )
+
+      val result = CategorisationInfo.build(ottResponse)
+      result.value mustEqual expectedResult
+    }
+
     "must return None when a category assessment cannot be found" in {
 
       val ottResponse = OttResponse(
