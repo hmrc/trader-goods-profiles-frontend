@@ -238,3 +238,5 @@ traderReference.inputHeading = What is the trader reference?
 traderReference.hint = This can be up to 512 characters.
 traderReference.error.required = Enter the trader reference
 traderReference.error.length = Trader reference must be 512 characters or less
+traderReference.checkYourAnswersLabel = Trader reference
+traderReference.change.hidden = Trader reference
