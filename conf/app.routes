@@ -1,90 +1,93 @@
 # microservice specific routes
 
-->          /hmrc-frontend                               hmrcfrontend.Routes
+->          /hmrc-frontend                                   hmrcfrontend.Routes
 
-GET         /                                            controllers.IndexController.onPageLoad
+GET         /                                                controllers.IndexController.onPageLoad
 
-GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                                    controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET         /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
-GET         /refresh-session                             controllers.KeepAliveController.keepAlive
+GET         /refresh-session                                 controllers.KeepAliveController.keepAlive
 
-GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /there-is-a-problem                              controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /cya-nirms-niphls                            controllers.CyaNirmsNiphlController.onPageLoad
-POST        /cya-nirms-niphls                            controllers.CyaNirmsNiphlController.onSubmit
+GET         /cya-nirms-niphls                                controllers.CyaNirmsNiphlController.onPageLoad
+POST        /cya-nirms-niphls                                controllers.CyaNirmsNiphlController.onSubmit
 
-GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
-GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey
-GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
+GET         /account/sign-out-survey                         controllers.auth.AuthController.signOut
+GET         /account/sign-out                                controllers.auth.AuthController.signOutNoSurvey
+GET         /account/signed-out                              controllers.auth.SignedOutController.onPageLoad
 
-GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised                                    controllers.UnauthorisedController.onPageLoad
 
-GET         /niphl-question                              controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-question                              controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-question/check                        controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-question/check                        controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
+GET         /niphl-question                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
+POST        /niphl-question                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
+GET         /niphl-question/check                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
+POST        /niphl-question/check                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
 
-GET         /nirms-question                              controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-question                              controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-question/check                        controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-question/check                        controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
+GET         /nirms-question                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
+POST        /nirms-question                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
+GET         /nirms-question/check                            controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
+POST        /nirms-question/check                            controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
 
-GET         /niphl-number                                controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-number                                controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-number/check                          controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-number/check                          controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /niphl-number                                    controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /niphl-number                                    controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /niphl-number/check                              controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /niphl-number/check                              controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /nirms-number                                controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-number                                controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-number/check                          controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-number/check                          controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /nirms-number                                    controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /nirms-number                                    controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /nirms-number/check                              controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /nirms-number/check                              controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /profile-setup                               controllers.ProfileSetupController.onPageLoad()
-POST        /profile-setup                               controllers.ProfileSetupController.onSubmit()
+GET         /profile-setup                                   controllers.ProfileSetupController.onPageLoad()
+POST        /profile-setup                                   controllers.ProfileSetupController.onSubmit()
 
-GET         /ukims-number                                controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /ukims-number                                controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /ukims-number/check                          controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /ukims-number/check                          controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /ukims-number                                    controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /ukims-number                                    controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /ukims-number/check                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /categorisation-start                        controllers.CategoryGuidanceController.onPageLoad()
-POST        /categorisation-start                        controllers.CategoryGuidanceController.onSubmit
+GET         /categorisation-start                            controllers.CategoryGuidanceController.onPageLoad()
+POST        /categorisation-start                            controllers.CategoryGuidanceController.onSubmit
 
-GET         /create-record/commodity-code                               controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/commodity-code                               controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/commodity-code/check                         controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/commodity-code/check                         controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code/check              controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code/check              controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
 
-GET         /country-of-origin                           controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
-POST        /country-of-origin                           controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
-GET         /country-of-origin/check                     controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
-POST        /country-of-origin/check                     controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
+GET         /country-of-origin                               controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
+POST        /country-of-origin                               controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
+GET         /country-of-origin/check                         controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
+POST        /country-of-origin/check                         controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
 
-GET         /homepage                                    controllers.HomePageController.onPageLoad()
+GET         /homepage                                        controllers.HomePageController.onPageLoad()
 
-GET        /category1Assesments                        controllers.Category1AssesmentsController.onPageLoad(mode: Mode = NormalMode)
-POST       /category1Assesments                        controllers.Category1AssesmentsController.onSubmit(mode: Mode = NormalMode)
-GET        /changeCategory1Assesments                  controllers.Category1AssesmentsController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeCategory1Assesments                  controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
+GET         /category1Assesments                             controllers.Category1AssesmentsController.onPageLoad(mode: Mode = NormalMode)
+POST        /category1Assesments                             controllers.Category1AssesmentsController.onSubmit(mode: Mode = NormalMode)
+GET         /changeCategory1Assesments                       controllers.Category1AssesmentsController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeCategory1Assesments                       controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /create-record/create-record-start          controllers.CreateRecordStartController.onPageLoad()
-POST       /create-record/create-record-start          controllers.CreateRecordStartController.onSubmit()
+GET         /create-record/create-record-start               controllers.CreateRecordStartController.onPageLoad()
+POST        /create-record/create-record-start               controllers.CreateRecordStartController.onSubmit()
 
-GET        /create-record/create-record-success          controllers.CreateRecordSuccessController.onPageLoad()
+GET         /create-record/create-record-success             controllers.CreateRecordSuccessController.onPageLoad()
 
-GET        /create-record/goods-description            controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST       /create-record/goods-description            controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET        /create-record/goods-description/check     controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST       /create-record/goods-description/check     controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/goods-description                 controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/goods-description                 controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/goods-description/check           controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/goods-description/check           controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
 
-GET        /create-record/commodity-code-result                        controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
-POST       /create-record/commodity-code-result                        controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
-GET        /create-record/commodity-code-result/check                  controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
-POST       /create-record/commodity-code-result/check                  controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/commodity-code-result             controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code-result             controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code-result/check       controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code-result/check       controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /create-record/goods-description-question                   controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST       /create-record/goods-description-question                   controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET        /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST       /create-record/goods-description-question/check             controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/goods-description-question        controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/goods-description-question        controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/goods-description-question/check  controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/goods-description-question/check  controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+
+GET          /create-record/cya-create-record                controllers.CyaCreateRecordController.onPageLoad
+POST         /create-record/cya-create-record                controllers.CyaCreateRecordController.onSubmit
