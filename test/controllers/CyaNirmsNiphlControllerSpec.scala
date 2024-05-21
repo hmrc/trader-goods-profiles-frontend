@@ -43,7 +43,7 @@ import scala.concurrent.Future
 
 class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  "Check Your Answers Controller" - {
+  "CyaNirmsNiphlController" - {
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(

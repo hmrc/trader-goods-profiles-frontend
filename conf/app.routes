@@ -72,7 +72,6 @@ POST       /changeCategory1Assesments                  controllers.Category1Asse
 GET        /create-record/create-record-start          controllers.CreateRecordStartController.onPageLoad()
 POST       /create-record/create-record-start          controllers.CreateRecordStartController.onSubmit()
 
-
 GET        /create-record/create-record-success          controllers.CreateRecordSuccessController.onPageLoad()
 
 GET        /create-record/goods-description            controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
