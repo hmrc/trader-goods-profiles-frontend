@@ -36,6 +36,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         val answers =
           UserAnswers(userAnswersId)
+            .set(TraderReferencePage, "123")
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
@@ -66,6 +69,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       "must return OK and the correct view with all data (including optional)" in {
 
         val userAnswers = UserAnswers(userAnswersId)
+          .set(TraderReferencePage, "123")
+          .success
+          .value
           .set(CommodityCodePage, Commodity("654321", "Description"))
           .success
           .value

@@ -33,6 +33,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers("id")
+            .set(TraderReferencePage, "123")
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
@@ -48,13 +51,16 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(GoodsRecord(testEori, "654321", "1", "2"))
+        result mustEqual Right(GoodsRecord(testEori, "123", "654321", "1", "2"))
       }
 
       "and all optional data is missing" in {
 
         val answers =
           UserAnswers("id")
+            .set(TraderReferencePage, "123")
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
@@ -67,7 +73,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(GoodsRecord(testEori, "654321", "1", "1"))
+        result mustEqual Right(GoodsRecord(testEori, "123", "654321", "1", "123"))
       }
     }
 
@@ -81,6 +87,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(TraderReferencePage),
             PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
             PageMissing(HasGoodsDescriptionPage)
@@ -92,6 +99,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers("id")
+            .set(TraderReferencePage, "123")
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
@@ -113,6 +123,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers("id")
+            .set(TraderReferencePage, "123")
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value

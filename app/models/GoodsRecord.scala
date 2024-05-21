@@ -23,6 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 
 final case class GoodsRecord(
   actorId: String,
+  traderReference: String,
   commodityCode: String,
   countryOfOrigin: String,
   goodsDescription: String
@@ -35,17 +36,18 @@ object GoodsRecord {
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
+      answers.getPageValue(TraderReferencePage),
       answers.getPageValue(CommodityCodePage),
       answers.getPageValue(CountryOfOriginPage),
       getGoodsDescription(answers)
-    ).parMapN((eori, commodity, country, description) =>
-      GoodsRecord(eori, commodity.commodityCode, country, description)
+    ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
+      GoodsRecord(eori, traderReference, commodity.commodityCode, countryOfOrigin, goodsDescription)
     )
 
   def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getOptionalPageValue(answers, HasGoodsDescriptionPage, GoodsDescriptionPage) match {
       case Right(Some(data)) => Right(data)
-      case Right(None)       => answers.getPageValue(CountryOfOriginPage)
+      case Right(None)       => answers.getPageValue(TraderReferencePage)
       case Left(errors)      => Left(errors)
     }
 }
