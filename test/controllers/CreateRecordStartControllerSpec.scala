@@ -41,8 +41,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
-//TODO - redirect it to trader reference when it is available
-    "must redirect to the index controller page when the user click continue button" in {
+    "must redirect to the trader reference controller page when the user click continue button" in {
 
       val application = applicationBuilder().build()
 
