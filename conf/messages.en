@@ -229,3 +229,12 @@ hasGoodsDescription.p3 = We will create a goods description for you. This will b
 hasGoodsDescription.h3 = Do you want to add a personalised goods description?
 hasGoodsDescription.checkYourAnswersLabel = hasCorrectGoods
 hasGoodsDescription.error.required = confirm if you want to add a personalised goods description
+
+traderReference.title = Trader reference
+traderReference.h1 = Trader reference
+traderReference.p1 = A trader reference is a custom name you can give a goods record to help you identify the record. You can also use the trader reference to add the record information to a declaration.
+traderReference.p2 = The trader reference needs to be unique to your Trader Goods Profile.
+traderReference.inputHeading = What is the trader reference?
+traderReference.hint = This can be up to 512 characters.
+traderReference.error.required = Enter the trader reference
+traderReference.error.length = Trader reference must be 512 characters or less
