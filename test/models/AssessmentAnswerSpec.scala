@@ -27,7 +27,7 @@ class AssessmentAnswerSpec extends AnyFreeSpec with Matchers {
     "must serialise / deserialise to / from JSON for an exemption" in {
 
       val exemption = AssessmentAnswer.Exemption("foo")
-      val json = Json.toJson[AssessmentAnswer](exemption)
+      val json      = Json.toJson[AssessmentAnswer](exemption)
 
       json mustEqual JsString("foo")
       json.validate[AssessmentAnswer] mustEqual JsSuccess(exemption)

@@ -18,6 +18,7 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.ott.response.{ExemptionType, OttResponse}
+import play.api.libs.json.{Json, OFormat}
 
 final case class CategoryAssessment(
   id: String,
@@ -52,4 +53,6 @@ object CategoryAssessment {
           .find(_.id == id)
           .map(x => AdditionalCode(x.id, x.code, x.description))
     }
+
+  implicit lazy val format: OFormat[CategoryAssessment] = Json.format
 }

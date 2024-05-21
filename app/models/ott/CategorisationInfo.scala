@@ -18,6 +18,7 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.ott.response.OttResponse
+import play.api.libs.json.{Json, OFormat}
 
 final case class CategorisationInfo(
   commodityCode: String,
@@ -33,4 +34,6 @@ object CategorisationInfo {
       .map { assessments =>
         CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted)
       }
+
+  implicit lazy val format: OFormat[CategorisationInfo] = Json.format
 }

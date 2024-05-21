@@ -35,4 +35,10 @@ object AssessmentAnswer {
     case NoExemption => JsString("none")
     case Exemption(s) => JsString(s)
   }
+
+  def fromString(input: String): AssessmentAnswer =
+    input match {
+      case NoExemption.toString => NoExemption
+      case s => Exemption(s)
+    }
 }
