@@ -38,7 +38,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new TraderReferenceFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val traderReferenceRoute = routes.TraderReferenceController.onPageLoad(NormalMode).url
 

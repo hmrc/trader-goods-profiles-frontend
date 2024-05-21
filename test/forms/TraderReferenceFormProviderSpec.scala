@@ -22,8 +22,8 @@ import play.api.data.FormError
 class TraderReferenceFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "traderReference.error.required"
-  val lengthKey = "traderReference.error.length"
-  val maxLength = 100
+  val lengthKey   = "traderReference.error.length"
+  val maxLength   = 100
 
   val form = new TraderReferenceFormProvider()()
 
