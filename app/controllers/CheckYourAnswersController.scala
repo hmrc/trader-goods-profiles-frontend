@@ -18,7 +18,7 @@ package controllers
 
 import cats.data
 import com.google.inject.Inject
-import connectors.RouterConnector
+import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.{TraderProfile, ValidationError}
@@ -40,7 +40,7 @@ class CheckYourAnswersController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
-  routerConnector: RouterConnector,
+  routerConnector: TraderProfileConnector,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

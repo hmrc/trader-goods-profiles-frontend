@@ -17,28 +17,59 @@
 package controllers
 
 import base.SpecBase
+import connectors.TraderProfileConnector
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.IndexView
+
+import scala.concurrent.Future
 
 class IndexControllerSpec extends SpecBase {
 
   "Index Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must redirect to ProfileSetupController if no profile present" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val mockConnector = mock[TraderProfileConnector]
+      when(mockConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
+
+      val application =
+        applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, routes.IndexController.onPageLoad.url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[IndexView]
+        status(result) mustEqual SEE_OTHER
 
-        status(result) mustEqual OK
+        redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+      }
+    }
 
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+    "must redirect to HomePageController if no profile present" in {
+
+      val mockConnector = mock[TraderProfileConnector]
+      when(mockConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
+
+      val application =
+        applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.IndexController.onPageLoad.url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
       }
     }
   }

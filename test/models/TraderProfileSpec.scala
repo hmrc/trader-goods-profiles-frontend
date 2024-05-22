@@ -51,7 +51,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3")))
+        result mustEqual Right(TraderProfile(testEori, testEori, "1", Some("2"), Some("3")))
       }
 
       "and all optional data is missing" in {
@@ -70,7 +70,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile(testEori, "1", None, None))
+        result mustEqual Right(TraderProfile(testEori, testEori, "1", None, None))
       }
     }
 

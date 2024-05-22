@@ -57,7 +57,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       val fakeAuditEvent = DataEvent("source", "type")
       when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
 
-      val traderProfile = TraderProfile(testEori, "", None, None)
+      val traderProfile = TraderProfile(testEori, testEori, "", None, None)
       val result        = await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
 
       result mustBe Done
@@ -81,7 +81,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       val fakeAuditEvent = DataEvent("source", "type")
       when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
 
-      val traderProfile = TraderProfile(testEori, "", None, None)
+      val traderProfile = TraderProfile(testEori, testEori, "", None, None)
       val result        = await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
 
       result mustBe Done
@@ -102,7 +102,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.failed(new RuntimeException("audit error")))
 
       intercept[RuntimeException] {
-        val traderProfile = TraderProfile(testEori, "", None, None)
+        val traderProfile = TraderProfile(testEori, testEori, "", None, None)
         await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
       }
 

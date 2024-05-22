@@ -32,7 +32,7 @@ class AuditEventFactorySpec extends SpecBase {
       "create event when all optionals supplied" in {
 
         val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+          TraderProfile(testEori, testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
 
         val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, AffinityGroup.Individual)
 
@@ -54,7 +54,7 @@ class AuditEventFactorySpec extends SpecBase {
 
       "create event when all optionals are not supplied" in {
 
-        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None)
+        val traderProfile = TraderProfile(testEori, testEori, "XIUKIM47699357400020231115081800", None, None)
 
         val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, AffinityGroup.Individual)
 
