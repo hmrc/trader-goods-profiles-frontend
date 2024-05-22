@@ -61,17 +61,17 @@ object Certificate {
       .andKeep(
         (
           (__ \ "id").read[String] and
-          (__ \ "code").read[String] and
-          (__ \ "description").read[String]
+            (__ \ "code").read[String] and
+            (__ \ "description").read[String]
         )(Certificate(_, _, _))
       )
 
   implicit lazy val writes: OWrites[Certificate] =
     (
       (__ \ "exemptionType").write[ExemptionType] and
-      (__ \ "id").write[String] and
-      (__ \ "code").write[String] and
-      (__ \ "description").write[String]
+        (__ \ "id").write[String] and
+        (__ \ "code").write[String] and
+        (__ \ "description").write[String]
     )(x => (x.exemptionType, x.id, x.code, x.description))
 }
 
@@ -95,8 +95,8 @@ object AdditionalCode {
       .andKeep(
         (
           (__ \ "id").read[String] and
-          (__ \ "code").read[String] and
-          (__ \ "description").read[String]
+            (__ \ "code").read[String] and
+            (__ \ "description").read[String]
         )(AdditionalCode(_, _, _))
       )
 
@@ -106,7 +106,7 @@ object AdditionalCode {
         (__ \ "id").write[String] and
         (__ \ "code").write[String] and
         (__ \ "description").write[String]
-      )(x => (x.exemptionType, x.id, x.code, x.description))
+    )(x => (x.exemptionType, x.id, x.code, x.description))
 }
 
 object Exemption {
@@ -115,7 +115,7 @@ object Exemption {
     Certificate.reads.widen or AdditionalCode.reads.widen
 
   implicit lazy val writes: OWrites[Exemption] = OWrites {
-    case c: Certificate => Json.toJsObject(c)(Certificate.writes)
+    case c: Certificate    => Json.toJsObject(c)(Certificate.writes)
     case a: AdditionalCode => Json.toJsObject(a)(AdditionalCode.writes)
   }
 }

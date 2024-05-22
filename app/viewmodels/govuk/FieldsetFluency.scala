@@ -64,5 +64,9 @@ trait FieldsetFluency {
 
     def withCssClass(newClass: String): Legend =
       legend.copy(classes = s"${legend.classes} $newClass")
+
+    def withSize(size: LegendSize = LegendSize.Medium): Legend =
+      legend
+        .withCssClass(size.toString)
   }
 }
