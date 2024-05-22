@@ -16,10 +16,30 @@
 
 package pages
 
-import models.AssessmentAnswer
+import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
+import queries.CategorisationQuery
+
+import scala.util.{Failure, Success, Try}
 
 case class AssessmentPage(assessmentId: String) extends QuestionPage[AssessmentAnswer] {
 
   override def path: JsPath = JsPath \ "assessments" \ assessmentId
+
+  override def cleanup(value: Option[AssessmentAnswer], userAnswers: UserAnswers): Try[UserAnswers] =
+    if (value.contains(AssessmentAnswer.NoExemption)) {
+      {
+        for {
+          categorisationInfo <- userAnswers.get(CategorisationQuery)
+          thisAssessment     <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
+          thisAssessmentIndex = categorisationInfo.categoryAssessments.indexOf(thisAssessment)
+          (_, itemsToRemove)  = categorisationInfo.categoryAssessments.splitAt(thisAssessmentIndex + 1)
+        } yield itemsToRemove
+          .foldLeft[Try[UserAnswers]](Success(userAnswers))((acc, assessment) =>
+            acc.flatMap(_.remove(AssessmentPage(assessment.id)))
+          )
+      }.getOrElse(Failure(new InconsistentUserAnswersException(s"Could not find category assessment $assessmentId")))
+    } else {
+      super.cleanup(value, userAnswers)
+    }
 }
