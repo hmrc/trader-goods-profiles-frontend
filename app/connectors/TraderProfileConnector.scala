@@ -53,17 +53,11 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .get(checkTraderProfileUrl(eori))
       .execute[HttpResponse]
       .map { response =>
-        println("exists")
-
-        println(response)
         response.status match {
           case OK => true
         }
       }
       .recoverWith { case e: NotFoundException =>
-        println("not exists")
-        println(e)
-
         Future.successful(false)
       }
 

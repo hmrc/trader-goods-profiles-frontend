@@ -34,7 +34,6 @@ class IndexController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    println("boo")
     traderProfileConnector.checkTraderProfile(request.eori).map {
       case true  => Redirect(routes.HomePageController.onPageLoad())
       case false => Redirect(routes.ProfileSetupController.onPageLoad())
