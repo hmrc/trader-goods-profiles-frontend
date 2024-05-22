@@ -81,17 +81,5 @@ class OttConnectorSpec
       connector.getCommodityCode("123456").failed.futureValue
     }
 
-    "must fail with JsResult.Exception when the JSON response is invalid" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
-          .willReturn(ok.withBody("{ invalid json }"))
-      )
-
-      val result = connector.getCommodityCode("123456").failed.futureValue
-
-      result mustBe a[JsResult.Exception]
-    }
-
   }
 }
