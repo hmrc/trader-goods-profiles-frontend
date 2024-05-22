@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import forms.NirmsNumberFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -35,12 +36,12 @@ import scala.concurrent.Future
 
 class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new NirmsNumberFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
-  lazy val nirmsNumberRoute = routes.NirmsNumberController.onPageLoad(NormalMode).url
+  private lazy val nirmsNumberRoute = routes.NirmsNumberController.onPageLoad(NormalMode).url
 
   "NirmsNumber Controller" - {
 

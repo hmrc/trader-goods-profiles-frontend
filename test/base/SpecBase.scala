@@ -16,6 +16,7 @@
 
 package base
 
+import base.TestConstants.userAnswersId
 import controllers.actions._
 import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -35,8 +36,6 @@ trait SpecBase
     with OptionValues
     with ScalaFutures
     with IntegrationPatience {
-
-  val userAnswersId: String = "id"
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 

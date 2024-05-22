@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import forms.NiphlNumberFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -35,12 +36,12 @@ import scala.concurrent.Future
 
 class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new NiphlNumberFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
-  lazy val niphlNumberRoute = routes.NiphlNumberController.onPageLoad(NormalMode).url
+  private lazy val niphlNumberRoute = routes.NiphlNumberController.onPageLoad(NormalMode).url
 
   "NiphlNumber Controller" - {
 

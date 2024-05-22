@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.RouterConnector
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done

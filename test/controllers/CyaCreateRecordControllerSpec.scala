@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import models.{Commodity, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
