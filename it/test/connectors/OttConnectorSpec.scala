@@ -85,7 +85,7 @@ class OttConnectorSpec
 
       wireMockServer.stubFor(
         get(urlEqualTo(s"/ott/commodities/123456"))
-          .willReturn(ok().withBody("{ invalid json }"))
+          .willReturn(ok.withBody("{ invalid json }"))
       )
 
       val result = connector.getCommodityCode("123456").failed.futureValue
