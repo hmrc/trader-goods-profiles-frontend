@@ -63,6 +63,13 @@ class NavigatorSpec extends SpecBase {
           val answers = UserAnswers("id").set(HasNirmsPage, false).success.value
           navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.HasNiphlController.onPageLoad(NormalMode)
         }
+
+        "to JourneyRecoveryPage when answer is not present" in {
+
+          val answers = UserAnswers("id")
+          navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.JourneyRecoveryController
+            .onPageLoad()
+        }
       }
 
       "must go from NirmsNumberPage to HasNiphlPage" in {
@@ -87,6 +94,13 @@ class NavigatorSpec extends SpecBase {
           val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
           navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
         }
+
+        "to JourneyRecoveryPage when answer is not present" in {
+
+          val answers = UserAnswers("id")
+          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.JourneyRecoveryController
+            .onPageLoad()
+        }
       }
 
       "must go from NiphlNumberPage to CheckYourAnswersPage" in {
@@ -96,6 +110,16 @@ class NavigatorSpec extends SpecBase {
           NormalMode,
           UserAnswers("id")
         ) mustBe routes.CheckYourAnswersController.onPageLoad
+      }
+
+      "must go from TraderReferencePage to HasGoodsDescriptionPage" in {
+        navigator.nextPage(
+          TraderReferencePage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.HasGoodsDescriptionController.onPageLoad(
+          NormalMode
+        )
       }
 
       "must go from HasGoodsDescriptionPage" - {
@@ -124,18 +148,23 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
-      "must go from GoodsDescriptionPage" - {
+      "must go from GoodsDescriptionPage to CountryOfOriginPage" in {
+        navigator.nextPage(
+          GoodsDescriptionPage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.CountryOfOriginController.onPageLoad(
+          NormalMode
+        )
+      }
 
-        "to CountryOfOriginPage" in {
-          navigator.nextPage(
-            GoodsDescriptionPage,
-            NormalMode,
-            UserAnswers("id")
-          ) mustBe routes.CountryOfOriginController.onPageLoad(
-            NormalMode
-          )
-        }
+      "must go from CountryOfOriginPage to CommodityCodePage" in {
 
+        navigator.nextPage(
+          CountryOfOriginPage,
+          NormalMode,
+          UserAnswers("id")
+        ) mustBe routes.CommodityCodeController.onPageLoad(NormalMode)
       }
 
       "must go from CommodityCodePage to HasCorrectGoodsPage" in {
@@ -203,6 +232,13 @@ class NavigatorSpec extends SpecBase {
           val answers = UserAnswers("id").set(HasNirmsPage, false).success.value
           navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
         }
+
+        "to JourneyRecoveryPage when answer is not present" in {
+
+          val answers = UserAnswers("id")
+          navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.JourneyRecoveryController
+            .onPageLoad()
+        }
       }
 
       "must go from NirmsNumberPage to CheckYourAnswersPage" in {
@@ -238,6 +274,13 @@ class NavigatorSpec extends SpecBase {
 
           val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
           navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CheckYourAnswersController.onPageLoad
+        }
+
+        "to JourneyRecoveryPage when answer is not present" in {
+
+          val answers = UserAnswers("id")
+          navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.JourneyRecoveryController
+            .onPageLoad()
         }
       }
 
