@@ -80,6 +80,5 @@ class OttConnectorSpec
 
       connector.getCommodityCode("123456").failed.futureValue
     }
-
   }
 }
