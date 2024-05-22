@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.AssessmentAnswer.Exemption
 import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
