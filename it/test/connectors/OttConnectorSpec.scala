@@ -23,6 +23,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.JsResult
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 
@@ -79,5 +80,18 @@ class OttConnectorSpec
 
       connector.getCommodityCode("123456").failed.futureValue
     }
+
+    "must fail with JsResult.Exception when the JSON response is invalid" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(ok().withBody("{ invalid json }"))
+      )
+
+      val result = connector.getCommodityCode("123456").failed.futureValue
+
+      result mustBe a[JsResult.Exception]
+    }
+
   }
 }
