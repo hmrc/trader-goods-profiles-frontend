@@ -36,24 +36,7 @@ object TraderProfile {
     (
       Right(eori),
       answers.getPageValue(UkimsNumberPage),
-      getNirms(answers),
-      getNiphl(answers)
+      answers.getOptionalPageValue(answers, HasNirmsPage, NirmsNumberPage),
+      answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
-
-  private def getNirms(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
-    getNumber(answers, HasNirmsPage, NirmsNumberPage)
-
-  private def getNiphl(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
-    getNumber(answers, HasNiphlPage, NiphlNumberPage)
-
-  private def getNumber(
-    answers: UserAnswers,
-    questionPage: QuestionPage[Boolean],
-    numberPage: QuestionPage[String]
-  ): EitherNec[ValidationError, Option[String]] =
-    answers.getPageValue(questionPage) match {
-      case Right(true)  => answers.getPageValue(numberPage).map(Some(_))
-      case Right(false) => answers.unexpectedValueDefined(answers, numberPage)
-      case Left(errors) => Left(errors)
-    }
 }

@@ -16,12 +16,14 @@
 
 package base
 
+import base.TestConstants.userAnswersId
 import controllers.actions._
-import models.UserAnswers
+import models.{Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, HasGoodsDescriptionPage, HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, TraderReferencePage, UkimsNumberPage}
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -36,9 +38,74 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience {
 
-  val userAnswersId: String = "id"
-
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
+  def fullProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+    .set(UkimsNumberPage, "1")
+    .success
+    .value
+    .set(HasNirmsPage, true)
+    .success
+    .value
+    .set(NirmsNumberPage, "2")
+    .success
+    .value
+    .set(HasNiphlPage, true)
+    .success
+    .value
+    .set(NiphlNumberPage, "3")
+    .success
+    .value
+
+  def mandatoryProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+    .set(UkimsNumberPage, "1")
+    .success
+    .value
+    .set(HasNirmsPage, false)
+    .success
+    .value
+    .set(HasNiphlPage, false)
+    .success
+    .value
+
+  def fullRecordUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(TraderReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, Commodity("654321", "Description"))
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(HasGoodsDescriptionPage, true)
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(GoodsDescriptionPage, "DESCRIPTION")
+      .success
+      .value
+
+  def mandatoryRecordUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(TraderReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, Commodity("654321", "Description"))
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(HasGoodsDescriptionPage, false)
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

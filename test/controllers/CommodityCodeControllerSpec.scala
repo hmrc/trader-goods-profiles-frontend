@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import connectors.OttConnector
 import forms.CommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}

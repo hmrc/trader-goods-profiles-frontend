@@ -17,7 +17,7 @@
 package models
 
 import org.scalatest.Inside.inside
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, userAnswersId}
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -32,7 +32,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "and all optional data is present" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(UkimsNumberPage, "1")
             .success
             .value
@@ -57,7 +57,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "and all optional data is missing" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(UkimsNumberPage, "1")
             .success
             .value
@@ -78,7 +78,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "when all mandatory answers are missing" in {
 
-        val answers = UserAnswers("id")
+        val answers = UserAnswers(userAnswersId)
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -94,7 +94,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "when the user said they have a Nirms number but it is missing" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(UkimsNumberPage, "1")
             .success
             .value
@@ -115,7 +115,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "when the user said they have a Niphl number but it is missing" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(UkimsNumberPage, "1")
             .success
             .value
@@ -136,7 +136,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "when the user said they don't have optional data but it is present" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(UkimsNumberPage, "1")
             .success
             .value
