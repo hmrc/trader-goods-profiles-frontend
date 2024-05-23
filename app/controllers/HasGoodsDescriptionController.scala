@@ -48,23 +48,27 @@ class HasGoodsDescriptionController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val traderReference = request.userAnswers.get(TraderReferencePage).get
-
     val preparedForm = request.userAnswers.get(HasGoodsDescriptionPage) match {
       case None        => form
       case Some(value) => form.fill(value)
     }
 
-    Ok(view(preparedForm, traderReference, mode))
+    request.userAnswers.get(TraderReferencePage) match {
+      case Some(traderReference) => Ok(view(preparedForm, traderReference, mode))
+      case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+    }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val traderReference = request.userAnswers.get(TraderReferencePage).get
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, traderReference, mode))),
+          formWithErrors =>
+            request.userAnswers.get(TraderReferencePage) match {
+              case Some(traderReference) => Future.successful(BadRequest(view(formWithErrors, traderReference, mode)))
+              case None                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+            },
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasGoodsDescriptionPage, value))
