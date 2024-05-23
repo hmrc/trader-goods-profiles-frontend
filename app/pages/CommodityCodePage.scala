@@ -16,12 +16,19 @@
 
 package pages
 
-import models.Commodity
+import models.{Commodity, UserAnswers}
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object CommodityCodePage extends QuestionPage[Commodity] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "commodity"
+
+  override def cleanup(value: Option[Commodity], userAnswers: UserAnswers): Try[UserAnswers] =
+    userAnswers.get(CommodityCodePage) match {
+      case _ => userAnswers.remove(HasCorrectGoodsPage)
+    }
 }

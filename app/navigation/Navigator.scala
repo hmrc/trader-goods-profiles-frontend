@@ -166,7 +166,7 @@ class Navigator @Inject() () {
           } else {
             routes.CommodityCodeController.onPageLoad(CheckMode)
           }
-        case false => routes.CyaCreateRecordController.onPageLoad
+        case false => routes.CommodityCodeController.onPageLoad(CheckMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
