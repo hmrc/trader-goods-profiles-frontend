@@ -80,6 +80,7 @@ POST       /create-record/goods-description            controllers.GoodsDescript
 GET        /create-record/goods-description/check     controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
 POST       /create-record/goods-description/check     controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
 
+
 GET        /create-record/commodity-code-result                        controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
 POST       /create-record/commodity-code-result                        controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
 GET        /create-record/commodity-code-result/check                  controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
@@ -94,3 +95,8 @@ GET        /trader-reference                        controllers.TraderReferenceC
 POST       /trader-reference                        controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
 GET        /trader-reference/check                  controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
 POST       /trader-reference/check                  controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
+
+GET        /assessment/:id                             controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, id: String)
+POST       /assessment/:id                             controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, id: String)
+GET        /assessment/:id/check                             controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, id: String)
+POST       /assessment/:id/check                             controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, id: String)

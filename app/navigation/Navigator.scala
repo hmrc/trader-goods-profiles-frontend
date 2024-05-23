@@ -17,11 +17,11 @@
 package navigation
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
+import queries.CategorisationQuery
 
 @Singleton
 class Navigator @Inject() () {
@@ -38,7 +38,9 @@ class Navigator @Inject() () {
     case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
     case CountryOfOriginPage     => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
     case CommodityCodePage       => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case p: AssessmentPage       => navigateFromAssessment(p)
     case _                       => _ => routes.IndexController.onPageLoad
+
   }
 
   private def navigateFromHasGoodsDescription(answers: UserAnswers): Call =
@@ -67,6 +69,24 @@ class Navigator @Inject() () {
         case false => routes.CheckYourAnswersController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
+    for {
+      categorisationInfo <- answers.get(CategorisationQuery)
+      assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
+      assessmentAnswer   <- answers.get(assessmentPage)
+      assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
+    } yield assessmentAnswer match {
+      case AssessmentAnswer.Exemption(_) =>
+        categorisationInfo.categoryAssessments
+          .lift(assessmentIndex + 1)
+          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, nextAssessment.id))
+          .getOrElse(routes.IndexController.onPageLoad)
+
+      case AssessmentAnswer.NoExemption =>
+        routes.IndexController.onPageLoad
+    }
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case HasNirmsPage => navigateFromHasNirmsCheck

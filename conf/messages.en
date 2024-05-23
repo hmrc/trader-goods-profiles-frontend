@@ -10,6 +10,7 @@ site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
+site.or = or
 
 date.day = Day
 date.month = Month
@@ -240,3 +241,11 @@ traderReference.error.required = Enter the trader reference
 traderReference.error.length = Trader reference must be 512 characters or less
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
+
+assessment.title = Category assessment {0} of {1}
+assessment.heading = Category assessment {0} of {1}
+assessment.guidance = You need to confirm which of these waivers you hold for {0}. We need this information to be ale to categorise your goods.
+assessment.question = Do you meet one of the following conditions and can supply the relevant document codes on your movements?
+assessment.hint = Select one answer.
+assessment.exemption = {0} - {1}
+assessment.exemption.none = None of the above

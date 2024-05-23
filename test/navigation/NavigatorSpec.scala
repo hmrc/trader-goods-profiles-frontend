@@ -20,6 +20,8 @@ import base.SpecBase
 import controllers.routes
 import pages._
 import models._
+import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import queries.CategorisationQuery
 
 class NavigatorSpec extends SpecBase {
 
@@ -155,6 +157,58 @@ class NavigatorSpec extends SpecBase {
           NormalMode,
           UserAnswers("id")
         ) mustBe routes.IndexController.onPageLoad
+      }
+
+      "must go from an assessment" - {
+
+        val assessment1        = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2        = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo = CategorisationInfo("123", Seq(assessment1, assessment2))
+
+        "to the next assessment when the answer is an exemption and at least one more assessment exists" in {
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationQuery, categorisationInfo)
+              .success
+              .value
+              .set(AssessmentPage("id1"), AssessmentAnswer.Exemption("cert1"))
+              .success
+              .value
+
+          navigator.nextPage(AssessmentPage("id1"), NormalMode, answers) mustEqual routes.AssessmentController
+            .onPageLoad(NormalMode, "id2")
+        }
+
+        // TODO: This will go to Check Assessments when that page exists
+        "to Index when the answer is an exemption and this is the last assessment" in {
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationQuery, categorisationInfo)
+              .success
+              .value
+              .set(AssessmentPage("id2"), AssessmentAnswer.Exemption("cert1"))
+              .success
+              .value
+
+          navigator.nextPage(AssessmentPage("id2"), NormalMode, answers) mustEqual routes.IndexController.onPageLoad
+        }
+
+        // TODO: This will go to Check Assessments when that page exists
+        "to Index when the answer is No Exemption" in {
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationQuery, categorisationInfo)
+              .success
+              .value
+              .set(AssessmentPage("id1"), AssessmentAnswer.NoExemption)
+              .success
+              .value
+
+          navigator.nextPage(AssessmentPage("id1"), NormalMode, answers) mustEqual routes.IndexController.onPageLoad
+        }
       }
     }
 
