@@ -17,6 +17,7 @@
 package navigation
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import controllers.routes
 import pages._
 import models._
@@ -32,18 +33,18 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
+        navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad
       }
 
       "must go from ProfileSetupPage to UkimsNumberPage" in {
 
-        navigator.nextPage(ProfileSetupPage, NormalMode, UserAnswers("id")) mustBe routes.UkimsNumberController
+        navigator.nextPage(ProfileSetupPage, NormalMode, emptyUserAnswers) mustBe routes.UkimsNumberController
           .onPageLoad(NormalMode)
       }
 
       "must go from UkimsNumberPage to HasNirmsPage" in {
 
-        navigator.nextPage(UkimsNumberPage, NormalMode, UserAnswers("id")) mustBe routes.HasNirmsController.onPageLoad(
+        navigator.nextPage(UkimsNumberPage, NormalMode, emptyUserAnswers) mustBe routes.HasNirmsController.onPageLoad(
           NormalMode
         )
       }
@@ -52,7 +53,7 @@ class NavigatorSpec extends SpecBase {
 
         "to NirmsNumberPage when answer is Yes" in {
 
-          val answers = UserAnswers("id").set(HasNirmsPage, true).success.value
+          val answers = UserAnswers(userAnswersId).set(HasNirmsPage, true).success.value
           navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.NirmsNumberController.onPageLoad(
             NormalMode
           )
@@ -60,14 +61,14 @@ class NavigatorSpec extends SpecBase {
 
         "to HasNiphlPage when answer is No" in {
 
-          val answers = UserAnswers("id").set(HasNirmsPage, false).success.value
+          val answers = UserAnswers(userAnswersId).set(HasNirmsPage, false).success.value
           navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.HasNiphlController.onPageLoad(NormalMode)
         }
       }
 
       "must go from NirmsNumberPage to HasNiphlPage" in {
 
-        navigator.nextPage(NirmsNumberPage, NormalMode, UserAnswers("id")) mustBe routes.HasNiphlController.onPageLoad(
+        navigator.nextPage(NirmsNumberPage, NormalMode, emptyUserAnswers) mustBe routes.HasNiphlController.onPageLoad(
           NormalMode
         )
       }
@@ -76,7 +77,7 @@ class NavigatorSpec extends SpecBase {
 
         "to NiphlNumberPage when answer is Yes" in {
 
-          val answers = UserAnswers("id").set(HasNiphlPage, true).success.value
+          val answers = UserAnswers(userAnswersId).set(HasNiphlPage, true).success.value
           navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.NiphlNumberController.onPageLoad(
             NormalMode
           )
@@ -84,7 +85,7 @@ class NavigatorSpec extends SpecBase {
 
         "to CyaCreateProfile when answer is No" in {
 
-          val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
+          val answers = UserAnswers(userAnswersId).set(HasNiphlPage, false).success.value
           navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
         }
       }
@@ -94,7 +95,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           NiphlNumberPage,
           NormalMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
@@ -102,7 +103,7 @@ class NavigatorSpec extends SpecBase {
 
         "to GoodsDescriptionPage when answer is Yes" in {
 
-          val answers = UserAnswers("id").set(HasGoodsDescriptionPage, true).success.value
+          val answers = UserAnswers(userAnswersId).set(HasGoodsDescriptionPage, true).success.value
           navigator.nextPage(HasGoodsDescriptionPage, NormalMode, answers) mustBe routes.GoodsDescriptionController
             .onPageLoad(
               NormalMode
@@ -111,15 +112,18 @@ class NavigatorSpec extends SpecBase {
 
         "to CountryOfOriginPage when answer is No" in {
 
-          val answers = UserAnswers("id").set(HasGoodsDescriptionPage, false).success.value
+          val answers = UserAnswers(userAnswersId).set(HasGoodsDescriptionPage, false).success.value
           navigator.nextPage(HasGoodsDescriptionPage, NormalMode, answers) mustBe routes.CountryOfOriginController
             .onPageLoad(NormalMode)
         }
 
         "to JourneyRecoveryPage when answer is not present" in {
 
-          val answers = UserAnswers("id")
-          navigator.nextPage(HasGoodsDescriptionPage, NormalMode, answers) mustBe routes.JourneyRecoveryController
+          navigator.nextPage(
+            HasGoodsDescriptionPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.JourneyRecoveryController
             .onPageLoad()
         }
       }
@@ -128,7 +132,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           GoodsDescriptionPage,
           NormalMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CountryOfOriginController.onPageLoad(
           NormalMode
         )
@@ -138,7 +142,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           CountryOfOriginPage,
           NormalMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CommodityCodeController.onPageLoad(
           NormalMode
         )
@@ -149,7 +153,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           CommodityCodePage,
           NormalMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
       }
 
@@ -158,7 +162,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           HasCorrectGoodsPage,
           NormalMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CyaCreateRecordController.onPageLoad
       }
     }
@@ -171,7 +175,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           UnknownPage,
           CheckMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
@@ -180,7 +184,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           UkimsNumberPage,
           CheckMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
@@ -190,7 +194,7 @@ class NavigatorSpec extends SpecBase {
 
           "to NirmsNumberPage when NirmsNumberPage is empty" in {
 
-            val answers = UserAnswers("id").set(HasNirmsPage, true).success.value
+            val answers = UserAnswers(userAnswersId).set(HasNirmsPage, true).success.value
             navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.NirmsNumberController.onPageLoad(
               CheckMode
             )
@@ -199,13 +203,19 @@ class NavigatorSpec extends SpecBase {
           "to CyaCreateProfile when NirmsNumberPage is answered" in {
 
             val answers =
-              UserAnswers("id").set(HasNirmsPage, true).success.value.set(NirmsNumberPage, "1234").success.value
+              UserAnswers(userAnswersId)
+                .set(HasNirmsPage, true)
+                .success
+                .value
+                .set(NirmsNumberPage, "1234")
+                .success
+                .value
             navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
           }
         }
         "to CyaCreateProfile when answer is No" in {
 
-          val answers = UserAnswers("id").set(HasNirmsPage, false).success.value
+          val answers = UserAnswers(userAnswersId).set(HasNirmsPage, false).success.value
           navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
         }
       }
@@ -215,7 +225,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           NirmsNumberPage,
           CheckMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
@@ -225,7 +235,7 @@ class NavigatorSpec extends SpecBase {
 
           "to NiphlNumberPage when NiphlNumberPage is empty" in {
 
-            val answers = UserAnswers("id").set(HasNiphlPage, true).success.value
+            val answers = UserAnswers(userAnswersId).set(HasNiphlPage, true).success.value
             navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.NiphlNumberController.onPageLoad(
               CheckMode
             )
@@ -234,14 +244,20 @@ class NavigatorSpec extends SpecBase {
           "to CyaCreateProfile when NiphlNumberPage is answered" in {
 
             val answers =
-              UserAnswers("id").set(HasNiphlPage, true).success.value.set(NiphlNumberPage, "1234").success.value
+              UserAnswers(userAnswersId)
+                .set(HasNiphlPage, true)
+                .success
+                .value
+                .set(NiphlNumberPage, "1234")
+                .success
+                .value
             navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
           }
         }
 
         "to CyaCreateProfile when answer is No" in {
 
-          val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
+          val answers = UserAnswers(userAnswersId).set(HasNiphlPage, false).success.value
           navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
         }
       }
@@ -251,7 +267,7 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(
           NiphlNumberPage,
           CheckMode,
-          UserAnswers("id")
+          emptyUserAnswers
         ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
     }

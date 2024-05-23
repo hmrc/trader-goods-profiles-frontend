@@ -16,7 +16,7 @@
 
 package models
 
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, userAnswersId}
 import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -32,7 +32,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
       "and all optional data is present" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(TraderReferencePage, "123")
             .success
             .value
@@ -60,7 +60,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
       "and all optional data is missing" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(TraderReferencePage, "123")
             .success
             .value
@@ -87,7 +87,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
       "when all mandatory answers are missing" in {
 
-        val answers = UserAnswers("id")
+        val answers = UserAnswers(userAnswersId)
 
         val result = GoodsRecord.build(answers, testEori)
 
@@ -104,7 +104,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
       "when the user said they have a Goods Description but it is missing" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(TraderReferencePage, "123")
             .success
             .value
@@ -131,7 +131,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
       "when the user said they don't have optional data but it is present" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(TraderReferencePage, "123")
             .success
             .value
@@ -163,7 +163,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
       "when HasCorrectGoodsPage is false" in {
 
         val answers =
-          UserAnswers("id")
+          UserAnswers(userAnswersId)
             .set(TraderReferencePage, "123")
             .success
             .value

@@ -17,7 +17,7 @@
 package controllers.actions
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, userAnswersId}
 import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
 import org.mockito.Mockito._
@@ -60,11 +60,13 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
       "must build a userAnswers object and add it to the request" in {
 
         val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.get("id")) thenReturn Future(Some(UserAnswers("id")))
+        when(sessionRepository.get(userAnswersId)) thenReturn Future(Some(emptyUserAnswers))
         val action            = new Harness(sessionRepository)
 
         val result =
-          action.callTransform(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual)).futureValue
+          action
+            .callTransform(IdentifierRequest(FakeRequest(), userAnswersId, testEori, AffinityGroup.Individual))
+            .futureValue
 
         result.userAnswers mustBe defined
       }
