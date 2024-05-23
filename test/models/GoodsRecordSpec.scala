@@ -48,6 +48,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(GoodsDescriptionPage, "2")
             .success
             .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
 
         val result = GoodsRecord.build(answers, testEori)
 
@@ -68,6 +71,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
             .set(HasGoodsDescriptionPage, false)
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
 
@@ -102,6 +108,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
@@ -126,6 +135,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
             .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
@@ -144,6 +156,38 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
             UnexpectedPage(GoodsDescriptionPage)
+          )
+        }
+      }
+
+      "when HasCorrectGoodsPage is false" in {
+
+        val answers =
+          UserAnswers("id")
+            .set(TraderReferencePage, "123")
+            .success
+            .value
+            .set(HasCorrectGoodsPage, false)
+            .success
+            .value
+            .set(CommodityCodePage, Commodity("654321", "Description"))
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(HasGoodsDescriptionPage, true)
+            .success
+            .value
+            .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+
+        val result = GoodsRecord.build(answers, testEori)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(HasCorrectGoodsPage)
           )
         }
       }

@@ -57,16 +57,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
 
       "must return OK and the correct view with valid mandatory data" in {
 
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(UkimsNumberPage, "1")
-          .success
-          .value
-          .set(HasNirmsPage, false)
-          .success
-          .value
-          .set(HasNiphlPage, false)
-          .success
-          .value
+        val userAnswers = mandatoryProfileUserAnswers
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 

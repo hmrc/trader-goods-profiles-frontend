@@ -16,7 +16,7 @@
 
 package models
 
-import cats.data.EitherNec
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import play.api.libs.json.{Json, OFormat}
@@ -37,7 +37,7 @@ object GoodsRecord {
     (
       Right(eori),
       answers.getPageValue(TraderReferencePage),
-      answers.getPageValue(CommodityCodePage),
+      getCommodityCode(answers),
       answers.getPageValue(CountryOfOriginPage),
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
@@ -49,5 +49,16 @@ object GoodsRecord {
       case Right(Some(data)) => Right(data)
       case Right(None)       => answers.getPageValue(TraderReferencePage)
       case Left(errors)      => Left(errors)
+    }
+
+  def getCommodityCode(answers: UserAnswers): EitherNec[ValidationError, Commodity] =
+    answers.getPageValue(CommodityCodePage) match {
+      case Right(data)  =>
+        answers.getPageValue(HasCorrectGoodsPage) match {
+          case Right(true)  => Right(data)
+          case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsPage)))
+          case Left(errors) => Left(errors)
+        }
+      case Left(errors) => Left(errors)
     }
 }

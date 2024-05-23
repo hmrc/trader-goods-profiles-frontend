@@ -23,6 +23,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -38,6 +39,38 @@ trait SpecBase
     with IntegrationPatience {
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
+  def fullProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+    .set(UkimsNumberPage, "1")
+    .success
+    .value
+    .set(HasNirmsPage, true)
+    .success
+    .value
+    .set(NirmsNumberPage, "2")
+    .success
+    .value
+    .set(HasNiphlPage, true)
+    .success
+    .value
+    .set(NiphlNumberPage, "3")
+    .success
+    .value
+
+  def mandatoryProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+    .set(UkimsNumberPage, "1")
+    .success
+    .value
+    .set(HasNirmsPage, false)
+    .success
+    .value
+    .set(HasNiphlPage, false)
+    .success
+    .value
+
+  def fullRecordUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
+  def mandatoryRecordUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
