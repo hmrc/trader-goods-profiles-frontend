@@ -12,8 +12,8 @@ GET         /refresh-session                                 controllers.KeepAli
 
 GET         /there-is-a-problem                              controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /cya-nirms-niphls                                controllers.CyaNirmsNiphlController.onPageLoad
-POST        /cya-nirms-niphls                                controllers.CyaNirmsNiphlController.onSubmit
+GET         /cya-nirms-niphls                                controllers.CyaCreateProfileController.onPageLoad
+POST        /cya-nirms-niphls                                controllers.CyaCreateProfileController.onSubmit
 
 GET         /account/sign-out-survey                         controllers.auth.AuthController.signOut
 GET         /account/sign-out                                controllers.auth.AuthController.signOutNoSurvey

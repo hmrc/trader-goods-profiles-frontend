@@ -82,20 +82,20 @@ class NavigatorSpec extends SpecBase {
           )
         }
 
-        "to CyaNirmsNiphl when answer is No" in {
+        "to CyaCreateProfile when answer is No" in {
 
           val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
-          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
+          navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
         }
       }
 
-      "must go from NiphlNumberPage to CyaNirmsNiphl" in {
+      "must go from NiphlNumberPage to CyaCreateProfile" in {
 
         navigator.nextPage(
           NiphlNumberPage,
           NormalMode,
           UserAnswers("id")
-        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
+        ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
       "must go from HasGoodsDescriptionPage" - {
@@ -165,23 +165,23 @@ class NavigatorSpec extends SpecBase {
 
     "in Check mode" - {
 
-      "must go from a page that doesn't exist in the edit route map to CyaNirmsNiphl" in {
+      "must go from a page that doesn't exist in the edit route map to CyaCreateProfile" in {
 
         case object UnknownPage extends Page
         navigator.nextPage(
           UnknownPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
+        ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
-      "must go from UkimsNumberPage to CyaNirmsNiphl" in {
+      "must go from UkimsNumberPage to CyaCreateProfile" in {
 
         navigator.nextPage(
           UkimsNumberPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
+        ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
       "must go from HasNirmsPage" - {
@@ -196,27 +196,27 @@ class NavigatorSpec extends SpecBase {
             )
           }
 
-          "to CyaNirmsNiphl when NirmsNumberPage is answered" in {
+          "to CyaCreateProfile when NirmsNumberPage is answered" in {
 
             val answers =
               UserAnswers("id").set(HasNirmsPage, true).success.value.set(NirmsNumberPage, "1234").success.value
-            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
+            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
           }
         }
-        "to CyaNirmsNiphl when answer is No" in {
+        "to CyaCreateProfile when answer is No" in {
 
           val answers = UserAnswers("id").set(HasNirmsPage, false).success.value
-          navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
+          navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
         }
       }
 
-      "must go from NirmsNumberPage to CyaNirmsNiphl" in {
+      "must go from NirmsNumberPage to CyaCreateProfile" in {
 
         navigator.nextPage(
           NirmsNumberPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
+        ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
 
       "must go from HasNiphlPage" - {
@@ -231,28 +231,28 @@ class NavigatorSpec extends SpecBase {
             )
           }
 
-          "to CyaNirmsNiphl when NiphlNumberPage is answered" in {
+          "to CyaCreateProfile when NiphlNumberPage is answered" in {
 
             val answers =
               UserAnswers("id").set(HasNiphlPage, true).success.value.set(NiphlNumberPage, "1234").success.value
-            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
+            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
           }
         }
 
-        "to CyaNirmsNiphl when answer is No" in {
+        "to CyaCreateProfile when answer is No" in {
 
           val answers = UserAnswers("id").set(HasNiphlPage, false).success.value
-          navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaNirmsNiphlController.onPageLoad
+          navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
         }
       }
 
-      "must go from NiphlNumberPage to CyaNirmsNiphl" in {
+      "must go from NiphlNumberPage to CyaCreateProfile" in {
 
         navigator.nextPage(
           NiphlNumberPage,
           CheckMode,
           UserAnswers("id")
-        ) mustBe routes.CyaNirmsNiphlController.onPageLoad
+        ) mustBe routes.CyaCreateProfileController.onPageLoad
       }
     }
   }

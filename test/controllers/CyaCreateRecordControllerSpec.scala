@@ -29,7 +29,7 @@ import views.html.CyaCreateRecordView
 
 class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  "CyaNirmsNiphlController" - {
+  "CyaCreateProfileController" - {
 
     "for a GET" - {
 

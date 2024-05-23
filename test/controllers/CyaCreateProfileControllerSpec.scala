@@ -35,13 +35,13 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaNirmsNiphlView
+import views.html.CyaCreateProfileView
 
 import scala.concurrent.Future
 
-class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
+class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  "CyaNirmsNiphlController" - {
+  "CyaCreateProfileController" - {
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
@@ -62,11 +62,11 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[CyaNirmsNiphlView]
+          val view = application.injector.instanceOf[CyaCreateProfileView]
           val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
@@ -81,11 +81,11 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[CyaNirmsNiphlView]
+          val view = application.injector.instanceOf[CyaCreateProfileView]
           val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
@@ -99,7 +99,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
         val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
@@ -114,7 +114,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
@@ -145,7 +145,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaNirmsNiphlController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
             val result = route(application, request).value
 
@@ -178,7 +178,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaNirmsNiphlController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
             val result = route(application, request).value
 
@@ -207,7 +207,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -233,7 +233,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -246,7 +246,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaNirmsNiphlController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 

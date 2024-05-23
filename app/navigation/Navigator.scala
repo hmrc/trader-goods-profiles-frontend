@@ -32,7 +32,7 @@ class Navigator @Inject() () {
     case HasNirmsPage            => navigateFromHasNirms
     case NirmsNumberPage         => _ => routes.HasNiphlController.onPageLoad(NormalMode)
     case HasNiphlPage            => navigateFromHasNiphl
-    case NiphlNumberPage         => _ => routes.CyaNirmsNiphlController.onPageLoad
+    case NiphlNumberPage         => _ => routes.CyaCreateProfileController.onPageLoad
     case TraderReferencePage     => _ => routes.HasGoodsDescriptionController.onPageLoad(NormalMode)
     case HasGoodsDescriptionPage => navigateFromHasGoodsDescription
     case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
@@ -65,14 +65,14 @@ class Navigator @Inject() () {
       .get(HasNiphlPage)
       .map {
         case true  => routes.NiphlNumberController.onPageLoad(NormalMode)
-        case false => routes.CyaNirmsNiphlController.onPageLoad
+        case false => routes.CyaCreateProfileController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case HasNirmsPage => navigateFromHasNirmsCheck
     case HasNiphlPage => navigateFromHasNiphlCheck
-    case _            => _ => routes.CyaNirmsNiphlController.onPageLoad
+    case _            => _ => routes.CyaCreateProfileController.onPageLoad
   }
 
   private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
@@ -81,11 +81,11 @@ class Navigator @Inject() () {
       .map {
         case true  =>
           if (answers.isDefined(NirmsNumberPage)) {
-            routes.CyaNirmsNiphlController.onPageLoad
+            routes.CyaCreateProfileController.onPageLoad
           } else {
             routes.NirmsNumberController.onPageLoad(CheckMode)
           }
-        case false => routes.CyaNirmsNiphlController.onPageLoad
+        case false => routes.CyaCreateProfileController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -95,11 +95,11 @@ class Navigator @Inject() () {
       .map {
         case true  =>
           if (answers.isDefined(NiphlNumberPage)) {
-            routes.CyaNirmsNiphlController.onPageLoad
+            routes.CyaCreateProfileController.onPageLoad
           } else {
             routes.NiphlNumberController.onPageLoad(CheckMode)
           }
-        case false => routes.CyaNirmsNiphlController.onPageLoad
+        case false => routes.CyaCreateProfileController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
