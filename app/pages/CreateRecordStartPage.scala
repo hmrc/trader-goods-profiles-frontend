@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout,
-    govukSummaryList: GovukSummaryList,
-    formHelper: FormWithCSRF,
-    govukButton: GovukButton
-)
+package pages
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = titleNoForm(messages("cyaCreateRecord.title"))) {
-
-    <h1 class="govuk-heading-l">@messages("cyaCreateRecord.h1")</h1>
-    <p class="govuk-body">@messages("cyaCreateRecord.h2")</p>
-    @govukSummaryList(list)
-
-    @formHelper(action = routes.CyaCreateRecordController.onSubmit) {
-        @govukButton(ButtonViewModel(messages("site.continue")))
-    }
-}
+case object CreateRecordStartPage extends Page

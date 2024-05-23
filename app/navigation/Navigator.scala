@@ -33,12 +33,13 @@ class Navigator @Inject() () {
     case NirmsNumberPage         => _ => routes.HasNiphlController.onPageLoad(NormalMode)
     case HasNiphlPage            => navigateFromHasNiphl
     case NiphlNumberPage         => _ => routes.CyaCreateProfileController.onPageLoad
+    case CreateRecordStartPage   => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
     case TraderReferencePage     => _ => routes.HasGoodsDescriptionController.onPageLoad(NormalMode)
     case HasGoodsDescriptionPage => navigateFromHasGoodsDescription
     case GoodsDescriptionPage    => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
     case CountryOfOriginPage     => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
     case CommodityCodePage       => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
-    case HasCorrectGoodsPage     => _ => routes.CyaCreateRecordController.onPageLoad
+    case HasCorrectGoodsPage     => navigateFromHasCorrectGoods
     case _                       => _ => routes.IndexController.onPageLoad
   }
 
@@ -48,6 +49,15 @@ class Navigator @Inject() () {
       .map {
         case true  => routes.GoodsDescriptionController.onPageLoad(NormalMode)
         case false => routes.CountryOfOriginController.onPageLoad(NormalMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoods(answers: UserAnswers): Call =
+    answers
+      .get(HasCorrectGoodsPage)
+      .map {
+        case true  => routes.CyaCreateRecordController.onPageLoad
+        case false => routes.CommodityCodeController.onPageLoad(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -70,9 +80,18 @@ class Navigator @Inject() () {
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
-    case HasNirmsPage => navigateFromHasNirmsCheck
-    case HasNiphlPage => navigateFromHasNiphlCheck
-    case _            => _ => routes.CyaCreateProfileController.onPageLoad
+    case UkimsNumberPage         => _ => routes.CyaCreateProfileController.onPageLoad
+    case HasNirmsPage            => navigateFromHasNirmsCheck
+    case NirmsNumberPage         => _ => routes.CyaCreateProfileController.onPageLoad
+    case HasNiphlPage            => navigateFromHasNiphlCheck
+    case NiphlNumberPage         => _ => routes.CyaCreateProfileController.onPageLoad
+    case TraderReferencePage     => _ => routes.CyaCreateRecordController.onPageLoad
+    case HasGoodsDescriptionPage => navigateFromHasGoodsDescriptionCheck
+    case GoodsDescriptionPage    => _ => routes.CyaCreateRecordController.onPageLoad
+    case CountryOfOriginPage     => _ => routes.CyaCreateRecordController.onPageLoad
+    case CommodityCodePage       => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+    case HasCorrectGoodsPage     => navigateFromHasCorrectGoodsCheck
+    case _                       => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
@@ -100,6 +119,34 @@ class Navigator @Inject() () {
             routes.NiphlNumberController.onPageLoad(CheckMode)
           }
         case false => routes.CyaCreateProfileController.onPageLoad
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasGoodsDescriptionCheck(answers: UserAnswers): Call =
+    answers
+      .get(HasGoodsDescriptionPage)
+      .map {
+        case true  =>
+          if (answers.isDefined(GoodsDescriptionPage)) {
+            routes.CyaCreateRecordController.onPageLoad
+          } else {
+            routes.GoodsDescriptionController.onPageLoad(CheckMode)
+          }
+        case false => routes.CyaCreateRecordController.onPageLoad
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsCheck(answers: UserAnswers): Call =
+    answers
+      .get(HasCorrectGoodsPage)
+      .map {
+        case true  =>
+          if (answers.isDefined(CommodityCodePage)) {
+            routes.CyaCreateRecordController.onPageLoad
+          } else {
+            routes.CommodityCodeController.onPageLoad(CheckMode)
+          }
+        case false => routes.CyaCreateRecordController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

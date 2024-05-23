@@ -25,6 +25,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
 
@@ -43,14 +44,20 @@ class CyaCreateRecordController @Inject() (
     GoodsRecord.build(request.userAnswers, request.eori) match {
       case Right(_)     =>
         val list = SummaryListViewModel(
-          rows = Seq.empty
+          rows = Seq(
+            TraderReferenceSummary.row(request.userAnswers),
+            HasGoodsDescriptionSummary.row(request.userAnswers),
+            GoodsDescriptionSummary.row(request.userAnswers),
+            CountryOfOriginSummary.row(request.userAnswers),
+            CommodityCodeSummary.row(request.userAnswers)
+          ).flatten
         )
         Ok(view(list))
       case Left(errors) => logErrorsAndContinue(errors)
     }
   }
 
-  // TODO redirect to correct location
+  // TODO redirect to correct location and submit data
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Redirect(routes.IndexController.onPageLoad)
   }

@@ -17,13 +17,14 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
-import models.{Commodity, UserAnswers}
+import models.UserAnswers
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
+import play.api.Application
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCreateRecordView
 
@@ -31,13 +32,23 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
   "CyaCreateProfileController" - {
 
+    def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
+      rows = Seq(
+        TraderReferenceSummary.row(userAnswers)(messages(app)),
+        HasGoodsDescriptionSummary.row(userAnswers)(messages(app)),
+        GoodsDescriptionSummary.row(userAnswers)(messages(app)),
+        CountryOfOriginSummary.row(userAnswers)(messages(app)),
+        CommodityCodeSummary.row(userAnswers)(messages(app))
+      ).flatten
+    )
+
     "for a GET" - {
 
       "must return OK and the correct view with valid mandatory data" in {
 
-        val answers = mandatoryRecordUserAnswers
+        val userAnswers = mandatoryRecordUserAnswers
 
-        val application = applicationBuilder(userAnswers = Some(answers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
@@ -45,9 +56,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CyaCreateRecordView]
-          val list = SummaryListViewModel(
-            rows = Seq.empty
-          )
+          val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
@@ -66,9 +75,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CyaCreateRecordView]
-          val list = SummaryListViewModel(
-            rows = Seq.empty
-          )
+          val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString

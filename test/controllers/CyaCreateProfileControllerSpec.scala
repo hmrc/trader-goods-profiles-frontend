@@ -17,14 +17,13 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, userAnswersId}
+import base.TestConstants.testEori
 import connectors.RouterConnector
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
