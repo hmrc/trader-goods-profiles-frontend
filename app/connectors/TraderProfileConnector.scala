@@ -20,7 +20,7 @@ import config.Service
 import models.TraderProfile
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.OK
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http._
@@ -46,23 +46,36 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .map(_ => Done)
 
   private def checkTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/tgp/does-profile-exist/$eori"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/profiles/$eori"
+
+//  def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+//    httpClient
+//      .get(checkTraderProfileUrl(eori))
+//      .execute[HttpResponse]
+//      .map { response =>
+//        response.status match {
+//          case OK => true
+//        }
+//      }
+//      .recover { case e: NotFoundException =>
+//        false
+//      }
 
   def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .get(checkTraderProfileUrl(eori))
+      .head(checkTraderProfileUrl(eori))
       .execute[HttpResponse]
       .map { response =>
         response.status match {
           case OK => true
         }
       }
-      .recoverWith { case e: NotFoundException =>
-        Future.successful(false)
+      .recover { case e: NotFoundException =>
+        false
       }
 
   private def getTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/tgp/get-profile/$eori"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"
 
   def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient
