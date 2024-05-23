@@ -46,20 +46,7 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .map(_ => Done)
 
   private def checkTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/profiles/$eori"
-
-//  def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-//    httpClient
-//      .get(checkTraderProfileUrl(eori))
-//      .execute[HttpResponse]
-//      .map { response =>
-//        response.status match {
-//          case OK => true
-//        }
-//      }
-//      .recover { case e: NotFoundException =>
-//        false
-//      }
+    url"$dataStoreBaseUrl/traders/$eori/profile"
 
   def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient

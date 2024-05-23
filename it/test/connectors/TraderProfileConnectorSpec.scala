@@ -106,7 +106,7 @@ class TraderProfileConnectorSpec
     "must return true if present" in {
 
       wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/profiles/$testEori"))
+        head(urlEqualTo(s"/traders/$testEori/profile"))
           .willReturn(ok())
       )
 
@@ -116,7 +116,7 @@ class TraderProfileConnectorSpec
     "must return false if not present" in {
 
       wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/profiles/$testEori"))
+        head(urlEqualTo(s"/traders/$testEori/profile"))
           .willReturn(notFound())
       )
 
@@ -126,7 +126,7 @@ class TraderProfileConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/profiles/$testEori"))
+        head(urlEqualTo(s"/traders/$testEori/profile"))
           .willReturn(serverError())
       )
 
