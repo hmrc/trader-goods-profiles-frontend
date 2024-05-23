@@ -76,22 +76,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
 
       "must return OK and the correct view with all data (including optional)" in {
 
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(UkimsNumberPage, "1")
-          .success
-          .value
-          .set(HasNirmsPage, true)
-          .success
-          .value
-          .set(NirmsNumberPage, "2")
-          .success
-          .value
-          .set(HasNiphlPage, true)
-          .success
-          .value
-          .set(NiphlNumberPage, "3")
-          .success
-          .value
+        val userAnswers = fullProfileUserAnswers
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -145,17 +130,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
 
         "must submit the trader profile and redirect to the Home Page" in {
 
-          val userAnswers =
-            emptyUserAnswers
-              .set(UkimsNumberPage, "1")
-              .success
-              .value
-              .set(HasNirmsPage, false)
-              .success
-              .value
-              .set(HasNiphlPage, false)
-              .success
-              .value
+          val userAnswers = mandatoryProfileUserAnswers
 
           val mockConnector = mock[RouterConnector]
           when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
@@ -197,7 +172,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
           val continueUrl      = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
           val application =
-            applicationBuilder(userAnswers = Some(UserAnswers("")))
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[RouterConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
               .build()
@@ -220,17 +195,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
 
       "must let the play error handler deal with connector failure" in {
 
-        val userAnswers =
-          emptyUserAnswers
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
+        val userAnswers = mandatoryProfileUserAnswers
 
         val mockConnector = mock[RouterConnector]
         when(mockConnector.submitTraderProfile(any(), any())(any()))
@@ -252,17 +217,7 @@ class CyaNirmsNiphlControllerSpec extends SpecBase with SummaryListFluency with 
 
       "must let the play error handler deal with an audit future failure" in {
 
-        val userAnswers =
-          emptyUserAnswers
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
+        val userAnswers = mandatoryProfileUserAnswers
 
         val mockConnector = mock[RouterConnector]
         when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))

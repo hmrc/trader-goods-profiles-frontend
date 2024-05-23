@@ -35,20 +35,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
       "must return OK and the correct view with valid mandatory data" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
-            .success
-            .value
-            .set(CommodityCodePage, Commodity("654321", "Description"))
-            .success
-            .value
-            .set(CountryOfOriginPage, "1")
-            .success
-            .value
-            .set(HasGoodsDescriptionPage, false)
-            .success
-            .value
+        val answers = mandatoryRecordUserAnswers
 
         val application = applicationBuilder(userAnswers = Some(answers)).build()
 
@@ -69,22 +56,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
       "must return OK and the correct view with all data (including optional)" in {
 
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(TraderReferencePage, "123")
-          .success
-          .value
-          .set(CommodityCodePage, Commodity("654321", "Description"))
-          .success
-          .value
-          .set(CountryOfOriginPage, "1")
-          .success
-          .value
-          .set(HasGoodsDescriptionPage, true)
-          .success
-          .value
-          .set(GoodsDescriptionPage, "2")
-          .success
-          .value
+        val userAnswers = fullRecordUserAnswers
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 

@@ -18,12 +18,12 @@ package base
 
 import base.TestConstants.userAnswersId
 import controllers.actions._
-import models.UserAnswers
+import models.{Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import pages.{HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, UkimsNumberPage}
+import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, HasGoodsDescriptionPage, HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, TraderReferencePage, UkimsNumberPage}
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -68,9 +68,44 @@ trait SpecBase
     .success
     .value
 
-  def fullRecordUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def fullRecordUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(TraderReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, Commodity("654321", "Description"))
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(HasGoodsDescriptionPage, true)
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(GoodsDescriptionPage, "DESCRIPTION")
+      .success
+      .value
 
-  def mandatoryRecordUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def mandatoryRecordUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(TraderReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, Commodity("654321", "Description"))
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(HasGoodsDescriptionPage, false)
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
