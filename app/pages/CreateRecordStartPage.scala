@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-package base
+package pages
 
-object TestConstants {
-  val testEori: String      = "eori"
-  val userAnswersId: String = "id"
-}
+case object CreateRecordStartPage extends Page

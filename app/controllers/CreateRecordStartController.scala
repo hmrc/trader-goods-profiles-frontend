@@ -18,10 +18,13 @@ package controllers
 
 import controllers.actions._
 import models.NormalMode
+import navigation.Navigator
+import pages.CreateRecordStartPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CreateRecordStartView
+
 import javax.inject.Inject
 
 class CreateRecordStartController @Inject() (
@@ -30,7 +33,8 @@ class CreateRecordStartController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CreateRecordStartView
+  view: CreateRecordStartView,
+  navigator: Navigator
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -38,7 +42,7 @@ class CreateRecordStartController @Inject() (
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData) { implicit request =>
-    Redirect(routes.TraderReferenceController.onPageLoad(NormalMode))
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers))
   }
 }

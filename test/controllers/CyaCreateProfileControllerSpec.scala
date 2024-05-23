@@ -24,7 +24,6 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -35,13 +34,13 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
-import views.html.CheckYourAnswersView
+import views.html.CyaCreateProfileView
 
 import scala.concurrent.Future
 
-class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
+class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  "Check Your Answers Controller" - {
+  "CyaCreateProfileController" - {
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
@@ -57,25 +56,16 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must return OK and the correct view with valid mandatory data" in {
 
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(UkimsNumberPage, "1")
-          .success
-          .value
-          .set(HasNirmsPage, false)
-          .success
-          .value
-          .set(HasNiphlPage, false)
-          .success
-          .value
+        val userAnswers = mandatoryProfileUserAnswers
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[CheckYourAnswersView]
+          val view = application.injector.instanceOf[CyaCreateProfileView]
           val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
@@ -85,31 +75,16 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must return OK and the correct view with all data (including optional)" in {
 
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(UkimsNumberPage, "1")
-          .success
-          .value
-          .set(HasNirmsPage, true)
-          .success
-          .value
-          .set(NirmsNumberPage, "2")
-          .success
-          .value
-          .set(HasNiphlPage, true)
-          .success
-          .value
-          .set(NiphlNumberPage, "3")
-          .success
-          .value
+        val userAnswers = fullProfileUserAnswers
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[CheckYourAnswersView]
+          val view = application.injector.instanceOf[CyaCreateProfileView]
           val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
@@ -123,7 +98,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
@@ -138,7 +113,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 
@@ -154,17 +129,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
         "must submit the trader profile and redirect to the Home Page" in {
 
-          val userAnswers =
-            emptyUserAnswers
-              .set(UkimsNumberPage, "1")
-              .success
-              .value
-              .set(HasNirmsPage, false)
-              .success
-              .value
-              .set(HasNiphlPage, false)
-              .success
-              .value
+          val userAnswers = mandatoryProfileUserAnswers
 
           val mockConnector = mock[RouterConnector]
           when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
@@ -179,7 +144,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
             val result = route(application, request).value
 
@@ -206,13 +171,13 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
           val continueUrl      = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
           val application =
-            applicationBuilder(userAnswers = Some(UserAnswers("")))
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[RouterConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
             val result = route(application, request).value
 
@@ -229,17 +194,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must let the play error handler deal with connector failure" in {
 
-        val userAnswers =
-          emptyUserAnswers
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
+        val userAnswers = mandatoryProfileUserAnswers
 
         val mockConnector = mock[RouterConnector]
         when(mockConnector.submitTraderProfile(any(), any())(any()))
@@ -251,7 +206,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -261,17 +216,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must let the play error handler deal with an audit future failure" in {
 
-        val userAnswers =
-          emptyUserAnswers
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
+        val userAnswers = mandatoryProfileUserAnswers
 
         val mockConnector = mock[RouterConnector]
         when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
@@ -287,7 +232,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -300,7 +245,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CheckYourAnswersController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
 
           val result = route(application, request).value
 

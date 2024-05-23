@@ -32,11 +32,15 @@ index.title = trader-goods-profiles-frontend
 index.heading = trader-goods-profiles-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-checkYourAnswers.title = Check your answers
-checkYourAnswers.h1 = Check your answers
-checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
-checkYourAnswers.warning = Warning
-checkYourAnswers.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+cyaCreateProfile.title = Check your answers
+cyaCreateProfile.h1 = Check your answers
+cyaCreateProfile.h2 = UKIMS, NIRMS and NIPHL
+cyaCreateProfile.warning = Warning
+cyaCreateProfile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+
+cyaCreateRecord.title = Check your answers
+cyaCreateRecord.h1 = Check your answers
+cyaCreateRecord.h2 = Check if the details on this record are correct
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -147,6 +151,8 @@ commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 8765432
 commodityCode.error.required = Enter a commodity code
 commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 commodityCode.error.invalid = Enter a real commodity code
+commodityCode.checkYourAnswersLabel = Commodity code
+commodityCode.change.hidden = Commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
@@ -155,6 +161,8 @@ countryOfOrigin.p2 = If the country of origin is different to the country of dep
 countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens in new tab)
 countryOfOrigin.heading = What is the country of origin of the goods?
 countryOfOrigin.error.required = Enter the country of origin
+countryOfOrigin.checkYourAnswersLabel = Country of origin
+countryOfOrigin.change.hidden = Country of origin
 
 homepage.title = Trader Goods Profile homepage
 homepage.h1 = Trader Goods Profile homepage
@@ -218,8 +226,6 @@ hasCorrectGoods.p1 = Classification: {0}
 hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select if these are the correct goods
-hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
-hasCorrectGoods.change.hidden = HasCorrectGoods
 
 hasGoodsDescription.title = Goods description
 hasGoodsDescription.h1 = Goods description
@@ -228,8 +234,9 @@ hasGoodsDescription.p2 = The goods description does not need to be unique to you
 hasGoodsDescription.h2 = If you do not add a goods description
 hasGoodsDescription.p3 = We will create a goods description for you. This will be the country of origin, followed by the commodity code and then the trader reference.
 hasGoodsDescription.h3 = Do you want to add a personalised goods description?
-hasGoodsDescription.checkYourAnswersLabel = hasCorrectGoods
+hasGoodsDescription.checkYourAnswersLabel = Do you want to use the trader reference as your goods description?
 hasGoodsDescription.error.required = Confirm if you want to add a personalised goods description
+hasGoodsDescription.change.hidden = Do you want to use the trader reference as your goods description?
 
 traderReference.title = Trader reference
 traderReference.h1 = Trader reference
