@@ -38,7 +38,6 @@ class TraderProfileConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
       .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
       .build()
 
@@ -53,7 +52,7 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/good-profiles/$testEori"))
+        post(urlEqualTo(s"/traders/$testEori/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(ok())
       )
@@ -66,7 +65,7 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        put(urlEqualTo("/trader-goods-profiles-router/customs/traders/good-profiles"))
+        post(urlEqualTo(s"/traders/$testEori/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(serverError())
       )
@@ -83,7 +82,7 @@ class TraderProfileConnectorSpec
       val traderProfile          = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$testEori"))
+        get(urlEqualTo(s"/customs/traders/goods-profiles/$testEori"))
           .willReturn(ok().withBody(Json.toJson(dataStoreTraderProfile).toString))
       )
 
@@ -93,7 +92,7 @@ class TraderProfileConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$testEori"))
+        get(urlEqualTo(s"/customs/traders/goods-profiles/$testEori"))
           .willReturn(serverError())
       )
 

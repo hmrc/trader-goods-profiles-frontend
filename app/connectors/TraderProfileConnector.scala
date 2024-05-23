@@ -32,25 +32,19 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   ec: ExecutionContext
 ) {
 
-  private val routerBaseUrl: Service    = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
-
-  private def submitTraderProfileUrl(eori: String) =
-    url"$routerBaseUrl/trader-goods-profiles-router/customs/traders/good-profiles/$eori"
+  private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private def traderProfileUrl(eori: String) = url"$dataStoreBaseUrl/traders/$eori/profile"
 
   def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .put(submitTraderProfileUrl(eori))
+      .post(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
       .map(_ => Done)
 
-  private def checkTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/traders/$eori/profile"
-
   def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .head(checkTraderProfileUrl(eori))
+      .head(traderProfileUrl(eori))
       .execute[HttpResponse]
       .map { response =>
         response.status match {
@@ -61,8 +55,7 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
         false
       }
 
-  private def getTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"
+  private def getTraderProfileUrl(eori: String) = url"$dataStoreBaseUrl/customs/traders/goods-profiles/$eori"
 
   def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient

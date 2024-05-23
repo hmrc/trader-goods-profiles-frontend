@@ -27,10 +27,6 @@ error.title.prefix = Error:
 error.prefix = Error
 error.summary.title = There is a problem
 
-index.title = trader-goods-profiles-frontend
-index.heading = trader-goods-profiles-frontend
-index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
-
 checkYourAnswers.title = Check your answers
 checkYourAnswers.h1 = Check your answers
 checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
