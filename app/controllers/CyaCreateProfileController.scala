@@ -40,7 +40,7 @@ class CyaCreateProfileController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
-  routerConnector: TraderProfileConnector,
+  traderProfileConnector: TraderProfileConnector,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -67,7 +67,7 @@ class CyaCreateProfileController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
-        routerConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
+        traderProfileConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
           auditService
             .auditProfileSetUp(model, request.affinityGroup)
             .map { _ =>
@@ -87,5 +87,4 @@ class CyaCreateProfileController @Inject() (
     logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
-
 }
