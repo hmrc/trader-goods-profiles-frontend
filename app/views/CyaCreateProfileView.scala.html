@@ -23,20 +23,20 @@
 
 @(list: SummaryList)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("cyaCreateRecord.title"))) {
+@layout(pageTitle = titleNoForm(messages("cyaCreateProfile.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("cyaCreateRecord.h1")</h1>
-    <h2 class="govuk-heading-m">@messages("cyaCreateRecord.h2")</h2>
+    <h1 class="govuk-heading-l">@messages("cyaCreateProfile.h1")</h1>
+    <h2 class="govuk-heading-m">@messages("cyaCreateProfile.h2")</h2>
     @govukSummaryList(list)
     <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
-            <span class="govuk-visually-hidden">@messages("cyaCreateRecord.warning")</span>
-            @messages("cyaCreateRecord.warningText")
+            <span class="govuk-visually-hidden">@messages("cyaCreateProfile.warning")</span>
+            @messages("cyaCreateProfile.warningText")
         </strong>
     </div>
 
-    @formHelper(action = routes.CyaCreateRecordController.onSubmit) {
+    @formHelper(action = routes.CyaCreateProfileController.onSubmit) {
         @govukButton(ButtonViewModel(messages("site.continue")))
     }
 }
