@@ -183,7 +183,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency wi
 
             val result = route(application, request).value
 
-            val expectedPayload = TraderProfile(testEori, testEori, "1", None, None)
+            val expectedPayload = TraderProfile(testEori, "1", None, None)
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url

@@ -22,7 +22,6 @@ import pages._
 import play.api.libs.json.{Json, OFormat}
 
 final case class TraderProfile(
-  eori: String,
   actorId: String,
   ukimsNumber: String,
   nirmsNumber: Option[String],
@@ -35,7 +34,6 @@ object TraderProfile {
 
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, TraderProfile] =
     (
-      Right(eori),
       Right(eori),
       answers.getPageValue(UkimsNumberPage),
       getNirms(answers),

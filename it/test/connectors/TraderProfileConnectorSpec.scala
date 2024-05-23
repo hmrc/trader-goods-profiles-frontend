@@ -25,6 +25,7 @@ import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import testModels.DataStoreProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 
@@ -49,7 +50,7 @@ class TraderProfileConnectorSpec
 
     "must submit a trader profile" in {
 
-      val traderProfile = TraderProfile(testEori, testEori, "1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
         put(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/good-profiles/$testEori"))
@@ -62,7 +63,7 @@ class TraderProfileConnectorSpec
 
     "must return a failed future when the server returns an error" in {
 
-      val traderProfile = TraderProfile(testEori, testEori, "1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
         put(urlEqualTo("/trader-goods-profiles-router/customs/traders/good-profiles"))
@@ -78,11 +79,12 @@ class TraderProfileConnectorSpec
 
     "must get a trader profile" in {
 
-      val traderProfile = TraderProfile(testEori, testEori, "1", Some("2"), None)
+      val dataStoreTraderProfile = DataStoreProfile(testEori, testEori, "1", Some("2"), None)
+      val traderProfile          = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
         get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$testEori"))
-          .willReturn(ok().withBody(Json.toJson(traderProfile).toString))
+          .willReturn(ok().withBody(Json.toJson(dataStoreTraderProfile).toString))
       )
 
       connector.getTraderProfile(testEori).futureValue mustBe traderProfile
