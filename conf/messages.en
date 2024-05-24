@@ -228,6 +228,8 @@ hasGoodsDescription.h2 = If you do not add a goods description
 hasGoodsDescription.p3 = We will use your trader reference as your goods description.
 hasGoodsDescription.p4 = The trader reference you entered is:
 hasGoodsDescription.h3 = Do you want to use the trader reference as your goods description?
+hasGoodsDescription.radio1 = Yes, use my trader reference as my goods description
+hasGoodsDescription.radio2 = No, I want to enter a different goods description
 hasGoodsDescription.checkYourAnswersLabel = hasCorrectGoods
 hasGoodsDescription.error.required = Confirm if you want to use your trader reference as the goods description
 
