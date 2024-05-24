@@ -33,7 +33,8 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
 ) {
 
   private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
-  private def traderProfileUrl(eori: String) = url"$dataStoreBaseUrl/traders/$eori/profile"
+  private def traderProfileUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/profile"
 
   def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
@@ -55,7 +56,8 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
         false
       }
 
-  private def getTraderProfileUrl(eori: String) = url"$dataStoreBaseUrl/customs/traders/goods-profiles/$eori"
+  private def getTraderProfileUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"
 
   def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient
