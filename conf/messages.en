@@ -41,7 +41,7 @@ cyaCreateProfile.warningText = You need to make sure these details are correct. 
 
 cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
-cyaCreateRecord.h2 = Check if the details on this record are correct
+cyaCreateRecord.h2 = Check if the details on this record are correct.
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
