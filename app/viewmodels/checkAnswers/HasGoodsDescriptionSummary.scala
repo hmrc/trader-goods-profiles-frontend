@@ -28,7 +28,7 @@ object HasGoodsDescriptionSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(HasGoodsDescriptionPage).map { answer =>
-      val value = if (answer) "site.yes" else "site.no"
+      val value = if (answer) "hasGoodsDescription.radio1" else "hasGoodsDescription.radio2"
 
       SummaryListRowViewModel(
         key = "hasGoodsDescription.checkYourAnswersLabel",
