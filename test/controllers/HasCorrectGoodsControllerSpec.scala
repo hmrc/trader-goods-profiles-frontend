@@ -42,7 +42,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val hasCorrectGoodsRoute = routes.HasCorrectGoodsController.onPageLoad(NormalMode).url
 
-  "HasCorrectGoods Controller" - {
+  "HasCorrectGoodsController" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -84,10 +84,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
       val commodity   = Commodity("654321", "Description")
       val userAnswers = emptyUserAnswers
-        .set(HasCorrectGoodsPage, true)
+        .set(CommodityCodePage, commodity)
         .success
         .value
-        .set(CommodityCodePage, commodity)
+        .set(HasCorrectGoodsPage, true)
         .success
         .value
 

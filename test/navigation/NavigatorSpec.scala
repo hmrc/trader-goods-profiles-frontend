@@ -521,10 +521,10 @@ class NavigatorSpec extends SpecBase {
 
               val answers =
                 UserAnswers(userAnswersId)
-                  .set(HasCorrectGoodsPage, true)
+                  .set(CommodityCodePage, Commodity("1234", "DESCRIPTION"))
                   .success
                   .value
-                  .set(CommodityCodePage, Commodity("1234", "DESCRIPTION"))
+                  .set(HasCorrectGoodsPage, true)
                   .success
                   .value
               navigator.nextPage(
@@ -535,14 +535,14 @@ class NavigatorSpec extends SpecBase {
             }
           }
 
-          "to CyaCreateRecord when answer is No" in {
+          "to CommodityCodePage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
             navigator.nextPage(
               HasCorrectGoodsPage,
               CheckMode,
               answers
-            ) mustBe routes.CyaCreateRecordController.onPageLoad
+            ) mustBe routes.CommodityCodeController.onPageLoad(CheckMode)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {

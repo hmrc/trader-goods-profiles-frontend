@@ -16,20 +16,24 @@
 
 package pages
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import base.TestConstants.userAnswersId
+import models.{Commodity, UserAnswers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.{OptionValues, TryValues}
 
-import scala.util.Try
+class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
-case object HasGoodsDescriptionPage extends QuestionPage[Boolean] {
+  "clean up" - {
 
-  override def path: JsPath = JsPath \ toString
+    "always removes HasCorrectGoodsPage" in {
 
-  override def toString: String = "hasGoodsDescription"
+      val userAnswers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
-    userAnswers.get(HasGoodsDescriptionPage) match {
-      case Some(false) => userAnswers.remove(GoodsDescriptionPage)
-      case _           => super.cleanup(value, userAnswers)
+      val result = userAnswers.set(CommodityCodePage, Commodity("1234", "5678")).success.value
+
+      result.isDefined(HasCorrectGoodsPage) mustBe false
+
     }
+  }
 }

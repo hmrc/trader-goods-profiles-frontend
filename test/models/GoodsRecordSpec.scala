@@ -108,10 +108,10 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
-            .set(CommodityCodePage, Commodity("654321", "Description"))
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
             .set(CountryOfOriginPage, "1")
@@ -135,10 +135,10 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
-            .set(CommodityCodePage, Commodity("654321", "Description"))
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
             .set(CountryOfOriginPage, "1")
@@ -167,10 +167,10 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(HasCorrectGoodsPage, false)
+            .set(CommodityCodePage, Commodity("654321", "Description"))
             .success
             .value
-            .set(CommodityCodePage, Commodity("654321", "Description"))
+            .set(HasCorrectGoodsPage, false)
             .success
             .value
             .set(CountryOfOriginPage, "1")
