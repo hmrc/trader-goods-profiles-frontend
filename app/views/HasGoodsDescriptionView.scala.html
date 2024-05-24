@@ -25,7 +25,7 @@
 )
 
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], traderReference: String, mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasGoodsDescription.title"))) {
 
@@ -37,6 +37,10 @@
 
     <p class="govuk-body">@messages("hasGoodsDescription.p3")</p>
 
+    <p class="govuk-body">@messages("hasGoodsDescription.p4")</p>
+
+    <p class="govuk-body">@messages(traderReference)</p>
+
     <h2 class="govuk-heading-m">@messages("hasGoodsDescription.h3")</h2>
 
     @formHelper(action = routes.HasGoodsDescriptionController.onSubmit(mode), Symbol("autoComplete") -> "off") {
@@ -46,9 +50,13 @@
         }
 
         @govukRadios(
-            RadiosViewModel.yesNo(
+            RadiosViewModel.apply(
                 field = form("value"),
-                legend = Legend(content = "hasGoodsDescription.h1", classes = "govuk-visually-hidden")
+                legend = Legend(content = "hasGoodsDescription.h1", classes = "govuk-visually-hidden"),
+                items = Seq(
+                    RadioItem(content = messages("hasGoodsDescription.radio1"), value = Some("true")),
+                    RadioItem(content = messages("hasGoodsDescription.radio2"), value = Some("false"))
+                )
             )
         )
 
