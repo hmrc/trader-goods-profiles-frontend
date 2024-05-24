@@ -54,8 +54,8 @@
                 field = form("value"),
                 legend = Legend(content = "hasGoodsDescription.h1", classes = "govuk-visually-hidden"),
                 items = Seq(
-                    RadioItem(content = messages("hasGoodsDescription.radio1"), id=Some("goodsDescYes"), value = Some("goodsDescYes")),
-                    RadioItem(content = messages("hasGoodsDescription.radio2"), id=Some("goodsDescNo"), value = Some("goodsDescNo"))
+                    RadioItem(content = messages("hasGoodsDescription.radio1"), value = Some("true")),
+                    RadioItem(content = messages("hasGoodsDescription.radio2"), value = Some("false"))
                 )
             )
         )
