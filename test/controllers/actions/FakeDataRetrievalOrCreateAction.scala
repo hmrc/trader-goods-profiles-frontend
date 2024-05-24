@@ -16,6 +16,7 @@
 
 package controllers.actions
 
+import base.TestConstants.userAnswersId
 import models.UserAnswers
 import models.requests.{DataRequest, IdentifierRequest}
 
@@ -24,7 +25,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class FakeDataRetrievalOrCreateAction extends DataRetrievalOrCreateAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
-    Future(DataRequest(request.request, request.userId, request.eori, request.affinityGroup, UserAnswers("id")))
+    Future(
+      DataRequest(request.request, request.userId, request.eori, request.affinityGroup, UserAnswers(userAnswersId))
+    )
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global

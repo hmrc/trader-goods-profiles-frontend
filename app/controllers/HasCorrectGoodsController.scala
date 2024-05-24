@@ -18,6 +18,8 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
+
+import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{CommodityCodePage, HasCorrectGoodsPage}
@@ -27,7 +29,6 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasCorrectGoodsController @Inject() (

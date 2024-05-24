@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import forms.HasGoodsDescriptionFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}

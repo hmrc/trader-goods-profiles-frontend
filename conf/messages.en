@@ -10,6 +10,7 @@ site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
+site.or = or
 
 date.day = Day
 date.month = Month
@@ -31,11 +32,15 @@ index.title = trader-goods-profiles-frontend
 index.heading = trader-goods-profiles-frontend
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-checkYourAnswers.title = Check your answers
-checkYourAnswers.h1 = Check your answers
-checkYourAnswers.h2 = UKIMS, NIRMS and NIPHL
-checkYourAnswers.warning = Warning
-checkYourAnswers.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+cyaCreateProfile.title = Check your answers
+cyaCreateProfile.h1 = Check your answers
+cyaCreateProfile.h2 = UKIMS, NIRMS and NIPHL
+cyaCreateProfile.warning = Warning
+cyaCreateProfile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+
+cyaCreateRecord.title = Check your answers
+cyaCreateRecord.h1 = Check your answers
+cyaCreateRecord.h2 = Check if the details on this record are correct
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -146,6 +151,8 @@ commodityCode.hint = You can use 6, 8 or 10 digits, for example, 654321, 8765432
 commodityCode.error.required = Enter a commodity code
 commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 commodityCode.error.invalid = Enter a real commodity code
+commodityCode.checkYourAnswersLabel = Commodity code
+commodityCode.change.hidden = Commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
@@ -154,6 +161,8 @@ countryOfOrigin.p2 = If the country of origin is different to the country of dep
 countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens in new tab)
 countryOfOrigin.heading = What is the country of origin of the goods?
 countryOfOrigin.error.required = Enter the country of origin
+countryOfOrigin.checkYourAnswersLabel = Country of origin
+countryOfOrigin.change.hidden = Country of origin
 
 homepage.title = Trader Goods Profile homepage
 homepage.h1 = Trader Goods Profile homepage
@@ -217,8 +226,6 @@ hasCorrectGoods.p1 = Classification: {0}
 hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select if these are the correct goods
-hasCorrectGoods.checkYourAnswersLabel = hasCorrectGoods
-hasCorrectGoods.change.hidden = HasCorrectGoods
 
 hasGoodsDescription.title = Goods description
 hasGoodsDescription.h1 = Goods description
@@ -230,8 +237,9 @@ hasGoodsDescription.p4 = The trader reference you entered is:
 hasGoodsDescription.h3 = Do you want to use the trader reference as your goods description?
 hasGoodsDescription.radio1 = Yes, use my trader reference as my goods description
 hasGoodsDescription.radio2 = No, I want to enter a different goods description
-hasGoodsDescription.checkYourAnswersLabel = hasCorrectGoods
+hasGoodsDescription.checkYourAnswersLabel = Do you want to use the trader reference as your goods description?
 hasGoodsDescription.error.required = Confirm if you want to use your trader reference as the goods description
+hasGoodsDescription.change.hidden = Do you want to use the trader reference as your goods description?
 
 traderReference.title = Trader reference
 traderReference.h1 = Trader reference
@@ -243,3 +251,11 @@ traderReference.error.required = Enter the trader reference
 traderReference.error.length = Trader reference must be 512 characters or less
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
+
+assessment.title = Category assessment {0} of {1}
+assessment.heading = Category assessment {0} of {1}
+assessment.guidance = You need to confirm which of these waivers you hold for {0}. We need this information to be ale to categorise your goods.
+assessment.question = Do you meet one of the following conditions and can supply the relevant document codes on your movements?
+assessment.hint = Select one answer.
+assessment.exemption = {0} - {1}
+assessment.exemption.none = None of the above

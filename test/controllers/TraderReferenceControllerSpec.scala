@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
 import forms.TraderReferenceFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -35,12 +36,12 @@ import scala.concurrent.Future
 
 class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new TraderReferenceFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
-  lazy val traderReferenceRoute = routes.TraderReferenceController.onPageLoad(NormalMode).url
+  private lazy val traderReferenceRoute = routes.TraderReferenceController.onPageLoad(NormalMode).url
 
   "TraderReference Controller" - {
 

@@ -17,7 +17,7 @@ TGP stores goods information allowing traders or intermediaries to use the infor
 
 Run this service from your console using: `sbt run`
 
-Use service manager to start up supporting services: `sm2 --start TGP_FE`
+Use service manager to start up supporting services: `sm2 --start TGP_FE_ALL`
 
 ### Testing
 
