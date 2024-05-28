@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.RouterConnector
+import connectors.TraderProfileConnector
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -131,7 +131,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
           val userAnswers = mandatoryProfileUserAnswers
 
-          val mockConnector = mock[RouterConnector]
+          val mockConnector = mock[TraderProfileConnector]
           when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val mockAuditService = mock[AuditService]
@@ -139,7 +139,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
-              .overrides(bind[RouterConnector].toInstance(mockConnector))
+              .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
               .build()
 
@@ -166,13 +166,13 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         "must not submit anything, and redirect to Journey Recovery" in {
 
-          val mockConnector    = mock[RouterConnector]
+          val mockConnector    = mock[TraderProfileConnector]
           val mockAuditService = mock[AuditService]
           val continueUrl      = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
-              .overrides(bind[RouterConnector].toInstance(mockConnector))
+              .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
               .build()
 
@@ -196,13 +196,13 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         val userAnswers = mandatoryProfileUserAnswers
 
-        val mockConnector = mock[RouterConnector]
+        val mockConnector = mock[TraderProfileConnector]
         when(mockConnector.submitTraderProfile(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[RouterConnector].toInstance(mockConnector))
+            .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
             .build()
 
         running(application) {
@@ -218,7 +218,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         val userAnswers = mandatoryProfileUserAnswers
 
-        val mockConnector = mock[RouterConnector]
+        val mockConnector = mock[TraderProfileConnector]
         when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
 
         val mockAuditService = mock[AuditService]
@@ -227,7 +227,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[RouterConnector].toInstance(mockConnector))
+            .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
             .overrides(bind[AuditService].toInstance(mockAuditService))
             .build()
 

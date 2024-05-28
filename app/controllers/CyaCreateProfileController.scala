@@ -18,7 +18,7 @@ package controllers
 
 import cats.data
 import com.google.inject.Inject
-import connectors.RouterConnector
+import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.{TraderProfile, ValidationError}
@@ -40,7 +40,7 @@ class CyaCreateProfileController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
-  routerConnector: RouterConnector,
+  traderProfileConnector: TraderProfileConnector,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -67,7 +67,7 @@ class CyaCreateProfileController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
-        routerConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
+        traderProfileConnector.submitTraderProfile(model, request.eori).flatMap { _ =>
           auditService
             .auditProfileSetUp(model, request.affinityGroup)
             .map { _ =>

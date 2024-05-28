@@ -29,10 +29,6 @@ error.title.prefix = Error:
 error.prefix = Error
 error.summary.title = There is a problem
 
-index.title = trader-goods-profiles-frontend
-index.heading = trader-goods-profiles-frontend
-index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
-
 cyaCreateProfile.title = Check your answers
 cyaCreateProfile.h1 = Check your answers
 cyaCreateProfile.h2 = UKIMS, NIRMS and NIPHL
