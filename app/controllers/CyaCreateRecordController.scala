@@ -46,7 +46,7 @@ class CyaCreateRecordController @Inject() (
         val list = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(request.userAnswers),
-            HasGoodsDescriptionSummary.row(request.userAnswers),
+            UseTraderReferenceSummary.row(request.userAnswers),
             GoodsDescriptionSummary.row(request.userAnswers),
             CountryOfOriginSummary.row(request.userAnswers),
             CommodityCodeSummary.row(request.userAnswers)

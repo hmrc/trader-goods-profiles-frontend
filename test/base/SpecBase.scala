@@ -23,7 +23,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, HasGoodsDescriptionPage, HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, TraderReferencePage, UkimsNumberPage}
+import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, TraderReferencePage, UkimsNumberPage, UseTraderReferencePage}
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -79,7 +79,7 @@ trait SpecBase
       .set(CountryOfOriginPage, "1")
       .success
       .value
-      .set(HasGoodsDescriptionPage, true)
+      .set(UseTraderReferencePage, false)
       .success
       .value
       .set(HasCorrectGoodsPage, true)
@@ -100,7 +100,7 @@ trait SpecBase
       .set(CountryOfOriginPage, "1")
       .success
       .value
-      .set(HasGoodsDescriptionPage, false)
+      .set(UseTraderReferencePage, true)
       .success
       .value
       .set(HasCorrectGoodsPage, true)

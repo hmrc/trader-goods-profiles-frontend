@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-import scala.util.Try
+class UseTraderReferenceFormProviderSpec extends BooleanFieldBehaviours {
 
-case object HasGoodsDescriptionPage extends QuestionPage[Boolean] {
+  val requiredKey = "useTraderReference.error.required"
+  val invalidKey  = "error.boolean"
 
-  override def path: JsPath = JsPath \ toString
+  val form = new UseTraderReferenceFormProvider()()
 
-  override def toString: String = "hasGoodsDescription"
+  ".value" - {
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
-    userAnswers.get(HasGoodsDescriptionPage) match {
-      case Some(false) => userAnswers.remove(GoodsDescriptionPage)
-      case _           => super.cleanup(value, userAnswers)
-    }
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }
