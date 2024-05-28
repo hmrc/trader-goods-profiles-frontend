@@ -20,23 +20,48 @@ import config.Service
 import models.TraderProfile
 import org.apache.pekko.Done
 import play.api.Configuration
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RouterConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
+class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
+  ec: ExecutionContext
+) {
 
-  private val baseUrl: Service               = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private def traderProfileUrl(eori: String) =
-    url"$baseUrl/trader-goods-profiles-router/customs/traders/good-profiles/$eori"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/profile"
 
   def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .put(traderProfileUrl(eori))
+      .post(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
       .map(_ => Done)
+
+  def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+    httpClient
+      .head(traderProfileUrl(eori))
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK => true
+        }
+      }
+      .recover { case e: NotFoundException =>
+        false
+      }
+
+  private def getTraderProfileUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"
+
+  def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
+    httpClient
+      .get(getTraderProfileUrl(eori))
+      .execute[HttpResponse]
+      .map(response => response.json.as[TraderProfile])
 }
