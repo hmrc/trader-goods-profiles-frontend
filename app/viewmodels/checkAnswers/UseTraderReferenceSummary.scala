@@ -18,24 +18,24 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.HasGoodsDescriptionPage
+import pages.UseTraderReferencePage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object HasGoodsDescriptionSummary {
+object UseTraderReferenceSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasGoodsDescriptionPage).map { answer =>
-      val value = if (answer) "hasGoodsDescription.radio1" else "hasGoodsDescription.radio2"
+    answers.get(UseTraderReferencePage).map { answer =>
+      val value = if (answer) "useTraderReference.radio1" else "useTraderReference.radio2"
 
       SummaryListRowViewModel(
-        key = "hasGoodsDescription.checkYourAnswersLabel",
+        key = "useTraderReference.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasGoodsDescriptionController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("hasGoodsDescription.change.hidden"))
+          ActionItemViewModel("site.change", routes.UseTraderReferenceController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("useTraderReference.change.hidden"))
         )
       )
     }
