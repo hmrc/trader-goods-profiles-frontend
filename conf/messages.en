@@ -256,3 +256,6 @@ assessment.question = Do you meet one of the following conditions and can supply
 assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
+
+signedOut.title = You have now signed out
+signedOut.heading = You have now signed out
