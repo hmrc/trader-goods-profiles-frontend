@@ -17,17 +17,48 @@
 package controllers
 
 import base.SpecBase
+import connectors.OttConnector
+import models.Commodity
+import models.ott.CategoryAssessment
+import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.CommodityCodePage
+import play.api.inject._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CategoryGuidanceView
+
+import scala.concurrent.Future
 
 class CategoryGuidanceControllerSpec extends SpecBase {
 
   "CategoryGuidance Controller" - {
 
+    val userAnswersWithCommodity = emptyUserAnswers
+      .set(
+        CommodityCodePage,
+        Commodity(commodityCode = "123", description = "test commodity")
+      )
+      .success
+      .value
+
+    val mockOttConnector = mock[OttConnector]
+    when(mockOttConnector.getCategorisationInfo(any())(any())).thenReturn(
+      Future.successful(OttResponse(
+          GoodsNomenclatureResponse("", ""),
+          Seq(),
+          Seq()
+        )
+      )
+    )
+
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity)).overrides(
+        bind[OttConnector].toInstance(mockOttConnector)
+      ).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
@@ -43,7 +74,9 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
     "must redirect to the categorisation page when the user click continue button" in {
 
-      val application = applicationBuilder().build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity)).overrides(
+        bind[OttConnector].toInstance(mockOttConnector)
+      ).build()
 
       running(application) {
         val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit.url)
