@@ -34,6 +34,8 @@ class CategoryGuidanceController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    // call ott
+    // save it?
     Ok(view())
   }
 
