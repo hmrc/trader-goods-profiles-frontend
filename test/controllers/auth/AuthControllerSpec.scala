@@ -81,7 +81,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         val encodedContinueUrl  =
-          URLEncoder.encode(appConfig.baseUrl + routes.SignedOutController.onPageLoad.url, "UTF-8")
+          URLEncoder.encode(appConfig.signOutContinueUrl, "UTF-8")
         val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
 
         status(result) mustEqual SEE_OTHER
