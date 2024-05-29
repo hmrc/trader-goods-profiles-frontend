@@ -33,8 +33,8 @@ class CyaCategorisationController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView
 ) extends FrontendBaseController
-  with I18nSupport
-  with Logging {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val list = SummaryListViewModel(
