@@ -20,7 +20,7 @@ import config.Service
 import models.TraderProfile
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http._
