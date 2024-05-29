@@ -257,5 +257,8 @@ assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
 
+ukimsKickOut.title = ukimsKickOut
+ukimsKickOut.heading = ukimsKickOut
+
 categorisationResult.title = categorisationResult
 categorisationResult.heading = categorisationResult
