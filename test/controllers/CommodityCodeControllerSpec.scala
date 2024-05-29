@@ -67,8 +67,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val commodity   = Commodity("654321", "")
-      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, commodity).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "654321").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -115,6 +114,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
 
         verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
+        verify(mockSessionRepository, times(1)).set(any())
       }
     }
 

@@ -18,12 +18,12 @@ package base
 
 import base.TestConstants.userAnswersId
 import controllers.actions._
-import models.{Commodity, UserAnswers}
+import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, HasGoodsDescriptionPage, HasNiphlPage, HasNirmsPage, NiphlNumberPage, NirmsNumberPage, TraderReferencePage, UkimsNumberPage}
+import pages._
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -73,7 +73,7 @@ trait SpecBase
       .set(TraderReferencePage, "123")
       .success
       .value
-      .set(CommodityCodePage, Commodity("654321", "Description"))
+      .set(CommodityCodePage, "654321")
       .success
       .value
       .set(CountryOfOriginPage, "1")
@@ -94,7 +94,7 @@ trait SpecBase
       .set(TraderReferencePage, "123")
       .success
       .value
-      .set(CommodityCodePage, Commodity("654321", "Description"))
+      .set(CommodityCodePage, "654321")
       .success
       .value
       .set(CountryOfOriginPage, "1")

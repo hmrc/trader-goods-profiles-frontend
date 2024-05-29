@@ -521,7 +521,7 @@ class NavigatorSpec extends SpecBase {
 
               val answers =
                 UserAnswers(userAnswersId)
-                  .set(CommodityCodePage, Commodity("1234", "DESCRIPTION"))
+                  .set(CommodityCodePage, "1234")
                   .success
                   .value
                   .set(HasCorrectGoodsPage, true)

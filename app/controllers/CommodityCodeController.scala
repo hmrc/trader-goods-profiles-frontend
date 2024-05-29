@@ -19,18 +19,19 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.CommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.CommodityQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CommodityCodeView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CommodityCodeController @Inject() (
@@ -53,7 +54,7 @@ class CommodityCodeController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(CommodityCodePage) match {
       case None        => form
-      case Some(value) => form.fill(value.commodityCode)
+      case Some(value) => form.fill(value)
     }
 
     Ok(view(preparedForm, mode))
@@ -67,10 +68,11 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             (for {
-              commodity      <- ottConnector.getCommodityCode(value)
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(CommodityCodePage, commodity))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswers))).recover {
+              commodity               <- ottConnector.getCommodityCode(value)
+              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
+              updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
+              _                       <- sessionRepository.set(updatedAnswersWithQuery)
+            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 val formWithApiErrors =
                   form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))
