@@ -31,14 +31,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
-  private val baseUrl: Service              = config.get[Service]("microservice.services.online-trade-tariff-api")
+  private val baseUrl: Service                         = config.get[Service]("microservice.services.online-trade-tariff-api")
   private def ottCommoditiesUrl(commodityCode: String) =
     url"$baseUrl/ott/commodities/$commodityCode"
 
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
-  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit hc: HeaderCarrier, reads: Reads[T]): Future[T] = {
+  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+    hc: HeaderCarrier,
+    reads: Reads[T]
+  ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
     httpClient
@@ -51,7 +54,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
               .validate[T]
               .map(result => Future.successful(result))
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-          case _ =>
+          case _  =>
             Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
@@ -60,12 +63,10 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
       }
   }
 
-  def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] = {
+  def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] =
     getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken")
-  }
 
-  def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] = {
+  def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] =
     getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
-  }
 
 }
