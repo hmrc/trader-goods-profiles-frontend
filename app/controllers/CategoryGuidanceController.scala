@@ -16,12 +16,22 @@
 
 package controllers
 
+import connectors.OttConnector
 import controllers.actions._
+import models.ott.CategorisationInfo
+import models.ott.response.OttResponse
+import pages.CommodityCodePage
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.CategorisationQuery
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -29,14 +39,27 @@ class CategoryGuidanceController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategoryGuidanceView
-) extends FrontendBaseController
+  view: CategoryGuidanceView,
+  ottConnector: OttConnector,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    // call ott
-    // save it?
-    Ok(view())
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    request.userAnswers.get(CommodityCodePage) match {
+      case Some(commodity) =>
+        val ottResponseFuture = ottConnector.getCategorisationInfo(commodity.commodityCode)
+
+        for {
+          goodsNomenclature <- ottResponseFuture
+          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          updatedAnswers <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
+          _ <- sessionRepository.set(updatedAnswers)
+        } yield Ok(view())
+
+      case None =>
+        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+    }
   }
 
   // TODO replace index route
