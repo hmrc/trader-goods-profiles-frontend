@@ -259,3 +259,6 @@ assessment.exemption.none = None of the above
 
 ukimsKickOut.title = ukimsKickOut
 ukimsKickOut.heading = ukimsKickOut
+
+categorisationResult.title = categorisationResult
+categorisationResult.heading = categorisationResult

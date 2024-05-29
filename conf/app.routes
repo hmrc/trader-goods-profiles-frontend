@@ -103,3 +103,7 @@ GET         /assessment/:id/check                            controllers.Assessm
 POST        /assessment/:id/check                            controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, id: String)
 
 GET        /ukimsKickOut                       controllers.UkimsKickOutController.onPageLoad()
+
+GET         /categorisation-result                            controllers.CategorisationResultController.onPageLoad()
+GET         /cya-categorisation                              controllers.CyaCategorisationController.onPageLoad
+POST        /cya-categorisation                              controllers.CyaCategorisationController.onSubmit
