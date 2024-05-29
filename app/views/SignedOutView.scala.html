@@ -22,5 +22,11 @@
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("signedOut.title"))) {
-    <h1 class="govuk-heading-xl">@messages("signedOut.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("signedOut.heading")</h1>
+
+        @formHelper(action = CategoryGuidanceController.onSubmit) {
+            @govukButton(
+                ButtonViewModel(messages("site.signIn"))
+            )
+        }
 }
