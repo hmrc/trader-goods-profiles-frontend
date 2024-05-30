@@ -40,9 +40,7 @@ object GoodsRecord {
       getCommodityCode(answers),
       answers.getPageValue(CountryOfOriginPage),
       getGoodsDescription(answers)
-    ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
-      GoodsRecord(eori, traderReference, commodity.commodityCode, countryOfOrigin, goodsDescription)
-    )
+    ).parMapN(GoodsRecord.apply)
 
   def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
@@ -51,7 +49,7 @@ object GoodsRecord {
       case Left(errors)      => Left(errors)
     }
 
-  def getCommodityCode(answers: UserAnswers): EitherNec[ValidationError, Commodity] =
+  def getCommodityCode(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getPageValue(CommodityCodePage) match {
       case Right(data)  =>
         answers.getPageValue(HasCorrectGoodsPage) match {
