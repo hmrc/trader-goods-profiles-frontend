@@ -18,16 +18,17 @@ package controllers
 
 import base.SpecBase
 import connectors.OttConnector
-import models.Commodity
+import models.{Commodity, UserAnswers}
 import models.ott.CategoryAssessment
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, atMostOnce, spy, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.CommodityCodePage
 import play.api.inject._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import views.html.CategoryGuidanceView
 
 import scala.concurrent.Future
@@ -53,6 +54,28 @@ class CategoryGuidanceControllerSpec extends SpecBase {
         )
       )
     )
+
+    "must call OTT and save the response in user answers prior to loading on a GET" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity)).overrides(
+        bind[OttConnector].toInstance(mockOttConnector),
+        bind[SessionRepository].toInstance(mockSessionRepository)
+      ).build()
+
+      running(application) {
+
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        verify(mockOttConnector, times(1)).getCategorisationInfo(any())(any())
+        verify(mockSessionRepository, times(1)).set(any())
+
+      }
+    }
 
     "must return OK and the correct view for a GET" in {
 
