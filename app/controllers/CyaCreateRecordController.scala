@@ -57,9 +57,8 @@ class CyaCreateRecordController @Inject() (
     }
   }
 
-  // TODO redirect to correct location and submit data
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad)
+    Redirect(routes.CreateRecordSuccessController.onPageLoad().url)
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {

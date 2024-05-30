@@ -115,7 +115,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
     "for a POST" - {
 
-      "must redirect to ???" in {
+      "must redirect to Create Record Success Controller" in {
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -127,7 +127,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+          redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad().url
         }
       }
     }
