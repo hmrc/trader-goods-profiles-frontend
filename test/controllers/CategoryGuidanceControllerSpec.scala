@@ -21,7 +21,8 @@ import connectors.OttConnector
 import models.Commodity
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
 import play.api.test.FakeRequest
@@ -32,19 +33,20 @@ import views.html.CategoryGuidanceView
 
 import scala.concurrent.Future
 
-class CategoryGuidanceControllerSpec extends SpecBase {
+class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  "CategoryGuidance Controller" - {
+  val userAnswersWithCommodity = emptyUserAnswers
+    .set(
+      CommodityQuery,
+      Commodity(commodityCode = "123", description = "test commodity")
+    )
+    .success
+    .value
 
-    val userAnswersWithCommodity = emptyUserAnswers
-      .set(
-        CommodityQuery,
-        Commodity(commodityCode = "123", description = "test commodity")
-      )
-      .success
-      .value
+  val mockOttConnector = mock[OttConnector]
 
-    val mockOttConnector = mock[OttConnector]
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     when(mockOttConnector.getCategorisationInfo(any())(any())).thenReturn(
       Future.successful(
         OttResponse(
@@ -54,6 +56,14 @@ class CategoryGuidanceControllerSpec extends SpecBase {
         )
       )
     )
+  }
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    reset(mockOttConnector)
+  }
+
+  "CategoryGuidance Controller" - {
 
     "must call OTT and save the response in user answers prior to loading on a GET" in {
 
