@@ -19,7 +19,6 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import models.ott.CategorisationInfo
-import models.ott.response.OttResponse
 import pages.CommodityCodePage
 
 import javax.inject.Inject
@@ -42,7 +41,8 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
@@ -51,10 +51,10 @@ class CategoryGuidanceController @Inject() (
         val ottResponseFuture = ottConnector.getCategorisationInfo(commodity.commodityCode)
 
         for {
-          goodsNomenclature <- ottResponseFuture
+          goodsNomenclature  <- ottResponseFuture
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
-          _ <- sessionRepository.set(updatedAnswers)
+          updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
+          _                  <- sessionRepository.set(updatedAnswers)
         } yield Ok(view())
 
       case None =>
