@@ -24,7 +24,7 @@ import pages.CommodityCodePage
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CategorisationQuery
+import queries.{CategorisationQuery, CommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
@@ -46,7 +46,7 @@ class CategoryGuidanceController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    request.userAnswers.get(CommodityCodePage) match {
+    request.userAnswers.get(CommodityQuery) match {
       case Some(commodity) =>
         val ottResponseFuture = ottConnector.getCategorisationInfo(commodity.commodityCode)
 

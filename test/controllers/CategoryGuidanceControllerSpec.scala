@@ -23,10 +23,10 @@ import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.CommodityCodePage
 import play.api.inject._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.CommodityQuery
 import repositories.SessionRepository
 import views.html.CategoryGuidanceView
 
@@ -38,7 +38,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
     val userAnswersWithCommodity = emptyUserAnswers
       .set(
-        CommodityCodePage,
+        CommodityQuery,
         Commodity(commodityCode = "123", description = "test commodity")
       )
       .success
@@ -79,7 +79,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to Journey Recover when no commodity code has been provided" in {
+    "must redirect to Journey Recover when no commodity query has been provided" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
