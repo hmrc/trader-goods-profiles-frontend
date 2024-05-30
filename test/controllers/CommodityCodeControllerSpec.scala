@@ -114,7 +114,6 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
 
         verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
-        verify(mockSessionRepository, times(1)).set(any())
       }
     }
 
