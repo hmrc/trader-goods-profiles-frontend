@@ -256,7 +256,7 @@ assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
 
-ukimsKickOut.title = UKIMS kick out page
+ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.p1 = You cannot use Trader Goods Profile (TGP) if you are not UKIMS registered.
 ukimsKickOut.p2 = Find out how to
