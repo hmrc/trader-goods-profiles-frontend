@@ -93,9 +93,9 @@ GET         /create-record/cya-create-record                 controllers.CyaCrea
 POST        /create-record/cya-create-record                 controllers.CyaCreateRecordController.onSubmit
 
 GET         /create/trader-reference                         controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
-POST        /trader-reference                                controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
-GET         /trader-reference/check                          controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
-POST        /trader-reference/check                          controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
+POST        /create/trader-reference                         controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
+GET         /create/trader-reference/check                   controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST        /create/trader-reference/check                   controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
 GET         /assessment/:id                                  controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, id: String)
 POST        /assessment/:id                                  controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, id: String)
