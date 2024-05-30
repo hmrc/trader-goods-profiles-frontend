@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton
+)
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+@()(implicit request: Request[_], messages: Messages)
 
-import scala.util.Try
+@layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
 
-case object CommodityCodePage extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "commodityCode"
-
-  override def cleanup(value: Option[String], userAnswers: UserAnswers): Try[UserAnswers] =
-    userAnswers.get(CommodityCodePage) match {
-      case _ => userAnswers.remove(HasCorrectGoodsPage)
-    }
+    <h1 class="govuk-heading-xl">@messages("categorisationResult.heading")</h1>
 }

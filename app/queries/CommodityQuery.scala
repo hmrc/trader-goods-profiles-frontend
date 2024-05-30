@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
-import models.UserAnswers
+import models.Commodity
 import play.api.libs.json.JsPath
 
-import scala.util.Try
+case object CommodityQuery extends Gettable[Commodity] with Settable[Commodity] {
 
-case object CommodityCodePage extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "commodityCode"
-
-  override def cleanup(value: Option[String], userAnswers: UserAnswers): Try[UserAnswers] =
-    userAnswers.get(CommodityCodePage) match {
-      case _ => userAnswers.remove(HasCorrectGoodsPage)
-    }
+  override def path: JsPath = JsPath \ "commodity"
 }

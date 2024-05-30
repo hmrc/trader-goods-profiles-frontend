@@ -46,9 +46,8 @@ journeyRecovery.startAgain.title = Sorry, there is a problem with the service
 journeyRecovery.startAgain.heading = Sorry, there is a problem with the service
 journeyRecovery.startAgain.guidance = [Add content to explain why the user needs to start again.]
 
-signedOut.title = For your security, we signed you out
-signedOut.heading = For your security, we signed you out
-signedOut.guidance = We did not save your answers.
+signedOut.title = You have now signed out
+signedOut.heading = You have now signed out
 
 unauthorised.title = There is a problem
 unauthorised.heading = There is a problem
@@ -131,11 +130,11 @@ ukimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
-categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain waivers.
-categoryGuidance.p2 = We’ll ask you questions about waivers that you hold and then tell you what category your goods are. If the commodity code has too many waivers for us to list, we might ask you for an 8 or 10 digit commodity code.
-categoryGuidance.p3 = You’ll need to know the certificate number or name of any waivers you have for your goods. If you get a new waiver, you’ll be able to change this later.
-categoryGuidance.p4 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classes as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
-categoryGuidance.p5 = You’ll need to know the certificate number or name of any waivers you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new waiver, you’ll be able to change this later.
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain conditions.
+categoryGuidance.p2 = We’ll ask you questions about conditions that you hold and then tell you what category your goods are. If the commodity code has too many conditions for us to list, we might ask you for an 8 or 10 digit commodity code.
+categoryGuidance.subheading = Exclusions
+categoryGuidance.p3 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classed as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
+categoryGuidance.p4 = You’ll need to know the certificate number or name of any conditions you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new condition, you’ll be able to change this later. If any measures apply to your trade, you’ll receive a categorisation result.
 
 commodityCode.title = Commodity code
 commodityCode.h1 = Commodity code
@@ -257,5 +256,11 @@ assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
 
-ukimsKickOut.title = ukimsKickOut
-ukimsKickOut.heading = ukimsKickOut
+ukimsKickOut.title = UKIMS kick out page
+ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
+ukimsKickOut.p1 = You cannot use Trader Goods Profile (TGP) if you are not UKIMS registered.
+ukimsKickOut.p2 = Find out how to
+ukimsKickOut.linkText = register for UKIMS (opens in a new tab)
+
+categorisationResult.title = categorisationResult
+categorisationResult.heading = categorisationResult

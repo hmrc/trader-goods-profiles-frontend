@@ -18,17 +18,17 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.{CommodityCodePage, HasCorrectGoodsPage}
+import pages.HasCorrectGoodsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.CommodityQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasCorrectGoodsController @Inject() (
@@ -53,7 +53,7 @@ class HasCorrectGoodsController @Inject() (
       case Some(value) => form.fill(value)
     }
 
-    request.userAnswers.get(CommodityCodePage) match {
+    request.userAnswers.get(CommodityQuery) match {
       case Some(commodity) => Ok(view(preparedForm, mode, commodity))
       case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
     }
@@ -65,7 +65,7 @@ class HasCorrectGoodsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            request.userAnswers.get(CommodityCodePage) match {
+            request.userAnswers.get(CommodityQuery) match {
               case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity)))
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },

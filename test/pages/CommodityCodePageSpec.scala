@@ -17,7 +17,7 @@
 package pages
 
 import base.TestConstants.userAnswersId
-import models.{Commodity, UserAnswers}
+import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
@@ -30,7 +30,7 @@ class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues wit
 
       val userAnswers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
 
-      val result = userAnswers.set(CommodityCodePage, Commodity("1234", "5678")).success.value
+      val result = userAnswers.set(CommodityCodePage, "1234").success.value
 
       result.isDefined(HasCorrectGoodsPage) mustBe false
 
