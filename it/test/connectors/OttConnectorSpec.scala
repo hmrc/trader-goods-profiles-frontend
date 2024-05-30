@@ -24,6 +24,7 @@ import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream4xxResponse
 import uk.gov.hmrc.http.test.WireMockSupport
 
 import scala.io.Source
@@ -79,7 +80,7 @@ class OttConnectorSpec
           .willReturn(notFound())
       )
 
-      connector.getCommodityCode("123456").failed.futureValue
+      connector.getCommodityCode("123456").failed.futureValue mustEqual Upstream4xxResponse
     }
   }
 
@@ -189,7 +190,7 @@ class OttConnectorSpec
           .willReturn(notFound())
       )
 
-      connector.getCategorisationInfo("123456").failed.futureValue
+      connector.getCategorisationInfo("123456").failed.futureValue mustEqual Upstream4xxResponse
     }
   }
 }
