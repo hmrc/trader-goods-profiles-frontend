@@ -23,7 +23,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream4xxResponse
 import uk.gov.hmrc.http.test.WireMockSupport
 
@@ -81,6 +81,17 @@ class OttConnectorSpec
 
       val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
     }
   }
 
@@ -192,6 +203,17 @@ class OttConnectorSpec
 
       val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
     }
   }
 }

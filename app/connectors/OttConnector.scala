@@ -20,10 +20,10 @@ import config.Service
 import models.Commodity
 import models.ott.response.OttResponse
 import play.api.Configuration
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.{JsResult, Reads}
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
 
 import java.net.URL
 import javax.inject.Inject
@@ -54,12 +54,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
               .validate[T]
               .map(result => Future.successful(result))
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-          case _  =>
-            Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
-      .recoverWith { case _: NotFoundException =>
-        Future.failed(UpstreamErrorResponse("", NOT_FOUND))
+      .recoverWith {
+        case e: NotFoundException   =>
+          Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
+        case e: Upstream5xxResponse =>
+          Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
       }
   }
 
