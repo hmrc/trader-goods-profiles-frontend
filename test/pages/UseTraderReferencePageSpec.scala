@@ -22,30 +22,30 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 
-class HasGoodsDescriptionPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class UseTraderReferencePageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
   "clean up" - {
 
-    "removes GoodsDescriptionPage when the answer is No" in {
+    "removes GoodsDescriptionPage when the answer is Yes" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "1234").success.value
 
-      val result = userAnswers.set(HasGoodsDescriptionPage, false).success.value
+      val result = userAnswers.set(UseTraderReferencePage, true).success.value
 
       result.isDefined(GoodsDescriptionPage) mustBe false
 
-      result.get(HasGoodsDescriptionPage).value mustBe false
+      result.get(UseTraderReferencePage).value mustBe true
     }
 
-    "does not removes GoodsDescriptionPage when the answer is Yes" in {
+    "does not removes GoodsDescriptionPage when the answer is No" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "1234").success.value
 
-      val result = userAnswers.set(HasGoodsDescriptionPage, true).success.value
+      val result = userAnswers.set(UseTraderReferencePage, false).success.value
 
       result.isDefined(GoodsDescriptionPage) mustBe true
 
-      result.get(HasGoodsDescriptionPage).value mustBe true
+      result.get(UseTraderReferencePage).value mustBe false
     }
   }
 }

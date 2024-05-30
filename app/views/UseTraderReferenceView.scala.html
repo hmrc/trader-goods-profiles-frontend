@@ -27,23 +27,23 @@
 
 @(form: Form[_], traderReference: String, mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("hasGoodsDescription.title"))) {
+@layout(pageTitle = title(form, messages("useTraderReference.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("hasGoodsDescription.h1")</h1>
-    <p class="govuk-body">@messages("hasGoodsDescription.p1")</p>
-    <p class="govuk-body">@messages("hasGoodsDescription.p2")</p>
+    <h1 class="govuk-heading-l">@messages("useTraderReference.h1")</h1>
+    <p class="govuk-body">@messages("useTraderReference.p1")</p>
+    <p class="govuk-body">@messages("useTraderReference.p2")</p>
 
-    <h2 class="govuk-heading-m">@messages("hasGoodsDescription.h2")</h2>
+    <h2 class="govuk-heading-m">@messages("useTraderReference.h2")</h2>
 
-    <p class="govuk-body">@messages("hasGoodsDescription.p3")</p>
+    <p class="govuk-body">@messages("useTraderReference.p3")</p>
 
-    <p class="govuk-body">@messages("hasGoodsDescription.p4")</p>
+    <p class="govuk-body">@messages("useTraderReference.p4")</p>
 
     <p class="govuk-body">@messages(traderReference)</p>
 
-    <h2 class="govuk-heading-m">@messages("hasGoodsDescription.h3")</h2>
+    <h2 class="govuk-heading-m">@messages("useTraderReference.h3")</h2>
 
-    @formHelper(action = routes.HasGoodsDescriptionController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.UseTraderReferenceController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -52,10 +52,10 @@
         @govukRadios(
             RadiosViewModel.apply(
                 field = form("value"),
-                legend = Legend(content = "hasGoodsDescription.h1", classes = "govuk-visually-hidden"),
+                legend = Legend(content = "useTraderReference.h1", classes = "govuk-visually-hidden"),
                 items = Seq(
-                    RadioItem(content = messages("hasGoodsDescription.radio1"), value = Some("true")),
-                    RadioItem(content = messages("hasGoodsDescription.radio2"), value = Some("false"))
+                    RadioItem(content = messages("useTraderReference.radio1"), value = Some("true")),
+                    RadioItem(content = messages("useTraderReference.radio2"), value = Some("false"))
                 )
             )
         )

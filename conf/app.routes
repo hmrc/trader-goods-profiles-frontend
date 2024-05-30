@@ -84,10 +84,10 @@ POST        /create-record/commodity-code-result             controllers.HasCorr
 GET         /create-record/commodity-code-result/check       controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
 POST        /create-record/commodity-code-result/check       controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create-record/goods-description-question        controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/goods-description-question        controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/goods-description-question/check  controllers.HasGoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/goods-description-question/check  controllers.HasGoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/goods-description-question        controllers.UseTraderReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/goods-description-question        controllers.UseTraderReferenceController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/goods-description-question/check  controllers.UseTraderReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/goods-description-question/check  controllers.UseTraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
 GET         /create-record/cya-create-record                 controllers.CyaCreateRecordController.onPageLoad
 POST        /create-record/cya-create-record                 controllers.CyaCreateRecordController.onSubmit
@@ -102,3 +102,8 @@ POST        /assessment/:id                                  controllers.Assessm
 GET         /assessment/:id/check                            controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, id: String)
 POST        /assessment/:id/check                            controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, id: String)
 
+GET        /ukimsKickOut                       controllers.UkimsKickOutController.onPageLoad()
+
+GET         /categorisation-result                            controllers.CategorisationResultController.onPageLoad()
+GET         /cya-categorisation                              controllers.CyaCategorisationController.onPageLoad
+POST        /cya-categorisation                              controllers.CyaCategorisationController.onSubmit

@@ -40,6 +40,8 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
   }
 
   val nonNirmsNumberGenerator: Gen[String] = {
+    def isInvalidNirmsDigits(digits: String) = digits.length != 6 || digits.toIntOption.isEmpty
+
     val invalidRegionGen = Gen.alphaStr.suchThat(s => s != "GB" && s != "NI" && s.nonEmpty)
     val invalidDigitsGen = for {
       length <- Gen.choose(1, 10)
@@ -48,8 +50,11 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
 
     Gen.oneOf(
       invalidRegionGen.map(region => s"RMS-$region-123456"),
-      invalidDigitsGen.map(digits => s"RMS-GB-$digits")
+      invalidDigitsGen
+        .suchThat(isInvalidNirmsDigits)
+        .map(digits => s"RMS-GB-$digits")
     )
+
   }
 
   ".nirmsNumber" - {

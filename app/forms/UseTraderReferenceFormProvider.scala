@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout
-)
+package forms
 
-@()(implicit request: Request[_], messages: Messages)
+import javax.inject.Inject
 
-@layout(
-    pageTitle = titleNoForm(messages("unauthorised.title")),
-    timeout   = false,
-    showBackLink = false
-) {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-    <h1 class="govuk-heading-l">@messages("unauthorised.heading")</h1>
+class UseTraderReferenceFormProvider @Inject() extends Mappings {
 
-    <p class="govuk-body">@messages("unauthorised.p1")</p>
-    <p class="govuk-body">@messages("unauthorised.p2.part1") <a href="@controllers.auth.routes.AuthController.signOutNoSurvey.url" class="govuk-link" >@messages("unauthorised.p2.linkText")</a> @messages("unauthorised.p2.part2")</p>
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("useTraderReference.error.required")
+    )
 }

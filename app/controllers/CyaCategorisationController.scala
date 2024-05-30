@@ -16,58 +16,35 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{GoodsRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
-import views.html.CyaCreateRecordView
+import views.html.CyaCategorisationView
 
-class CyaCreateRecordController @Inject() (
+class CyaCategorisationController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaCreateRecordView
+  view: CyaCategorisationView
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    GoodsRecord.build(request.userAnswers, request.eori) match {
-      case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            TraderReferenceSummary.row(request.userAnswers),
-            UseTraderReferenceSummary.row(request.userAnswers),
-            GoodsDescriptionSummary.row(request.userAnswers),
-            CountryOfOriginSummary.row(request.userAnswers),
-            CommodityCodeSummary.row(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list))
-      case Left(errors) => logErrorsAndContinue(errors)
-    }
+    val list = SummaryListViewModel(
+      rows = Seq.empty
+    )
+    Ok(view(list))
   }
 
-  // TODO redirect to correct location and submit data
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Redirect(routes.IndexController.onPageLoad)
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
-
-    logger.warn(s"Unable to create Goods Record.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
 }

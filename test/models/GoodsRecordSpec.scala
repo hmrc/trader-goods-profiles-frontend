@@ -42,7 +42,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(HasGoodsDescriptionPage, true)
+            .set(UseTraderReferencePage, false)
             .success
             .value
             .set(GoodsDescriptionPage, "2")
@@ -70,7 +70,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(HasGoodsDescriptionPage, false)
+            .set(UseTraderReferencePage, true)
             .success
             .value
             .set(HasCorrectGoodsPage, true)
@@ -96,7 +96,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             PageMissing(TraderReferencePage),
             PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
-            PageMissing(HasGoodsDescriptionPage)
+            PageMissing(UseTraderReferencePage)
           )
         }
       }
@@ -117,7 +117,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(HasGoodsDescriptionPage, true)
+            .set(UseTraderReferencePage, false)
             .success
             .value
 
@@ -144,7 +144,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(HasGoodsDescriptionPage, false)
+            .set(UseTraderReferencePage, true)
             .success
             .value
             .set(GoodsDescriptionPage, "2")
@@ -176,7 +176,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(HasGoodsDescriptionPage, true)
+            .set(UseTraderReferencePage, false)
             .success
             .value
             .set(GoodsDescriptionPage, "2")

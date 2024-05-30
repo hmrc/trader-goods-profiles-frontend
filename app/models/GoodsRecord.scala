@@ -45,7 +45,7 @@ object GoodsRecord {
     )
 
   def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
-    answers.getOptionalPageValue(answers, HasGoodsDescriptionPage, GoodsDescriptionPage) match {
+    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
       case Right(Some(data)) => Right(data)
       case Right(None)       => answers.getPageValue(TraderReferencePage)
       case Left(errors)      => Left(errors)
