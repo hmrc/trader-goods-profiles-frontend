@@ -54,6 +54,8 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
               .validate[T]
               .map(result => Future.successful(result))
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
+          case _  =>
+            Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
       .recoverWith { case _: NotFoundException =>
