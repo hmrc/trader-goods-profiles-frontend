@@ -15,19 +15,13 @@
  *@
 
 @this(
-    layout: templates.Layout
+        layout: templates.Layout,
+        govukButton: GovukButton
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleNoForm(messages("unauthorised.title")),
-    timeout   = false,
-    showBackLink = false
-) {
+@layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("unauthorised.heading")</h1>
-
-    <p class="govuk-body">@messages("unauthorised.p1")</p>
-    <p class="govuk-body">@messages("unauthorised.p2.part1") <a href="@controllers.auth.routes.AuthController.signOutNoSurvey.url" class="govuk-link" >@messages("unauthorised.p2.linkText")</a> @messages("unauthorised.p2.part2")</p>
+    <h1 class="govuk-heading-xl">@messages("categorisationResult.heading")</h1>
 }
