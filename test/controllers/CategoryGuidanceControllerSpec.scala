@@ -21,7 +21,7 @@ import connectors.OttConnector
 import models.Commodity
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
 import play.api.test.FakeRequest
@@ -93,6 +93,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockOttConnector, never()).getCategorisationInfo(any())(any())
       }
     }
 

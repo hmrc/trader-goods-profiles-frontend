@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream4xxResponse
 import uk.gov.hmrc.http.test.WireMockSupport
 
-import scala.io.Source
 
 class OttConnectorSpec
     extends AnyFreeSpec
