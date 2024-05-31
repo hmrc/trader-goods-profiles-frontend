@@ -53,4 +53,8 @@ class AuthController @Inject() (
         )
       }
   }
+
+  def signOutNoSession(): Action[AnyContent] = Action { implicit request =>
+      Redirect(config.signOutUrl, Map("continue" -> Seq(config.signOutContinueUrl)))
+  }
 }

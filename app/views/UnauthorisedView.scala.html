@@ -23,11 +23,12 @@
 @layout(
     pageTitle = titleNoForm(messages("unauthorised.title")),
     timeout   = false,
-    showBackLink = false
+    showBackLink = false,
+    signOutUrl = controllers.auth.routes.AuthController.signOutNoSession.url
 ) {
 
     <h1 class="govuk-heading-l">@messages("unauthorised.heading")</h1>
 
     <p class="govuk-body">@messages("unauthorised.p1")</p>
-    <p class="govuk-body">@messages("unauthorised.p2.part1") <a href="@controllers.auth.routes.AuthController.signOutNoSurvey.url" class="govuk-link" >@messages("unauthorised.p2.linkText")</a> @messages("unauthorised.p2.part2")</p>
+    <p class="govuk-body">@messages("unauthorised.p2.part1") <a href="@controllers.auth.routes.AuthController.signOutNoSession.url" class="govuk-link" >@messages("unauthorised.p2.linkText")</a> @messages("unauthorised.p2.part2")</p>
 }
