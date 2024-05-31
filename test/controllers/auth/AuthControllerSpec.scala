@@ -90,4 +90,37 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
       }
     }
   }
+
+  "signOutNoSession" - {
+
+    "must redirect to sign out, specifying SignedOut as the continue URL" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      val application =
+        applicationBuilder(None)
+          .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
+          .build()
+
+      running(application) {
+
+        val appConfig = application.injector.instanceOf[FrontendAppConfig]
+        val request   = FakeRequest(GET, routes.AuthController.signOutNoSession.url)
+
+        val result = route(application, request).value
+
+        val encodedContinueUrl  =
+          URLEncoder.encode(appConfig.signOutContinueUrl, "UTF-8")
+        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual expectedRedirectUrl
+
+        withClue("must not try and clear session data as none exists") {
+          verify(mockSessionRepository, times(0)).clear(any)
+        }
+      }
+    }
+  }
+
 }
