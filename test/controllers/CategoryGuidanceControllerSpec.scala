@@ -17,17 +17,103 @@
 package controllers
 
 import base.SpecBase
+import connectors.OttConnector
+import models.Commodity
+import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{never, reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.CommodityQuery
+import repositories.SessionRepository
 import views.html.CategoryGuidanceView
 
-class CategoryGuidanceControllerSpec extends SpecBase {
+import scala.concurrent.Future
+
+class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
+
+  val userAnswersWithCommodity = emptyUserAnswers
+    .set(
+      CommodityQuery,
+      Commodity(commodityCode = "123", description = "test commodity")
+    )
+    .success
+    .value
+
+  val mockOttConnector = mock[OttConnector]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    when(mockOttConnector.getCategorisationInfo(any())(any())).thenReturn(
+      Future.successful(
+        OttResponse(
+          GoodsNomenclatureResponse("", ""),
+          Seq(),
+          Seq()
+        )
+      )
+    )
+  }
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    reset(mockOttConnector)
+  }
 
   "CategoryGuidance Controller" - {
 
+    "must call OTT and save the response in user answers prior to loading on a GET" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual OK
+        verify(mockOttConnector, times(1)).getCategorisationInfo(any())(any())
+        verify(mockSessionRepository, times(1)).set(any())
+
+      }
+    }
+
+    "must redirect to Journey Recover when no commodity query has been provided" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockOttConnector, never()).getCategorisationInfo(any())(any())
+      }
+    }
+
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
@@ -43,7 +129,11 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
     "must redirect to the categorisation page when the user click continue button" in {
 
-      val application = applicationBuilder().build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit.url)

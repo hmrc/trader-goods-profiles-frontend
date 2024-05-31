@@ -23,8 +23,10 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream4xxResponse
 import uk.gov.hmrc.http.test.WireMockSupport
+
 
 class OttConnectorSpec
     extends AnyFreeSpec
@@ -70,14 +72,148 @@ class OttConnectorSpec
       connector.getCommodityCode("123456").failed.futureValue
     }
 
-    "must return a not found future when the server returns an not found" in {
+    "must return a not found future when the server returns a not found" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(s"/ott/commodities/123456"))
           .willReturn(notFound())
       )
 
-      connector.getCommodityCode("123456").failed.futureValue
+      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+    }
+  }
+
+  ".getCategorisationInfo" - {
+
+    "must return correct OttResponse object" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(
+            ok().withBody(
+              """{
+                |  "data": {
+                |    "id": "54267",
+                |    "type": "goods_nomenclature",
+                |    "attributes": {
+                |      "goods_nomenclature_item_id": "9306210000"
+                |    },
+                |    "relationships": {
+                |      "applicable_category_assessments": {
+                |        "data": [
+                |          {
+                |            "id": "238dbab8cc5026c67757c7e05751f312",
+                |            "type": "category_assessment"
+                |          }
+                |        ]
+                |      }
+                |    }
+                |  },
+                |  "included": [
+                |    {
+                |      "id": "238dbab8cc5026c67757c7e05751f312",
+                |      "type": "category_assessment",
+                |      "relationships": {
+                |        "exemptions": {
+                |          "data": [
+                |            {
+                |              "id": "8392",
+                |              "type": "additional_code"
+                |            }
+                |          ]
+                |        },
+                |        "theme": {
+                |          "data": {
+                |            "id": "1.1",
+                |            "type": "theme"
+                |          }
+                |        },
+                |        "geographical_area": {
+                |          "data": {
+                |            "id": "IQ",
+                |            "type": "geographical_area"
+                |          }
+                |        },
+                |        "excluded_geographical_areas": {
+                |          "data": [
+                |
+                |          ]
+                |        },
+                |        "measure_type": {
+                |          "data": {
+                |            "id": "465",
+                |            "type": "measure_type"
+                |          }
+                |        },
+                |        "regulation": {
+                |          "data": {
+                |            "id": "R0312100",
+                |            "type": "legal_act"
+                |          }
+                |        },
+                |        "measures": {
+                |          "data": [
+                |            {
+                |              "id": "2524368",
+                |              "type": "measure"
+                |            }
+                |          ]
+                |        }
+                |      }
+                |    }
+                |  ]
+                |}""".stripMargin
+            )
+          )
+      )
+
+      val connectorResponse = connector.getCategorisationInfo("123456").futureValue
+      connectorResponse.categoryAssessments.size mustEqual 1
+      connectorResponse.categoryAssessments(0).id mustEqual "238dbab8cc5026c67757c7e05751f312"
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(serverError())
+      )
+
+      connector.getCategorisationInfo("123456").failed.futureValue
+    }
+
+    "must return a not found future when the server returns a not found" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(notFound())
+      )
+
+      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
     }
   }
 }
