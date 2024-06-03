@@ -38,6 +38,8 @@ cyaCreateProfile.warningText = You need to make sure these details are correct. 
 cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
 cyaCreateRecord.h2 = Check if the details on this record are correct.
+cyaCreateRecord.warning = Warning
+cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
 cyaRequestAdvice.title = Check your answers
 cyaRequestAdvice.heading = Check your answers

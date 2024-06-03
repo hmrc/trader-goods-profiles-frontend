@@ -28,6 +28,13 @@
     <h1 class="govuk-heading-l">@messages("cyaCreateRecord.h1")</h1>
     <p class="govuk-body">@messages("cyaCreateRecord.h2")</p>
     @govukSummaryList(list)
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">@messages("cyaCreateRecord.warning")</span>
+            @messages("cyaCreateRecord.warningText")
+        </strong>
+    </div>
 
     @formHelper(action = routes.CyaCreateRecordController.onSubmit) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
