@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
 
 @this(
@@ -37,7 +38,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("name.heading")).asPageHeading()
+                label = LabelViewModel(messages("name.heading")).withSize(Large)
             )
             .withHint(Hint(content = Text(messages("name.hint"))))
             .withWidth(Full)

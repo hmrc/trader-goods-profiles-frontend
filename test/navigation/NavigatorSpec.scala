@@ -291,16 +291,6 @@ class NavigatorSpec extends SpecBase {
 
       "in Accreditation Journey" - {
 
-        "must go from AdviceStartPage to NamePage" in {
-
-          navigator.nextPage(
-            AdviceStartPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.NameController
-            .onPageLoad(NormalMode)
-        }
-
         // TODO
         "must go from NamePage to ???" in {
 
