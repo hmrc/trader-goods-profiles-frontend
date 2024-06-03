@@ -17,6 +17,8 @@
 package controllers
 
 import controllers.actions._
+import models.helper.{CategorisationHelper, Scenario}
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,11 +31,12 @@ class CategorisationResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView
+  view: CategorisationResultView,
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Ok(view())
+    val scenario = CategorisationHelper.getScenario(request.userAnswers)
+    Ok(view(categorisationScenario = scenario))
   }
 }
