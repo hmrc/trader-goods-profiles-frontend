@@ -32,7 +32,7 @@
         case Category1 => messages("categorisationResult.Category1.panelBody")
         case Category2 => messages("categorisationResult.Category2.panelBody")
     }
-    govukPanel(Panel(title = messages("categorisationResult.heading"), content = panelContent))
+    govukPanel(Panel(title = messages("categorisationResult.heading"), content = HtmlContent("<p class=\"govuk-body\" style=\"color:#FFFFFF\">" + panelContent + "</p>")))
 }
 
 @paragraphContent = @{
