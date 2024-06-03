@@ -18,7 +18,8 @@
     layout: templates.Layout,
     govukSummaryList: GovukSummaryList,
     formHelper: FormWithCSRF,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukWarningText: GovukWarningText
 )
 
 @(list: SummaryList)(implicit request: Request[_], messages: Messages)
@@ -28,6 +29,11 @@
     <h1 class="govuk-heading-l">@messages("cyaCreateRecord.h1")</h1>
     <p class="govuk-body">@messages("cyaCreateRecord.h2")</p>
     @govukSummaryList(list)
+
+    @govukWarningText(WarningText(
+        iconFallbackText = Some(messages("cyaCreateRecord.warning")),
+        content = Text(messages("cyaCreateRecord.warningText"))
+    ))
 
     @formHelper(action = routes.CyaCreateRecordController.onSubmit) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
