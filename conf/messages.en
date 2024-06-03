@@ -203,12 +203,15 @@ createRecordStart.p8 = You’ll need to complete categorisation before you can u
 
 createRecordSuccess.title = You''ve created a goods record
 createRecordSuccess.h1 = You''ve created a goods record
-createRecordSuccess.p1 = We’ve added this record to your list of goods records.
-createRecordSuccess.h2 = Categorisation
+createRecordSuccess.h2 = What happens next
 createRecordSuccess.p2 = You still need to categorise the goods before you can use it on movements.
-createRecordSuccess.p3 = You do not have to categorise the goods now. You can review the record from your list of goods records and start categorisation from there.
-createRecordSuccess.primaryButton = Categorise goods now
-createRecordSuccess.secondaryButton = Go to homepage
+createRecordSuccess.p3 = You do not have to categorise this record now. You can review the record from your list of goods records and start categorisation later.
+createRecordSuccess.p4.linkText = Categorise goods now
+createRecordSuccess.p5.linkText = Go to homepage
+createRecordSuccess.h2.1 = Tell us what you think
+createRecordSuccess.p6 = This is a new service and we want to know what you think of it.
+createRecordSuccess.p7.linkText = Send us your feedback
+createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvements.
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
