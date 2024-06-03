@@ -24,25 +24,45 @@ import uk.gov.hmrc.play.audit.model.DataEvent
 
 case class AuditEventFactory() {
 
-  def createSetUpProfileEvent(traderProfile: TraderProfile, affinityGroup: AffinityGroup)(implicit
-    hc: HeaderCarrier
-  ): DataEvent = {
+  private val auditSource = "trader-goods-profiles-frontend"
+
+  def createSetUpProfileEvent(
+    traderProfile: TraderProfile,
+    affinityGroup: AffinityGroup
+  )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "EORINumber"    -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,
       "UKIMSNumber"   -> traderProfile.ukimsNumber
-    ) ++ writeOptional("isNIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++ writeOptional(
-      "isNIPHLRegistered",
-      "NIPHLNumber",
-      traderProfile.niphlNumber
-    )
+    ) ++
+      writeOptional("isNIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++
+      writeOptional("isNIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber)
 
     DataEvent(
-      auditSource = "trader-goods-profiles-frontend",
+      auditSource = auditSource,
       auditType = "ProfileSetUp",
       tags = hc.toAuditTags(),
       detail = auditDetails
     )
+  }
+
+  def createStartCreateGoodsRecord(
+    eori: String,
+    affinityGroup: AffinityGroup
+  )(implicit hc: HeaderCarrier): DataEvent = {
+
+    val auditDetails = Map(
+      "EORINumber" -> eori,
+      "affinityGroup" -> affinityGroup.toString
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "StartCreateGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+
   }
 
   private def writeOptional(containsValueDescription: String, valueDescription: String, optionalValue: Option[String]) =

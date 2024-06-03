@@ -76,6 +76,25 @@ class AuditEventFactorySpec extends SpecBase {
 
     }
 
+    "create start create goods record" - {
+
+      "create event" in {
+
+        val result = AuditEventFactory().createStartCreateGoodsRecord(testEori, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "StartCreateGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 2
+        auditDetails("EORINumber") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+
+      }
+
+    }
+
   }
 
 }
