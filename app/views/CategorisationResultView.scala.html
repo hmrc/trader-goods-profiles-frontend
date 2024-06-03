@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import models.helper.Scenario
-@import models.helper.Category1NoExemptions
+@import models.helper._
+
 
 
 @this(
@@ -28,11 +28,35 @@
 
 @panel = @{
     scenario match {
-     case Category1NoExemptions => govukPanel(Panel(title = messages("categorisationResult.heading")))
-     case _ => Html("Unknown Scenario")
+        case Category1NoExemptions => govukPanel(Panel(title = messages("categorisationResult.heading"), content = "Hello this is some content and it can get really long so hopefully it just resizes"))
+        case Category3NoAssessments => govukPanel(Panel(title = messages("categorisationResult.heading")))
+        case StandardNoSupplementaryUnits => govukPanel(Panel(title = messages("categorisationResult.heading")))
+        case Category1 => govukPanel(Panel(title = messages("categorisationResult.heading")))
+        case Category2 => govukPanel(Panel(title = messages("categorisationResult.heading")))
     }
 }
 
 @layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
     @panel
+
+    <h2 class="govuk-heading-m">
+        Tell us what you think
+    </h2>
+
+    <p class="govuk-body">
+        This is a new service and we want to know what you think of it.
+    </p>
+
+    <p class="govuk-body">
+        Send us your feedback. Your thoughts and ideas will help us to make improvements.
+    </p>
+
+    <p class="govuk-body">
+        Go to goods record
+    </p>
+
+    <p class="govuk-body">
+        Go to homepage
+    </p>
+
 }
