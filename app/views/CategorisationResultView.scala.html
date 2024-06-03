@@ -35,23 +35,25 @@
     govukPanel(Panel(title = messages("categorisationResult.heading"), content = panelContent))
 }
 
-@paragraphContent = {
-    <p class="govuk-body"> @{
-        scenario match {
-            case Category1NoExemptions => messages("categorisationResult.p1")
-            case Category3NoAssessments => messages("categorisationResult.p1")
-            case StandardNoSupplementaryUnits => messages("categorisationResult.p1")
-            case Category1 => messages("categorisationResult.p1")
-            case Category2 => messages("categorisationResult.p1")
-        }
-    } </p>
+@paragraphContent = @{
+    scenario match {
+        case Category1NoExemptions => Some(messages("categorisationResult.p1"))
+        case Category3NoAssessments => Some(messages("categorisationResult.p1"))
+        case StandardNoSupplementaryUnits => Some(messages("categorisationResult.p1"))
+        case Category1 => Some(messages("categorisationResult.p1"))
+        case Category2 => None
+    }
 }
 
 @layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
 
     @panel
 
-    @paragraphContent
+    @if(paragraphContent.isDefined) {
+        <p class="govuk-body">
+            @paragraphContent
+        </p>
+    }
 
     <h2 class="govuk-heading-m">
         @messages("site.tellUsWhatYouThink")
