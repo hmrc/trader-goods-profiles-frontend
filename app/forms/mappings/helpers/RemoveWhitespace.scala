@@ -18,6 +18,6 @@ package forms.mappings.helpers
 
 object RemoveWhitespace {
 
-  def removeWhitespace: String => String          = _.filterNot(_.isWhitespace)
-  def trimAndCompressSpaces(text: String): String = text.trim.replaceAll("\\s+", " ")
+  def removeWhitespace: String => String      = _.filterNot(_.isWhitespace)
+  def trimAndCompressSpaces: String => String = _.trim.replaceAll("\\s+", " ")
 }
