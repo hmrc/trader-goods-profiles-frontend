@@ -14,12 +14,14 @@
  * limitations under the License.
  *@
 
+@import models.helper.Scenario
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(scenario: Scenario)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
 
