@@ -18,17 +18,11 @@ package controllers
 
 import base.SpecBase
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
 import views.html.CreateRecordStartView
-
-import scala.concurrent.Future
 
 class CreateRecordStartControllerSpec extends SpecBase {
 
@@ -53,13 +47,8 @@ class CreateRecordStartControllerSpec extends SpecBase {
     val onwardRoute = Call("", "")
 
     "must redirect to the trader reference controller page when the user click continue button" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[SessionRepository].toInstance(mockSessionRepository),
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
         )
         .build()

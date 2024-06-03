@@ -40,9 +40,9 @@
     <p class="govuk-body">@messages("adviceStart.p4")</p>
     <p class="govuk-body">@messages("adviceStart.p5")</p>
     <p class="govuk-body">@messages("adviceStart.p6")</p>
-        @formHelper(action = AdviceStartController.onSubmit) {
-            @govukButton(
-                ButtonViewModel(messages("site.continue"))
-            )
-        }
+    @formHelper(action = AdviceStartController.onSubmit) {
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }
