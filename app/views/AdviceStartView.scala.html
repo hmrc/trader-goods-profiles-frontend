@@ -14,14 +14,32 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukWarningText
+
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF,
+        govukWarningText: GovukWarningText
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("adviceStart.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("adviceStart.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("adviceStart.heading")</h1>
+    <p class="govuk-body">@messages("adviceStart.p1")</p>
+    @govukWarningText(WarningText(content = Text(messages("adviceStart.warningText"))))
+    <p class="govuk-body">@messages("adviceStart.p2") <a href="https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision" class="govuk-link">@messages("adviceStart.p2.linkText")</a>.</p>
+    <h2 class="govuk-heading-m">@messages("adviceStart.subheading1")</h2>
+    <p class="govuk-body">@messages("adviceStart.p3")</p>
+    <h2 class="govuk-heading-m">@messages("adviceStart.subheading2")</h2>
+    <p class="govuk-body">@messages("adviceStart.p4")</p>
+    <p class="govuk-body">@messages("adviceStart.p5")</p>
+    <p class="govuk-body">@messages("adviceStart.p6")</p>
+    @formHelper(action = AdviceStartController.onSubmit) {
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }
