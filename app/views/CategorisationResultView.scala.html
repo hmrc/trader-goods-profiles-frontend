@@ -36,8 +36,23 @@
     }
 }
 
+@paragraphContent = {
+    <p class="govuk-body"> @{
+        scenario match {
+            case Category1NoExemptions => messages("categorisationResult.p1")
+            case Category3NoAssessments => messages("categorisationResult.p1")
+            case StandardNoSupplementaryUnits => messages("categorisationResult.p1")
+            case Category1 => messages("categorisationResult.p1")
+            case Category2 => messages("categorisationResult.p1")
+        }
+    } </p>
+}
+
 @layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
+
     @panel
+
+    @paragraphContent
 
     <h2 class="govuk-heading-m">
         Tell us what you think
