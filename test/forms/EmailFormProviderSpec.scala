@@ -25,9 +25,10 @@ class EmailFormProviderSpec extends StringFieldBehaviours {
   val lengthKey        = "email.error.length"
   val invalidFormatKey = "email.error.invalidFormat"
 
-  val validEmail     = "test@test.co.uk"
-  val invalidEmail   = "test"
-  val longValidEmail =
+  val validEmail           = "test@test.co.uk"
+  val validEmailWithSpaces = "test @test.co.uk"
+  val invalidEmail         = "test"
+  val longValidEmail       =
     "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890@test.co.uk"
 
   val form = new EmailFormProvider()()
@@ -41,6 +42,15 @@ class EmailFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       validEmail
     )
+
+    "with spaces" - {
+
+      behave like fieldThatBindsValidData(
+        form,
+        fieldName,
+        validEmailWithSpaces
+      )
+    }
 
     "too long" - {
 
