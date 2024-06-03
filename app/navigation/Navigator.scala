@@ -41,6 +41,7 @@ class Navigator @Inject() () {
     case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoods
     case p: AssessmentPage      => navigateFromAssessment(p)
+    case AdviceStartPage        => _ => routes.NameController.onPageLoad(NormalMode)
     case _                      => _ => routes.IndexController.onPageLoad
 
   }

@@ -288,6 +288,20 @@ class NavigatorSpec extends SpecBase {
           navigator.nextPage(AssessmentPage("id1"), NormalMode, answers) mustEqual routes.IndexController.onPageLoad
         }
       }
+
+      "in Accreditation Journey" - {
+
+        "must go from AdviceStartPage to NamePage" in {
+
+          navigator.nextPage(
+            AdviceStartPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.NameController
+            .onPageLoad(NormalMode)
+        }
+
+      }
     }
 
     "in Check mode" - {

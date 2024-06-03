@@ -52,7 +52,7 @@ class AdviceStartControllerSpec extends SpecBase {
 
     val onwardRoute = Call("", "")
 
-    "must redirect to ??? when the user click continue button" in {
+    "must redirect to NameController when the user click continue button" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
