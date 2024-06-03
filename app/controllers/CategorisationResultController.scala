@@ -37,6 +37,6 @@ class CategorisationResultController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val scenario = CategorisationHelper.getScenario(request.userAnswers)
-    Ok(view(categorisationScenario = scenario))
+    Ok(view(scenario))
   }
 }

@@ -15,15 +15,24 @@
  *@
 
 @import models.helper.Scenario
+@import models.helper.Category1NoExemptions
+
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukPanel: GovukPanel
 )
 
 @(scenario: Scenario)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
+@panel = @{
+    scenario match {
+     case Category1NoExemptions => govukPanel(Panel(title = messages("categorisationResult.heading")))
+     case _ => Html("Unknown Scenario")
+    }
+}
 
-    <h1 class="govuk-heading-xl">@messages("categorisationResult.heading")</h1>
+@layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
+    @panel
 }
