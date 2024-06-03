@@ -39,6 +39,9 @@ cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
 cyaCreateRecord.h2 = Check if the details on this record are correct.
 
+cyaRequestAdvice.title = Check your answers
+cyaRequestAdvice.heading = Check your answers
+
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
@@ -264,3 +267,23 @@ ukimsKickOut.linkText = register for UKIMS (opens in a new tab)
 
 categorisationResult.title = categorisationResult
 categorisationResult.heading = categorisationResult
+
+adviceStart.title = adviceStart
+adviceStart.heading = adviceStart
+
+adviceSuccess.title = adviceSuccess
+adviceSuccess.heading = adviceSuccess
+
+email.title = email
+email.heading = email
+email.checkYourAnswersLabel = email
+email.error.required = Enter email
+email.error.length = Email must be 100 characters or less
+email.change.hidden = Email
+
+name.title = name
+name.heading = name
+name.checkYourAnswersLabel = name
+name.error.required = Enter name
+name.error.length = Name must be 100 characters or less
+name.change.hidden = Name
