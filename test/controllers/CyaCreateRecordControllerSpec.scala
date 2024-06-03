@@ -17,16 +17,25 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
 import models.UserAnswers
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.{await, _}
+import play.api.inject.bind
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCreateRecordView
+
+import scala.concurrent.Future
 
 class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
@@ -117,8 +126,16 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
       "must redirect to Create Record Success Controller" in {
 
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val testUserAnswers = emptyUserAnswers
+        val application     =
+          applicationBuilder(userAnswers = Some(testUserAnswers))
+            .overrides(
+              bind[AuditService].toInstance(mockAuditService)
+            )
             .build()
 
         running(application) {
@@ -128,8 +145,37 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad().url
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService, times(1))
+              .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(testUserAnswers))(
+                any()
+              )
+
+          }
         }
       }
+
+      "must let the play error handler deal with an audit future failure" in {
+
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishCreateGoodsRecord(any, any, any)(any))
+          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
     }
   }
 }

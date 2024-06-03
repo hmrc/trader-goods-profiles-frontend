@@ -16,7 +16,7 @@
 
 package factories
 
-import models.TraderProfile
+import models.{Commodity, GoodsRecord, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
@@ -65,11 +65,49 @@ case class AuditEventFactory() {
 
   }
 
+  def createFinishCreateGoodsRecord(
+    affinityGroup: AffinityGroup,
+    goodsRecord: GoodsRecord,
+    commodity: Commodity,
+    isUsingGoodsDescription: Boolean
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "EORINumber" -> goodsRecord.actorId,
+      "affinityGroup" -> affinityGroup.toString,
+      "traderReference" -> goodsRecord.traderReference,
+      "commodityCode" -> goodsRecord.commodityCode,
+      "countryOfOrigin" -> goodsRecord.countryOfOrigin,
+      "commodityDescription" -> commodity.description,
+      "commodityCodeEffectiveFrom" -> commodity.validityStartDate.toString,
+      "commodityCodeEffectiveTo" -> commodity.validityEndDate.map(_.toString).getOrElse("null")
+    ) ++ writeGoodsReference(isUsingGoodsDescription, goodsRecord.goodsDescription)
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "FinishCreateGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
   private def writeOptional(containsValueDescription: String, valueDescription: String, optionalValue: Option[String]) =
     optionalValue
       .map { value =>
         Map(containsValueDescription -> "true", valueDescription -> value)
       }
       .getOrElse(Map(containsValueDescription -> "false"))
+
+  private def writeGoodsReference(isUsingGoodsDescription: Boolean, goodsDescription: String) ={
+
+    if (isUsingGoodsDescription){
+      Map(
+        "specifiedGoodsDescription" -> "true",
+        "goodsDescription" -> goodsDescription
+      )
+    } else {
+      Map("specifiedGoodsDescription" -> "false")
+    }
+
+  }
 
 }

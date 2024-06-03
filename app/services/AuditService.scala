@@ -16,11 +16,14 @@
 
 package services
 
+import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
-import models.TraderProfile
+import models.{GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
+import pages.UseTraderReferencePage
 import play.api.Logging
+import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -49,6 +52,29 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
         logger.info(s"StartCreateGoodsRecord audit event status: $auditResult")
       Done
     }
+  }
+
+  def auditFinishCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup, userAnswers: UserAnswers)
+                                  (implicit hc: HeaderCarrier): Future[Done] = {
+
+    val buildEvent = (Right(affinityGroup),
+      GoodsRecord.build(userAnswers, eori),
+      userAnswers.getPageValue(CommodityQuery),
+      userAnswers.getPageValue(UseTraderReferencePage).map(!_)
+    ).parMapN(auditEventFactory.createFinishCreateGoodsRecord)
+
+    buildEvent match {
+      case Right(event) =>
+        auditConnector.sendEvent(event).map { auditResult =>
+          logger.info(s"FinishCreateGoodsRecord audit event status: $auditResult")
+          Done
+        }
+
+      case Left(errors) =>
+        logger.info(s"Failed to create FinishCreateGoodsRecord audit event: $errors")
+        Future.successful(Done)
+    }
+
   }
 
 }

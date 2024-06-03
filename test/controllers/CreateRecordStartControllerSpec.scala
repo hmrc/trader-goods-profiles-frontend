@@ -84,14 +84,13 @@ class CreateRecordStartControllerSpec extends SpecBase {
 
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          withClue("must call the audit connector with the correct details") {
+          withClue("must call the audit service with the correct details") {
             verify(mockAuditService, times(1))
               .auditStartCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual))(any())
           }
 
         }
       }
-
 
       "must let the play error handler deal with an audit future failure" in {
 
@@ -112,7 +111,6 @@ class CreateRecordStartControllerSpec extends SpecBase {
           }
         }
       }
-
 
     }
   }
