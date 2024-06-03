@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
-import pages.{AdviceStartPage, CreateRecordStartPage}
+import pages.AdviceStartPage
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}

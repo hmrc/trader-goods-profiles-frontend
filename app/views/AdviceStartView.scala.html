@@ -14,10 +14,13 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukWarningText
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
-        formHelper: FormWithCSRF
+        formHelper: FormWithCSRF,
+        govukWarningText: GovukWarningText
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -26,13 +29,7 @@
 
     <h1 class="govuk-heading-l">@messages("adviceStart.heading")</h1>
     <p class="govuk-body">@messages("adviceStart.p1")</p>
-    <div class="govuk-warning-text">
-      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      <strong class="govuk-warning-text__text">
-        <span class="govuk-visually-hidden">@messages("adviceStart.warning")</span>
-        @messages("adviceStart.warningText")
-      </strong>
-    </div>
+    @govukWarningText(WarningText(content = Text(messages("adviceStart.warningText"))))
     <p class="govuk-body">@messages("adviceStart.p2") <a href="https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision" class="govuk-link">@messages("adviceStart.p2.linkText")</a>.</p>
     <h2 class="govuk-heading-m">@messages("adviceStart.subheading1")</h2>
     <p class="govuk-body">@messages("adviceStart.p3")</p>

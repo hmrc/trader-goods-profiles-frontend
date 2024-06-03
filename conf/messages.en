@@ -38,6 +38,8 @@ cyaCreateProfile.warningText = You need to make sure these details are correct. 
 cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
 cyaCreateRecord.h2 = Check if the details on this record are correct.
+cyaCreateRecord.warning = Warning
+cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
 cyaRequestAdvice.title = Check your answers
 cyaRequestAdvice.heading = Check your answers
@@ -271,7 +273,6 @@ categorisationResult.heading = categorisationResult
 adviceStart.title = Asking HMRC for advice
 adviceStart.heading = Asking HMRC for advice
 adviceStart.p1 = Asking HMRC for advice lets you get a view from HMRC if the commodity code matches the information in your goods record.
-adviceStart.warning = Warning
 adviceStart.warningText = This advice is not legally binding.
 adviceStart.p2 = If you want a legally binding decision,
 adviceStart.p2.linkText = apply for a Binding Tariff information decision
@@ -281,8 +282,6 @@ adviceStart.subheading2 = What happens when HMRC are looking at your record
 adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes.
 adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you'll be able to by email. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
 adviceStart.p6 = You should get a response to your request within 5 working days, but it could take longer.
-
-
 
 adviceSuccess.title = adviceSuccess
 adviceSuccess.heading = adviceSuccess
