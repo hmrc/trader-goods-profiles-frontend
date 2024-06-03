@@ -128,16 +128,6 @@ class NavigatorSpec extends SpecBase {
 
       "in Create Record Journey" - {
 
-        "must go from CreateRecordStartPage to TraderReferencePage" in {
-
-          navigator.nextPage(
-            CreateRecordStartPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.TraderReferenceController
-            .onPageLoad(NormalMode)
-        }
-
         "must go from TraderReferencePage to HasGoodsDescriptionPage" in {
 
           navigator.nextPage(

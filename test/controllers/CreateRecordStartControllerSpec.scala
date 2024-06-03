@@ -49,30 +49,5 @@ class CreateRecordStartControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
-
-    val onwardRoute = Call("", "")
-
-    "must redirect to the trader reference controller page when the user click continue button" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual onwardRoute.url
-      }
-    }
   }
 }

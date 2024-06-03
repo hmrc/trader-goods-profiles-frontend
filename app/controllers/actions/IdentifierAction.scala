@@ -61,6 +61,7 @@ class AuthenticatedIdentifierAction @Inject() (
               block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup))
             case _                                           => throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
+        case _                                                             => throw InsufficientEnrolments("Unable to retrieve Enrolment")
       } recover {
       case _: NoActiveSession        =>
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")

@@ -70,7 +70,6 @@ GET         /changeCategory1Assesments                       controllers.Categor
 POST        /changeCategory1Assesments                       controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
 
 GET         /create-record/create-record-start               controllers.CreateRecordStartController.onPageLoad()
-POST        /create-record/create-record-start               controllers.CreateRecordStartController.onSubmit()
 
 GET         /create-record/create-record-success             controllers.CreateRecordSuccessController.onPageLoad()
 
