@@ -109,3 +109,19 @@ GET         /categorisation-result                           controllers.Categor
 
 GET         /cya-categorisation                              controllers.CyaCategorisationController.onPageLoad
 POST        /cya-categorisation                              controllers.CyaCategorisationController.onSubmit
+
+GET         /adviceStart                                     controllers.AdviceStartController.onPageLoad()
+
+GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
+
+GET         /adviceSuccess                                   controllers.AdviceSuccessController.onPageLoad()
+
+GET         /email                                           controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
+POST        /email                                           controllers.EmailController.onSubmit(mode: Mode = NormalMode)
+GET         /changeEmail                                     controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeEmail                                     controllers.EmailController.onSubmit(mode: Mode = CheckMode)
+
+GET         /name                                            controllers.NameController.onPageLoad(mode: Mode = NormalMode)
+POST        /name                                            controllers.NameController.onSubmit(mode: Mode = NormalMode)
+GET         /changeName                                      controllers.NameController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeName                                      controllers.NameController.onSubmit(mode: Mode = CheckMode)
