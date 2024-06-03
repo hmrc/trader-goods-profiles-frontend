@@ -16,8 +16,6 @@
 
 @import models.helper._
 
-
-
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
@@ -27,13 +25,14 @@
 @(scenario: Scenario)(implicit request: Request[_], messages: Messages)
 
 @panel = @{
-    scenario match {
-        case Category1NoExemptions => govukPanel(Panel(title = messages("categorisationResult.heading"), content = "Hello this is some content and it can get really long so hopefully it just resizes"))
-        case Category3NoAssessments => govukPanel(Panel(title = messages("categorisationResult.heading")))
-        case StandardNoSupplementaryUnits => govukPanel(Panel(title = messages("categorisationResult.heading")))
-        case Category1 => govukPanel(Panel(title = messages("categorisationResult.heading")))
-        case Category2 => govukPanel(Panel(title = messages("categorisationResult.heading")))
+    val panelContent = scenario match {
+        case Category1NoExemptions => messages("categorisationResult.panelBody")
+        case Category3NoAssessments => messages("categorisationResult.panelBody")
+        case StandardNoSupplementaryUnits => messages("categorisationResult.panelBody")
+        case Category1 => messages("categorisationResult.panelBody")
+        case Category2 => messages("categorisationResult.panelBody")
     }
+    govukPanel(Panel(title = messages("categorisationResult.heading"), content = panelContent))
 }
 
 @paragraphContent = {
