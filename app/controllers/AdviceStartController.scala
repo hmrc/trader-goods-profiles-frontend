@@ -17,6 +17,10 @@
 package controllers
 
 import controllers.actions._
+import models.NormalMode
+import navigation.Navigator
+import pages.{AdviceStartPage, CreateRecordStartPage}
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,11 +33,17 @@ class AdviceStartController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: AdviceStartView
+  view: AdviceStartView,
+  navigator: Navigator
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Ok(view())
+  }
+
+  //TODO navigate to correct page
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    Redirect(navigator.nextPage(AdviceStartPage, NormalMode, request.userAnswers))
   }
 }

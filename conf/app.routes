@@ -110,7 +110,8 @@ GET         /categorisation-result                           controllers.Categor
 GET         /cya-categorisation                              controllers.CyaCategorisationController.onPageLoad
 POST        /cya-categorisation                              controllers.CyaCategorisationController.onSubmit
 
-GET         /adviceStart                                     controllers.AdviceStartController.onPageLoad()
+GET         /advice-start                                    controllers.AdviceStartController.onPageLoad()
+POST        /advice-start                                    controllers.AdviceStartController.onSubmit()
 
 GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
 
