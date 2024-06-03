@@ -116,10 +116,10 @@ GET         /advice/check-your-answers                       controllers.CyaRequ
 
 GET         /adviceSuccess                                   controllers.AdviceSuccessController.onPageLoad()
 
-GET         /email                                           controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
-POST        /email                                           controllers.EmailController.onSubmit(mode: Mode = NormalMode)
-GET         /changeEmail                                     controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeEmail                                     controllers.EmailController.onSubmit(mode: Mode = CheckMode)
+GET         /advice/email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
+POST        /advice/email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode)
+GET         /advice/email/check                              controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
+POST        /advice/email/check                              controllers.EmailController.onSubmit(mode: Mode = CheckMode)
 
 GET         /name                                            controllers.NameController.onPageLoad(mode: Mode = NormalMode)
 POST        /name                                            controllers.NameController.onSubmit(mode: Mode = NormalMode)

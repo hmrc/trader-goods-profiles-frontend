@@ -274,11 +274,13 @@ adviceStart.heading = adviceStart
 adviceSuccess.title = adviceSuccess
 adviceSuccess.heading = adviceSuccess
 
-email.title = email
-email.heading = email
-email.checkYourAnswersLabel = email
+email.title = What is your email address?
+email.heading = What is your email address?
+email.hint = We will only use this to contact you about your request.
+email.checkYourAnswersLabel = Email
 email.error.required = Enter email
-email.error.length = Email must be 100 characters or less
+email.error.invalidFormat = Enter your email in the correct format
+email.error.length = Email must be 254 characters or less
 email.change.hidden = Email
 
 name.title = name
