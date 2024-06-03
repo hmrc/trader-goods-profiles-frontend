@@ -42,6 +42,7 @@ class AdviceStartController @Inject() (
     Ok(view())
   }
 
+  //TODO navigate to correct page
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Redirect(navigator.nextPage(AdviceStartPage, NormalMode, request.userAnswers))
   }
