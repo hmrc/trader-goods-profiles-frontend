@@ -301,6 +301,16 @@ class NavigatorSpec extends SpecBase {
             .onPageLoad(NormalMode)
         }
 
+        // TODO
+        "must go from NamePage to ???" in {
+
+          navigator.nextPage(
+            NamePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.IndexController.onPageLoad
+        }
+
       }
     }
 
