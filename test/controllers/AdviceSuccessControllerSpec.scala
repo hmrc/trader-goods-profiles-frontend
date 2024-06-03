@@ -40,5 +40,6 @@ class AdviceSuccessControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
+
   }
 }

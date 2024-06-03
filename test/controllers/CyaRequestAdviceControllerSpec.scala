@@ -48,5 +48,24 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         }
       }
     }
+
+    "for a POST" - {
+
+      "must redirect to AdviceSuccessController" in {
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad().url
+        }
+      }
+    }
   }
 }

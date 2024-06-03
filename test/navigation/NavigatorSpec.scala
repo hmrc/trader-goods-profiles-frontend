@@ -38,6 +38,31 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad
       }
 
+      "in Require Advice Journey" - {
+
+        "must go from AdviceStartPage to NamePage" in {
+
+          navigator.nextPage(AdviceStartPage, NormalMode, emptyUserAnswers) mustBe routes.NameController
+            .onPageLoad(NormalMode)
+        }
+
+        "must go from NamePage to EmailPage" in {
+
+          navigator.nextPage(NamePage, NormalMode, emptyUserAnswers) mustBe routes.EmailController.onPageLoad(
+            NormalMode
+          )
+        }
+
+        "must go from EmailPage to CyaRequestAdviceController" in {
+
+          navigator.nextPage(
+            EmailPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad
+        }
+      }
+
       "in Create Profile Journey" - {
 
         "must go from ProfileSetupPage to UkimsNumberPage" in {
