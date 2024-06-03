@@ -54,12 +54,8 @@ class AdviceStartControllerSpec extends SpecBase {
 
     "must redirect to ??? when the user click continue button" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[SessionRepository].toInstance(mockSessionRepository),
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
         )
         .build()
