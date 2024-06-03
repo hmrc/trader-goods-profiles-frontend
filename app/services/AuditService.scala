@@ -44,20 +44,23 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
-  def auditStartCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup)
-                                 (implicit hc: HeaderCarrier): Future[Done] = {
+  def auditStartCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
     val event = auditEventFactory.createStartCreateGoodsRecord(eori, affinityGroup)
 
-    auditConnector.sendEvent(event).map{ auditResult =>
-        logger.info(s"StartCreateGoodsRecord audit event status: $auditResult")
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"StartCreateGoodsRecord audit event status: $auditResult")
       Done
     }
   }
 
-  def auditFinishCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup, userAnswers: UserAnswers)
-                                  (implicit hc: HeaderCarrier): Future[Done] = {
+  def auditFinishCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup, userAnswers: UserAnswers)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
 
-    val buildEvent = (Right(affinityGroup),
+    val buildEvent = (
+      Right(affinityGroup),
       GoodsRecord.build(userAnswers, eori),
       userAnswers.getPageValue(CommodityQuery),
       userAnswers.getPageValue(UseTraderReferencePage).map(!_)

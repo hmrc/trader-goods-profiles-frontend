@@ -21,7 +21,12 @@ import play.api.libs.json._
 
 import java.time.Instant
 
-case class Commodity(commodityCode: String, description: String, validityStartDate: Instant, validityEndDate: Option[Instant])
+case class Commodity(
+  commodityCode: String,
+  description: String,
+  validityStartDate: Instant,
+  validityEndDate: Option[Instant]
+)
 
 object Commodity {
 
@@ -34,7 +39,7 @@ object Commodity {
         (__ \ "data" \ "attributes" \ "description").read[String] and
         (__ \ "data" \ "attributes" \ "validity_start_date").read[Instant] and
         (__ \ "data" \ "attributes" \ "validity_end_date").readNullable[Instant]
-      )(Commodity.apply _)
+    )(Commodity.apply _)
   }
 
   val writes: OWrites[Commodity] = {
@@ -46,8 +51,7 @@ object Commodity {
         (__ \ "data" \ "attributes" \ "description").write[String] and
         (__ \ "data" \ "attributes" \ "validity_start_date").write[Instant] and
         (__ \ "data" \ "attributes" \ "validity_end_date").writeOptionWithNull[Instant]
-
-      )(unlift(Commodity.unapply))
+    )(unlift(Commodity.unapply))
   }
 
   implicit val format: OFormat[Commodity] = OFormat(reads, writes)

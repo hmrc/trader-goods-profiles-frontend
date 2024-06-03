@@ -52,7 +52,7 @@ case class AuditEventFactory() {
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     val auditDetails = Map(
-      "EORINumber" -> eori,
+      "EORINumber"    -> eori,
       "affinityGroup" -> affinityGroup.toString
     )
 
@@ -72,14 +72,14 @@ case class AuditEventFactory() {
     isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "EORINumber" -> goodsRecord.actorId,
-      "affinityGroup" -> affinityGroup.toString,
-      "traderReference" -> goodsRecord.traderReference,
-      "commodityCode" -> goodsRecord.commodityCode,
-      "countryOfOrigin" -> goodsRecord.countryOfOrigin,
-      "commodityDescription" -> commodity.description,
+      "EORINumber"                 -> goodsRecord.actorId,
+      "affinityGroup"              -> affinityGroup.toString,
+      "traderReference"            -> goodsRecord.traderReference,
+      "commodityCode"              -> goodsRecord.commodityCode,
+      "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
+      "commodityDescription"       -> commodity.description,
       "commodityCodeEffectiveFrom" -> commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo" -> commodity.validityEndDate.map(_.toString).getOrElse("null")
+      "commodityCodeEffectiveTo"   -> commodity.validityEndDate.map(_.toString).getOrElse("null")
     ) ++ writeGoodsReference(isUsingGoodsDescription, goodsRecord.goodsDescription)
 
     DataEvent(
@@ -97,17 +97,14 @@ case class AuditEventFactory() {
       }
       .getOrElse(Map(containsValueDescription -> "false"))
 
-  private def writeGoodsReference(isUsingGoodsDescription: Boolean, goodsDescription: String) ={
-
-    if (isUsingGoodsDescription){
+  private def writeGoodsReference(isUsingGoodsDescription: Boolean, goodsDescription: String)                          =
+    if (isUsingGoodsDescription) {
       Map(
         "specifiedGoodsDescription" -> "true",
-        "goodsDescription" -> goodsDescription
+        "goodsDescription"          -> goodsDescription
       )
     } else {
       Map("specifiedGoodsDescription" -> "false")
     }
-
-  }
 
 }
