@@ -17,8 +17,8 @@
 package forms
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.trimSpaces
 import play.api.data.Form
 
 class NameFormProvider @Inject() extends Mappings {
@@ -26,6 +26,7 @@ class NameFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("name.error.required")
+        .transform(trimSpaces, identity[String])
         .verifying(maxLength(70, "name.error.length"))
     )
 }
