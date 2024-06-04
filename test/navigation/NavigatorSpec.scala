@@ -441,6 +441,23 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "in Require Advice Journey" - {
+
+        "must go from NamePage to CyaRequestAdviceController" in {
+
+          navigator.nextPage(NamePage, CheckMode, emptyUserAnswers) mustBe routes.CyaRequestAdviceController.onPageLoad
+        }
+
+        "must go from EmailPage to CyaRequestAdviceController" in {
+
+          navigator.nextPage(
+            EmailPage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad
+        }
+      }
+
       "in Create Record Journey" - {
 
         "must go from TraderReferencePage to CyaCreateRecord" in {

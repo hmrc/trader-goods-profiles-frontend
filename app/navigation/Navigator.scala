@@ -114,6 +114,8 @@ class Navigator @Inject() () {
     case CountryOfOriginPage    => _ => routes.CyaCreateRecordController.onPageLoad
     case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoodsCheck
+    case NamePage               => _ => routes.CyaRequestAdviceController.onPageLoad
+    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
     case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
