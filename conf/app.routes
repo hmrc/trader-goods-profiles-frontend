@@ -115,7 +115,7 @@ POST        /advice-start                                    controllers.AdviceS
 
 GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
 
-GET         /adviceSuccess                                   controllers.AdviceSuccessController.onPageLoad()
+GET         /advice/success                                  controllers.AdviceSuccessController.onPageLoad()
 
 GET         /advice/email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
 POST        /advice/email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode)
