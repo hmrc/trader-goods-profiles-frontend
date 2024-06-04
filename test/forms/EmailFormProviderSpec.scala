@@ -21,9 +21,15 @@ import play.api.data.FormError
 
 class EmailFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "email.error.required"
-  val lengthKey   = "email.error.length"
-  val maxLength   = 100
+  val requiredKey      = "email.error.required"
+  val lengthKey        = "email.error.length"
+  val invalidFormatKey = "email.error.invalidFormat"
+
+  val validEmail           = "test@test.co.uk"
+  val validEmailWithSpaces = "test @test.co.uk"
+  val invalidEmail         = "test"
+  val longValidEmail       =
+    "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890@test.co.uk"
 
   val form = new EmailFormProvider()()
 
@@ -34,15 +40,37 @@ class EmailFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      validEmail
     )
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+    "with spaces" - {
+
+      behave like fieldThatBindsValidData(
+        form,
+        fieldName,
+        validEmailWithSpaces
+      )
+    }
+
+    "too long" - {
+
+      behave like fieldThatErrorsOnInvalidData(
+        form,
+        fieldName,
+        longValidEmail,
+        invalidError = FormError(fieldName, lengthKey)
+      )
+    }
+
+    "invalid email" - {
+
+      behave like fieldThatErrorsOnInvalidData(
+        form,
+        fieldName,
+        invalidEmail,
+        invalidError = FormError(fieldName, invalidFormatKey)
+      )
+    }
 
     behave like mandatoryField(
       form,

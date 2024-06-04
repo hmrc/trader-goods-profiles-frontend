@@ -21,4 +21,5 @@ object StringFieldRegex {
   val nirmsRegex: String               = "RMS-?(GB|NI)-?[0-9]{6}"
   val niphlRegex: String               = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
   val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
+  val emailRegex: String               = """^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"""
 }

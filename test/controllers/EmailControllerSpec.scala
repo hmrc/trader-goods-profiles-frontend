@@ -40,6 +40,7 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new EmailFormProvider()
   private val form = formProvider()
+  val validEmail   = "test@test.com"
 
   private lazy val emailRoute = routes.EmailController.onPageLoad(NormalMode).url
 
@@ -96,7 +97,7 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, emailRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", validEmail))
 
         val result = route(application, request).value
 
@@ -146,7 +147,7 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, emailRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", validEmail))
 
         val result = route(application, request).value
 
