@@ -114,6 +114,7 @@ GET         /advice-start                                    controllers.AdviceS
 POST        /advice-start                                    controllers.AdviceStartController.onSubmit()
 
 GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
+POST        /advice/check-your-answers                       controllers.CyaRequestAdviceController.onSubmit
 
 GET         /advice/success                                  controllers.AdviceSuccessController.onPageLoad()
 
