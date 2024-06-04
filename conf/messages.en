@@ -259,8 +259,9 @@ traderReference.change.hidden = Trader reference
 
 assessment.title = Category assessment {0} of {1}
 assessment.heading = Category assessment {0} of {1}
-assessment.guidance = You need to confirm which of these waivers you hold for {0}. We need this information to be ale to categorise your goods.
-assessment.question = Do you meet one of the following conditions and can supply the relevant document codes on your movements?
+assessment.guidance = You need to confirm which of these conditions you hold for {0}. We need this information to be able to categorise your goods.
+assessment.linkText = Review this code on the Online Tariff Tool (opens in a new tab)
+assessment.question = Do you meet one of the following conditions and can you supply the relevant document code on your movements?
 assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above

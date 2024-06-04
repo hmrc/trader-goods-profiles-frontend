@@ -37,13 +37,16 @@
 
         <h1 class="govuk-heading-l">@messages("assessment.heading", viewModel.numberOfThisAssessment, viewModel.numberOfAssessments)</h1>
         <p class="govuk-body">@messages("assessment.guidance", viewModel.commodityCode)</p>
+        <p class="govuk-body">
+            <a href="https://www.trade-tariff.service.gov.uk/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
+        </p>
 
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("assessment.question")).withSize(Medium),
+                legend = LegendViewModel(HtmlContent("<h2 class='govuk-heading-m'>" + messages("assessment.question") + "</h2>")),
                 items  = viewModel.radioOptions
-            ).withHint(HintViewModel(content = "assessment.hint"))
+            )
         )
 
         @govukButton(
