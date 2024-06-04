@@ -265,6 +265,7 @@ assessment.question = Do you meet one of the following conditions and can you su
 assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
+assessment.error.required = Select if you meet a condition
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
