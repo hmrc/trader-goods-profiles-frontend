@@ -313,20 +313,6 @@ class NavigatorSpec extends SpecBase {
           navigator.nextPage(AssessmentPage("id1"), NormalMode, answers) mustEqual routes.IndexController.onPageLoad
         }
       }
-
-      "in Accreditation Journey" - {
-
-        // TODO
-        "must go from NamePage to ???" in {
-
-          navigator.nextPage(
-            NamePage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.IndexController.onPageLoad
-        }
-
-      }
     }
 
     "in Check mode" - {
