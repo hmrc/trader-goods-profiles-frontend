@@ -289,11 +289,13 @@ adviceStart.p6 = You should get a response to your request within 5 working days
 adviceSuccess.title = adviceSuccess
 adviceSuccess.heading = adviceSuccess
 
-email.title = email
-email.heading = email
-email.checkYourAnswersLabel = email
-email.error.required = Enter email
-email.error.length = Email must be 100 characters or less
+email.title = What is your email address?
+email.heading = What is your email address?
+email.hint = We will only use this to contact you about your request.
+email.checkYourAnswersLabel = Email
+email.error.required = Enter your email address
+email.error.invalidFormat = Enter a valid email address
+email.error.length = Email must be 254 characters or less
 email.change.hidden = Email
 
 name.title = name

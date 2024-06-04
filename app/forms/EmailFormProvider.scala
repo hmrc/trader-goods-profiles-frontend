@@ -17,8 +17,9 @@
 package forms
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex
 import play.api.data.Form
 
 class EmailFormProvider @Inject() extends Mappings {
@@ -26,6 +27,8 @@ class EmailFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("email.error.required")
-        .verifying(maxLength(100, "email.error.length"))
+        .transform(removeWhitespace, identity[String])
+        .verifying(maxLength(254, "email.error.length"))
+        .verifying(regexp(StringFieldRegex.emailRegex, "email.error.invalidFormat"))
     )
 }
