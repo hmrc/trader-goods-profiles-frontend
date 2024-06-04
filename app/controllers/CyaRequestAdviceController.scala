@@ -53,11 +53,6 @@ class CyaRequestAdviceController @Inject() (
     }
   }
 
-  // TODO submit data
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.AdviceSuccessController.onPageLoad().url)
-  }
-
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
