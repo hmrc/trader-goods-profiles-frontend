@@ -24,9 +24,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.{CommodityCodeSummary, CountryOfOriginSummary, EmailSummary, GoodsDescriptionSummary, NameSummary, TraderReferenceSummary, UseTraderReferenceSummary}
+import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.SummaryListFluency
-import views.html.{CyaCreateRecordView, CyaRequestAdviceView}
+import views.html.CyaRequestAdviceView
 
 class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
