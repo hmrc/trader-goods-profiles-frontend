@@ -296,8 +296,8 @@ adviceStart.p2.linkText = apply for a Binding Tariff information decision
 adviceStart.subheading1 = What HMRC needs
 adviceStart.p3 = We’ll ask for your name and email address. An HMRC caseworker will look at the goods record you’ve asked for advice on.
 adviceStart.subheading2 = What happens when HMRC are looking at your record
-adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes.
-adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you'll be able to by email. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
+adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
+adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you'll be able to by email.
 adviceStart.p6 = You should get a response to your request within 5 working days, but it could take longer.
 
 adviceSuccess.title = Request for advice complete
