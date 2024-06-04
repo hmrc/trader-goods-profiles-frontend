@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions._
-import models.helper.{CategorisationHelper, Scenario}
+import models.helper.CategorisationHelper
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
