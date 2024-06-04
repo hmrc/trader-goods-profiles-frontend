@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-object StringFieldRegex {
-  val ukimsNumberRegex: String         = "^(GB|XI)UKIM[0-9]{12}[0-9]{14}$"
-  val nirmsRegex: String               = "RMS-?(GB|NI)-?[0-9]{6}"
-  val niphlRegex: String               = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
-  val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
-  val emailRegex: String               = """^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"""
+import javax.inject.Inject
+import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex
+import play.api.data.Form
+
+class EmailFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("email.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying(maxLength(254, "email.error.length"))
+        .verifying(regexp(StringFieldRegex.emailRegex, "email.error.invalidFormat"))
+    )
 }

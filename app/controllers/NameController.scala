@@ -16,53 +16,56 @@
 
 package controllers
 
-import connectors.OttConnector
 import controllers.actions._
-import models.ott.CategorisationInfo
-
+import forms.NameFormProvider
 import javax.inject.Inject
+import models.Mode
+import navigation.Navigator
+import pages.NamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationQuery, CommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CategoryGuidanceView
+import views.html.NameView
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
-class CategoryGuidanceController @Inject() (
+class NameController @Inject() (
   override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  formProvider: NameFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: CategoryGuidanceView,
-  ottConnector: OttConnector,
-  sessionRepository: SessionRepository
+  view: NameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    request.userAnswers.get(CommodityQuery) match {
-      case Some(commodity) =>
-        val ottResponseFuture = ottConnector.getCategorisationInfo(commodity.commodityCode)
+  private val form = formProvider()
 
-        for {
-          goodsNomenclature  <- ottResponseFuture
-          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
-          _                  <- sessionRepository.set(updatedAnswers)
-        } yield Ok(view())
-
-      case None =>
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    val preparedForm = request.userAnswers.get(NamePage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
     }
+
+    Ok(view(preparedForm, mode))
   }
 
-  // TODO replace index route
-  def onSubmit: Action[AnyContent] = (identify andThen getData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad.url)
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(NamePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(NamePage, mode, updatedAnswers)) //TODO navigate to correct page
+        )
   }
 }
