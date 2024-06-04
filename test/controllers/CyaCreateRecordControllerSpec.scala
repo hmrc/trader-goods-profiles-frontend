@@ -28,6 +28,8 @@ import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
@@ -132,9 +134,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.submitGoodsRecordUrl(any(), any())(any())).thenReturn(Future.successful(Done))
 
+          val mockAuditService = mock[AuditService]
+          when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .overrides(bind[AuditService].toInstance(mockAuditService))
               .build()
 
           running(application) {
@@ -147,6 +154,11 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad().url
             verify(mockConnector, times(1)).submitGoodsRecordUrl(eqTo(expectedPayload), eqTo(testEori))(any())
+
+            withClue("must call the audit connector with the supplied details") {
+              verify(mockAuditService, times(1))
+                .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+            }
           }
         }
       }
@@ -155,12 +167,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "must not submit anything, and redirect to Journey Recovery" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          val continueUrl   = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+          val mockConnector    = mock[GoodsRecordConnector]
+          val mockAuditService = mock[AuditService]
+          val continueUrl      = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .overrides(bind[AuditService].toInstance(mockAuditService))
               .build()
 
           running(application) {
@@ -171,7 +185,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
             verify(mockConnector, never()).submitGoodsRecordUrl(any(), any())(any())
+
+            withClue("must not try and submit an audit") {
+              verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
+            }
           }
+
         }
       }
 
@@ -186,6 +205,32 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
+      "must let the play error handler deal with an audit future failure" in {
+
+        val userAnswers = mandatoryRecordUserAnswers
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.submitGoodsRecordUrl(any(), any())(any())).thenReturn(Future.successful(Done))
+
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
             .build()
 
         running(application) {
