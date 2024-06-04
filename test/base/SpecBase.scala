@@ -107,6 +107,15 @@ trait SpecBase
       .success
       .value
 
+  def mandatoryAdviceUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(NamePage, "123")
+      .success
+      .value
+      .set(EmailPage, "654321")
+      .success
+      .value
+
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

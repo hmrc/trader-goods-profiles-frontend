@@ -17,21 +17,35 @@
 package controllers
 
 import base.SpecBase
+import models.UserAnswers
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.Application
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import viewmodels.checkAnswers.{CommodityCodeSummary, CountryOfOriginSummary, EmailSummary, GoodsDescriptionSummary, NameSummary, TraderReferenceSummary, UseTraderReferenceSummary}
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaRequestAdviceView
+import views.html.{CyaCreateRecordView, CyaRequestAdviceView}
 
 class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   "CyaRequestAdviceController" - {
 
+    def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
+      rows = Seq(
+        NameSummary.row(userAnswers)(messages(app)),
+        EmailSummary.row(userAnswers)(messages(app))
+      ).flatten
+    )
+
     "for a GET" - {
 
-      "must return OK and the correct view" in {
+      "must return OK and the correct view with valid mandatory data" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val userAnswers = mandatoryAdviceUserAnswers
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad.url)
@@ -39,12 +53,40 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CyaRequestAdviceView]
-          val list = SummaryListViewModel(
-            rows = Seq.empty
-          )
+          val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Journey Recovery if no answers are found" in {
+
+        val application = applicationBuilder(Some(emptyUserAnswers)).build()
+        val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }
