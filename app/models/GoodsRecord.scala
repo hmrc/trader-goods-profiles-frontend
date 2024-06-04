@@ -26,7 +26,9 @@ final case class GoodsRecord(
   traderReference: String,
   commodityCode: String,
   countryOfOrigin: String,
-  goodsDescription: String
+  goodsDescription: String,
+  category: String,
+  comcodeEffectiveFromDate: String
 )
 
 object GoodsRecord {
@@ -39,7 +41,10 @@ object GoodsRecord {
       answers.getPageValue(TraderReferencePage),
       getCommodityCode(answers),
       answers.getPageValue(CountryOfOriginPage),
-      getGoodsDescription(answers)
+      getGoodsDescription(answers),
+      // TODO remove hard coding
+      Right("1"),
+      Right("1970-01-01")
     ).parMapN(GoodsRecord.apply)
 
   def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =

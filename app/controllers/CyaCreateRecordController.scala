@@ -18,6 +18,7 @@ package controllers
 
 import cats.data
 import com.google.inject.Inject
+import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.{GoodsRecord, ValidationError}
@@ -29,14 +30,18 @@ import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
 
+import scala.concurrent.{ExecutionContext, Future}
+
 class CyaCreateRecordController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaCreateRecordView
-) extends FrontendBaseController
+  view: CyaCreateRecordView,
+  goodsRecordConnector: GoodsRecordConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -57,8 +62,14 @@ class CyaCreateRecordController @Inject() (
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.CreateRecordSuccessController.onPageLoad().url)
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    GoodsRecord.build(request.userAnswers, request.eori) match {
+      case Right(model) =>
+        goodsRecordConnector
+          .submitGoodsRecordUrl(model, request.eori)
+          .map(_ => Redirect(routes.CreateRecordSuccessController.onPageLoad()))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+    }
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
