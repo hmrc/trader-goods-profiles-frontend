@@ -19,18 +19,21 @@ package services
 import base.SpecBase
 import base.TestConstants.testEori
 import factories.AuditEventFactory
-import models.TraderProfile
+import models.{Commodity, GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage, UseTraderReferencePage}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 
+import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -40,6 +43,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockAuditFactory                = mock[AuditEventFactory]
   val auditService                            = new AuditService(mockAuditConnector, mockAuditFactory)
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  private val testCommodity = Commodity(commodityCode = "123456", description = "test commodity", Instant.now, None)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -62,7 +67,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       result mustBe Done
 
-      withClue("Should have supplied the trader profile and time to the factory to create the event") {
+      withClue("Should have supplied the trader profile and affinity group to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createSetUpProfileEvent(eqTo(traderProfile), eqTo(AffinityGroup.Individual))(any())
       }
@@ -110,4 +115,190 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
+  "auditStartCreateGoodsRecord" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createStartCreateGoodsRecord(any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      val result = await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
+
+      result mustBe Done
+
+      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createStartCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual))(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createStartCreateGoodsRecord(any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      val result = await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
+
+      result mustBe Done
+
+      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createStartCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual))(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "must let the play error handler deal with an future failure" in {
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
+      }
+
+    }
+
+  }
+
+  "auditFinishCreateGoodsRecord" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createFinishCreateGoodsRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
+      val expectedGoodsRecord = GoodsRecord(testEori, "trader reference", "123456", "PF", "trader reference")
+
+      val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
+
+      result mustBe Done
+
+      withClue("Should have supplied the correct parameters to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createFinishCreateGoodsRecord(
+            eqTo(AffinityGroup.Individual),
+            eqTo(expectedGoodsRecord),
+            eqTo(testCommodity),
+            eqTo(false)
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createFinishCreateGoodsRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
+      val expectedGoodsRecord = GoodsRecord(testEori, "trader reference", "123456", "PF", "goods description")
+
+      val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
+
+      result mustBe Done
+
+      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createFinishCreateGoodsRecord(
+            eqTo(AffinityGroup.Individual),
+            eqTo(expectedGoodsRecord),
+            eqTo(testCommodity),
+            eqTo(true)
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "must let the play error handler deal with an future failure" in {
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        await(
+          auditService.auditFinishCreateGoodsRecord(
+            testEori,
+            AffinityGroup.Individual,
+            generateUserAnswersForFinishCreateGoodsTest(true)
+          )
+        )
+      }
+
+    }
+
+    "return Done when user answers are not sufficient to generate event" in {
+      val userAnswers = emptyUserAnswers
+      val result      = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
+
+      result mustBe Done
+
+      withClue("Should not have tried to create the event as the details were invalid") {
+        verify(mockAuditFactory, times(0))
+          .createFinishCreateGoodsRecord(any, any, any, any)(any())
+      }
+
+      withClue("Should not have tried to submit an event to the audit connector") {
+        verify(mockAuditConnector, times(0)).sendEvent(any)(any(), any())
+      }
+
+    }
+
+  }
+
+  private def generateUserAnswersForFinishCreateGoodsTest(useTraderRef: Boolean) = {
+    val ua = emptyUserAnswers
+      .set(CommodityQuery, testCommodity)
+      .success
+      .value
+      .set(TraderReferencePage, "trader reference")
+      .success
+      .value
+      .set(CountryOfOriginPage, "PF")
+      .success
+      .value
+      .set(CommodityCodePage, "123456")
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+
+    if (useTraderRef) {
+      ua.set(UseTraderReferencePage, true).success.value
+    } else {
+      ua.set(UseTraderReferencePage, false)
+        .success
+        .value
+        .set(GoodsDescriptionPage, "goods description")
+        .success
+        .value
+    }
+  }
 }

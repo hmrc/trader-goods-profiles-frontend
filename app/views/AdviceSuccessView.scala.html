@@ -16,12 +16,35 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukPanel: GovukPanel
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("adviceSuccess.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("adviceSuccess.heading")</h1>
+     @govukPanel(Panel(
+      title = messages("adviceSuccess.h1")
+     )
+     )
+
+    <h2 class="govuk-heading-m">@messages("adviceSuccess.h2")</h2>
+    <p class="govuk-body">@messages("adviceSuccess.p1")</p>
+    <p class="govuk-body">@messages("adviceSuccess.p2")</p>
+    <ul class="govuk-body">
+        <li>@messages("adviceSuccess.p2.1")</li>
+        <li>@messages("adviceSuccess.p2.2")</li>
+        <li>@messages("adviceSuccess.p2.3")</li>
+        <li>@messages("adviceSuccess.p2.4")</li>
+    </ul>
+    <p class="govuk-body">@messages("adviceSuccess.p3")</p>
+    <p class="govuk-body">@messages("adviceSuccess.p4")</p>
+    <p class="govuk-body">@messages("adviceSuccess.p5")</p>
+    <h2 class="govuk-heading-m">@messages("adviceSuccess.h2.1")</h2>
+    <p class="govuk-body">@messages("adviceSuccess.p6")</p>
+    <p class="govuk-body"><a href="#" class="govuk-link" >@messages("adviceSuccess.p7.linkText")</a>. @messages("adviceSuccess.p7")</p>
+    @*TODO correct link when defined by design*@
+    <p class="govuk-body"><a href="@routes.AdviceSuccessController.onPageLoad.url" class="govuk-link" >@messages("adviceSuccess.p8.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("adviceSuccess.p9.linkText")</a></p>
 }

@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package forms.mappings.helpers
+package models.helper
 
-object RemoveWhitespace {
+import models.UserAnswers
 
-  def removeWhitespace: String => String      = _.filterNot(_.isWhitespace)
-  def trimAndCompressSpaces: String => String = _.trim.replaceAll("\\s+", " ")
+object CategorisationHelper {
+
+  def getScenario(userAnswers: UserAnswers): Scenario =
+    //TODO: Implement logic
+    Category1NoExemptions
+
 }
+
+sealed trait Scenario
+
+case object Category1NoExemptions extends Scenario
+case object Category3NoAssessments extends Scenario
+case object StandardNoSupplementaryUnits extends Scenario
+case object Category1 extends Scenario
+case object Category2 extends Scenario

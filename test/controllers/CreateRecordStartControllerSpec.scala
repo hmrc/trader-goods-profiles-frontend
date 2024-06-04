@@ -17,15 +17,19 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CreateRecordStartView
 
 import scala.concurrent.Future
@@ -34,45 +38,80 @@ class CreateRecordStartControllerSpec extends SpecBase {
 
   "CreateRecordStart Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "for a GET" - {
+      "must return OK and the correct view" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CreateRecordStartController.onPageLoad().url)
+        running(application) {
+          val request = FakeRequest(GET, routes.CreateRecordStartController.onPageLoad().url)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CreateRecordStartView]
+          val view = application.injector.instanceOf[CreateRecordStartView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view()(request, messages(application)).toString
+        }
       }
     }
 
-    val onwardRoute = Call("", "")
+    "for a POST" - {
+      "must redirect to the trader reference controller page" in {
 
-    "must redirect to the trader reference controller page when the user click continue button" in {
+        val onwardRoute = Call("", "")
 
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditStartCreateGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-        )
-        .build()
+        val mockSessionRepository = mock[SessionRepository]
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
-      running(application) {
-        val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
 
-        status(result) mustEqual SEE_OTHER
+          val result = route(application, request).value
 
-        redirectLocation(result).value mustEqual onwardRoute.url
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService, times(1))
+              .auditStartCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual))(any())
+          }
+
+        }
       }
+
+      "must let the play error handler deal with an audit future failure" in {
+
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditStartCreateGoodsRecord(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
     }
   }
 }

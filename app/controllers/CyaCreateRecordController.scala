@@ -23,11 +23,14 @@ import logging.Logging
 import models.{GoodsRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
+
+import scala.concurrent.ExecutionContext
 
 class CyaCreateRecordController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,8 +38,10 @@ class CyaCreateRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaCreateRecordView
-) extends FrontendBaseController
+  view: CyaCreateRecordView,
+  auditService: AuditService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -57,8 +62,10 @@ class CyaCreateRecordController @Inject() (
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.CreateRecordSuccessController.onPageLoad().url)
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    auditService
+      .auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
+      .map(_ => Redirect(routes.CreateRecordSuccessController.onPageLoad().url))
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
