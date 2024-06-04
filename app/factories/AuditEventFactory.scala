@@ -65,6 +65,29 @@ case class AuditEventFactory() {
 
   }
 
+  def createStartUpdateGoodsRecord(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    updateSection: String,
+    recordId: String
+  )(implicit hc: HeaderCarrier): DataEvent = {
+
+    val auditDetails = Map(
+      "EORINumber"    -> eori,
+      "affinityGroup" -> affinityGroup.toString,
+      "updateSection" -> updateSection,
+      "recordId"      -> recordId
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "StartUpdateGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+
+  }
+
   def createFinishCreateGoodsRecord(
     affinityGroup: AffinityGroup,
     goodsRecord: GoodsRecord,

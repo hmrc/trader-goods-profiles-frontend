@@ -80,4 +80,15 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
   }
 
+  def auditStartUpdateGoodsRecord(eori: String, affinityGroup: AffinityGroup, updateSection: String, recordId: String)(
+    implicit hc: HeaderCarrier
+  ): Future[Done] = {
+    val event = auditEventFactory.createStartUpdateGoodsRecord(eori, affinityGroup, updateSection, recordId)
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"StartUpdateGoodsRecord audit event status: $auditResult")
+      Done
+    }
+  }
+
 }

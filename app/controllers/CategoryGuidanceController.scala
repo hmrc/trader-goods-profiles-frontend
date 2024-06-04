@@ -25,9 +25,10 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationQuery, CommodityQuery}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
-
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -39,7 +40,8 @@ class CategoryGuidanceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
   ottConnector: OttConnector,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -62,7 +64,9 @@ class CategoryGuidanceController @Inject() (
   }
 
   // TODO replace index route
-  def onSubmit: Action[AnyContent] = (identify andThen getData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad.url)
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    auditService
+      .auditStartUpdateGoodsRecord(request.eori, request.affinityGroup, "updateSection", "recordId") // TODO
+      .map(_ => Redirect(routes.IndexController.onPageLoad.url))
   }
 }
