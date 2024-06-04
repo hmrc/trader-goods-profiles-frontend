@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.helper.Category1NoExemptions
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CategorisationResultView
@@ -37,7 +38,7 @@ class CategorisationResultControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[CategorisationResultView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(Category1NoExemptions)(request, messages(application)).toString
       }
     }
   }

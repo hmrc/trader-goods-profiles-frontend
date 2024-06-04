@@ -14,14 +14,65 @@
  * limitations under the License.
  *@
 
+@import models.helper._
+
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukPanel: GovukPanel
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(scenario: Scenario)(implicit request: Request[_], messages: Messages)
+
+@panel = @{
+    val panelContent = scenario match {
+        case Category1NoExemptions => messages("categorisationResult.Category1NoExemptions.panelBody")
+        case Category3NoAssessments => messages("categorisationResult.Category3NoAssessments.panelBody")
+        case StandardNoSupplementaryUnits => messages("categorisationResult.StandardNoSupplementaryUnits.panelBody")
+        case Category1 => messages("categorisationResult.Category1.panelBody")
+        case Category2 => messages("categorisationResult.Category2.panelBody")
+    }
+    govukPanel(Panel(title = messages("categorisationResult.heading"), content = HtmlContent("<p class=\"govuk-body\" style=\"color:#FFFFFF\">" + panelContent + "</p>")))
+}
+
+@paragraphContent = @{
+    scenario match {
+        case Category1NoExemptions => Some(messages("categorisationResult.Category1NoExemptions.p1"))
+        case Category3NoAssessments => Some(messages("categorisationResult.Category3NoAssessments.p1"))
+        case StandardNoSupplementaryUnits => None
+        case Category1 => None
+        case Category2 => None
+    }
+}
 
 @layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("categorisationResult.heading")</h1>
+    @panel
+
+    @if(paragraphContent.isDefined) {
+        <p class="govuk-body">
+            @paragraphContent
+        </p>
+    }
+
+    <h2 class="govuk-heading-m">
+        @messages("categorisationResult.tellUsWhatYouThink")
+    </h2>
+
+    <p class="govuk-body">
+        @messages("categorisationResult.thisIsNewService")
+    </p>
+
+    <p class="govuk-body">
+        <a href="#" class="govuk-link">@messages("categorisationResult.sendUsFeedback")</a> @messages("categorisationResult.improvements")
+    </p>
+
+    <p class="govuk-body">
+        <a href="#" class="govuk-link">@messages("categorisationResult.goToRecord")</a>
+    </p>
+
+    <p class="govuk-body">
+        <a href="#" class="govuk-link">@messages("categorisationResult.goToHome")</a>
+    </p>
+
 }
