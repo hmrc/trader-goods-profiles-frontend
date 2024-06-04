@@ -24,8 +24,10 @@ import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
-import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream4xxResponse
 import uk.gov.hmrc.http.test.WireMockSupport
+
+import java.time.Instant
+
 
 class OttConnectorSpec
     extends AnyFreeSpec
@@ -45,20 +47,40 @@ class OttConnectorSpec
 
   ".getCommodityCode" - {
 
-    "must return correct commodity object" in {
+    "must return correct commodity object" - {
 
-      val commodity = Commodity("123456", "Commodity description")
+      "when validity end date is undefined" in {
+        val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), None)
 
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
-          .willReturn(
-            ok().withBody(
-              "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\"\n    }\n  }\n}"
+        wireMockServer.stubFor(
+          get(urlEqualTo(s"/ott/commodities/123456"))
+            .willReturn(
+              ok().withBody(
+                "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
+                  "\"validity_start_date\": \"2012-01-01T00:00:00.000Z\",\n            \"validity_end_date\": null }\n  }\n}"
+              )
             )
-          )
-      )
+        )
 
-      connector.getCommodityCode("123456").futureValue mustBe commodity
+        connector.getCommodityCode("123456").futureValue mustBe commodity
+      }
+
+      "when validity end date is defined" in {
+        val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), Some(Instant.parse("2032-01-01T00:00:00.000Z")))
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(s"/ott/commodities/123456"))
+            .willReturn(
+              ok().withBody(
+                "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
+                  "\"validity_start_date\": \"2012-01-01T00:00:00.000Z\",\n            \"validity_end_date\": \"2032-01-01T00:00:00.000Z\" }\n  }\n}"
+              )
+            )
+        )
+
+        connector.getCommodityCode("123456").futureValue mustBe commodity
+      }
+
     }
 
     "must return a failed future when the server returns an error" in {

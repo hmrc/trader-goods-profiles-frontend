@@ -42,14 +42,14 @@ object GoodsRecord {
       getGoodsDescription(answers)
     ).parMapN(GoodsRecord.apply)
 
-  def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
+  private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
       case Right(Some(data)) => Right(data)
       case Right(None)       => answers.getPageValue(TraderReferencePage)
       case Left(errors)      => Left(errors)
     }
 
-  def getCommodityCode(answers: UserAnswers): EitherNec[ValidationError, String] =
+  private def getCommodityCode(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getPageValue(CommodityCodePage) match {
       case Right(data)  =>
         answers.getPageValue(HasCorrectGoodsPage) match {

@@ -36,6 +36,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.CommodityCodeView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
@@ -91,7 +92,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.successful(
-        Commodity("654321", "Description")
+        Commodity("654321", "Description", Instant.now, None)
       )
 
       val application =

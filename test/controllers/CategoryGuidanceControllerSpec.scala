@@ -31,19 +31,20 @@ import queries.CommodityQuery
 import repositories.SessionRepository
 import views.html.CategoryGuidanceView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  val userAnswersWithCommodity = emptyUserAnswers
+  private val userAnswersWithCommodity = emptyUserAnswers
     .set(
       CommodityQuery,
-      Commodity(commodityCode = "123", description = "test commodity")
+      Commodity(commodityCode = "123", description = "test commodity", Instant.now, None)
     )
     .success
     .value
 
-  val mockOttConnector = mock[OttConnector]
+  private val mockOttConnector = mock[OttConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
