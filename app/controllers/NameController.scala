@@ -65,7 +65,7 @@ class NameController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NamePage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(NamePage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(NamePage, mode, updatedAnswers)) //TODO navigate to correct page
         )
   }
 }

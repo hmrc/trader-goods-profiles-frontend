@@ -32,6 +32,7 @@ import queries.CommodityQuery
 import repositories.SessionRepository
 import views.html.HasCorrectGoodsView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
@@ -48,7 +49,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET" in {
 
       val userAnswers =
-        emptyUserAnswers.set(CommodityQuery, Commodity("654321", "Description")).success.value
+        emptyUserAnswers
+          .set(CommodityQuery, Commodity("654321", "Description", Instant.now, None))
+          .success
+          .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -60,7 +64,11 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HasCorrectGoodsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, Commodity("654321", "Description"))(
+        contentAsString(result) mustEqual view(
+          form,
+          NormalMode,
+          Commodity("654321", "Description", Instant.now, None)
+        )(
           request,
           messages(application)
         ).toString
@@ -83,7 +91,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val commodity   = Commodity("654321", "Description")
+      val commodity   = Commodity("654321", "Description", Instant.now, None)
       val userAnswers = emptyUserAnswers
         .set(CommodityQuery, commodity)
         .success
@@ -153,7 +161,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val commodity = Commodity("654321", "Description")
+      val commodity = Commodity("654321", "Description", Instant.now, None)
 
       val userAnswers =
         emptyUserAnswers.set(CommodityQuery, commodity).success.value

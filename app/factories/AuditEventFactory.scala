@@ -16,7 +16,7 @@
 
 package factories
 
-import models.TraderProfile
+import models.{Commodity, GoodsRecord, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
@@ -24,22 +24,67 @@ import uk.gov.hmrc.play.audit.model.DataEvent
 
 case class AuditEventFactory() {
 
-  def createSetUpProfileEvent(traderProfile: TraderProfile, affinityGroup: AffinityGroup)(implicit
-    hc: HeaderCarrier
-  ): DataEvent = {
+  private val auditSource = "trader-goods-profiles-frontend"
+
+  def createSetUpProfileEvent(
+    traderProfile: TraderProfile,
+    affinityGroup: AffinityGroup
+  )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "EORINumber"    -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,
       "UKIMSNumber"   -> traderProfile.ukimsNumber
-    ) ++ writeOptional("isNIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++ writeOptional(
-      "isNIPHLRegistered",
-      "NIPHLNumber",
-      traderProfile.niphlNumber
+    ) ++
+      writeOptional("isNIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++
+      writeOptional("isNIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber)
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "ProfileSetUp",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
+  def createStartCreateGoodsRecord(
+    eori: String,
+    affinityGroup: AffinityGroup
+  )(implicit hc: HeaderCarrier): DataEvent = {
+
+    val auditDetails = Map(
+      "EORINumber"    -> eori,
+      "affinityGroup" -> affinityGroup.toString
     )
 
     DataEvent(
-      auditSource = "trader-goods-profiles-frontend",
-      auditType = "ProfileSetUp",
+      auditSource = auditSource,
+      auditType = "StartCreateGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+
+  }
+
+  def createFinishCreateGoodsRecord(
+    affinityGroup: AffinityGroup,
+    goodsRecord: GoodsRecord,
+    commodity: Commodity,
+    isUsingGoodsDescription: Boolean
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "EORINumber"                 -> goodsRecord.actorId,
+      "affinityGroup"              -> affinityGroup.toString,
+      "traderReference"            -> goodsRecord.traderReference,
+      "commodityCode"              -> goodsRecord.commodityCode,
+      "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
+      "commodityDescription"       -> commodity.description,
+      "commodityCodeEffectiveFrom" -> commodity.validityStartDate.toString,
+      "commodityCodeEffectiveTo"   -> commodity.validityEndDate.map(_.toString).getOrElse("null")
+    ) ++ writeGoodsReference(isUsingGoodsDescription, goodsRecord.goodsDescription)
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "FinishCreateGoodsRecord",
       tags = hc.toAuditTags(),
       detail = auditDetails
     )
@@ -51,5 +96,15 @@ case class AuditEventFactory() {
         Map(containsValueDescription -> "true", valueDescription -> value)
       }
       .getOrElse(Map(containsValueDescription -> "false"))
+
+  private def writeGoodsReference(isUsingGoodsDescription: Boolean, goodsDescription: String)                          =
+    if (isUsingGoodsDescription) {
+      Map(
+        "specifiedGoodsDescription" -> "true",
+        "goodsDescription"          -> goodsDescription
+      )
+    } else {
+      Map("specifiedGoodsDescription" -> "false")
+    }
 
 }

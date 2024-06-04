@@ -13,6 +13,7 @@ site.signIn = Sign in
 site.govuk = GOV.UK
 site.or = or
 
+
 date.day = Day
 date.month = Month
 date.year = Year
@@ -271,8 +272,21 @@ ukimsKickOut.p1 = You cannot use Trader Goods Profile (TGP) if you are not UKIMS
 ukimsKickOut.p2 = Find out how to
 ukimsKickOut.linkText = register for UKIMS (opens in a new tab)
 
-categorisationResult.title = categorisationResult
-categorisationResult.heading = categorisationResult
+categorisationResult.title = Categorisation complete
+categorisationResult.heading = Categorisation complete
+categorisationResult.Category1.panelBody = Your goods are Category 1 goods and are not eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.Category1NoExemptions.panelBody = Your goods are Category 1 goods and are not eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.Category1NoExemptions.p1 = These goods are Category 1 goods and there are no available conditions to change the category.
+categorisationResult.StandardNoSupplementaryUnits.panelBody = Your goods are standard goods and eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.Category3NoAssessments.panelBody = Your goods are standard goods and eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.Category3NoAssessments.p1 = These goods are Standard goods and there are no category assessments needed.
+categorisationResult.Category2.panelBody = Your goods are Category 2 goods and are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.tellUsWhatYouThink = Tell us what you think
+categorisationResult.thisIsNewService = This is a new service and we want to know what you think of it.
+categorisationResult.sendUsFeedback = Send us your feedback.
+categorisationResult.improvements = Your thoughts and ideas will help us to make improvements.
+categorisationResult.goToRecord = Go to goods record
+categorisationResult.goToHome = Go to homepage
 
 adviceStart.title = Asking HMRC for advice
 adviceStart.heading = Asking HMRC for advice
@@ -287,8 +301,24 @@ adviceStart.p4 = Whilst your record is under review by HMRC, you will not be abl
 adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you'll be able to by email. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
 adviceStart.p6 = You should get a response to your request within 5 working days, but it could take longer.
 
-adviceSuccess.title = adviceSuccess
-adviceSuccess.heading = adviceSuccess
+adviceSuccess.title = Request for advice complete
+adviceSuccess.h1 = Request for advice complete
+adviceSuccess.h2 = What happens next
+adviceSuccess.p1 = HMRC will contact you to let you know their decision.
+adviceSuccess.p2 = The decisions could be:
+adviceSuccess.p2.1 = agreeing the commodity code is correct
+adviceSuccess.p2.2 = asking for more information about the goods
+adviceSuccess.p2.3 = suggesting a change to the commodity code or goods description
+adviceSuccess.p2.4 = saying the record is wrong, and why
+adviceSuccess.p3 = You can send more information to HMRC about your goods to [email address] with your EORI number.
+adviceSuccess.p4 = Email is not a secure method of communication so do not include any personal details if you email HMRC.
+adviceSuccess.p5 = You should get a response to your request within 5 working days, but it could take longer.
+adviceSuccess.h2.1 = Tell us what you think
+adviceSuccess.p6 = This is a new service and we want to know what you think of it.
+adviceSuccess.p7.linkText = Send us your feedback
+adviceSuccess.p7 = Your thoughts and ideas will help us to make improvements.
+adviceSuccess.p8.linkText = Go to goods record
+adviceSuccess.p9.linkText = Go to homepage
 
 email.title = What is your email address?
 email.heading = What is your email address?
@@ -299,9 +329,10 @@ email.error.invalidFormat = Enter a valid email address
 email.error.length = Email must be 254 characters or less
 email.change.hidden = Email
 
-name.title = name
-name.heading = name
-name.checkYourAnswersLabel = name
-name.error.required = Enter name
-name.error.length = Name must be 100 characters or less
+name.title = What is your name?
+name.heading = What is your name?
+name.hint = We need your name so we can contact you.
+name.checkYourAnswersLabel = Name
+name.error.required = Enter your name
+name.error.length = Enter a name with less than 70 characters
 name.change.hidden = Name
