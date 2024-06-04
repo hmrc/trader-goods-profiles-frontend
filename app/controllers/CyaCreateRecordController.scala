@@ -24,6 +24,7 @@ import logging.Logging
 import models.{GoodsRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -39,7 +40,8 @@ class CyaCreateRecordController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateRecordView,
-  goodsRecordConnector: GoodsRecordConnector
+  goodsRecordConnector: GoodsRecordConnector,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -67,7 +69,11 @@ class CyaCreateRecordController @Inject() (
       case Right(model) =>
         goodsRecordConnector
           .submitGoodsRecordUrl(model, request.eori)
-          .map(_ => Redirect(routes.CreateRecordSuccessController.onPageLoad()))
+          .flatMap { _ =>
+            auditService
+              .auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
+              .map(_ => Redirect(routes.CreateRecordSuccessController.onPageLoad()))
+          }
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
     }
   }

@@ -18,9 +18,11 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.testEori
-import models.TraderProfile
+import models.{Commodity, GoodsRecord, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+
+import java.time.Instant
 
 class AuditEventFactorySpec extends SpecBase {
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -72,6 +74,81 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails("isNIPHLRegistered") mustBe "false"
         auditDetails.get("NIPHLNumber") mustBe None
 
+      }
+
+    }
+
+    "create start create goods record" - {
+
+      "create event" in {
+
+        val result = AuditEventFactory().createStartCreateGoodsRecord(testEori, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "StartCreateGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 2
+        auditDetails("EORINumber") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+
+      }
+
+    }
+
+    "create finish create goods record" - {
+
+      "create event when all optional fields populated" in {
+
+        val effectiveFrom = Instant.now
+        val effectiveTo   = effectiveFrom.plusSeconds(99)
+
+        val result = AuditEventFactory().createFinishCreateGoodsRecord(
+          AffinityGroup.Organisation,
+          GoodsRecord(testEori, "trader reference", "030821", "AG", "goods description", "1", "1970-01-01"),
+          Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo)),
+          isUsingGoodsDescription = true
+        )
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "FinishCreateGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 10
+        auditDetails("EORINumber") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Organisation"
+        auditDetails("traderReference") mustBe "trader reference"
+        auditDetails("specifiedGoodsDescription") mustBe "true"
+        auditDetails("goodsDescription") mustBe "goods description"
+        auditDetails("countryOfOrigin") mustBe "AG"
+        auditDetails("commodityDescription") mustBe "Sea urchins"
+        auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
+        auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
+      }
+
+      "create event when optional fields are not defined" in {
+
+        val effectiveFrom = Instant.now
+
+        val result = AuditEventFactory().createFinishCreateGoodsRecord(
+          AffinityGroup.Organisation,
+          GoodsRecord(testEori, "trader reference", "030821", "AG", "trader reference", "1", "1970-01-01"),
+          Commodity("030821", "Sea urchins", effectiveFrom, None),
+          isUsingGoodsDescription = false
+        )
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "FinishCreateGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 9
+        auditDetails("specifiedGoodsDescription") mustBe "false"
+        auditDetails.get("goodsDescription") mustBe None
+        auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
+        auditDetails("commodityCodeEffectiveTo") mustBe "null"
       }
 
     }
