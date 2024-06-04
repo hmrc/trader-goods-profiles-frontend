@@ -17,11 +17,20 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.{await, _}
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
+
+import scala.concurrent.Future
 
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
@@ -47,25 +56,59 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
         }
       }
+    }
 
-      "for a POST" - {
+    "for a POST" - {
 
-        "must redirect to ???" in {
+      "must redirect to ???" in {
 
-          val application =
-            applicationBuilder(userAnswers = Some(emptyUserAnswers))
-              .build()
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any, any)(any))
+          .thenReturn(Future.successful(Done))
 
-          running(application) {
-            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad.url)
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .build()
 
-            val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad.url)
 
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService, times(1))
+              .auditFinishUpdateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual))(
+                any()
+              )
+          }
+
+        }
+      }
+
+      "must let the play error handler deal with an audit future failure" in {
+
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any, any)(any))
+          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad.url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
           }
         }
       }
+
     }
   }
 }

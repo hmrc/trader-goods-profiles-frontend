@@ -21,9 +21,12 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
+
+import scala.concurrent.ExecutionContext
 
 class CyaCategorisationController @Inject() (
   override val messagesApi: MessagesApi,
@@ -31,8 +34,9 @@ class CyaCategorisationController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaCategorisationView
-) extends FrontendBaseController
+  view: CyaCategorisationView,
+  auditService: AuditService
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -43,8 +47,10 @@ class CyaCategorisationController @Inject() (
     Ok(view(list))
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad)
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    auditService
+      .auditFinishUpdateGoodsRecord(request.eori, request.affinityGroup)
+      .map(_ => Redirect(routes.IndexController.onPageLoad.url))
   }
 
 }
