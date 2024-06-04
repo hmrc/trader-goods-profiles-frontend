@@ -122,7 +122,7 @@ POST        /advice/email                                    controllers.EmailCo
 GET         /advice/email/check                              controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
 POST        /advice/email/check                              controllers.EmailController.onSubmit(mode: Mode = CheckMode)
 
-GET         /name                                            controllers.NameController.onPageLoad(mode: Mode = NormalMode)
-POST        /name                                            controllers.NameController.onSubmit(mode: Mode = NormalMode)
+GET         /advice/name                                     controllers.NameController.onPageLoad(mode: Mode = NormalMode)
+POST        /advice/name                                     controllers.NameController.onSubmit(mode: Mode = NormalMode)
 GET         /changeName                                      controllers.NameController.onPageLoad(mode: Mode = CheckMode)
 POST        /changeName                                      controllers.NameController.onSubmit(mode: Mode = CheckMode)

@@ -23,7 +23,7 @@ class NameFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "name.error.required"
   val lengthKey   = "name.error.length"
-  val maxLength   = 100
+  val maxLength   = 70
 
   val form = new NameFormProvider()()
 

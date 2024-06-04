@@ -298,9 +298,10 @@ email.error.invalidFormat = Enter a valid email address
 email.error.length = Email must be 254 characters or less
 email.change.hidden = Email
 
-name.title = name
-name.heading = name
-name.checkYourAnswersLabel = name
-name.error.required = Enter name
-name.error.length = Name must be 100 characters or less
+name.title = What is your name?
+name.heading = What is your name?
+name.hint = We need your name so we can contact you.
+name.checkYourAnswersLabel = Name
+name.error.required = Enter your name
+name.error.length = Enter a name with less than 70 characters
 name.change.hidden = Name

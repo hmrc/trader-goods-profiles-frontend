@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse
 import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream4xxResponse
 import uk.gov.hmrc.http.test.WireMockSupport
 
-
 class OttConnectorSpec
     extends AnyFreeSpec
     with Matchers
