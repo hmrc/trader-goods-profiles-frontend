@@ -20,10 +20,9 @@ import models.UserAnswers
 
 object CategorisationHelper {
 
-  def getScenario(userAnswers: UserAnswers): Scenario = {
+  def getScenario(userAnswers: UserAnswers): Scenario =
     //TODO: Implement logic
     Category1NoExemptions
-  }
 
 }
 

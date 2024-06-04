@@ -31,7 +31,7 @@ class CategorisationResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView,
+  view: CategorisationResultView
 ) extends FrontendBaseController
     with I18nSupport {
 
