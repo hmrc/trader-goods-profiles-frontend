@@ -18,6 +18,7 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
+import models.responses.GoodsRecordResponse
 import pages._
 import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
 
@@ -41,6 +42,14 @@ object GoodsRecord {
       answers.getPageValue(CountryOfOriginPage),
       getGoodsDescription(answers)
     ).parMapN(GoodsRecord.apply)
+
+  def buildFromResponse(response: GoodsRecordResponse): GoodsRecord = GoodsRecord(
+    response.actorId,
+    response.traderReference,
+    response.commodityCode,
+    response.countryOfOrigin,
+    response.goodsDescription
+  )
 
   private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
