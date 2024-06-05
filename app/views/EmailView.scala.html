@@ -29,6 +29,8 @@
 
 @layout(pageTitle = title(form, messages("email.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("email.heading")</h1>
+
     @formHelper(action = routes.EmailController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
