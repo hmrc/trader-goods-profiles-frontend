@@ -16,14 +16,14 @@
 
 package controllers
 
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{CategorisationRequiredAction, CategorisationRequiredActionImpl, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CategorisationQuery
+import queries.{CategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AssessmentViewModel
@@ -39,6 +39,7 @@ class AssessmentController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  requireCategorisations: CategorisationRequiredActionImpl,
   formProvider: AssessmentFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
@@ -46,18 +47,19 @@ class AssessmentController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode, assessmentId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoad(mode: Mode, recordId: String, assessmentId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData andThen requireCategorisations.withRecordId(recordId)) { implicit request =>
       {
         for {
-          categorisationInfo <- request.userAnswers.get(CategorisationQuery)
+          recordQuery <- request.userAnswers.get(RecordCategorisationsQuery)
+          categorisationInfo <- recordQuery.records.get(recordId)
           assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
           assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
         } yield {
 
           val form = formProvider(assessment.exemptions.map(_.id))
 
-          val preparedForm = request.userAnswers.get(AssessmentPage(assessmentId)) match {
+          val preparedForm = request.userAnswers.get(AssessmentPage(recordId, assessmentId)) match {
             case Some(value) => form.fill(value)
             case None        => form
           }
@@ -70,12 +72,12 @@ class AssessmentController @Inject() (
             radioOptions = radioOptions
           )
 
-          Ok(view(preparedForm, mode, assessmentId, viewModel))
+          Ok(view(preparedForm, mode, recordId, assessmentId, viewModel))
         }
       }.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
-  def onSubmit(mode: Mode, assessmentId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId:String, assessmentId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       {
         for {
@@ -98,13 +100,13 @@ class AssessmentController @Inject() (
                   radioOptions = radioOptions
                 )
 
-                Future.successful(BadRequest(view(formWithErrors, mode, assessmentId, viewModel)))
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, assessmentId, viewModel)))
               },
               value =>
                 for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(assessmentId), value))
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, assessmentId), value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AssessmentPage(assessmentId), mode, updatedAnswers))
+                } yield Redirect(navigator.nextPage(AssessmentPage(recordId, assessmentId), mode, updatedAnswers))
             )
         }
       }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
