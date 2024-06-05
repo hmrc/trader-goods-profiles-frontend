@@ -71,7 +71,9 @@ trait SpecBase
     .success
     .value
 
-  def testCommodity: Commodity = Commodity("1234567890", "test", Instant.now, None)
+  def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
+
+  def testCommodity: Commodity = Commodity("1234567890", "test", validityStartDate, None)
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
