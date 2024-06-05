@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.testEori
 import factories.AuditEventFactory
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -33,7 +33,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 
-import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -43,8 +42,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockAuditFactory                = mock[AuditEventFactory]
   val auditService                            = new AuditService(mockAuditConnector, mockAuditFactory)
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
-
-  private val testCommodity = Commodity(commodityCode = "123456", description = "test commodity", Instant.now, None)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -185,7 +182,15 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
       val expectedGoodsRecord =
-        GoodsRecord(testEori, "trader reference", "123456", "PF", "trader reference", "1", "1970-01-01")
+        GoodsRecord(
+          testEori,
+          "trader reference",
+          testCommodity.commodityCode,
+          "PF",
+          "trader reference",
+          "1",
+          testCommodity.validityStartDate
+        )
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
 
@@ -217,7 +222,15 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
       val expectedGoodsRecord =
-        GoodsRecord(testEori, "trader reference", "123456", "PF", "goods description", "1", "1970-01-01")
+        GoodsRecord(
+          testEori,
+          "trader reference",
+          testCommodity.commodityCode,
+          "PF",
+          "goods description",
+          "1",
+          testCommodity.validityStartDate
+        )
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
 
@@ -285,10 +298,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(CountryOfOriginPage, "PF")
       .success
       .value
-      .set(CommodityCodePage, "123456")
+      .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
       .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(CommodityQuery, testCommodity)
       .success
       .value
 

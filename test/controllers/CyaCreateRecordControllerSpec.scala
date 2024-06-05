@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  "CyaCreateProfileController" - {
+  "CyaCreateRecordController" - {
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
@@ -149,7 +149,15 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val result = route(application, request).value
 
-            val expectedPayload = GoodsRecord(testEori, "123", "654321", "1", "123", "1", "1970-01-01")
+            val expectedPayload = GoodsRecord(
+              testEori,
+              "123",
+              testCommodity.commodityCode,
+              "1",
+              "123",
+              "1",
+              testCommodity.validityStartDate
+            )
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad().url

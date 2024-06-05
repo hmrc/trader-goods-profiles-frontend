@@ -22,8 +22,13 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
+import queries.CommodityQuery
+
+import java.time.Instant
 
 class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+
+  private val testCommodity = Commodity("1234567890", "test", Instant.now, None)
 
   ".build" - {
 
@@ -36,7 +41,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage, "654321")
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
             .set(CountryOfOriginPage, "1")
@@ -51,10 +56,15 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(HasCorrectGoodsPage, true)
             .success
             .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(GoodsRecord(testEori, "123", "654321", "1", "2", "1", "1970-01-01"))
+        result mustEqual Right(
+          GoodsRecord(testEori, "123", testCommodity.commodityCode, "1", "2", "1", testCommodity.validityStartDate)
+        )
       }
 
       "and all optional data is missing" in {
@@ -64,7 +74,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage, "654321")
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
             .set(CountryOfOriginPage, "1")
@@ -76,10 +86,15 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(HasCorrectGoodsPage, true)
             .success
             .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(GoodsRecord(testEori, "123", "654321", "1", "123", "1", "1970-01-01"))
+        result mustEqual Right(
+          GoodsRecord(testEori, "123", testCommodity.commodityCode, "1", "123", "1", testCommodity.validityStartDate)
+        )
       }
     }
 
@@ -96,7 +111,8 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             PageMissing(TraderReferencePage),
             PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
-            PageMissing(UseTraderReferencePage)
+            PageMissing(UseTraderReferencePage),
+            PageMissing(CommodityQuery)
           )
         }
       }
@@ -108,7 +124,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage, "654321")
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
             .set(HasCorrectGoodsPage, true)
@@ -118,6 +134,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
             .set(UseTraderReferencePage, false)
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
             .success
             .value
 
@@ -135,7 +154,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage, "654321")
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
             .set(HasCorrectGoodsPage, true)
@@ -148,6 +167,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
             .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
             .success
             .value
 
@@ -167,7 +189,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage, "654321")
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
             .set(HasCorrectGoodsPage, false)
@@ -180,6 +202,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
             .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
             .success
             .value
 

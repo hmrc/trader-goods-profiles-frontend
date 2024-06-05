@@ -28,6 +28,8 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 
+import java.time.Instant
+
 class GoodsRecordConnectorSpec
     extends AnyFreeSpec
     with Matchers
@@ -48,7 +50,7 @@ class GoodsRecordConnectorSpec
 
     "must submit a goods record" in {
 
-      val goodsRecord = GoodsRecord(testEori, "1", "2", "3", "4", "1", "1970-01-01")
+      val goodsRecord = GoodsRecord(testEori, "1", "2", "3", "4", "1", Instant.now)
 
       wireMockServer.stubFor(
         post(urlEqualTo(s"/customs/traders/goods-profiles/$testEori/records"))
@@ -61,7 +63,7 @@ class GoodsRecordConnectorSpec
 
     "must return a failed future when the server returns an error" in {
 
-      val goodsRecord = GoodsRecord(testEori, "1", "2", "3", "4", "1", "1970-01-01")
+      val goodsRecord = GoodsRecord(testEori, "1", "2", "3", "4", "1", Instant.now)
 
       wireMockServer.stubFor(
         post(urlEqualTo(s"/customs/traders/goods-profiles/$testEori/records"))

@@ -20,6 +20,9 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import play.api.libs.json.{Json, OFormat}
+import queries.CommodityQuery
+
+import java.time.Instant
 
 final case class GoodsRecord(
   actorId: String,
@@ -28,7 +31,7 @@ final case class GoodsRecord(
   countryOfOrigin: String,
   goodsDescription: String,
   category: String,
-  comcodeEffectiveFromDate: String
+  comcodeEffectiveFromDate: Instant
 )
 
 object GoodsRecord {
@@ -44,8 +47,18 @@ object GoodsRecord {
       getGoodsDescription(answers),
       // TODO remove hard coding
       Right("1"),
-      Right("1970-01-01")
-    ).parMapN(GoodsRecord.apply)
+      answers.getPageValue(CommodityQuery)
+    ).parMapN((eori, traderReference, commodityCode, countryOfOrigin, goodsDescription, category, commodity) =>
+      GoodsRecord(
+        eori,
+        traderReference,
+        commodityCode,
+        countryOfOrigin,
+        goodsDescription,
+        category,
+        commodity.validityStartDate
+      )
+    )
 
   private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
