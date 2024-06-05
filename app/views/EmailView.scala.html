@@ -40,7 +40,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("email.heading")).withSize(Large)
+                label = LabelViewModel(messages("email.heading"), classes = "govuk-visually-hidden").withSize(Large)
             )
             .withHint(Hint(content = Text(messages("email.hint"))))
             .withWidth(Full)
