@@ -40,6 +40,7 @@ class GoodsRecordsConnector @Inject()(config: Configuration, httpClient: HttpCli
   def getRecord(eori: String, recordId: String)(implicit hc: HeaderCarrier): Future[GoodsRecordResponse] = {
     httpClient
       .get(getRecordUrl(eori, recordId))
+      .addHeaders(("X-Client-ID", "TGP-Frontend"))
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
