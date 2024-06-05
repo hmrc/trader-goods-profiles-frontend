@@ -18,7 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.GoodsRecord
+import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -48,25 +48,38 @@ class GoodsRecordConnectorSpec
 
   ".submitGoodsRecord" - {
 
+    val goodsRecord = CreateGoodsRecordRequest(
+      testEori,
+      testEori,
+      "1",
+      "2",
+      "3",
+      "4",
+      1,
+      None,
+      None,
+      None,
+      Instant.now,
+      None
+    )
+
     "must submit a goods record" in {
 
-      val goodsRecord = GoodsRecord(testEori, "1", "2", "3", "4", "1", Instant.now)
+      val goodsRecordResponse = CreateGoodsRecordResponse("recordId")
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/customs/traders/goods-profiles/$testEori/records"))
+        post(urlEqualTo(s"/trader-goods-profiles-router/records"))
           .withRequestBody(equalTo(Json.toJson(goodsRecord).toString))
-          .willReturn(ok())
+          .willReturn(ok().withBody(Json.toJson(goodsRecordResponse).toString))
       )
 
-      connector.submitGoodsRecordUrl(goodsRecord, testEori).futureValue
+      connector.submitGoodsRecordUrl(goodsRecord, testEori).futureValue mustBe goodsRecordResponse
     }
 
     "must return a failed future when the server returns an error" in {
 
-      val goodsRecord = GoodsRecord(testEori, "1", "2", "3", "4", "1", Instant.now)
-
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/customs/traders/goods-profiles/$testEori/records"))
+        post(urlEqualTo(s"/trader-goods-profiles-router/records"))
           .withRequestBody(equalTo(Json.toJson(goodsRecord).toString))
           .willReturn(serverError())
       )

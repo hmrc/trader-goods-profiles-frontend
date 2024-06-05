@@ -73,7 +73,7 @@ POST        /changeCategory1Assesments                       controllers.Categor
 GET         /create-record/create-record-start               controllers.CreateRecordStartController.onPageLoad()
 POST        /create-record/create-record-start               controllers.CreateRecordStartController.onSubmit()
 
-GET         /create-record/create-record-success             controllers.CreateRecordSuccessController.onPageLoad()
+GET         /create-record/create-record-success/:recordId   controllers.CreateRecordSuccessController.onPageLoad(recordId: String)
 
 GET         /create-record/goods-description                 controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/goods-description                 controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)

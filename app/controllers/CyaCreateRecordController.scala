@@ -21,9 +21,12 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{GoodsRecord, ValidationError}
+import models.{CreateGoodsRecordRequest, UserAnswers, ValidationError}
+import org.apache.pekko.Done
+import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage, UseTraderReferencePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import queries.CommodityQuery
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -48,7 +51,7 @@ class CyaCreateRecordController @Inject() (
     with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    GoodsRecord.build(request.userAnswers, request.eori) match {
+    CreateGoodsRecordRequest.build(request.userAnswers, request.eori) match {
       case Right(_)     =>
         val list = SummaryListViewModel(
           rows = Seq(
@@ -65,17 +68,31 @@ class CyaCreateRecordController @Inject() (
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    GoodsRecord.build(request.userAnswers, request.eori) match {
+    CreateGoodsRecordRequest.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         goodsRecordConnector
           .submitGoodsRecordUrl(model, request.eori)
-          .flatMap { _ =>
+          .flatMap { goodsRecordResponse =>
             auditService
               .auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
-              .map(_ => Redirect(routes.CreateRecordSuccessController.onPageLoad()))
+              .map { _ =>
+                cleanseUserAnswers(request.userAnswers)
+                Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
+              }
           }
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
     }
+  }
+
+  def cleanseUserAnswers(userAnswers: UserAnswers): Done = {
+    userAnswers.remove(TraderReferencePage)
+    userAnswers.remove(UseTraderReferencePage)
+    userAnswers.remove(GoodsDescriptionPage)
+    userAnswers.remove(CountryOfOriginPage)
+    userAnswers.remove(CommodityCodePage)
+    userAnswers.remove(CommodityQuery)
+    userAnswers.remove(HasCorrectGoodsPage)
+    Done
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {

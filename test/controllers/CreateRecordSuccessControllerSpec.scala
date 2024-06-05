@@ -30,7 +30,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CreateRecordSuccessController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CreateRecordSuccessController.onPageLoad("test").url)
 
         val result = route(application, request).value
 

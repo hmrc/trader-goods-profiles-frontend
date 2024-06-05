@@ -60,10 +60,23 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = GoodsRecord.build(answers, testEori)
+        val result = CreateGoodsRecordRequest.build(answers, testEori)
 
         result mustEqual Right(
-          GoodsRecord(testEori, "123", testCommodity.commodityCode, "1", "2", "1", testCommodity.validityStartDate)
+          CreateGoodsRecordRequest(
+            testEori,
+            testEori,
+            "123",
+            testCommodity.commodityCode,
+            "2",
+            "1",
+            1,
+            None,
+            None,
+            None,
+            testCommodity.validityStartDate,
+            None
+          )
         )
       }
 
@@ -90,10 +103,23 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = GoodsRecord.build(answers, testEori)
+        val result = CreateGoodsRecordRequest.build(answers, testEori)
 
         result mustEqual Right(
-          GoodsRecord(testEori, "123", testCommodity.commodityCode, "1", "123", "1", testCommodity.validityStartDate)
+          CreateGoodsRecordRequest(
+            testEori,
+            testEori,
+            "123",
+            testCommodity.commodityCode,
+            "123",
+            "1",
+            1,
+            None,
+            None,
+            None,
+            testCommodity.validityStartDate,
+            None
+          )
         )
       }
     }
@@ -104,12 +130,11 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = GoodsRecord.build(answers, testEori)
+        val result = CreateGoodsRecordRequest.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
             PageMissing(TraderReferencePage),
-            PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
             PageMissing(UseTraderReferencePage),
             PageMissing(CommodityQuery)
@@ -140,7 +165,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = GoodsRecord.build(answers, testEori)
+        val result = CreateGoodsRecordRequest.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionPage)
@@ -173,7 +198,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = GoodsRecord.build(answers, testEori)
+        val result = CreateGoodsRecordRequest.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -208,7 +233,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = GoodsRecord.build(answers, testEori)
+        val result = CreateGoodsRecordRequest.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(

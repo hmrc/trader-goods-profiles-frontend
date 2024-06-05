@@ -16,7 +16,7 @@
 
 package factories
 
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{Commodity, CreateGoodsRecordRequest, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
@@ -67,15 +67,15 @@ case class AuditEventFactory() {
 
   def createFinishCreateGoodsRecord(
     affinityGroup: AffinityGroup,
-    goodsRecord: GoodsRecord,
+    goodsRecord: CreateGoodsRecordRequest,
     commodity: Commodity,
     isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "EORINumber"                 -> goodsRecord.actorId,
       "affinityGroup"              -> affinityGroup.toString,
-      "traderReference"            -> goodsRecord.traderReference,
-      "commodityCode"              -> goodsRecord.commodityCode,
+      "traderReference"            -> goodsRecord.traderRef,
+      "commodityCode"              -> goodsRecord.comcode,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityDescription"       -> commodity.description,
       "commodityCodeEffectiveFrom" -> commodity.validityStartDate.toString,

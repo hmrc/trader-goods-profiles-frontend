@@ -18,7 +18,7 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.testEori
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{Commodity, CreateGoodsRecordRequest, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -106,14 +106,19 @@ class AuditEventFactorySpec extends SpecBase {
 
         val result = AuditEventFactory().createFinishCreateGoodsRecord(
           AffinityGroup.Organisation,
-          GoodsRecord(
+          CreateGoodsRecordRequest(
+            testEori,
             testEori,
             "trader reference",
             "030821",
-            "AG",
             "goods description",
-            "1",
-            Instant.now
+            "AG",
+            1,
+            None,
+            None,
+            None,
+            Instant.now,
+            None
           ),
           Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo)),
           isUsingGoodsDescription = true
@@ -142,14 +147,19 @@ class AuditEventFactorySpec extends SpecBase {
 
         val result = AuditEventFactory().createFinishCreateGoodsRecord(
           AffinityGroup.Organisation,
-          GoodsRecord(
+          CreateGoodsRecordRequest(
+            testEori,
             testEori,
             "trader reference",
             "030821",
-            "AG",
             "trader reference",
-            "1",
-            Instant.now
+            "AG",
+            1,
+            None,
+            None,
+            None,
+            Instant.now,
+            None
           ),
           Commodity("030821", "Sea urchins", effectiveFrom, None),
           isUsingGoodsDescription = false

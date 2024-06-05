@@ -17,8 +17,7 @@
 package connectors
 
 import config.Service
-import models.GoodsRecord
-import org.apache.pekko.Done
+import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse}
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -31,14 +30,16 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ec: ExecutionContext
 ) {
 
-  private val tgpRouterBaseUrl: Service    = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private def goodsRecordUrl(eori: String) =
-    url"$tgpRouterBaseUrl/customs/traders/goods-profiles/$eori/records"
+  private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
 
-  def submitGoodsRecordUrl(goodsRecord: GoodsRecord, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
+  def submitGoodsRecordUrl(goodsRecord: CreateGoodsRecordRequest, eori: String)(implicit
+    hc: HeaderCarrier
+  ): Future[CreateGoodsRecordResponse] =
     httpClient
-      .post(goodsRecordUrl(eori))
+      .post(goodsRecordUrl)
+      .setHeader(header = ("X-Client-ID", "tss"))
       .withBody(Json.toJson(goodsRecord))
       .execute[HttpResponse]
-      .map(_ => Done)
+      .map(response => response.json.as[CreateGoodsRecordResponse])
 }
