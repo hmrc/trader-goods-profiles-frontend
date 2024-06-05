@@ -1,0 +1,62 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package models.responses
+
+import cats.data.{EitherNec, NonEmptyChain}
+import cats.implicits._
+import pages._
+import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
+
+final case class GoodsRecordResponse(
+  recordId: String,
+  actorId: String,
+  traderReference: String,
+  commodityCode: String,
+  countryOfOrigin: String,
+  goodsDescription: String
+)
+
+object GoodsRecordResponse {
+
+  implicit val reads: Reads[GoodsRecordResponse] = {
+
+    import play.api.libs.functional.syntax._
+
+    (
+      (__ \ "recordId").read[String] and
+        (__ \ "actorId").read[String] and
+        (__ \ "traderRef").read[String] and
+        (__ \ "comcode").read[String] and
+        (__ \ "countryOfOrigin").read[String] and
+        (__ \ "goodsDescription").read[String]
+      )(GoodsRecordResponse.apply _)
+  }
+
+  implicit val writes: OWrites[GoodsRecordResponse] = {
+
+    import play.api.libs.functional.syntax._
+
+    (
+      (__ \ "recordId").write[String] and
+        (__ \ "actorId").write[String] and
+        (__ \ "traderRef").write[String] and
+        (__ \ "comcode").write[String] and
+        (__ \ "countryOfOrigin").write[String] and
+        (__ \ "goodsDescription").write[String]
+      )(unlift(GoodsRecordResponse.unapply))
+  }
+}

@@ -22,7 +22,6 @@ import pages._
 import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
 
 final case class GoodsRecord(
-  recordId: String,
   actorId: String,
   traderReference: String,
   commodityCode: String,
@@ -32,11 +31,10 @@ final case class GoodsRecord(
 
 object GoodsRecord {
 
-  //implicit lazy val format: OFormat[GoodsRecord] = Json.format
+  implicit lazy val format: OFormat[GoodsRecord] = Json.format
 
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
-      Right("placeholder might need to change when merging create."),
       Right(eori),
       answers.getPageValue(TraderReferencePage),
       getCommodityCode(answers),
@@ -62,31 +60,4 @@ object GoodsRecord {
       case Left(errors) => Left(errors)
     }
 
-  implicit val reads: Reads[GoodsRecord] = {
-
-    import play.api.libs.functional.syntax._
-
-    (
-      (__ \ "recordId").read[String] and
-      (__ \ "actorId").read[String] and
-        (__ \ "traderRef").read[String] and
-        (__ \ "comcode").read[String] and
-        (__ \ "countryOfOrigin").read[String] and
-        (__ \ "goodsDescription").read[String]
-      )(GoodsRecord.apply _)
-  }
-
-    implicit val writes: OWrites[GoodsRecord] = {
-
-      import play.api.libs.functional.syntax._
-
-      (
-        (__ \ "recordId").write[String] and
-          (__ \ "actorId").write[String] and
-          (__ \ "traderRef").write[String] and
-          (__ \ "comcode").write[String] and
-          (__ \ "countryOfOrigin").write[String] and
-          (__ \ "goodsDescription").write[String]
-        )(unlift(GoodsRecord.unapply))
-  }
 }

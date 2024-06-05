@@ -184,7 +184,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createFinishCreateGoodsRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
-      val expectedGoodsRecord = GoodsRecord("recId", testEori, "trader reference", "123456", "PF", "trader reference")
+      val expectedGoodsRecord = GoodsRecord(testEori, "trader reference", "123456", "PF", "trader reference")
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
 
@@ -215,7 +215,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createFinishCreateGoodsRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
-      val expectedGoodsRecord = GoodsRecord("recId", testEori, "trader reference", "123456", "PF", "goods description")
+      val expectedGoodsRecord = GoodsRecord(testEori, "trader reference", "123456", "PF", "goods description")
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
 

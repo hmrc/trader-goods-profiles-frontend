@@ -18,19 +18,18 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{GoodsRecord, TraderProfile}
+import models.responses.GoodsRecordResponse
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import testModels.DataStoreProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 
 class GoodsRecordsConnectorSpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -56,7 +55,7 @@ class GoodsRecordsConnectorSpec
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
-      connector.getRecord(testEori, testRecordId).futureValue mustBe GoodsRecord(
+      connector.getRecord(testEori, testRecordId).futureValue mustBe GoodsRecordResponse(
         testRecordId,
         testEori,
         "BAN001001",
@@ -89,8 +88,7 @@ class GoodsRecordsConnectorSpec
   }
 
   lazy private val getRecordResponse = Json
-    .parse(
-      s"""
+    .parse(s"""
         |  {
         |    "eori": "$testEori",
         |    "actorId": "$testEori",
