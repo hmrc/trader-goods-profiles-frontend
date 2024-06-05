@@ -16,10 +16,7 @@
 
 package models.responses
 
-import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits._
-import pages._
-import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
+import play.api.libs.json.{OWrites, Reads, __}
 
 final case class GoodsRecordResponse(
   recordId: String,
@@ -43,7 +40,7 @@ object GoodsRecordResponse {
         (__ \ "comcode").read[String] and
         (__ \ "countryOfOrigin").read[String] and
         (__ \ "goodsDescription").read[String]
-      )(GoodsRecordResponse.apply _)
+    )(GoodsRecordResponse.apply _)
   }
 
   implicit val writes: OWrites[GoodsRecordResponse] = {
@@ -57,6 +54,6 @@ object GoodsRecordResponse {
         (__ \ "comcode").write[String] and
         (__ \ "countryOfOrigin").write[String] and
         (__ \ "goodsDescription").write[String]
-      )(unlift(GoodsRecordResponse.unapply))
+    )(unlift(GoodsRecordResponse.unapply))
   }
 }

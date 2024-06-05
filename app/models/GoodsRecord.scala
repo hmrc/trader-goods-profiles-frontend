@@ -20,7 +20,7 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import models.responses.GoodsRecordResponse
 import pages._
-import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
+import play.api.libs.json.{Json, OFormat}
 
 final case class GoodsRecord(
   actorId: String,
