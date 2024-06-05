@@ -45,7 +45,7 @@ class CategorisationService @Inject()(
       case None =>
         val retrievalFutureResult = for {
           routerModel <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature <- ottConnector.getCategorisationInfo("0702000007")
+          goodsNomenclature <- ottConnector.getCategorisationInfo(routerModel.commodityCode)
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
           updatedAnswers <- Future.fromTry(request.userAnswers.set(
             RecordCategorisationsQuery,
