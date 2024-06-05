@@ -16,15 +16,16 @@
 
 package controllers
 
-import controllers.actions.{CategorisationRequiredAction, CategorisationRequiredActionImpl, DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.{CategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
@@ -39,7 +40,7 @@ class AssessmentController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  requireCategorisations: CategorisationRequiredActionImpl,
+  categorisationService: CategorisationService,
   formProvider: AssessmentFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
@@ -48,34 +49,38 @@ class AssessmentController @Inject() (
     with I18nSupport {
 
   def onPageLoad(mode: Mode, recordId: String, assessmentId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData andThen requireCategorisations.withRecordId(recordId)) { implicit request =>
-      {
-        for {
-          recordQuery <- request.userAnswers.get(RecordCategorisationsQuery)
-          categorisationInfo <- recordQuery.records.get(recordId)
-          assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
-          assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
-        } yield {
+    (identify andThen getData andThen requireData).async { implicit request => {
 
-          val form = formProvider(assessment.exemptions.map(_.id))
+        categorisationService.requireCategorisation(request, recordId).flatMap[Result] { _ =>
+          val optionalResult = for {
+            recordQuery <- request.userAnswers.get(RecordCategorisationsQuery)
+            categorisationInfo <- recordQuery.records.get(recordId)
+            assessment <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
+            assessmentIndex = categorisationInfo.categoryAssessments.indexOf(assessment)
+          } yield {
 
-          val preparedForm = request.userAnswers.get(AssessmentPage(recordId, assessmentId)) match {
-            case Some(value) => form.fill(value)
-            case None        => form
+            val form = formProvider(assessment.exemptions.map(_.id))
+            val preparedForm = request.userAnswers.get(AssessmentPage(recordId, assessmentId)) match {
+              case Some(value) => form.fill(value)
+              case None => form
+            }
+            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
+            val viewModel = AssessmentViewModel(
+              commodityCode = categorisationInfo.commodityCode,
+              numberOfThisAssessment = assessmentIndex + 1,
+              numberOfAssessments = categorisationInfo.categoryAssessments.size,
+              radioOptions = radioOptions
+            )
+
+            Ok(view(preparedForm, mode, recordId, assessmentId, viewModel))
           }
 
-          val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
-          val viewModel    = AssessmentViewModel(
-            commodityCode = categorisationInfo.commodityCode,
-            numberOfThisAssessment = assessmentIndex + 1,
-            numberOfAssessments = categorisationInfo.categoryAssessments.size,
-            radioOptions = radioOptions
-          )
-
-          Ok(view(preparedForm, mode, recordId, assessmentId, viewModel))
+          Future.successful(optionalResult.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad())))
         }
-      }.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+
+      }
     }
+
 
   def onSubmit(mode: Mode, recordId:String, assessmentId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

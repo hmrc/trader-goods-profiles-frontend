@@ -14,51 +14,36 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package services
 
 import connectors.{GoodsRecordsConnector, OttConnector}
-
-import javax.inject.Inject
-import controllers.routes
 import models.RecordCategorisations
 import models.ott.CategorisationInfo
-import models.requests.{DataRequest, OptionalDataRequest}
-import play.api.mvc.Results.Redirect
-import play.api.mvc.{ActionRefiner, Result}
+import models.requests.DataRequest
+import org.apache.pekko.Done
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class CategorisationRequiredActionImpl @Inject() (
+class CategorisationService @Inject()(
  sessionRepository: SessionRepository,
  ottConnector: OttConnector,
  goodsRecordsConnector: GoodsRecordsConnector
-) extends CategorisationRequiredAction {
+)(implicit ec: ExecutionContext) {
 
-  implicit var executionContext: ExecutionContext = ExecutionContext.global
-  implicit var hc: HeaderCarrier = HeaderCarrier()
-
-  var recordId = ""
-
-  def withRecordId(recordId: String): CategorisationRequiredAction = {
-    this.recordId = recordId
-    this
-  }
-
-  override protected def refine[A](request: DataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
+  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[Done] = {
 
     val recordCategorisations = request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     recordCategorisations.records.get(recordId) match {
-      case Some(categorisationInfo) =>
-        Future.successful(
-          Right(DataRequest(request.request, request.userId, request.eori, request.affinityGroup, request.userAnswers))
-        )
+      case Some(categorisationInfo: CategorisationInfo) =>
+        Future.successful(Done)
       case None =>
-        for {
+        val retrievalFutureResult = for {
           routerModel <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature <- ottConnector.getCategorisationInfo(routerModel.commodityCode)
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
@@ -67,10 +52,11 @@ class CategorisationRequiredActionImpl @Inject() (
             recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
           ))
           _ <- sessionRepository.set(updatedAnswers)
-        } yield Right(DataRequest(request.request, request.userId, request.eori, request.affinityGroup, updatedAnswers))
+        } yield Done
+
+        retrievalFutureResult.recoverWith {
+          case exception: Exception => Future.failed(exception)
+        }
     }
   }
-
 }
-
-trait CategorisationRequiredAction extends ActionRefiner[DataRequest, DataRequest]
