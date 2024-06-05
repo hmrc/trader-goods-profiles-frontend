@@ -27,9 +27,9 @@ case object UseTraderReferencePage extends QuestionPage[Boolean] {
 
   override def toString: String = "useTraderReference"
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
-    userAnswers.get(UseTraderReferencePage) match {
-      case Some(true) => userAnswers.remove(GoodsDescriptionPage)
-      case _          => super.cleanup(value, userAnswers)
+  override def cleanup(value: Option[Boolean], updatedUserAnswers: UserAnswers, originalUserAnswers: UserAnswers): Try[UserAnswers] =
+    updatedUserAnswers.get(UseTraderReferencePage) match {
+      case Some(true) => updatedUserAnswers.remove(GoodsDescriptionPage)
+      case _          => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }
 }
