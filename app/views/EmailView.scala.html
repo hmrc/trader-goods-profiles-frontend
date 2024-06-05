@@ -29,6 +29,8 @@
 
 @layout(pageTitle = title(form, messages("email.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("email.heading")</h1>
+
     @formHelper(action = routes.EmailController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
@@ -38,7 +40,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("email.heading")).withSize(Large)
+                label = Label(content = messages("name.heading"), classes = "govuk-visually-hidden")
             )
             .withHint(Hint(content = Text(messages("email.hint"))))
             .withWidth(Full)
