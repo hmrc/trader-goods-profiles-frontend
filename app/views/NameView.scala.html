@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
 
 @this(
@@ -29,6 +28,8 @@
 
 @layout(pageTitle = title(form, messages("name.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("name.heading")</h1>
+
     @formHelper(action = routes.NameController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
@@ -38,7 +39,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("name.heading")).withSize(Large)
+                label = Label(content = messages("name.heading"), classes = "govuk-visually-hidden")
             )
             .withHint(Hint(content = Text(messages("name.hint"))))
             .withWidth(Full)
