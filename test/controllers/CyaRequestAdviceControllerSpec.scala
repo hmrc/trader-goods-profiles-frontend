@@ -100,27 +100,27 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
     "for a POST" - {
 
-//      "must submit the advice request and redirect to AdviceSuccessController" in {
-//
-//        val userAnswers = mandatoryProfileUserAnswers
-//
-//        val mockConnector = mock[AccreditationConnector]
-//        when(mockConnector.submitRequestAccreditation(any())(any())).thenReturn(Future.successful(Done))
-//
-//        val application =
-//          applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[AccreditationConnector].toInstance(mockConnector))
-//            .build()
-//
-//        running(application) {
-//          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
-//
-//          val result = route(application, request).value
-//
-//          status(result) mustEqual SEE_OTHER
-//          redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad().url
-//        }
-//      }
+      "must submit the advice request and redirect to AdviceSuccessController" in {
+
+        val userAnswers = mandatoryAdviceUserAnswers
+
+        val mockConnector = mock[AccreditationConnector]
+        when(mockConnector.submitRequestAccreditation(any())(any())).thenReturn(Future.successful(Done))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad().url
+        }
+      }
 
       "must let the play error handler deal with connector failure" in {
 
