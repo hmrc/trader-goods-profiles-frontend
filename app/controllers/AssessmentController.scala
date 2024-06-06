@@ -42,9 +42,9 @@ class AssessmentController @Inject() (
   formProvider: AssessmentFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
-  )(implicit ec: ExecutionContext)
-      extends FrontendBaseController
-      with I18nSupport {
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(mode: Mode, assessmentId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
