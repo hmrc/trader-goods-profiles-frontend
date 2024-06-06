@@ -127,7 +127,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
       "when user answers can create a valid goods record" - {
 
-        "must submit the goods record and redirect to the CreateRecordSuccessController" in {
+        "must submit the goods record and redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
 
           val userAnswers = mandatoryRecordUserAnswers
 

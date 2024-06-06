@@ -21,12 +21,9 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{CreateGoodsRecordRequest, UserAnswers, ValidationError}
-import org.apache.pekko.Done
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage, UseTraderReferencePage}
+import models.{CreateGoodsRecordRequest, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.CommodityQuery
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -70,29 +67,12 @@ class CyaCreateRecordController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     CreateGoodsRecordRequest.build(request.userAnswers, request.eori) match {
       case Right(model) =>
-        goodsRecordConnector
-          .submitGoodsRecordUrl(model, request.eori)
-          .flatMap { goodsRecordResponse =>
-            auditService
-              .auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
-              .map { _ =>
-                cleanseUserAnswers(request.userAnswers)
-                Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
-              }
-          }
+        for {
+          goodsRecordResponse <- goodsRecordConnector.submitGoodsRecordUrl(model, request.eori)
+          _                   <- auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
+        } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
     }
-  }
-
-  def cleanseUserAnswers(userAnswers: UserAnswers): Done = {
-    userAnswers.remove(TraderReferencePage)
-    userAnswers.remove(UseTraderReferencePage)
-    userAnswers.remove(GoodsDescriptionPage)
-    userAnswers.remove(CountryOfOriginPage)
-    userAnswers.remove(CommodityCodePage)
-    userAnswers.remove(CommodityQuery)
-    userAnswers.remove(HasCorrectGoodsPage)
-    Done
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
