@@ -16,25 +16,14 @@
 
 package models
 
-import queries.Query
+import play.api.libs.json.{Json, OFormat}
 
-sealed trait ValidationError {
+final case class CreateGoodsRecordResponse(
+  recordId: String
+)
 
-  val query: Query
-  val message: String
-}
+object CreateGoodsRecordResponse {
 
-final case class PageMissing(query: Query) extends ValidationError {
+  implicit lazy val format: OFormat[CreateGoodsRecordResponse] = Json.format
 
-  val message: String = s"Page missing: ${query.path}"
-}
-
-final case class UnexpectedPage(query: Query) extends ValidationError {
-
-  val message: String = s"Unexpected page: ${query.path}"
-}
-
-final case class MismatchedPage(query: Query) extends ValidationError {
-
-  val message: String = s"Mismatched page: ${query.path}"
 }

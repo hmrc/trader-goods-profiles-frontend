@@ -66,6 +66,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   "CategoryGuidance Controller" - {
 
+    val recordId = "test-record-id"
+
     "must call OTT and save the response in user answers prior to loading on a GET" in {
 
       val mockSessionRepository = mock[SessionRepository]
@@ -80,7 +82,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
 
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
         val result  = route(application, request).value
 
         status(result) mustEqual OK
@@ -99,7 +101,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -117,7 +119,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
         val result = route(application, request).value
 

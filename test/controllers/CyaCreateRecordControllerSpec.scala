@@ -18,15 +18,16 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import models.UserAnswers
+import connectors.GoodsRecordConnector
+import models.{CreateGoodsRecordResponse, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{await, _}
 import play.api.inject.bind
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -39,7 +40,7 @@ import scala.concurrent.Future
 
 class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  "CyaCreateProfileController" - {
+  "CyaCreateRecordController" - {
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
@@ -124,47 +125,95 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
     "for a POST" - {
 
-      "must redirect to Create Record Success Controller" in {
+      "when user answers can create a valid goods record" - {
 
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
+        "must submit the goods record and redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
 
-        val testUserAnswers = emptyUserAnswers
-        val application     =
-          applicationBuilder(userAnswers = Some(testUserAnswers))
-            .overrides(
-              bind[AuditService].toInstance(mockAuditService)
+          val userAnswers = mandatoryRecordUserAnswers
+
+          val mockConnector = mock[GoodsRecordConnector]
+          when(mockConnector.submitGoodsRecord(any())(any()))
+            .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
+
+          val mockAuditService = mock[AuditService]
+          when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .overrides(bind[AuditService].toInstance(mockAuditService))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+
+            val result = route(application, request).value
+
+            val expectedPayload = GoodsRecord(
+              testEori,
+              "123",
+              testCommodity.commodityCode,
+              "123",
+              "1",
+              testCommodity.validityStartDate,
+              testCommodity.validityEndDate
             )
-            .build()
 
-        running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
+            verify(mockConnector, times(1)).submitGoodsRecord(eqTo(expectedPayload))(any())
 
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad().url
-
-          withClue("must call the audit service with the correct details") {
-            verify(mockAuditService, times(1))
-              .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(testUserAnswers))(
-                any()
-              )
-
+            withClue("must call the audit connector with the supplied details") {
+              verify(mockAuditService, times(1))
+                .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+            }
           }
         }
       }
 
-      "must let the play error handler deal with an audit future failure" in {
+      "when user answers cannot create a goods record" - {
 
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditFinishCreateGoodsRecord(any, any, any)(any))
-          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockConnector    = mock[GoodsRecordConnector]
+          val mockAuditService = mock[AuditService]
+          val continueUrl      = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .overrides(bind[AuditService].toInstance(mockAuditService))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            verify(mockConnector, never()).submitGoodsRecord(any())(any())
+
+            withClue("must not try and submit an audit") {
+              verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
+            }
+          }
+
+        }
+      }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers = mandatoryRecordUserAnswers
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.submitGoodsRecord(any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
         running(application) {
@@ -176,6 +225,19 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
       }
 
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
     }
   }
 }
