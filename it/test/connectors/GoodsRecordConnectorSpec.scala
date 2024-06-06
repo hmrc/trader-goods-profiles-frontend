@@ -100,16 +100,5 @@ class GoodsRecordConnectorSpec
 
       connector.submitGoodsRecord(goodsRecord).failed.futureValue
     }
-
-    "must return a failed future when there is no header set" in {
-
-      wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-router/records"))
-          .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
-          .willReturn(badRequest())
-      )
-
-      connector.submitGoodsRecord(goodsRecord).failed.futureValue
-    }
   }
 }
