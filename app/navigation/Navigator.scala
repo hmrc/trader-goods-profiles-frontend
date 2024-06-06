@@ -27,24 +27,25 @@ import queries.CategorisationQuery
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ProfileSetupPage       => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
-    case UkimsNumberPage        => _ => routes.HasNirmsController.onPageLoad(NormalMode)
-    case HasNirmsPage           => navigateFromHasNirms
-    case NirmsNumberPage        => _ => routes.HasNiphlController.onPageLoad(NormalMode)
-    case HasNiphlPage           => navigateFromHasNiphl
-    case NiphlNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case CreateRecordStartPage  => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
-    case TraderReferencePage    => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
-    case UseTraderReferencePage => navigateFromUseTraderReference
-    case GoodsDescriptionPage   => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
-    case CountryOfOriginPage    => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
-    case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
-    case HasCorrectGoodsPage    => navigateFromHasCorrectGoods
-    case p: AssessmentPage      => navigateFromAssessment(p)
-    case AdviceStartPage        => _ => routes.NameController.onPageLoad(NormalMode)
-    case NamePage               => _ => routes.EmailController.onPageLoad(NormalMode)
-    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
-    case _                      => _ => routes.IndexController.onPageLoad
+    case ProfileSetupPage         => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
+    case UkimsNumberPage          => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case HasNirmsPage             => navigateFromHasNirms
+    case NirmsNumberPage          => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case HasNiphlPage             => navigateFromHasNiphl
+    case NiphlNumberPage          => _ => routes.CyaCreateProfileController.onPageLoad
+    case CreateRecordStartPage    => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
+    case TraderReferencePage      => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
+    case UseTraderReferencePage   => navigateFromUseTraderReference
+    case GoodsDescriptionPage     => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
+    case CountryOfOriginPage      => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
+    case CommodityCodePage        => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case HasCorrectGoodsPage      => navigateFromHasCorrectGoods
+    case p: AssessmentPage        => navigateFromAssessment(p)
+    case AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode)
+    case NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode)
+    case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
+    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
+    case _                        => _ => routes.IndexController.onPageLoad
 
   }
 
@@ -101,6 +102,15 @@ class Navigator @Inject() () {
         routes.IndexController.onPageLoad
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasSupplementaryUnit(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage)
+      .map {
+        case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode)
+        case false => routes.JourneyRecoveryController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
