@@ -33,9 +33,8 @@ case object CommodityCodePage extends QuestionPage[String] {
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] = {
 
-    val originalValue = originalUserAnswers.get(CommodityCodePage)
-    originalValue match {
-      case x if x == newValue =>
+    originalUserAnswers.get(CommodityCodePage) match {
+      case originalValue if originalValue == newValue =>
         Success(updatedUserAnswers)
       case _                  =>
         updatedUserAnswers.remove(HasCorrectGoodsPage)
