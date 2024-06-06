@@ -43,7 +43,7 @@ class CategorisationService @Inject()(
       case Some(categorisationInfo: CategorisationInfo) =>
         Future.successful(Done)
       case None =>
-        val retrievalFutureResult = for {
+        for {
           goodsRecord <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
@@ -53,10 +53,6 @@ class CategorisationService @Inject()(
           ))
           _ <- sessionRepository.set(updatedAnswers)
         } yield Done
-
-        retrievalFutureResult.recoverWith {
-          case exception: Exception => Future.failed(exception)
-        }
     }
   }
 }
