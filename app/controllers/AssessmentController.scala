@@ -33,18 +33,18 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AssessmentController @Inject() (
-                                       override val messagesApi: MessagesApi,
-                                       sessionRepository: SessionRepository,
-                                       navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       formProvider: AssessmentFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: AssessmentView
-                                     )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
-    with I18nSupport {
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  formProvider: AssessmentFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: AssessmentView
+  )(implicit ec: ExecutionContext)
+      extends FrontendBaseController
+      with I18nSupport {
 
   def onPageLoad(mode: Mode, assessmentId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
