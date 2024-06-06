@@ -26,7 +26,11 @@ case class AssessmentPage(assessmentId: String) extends QuestionPage[AssessmentA
 
   override def path: JsPath = JsPath \ "assessments" \ assessmentId
 
-  override def cleanup(value: Option[AssessmentAnswer], updatedUserAnswers: UserAnswers, originalUserAnswers: UserAnswers): Try[UserAnswers] =
+  override def cleanup(
+    value: Option[AssessmentAnswer],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
     if (value.contains(AssessmentAnswer.NoExemption)) {
       {
         for {

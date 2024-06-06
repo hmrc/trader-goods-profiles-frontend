@@ -30,6 +30,10 @@ trait Gettable[A] extends Query
 
 trait Settable[A] extends Query {
 
-  def cleanup(newValue: Option[A], updatedUserAnswers: UserAnswers, originalUserAnswers: UserAnswers): Try[UserAnswers] =
+  def cleanup(
+    newValue: Option[A],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
     Success(updatedUserAnswers)
 }

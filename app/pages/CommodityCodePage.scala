@@ -27,13 +27,17 @@ case object CommodityCodePage extends QuestionPage[String] {
 
   override def toString: String = "commodityCode"
 
-  override def cleanup(newValue: Option[String], updatedUserAnswers: UserAnswers, originalUserAnswers: UserAnswers): Try[UserAnswers] = {
+  override def cleanup(
+    newValue: Option[String],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] = {
 
     val originalValue = originalUserAnswers.get(CommodityCodePage)
-     originalValue match {
+    originalValue match {
       case x if x == newValue =>
         Success(updatedUserAnswers)
-      case _ =>
+      case _                  =>
         updatedUserAnswers.remove(HasCorrectGoodsPage)
     }
   }
