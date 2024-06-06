@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{GoodsRecordsConnector, OttConnector}
+import connectors.{GoodsRecordConnector, OttConnector}
 import models.RecordCategorisations
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
@@ -32,7 +32,7 @@ import scala.util.Try
 class CategorisationService @Inject() (
   sessionRepository: SessionRepository,
   ottConnector: OttConnector,
-  goodsRecordsConnector: GoodsRecordsConnector
+  goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[Done] = {

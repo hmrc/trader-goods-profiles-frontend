@@ -17,10 +17,12 @@
 package connectors
 
 import config.Service
+import models.responses.GoodsRecordResponse
 import models.router.CreateRecordRequest
 import models.{CreateGoodsRecordResponse, GoodsRecord}
 import play.api.Configuration
-import play.api.libs.json.Json
+import play.api.http.Status.OK
+import play.api.libs.json.{JsResult, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -32,14 +34,35 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 ) {
   private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
+  private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
+
+  private def getRecordUrl(eori: String, recordId: String) =
+    url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
       .post(goodsRecordUrl)
-      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
+      .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
+
+  def getRecord(eori: String, recordId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[GoodsRecordResponse] =
+    httpClient
+      .get(getRecordUrl(eori, recordId))
+      .addHeaders(clientIdHeader)
+      .execute[HttpResponse]
+      .flatMap { response =>
+        response.status match {
+          case OK =>
+            response.json
+              .validate[GoodsRecordResponse]
+              .map(result => Future.successful(result))
+              .recoverTotal(error => Future.failed(JsResult.Exception(error)))
+        }
+      }
 }

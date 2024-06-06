@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import connectors.{GoodsRecordsConnector, OttConnector}
+import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
@@ -43,7 +43,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockSessionRepository     = mock[SessionRepository]
   private val mockOttConnector          = mock[OttConnector]
-  private val mockGoodsRecordsConnector = mock[GoodsRecordsConnector]
+  private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   private val mockOttResponse = OttResponse(
     GoodsNomenclatureResponse("some id", "some comcode"),
