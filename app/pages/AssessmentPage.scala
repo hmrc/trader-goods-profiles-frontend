@@ -22,7 +22,7 @@ import queries.CategorisationQuery
 
 import scala.util.{Failure, Success, Try}
 
-case class AssessmentPage(recordId: String, assessmentId: String) extends QuestionPage[AssessmentAnswer] {
+case class AssessmentPage(assessmentId: String) extends QuestionPage[AssessmentAnswer] {
 
   override def path: JsPath = JsPath \ "assessments" \ assessmentId
 
@@ -36,7 +36,7 @@ case class AssessmentPage(recordId: String, assessmentId: String) extends Questi
           (_, itemsToRemove)  = categorisationInfo.categoryAssessments.splitAt(thisAssessmentIndex + 1)
         } yield itemsToRemove
           .foldLeft[Try[UserAnswers]](Success(userAnswers))((acc, assessment) =>
-            acc.flatMap(_.remove(AssessmentPage(recordId, assessment.id)))
+            acc.flatMap(_.remove(AssessmentPage(assessment.id)))
           )
       }.getOrElse(Failure(new InconsistentUserAnswersException(s"Could not find category assessment $assessmentId")))
     } else {

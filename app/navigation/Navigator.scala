@@ -94,7 +94,7 @@ class Navigator @Inject() () {
       case AssessmentAnswer.Exemption(_) =>
         categorisationInfo.categoryAssessments
           .lift(assessmentIndex + 1)
-          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, nextAssessment.id))
+          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, nextAssessment.id))
           .getOrElse(routes.IndexController.onPageLoad)
 
       case AssessmentAnswer.NoExemption =>

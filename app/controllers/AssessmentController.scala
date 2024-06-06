@@ -22,10 +22,9 @@ import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.CategorisationQuery
 import repositories.SessionRepository
-import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
@@ -34,55 +33,49 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AssessmentController @Inject() (
-  override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
-  navigator: Navigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  categorisationService: CategorisationService,
-  formProvider: AssessmentFormProvider,
-  val controllerComponents: MessagesControllerComponents,
-  view: AssessmentView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+                                       override val messagesApi: MessagesApi,
+                                       sessionRepository: SessionRepository,
+                                       navigator: Navigator,
+                                       identify: IdentifierAction,
+                                       getData: DataRetrievalAction,
+                                       requireData: DataRequiredAction,
+                                       formProvider: AssessmentFormProvider,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       view: AssessmentView
+                                     )(implicit ec: ExecutionContext)
+  extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode, recordId: String, assessmentId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request => {
+  def onPageLoad(mode: Mode, assessmentId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      {
+        for {
+          categorisationInfo <- request.userAnswers.get(CategorisationQuery)
+          assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
+          assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
+        } yield {
 
-        categorisationService.requireCategorisation(request, recordId).flatMap[Result] { _ =>
-          val optionalResult = for {
-            recordQuery <- request.userAnswers.get(RecordCategorisationsQuery)
-            categorisationInfo <- recordQuery.records.get(recordId)
-            assessment <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
-            assessmentIndex = categorisationInfo.categoryAssessments.indexOf(assessment)
-          } yield {
+          val form = formProvider(assessment.exemptions.map(_.id))
 
-            val form = formProvider(assessment.exemptions.map(_.id))
-            val preparedForm = request.userAnswers.get(AssessmentPage(recordId, assessmentId)) match {
-              case Some(value) => form.fill(value)
-              case None => form
-            }
-            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
-            val viewModel = AssessmentViewModel(
-              commodityCode = categorisationInfo.commodityCode,
-              numberOfThisAssessment = assessmentIndex + 1,
-              numberOfAssessments = categorisationInfo.categoryAssessments.size,
-              radioOptions = radioOptions
-            )
-
-            Ok(view(preparedForm, mode, recordId, assessmentId, viewModel))
+          val preparedForm = request.userAnswers.get(AssessmentPage(assessmentId)) match {
+            case Some(value) => form.fill(value)
+            case None        => form
           }
 
-          Future.successful(optionalResult.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-        }
+          val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
+          val viewModel    = AssessmentViewModel(
+            commodityCode = categorisationInfo.commodityCode,
+            numberOfThisAssessment = assessmentIndex + 1,
+            numberOfAssessments = categorisationInfo.categoryAssessments.size,
+            radioOptions = radioOptions
+          )
 
-      }
+          Ok(view(preparedForm, mode, assessmentId, viewModel))
+        }
+      }.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
-
-  def onSubmit(mode: Mode, recordId:String, assessmentId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, assessmentId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       {
         for {
@@ -105,13 +98,13 @@ class AssessmentController @Inject() (
                   radioOptions = radioOptions
                 )
 
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, assessmentId, viewModel)))
+                Future.successful(BadRequest(view(formWithErrors, mode, assessmentId, viewModel)))
               },
               value =>
                 for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, assessmentId), value))
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(assessmentId), value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AssessmentPage(recordId, assessmentId), mode, updatedAnswers))
+                } yield Redirect(navigator.nextPage(AssessmentPage(assessmentId), mode, updatedAnswers))
             )
         }
       }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))

@@ -41,8 +41,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  private val mockSessionRepository = mock[SessionRepository]
-  private val mockOttConnector = mock[OttConnector]
+  private val mockSessionRepository     = mock[SessionRepository]
+  private val mockOttConnector          = mock[OttConnector]
   private val mockGoodsRecordsConnector = mock[GoodsRecordsConnector]
 
   private val mockOttResponse = OttResponse(
@@ -60,13 +60,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "description"
   )
 
-  private val categorisationService = new CategorisationService(mockSessionRepository, mockOttConnector, mockGoodsRecordsConnector)
+  private val categorisationService =
+    new CategorisationService(mockSessionRepository, mockOttConnector, mockGoodsRecordsConnector)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any())(any())).thenReturn(Future.successful(mockOttResponse))
-    when(mockGoodsRecordsConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+    when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+      .thenReturn(Future.successful(mockGoodsRecordResponse))
   }
 
   override def afterEach(): Unit = {
@@ -99,9 +101,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "should not store category assessments if they are already present, then return successful Done" in {
-      val userAnswers = emptyUserAnswers.set(RecordCategorisationsQuery,
-        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq())))
-      ).success.value
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq()))))
+        .success
+        .value
 
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
