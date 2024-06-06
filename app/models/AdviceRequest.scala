@@ -16,25 +16,25 @@
 
 package models
 
-import queries.Query
+import cats.data.EitherNec
+import cats.implicits.catsSyntaxTuple3Parallel
+import pages.{EmailPage, NamePage}
+import play.api.libs.json.{Json, OFormat}
 
-sealed trait ValidationError {
+final case class AdviceRequest(
+  actorId: String,
+  name: String,
+  email: String
+)
 
-  val query: Query
-  val message: String
-}
+object AdviceRequest {
 
-final case class PageMissing(query: Query) extends ValidationError {
+  implicit lazy val format: OFormat[AdviceRequest] = Json.format
 
-  val message: String = s"Page missing: ${query.path}"
-}
-
-final case class UnexpectedPage(query: Query) extends ValidationError {
-
-  val message: String = s"Unexpected page: ${query.path}"
-}
-
-final case class MismatchedPage(query: Query) extends ValidationError {
-
-  val message: String = s"Mismatched page: ${query.path}"
+  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, AdviceRequest] =
+    (
+      Right(eori),
+      answers.getPageValue(NamePage),
+      answers.getPageValue(EmailPage)
+    ).parMapN(AdviceRequest.apply)
 }

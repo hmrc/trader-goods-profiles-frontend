@@ -50,7 +50,7 @@ POST        /ukims-number                                    controllers.UkimsNu
 GET         /ukims-number/check                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /categorisation-start                            controllers.CategoryGuidanceController.onPageLoad()
+GET         /categorisation-start/:recordId                  controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /categorisation-start                            controllers.CategoryGuidanceController.onSubmit
 
 GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
@@ -73,7 +73,7 @@ POST        /changeCategory1Assesments                       controllers.Categor
 GET         /create-record/create-record-start               controllers.CreateRecordStartController.onPageLoad()
 POST        /create-record/create-record-start               controllers.CreateRecordStartController.onSubmit()
 
-GET         /create-record/create-record-success             controllers.CreateRecordSuccessController.onPageLoad()
+GET         /create-record/create-record-success/:recordId   controllers.CreateRecordSuccessController.onPageLoad(recordId: String)
 
 GET         /create-record/goods-description                 controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/goods-description                 controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
@@ -114,8 +114,9 @@ GET         /advice-start                                    controllers.AdviceS
 POST        /advice-start                                    controllers.AdviceStartController.onSubmit()
 
 GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
+POST        /advice/check-your-answers                       controllers.CyaRequestAdviceController.onSubmit
 
-GET         /adviceSuccess                                   controllers.AdviceSuccessController.onPageLoad()
+GET         /advice/success                                  controllers.AdviceSuccessController.onPageLoad()
 
 GET         /advice/email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
 POST        /advice/email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode)

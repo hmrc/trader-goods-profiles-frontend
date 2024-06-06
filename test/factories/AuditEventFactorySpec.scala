@@ -106,7 +106,15 @@ class AuditEventFactorySpec extends SpecBase {
 
         val result = AuditEventFactory().createFinishCreateGoodsRecord(
           AffinityGroup.Organisation,
-          GoodsRecord(testEori, "trader reference", "030821", "AG", "goods description"),
+          GoodsRecord(
+            testEori,
+            "trader reference",
+            "030821",
+            "goods description",
+            "AG",
+            Instant.now,
+            Some(Instant.now)
+          ),
           Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo)),
           isUsingGoodsDescription = true
         )
@@ -134,7 +142,15 @@ class AuditEventFactorySpec extends SpecBase {
 
         val result = AuditEventFactory().createFinishCreateGoodsRecord(
           AffinityGroup.Organisation,
-          GoodsRecord(testEori, "trader reference", "030821", "AG", "trader reference"),
+          GoodsRecord(
+            testEori,
+            "trader reference",
+            "030821",
+            "trader reference",
+            "AG",
+            Instant.now,
+            Some(Instant.now)
+          ),
           Commodity("030821", "Sea urchins", effectiveFrom, None),
           isUsingGoodsDescription = false
         )
@@ -144,9 +160,9 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 9
+        auditDetails.size mustBe 10
         auditDetails("specifiedGoodsDescription") mustBe "false"
-        auditDetails.get("goodsDescription") mustBe None
+        auditDetails("goodsDescription") mustBe "trader reference"
         auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
         auditDetails("commodityCodeEffectiveTo") mustBe "null"
       }

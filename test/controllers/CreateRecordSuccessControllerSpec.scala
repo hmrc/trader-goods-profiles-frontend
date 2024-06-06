@@ -30,14 +30,14 @@ class CreateRecordSuccessControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CreateRecordSuccessController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CreateRecordSuccessController.onPageLoad("test").url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view("test")(request, messages(application)).toString
       }
     }
   }

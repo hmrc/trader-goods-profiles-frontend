@@ -44,21 +44,19 @@ class CategoryGuidanceController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    request.userAnswers.get(CommodityQuery) match {
-      case Some(commodity) =>
-        val ottResponseFuture = ottConnector.getCategorisationInfo(commodity.commodityCode)
-
-        for {
-          goodsNomenclature  <- ottResponseFuture
-          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
-          _                  <- sessionRepository.set(updatedAnswers)
-        } yield Ok(view())
-
-      case None =>
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-    }
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      request.userAnswers.get(CommodityQuery) match {
+        case Some(commodity) =>
+          for {
+            goodsNomenclature  <- ottConnector.getCategorisationInfo(commodity.commodityCode)
+            categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+            updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
+            _                  <- sessionRepository.set(updatedAnswers)
+          } yield Ok(view())
+        case None            =>
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+      }
   }
 
   // TODO replace index route
