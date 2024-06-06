@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-
+  private val xClientId: String         = config.get[String]("headers.xClientId")
   private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
 
@@ -51,7 +51,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ): Future[CreateGoodsRecordResponse] =
     httpClient
       .post(goodsRecordUrl)
-      .setHeader(header = ("X-Client-ID", "tss"))
+      .setHeader(header = ("X-Client-ID", xClientId))
       .withBody(Json.toJson(mapToCreateRecordRequest(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])

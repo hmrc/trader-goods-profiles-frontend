@@ -47,6 +47,9 @@ class GoodsRecordConnectorSpec
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
+  private val xClientIdName: String = "X-Client-ID"
+  private val xClientId: String     = "tgp-frontend"
+
   ".submitGoodsRecord" - {
 
     val instant = Instant.now
@@ -79,6 +82,7 @@ class GoodsRecordConnectorSpec
       wireMockServer.stubFor(
         post(urlEqualTo(s"/trader-goods-profiles-router/records"))
           .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok().withBody(Json.toJson(goodsRecordResponse).toString))
       )
 
@@ -90,7 +94,19 @@ class GoodsRecordConnectorSpec
       wireMockServer.stubFor(
         post(urlEqualTo(s"/trader-goods-profiles-router/records"))
           .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
+      )
+
+      connector.submitGoodsRecord(goodsRecord).failed.futureValue
+    }
+
+    "must return a failed future when there is no header set" in {
+
+      wireMockServer.stubFor(
+        post(urlEqualTo(s"/trader-goods-profiles-router/records"))
+          .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
+          .willReturn(badRequest())
       )
 
       connector.submitGoodsRecord(goodsRecord).failed.futureValue
