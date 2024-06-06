@@ -122,6 +122,30 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         }
       }
 
+      "when user answers cannot create a advice request" - {
+
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockConnector = mock[AccreditationConnector]
+          val continueUrl   = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            verify(mockConnector, never()).submitRequestAccreditation(any())(any())
+          }
+        }
+      }
+
       "must let the play error handler deal with connector failure" in {
 
         val userAnswers = mandatoryAdviceUserAnswers
