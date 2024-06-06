@@ -47,7 +47,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[CreateOrUpdateRecordResponse] =
     httpClient
-      .put(goodsRecordUrl(s"$tgpRouterBaseUrl/trader-goods-profiles-router/records"))
+      .put(url"$tgpRouterBaseUrl/trader-goods-profiles-router/records")
       .setHeader(header = ("X-Client-ID", "tgp-frontend"))
       .withBody(Json.toJson(UpdateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
