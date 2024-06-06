@@ -19,9 +19,13 @@ package controllers
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.{AssessmentAnswer, NormalMode, UserAnswers}
+import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import queries.CategorisationQuery
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.checkAnswers.AssessmentsSummary
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
 
@@ -36,15 +40,28 @@ class CyaCategorisationController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val list = SummaryListViewModel(
-      rows = Seq.empty
-    )
-    Ok(view(list))
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
+        case Some(categorisationInfo) =>
+          categorisationInfo.categoryAssessments
+            .map(assessment => AssessmentsSummary.row(request.userAnswers, assessment.id))
+            .flatten
+      }
+
+      val categorisationList    = SummaryListViewModel(
+        rows = Seq.empty
+      )
+      val supplementaryUnitList = SummaryListViewModel(
+        rows = Seq.empty
+      )
+
+      Ok(view(recordId, categorisationList, supplementaryUnitList))
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad)
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      Redirect(routes.IndexController.onPageLoad)
   }
 
 }

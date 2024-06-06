@@ -107,8 +107,8 @@ GET         /ukims-kick-out                                  controllers.UkimsKi
 
 GET         /categorisation-result                           controllers.CategorisationResultController.onPageLoad()
 
-GET         /cya-categorisation                              controllers.CyaCategorisationController.onPageLoad
-POST        /cya-categorisation                              controllers.CyaCategorisationController.onSubmit
+GET         /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onPageLoad(recordId:String)
+POST        /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onSubmit(recordId:String)
 
 GET         /advice-start                                    controllers.AdviceStartController.onPageLoad()
 POST        /advice-start                                    controllers.AdviceStartController.onSubmit()

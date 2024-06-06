@@ -34,7 +34,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("test").url)
 
           val result = route(application, request).value
 
@@ -44,7 +44,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           )
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+          contentAsString(result) mustEqual view("test", list, list)(request, messages(application)).toString
         }
       }
 
@@ -57,7 +57,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad("test").url)
 
             val result = route(application, request).value
 
