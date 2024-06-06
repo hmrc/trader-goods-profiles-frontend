@@ -38,13 +38,15 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[CyaCategorisationView]
-          val list = SummaryListViewModel(
+          val view  = application.injector.instanceOf[CyaCategorisationView]
+          val list1 = SummaryListViewModel(
             rows = Seq.empty
           )
-
+          val list2 = SummaryListViewModel(
+            rows = Seq.empty
+          )
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view("test", list, list)(request, messages(application)).toString
+          contentAsString(result) mustEqual view("test", list1, list2)(request, messages(application)).toString
         }
       }
 

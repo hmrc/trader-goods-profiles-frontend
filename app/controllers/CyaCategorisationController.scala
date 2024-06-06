@@ -42,12 +42,12 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
-        case Some(categorisationInfo) =>
-          categorisationInfo.categoryAssessments
-            .map(assessment => AssessmentsSummary.row(request.userAnswers, assessment.id))
-            .flatten
-      }
+      // TODO an example of how to build the rows - might help
+//      val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
+//        case Some(categorisationInfo) =>
+//          categorisationInfo.categoryAssessments
+//            .flatMap(assessment => AssessmentsSummary.row(request.userAnswers, assessment.id))
+//      }
 
       val categorisationList    = SummaryListViewModel(
         rows = Seq.empty
