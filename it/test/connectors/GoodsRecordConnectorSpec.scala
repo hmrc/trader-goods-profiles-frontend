@@ -49,6 +49,7 @@ class GoodsRecordConnectorSpec
 
   private val xClientIdName: String = "X-Client-ID"
   private val xClientId: String     = "tgp-frontend"
+  private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
 
   ".submitGoodsRecord" - {
 
@@ -80,7 +81,7 @@ class GoodsRecordConnectorSpec
       val goodsRecordResponse = CreateGoodsRecordResponse("recordId")
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-router/records"))
+        post(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok().withBody(Json.toJson(goodsRecordResponse).toString))
@@ -92,7 +93,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-router/records"))
+        post(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
