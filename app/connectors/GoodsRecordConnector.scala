@@ -17,7 +17,7 @@
 package connectors
 
 import config.Service
-import models.router.CreateRecordRequest
+import models.router.{CreateOrUpdateRecordResponse, CreateRecordRequest, UpdateRecordRequest}
 import models.{CreateGoodsRecordResponse, GoodsRecord}
 import play.api.Configuration
 import play.api.libs.json.Json
@@ -42,4 +42,14 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
+
+  def updateGoodsRecord(goodsRecord: GoodsRecord)(implicit
+    hc: HeaderCarrier
+  ): Future[CreateOrUpdateRecordResponse] =
+    httpClient
+      .put(goodsRecordUrl(s"$tgpRouterBaseUrl/trader-goods-profiles-router/records"))
+      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
+      .withBody(Json.toJson(UpdateRecordRequest.map(goodsRecord)))
+      .execute[HttpResponse]
+      .map(response => response.json.as[CreateOrUpdateRecordResponse])
 }

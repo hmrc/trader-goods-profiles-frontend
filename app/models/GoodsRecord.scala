@@ -18,6 +18,7 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
+import models.router.Assessment
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
@@ -31,14 +32,19 @@ final case class GoodsRecord(
   goodsDescription: String,
   countryOfOrigin: String,
   comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant]
+  comcodeEffectiveToDate: Option[Instant],
+  recordId: String = "",
+  category: Option[Int] = None,
+  assessments: Option[Seq[Assessment]] = None,
+  supplementaryUnit: Option[Int] = None,
+  measurementUnit: Option[String] = None
 )
 
 object GoodsRecord {
 
   implicit lazy val format: OFormat[GoodsRecord] = Json.format
 
-  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
+  def build(answers: UserAnswers, eori: String, recordId: String = ""): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
       answers.getPageValue(TraderReferencePage),
@@ -53,7 +59,8 @@ object GoodsRecord {
         goodsDescription,
         countryOfOrigin,
         commodity.validityStartDate,
-        commodity.validityEndDate
+        commodity.validityEndDate,
+        recordId
       )
     )
 
