@@ -18,7 +18,7 @@ package base
 
 import base.TestConstants.userAnswersId
 import controllers.actions._
-import models.UserAnswers
+import models.{Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -29,6 +29,9 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
+import queries.CommodityQuery
+
+import java.time.Instant
 
 trait SpecBase
     extends AnyFreeSpec
@@ -68,12 +71,16 @@ trait SpecBase
     .success
     .value
 
+  def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
+
+  def testCommodity: Commodity = Commodity("1234567890", "test", validityStartDate, None)
+
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
       .set(TraderReferencePage, "123")
       .success
       .value
-      .set(CommodityCodePage, "654321")
+      .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
       .set(CountryOfOriginPage, "1")
@@ -88,13 +95,16 @@ trait SpecBase
       .set(GoodsDescriptionPage, "DESCRIPTION")
       .success
       .value
+      .set(CommodityQuery, testCommodity)
+      .success
+      .value
 
   def mandatoryRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
       .set(TraderReferencePage, "123")
       .success
       .value
-      .set(CommodityCodePage, "654321")
+      .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
       .set(CountryOfOriginPage, "1")
@@ -104,6 +114,9 @@ trait SpecBase
       .success
       .value
       .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(CommodityQuery, testCommodity)
       .success
       .value
 
