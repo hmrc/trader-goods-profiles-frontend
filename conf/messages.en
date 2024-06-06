@@ -336,3 +336,18 @@ name.checkYourAnswersLabel = Name
 name.error.required = Enter your name
 name.error.length = Enter a name with less than 70 characters
 name.change.hidden = Name
+
+hasSupplementaryUnit.title = hasSupplementaryUnit
+hasSupplementaryUnit.heading = hasSupplementaryUnit
+hasSupplementaryUnit.checkYourAnswersLabel = hasSupplementaryUnit
+hasSupplementaryUnit.error.required = Select yes if hasSupplementaryUnit
+hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
+
+supplementaryUnit.title = SupplementaryUnit
+supplementaryUnit.heading = SupplementaryUnit
+supplementaryUnit.checkYourAnswersLabel = SupplementaryUnit
+supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
+supplementaryUnit.error.required = Enter your supplementaryUnit
+supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
+supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
+supplementaryUnit.change.hidden = SupplementaryUnit
