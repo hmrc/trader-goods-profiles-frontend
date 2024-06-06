@@ -160,9 +160,9 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 9
+        auditDetails.size mustBe 10
         auditDetails("specifiedGoodsDescription") mustBe "false"
-        auditDetails.get("goodsDescription") mustBe None
+        auditDetails("goodsDescription") mustBe "trader reference"
         auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
         auditDetails("commodityCodeEffectiveTo") mustBe "null"
       }
