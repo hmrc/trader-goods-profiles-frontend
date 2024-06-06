@@ -21,7 +21,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
-import models.responses.GoodsRecordResponse
+import models.responses.GetGoodsRecordResponse
 import models.RecordCategorisations
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
@@ -51,13 +51,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     Seq[IncludedElement]()
   )
 
-  private val mockGoodsRecordResponse = GoodsRecordResponse(
+  private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
-    "actorId",
-    "traderRef",
     "comcode",
-    "countryOfOrigin",
-    "description"
+    "countryOfOrigin"
   )
 
   private val categorisationService =

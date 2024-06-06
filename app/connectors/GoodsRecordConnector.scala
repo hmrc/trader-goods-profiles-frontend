@@ -17,9 +17,9 @@
 package connectors
 
 import config.Service
-import models.responses.GoodsRecordResponse
+import models.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import models.router.CreateRecordRequest
-import models.{CreateGoodsRecordResponse, GoodsRecord}
+import models.GoodsRecord
 import play.api.Configuration
 import play.api.http.Status.OK
 import play.api.libs.json.{JsResult, Json}
@@ -51,7 +51,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
-  ): Future[GoodsRecordResponse] =
+  ): Future[GetGoodsRecordResponse] =
     httpClient
       .get(getRecordUrl(eori, recordId))
       .addHeaders(clientIdHeader)
@@ -60,7 +60,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case OK =>
             response.json
-              .validate[GoodsRecordResponse]
+              .validate[GetGoodsRecordResponse]
               .map(result => Future.successful(result))
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
         }

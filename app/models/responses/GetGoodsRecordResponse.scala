@@ -18,42 +18,33 @@ package models.responses
 
 import play.api.libs.json.{OWrites, Reads, __}
 
-final case class GoodsRecordResponse(
+final case class GetGoodsRecordResponse(
   recordId: String,
-  actorId: String,
-  traderReference: String,
   commodityCode: String,
-  countryOfOrigin: String,
-  goodsDescription: String
+  countryOfOrigin: String
 )
 
-object GoodsRecordResponse {
+object GetGoodsRecordResponse {
 
-  implicit val reads: Reads[GoodsRecordResponse] = {
+  implicit val reads: Reads[GetGoodsRecordResponse] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "recordId").read[String] and
-        (__ \ "actorId").read[String] and
-        (__ \ "traderRef").read[String] and
         (__ \ "comcode").read[String] and
-        (__ \ "countryOfOrigin").read[String] and
-        (__ \ "goodsDescription").read[String]
-    )(GoodsRecordResponse.apply _)
+        (__ \ "countryOfOrigin").read[String]
+    )(GetGoodsRecordResponse.apply _)
   }
 
-  implicit val writes: OWrites[GoodsRecordResponse] = {
+  implicit val writes: OWrites[GetGoodsRecordResponse] = {
 
     import play.api.libs.functional.syntax._
 
     (
       (__ \ "recordId").write[String] and
-        (__ \ "actorId").write[String] and
-        (__ \ "traderRef").write[String] and
         (__ \ "comcode").write[String] and
-        (__ \ "countryOfOrigin").write[String] and
-        (__ \ "goodsDescription").write[String]
-    )(unlift(GoodsRecordResponse.unapply))
+        (__ \ "countryOfOrigin").write[String]
+    )(unlift(GetGoodsRecordResponse.unapply))
   }
 }

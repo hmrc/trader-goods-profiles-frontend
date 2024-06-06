@@ -18,9 +18,9 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.responses.GoodsRecordResponse
+import models.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import models.router.CreateRecordRequest
-import models.{CreateGoodsRecordResponse, GoodsRecord}
+import models.GoodsRecord
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -156,13 +156,10 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
-      connector.getRecord(testEori, testRecordId).futureValue mustBe GoodsRecordResponse(
+      connector.getRecord(testEori, testRecordId).futureValue mustBe GetGoodsRecordResponse(
         testRecordId,
-        testEori,
-        "BAN001001",
         "10410100",
-        "EC",
-        "Organic bananas"
+        "EC"
       )
     }
 

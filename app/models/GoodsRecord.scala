@@ -18,7 +18,7 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
-import models.responses.GoodsRecordResponse
+import models.responses.GetGoodsRecordResponse
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
@@ -57,14 +57,6 @@ object GoodsRecord {
         commodity.validityEndDate
       )
     )
-
-//  def buildFromResponse(response: GoodsRecordResponse): GoodsRecord = GoodsRecord(
-//    response.actorId,
-//    response.traderReference,
-//    response.commodityCode,
-//    response.countryOfOrigin,
-//    response.goodsDescription
-//  )
 
   private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
     answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
