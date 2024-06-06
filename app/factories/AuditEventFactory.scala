@@ -72,7 +72,7 @@ case class AuditEventFactory() {
     isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "EORINumber"                 -> goodsRecord.actorId,
+      "EORINumber"                 -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
       "traderReference"            -> goodsRecord.traderRef,
       "commodityCode"              -> goodsRecord.comcode,

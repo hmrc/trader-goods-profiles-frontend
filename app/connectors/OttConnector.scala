@@ -43,6 +43,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
+
     httpClient
       .get(urlFunc(commodityCode))(newHeaderCarrier)
       .execute[HttpResponse]

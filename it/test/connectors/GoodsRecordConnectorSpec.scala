@@ -18,6 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.router.CreateRecordRequest
 import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -48,7 +49,18 @@ class GoodsRecordConnectorSpec
 
   ".submitGoodsRecord" - {
 
+    val instant = Instant.now
+
     val goodsRecord = CreateGoodsRecordRequest(
+      testEori,
+      "1",
+      "2",
+      "3",
+      "4",
+      instant
+    )
+
+    val goodsRecordRequest = CreateRecordRequest(
       testEori,
       testEori,
       "1",
@@ -59,7 +71,7 @@ class GoodsRecordConnectorSpec
       None,
       None,
       None,
-      Instant.now,
+      instant,
       None
     )
 
@@ -69,22 +81,22 @@ class GoodsRecordConnectorSpec
 
       wireMockServer.stubFor(
         post(urlEqualTo(s"/trader-goods-profiles-router/records"))
-          .withRequestBody(equalTo(Json.toJson(goodsRecord).toString))
+          .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
           .willReturn(ok().withBody(Json.toJson(goodsRecordResponse).toString))
       )
 
-      connector.submitGoodsRecordUrl(goodsRecord, testEori).futureValue mustBe goodsRecordResponse
+      connector.submitGoodsRecordUrl(goodsRecord).futureValue mustBe goodsRecordResponse
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
         post(urlEqualTo(s"/trader-goods-profiles-router/records"))
-          .withRequestBody(equalTo(Json.toJson(goodsRecord).toString))
+          .withRequestBody(equalTo(Json.toJson(goodsRecordRequest).toString))
           .willReturn(serverError())
       )
 
-      connector.submitGoodsRecordUrl(goodsRecord, testEori).failed.futureValue
+      connector.submitGoodsRecordUrl(goodsRecord).failed.futureValue
     }
   }
 }

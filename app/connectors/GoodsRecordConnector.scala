@@ -17,6 +17,7 @@
 package connectors
 
 import config.Service
+import models.router.CreateRecordRequest
 import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse}
 import play.api.Configuration
 import play.api.libs.json.Json
@@ -33,13 +34,29 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
 
-  def submitGoodsRecordUrl(goodsRecord: CreateGoodsRecordRequest, eori: String)(implicit
+  private def mapToCreateRecordRequest(goodsRecord: CreateGoodsRecordRequest): CreateRecordRequest =
+    CreateRecordRequest(
+      goodsRecord.eori,
+      goodsRecord.eori,
+      goodsRecord.traderRef,
+      goodsRecord.comcode,
+      goodsRecord.goodsDescription,
+      goodsRecord.countryOfOrigin,
+      1,
+      None,
+      None,
+      None,
+      goodsRecord.comcodeEffectiveFromDate,
+      None
+    )
+
+  def submitGoodsRecordUrl(goodsRecord: CreateGoodsRecordRequest)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
       .post(goodsRecordUrl)
       .setHeader(header = ("X-Client-ID", "tss"))
-      .withBody(Json.toJson(goodsRecord))
+      .withBody(Json.toJson(mapToCreateRecordRequest(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
 }

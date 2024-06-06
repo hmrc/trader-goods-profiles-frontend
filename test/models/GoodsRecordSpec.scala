@@ -65,17 +65,11 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         result mustEqual Right(
           CreateGoodsRecordRequest(
             testEori,
-            testEori,
             "123",
             testCommodity.commodityCode,
             "2",
             "1",
-            1,
-            None,
-            None,
-            None,
-            testCommodity.validityStartDate,
-            None
+            testCommodity.validityStartDate
           )
         )
       }
@@ -108,17 +102,11 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         result mustEqual Right(
           CreateGoodsRecordRequest(
             testEori,
-            testEori,
             "123",
             testCommodity.commodityCode,
             "123",
             "1",
-            1,
-            None,
-            None,
-            None,
-            testCommodity.validityStartDate,
-            None
+            testCommodity.validityStartDate
           )
         )
       }

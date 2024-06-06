@@ -108,17 +108,11 @@ class AuditEventFactorySpec extends SpecBase {
           AffinityGroup.Organisation,
           CreateGoodsRecordRequest(
             testEori,
-            testEori,
             "trader reference",
             "030821",
             "goods description",
             "AG",
-            1,
-            None,
-            None,
-            None,
-            Instant.now,
-            None
+            Instant.now
           ),
           Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo)),
           isUsingGoodsDescription = true
@@ -149,17 +143,11 @@ class AuditEventFactorySpec extends SpecBase {
           AffinityGroup.Organisation,
           CreateGoodsRecordRequest(
             testEori,
-            testEori,
             "trader reference",
             "030821",
             "trader reference",
             "AG",
-            1,
-            None,
-            None,
-            None,
-            Instant.now,
-            None
+            Instant.now
           ),
           Commodity("030821", "Sea urchins", effectiveFrom, None),
           isUsingGoodsDescription = false

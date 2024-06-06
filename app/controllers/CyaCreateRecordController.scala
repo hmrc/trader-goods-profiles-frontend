@@ -68,7 +68,7 @@ class CyaCreateRecordController @Inject() (
     CreateGoodsRecordRequest.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         for {
-          goodsRecordResponse <- goodsRecordConnector.submitGoodsRecordUrl(model, request.eori)
+          goodsRecordResponse <- goodsRecordConnector.submitGoodsRecordUrl(model)
           _                   <- auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))

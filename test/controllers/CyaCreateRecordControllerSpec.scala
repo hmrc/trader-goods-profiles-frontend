@@ -132,7 +132,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val userAnswers = mandatoryRecordUserAnswers
 
           val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.submitGoodsRecordUrl(any(), any())(any()))
+          when(mockConnector.submitGoodsRecordUrl(any())(any()))
             .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
 
           val mockAuditService = mock[AuditService]
@@ -152,22 +152,16 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val expectedPayload = CreateGoodsRecordRequest(
               testEori,
-              testEori,
               "123",
               testCommodity.commodityCode,
               "123",
               "1",
-              1,
-              None,
-              None,
-              None,
-              testCommodity.validityStartDate,
-              None
+              testCommodity.validityStartDate
             )
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
-            verify(mockConnector, times(1)).submitGoodsRecordUrl(eqTo(expectedPayload), eqTo(testEori))(any())
+            verify(mockConnector, times(1)).submitGoodsRecordUrl(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService, times(1))
@@ -198,7 +192,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-            verify(mockConnector, never()).submitGoodsRecordUrl(any(), any())(any())
+            verify(mockConnector, never()).submitGoodsRecordUrl(any())(any())
 
             withClue("must not try and submit an audit") {
               verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
@@ -213,7 +207,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val userAnswers = mandatoryRecordUserAnswers
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.submitGoodsRecordUrl(any(), any())(any()))
+        when(mockConnector.submitGoodsRecordUrl(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =
@@ -235,7 +229,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val userAnswers = mandatoryRecordUserAnswers
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.submitGoodsRecordUrl(any(), any())(any()))
+        when(mockConnector.submitGoodsRecordUrl(any())(any()))
           .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
 
         val mockAuditService = mock[AuditService]

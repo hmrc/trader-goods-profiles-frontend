@@ -26,17 +26,11 @@ import java.time.Instant
 
 final case class CreateGoodsRecordRequest(
   eori: String,
-  actorId: String,
   traderRef: String,
   comcode: String,
   goodsDescription: String,
   countryOfOrigin: String,
-  category: Int,
-  assessments: Option[String],
-  supplementaryUnit: Option[Int],
-  measurementUnit: Option[String],
-  comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant]
+  comcodeEffectiveFromDate: Instant
 )
 
 object CreateGoodsRecordRequest {
@@ -53,17 +47,11 @@ object CreateGoodsRecordRequest {
     ).parMapN((eori, traderReference, countryOfOrigin, goodsDescription, commodity) =>
       CreateGoodsRecordRequest(
         eori,
-        eori,
         traderReference,
         commodity.commodityCode,
         goodsDescription,
         countryOfOrigin,
-        1,
-        None,
-        None,
-        None,
-        commodity.validityStartDate,
-        None
+        commodity.validityStartDate
       )
     )
 
