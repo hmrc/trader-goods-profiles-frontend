@@ -18,6 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.responses.GoodsRecordResponse
 import models.router.CreateRecordRequest
 import models.{CreateGoodsRecordResponse, GoodsRecord}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -49,6 +50,50 @@ class GoodsRecordConnectorSpec
 
   private val xClientIdName: String = "X-Client-ID"
   private val xClientId: String     = "tgp-frontend"
+
+  private val testRecordId = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private lazy val getRecordResponse = Json
+    .parse(
+      s"""
+         |  {
+         |    "eori": "$testEori",
+         |    "actorId": "$testEori",
+         |    "recordId": "$testRecordId",
+         |    "traderRef": "BAN001001",
+         |    "comcode": "10410100",
+         |    "accreditationStatus": "Not requested",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
+         |    "category": 3,
+         |    "assessments": [
+         |      {
+         |        "assessmentId": "abc123",
+         |        "primaryCategory": "1",
+         |        "condition": {
+         |          "type": "abc123",
+         |          "conditionId": "Y923",
+         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+         |          "conditionTraderText": "Excluded product"
+         |        }
+         |      }
+         |    ],
+         |    "supplementaryUnit": 500,
+         |    "measurementUnit": "square meters(m^2)",
+         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+         |    "version": 1,
+         |    "active": true,
+         |    "toReview": false,
+         |    "reviewReason": null,
+         |    "declarable": "IMMI declarable",
+         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+         |    "nirmsNumber": "RMS-GB-123456",
+         |    "niphlNumber": "6 S12345",
+         |    "locked": false,
+         |    "createdDateTime": "2024-11-18T23:20:19Z",
+         |    "updatedDateTime": "2024-11-18T23:20:19Z"
+         |  }
+         |""".stripMargin)
 
   ".submitGoodsRecord" - {
 
@@ -101,4 +146,46 @@ class GoodsRecordConnectorSpec
       connector.submitGoodsRecord(goodsRecord).failed.futureValue
     }
   }
+
+  ".getRecord" - {
+
+    "must get a goods record" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/$testRecordId"))
+          .willReturn(ok().withBody(getRecordResponse.toString))
+      )
+
+      connector.getRecord(testEori, testRecordId).futureValue mustBe GoodsRecordResponse(
+        testRecordId,
+        testEori,
+        "BAN001001",
+        "10410100",
+        "EC",
+        "Organic bananas"
+      )
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/testRecordId"))
+          .willReturn(serverError())
+      )
+
+      connector.getRecord(testEori, testRecordId).failed.futureValue
+    }
+
+    "must return a failed future when the json does not match the format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/testRecordId"))
+          .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+      )
+
+      connector.getRecord(testEori, testRecordId).failed.futureValue
+    }
+
+  }
+
 }
