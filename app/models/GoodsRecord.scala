@@ -18,7 +18,6 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
-import models.router.responses.GetGoodsRecordResponse
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
