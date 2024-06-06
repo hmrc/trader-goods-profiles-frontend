@@ -44,7 +44,6 @@ class Navigator @Inject() () {
     case AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode)
     case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
-    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
     case _                        => _ => routes.IndexController.onPageLoad
 
   }
@@ -102,15 +101,6 @@ class Navigator @Inject() () {
         routes.IndexController.onPageLoad
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromHasSupplementaryUnit(answers: UserAnswers): Call =
-    answers
-      .get(HasSupplementaryUnitPage)
-      .map {
-        case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode)
-        case false => routes.JourneyRecoveryController.onPageLoad()
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
