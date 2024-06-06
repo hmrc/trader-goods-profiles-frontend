@@ -26,13 +26,13 @@ import queries.CommodityQuery
 
 import java.time.Instant
 
-class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
   private val testCommodity = Commodity("1234567890", "test", Instant.now, None)
 
   ".build" - {
 
-    "must return a CreateGoodsRecord when all mandatory questions are answered" - {
+    "must return a GoodsRecord when all mandatory questions are answered" - {
 
       "and all optional data is present" in {
 
@@ -60,10 +60,10 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         result mustEqual Right(
-          CreateGoodsRecord(
+          GoodsRecord(
             testEori,
             "123",
             testCommodity.commodityCode,
@@ -98,10 +98,10 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         result mustEqual Right(
-          CreateGoodsRecord(
+          GoodsRecord(
             testEori,
             "123",
             testCommodity.commodityCode,
@@ -120,7 +120,7 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -155,7 +155,7 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionPage)
@@ -188,7 +188,7 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(GoodsDescriptionPage)
@@ -221,7 +221,7 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsPage)
@@ -254,7 +254,7 @@ class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = CreateGoodsRecord.build(answers, testEori)
+        val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only MismatchedPage(CommodityCodePage)

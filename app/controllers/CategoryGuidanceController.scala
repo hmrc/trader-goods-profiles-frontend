@@ -48,16 +48,13 @@ class CategoryGuidanceController @Inject() (
     implicit request =>
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) =>
-          val ottResponseFuture = ottConnector.getCategorisationInfo(commodity.commodityCode)
-
           for {
-            goodsNomenclature  <- ottResponseFuture
+            goodsNomenclature  <- ottConnector.getCategorisationInfo(commodity.commodityCode)
             categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
             updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
             _                  <- sessionRepository.set(updatedAnswers)
           } yield Ok(view())
-
-        case None =>
+        case None            =>
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
   }

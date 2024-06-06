@@ -19,7 +19,7 @@ package connectors
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.CreateRecordRequest
-import models.{CreateGoodsRecord, CreateGoodsRecordResponse}
+import models.{CreateGoodsRecordResponse, GoodsRecord}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -54,7 +54,7 @@ class GoodsRecordConnectorSpec
 
     val instant = Instant.now
 
-    val goodsRecord = CreateGoodsRecord(
+    val goodsRecord = GoodsRecord(
       testEori,
       "1",
       "2",

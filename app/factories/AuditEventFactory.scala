@@ -16,7 +16,7 @@
 
 package factories
 
-import models.{Commodity, CreateGoodsRecord, TraderProfile}
+import models.{Commodity, GoodsRecord, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
@@ -67,7 +67,7 @@ case class AuditEventFactory() {
 
   def createFinishCreateGoodsRecord(
     affinityGroup: AffinityGroup,
-    goodsRecord: CreateGoodsRecord,
+    goodsRecord: GoodsRecord,
     commodity: Commodity,
     isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {

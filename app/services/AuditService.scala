@@ -19,7 +19,7 @@ package services
 import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
-import models.{CreateGoodsRecord, TraderProfile, UserAnswers}
+import models.{GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
@@ -61,7 +61,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
     val buildEvent = (
       Right(affinityGroup),
-      CreateGoodsRecord.build(userAnswers, eori),
+      GoodsRecord.build(userAnswers, eori),
       userAnswers.getPageValue(CommodityQuery),
       userAnswers.getPageValue(UseTraderReferencePage).map(!_)
     ).parMapN(auditEventFactory.createFinishCreateGoodsRecord)

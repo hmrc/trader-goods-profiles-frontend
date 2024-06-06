@@ -18,7 +18,7 @@ package connectors
 
 import config.Service
 import models.router.CreateRecordRequest
-import models.{CreateGoodsRecord, CreateGoodsRecordResponse}
+import models.{CreateGoodsRecordResponse, GoodsRecord}
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -30,29 +30,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val xClientId: String         = config.get[String]("headers.xClientId")
   private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
 
-  private def mapToCreateRecordRequest(goodsRecord: CreateGoodsRecord): CreateRecordRequest =
-    CreateRecordRequest(
-      goodsRecord.eori,
-      goodsRecord.eori,
-      goodsRecord.traderRef,
-      goodsRecord.comcode,
-      goodsRecord.goodsDescription,
-      goodsRecord.countryOfOrigin,
-      goodsRecord.comcodeEffectiveFromDate,
-      goodsRecord.comcodeEffectiveToDate
-    )
-
-  def submitGoodsRecord(goodsRecord: CreateGoodsRecord)(implicit
+  def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
       .post(goodsRecordUrl)
-      .setHeader(header = ("X-Client-ID", xClientId))
-      .withBody(Json.toJson(mapToCreateRecordRequest(goodsRecord)))
+      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
+      .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
 }

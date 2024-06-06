@@ -16,6 +16,7 @@
 
 package models.router
 
+import models.GoodsRecord
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
@@ -36,6 +37,18 @@ case class CreateRecordRequest(
 )
 
 object CreateRecordRequest {
+
+  def map(goodsRecord: GoodsRecord): CreateRecordRequest =
+    CreateRecordRequest(
+      goodsRecord.eori,
+      goodsRecord.eori,
+      goodsRecord.traderRef,
+      goodsRecord.comcode,
+      goodsRecord.goodsDescription,
+      goodsRecord.countryOfOrigin,
+      goodsRecord.comcodeEffectiveFromDate,
+      goodsRecord.comcodeEffectiveToDate
+    )
 
   implicit val reads: Reads[CreateRecordRequest] =
     ((JsPath \ "eori").read[String] and

@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.testEori
 import factories.AuditEventFactory
-import models.{CreateGoodsRecord, TraderProfile}
+import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -182,7 +182,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
       val expectedGoodsRecord =
-        CreateGoodsRecord(
+        GoodsRecord(
           testEori,
           "trader reference",
           testCommodity.commodityCode,
@@ -222,7 +222,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
       val expectedGoodsRecord =
-        CreateGoodsRecord(
+        GoodsRecord(
           testEori,
           "trader reference",
           testCommodity.commodityCode,

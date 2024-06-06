@@ -24,7 +24,7 @@ import queries.CommodityQuery
 
 import java.time.Instant
 
-final case class CreateGoodsRecord(
+final case class GoodsRecord(
   eori: String,
   traderRef: String,
   comcode: String,
@@ -34,11 +34,11 @@ final case class CreateGoodsRecord(
   comcodeEffectiveToDate: Option[Instant]
 )
 
-object CreateGoodsRecord {
+object GoodsRecord {
 
-  implicit lazy val format: OFormat[CreateGoodsRecord] = Json.format
+  implicit lazy val format: OFormat[GoodsRecord] = Json.format
 
-  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, CreateGoodsRecord] =
+  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
       answers.getPageValue(TraderReferencePage),
@@ -46,7 +46,7 @@ object CreateGoodsRecord {
       answers.getPageValue(CountryOfOriginPage),
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
-      CreateGoodsRecord(
+      GoodsRecord(
         eori,
         traderReference,
         commodity.commodityCode,

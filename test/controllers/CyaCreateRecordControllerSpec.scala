@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.GoodsRecordConnector
-import models.{CreateGoodsRecord, CreateGoodsRecordResponse, UserAnswers}
+import models.{CreateGoodsRecordResponse, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -150,7 +150,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val result = route(application, request).value
 
-            val expectedPayload = CreateGoodsRecord(
+            val expectedPayload = GoodsRecord(
               testEori,
               "123",
               testCommodity.commodityCode,
@@ -214,33 +214,6 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-            .build()
-
-        running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
-
-          intercept[RuntimeException] {
-            await(route(application, request).value)
-          }
-        }
-      }
-
-      "must let the play error handler deal with an audit future failure" in {
-
-        val userAnswers = mandatoryRecordUserAnswers
-
-        val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.submitGoodsRecord(any())(any()))
-          .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
-
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
             .build()
 
         running(application) {

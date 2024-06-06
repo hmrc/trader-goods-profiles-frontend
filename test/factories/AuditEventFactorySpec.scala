@@ -18,7 +18,7 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.testEori
-import models.{Commodity, CreateGoodsRecord, TraderProfile}
+import models.{Commodity, GoodsRecord, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -106,7 +106,7 @@ class AuditEventFactorySpec extends SpecBase {
 
         val result = AuditEventFactory().createFinishCreateGoodsRecord(
           AffinityGroup.Organisation,
-          CreateGoodsRecord(
+          GoodsRecord(
             testEori,
             "trader reference",
             "030821",
@@ -142,7 +142,7 @@ class AuditEventFactorySpec extends SpecBase {
 
         val result = AuditEventFactory().createFinishCreateGoodsRecord(
           AffinityGroup.Organisation,
-          CreateGoodsRecord(
+          GoodsRecord(
             testEori,
             "trader reference",
             "030821",
