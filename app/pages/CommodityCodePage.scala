@@ -31,13 +31,11 @@ case object CommodityCodePage extends QuestionPage[String] {
     newValue: Option[String],
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] = {
-
+  ): Try[UserAnswers] =
     originalUserAnswers.get(CommodityCodePage) match {
       case originalValue if originalValue == newValue =>
         Success(updatedUserAnswers)
-      case _                  =>
+      case _                                          =>
         updatedUserAnswers.remove(HasCorrectGoodsPage)
     }
-  }
 }
