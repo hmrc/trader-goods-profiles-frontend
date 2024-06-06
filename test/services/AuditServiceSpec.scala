@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.testEori
 import factories.AuditEventFactory
-import models.{CreateGoodsRecordRequest, TraderProfile}
+import models.{CreateGoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -182,13 +182,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
       val expectedGoodsRecord =
-        CreateGoodsRecordRequest(
+        CreateGoodsRecord(
           testEori,
           "trader reference",
           testCommodity.commodityCode,
           "trader reference",
           "PF",
-          testCommodity.validityStartDate
+          testCommodity.validityStartDate,
+          testCommodity.validityEndDate
         )
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
@@ -221,13 +222,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
       val expectedGoodsRecord =
-        CreateGoodsRecordRequest(
+        CreateGoodsRecord(
           testEori,
           "trader reference",
           testCommodity.commodityCode,
           "goods description",
           "PF",
-          testCommodity.validityStartDate
+          testCommodity.validityStartDate,
+          testCommodity.validityEndDate
         )
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))

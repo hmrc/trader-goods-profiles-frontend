@@ -20,7 +20,7 @@
         govukPanel : GovukPanel
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("createRecordSuccess.title"))) {
 
@@ -32,7 +32,7 @@
     <p class="govuk-body">@messages("createRecordSuccess.p2")</p>
     <p class="govuk-body">@messages("createRecordSuccess.p3")</p>
 
-    <p class="govuk-body"><a href="@routes.CategoryGuidanceController.onPageLoad.url" class="govuk-link" >@messages("createRecordSuccess.p4.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.CategoryGuidanceController.onPageLoad(recordId).url" class="govuk-link" >@messages("createRecordSuccess.p4.linkText")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("createRecordSuccess.p5.linkText")</a></p>
 
     <h2 class="govuk-heading-m">@messages("createRecordSuccess.h2.1")</h2>

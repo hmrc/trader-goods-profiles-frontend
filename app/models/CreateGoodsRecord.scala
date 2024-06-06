@@ -24,34 +24,36 @@ import queries.CommodityQuery
 
 import java.time.Instant
 
-final case class CreateGoodsRecordRequest(
+final case class CreateGoodsRecord(
   eori: String,
   traderRef: String,
   comcode: String,
   goodsDescription: String,
   countryOfOrigin: String,
-  comcodeEffectiveFromDate: Instant
+  comcodeEffectiveFromDate: Instant,
+  comcodeEffectiveToDate: Option[Instant]
 )
 
-object CreateGoodsRecordRequest {
+object CreateGoodsRecord {
 
-  implicit lazy val format: OFormat[CreateGoodsRecordRequest] = Json.format
+  implicit lazy val format: OFormat[CreateGoodsRecord] = Json.format
 
-  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, CreateGoodsRecordRequest] =
+  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, CreateGoodsRecord] =
     (
       Right(eori),
       answers.getPageValue(TraderReferencePage),
+      getCommodity(answers),
       answers.getPageValue(CountryOfOriginPage),
-      getGoodsDescription(answers),
-      getCommodity(answers)
-    ).parMapN((eori, traderReference, countryOfOrigin, goodsDescription, commodity) =>
-      CreateGoodsRecordRequest(
+      getGoodsDescription(answers)
+    ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
+      CreateGoodsRecord(
         eori,
         traderReference,
         commodity.commodityCode,
         goodsDescription,
         countryOfOrigin,
-        commodity.validityStartDate
+        commodity.validityStartDate,
+        commodity.validityEndDate
       )
     )
 
@@ -63,13 +65,21 @@ object CreateGoodsRecordRequest {
     }
 
   private def getCommodity(answers: UserAnswers): EitherNec[ValidationError, Commodity] =
-    answers.getPageValue(CommodityQuery) match {
-      case Right(data)  =>
+    answers.getPageValue(CommodityCodePage) match {
+      case Right(code)  =>
         answers.getPageValue(HasCorrectGoodsPage) match {
-          case Right(true)  => Right(data)
+          case Right(true)  => getCommodityQuery(answers, code)
           case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsPage)))
           case Left(errors) => Left(errors)
         }
       case Left(errors) => Left(errors)
     }
+
+  private def getCommodityQuery(answers: UserAnswers, code: String): EitherNec[ValidationError, Commodity] =
+    answers.getPageValue(CommodityQuery) match {
+      case Right(commodity) if commodity.commodityCode == code => Right(commodity)
+      case Left(errors)                                        => Left(errors)
+      case _                                                   => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage)))
+    }
+
 }

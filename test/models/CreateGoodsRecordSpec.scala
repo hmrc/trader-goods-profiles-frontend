@@ -26,13 +26,13 @@ import queries.CommodityQuery
 
 import java.time.Instant
 
-class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class CreateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
   private val testCommodity = Commodity("1234567890", "test", Instant.now, None)
 
   ".build" - {
 
-    "must return a GoodsRecord when all mandatory questions are answered" - {
+    "must return a CreateGoodsRecord when all mandatory questions are answered" - {
 
       "and all optional data is present" in {
 
@@ -60,16 +60,17 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = CreateGoodsRecordRequest.build(answers, testEori)
+        val result = CreateGoodsRecord.build(answers, testEori)
 
         result mustEqual Right(
-          CreateGoodsRecordRequest(
+          CreateGoodsRecord(
             testEori,
             "123",
             testCommodity.commodityCode,
             "2",
             "1",
-            testCommodity.validityStartDate
+            testCommodity.validityStartDate,
+            testCommodity.validityEndDate
           )
         )
       }
@@ -97,16 +98,17 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = CreateGoodsRecordRequest.build(answers, testEori)
+        val result = CreateGoodsRecord.build(answers, testEori)
 
         result mustEqual Right(
-          CreateGoodsRecordRequest(
+          CreateGoodsRecord(
             testEori,
             "123",
             testCommodity.commodityCode,
             "123",
             "1",
-            testCommodity.validityStartDate
+            testCommodity.validityStartDate,
+            testCommodity.validityEndDate
           )
         )
       }
@@ -118,14 +120,14 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = CreateGoodsRecordRequest.build(answers, testEori)
+        val result = CreateGoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
             PageMissing(TraderReferencePage),
+            PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
-            PageMissing(UseTraderReferencePage),
-            PageMissing(CommodityQuery)
+            PageMissing(UseTraderReferencePage)
           )
         }
       }
@@ -153,7 +155,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = CreateGoodsRecordRequest.build(answers, testEori)
+        val result = CreateGoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionPage)
@@ -186,16 +188,14 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = CreateGoodsRecordRequest.build(answers, testEori)
+        val result = CreateGoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(GoodsDescriptionPage)
-          )
+          errors.toChain.toList must contain only UnexpectedPage(GoodsDescriptionPage)
         }
       }
 
-      "when HasCorrectGoodsPage is false" in {
+      "when HasCorrectGoodsPage is false but they do have a CommodityCodePage" in {
 
         val answers =
           UserAnswers(userAnswersId)
@@ -221,12 +221,43 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .success
             .value
 
-        val result = CreateGoodsRecordRequest.build(answers, testEori)
+        val result = CreateGoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(HasCorrectGoodsPage)
-          )
+          errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsPage)
+        }
+      }
+
+      "when CommodityQuery code and CommodityCodePage do not match" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(TraderReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, "test")
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(UseTraderReferencePage, false)
+            .success
+            .value
+            .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
+
+        val result = CreateGoodsRecord.build(answers, testEori)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only MismatchedPage(CommodityCodePage)
         }
       }
     }

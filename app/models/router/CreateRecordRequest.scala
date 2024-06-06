@@ -30,12 +30,9 @@ case class CreateRecordRequest(
   comcode: String,
   goodsDescription: String,
   countryOfOrigin: String,
-  category: Int,
-  assessments: Option[Seq[Assessment]],
-  supplementaryUnit: Option[Int],
-  measurementUnit: Option[String],
   comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant]
+  comcodeEffectiveToDate: Option[Instant],
+  category: Int = 1
 )
 
 object CreateRecordRequest {
@@ -47,13 +44,9 @@ object CreateRecordRequest {
       (JsPath \ "comcode").read[String] and
       (JsPath \ "goodsDescription").read[String] and
       (JsPath \ "countryOfOrigin").read[String] and
-      (JsPath \ "category").read[Int] and
-      (JsPath \ "assessments").readNullable[Seq[Assessment]] and
-      (JsPath \ "supplementaryUnit").readNullable[Int] and
-      (JsPath \ "measurementUnit").readNullable[String] and
       (JsPath \ "comcodeEffectiveFromDate").read[Instant] and
-      (JsPath \ "comcodeEffectiveToDate")
-        .readNullable[Instant])(CreateRecordRequest.apply _)
+      (JsPath \ "comcodeEffectiveToDate").readNullable[Instant] and
+      (JsPath \ "category").read[Int])(CreateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[CreateRecordRequest] =
     ((JsPath \ "eori").write[String] and
@@ -62,10 +55,7 @@ object CreateRecordRequest {
       (JsPath \ "comcode").write[String] and
       (JsPath \ "goodsDescription").write[String] and
       (JsPath \ "countryOfOrigin").write[String] and
-      (JsPath \ "category").write[Int] and
-      (JsPath \ "assessments").writeNullable[Seq[Assessment]] and
-      (JsPath \ "supplementaryUnit").writeNullable[Int] and
-      (JsPath \ "measurementUnit").writeNullable[String] and
       (JsPath \ "comcodeEffectiveFromDate").write[Instant] and
-      (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant])(unlift(CreateRecordRequest.unapply))
+      (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant] and
+      (JsPath \ "category").write[Int])(unlift(CreateRecordRequest.unapply))
 }

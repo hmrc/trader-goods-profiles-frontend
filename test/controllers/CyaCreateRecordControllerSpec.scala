@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.GoodsRecordConnector
-import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse, UserAnswers}
+import models.{CreateGoodsRecord, CreateGoodsRecordResponse, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -132,7 +132,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val userAnswers = mandatoryRecordUserAnswers
 
           val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.submitGoodsRecordUrl(any())(any()))
+          when(mockConnector.submitGoodsRecord(any())(any()))
             .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
 
           val mockAuditService = mock[AuditService]
@@ -150,18 +150,19 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val result = route(application, request).value
 
-            val expectedPayload = CreateGoodsRecordRequest(
+            val expectedPayload = CreateGoodsRecord(
               testEori,
               "123",
               testCommodity.commodityCode,
               "123",
               "1",
-              testCommodity.validityStartDate
+              testCommodity.validityStartDate,
+              testCommodity.validityEndDate
             )
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
-            verify(mockConnector, times(1)).submitGoodsRecordUrl(eqTo(expectedPayload))(any())
+            verify(mockConnector, times(1)).submitGoodsRecord(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService, times(1))
@@ -192,7 +193,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-            verify(mockConnector, never()).submitGoodsRecordUrl(any())(any())
+            verify(mockConnector, never()).submitGoodsRecord(any())(any())
 
             withClue("must not try and submit an audit") {
               verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
@@ -207,7 +208,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val userAnswers = mandatoryRecordUserAnswers
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.submitGoodsRecordUrl(any())(any()))
+        when(mockConnector.submitGoodsRecord(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =
@@ -229,7 +230,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val userAnswers = mandatoryRecordUserAnswers
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.submitGoodsRecordUrl(any())(any()))
+        when(mockConnector.submitGoodsRecord(any())(any()))
           .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
 
         val mockAuditService = mock[AuditService]

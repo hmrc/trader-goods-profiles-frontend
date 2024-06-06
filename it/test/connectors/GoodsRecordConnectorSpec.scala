@@ -19,7 +19,7 @@ package connectors
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.CreateRecordRequest
-import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse}
+import models.{CreateGoodsRecord, CreateGoodsRecordResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -51,13 +51,14 @@ class GoodsRecordConnectorSpec
 
     val instant = Instant.now
 
-    val goodsRecord = CreateGoodsRecordRequest(
+    val goodsRecord = CreateGoodsRecord(
       testEori,
       "1",
       "2",
       "3",
       "4",
-      instant
+      instant,
+      None
     )
 
     val goodsRecordRequest = CreateRecordRequest(
@@ -67,10 +68,6 @@ class GoodsRecordConnectorSpec
       "2",
       "3",
       "4",
-      1,
-      None,
-      None,
-      None,
       instant,
       None
     )
@@ -85,7 +82,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(Json.toJson(goodsRecordResponse).toString))
       )
 
-      connector.submitGoodsRecordUrl(goodsRecord).futureValue mustBe goodsRecordResponse
+      connector.submitGoodsRecord(goodsRecord).futureValue mustBe goodsRecordResponse
     }
 
     "must return a failed future when the server returns an error" in {
@@ -96,7 +93,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.submitGoodsRecordUrl(goodsRecord).failed.futureValue
+      connector.submitGoodsRecord(goodsRecord).failed.futureValue
     }
   }
 }

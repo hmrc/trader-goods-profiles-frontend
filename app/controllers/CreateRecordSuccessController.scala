@@ -35,6 +35,6 @@ class CreateRecordSuccessController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view())
+      Ok(view(recordId))
   }
 }

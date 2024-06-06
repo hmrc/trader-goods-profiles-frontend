@@ -21,7 +21,7 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{CreateGoodsRecordRequest, ValidationError}
+import models.{CreateGoodsRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
@@ -48,7 +48,7 @@ class CyaCreateRecordController @Inject() (
     with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    CreateGoodsRecordRequest.build(request.userAnswers, request.eori) match {
+    CreateGoodsRecord.build(request.userAnswers, request.eori) match {
       case Right(_)     =>
         val list = SummaryListViewModel(
           rows = Seq(
@@ -65,10 +65,10 @@ class CyaCreateRecordController @Inject() (
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    CreateGoodsRecordRequest.build(request.userAnswers, request.eori) match {
+    CreateGoodsRecord.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         for {
-          goodsRecordResponse <- goodsRecordConnector.submitGoodsRecordUrl(model)
+          goodsRecordResponse <- goodsRecordConnector.submitGoodsRecord(model)
           _                   <- auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))

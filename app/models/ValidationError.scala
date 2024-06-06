@@ -33,3 +33,8 @@ final case class UnexpectedPage(query: Query) extends ValidationError {
 
   val message: String = s"Unexpected page: ${query.path}"
 }
+
+final case class MismatchedPage(query: Query) extends ValidationError {
+
+  val message: String = s"Mismatched page: ${query.path}"
+}

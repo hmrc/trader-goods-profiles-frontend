@@ -18,7 +18,7 @@ package connectors
 
 import config.Service
 import models.router.CreateRecordRequest
-import models.{CreateGoodsRecordRequest, CreateGoodsRecordResponse}
+import models.{CreateGoodsRecord, CreateGoodsRecordResponse}
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -34,7 +34,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
 
-  private def mapToCreateRecordRequest(goodsRecord: CreateGoodsRecordRequest): CreateRecordRequest =
+  private def mapToCreateRecordRequest(goodsRecord: CreateGoodsRecord): CreateRecordRequest =
     CreateRecordRequest(
       goodsRecord.eori,
       goodsRecord.eori,
@@ -42,15 +42,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       goodsRecord.comcode,
       goodsRecord.goodsDescription,
       goodsRecord.countryOfOrigin,
-      1,
-      None,
-      None,
-      None,
       goodsRecord.comcodeEffectiveFromDate,
-      None
+      goodsRecord.comcodeEffectiveToDate
     )
 
-  def submitGoodsRecordUrl(goodsRecord: CreateGoodsRecordRequest)(implicit
+  def submitGoodsRecord(goodsRecord: CreateGoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
