@@ -37,7 +37,7 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
   def submitRequestAccreditation(adviceRequest: AdviceRequest)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .post(accreditationUrl)
-      .setHeader(header = ("X-Client-ID", "tss"))
+      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
       .withBody(Json.toJson(adviceRequest))
       .execute[HttpResponse]
       .map(_ => Done)

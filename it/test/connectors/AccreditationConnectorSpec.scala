@@ -53,7 +53,7 @@ class AccreditationConnectorSpec
 
       wireMockServer.stubFor(
         post(urlEqualTo(s"/trader-goods-profiles-router/createaccreditation"))
-          .withHeader("X-Client-ID", equalTo("tss"))
+          .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withRequestBody(equalTo(Json.toJson(adviceRequest).toString))
           .willReturn(ok())
       )
@@ -65,7 +65,7 @@ class AccreditationConnectorSpec
 
       wireMockServer.stubFor(
         post(urlEqualTo(s"/trader-goods-profiles-router/createaccreditation"))
-          .withHeader("X-Client-ID", equalTo("tss"))
+          .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withRequestBody(equalTo(Json.toJson(adviceRequest).toString))
           .willReturn(serverError())
       )
