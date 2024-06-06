@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.GoodsRecordConnector
-import models.responses.CreateGoodsRecordResponse
+import models.router.responses.CreateGoodsRecordResponse
 import models.{GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

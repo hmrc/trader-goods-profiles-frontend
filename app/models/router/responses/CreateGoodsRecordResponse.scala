@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.responses
+package models.router.responses
 
 import play.api.libs.json.{Json, OFormat}
 

@@ -18,9 +18,9 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
-import models.router.CreateRecordRequest
 import models.GoodsRecord
+import models.router.requests.CreateRecordRequest
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers

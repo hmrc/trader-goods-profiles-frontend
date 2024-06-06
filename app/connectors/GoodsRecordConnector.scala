@@ -17,9 +17,9 @@
 package connectors
 
 import config.Service
-import models.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
-import models.router.CreateRecordRequest
 import models.GoodsRecord
+import models.router.requests.CreateRecordRequest
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import play.api.Configuration
 import play.api.http.Status.OK
 import play.api.libs.json.{JsResult, Json}
