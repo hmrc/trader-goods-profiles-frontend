@@ -88,7 +88,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should call the router to get the goods record") {
-        verify(mockOttConnector, times(1)).getCategorisationInfo(any())(any())
+        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
       }
 
       withClue("Should call OTT to get categorisation info") {
@@ -113,7 +113,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should call the router to get the goods record") {
-        verify(mockOttConnector, never()).getCategorisationInfo(any())(any())
+        verify(mockGoodsRecordsConnector, never()).getRecord(any(), any())(any())
       }
 
       withClue("Should call OTT to get categorisation info") {

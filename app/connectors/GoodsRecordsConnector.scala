@@ -29,15 +29,14 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsRecordsConnector @Inject()(config: Configuration, httpClient: HttpClientV2)
-                                     (implicit ec: ExecutionContext){
+class GoodsRecordsConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
-  private val routerBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val routerBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
 
   private def getRecordUrl(eori: String, recordId: String) =
     url"$routerBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
-  def getRecord(eori: String, recordId: String)(implicit hc: HeaderCarrier): Future[GoodsRecordResponse] = {
+  def getRecord(eori: String, recordId: String)(implicit hc: HeaderCarrier): Future[GoodsRecordResponse] =
     httpClient
       .get(getRecordUrl(eori, recordId))
       .addHeaders(("X-Client-ID", "TGP-Frontend"))
@@ -51,7 +50,5 @@ class GoodsRecordsConnector @Inject()(config: Configuration, httpClient: HttpCli
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
         }
       }
-
-  }
 
 }

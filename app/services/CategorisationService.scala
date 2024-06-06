@@ -29,29 +29,33 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class CategorisationService @Inject()(
- sessionRepository: SessionRepository,
- ottConnector: OttConnector,
- goodsRecordsConnector: GoodsRecordsConnector
+class CategorisationService @Inject() (
+  sessionRepository: SessionRepository,
+  ottConnector: OttConnector,
+  goodsRecordsConnector: GoodsRecordsConnector
 )(implicit ec: ExecutionContext) {
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[Done] = {
 
-    val recordCategorisations = request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    val recordCategorisations =
+      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     recordCategorisations.records.get(recordId) match {
       case Some(categorisationInfo: CategorisationInfo) =>
         Future.successful(Done)
-      case None =>
+      case None                                         =>
         for {
-          goodsRecord <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
+          goodsRecord        <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+          goodsNomenclature  <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers <- Future.fromTry(request.userAnswers.set(
-            RecordCategorisationsQuery,
-            recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-          ))
-          _ <- sessionRepository.set(updatedAnswers)
+          updatedAnswers     <-
+            Future.fromTry(
+              request.userAnswers.set(
+                RecordCategorisationsQuery,
+                recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
+              )
+            )
+          _                  <- sessionRepository.set(updatedAnswers)
         } yield Done
     }
   }
