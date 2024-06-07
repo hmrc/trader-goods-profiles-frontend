@@ -33,17 +33,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ec: ExecutionContext
 ) {
   private val tgpRouterBaseUrl: Service    = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private def goodsRecordUrl(eori: String) = url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
-
-  private def getRecordUrl(eori: String, recordId: String) =
-    url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
+  private def createUpdateGoodsRecordUrl(eori: String) = url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
+  private def getGoodsRecordUrl(eori: String, recordId: String) = url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
-      .post(goodsRecordUrl(goodsRecord.eori))
+      .post(createUpdateGoodsRecordUrl(goodsRecord.eori))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
@@ -53,16 +51,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[GetGoodsRecordResponse] =
     httpClient
-      .get(getRecordUrl(eori, recordId))
+      .get(getGoodsRecordUrl(eori, recordId))
       .addHeaders(clientIdHeader)
       .execute[HttpResponse]
-      .flatMap { response =>
-        response.status match {
-          case OK =>
-            response.json
-              .validate[GetGoodsRecordResponse]
-              .map(result => Future.successful(result))
-              .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-        }
-      }
+      .map(response => response.json.as[GetGoodsRecordResponse])
 }
