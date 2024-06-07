@@ -21,8 +21,7 @@ import models.GoodsRecord
 import models.router.requests.CreateRecordRequest
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import play.api.Configuration
-import play.api.http.Status.OK
-import play.api.libs.json.{JsResult, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
