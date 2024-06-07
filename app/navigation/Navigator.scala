@@ -23,6 +23,8 @@ import pages._
 import models._
 import queries.{CategorisationQuery, RecordCategorisationsQuery}
 
+import scala.util.Try
+
 @Singleton
 class Navigator @Inject() () {
 
@@ -90,7 +92,12 @@ class Navigator @Inject() () {
       assessmentAnswer   <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
-        if (assessmentPage.index + 1 < recordQuery.records.size) {
+        val assessmentCount = Try {
+          recordQuery.records
+            .get(assessmentPage.recordId)
+            .get.categoryAssessments.size
+        }.getOrElse(0)
+        if (assessmentPage.index + 1 < assessmentCount) {
           routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
         } else {
           // no more assessments left
