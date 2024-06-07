@@ -46,12 +46,11 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      // TODO an example of how to build the rows - might help
 
       CategorisationAnswers.build(request.userAnswers) match {
         case Right(_) =>
 
-
+//TODO move all this validation into the CategorisationAnswers build
           val categoriesThatAreValid = request.userAnswers.get(CategorisationQuery) match {
             case Some(categorisationInfo) =>
               categorisationInfo.categoryAssessments.flatMap(

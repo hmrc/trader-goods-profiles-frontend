@@ -32,7 +32,7 @@ object CategorisationAnswers {
 
   def build(answers: UserAnswers): EitherNec[ValidationError, CategorisationAnswers] = {
     (
-      Right(Seq.empty[String]),
+      Right(Seq.empty[String]), //TODO do this proper ideally move all the CYA errors here
       answers.getOptionalPageValueForOptionalBooleanPage(answers, HasSupplementaryUnitPage, SupplementaryUnitPage)
     ).parMapN(CategorisationAnswers.apply)
   }
