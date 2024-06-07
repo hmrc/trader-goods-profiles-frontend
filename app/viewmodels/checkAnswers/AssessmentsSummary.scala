@@ -27,7 +27,14 @@ import viewmodels.implicits._
 
 object AssessmentsSummary {
 
-  def row(answers: UserAnswers, assessmentId: String, numberOfThisAssessment: Int, numberOfAssessments: Int, exemptions: Seq[Exemption])(implicit messages: Messages): Option[SummaryListRow] =
+  //TODO is this tested via CYA? Make sure case where can't find exemption is tested
+  def row(
+    answers: UserAnswers,
+    assessmentId: String,
+    numberOfThisAssessment: Int,
+    numberOfAssessments: Int,
+    exemptions: Seq[Exemption]
+  )(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(AssessmentPage(assessmentId)).map { answer =>
       val value = answer.toString
       val descriptiveText = if (value == "none") {

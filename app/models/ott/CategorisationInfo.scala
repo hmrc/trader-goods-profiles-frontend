@@ -27,16 +27,13 @@ final case class CategorisationInfo(
 
 object CategorisationInfo {
 
-  def build(ott: OttResponse): Option[CategorisationInfo] = {
-    val a = ott.categoryAssessmentRelationships
+  def build(ott: OttResponse): Option[CategorisationInfo] =
+    ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
       .map { assessments =>
         CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted)
       }
-
-    a
-  }
 
   implicit lazy val format: OFormat[CategorisationInfo] = Json.format
 }

@@ -95,6 +95,7 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  //TODO remove mode
   private def navigateFromAssessment(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
     for {
       categorisationInfo <- answers.get(CategorisationQuery)
@@ -127,7 +128,7 @@ class Navigator @Inject() () {
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoodsCheck
     case NamePage               => _ => routes.CyaRequestAdviceController.onPageLoad
     case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
-    case p: AssessmentPage      => navigateFromAssessment(p, CheckMode)
+    case p: AssessmentPage      => navigateFromAssessmentCheck(p)
     case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck
     case SupplementaryUnitPage => _ => routes.CyaCategorisationController.onPageLoad("123")
     case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
@@ -189,8 +190,8 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  //TODO ????
-  private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
+  //TODO dont like redoing all the logic
+  private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     for {
       categorisationInfo <- answers.get(CategorisationQuery)
       assessment <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
@@ -202,9 +203,9 @@ class Navigator @Inject() () {
           .lift(assessmentIndex + 1)
           .map(nextAssessment =>
             if (answers.isDefined(AssessmentPage(nextAssessment.id))) {
-              routes.CyaCreateProfileController.onPageLoad
+              routes.CyaCategorisationController.onPageLoad("123")
             } else {
-              routes.AssessmentController.onPageLoad(mode, nextAssessment.id)
+              routes.AssessmentController.onPageLoad(CheckMode, nextAssessment.id)
             })
           .getOrElse(routes.CyaCategorisationController.onPageLoad("123"))
 
