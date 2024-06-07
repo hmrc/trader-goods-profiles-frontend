@@ -42,8 +42,9 @@ cyaCreateRecord.h2 = Check if the details on this record are correct.
 cyaCreateRecord.warning = Warning
 cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
-cyaRequestAdvice.title = Check your answers
-cyaRequestAdvice.heading = Check your answers
+cyaRequestAdvice.title = Check your answers before sending your request for advice
+cyaRequestAdvice.heading = Check your answers before sending your request for advice
+cyaRequestAdvice.subheading = Contact details
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -298,12 +299,28 @@ adviceStart.p2.linkText = apply for a Binding Tariff information decision
 adviceStart.subheading1 = What HMRC needs
 adviceStart.p3 = We’ll ask for your name and email address. An HMRC caseworker will look at the goods record you’ve asked for advice on.
 adviceStart.subheading2 = What happens when HMRC are looking at your record
-adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes.
-adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you'll be able to by email. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
+adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
+adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you’ll be able to by email.
 adviceStart.p6 = You should get a response to your request within 5 working days, but it could take longer.
 
-adviceSuccess.title = adviceSuccess
-adviceSuccess.heading = adviceSuccess
+adviceSuccess.title = Request for advice complete
+adviceSuccess.h1 = Request for advice complete
+adviceSuccess.h2 = What happens next
+adviceSuccess.p1 = HMRC will contact you to let you know their decision.
+adviceSuccess.p2 = The decisions could be:
+adviceSuccess.p2.1 = agreeing the commodity code is correct
+adviceSuccess.p2.2 = asking for more information about the goods
+adviceSuccess.p2.3 = suggesting a change to the commodity code or goods description
+adviceSuccess.p2.4 = saying the record is wrong, and why
+adviceSuccess.p3 = You can send more information to HMRC about your goods to [email address] with your EORI number.
+adviceSuccess.p4 = Email is not a secure method of communication so do not include any personal details if you email HMRC.
+adviceSuccess.p5 = You should get a response to your request within 5 working days, but it could take longer.
+adviceSuccess.h2.1 = Tell us what you think
+adviceSuccess.p6 = This is a new service and we want to know what you think of it.
+adviceSuccess.p7.linkText = Send us your feedback
+adviceSuccess.p7 = Your thoughts and ideas will help us to make improvements.
+adviceSuccess.p8.linkText = Go to goods record
+adviceSuccess.p9.linkText = Go to homepage
 
 email.title = What is your email address?
 email.heading = What is your email address?
@@ -321,3 +338,21 @@ name.checkYourAnswersLabel = Name
 name.error.required = Enter your name
 name.error.length = Enter a name with less than 70 characters
 name.change.hidden = Name
+
+hasSupplementaryUnit.title = Supplementary unit
+hasSupplementaryUnit.h1 = Supplementary unit
+hasSupplementaryUnit.h2 = Do you want to add the supplementary unit?
+hasSupplementaryUnit.p1 = As your goods are Category 2, this means you’ll need to add a supplementary unit to your Internal Market Movement Information (IMMI).
+hasSupplementaryUnit.p2 = You can optionally store a supplementary unit in your TGP. This is useful if you move the same amount of goods often.
+hasSupplementaryUnit.checkYourAnswersLabel = hasSupplementaryUnit
+hasSupplementaryUnit.error.required = Select yes if you want to add the supplementary unit
+hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
+
+supplementaryUnit.title = SupplementaryUnit
+supplementaryUnit.heading = SupplementaryUnit
+supplementaryUnit.checkYourAnswersLabel = SupplementaryUnit
+supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
+supplementaryUnit.error.required = Enter your supplementaryUnit
+supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
+supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
+supplementaryUnit.change.hidden = SupplementaryUnit
