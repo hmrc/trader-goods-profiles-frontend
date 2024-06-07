@@ -38,7 +38,7 @@ object AdviceRequest {
       Right(eori),
       answers.getPageValue(NamePage),
       Right(eori),
-      Right("recordId"),
+      Right("b0082f50-f13b-416a-8071-3bd95107d44d"),
       answers.getPageValue(EmailPage)
     ).parMapN(AdviceRequest.apply)
 }
