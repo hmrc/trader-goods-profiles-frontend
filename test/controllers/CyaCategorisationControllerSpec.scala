@@ -38,7 +38,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val result = route(application, request).value
 
-          val view  = application.injector.instanceOf[CyaCategorisationView]
+          val view = application.injector.instanceOf[CyaCategorisationView]
           val list1 = SummaryListViewModel(
             rows = Seq.empty
           )
@@ -49,6 +49,19 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           contentAsString(result) mustEqual view("test", list1, list2)(request, messages(application)).toString
         }
       }
+
+      //TODO Monday
+    // must return OK and the correct view when assessments supplied
+      // must return OK and the correct view when supplementary units supplied
+      //must redirect to Journey Recovery when no answers supplied
+        //must redirect to Journey Recovery when no existing data
+
+      // These might move but write them here first before refactoring
+      // must redirect when you answer assessments out of order, e.g. answer assessment 3 without answering assessment 2
+      // must redirect when you answer assessments after the none, e.g. assessment 2 is None but assessment 3 is answered
+      // must redirect when you just stop answering? e.g. assessment 2 is exemption but assessment 3 is not answered
+
+    }
 
       "for a POST" - {
 
@@ -69,5 +82,5 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         }
       }
     }
-  }
+
 }

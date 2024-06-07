@@ -49,7 +49,7 @@ class CyaCategorisationController @Inject() (
   // No hasSuppUnit but suppUnit
   // hasSuppUnit false but SuppUnit
   // assessment1 = ex, 2 = ex, 3 = None, 4 = ex - error
-  // assessment1 = ex, 2 = None, 4 = ex - error
+  // assessment1 = ex, 2 = None, 3 = ex - error
   // assessment1 = ex, 2 = (not answered) - error
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
@@ -58,7 +58,7 @@ class CyaCategorisationController @Inject() (
       CategorisationAnswers.build(request.userAnswers) match {
         case Right(_) =>
 
-//TODO move all this validation into the CategorisationAnswers build
+//TODO move all this validation into the CategorisationAnswers build??
           val categoriesThatAreValid = request.userAnswers.get(CategorisationQuery) match {
             case Some(categorisationInfo) =>
               categorisationInfo.categoryAssessments.flatMap(
@@ -76,6 +76,15 @@ class CyaCategorisationController @Inject() (
               !values.reverse.tail.contains(NoExemption)
           }
 
+          //TODO test this
+//          val finishesAtTheRightPoint = request.userAnswers.get(CategorisationQuery) match {
+//            case Some(categorisationInfo) =>
+//              val values = categorisationInfo.categoryAssessments.flatMap(
+//                assessment => request.userAnswers.get(AssessmentPage(assessment.id)).map(value => request.userAnswers.get(AssessmentPage(assessment.id)))
+//              ).flatten
+//
+//              values.tail.equals(NoExemption) || values.size == categorisationRows.size
+//          }
 
               val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
             case Some(categorisationInfo) =>
