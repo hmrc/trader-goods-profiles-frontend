@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-import scala.util.Try
+class HasSupplementaryUnitFormProviderSpec extends BooleanFieldBehaviours {
 
-case object HasNiphlPage extends QuestionPage[Boolean] {
+  val requiredKey = "hasSupplementaryUnit.error.required"
+  val invalidKey  = "error.boolean"
 
-  override def path: JsPath = JsPath \ toString
+  val form = new HasSupplementaryUnitFormProvider()()
 
-  override def toString: String = "hasNiphl"
+  ".value" - {
 
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasNiphlPage) match {
-      case Some(false) => updatedUserAnswers.remove(NiphlNumberPage)
-      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-    }
+    val fieldName = "value"
 
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }
