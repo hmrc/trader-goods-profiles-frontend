@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-package queries
+package models
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import models.ott.CategorisationInfo
+import play.api.libs.json.{Json, OFormat}
 
-import scala.util.{Success, Try}
+case class RecordCategorisations(records: Map[String, CategorisationInfo])
 
-sealed trait Query {
-
-  def path: JsPath
-}
-
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(
-    newValue: Option[A],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    Success(updatedUserAnswers)
+object RecordCategorisations {
+  implicit val format: OFormat[RecordCategorisations] = Json.format[RecordCategorisations]
 }

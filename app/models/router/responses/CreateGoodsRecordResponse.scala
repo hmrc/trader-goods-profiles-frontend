@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 
-package pages
+package models.router.responses
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-import scala.util.Try
+final case class CreateGoodsRecordResponse(
+  recordId: String
+)
 
-case object HasNiphlPage extends QuestionPage[Boolean] {
+object CreateGoodsRecordResponse {
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "hasNiphl"
-
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasNiphlPage) match {
-      case Some(false) => updatedUserAnswers.remove(NiphlNumberPage)
-      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-    }
+  implicit lazy val format: OFormat[CreateGoodsRecordResponse] = Json.format
 
 }

@@ -17,8 +17,9 @@
 package connectors
 
 import config.Service
-import models.router.CreateRecordRequest
-import models.{CreateGoodsRecordResponse, GoodsRecord}
+import models.GoodsRecord
+import models.router.requests.CreateRecordRequest
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -30,16 +31,29 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private val goodsRecordUrl            = url"$tgpRouterBaseUrl/trader-goods-profiles-router/records"
+  private val tgpRouterBaseUrl: Service                         = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val clientIdHeader                                    = ("X-Client-ID", "tgp-frontend")
+  private def createUpdateGoodsRecordUrl(eori: String)          =
+    url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
+  private def getGoodsRecordUrl(eori: String, recordId: String) =
+    url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
-      .post(goodsRecordUrl)
-      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
+      .post(createUpdateGoodsRecordUrl(goodsRecord.eori))
+      .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
+
+  def getRecord(eori: String, recordId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[GetGoodsRecordResponse] =
+    httpClient
+      .get(getGoodsRecordUrl(eori, recordId))
+      .addHeaders(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetGoodsRecordResponse])
 }

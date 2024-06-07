@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package queries
+package forms
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-import scala.util.{Success, Try}
+class SupplementaryUnitFormProvider @Inject() extends Mappings {
 
-sealed trait Query {
-
-  def path: JsPath
-}
-
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(
-    newValue: Option[A],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    Success(updatedUserAnswers)
+  def apply(): Form[Int] =
+    Form(
+      "value" -> int(
+        "supplementaryUnit.error.required",
+        "supplementaryUnit.error.wholeNumber",
+        "supplementaryUnit.error.nonNumeric"
+      )
+        .verifying(inRange(0, Int.MaxValue, "supplementaryUnit.error.outOfRange"))
+    )
 }
