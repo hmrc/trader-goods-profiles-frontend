@@ -58,13 +58,13 @@ class AssessmentController @Inject() (
             categorisationInfo <- recordQuery.records.get(recordId)
           } yield {
 
-            val form = formProvider(categorisationInfo.categoryAssessments.head.exemptions.map(_.id))
+            val form = formProvider(categorisationInfo.categoryAssessments(index).exemptions.map(_.id))
             val preparedForm = request.userAnswers.get(AssessmentPage(recordId, index)) match {
               case Some(value) => form.fill(value)
               case None => form
             }
 
-            val radioOptions = AssessmentAnswer.radioOptions(categorisationInfo.categoryAssessments.head.exemptions)
+            val radioOptions = AssessmentAnswer.radioOptions(categorisationInfo.categoryAssessments(index).exemptions)
             val viewModel = AssessmentViewModel(
               commodityCode = categorisationInfo.commodityCode,
               numberOfThisAssessment = index + 1,

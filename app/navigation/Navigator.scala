@@ -21,7 +21,7 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.CategorisationQuery
+import queries.{CategorisationQuery, RecordCategorisationsQuery}
 
 @Singleton
 class Navigator @Inject() () {
@@ -86,11 +86,18 @@ class Navigator @Inject() () {
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     for {
+      recordQuery <- answers.get(RecordCategorisationsQuery)
       assessmentAnswer   <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
-        routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
+        if (assessmentPage.index + 1 < recordQuery.records.size) {
+          routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
+        } else {
+          // no more assessments left
+          routes.IndexController.onPageLoad
+        }
       case AssessmentAnswer.NoExemption =>
+        // user answered no to one of them, nick's work
         routes.IndexController.onPageLoad
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
