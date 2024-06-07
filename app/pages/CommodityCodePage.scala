@@ -19,7 +19,7 @@ package pages
 import models.UserAnswers
 import play.api.libs.json.JsPath
 
-import scala.util.Try
+import scala.util.{Success, Try}
 
 case object CommodityCodePage extends QuestionPage[String] {
 
@@ -27,8 +27,15 @@ case object CommodityCodePage extends QuestionPage[String] {
 
   override def toString: String = "commodityCode"
 
-  override def cleanup(value: Option[String], userAnswers: UserAnswers): Try[UserAnswers] =
-    userAnswers.get(CommodityCodePage) match {
-      case _ => userAnswers.remove(HasCorrectGoodsPage)
+  override def cleanup(
+    newValue: Option[String],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
+    originalUserAnswers.get(CommodityCodePage) match {
+      case originalValue if originalValue == newValue =>
+        Success(updatedUserAnswers)
+      case _                                          =>
+        updatedUserAnswers.remove(HasCorrectGoodsPage)
     }
 }
