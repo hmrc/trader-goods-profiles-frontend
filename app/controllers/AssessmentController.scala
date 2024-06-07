@@ -18,13 +18,15 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
+import models.ott.CategoryAssessment
 import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CategorisationQuery
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import queries.{CategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
@@ -40,39 +42,43 @@ class AssessmentController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
+  categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode, assessmentId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      {
-        for {
-          categorisationInfo <- request.userAnswers.get(CategorisationQuery)
-          assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
-          assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
-        } yield {
+  def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async {
+      implicit request => {
+        categorisationService.requireCategorisation(request, recordId).flatMap[Result] { _ =>
+          val optionalResult: Option[Result] = for {
+            recordQuery <- request.userAnswers.get(RecordCategorisationsQuery)
+            categorisationInfo <- recordQuery.records.get(recordId)
+            assessment: CategoryAssessment <- categorisationInfo.categoryAssessments.head
+          } yield {
 
-          val form = formProvider(assessment.exemptions.map(_.id))
+            val form = formProvider(assessment.exemptions.map(_.id))
+            val preparedForm = request.userAnswers.get(AssessmentPage(recordId, index)) match {
+              case Some(value) => form.fill(value)
+              case None => form
+            }
 
-          val preparedForm = request.userAnswers.get(AssessmentPage(assessmentId)) match {
-            case Some(value) => form.fill(value)
-            case None        => form
+            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
+            val viewModel = AssessmentViewModel(
+              commodityCode = categorisationInfo.commodityCode,
+              numberOfThisAssessment = index + 1,
+              numberOfAssessments = categorisationInfo.categoryAssessments.size,
+              radioOptions = radioOptions
+            )
+
+            Ok(view(preparedForm, mode, recordId, index, viewModel))
           }
 
-          val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
-          val viewModel    = AssessmentViewModel(
-            commodityCode = categorisationInfo.commodityCode,
-            numberOfThisAssessment = assessmentIndex + 1,
-            numberOfAssessments = categorisationInfo.categoryAssessments.size,
-            radioOptions = radioOptions
-          )
-
-          Ok(view(preparedForm, mode, assessmentId, viewModel))
+          Future.successful(optionalResult.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad())))
         }
-      }.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+      }
     }
 
   def onSubmit(mode: Mode, assessmentId: String): Action[AnyContent] =

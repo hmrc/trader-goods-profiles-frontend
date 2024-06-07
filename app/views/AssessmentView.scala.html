@@ -25,11 +25,11 @@
         govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, assessmentId: String, viewModel: AssessmentViewModel)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, index: Int, viewModel: AssessmentViewModel)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("assessment.title", viewModel.numberOfThisAssessment, viewModel.numberOfAssessments))) {
 
-    @formHelper(action = routes.AssessmentController.onSubmit(mode, assessmentId), 'autoComplete -> "off") {
+    @formHelper(action = routes.AssessmentController.onSubmit(mode, recordId, index), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))

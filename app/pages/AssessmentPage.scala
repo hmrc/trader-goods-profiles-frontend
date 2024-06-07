@@ -18,13 +18,13 @@ package pages
 
 import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.CategorisationQuery
+import queries.{CategorisationQuery, RecordCategorisationsQuery}
 
 import scala.util.{Failure, Success, Try}
 
-case class AssessmentPage(assessmentId: String) extends QuestionPage[AssessmentAnswer] {
+case class AssessmentPage(recordId: String, index: Int) extends QuestionPage[AssessmentAnswer] {
 
-  override def path: JsPath = JsPath \ "assessments" \ assessmentId
+  override def path: JsPath = JsPath \ "assessments" \ recordId \ index
 
   override def cleanup(
     value: Option[AssessmentAnswer],
@@ -32,17 +32,16 @@ case class AssessmentPage(assessmentId: String) extends QuestionPage[AssessmentA
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
     if (value.contains(AssessmentAnswer.NoExemption)) {
-      {
-        for {
-          categorisationInfo <- updatedUserAnswers.get(CategorisationQuery)
-          thisAssessment     <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
-          thisAssessmentIndex = categorisationInfo.categoryAssessments.indexOf(thisAssessment)
-          (_, itemsToRemove)  = categorisationInfo.categoryAssessments.splitAt(thisAssessmentIndex + 1)
-        } yield itemsToRemove
-          .foldLeft[Try[UserAnswers]](Success(updatedUserAnswers))((acc, assessment) =>
-            acc.flatMap(_.remove(AssessmentPage(assessment.id)))
-          )
-      }.getOrElse(Failure(new InconsistentUserAnswersException(s"Could not find category assessment $assessmentId")))
+      (for {
+        recordQuery <- updatedUserAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- recordQuery.records.get(recordId)
+        count = categorisationInfo.categoryAssessments.size
+        rangeToRemove = (index + 1) to count
+      } yield {
+        rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
+          acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
+        }
+      }).getOrElse(Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index")))
     } else {
       super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }

@@ -98,10 +98,10 @@ POST        /create/trader-reference                         controllers.TraderR
 GET         /create/trader-reference/check                   controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
 POST        /create/trader-reference/check                   controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
-GET         /assessment/:id                                  controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, id: String)
-POST        /assessment/:id                                  controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, id: String)
-GET         /assessment/:id/check                            controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, id: String)
-POST        /assessment/:id/check                            controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, id: String)
+GET       /update/:recordId/category-assessment/:index       controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
+POST      /update/:recordId/category-assessment/:index       controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
+GET       /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
+POST      /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
 
 GET         /ukims-kick-out                                  controllers.UkimsKickOutController.onPageLoad()
 
