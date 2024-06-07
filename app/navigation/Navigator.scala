@@ -86,17 +86,10 @@ class Navigator @Inject() () {
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     for {
-      categorisationInfo <- answers.get(CategorisationQuery)
-      assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
       assessmentAnswer   <- answers.get(assessmentPage)
-      assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
-        categorisationInfo.categoryAssessments
-          .lift(assessmentIndex + 1)
-          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, nextAssessment.id))
-          .getOrElse(routes.IndexController.onPageLoad)
-
+        routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
       case AssessmentAnswer.NoExemption =>
         routes.IndexController.onPageLoad
     }
