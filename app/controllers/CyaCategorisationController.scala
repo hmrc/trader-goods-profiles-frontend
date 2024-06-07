@@ -16,16 +16,20 @@
 
 package controllers
 
+import cats.data
+import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{AssessmentAnswer, NormalMode, UserAnswers}
-import pages.AssessmentPage
+import models.AssessmentAnswer.NoExemption
+import models.{AssessmentAnswer, CategorisationAnswers, NormalMode, UserAnswers, ValidationError}
+import pages.{AssessmentPage, HasSupplementaryUnitPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import queries.CategorisationQuery
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.AssessmentsSummary
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
 
@@ -43,25 +47,78 @@ class CyaCategorisationController @Inject() (
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       // TODO an example of how to build the rows - might help
-//      val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
-//        case Some(categorisationInfo) =>
-//          categorisationInfo.categoryAssessments
-//            .flatMap(assessment => AssessmentsSummary.row(request.userAnswers, assessment.id))
-//      }
 
-      val categorisationList    = SummaryListViewModel(
-        rows = Seq.empty
-      )
-      val supplementaryUnitList = SummaryListViewModel(
-        rows = Seq.empty
-      )
+      CategorisationAnswers.build(request.userAnswers) match {
+        case Right(_) =>
 
-      Ok(view(recordId, categorisationList, supplementaryUnitList))
+
+          val categoriesThatAreValid = request.userAnswers.get(CategorisationQuery) match {
+            case Some(categorisationInfo) =>
+              categorisationInfo.categoryAssessments.flatMap(
+                assessment => request.userAnswers.get(AssessmentPage(assessment.id)).map(ass => categorisationInfo.categoryAssessments.indexOf(assessment) + 1)
+              )
+
+          }
+
+          val noNoneBeforeTheEnd = request.userAnswers.get(CategorisationQuery) match {
+            case Some(categorisationInfo) =>
+              val values = categorisationInfo.categoryAssessments.flatMap(
+                assessment => request.userAnswers.get(AssessmentPage(assessment.id)).map(value => request.userAnswers.get(AssessmentPage(assessment.id)))
+              ).flatten
+
+              !values.reverse.tail.contains(NoExemption)
+          }
+
+
+              val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
+            case Some(categorisationInfo) =>
+              categorisationInfo.categoryAssessments
+                .flatMap(assessment => AssessmentsSummary.row(
+                  request.userAnswers,
+                  assessment.id,
+                  categorisationInfo.categoryAssessments.indexOf(assessment) + 1,
+                  categorisationInfo.categoryAssessments.size,
+                  assessment.exemptions
+                ))
+          }
+
+          if (noNoneBeforeTheEnd && categoriesThatAreValid.zipWithIndex.takeWhile(x => x._1 == x._2 + 1).size == categorisationRows.size) {
+            //happy
+
+            val categorisationList = SummaryListViewModel(
+              rows = categorisationRows
+            )
+            val supplementaryUnitList = SummaryListViewModel(
+              rows = Seq(
+                HasSupplementaryUnitSummary.row(request.userAnswers, recordId),
+                SupplementaryUnitSummary.row(request.userAnswers)
+              ).flatten
+            )
+
+            Ok(view(recordId, categorisationList, supplementaryUnitList))
+          } else {
+            logErrorsAndContinue(NonEmptyChain.fromSeq(Seq.empty[ValidationError]).get)
+          }
+        case Left(errors) =>
+          logErrorsAndContinue(errors)
+
+      }
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       Redirect(routes.IndexController.onPageLoad)
+  }
+
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+  //def logErrorsAndContinue(): Result = {
+
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+    val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+
+    logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
 }

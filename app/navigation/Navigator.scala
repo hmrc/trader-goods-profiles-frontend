@@ -40,10 +40,12 @@ class Navigator @Inject() () {
     case CountryOfOriginPage    => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
     case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoods
-    case p: AssessmentPage      => navigateFromAssessment(p)
+    case p: AssessmentPage      => navigateFromAssessment(p, NormalMode)
     case AdviceStartPage        => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage               => _ => routes.EmailController.onPageLoad(NormalMode)
     case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
+    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
+    case SupplementaryUnitPage => _ => routes.CyaCategorisationController.onPageLoad("123")
     case _                      => _ => routes.IndexController.onPageLoad
 
   }
@@ -84,7 +86,16 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
+  private def navigateFromHasSupplementaryUnit(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage)
+      .map{
+        case true => routes.SupplementaryUnitController.onPageLoad(NormalMode)
+        case false => routes.CyaCategorisationController.onPageLoad("123")
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromAssessment(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
     for {
       categorisationInfo <- answers.get(CategorisationQuery)
       assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
@@ -94,11 +105,11 @@ class Navigator @Inject() () {
       case AssessmentAnswer.Exemption(_) =>
         categorisationInfo.categoryAssessments
           .lift(assessmentIndex + 1)
-          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, nextAssessment.id))
-          .getOrElse(routes.IndexController.onPageLoad)
+          .map(nextAssessment => routes.AssessmentController.onPageLoad(mode, nextAssessment.id))
+          .getOrElse(routes.CyaCategorisationController.onPageLoad("123"))
 
       case AssessmentAnswer.NoExemption =>
-        routes.IndexController.onPageLoad
+        routes.CyaCategorisationController.onPageLoad("123")
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -116,6 +127,9 @@ class Navigator @Inject() () {
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoodsCheck
     case NamePage               => _ => routes.CyaRequestAdviceController.onPageLoad
     case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
+    case p: AssessmentPage      => navigateFromAssessment(p, CheckMode)
+    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck
+    case SupplementaryUnitPage => _ => routes.CyaCategorisationController.onPageLoad("123")
     case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -174,6 +188,45 @@ class Navigator @Inject() () {
         case false => routes.CommodityCodeController.onPageLoad(CheckMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  //TODO ????
+  private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
+    for {
+      categorisationInfo <- answers.get(CategorisationQuery)
+      assessment <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
+      assessmentAnswer <- answers.get(assessmentPage)
+      assessmentIndex = categorisationInfo.categoryAssessments.indexOf(assessment)
+    } yield assessmentAnswer match {
+      case AssessmentAnswer.Exemption(_) =>
+        categorisationInfo.categoryAssessments
+          .lift(assessmentIndex + 1)
+          .map(nextAssessment =>
+            if (answers.isDefined(AssessmentPage(nextAssessment.id))) {
+              routes.CyaCreateProfileController.onPageLoad
+            } else {
+              routes.AssessmentController.onPageLoad(mode, nextAssessment.id)
+            })
+          .getOrElse(routes.CyaCategorisationController.onPageLoad("123"))
+
+      case AssessmentAnswer.NoExemption =>
+        routes.CyaCategorisationController.onPageLoad("123")
+    }
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasSupplementaryUnitCheck(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage)
+      .map {
+        case true =>
+          if (answers.isDefined(SupplementaryUnitPage)) {
+            routes.CyaCategorisationController.onPageLoad("123")
+          } else {
+            routes.SupplementaryUnitController.onPageLoad(CheckMode)
+          }
+        case false => routes.CyaCategorisationController.onPageLoad("123")
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>

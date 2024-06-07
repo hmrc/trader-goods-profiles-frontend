@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.ott.Exemption
 import models.{CheckMode, UserAnswers}
 import pages.AssessmentPage
 import play.api.i18n.Messages
@@ -26,13 +27,20 @@ import viewmodels.implicits._
 
 object AssessmentsSummary {
 
-  def row(answers: UserAnswers, assessmentId: String)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, assessmentId: String, numberOfThisAssessment: Int, numberOfAssessments: Int, exemptions: Seq[Exemption])(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(AssessmentPage(assessmentId)).map { answer =>
       val value = answer.toString
+      val descriptiveText = if (value == "none") {
+        "assessment.exemption.none.checkYourAnswersLabel"
+      } else {
+        //TODO if it can't be found???
+        val exemption = exemptions.find(x => x.code == value).get
+        messages("assessment.exemption", exemption.code, exemption.description)
+      }
 
       SummaryListRowViewModel(
-        key = "assessment.checkYourAnswersLabel",
-        value = ValueViewModel(value),
+        key = messages("assessment.checkYourAnswersLabel", numberOfThisAssessment, numberOfAssessments),
+        value = ValueViewModel(descriptiveText),
         actions = Seq(
           ActionItemViewModel("site.change", routes.AssessmentController.onPageLoad(CheckMode, assessmentId).url)
             .withVisuallyHiddenText(messages("assessment.change.hidden"))

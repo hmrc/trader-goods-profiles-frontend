@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package models.ott
+package models
 
-import cats.implicits.toTraverseOps
-import models.ott.response.OttResponse
+import cats.data.EitherNec
+import cats.implicits.catsSyntaxTuple2Parallel
+import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
 
-final case class CategorisationInfo(
-  commodityCode: String,
-  categoryAssessments: Seq[CategoryAssessment]
+final case class CategorisationAnswers (
+  assessmentValues: Seq[String],
+  supplementaryUnit: Option[Int]
 )
 
-object CategorisationInfo {
+object CategorisationAnswers {
 
-  def build(ott: OttResponse): Option[CategorisationInfo] = {
-    val a = ott.categoryAssessmentRelationships
-      .map(x => CategoryAssessment.build(x.id, ott))
-      .sequence
-      .map { assessments =>
-        CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted)
-      }
+  implicit lazy val format: OFormat[CategorisationAnswers] = Json.format
 
-    a
+  def build(answers: UserAnswers): EitherNec[ValidationError, CategorisationAnswers] = {
+    (
+      Right(Seq.empty[String]),
+      answers.getOptionalPageValueForOptionalBooleanPage(answers, HasSupplementaryUnitPage, SupplementaryUnitPage)
+    ).parMapN(CategorisationAnswers.apply)
   }
-
-  implicit lazy val format: OFormat[CategorisationInfo] = Json.format
 }
+
+
