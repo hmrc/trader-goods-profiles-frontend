@@ -17,8 +17,13 @@
 package controllers
 
 import base.SpecBase
+import connectors.AccreditationConnector
 import models.UserAnswers
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
 import play.api.Application
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -27,6 +32,8 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaRequestAdviceView
+
+import scala.concurrent.Future
 
 class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
@@ -93,10 +100,16 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
     "for a POST" - {
 
-      "must redirect to AdviceSuccessController" in {
+      "must submit the advice request and redirect to AdviceSuccessController" in {
+
+        val userAnswers = mandatoryAdviceUserAnswers
+
+        val mockConnector = mock[AccreditationConnector]
+        when(mockConnector.submitRequestAccreditation(any())(any())).thenReturn(Future.successful(Done))
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AccreditationConnector].toInstance(mockConnector))
             .build()
 
         running(application) {
@@ -108,6 +121,67 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad().url
         }
       }
+
+      "when user answers cannot create a advice request" - {
+
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockConnector = mock[AccreditationConnector]
+          val continueUrl   = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            verify(mockConnector, never()).submitRequestAccreditation(any())(any())
+          }
+        }
+      }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers = mandatoryAdviceUserAnswers
+
+        val mockConnector = mock[AccreditationConnector]
+        when(mockConnector.submitRequestAccreditation(any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
     }
   }
 }

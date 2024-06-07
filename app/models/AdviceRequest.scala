@@ -17,14 +17,16 @@
 package models
 
 import cats.data.EitherNec
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.implicits.catsSyntaxTuple5Parallel
 import pages.{EmailPage, NamePage}
 import play.api.libs.json.{Json, OFormat}
 
 final case class AdviceRequest(
+  eori: String,
+  requestorName: String,
   actorId: String,
-  name: String,
-  email: String
+  recordId: String,
+  requestorEmail: String
 )
 
 object AdviceRequest {
@@ -35,6 +37,8 @@ object AdviceRequest {
     (
       Right(eori),
       answers.getPageValue(NamePage),
+      Right(eori),
+      Right("b0082f50-f13b-416a-8071-3bd95107d44d"),
       answers.getPageValue(EmailPage)
     ).parMapN(AdviceRequest.apply)
 }
