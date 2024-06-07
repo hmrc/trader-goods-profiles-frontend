@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import models.UserAnswers
-import play.api.libs.json.JsPath
+import javax.inject.Inject
 
-import scala.util.Try
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case object HasNiphlPage extends QuestionPage[Boolean] {
+class HasSupplementaryUnitFormProvider @Inject() extends Mappings {
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "hasNiphl"
-
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasNiphlPage) match {
-      case Some(false) => updatedUserAnswers.remove(NiphlNumberPage)
-      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-    }
-
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("hasSupplementaryUnit.error.required")
+    )
 }
