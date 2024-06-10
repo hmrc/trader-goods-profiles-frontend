@@ -17,10 +17,12 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
 import connectors.OttConnector
 import models.Commodity
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
-import org.mockito.ArgumentMatchers.any
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -29,6 +31,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.CommodityQuery
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
 
 import java.time.Instant
@@ -132,9 +136,15 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     "must redirect to the categorisation page when the user click continue button" in {
 
+      val mockAuditService = mock[AuditService]
+
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+
       val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
         .overrides(
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AuditService].toInstance(mockAuditService)
         )
         .build()
 
@@ -146,6 +156,19 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         status(result) mustEqual SEE_OTHER
         // TODO replace index route
         redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+
+        withClue("must call the audit service with the correct details") {
+          verify(mockAuditService, times(1))
+            .auditStartUpdateGoodsRecord(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo("updateSection"),
+              eqTo("b0082f50-f13b-416a-8071-3bd95107d44d")
+            )(
+              any()
+            )
+
+        }
       }
     }
   }
