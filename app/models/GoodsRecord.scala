@@ -31,15 +31,14 @@ final case class GoodsRecord(
   goodsDescription: String,
   countryOfOrigin: String,
   comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant],
-  recordId: String = ""
+  comcodeEffectiveToDate: Option[Instant]
 )
 
 object GoodsRecord {
 
   implicit lazy val format: OFormat[GoodsRecord] = Json.format
 
-  def build(answers: UserAnswers, eori: String, recordId: String = ""): EitherNec[ValidationError, GoodsRecord] =
+  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
       answers.getPageValue(TraderReferencePage),
@@ -48,14 +47,13 @@ object GoodsRecord {
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
       GoodsRecord(
-        eori = eori,
-        traderRef = traderReference,
-        comcode = commodity.commodityCode,
-        goodsDescription = goodsDescription,
-        countryOfOrigin = countryOfOrigin,
-        comcodeEffectiveFromDate = commodity.validityStartDate,
-        comcodeEffectiveToDate = commodity.validityEndDate,
-        recordId = recordId
+        eori,
+        traderReference,
+        commodity.commodityCode,
+        goodsDescription,
+        countryOfOrigin,
+        commodity.validityStartDate,
+        commodity.validityEndDate
       )
     )
 

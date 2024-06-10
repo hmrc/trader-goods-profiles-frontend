@@ -107,8 +107,7 @@ class GoodsRecordConnectorSpec
       "3",
       "4",
       instant,
-      None,
-      testRecordId
+      None
     )
 
     val createRecordRequest = CreateRecordRequest(
