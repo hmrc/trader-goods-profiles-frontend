@@ -16,13 +16,17 @@
 
 package models
 
-import cats.data.EitherNec
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
-import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
+import models.AssessmentAnswer.NoExemption
+import models.ott.{CategorisationInfo, CategoryAssessment}
+import org.apache.pekko.Done
+import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
+import queries.CategorisationQuery
 
-final case class CategorisationAnswers (
-  assessmentValues: Seq[String],
+final case class CategorisationAnswers(
+  assessmentValues: Seq[AssessmentAnswer],
   supplementaryUnit: Option[Int]
 )
 
@@ -30,12 +34,73 @@ object CategorisationAnswers {
 
   implicit lazy val format: OFormat[CategorisationAnswers] = Json.format
 
-  def build(answers: UserAnswers): EitherNec[ValidationError, CategorisationAnswers] = {
+  def build(userAnswers: UserAnswers): EitherNec[ValidationError, CategorisationAnswers] =
     (
-      Right(Seq.empty[String]), //TODO do this proper ideally move all the CYA errors here
-      answers.getOptionalPageValueForOptionalBooleanPage(answers, HasSupplementaryUnitPage, SupplementaryUnitPage)
+      getAssessmentAnswers(userAnswers),
+      userAnswers.getOptionalPageValueForOptionalBooleanPage(
+        userAnswers,
+        HasSupplementaryUnitPage,
+        SupplementaryUnitPage
+      )
     ).parMapN(CategorisationAnswers.apply)
+
+  private def getAssessmentAnswers(userAnswers: UserAnswers) =
+    for {
+      categorisationInfo  <- userAnswers.getPageValue(CategorisationQuery)
+      answeredAssessments <- getAnsweredAssessments(categorisationInfo, userAnswers)
+      _                   <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments)
+      _                   <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
+      justTheAnswers       = answeredAssessments.map(_._2)
+    } yield justTheAnswers
+
+  private def getAnsweredAssessments(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers
+  ): EitherNec[ValidationError, Seq[(CategoryAssessment, AssessmentAnswer)]] = {
+    val answers = categorisationInfo.categoryAssessments
+      .map(assessment => (assessment, userAnswers.get(AssessmentPage(assessment.id))))
+      .takeWhile(x => x._2.isDefined)
+      .map(x => (x._1, x._2.get))
+
+    if (answers.isEmpty) {
+      Left(NonEmptyChain(PageMissing(AssessmentPage(categorisationInfo.categoryAssessments.head.id))))
+    } else {
+      Right(answers)
+    }
   }
+
+  private def ensureNoExemptionIsOnlyFinalAnswer(
+    answeredAssessments: Seq[(CategoryAssessment, AssessmentAnswer)]
+  ): EitherNec[ValidationError, Done] = {
+
+    //Last answer can be a NoExemption. Others can't
+    val allExceptLastAnswer          = answeredAssessments.reverse.tail
+    val noExemptionsBeforeLastAnswer = allExceptLastAnswer.filter(ass => ass._2 == NoExemption)
+
+    if (noExemptionsBeforeLastAnswer.isEmpty) {
+      Right(Done)
+    } else {
+      val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage(ass._1.id)))
+      val nec    = NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(UnexpectedNoExemption(CategorisationQuery)))
+      Left(nec)
+    }
+
+  }
+
+  private def ensureHaveAnsweredTheRightAmount(
+    answeredAssessments: Seq[(CategoryAssessment, AssessmentAnswer)],
+    assessmentCount: Int
+  ): Either[NonEmptyChain[ValidationError], Done] = {
+
+    val lastAnswerIsExemption = answeredAssessments.last._2.equals(NoExemption)
+    val amountAnswered        = answeredAssessments.size
+
+    if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
+      Right(Done)
+    } else {
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationQuery)))
+    }
+
+  }
+
 }
-
-

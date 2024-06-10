@@ -21,11 +21,9 @@ import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.AssessmentAnswer.NoExemption
-import models.{AssessmentAnswer, CategorisationAnswers, NormalMode, UserAnswers, ValidationError}
-import pages.{AssessmentPage, HasSupplementaryUnitPage}
+import models.{CategorisationAnswers, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CategorisationQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,7 +42,6 @@ class CyaCategorisationController @Inject() (
     with I18nSupport
     with Logging {
 
-
   //TODO test cases to retest
   // No hasSuppUnit but suppUnit
   // hasSuppUnit false but SuppUnit
@@ -54,69 +51,38 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
       CategorisationAnswers.build(request.userAnswers) match {
         case Right(_) =>
 
-//TODO move all this validation into the CategorisationAnswers build??
-          val categoriesThatAreValid = request.userAnswers.get(CategorisationQuery) match {
-            case Some(categorisationInfo) =>
-              categorisationInfo.categoryAssessments.flatMap(
-                assessment => request.userAnswers.get(AssessmentPage(assessment.id)).map(ass => categorisationInfo.categoryAssessments.indexOf(assessment) + 1)
-              )
-
-          }
-
-          val noNoneBeforeTheEnd = request.userAnswers.get(CategorisationQuery) match {
-            case Some(categorisationInfo) =>
-              val values = categorisationInfo.categoryAssessments.flatMap(
-                assessment => request.userAnswers.get(AssessmentPage(assessment.id)).map(value => request.userAnswers.get(AssessmentPage(assessment.id)))
-              ).flatten
-
-              !values.reverse.tail.contains(NoExemption)
-          }
-
-          //TODO test this
-//          val finishesAtTheRightPoint = request.userAnswers.get(CategorisationQuery) match {
-//            case Some(categorisationInfo) =>
-//              val values = categorisationInfo.categoryAssessments.flatMap(
-//                assessment => request.userAnswers.get(AssessmentPage(assessment.id)).map(value => request.userAnswers.get(AssessmentPage(assessment.id)))
-//              ).flatten
-//
-//              values.tail.equals(NoExemption) || values.size == categorisationRows.size
-//          }
-
-              val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
+          val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
             case Some(categorisationInfo) =>
               categorisationInfo.categoryAssessments
-                .flatMap(assessment => AssessmentsSummary.row(
-                  request.userAnswers,
-                  assessment.id,
-                  categorisationInfo.categoryAssessments.indexOf(assessment) + 1,
-                  categorisationInfo.categoryAssessments.size,
-                  assessment.exemptions
-                ))
+                .flatMap(assessment =>
+                  AssessmentsSummary.row(
+                    request.userAnswers,
+                    assessment.id,
+                    categorisationInfo.categoryAssessments.indexOf(assessment) + 1,
+                    categorisationInfo.categoryAssessments.size,
+                    assessment.exemptions
+                  )
+                )
           }
 
-          if (noNoneBeforeTheEnd && categoriesThatAreValid.zipWithIndex.takeWhile(x => x._1 == x._2 + 1).size == categorisationRows.size) {
-            //happy
+          val categorisationList    = SummaryListViewModel(
+            rows = categorisationRows
+          )
 
-            val categorisationList = SummaryListViewModel(
-              rows = categorisationRows
-            )
-            val supplementaryUnitList = SummaryListViewModel(
-              rows = Seq(
-                HasSupplementaryUnitSummary.row(request.userAnswers, recordId),
-                SupplementaryUnitSummary.row(request.userAnswers)
-              ).flatten
-            )
+          val supplementaryUnitList = SummaryListViewModel(
+            rows = Seq(
+              HasSupplementaryUnitSummary.row(request.userAnswers, recordId),
+              SupplementaryUnitSummary.row(request.userAnswers)
+            ).flatten
+          )
 
-            Ok(view(recordId, categorisationList, supplementaryUnitList))
-          } else {
-            logErrorsAndContinue(NonEmptyChain.fromSeq(Seq.empty[ValidationError]).get)
-          }
-        case Left(errors) =>
-          logErrorsAndContinue(errors)
+          Ok(view(recordId, categorisationList, supplementaryUnitList))
+
+        case Left(errors: NonEmptyChain[ValidationError]) =>
+          logErrorsAndContinue(recordId, errors)
 
       }
   }
@@ -126,14 +92,13 @@ class CyaCategorisationController @Inject() (
       Redirect(routes.IndexController.onPageLoad)
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
-  //def logErrorsAndContinue(): Result = {
+  def logErrorsAndContinue(recordId: String, errors: data.NonEmptyChain[ValidationError]): Result = {
 
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+    val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
-    logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
+    logger.warn(s"Unable to create Categorisation details.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 

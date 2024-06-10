@@ -666,7 +666,8 @@ class NavigatorSpec extends SpecBase {
               .success
               .value
 
-          navigator.nextPage(AssessmentPage("id1"), CheckMode, answers) mustEqual routes.CyaCategorisationController.onPageLoad("123")
+          navigator.nextPage(AssessmentPage("id1"), CheckMode, answers) mustEqual routes.CyaCategorisationController
+            .onPageLoad("123")
         }
 
         "to the next assessment when the answer is an exemption and the next assessment is unanswered" in {

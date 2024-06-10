@@ -1,45 +1,83 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package models
 
-import base.TestConstants.{testEori, userAnswersId}
+import base.SpecBase
+import models.AssessmentAnswer.{Exemption, NoExemption}
 import org.scalatest.Inside.inside
-import org.scalatest.{OptionValues, TryValues}
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import pages.{HasNiphlPage, HasNirmsPage, HasSupplementaryUnitPage, NiphlNumberPage, NirmsNumberPage, SupplementaryUnitPage, UkimsNumberPage}
+import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
+import queries.CategorisationQuery
 
-class CategorisationAnswersSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class CategorisationAnswersSpec extends SpecBase {
 
   ".build" - {
 
-    "must return a CategorisationAnswer when all mandatory questions are answered" - {
+    "must return a CategorisationAnswer when" - {
 
-      "and supplementary unit was not asked of them" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
+      "a NoExemption means some assessment pages are unanswered" in {
+        val answers = emptyUserAnswers
+          .set(CategorisationQuery, categoryQuery)
+          .success
+          .value
+          .set(AssessmentPage("1"), Exemption("Y994"))
+          .success
+          .value
+          .set(AssessmentPage("2"), NoExemption)
+          .success
+          .value
 
         val result = CategorisationAnswers.build(answers)
 
-        result mustEqual Right(CategorisationAnswers(Seq.empty, None))
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("Y994"), NoExemption), None)
+        )
+      }
+
+      "all assessments are answered and supplementary unit was not asked" in {
+
+        val answers =
+          userAnswersForCategorisationCya
+
+        val result = CategorisationAnswers.build(answers)
+
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), None)
+        )
       }
 
       "and supplementary unit was asked for and the answer was no" in {
 
         val answers =
-          UserAnswers(userAnswersId)
+          userAnswersForCategorisationCya
             .set(HasSupplementaryUnitPage, false)
             .success
             .value
 
         val result = CategorisationAnswers.build(answers)
 
-        result mustEqual Right(CategorisationAnswers(Seq.empty, None))
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), None)
+        )
       }
 
       "and supplementary unit was asked for and the answer was yes and it was supplied" in {
 
         val answers =
-          UserAnswers(userAnswersId)
+          userAnswersForCategorisationCya
             .set(HasSupplementaryUnitPage, true)
             .success
             .value
@@ -49,32 +87,19 @@ class CategorisationAnswersSpec extends AnyFreeSpec with Matchers with TryValues
 
         val result = CategorisationAnswers.build(answers)
 
-        result mustEqual Right(CategorisationAnswers(Seq.empty, Some(42)))
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), Some(42))
+        )
       }
 
     }
 
     "must return errors" - {
 
-//        "when all mandatory answers are missing" in {
-//
-//          val answers = UserAnswers(userAnswersId)
-//
-//          val result = TraderProfile.build(answers, testEori)
-//
-//          inside(result) { case Left(errors) =>
-//            errors.toChain.toList must contain theSameElementsAs Seq(
-//              PageMissing(UkimsNumberPage),
-//              PageMissing(HasNirmsPage),
-//              PageMissing(HasNiphlPage)
-//            )
-//          }
-//        }
-
       "when the user said they have a supplementary unit but it is missing" in {
 
         val answers =
-          UserAnswers(userAnswersId)
+          userAnswersForCategorisationCya
             .set(HasSupplementaryUnitPage, true)
             .success
             .value
@@ -89,7 +114,7 @@ class CategorisationAnswersSpec extends AnyFreeSpec with Matchers with TryValues
       "when the user has a supplementary unit without being asked about it " in {
 
         val answers =
-          UserAnswers(userAnswersId)
+          userAnswersForCategorisationCya
             .set(SupplementaryUnitPage, 42)
             .success
             .value
@@ -101,6 +126,70 @@ class CategorisationAnswersSpec extends AnyFreeSpec with Matchers with TryValues
         }
       }
 
+      "when some category assessments have been skipped" in {
+
+        val answers = emptyUserAnswers
+          .set(CategorisationQuery, categoryQuery)
+          .success
+          .value
+          .set(AssessmentPage("1"), Exemption("Y994"))
+          .success
+          .value
+          .set(AssessmentPage("3"), NoExemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers.build(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only MissingAssessmentAnswers(CategorisationQuery)
+        }
+      }
+
+      "when additional assessments have been answered after a NoExemption" in {
+
+        val answers = emptyUserAnswers
+          .set(CategorisationQuery, categoryQuery)
+          .success
+          .value
+          .set(AssessmentPage("1"), Exemption("Y994"))
+          .success
+          .value
+          .set(AssessmentPage("2"), NoExemption)
+          .success
+          .value
+          .set(AssessmentPage("3"), Exemption("X812"))
+          .success
+          .value
+
+        val result = CategorisationAnswers.build(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedNoExemption(AssessmentPage("2"))
+        }
+      }
+
     }
+
+    "when you have not finished answering assessments" in {
+
+      val answers = emptyUserAnswers
+        .set(CategorisationQuery, categoryQuery)
+        .success
+        .value
+        .set(AssessmentPage("1"), Exemption("Y994"))
+        .success
+        .value
+        .set(AssessmentPage("2"), Exemption("NC123"))
+        .success
+        .value
+
+      val result = CategorisationAnswers.build(answers)
+
+      inside(result) { case Left(errors) =>
+        errors.toChain.toList must contain only MissingAssessmentAnswers(CategorisationQuery)
+      }
+    }
+
   }
 }

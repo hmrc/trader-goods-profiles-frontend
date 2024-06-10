@@ -28,6 +28,7 @@ import viewmodels.implicits._
 object AssessmentsSummary {
 
   //TODO is this tested via CYA? Make sure case where can't find exemption is tested
+  //TODO this is a pain to use
   def row(
     answers: UserAnswers,
     assessmentId: String,

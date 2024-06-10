@@ -18,7 +18,8 @@ package base
 
 import base.TestConstants.userAnswersId
 import controllers.actions._
-import models.{Commodity, UserAnswers}
+import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
+import models.{AssessmentAnswer, Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -29,7 +30,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.CommodityQuery
+import queries.{CategorisationQuery, CommodityQuery}
 
 import java.time.Instant
 
@@ -128,6 +129,36 @@ trait SpecBase
       .set(EmailPage, "654321")
       .success
       .value
+
+  lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(
+      CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
+      CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
+      CategoryAssessment(
+        "3",
+        2,
+        Seq(
+          Certificate("Y737", "Y737", "Goods not containing ivory"),
+          Certificate("X812", "X812", "Goods not containing seal products")
+        )
+      )
+    )
+  )
+
+  lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers
+    .set(CategorisationQuery, categoryQuery)
+    .success
+    .value
+    .set(AssessmentPage("1"), AssessmentAnswer.Exemption("Y994"))
+    .success
+    .value
+    .set(AssessmentPage("2"), AssessmentAnswer.Exemption("NC123"))
+    .success
+    .value
+    .set(AssessmentPage("3"), AssessmentAnswer.Exemption("X812"))
+    .success
+    .value
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
