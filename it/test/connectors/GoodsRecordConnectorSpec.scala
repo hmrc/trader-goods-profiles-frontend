@@ -18,8 +18,10 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.router.{CreateOrUpdateRecordResponse, CreateRecordRequest, UpdateRecordRequest}
-import models.{CreateGoodsRecordResponse, GoodsRecord}
+import models.GoodsRecord
+import models.router.{CreateOrUpdateRecordResponse, UpdateRecordRequest}
+import models.router.requests.CreateRecordRequest
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -50,8 +52,52 @@ class GoodsRecordConnectorSpec
   private val xClientIdName: String = "X-Client-ID"
   private val xClientId: String     = "tgp-frontend"
   private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
-  private val updateGoodsRecordUrl  = s"/trader-goods-profiles-router/records"
-  private val instant               = Instant.now
+
+  private val testRecordId           = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private lazy val getRecordResponse = Json
+    .parse(s"""
+         |  {
+         |    "eori": "$testEori",
+         |    "actorId": "$testEori",
+         |    "recordId": "$testRecordId",
+         |    "traderRef": "BAN001001",
+         |    "comcode": "10410100",
+         |    "accreditationStatus": "Not requested",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
+         |    "category": 3,
+         |    "assessments": [
+         |      {
+         |        "assessmentId": "abc123",
+         |        "primaryCategory": "1",
+         |        "condition": {
+         |          "type": "abc123",
+         |          "conditionId": "Y923",
+         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+         |          "conditionTraderText": "Excluded product"
+         |        }
+         |      }
+         |    ],
+         |    "supplementaryUnit": 500,
+         |    "measurementUnit": "square meters(m^2)",
+         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+         |    "version": 1,
+         |    "active": true,
+         |    "toReview": false,
+         |    "reviewReason": null,
+         |    "declarable": "IMMI declarable",
+         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+         |    "nirmsNumber": "RMS-GB-123456",
+         |    "niphlNumber": "6 S12345",
+         |    "locked": false,
+         |    "createdDateTime": "2024-11-18T23:20:19Z",
+         |    "updatedDateTime": "2024-11-18T23:20:19Z"
+         |  }
+         |""".stripMargin)
+
+  private val updateGoodsRecordUrl = s"/trader-goods-profiles-router/records"
+  private val instant              = Instant.now
 
   private val goodsRecord = GoodsRecord(
     testEori,
@@ -172,6 +218,44 @@ class GoodsRecordConnectorSpec
 
       connector.updateGoodsRecord(goodsRecord).failed.futureValue
     }
+  }
+
+  ".getRecord" - {
+
+    "must get a goods record" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/$testRecordId"))
+          .willReturn(ok().withBody(getRecordResponse.toString))
+      )
+
+      connector.getRecord(testEori, testRecordId).futureValue mustBe GetGoodsRecordResponse(
+        testRecordId,
+        "10410100",
+        "EC"
+      )
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/testRecordId"))
+          .willReturn(serverError())
+      )
+
+      connector.getRecord(testEori, testRecordId).failed.futureValue
+    }
+
+    "must return a failed future when the json does not match the format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/testRecordId"))
+          .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+      )
+
+      connector.getRecord(testEori, testRecordId).failed.futureValue
+    }
+
   }
 
 }

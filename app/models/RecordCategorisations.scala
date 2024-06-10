@@ -16,29 +16,11 @@
 
 package models
 
-import cats.data.EitherNec
-import cats.implicits.catsSyntaxTuple5Parallel
-import pages.{EmailPage, NamePage}
+import models.ott.CategorisationInfo
 import play.api.libs.json.{Json, OFormat}
 
-final case class AdviceRequest(
-  eori: String,
-  requestorName: String,
-  actorId: String,
-  recordId: String,
-  requestorEmail: String
-)
+case class RecordCategorisations(records: Map[String, CategorisationInfo])
 
-object AdviceRequest {
-
-  implicit lazy val format: OFormat[AdviceRequest] = Json.format
-
-  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, AdviceRequest] =
-    (
-      Right(eori),
-      answers.getPageValue(NamePage),
-      Right(eori),
-      Right("b0082f50-f13b-416a-8071-3bd95107d44d"),
-      answers.getPageValue(EmailPage)
-    ).parMapN(AdviceRequest.apply)
+object RecordCategorisations {
+  implicit val format: OFormat[RecordCategorisations] = Json.format[RecordCategorisations]
 }

@@ -40,7 +40,7 @@ class AdviceRequestSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       val result = AdviceRequest.build(answers, testEori)
 
-      result mustEqual Right(AdviceRequest(testEori, "1", "2"))
+      result mustEqual Right(AdviceRequest(testEori, "1", testEori, "b0082f50-f13b-416a-8071-3bd95107d44d", "2"))
     }
 
     "must return errors" - {
