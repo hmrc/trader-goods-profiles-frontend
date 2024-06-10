@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.CategoryRecord
-import models.router.responses.CreateGoodsRecordResponse
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -68,7 +68,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             val mockConnector = mock[GoodsRecordConnector]
             when(mockConnector.updateGoodsRecord(any())(any()))
-              .thenReturn(Future.successful(CreateGoodsRecordResponse(testRecordId)))
+              .thenReturn(Future.successful(Done))
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))

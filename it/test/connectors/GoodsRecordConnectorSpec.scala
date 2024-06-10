@@ -168,16 +168,14 @@ class GoodsRecordConnectorSpec
 
     "must update a goods record" in {
 
-      val createOrUpdateRecordResponse = CreateGoodsRecordResponse(testRecordId)
-
       wireMockServer.stubFor(
         put(urlEqualTo(updateGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody(Json.toJson(createOrUpdateRecordResponse).toString))
+          .willReturn(ok())
       )
 
-      connector.updateGoodsRecord(goodsRecord).futureValue mustBe createOrUpdateRecordResponse
+      connector.updateGoodsRecord(goodsRecord).futureValue
     }
 
     "must return a failed future when the server returns an error" in {

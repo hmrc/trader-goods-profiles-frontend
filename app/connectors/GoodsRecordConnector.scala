@@ -20,6 +20,7 @@ import config.Service
 import models.{CategoryRecord, GoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
+import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -50,13 +51,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def updateGoodsRecord(categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
-  ): Future[CreateGoodsRecordResponse] =
+  ): Future[Done] =
     httpClient
       .put(url"$tgpRouterBaseUrl/trader-goods-profiles-router/records")
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
       .execute[HttpResponse]
-      .map(response => response.json.as[CreateGoodsRecordResponse])
+      .map(_ => Done)
 
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
