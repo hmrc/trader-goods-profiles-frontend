@@ -41,6 +41,9 @@ class Navigator @Inject() () {
     case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoods
     case p: AssessmentPage      => navigateFromAssessment(p)
+    case AdviceStartPage        => _ => routes.NameController.onPageLoad(NormalMode)
+    case NamePage               => _ => routes.EmailController.onPageLoad(NormalMode)
+    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
     case _                      => _ => routes.IndexController.onPageLoad
 
   }
@@ -111,6 +114,8 @@ class Navigator @Inject() () {
     case CountryOfOriginPage    => _ => routes.CyaCreateRecordController.onPageLoad
     case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
     case HasCorrectGoodsPage    => navigateFromHasCorrectGoodsCheck
+    case NamePage               => _ => routes.CyaRequestAdviceController.onPageLoad
+    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
     case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 

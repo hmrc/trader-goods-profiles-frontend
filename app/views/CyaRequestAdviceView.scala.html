@@ -16,6 +16,8 @@
 
 @this(
     layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton,
     govukSummaryList: GovukSummaryList
 )
 
@@ -23,7 +25,12 @@
 
 @layout(pageTitle = titleNoForm(messages("cyaRequestAdvice.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("cyaRequestAdvice.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("cyaRequestAdvice.heading")</h1>
+    <h2 class="govuk-heading-m">@messages("cyaRequestAdvice.subheading")</h2>
 
     @govukSummaryList(list)
+
+    @formHelper(action = routes.CyaRequestAdviceController.onSubmit) {
+        @govukButton(ButtonViewModel(messages("site.continue")))
+    }
 }

@@ -26,13 +26,35 @@ class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues wit
 
   "clean up" - {
 
-    "always removes HasCorrectGoodsPage" in {
+    "removes HasCorrectGoodsPage when commodity code has changed" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(CommodityCodePage, "123")
+        .success
+        .value
+        .set(HasCorrectGoodsPage, true)
+        .success
+        .value
 
       val result = userAnswers.set(CommodityCodePage, "1234").success.value
 
       result.isDefined(HasCorrectGoodsPage) mustBe false
+
+    }
+
+    "retains HasCorrectGoodsPage when commodity code has not changed" in {
+
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(CommodityCodePage, "123")
+        .success
+        .value
+        .set(HasCorrectGoodsPage, true)
+        .success
+        .value
+
+      val result = userAnswers.set(CommodityCodePage, "123").success.value
+
+      result.isDefined(HasCorrectGoodsPage) mustBe true
 
     }
   }

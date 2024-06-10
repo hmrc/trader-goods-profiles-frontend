@@ -16,13 +16,22 @@
 
 package controllers
 
+import cats.data
 import com.google.inject.Inject
+import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import logging.Logging
+import models.{AdviceRequest, ValidationError}
+import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaRequestAdviceView
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class CyaRequestAdviceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -30,15 +39,43 @@ class CyaRequestAdviceController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaRequestAdviceView
-) extends FrontendBaseController
-    with I18nSupport {
+  view: CyaRequestAdviceView,
+  accreditationConnector: AccreditationConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val list = SummaryListViewModel(
-      rows = Seq.empty
-    )
+    AdviceRequest.build(request.userAnswers, request.eori) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            NameSummary.row(request.userAnswers),
+            EmailSummary.row(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list))
+      case Left(errors) => logErrorsAndContinue(errors)
+    }
+  }
 
-    Ok(view(list))
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+    val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+
+    logger.warn(s"Unable to create Request Advice.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    AdviceRequest.build(request.userAnswers, request.eori) match {
+      case Right(model) =>
+        accreditationConnector
+          .submitRequestAccreditation(model)
+          .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad().url))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+    }
   }
 }

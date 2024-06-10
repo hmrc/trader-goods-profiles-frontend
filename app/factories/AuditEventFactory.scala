@@ -95,15 +95,17 @@ case class AuditEventFactory() {
     isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "EORINumber"                 -> goodsRecord.actorId,
+      "EORINumber"                 -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
-      "traderReference"            -> goodsRecord.traderReference,
-      "commodityCode"              -> goodsRecord.commodityCode,
+      "traderReference"            -> goodsRecord.traderRef,
+      "commodityCode"              -> goodsRecord.comcode,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityDescription"       -> commodity.description,
       "commodityCodeEffectiveFrom" -> commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo"   -> commodity.validityEndDate.map(_.toString).getOrElse("null")
-    ) ++ writeGoodsReference(isUsingGoodsDescription, goodsRecord.goodsDescription)
+      "commodityCodeEffectiveTo"   -> commodity.validityEndDate.map(_.toString).getOrElse("null"),
+      "specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
+      "goodsDescription"           -> goodsRecord.goodsDescription
+    )
 
     DataEvent(
       auditSource = auditSource,
@@ -119,15 +121,5 @@ case class AuditEventFactory() {
         Map(containsValueDescription -> "true", valueDescription -> value)
       }
       .getOrElse(Map(containsValueDescription -> "false"))
-
-  private def writeGoodsReference(isUsingGoodsDescription: Boolean, goodsDescription: String)                          =
-    if (isUsingGoodsDescription) {
-      Map(
-        "specifiedGoodsDescription" -> "true",
-        "goodsDescription"          -> goodsDescription
-      )
-    } else {
-      Map("specifiedGoodsDescription" -> "false")
-    }
 
 }
