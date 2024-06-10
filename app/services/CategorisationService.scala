@@ -35,7 +35,9 @@ class CategorisationService @Inject() (
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
-  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[UserAnswers] = {
+  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[UserAnswers] = {
 
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
@@ -46,7 +48,7 @@ class CategorisationService @Inject() (
       case None                                         =>
         for {
           goodsRecord        <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature  <- ottConnector.getCategorisationInfo("0702000007")
+          goodsNomenclature  <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
           updatedAnswers     <-
             Future.fromTry(
@@ -55,7 +57,7 @@ class CategorisationService @Inject() (
                 recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
               )
             )
-          updated                  <- sessionRepository.set(updatedAnswers)
+          updated            <- sessionRepository.set(updatedAnswers)
         } yield updatedAnswers
     }
   }

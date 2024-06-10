@@ -21,7 +21,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
-import models.RecordCategorisations
+import models.{RecordCategorisations, UserAnswers}
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
@@ -77,12 +77,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   "requireCategorisation" - {
 
-    "should store category assessments if they are not present, then return successful Done" in {
-      val mockDataRequest = mock[DataRequest[AnyContent]]
+    "should store category assessments if they are not present, then return successful updated answers" in {
+      val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq())
+      val expectedRecordCategorisations = RecordCategorisations(records = Map("recordId" -> expectedCategorisationInfo))
 
       val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
-      result mustBe Done
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call the router to get the goods record") {
         verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
@@ -97,9 +99,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "should not store category assessments if they are already present, then return successful Done" in {
+    "should not call for category assessments if they are already present, then return successful updated answers" in {
+      val expectedRecordCategorisations = RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq())))
+
       val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq()))))
+        .set(RecordCategorisationsQuery, expectedRecordCategorisations)
         .success
         .value
 
@@ -107,7 +111,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
-      result mustBe Done
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call the router to get the goods record") {
         verify(mockGoodsRecordsConnector, never()).getRecord(any(), any())(any())

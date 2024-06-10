@@ -53,18 +53,18 @@ class AssessmentController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        recordQuery <- Future.successful(userAnswersWithCategorisations.get(RecordCategorisationsQuery))
-        categorisationInfo <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
+        recordQuery                    <- Future.successful(userAnswersWithCategorisations.get(RecordCategorisationsQuery))
+        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
       } yield {
-        val exemptions = categorisationInfo.categoryAssessments(index).exemptions
-        val form = formProvider(exemptions.map(_.id))
+        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
+        val form         = formProvider(exemptions.map(_.id))
         val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
           case Some(value) => form.fill(value)
-          case None => form
+          case None        => form
         }
 
         val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-        val viewModel = AssessmentViewModel(
+        val viewModel    = AssessmentViewModel(
           commodityCode = categorisationInfo.commodityCode,
           numberOfThisAssessment = index + 1,
           numberOfAssessments = categorisationInfo.categoryAssessments.size,
@@ -74,11 +74,10 @@ class AssessmentController @Inject() (
         Ok(view(preparedForm, mode, recordId, index, viewModel))
       }
 
-      categorisationResult.recover {
-        case _ => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      categorisationResult.recover { case _ =>
+        Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
-
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
