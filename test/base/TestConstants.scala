@@ -19,4 +19,5 @@ package base
 object TestConstants {
   val testEori: String      = "eori"
   val userAnswersId: String = "id"
+  val testRecordId: String  = "recordId"
 }

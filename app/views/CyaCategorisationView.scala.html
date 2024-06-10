@@ -21,7 +21,7 @@ formHelper: FormWithCSRF,
 govukButton: GovukButton
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cyaCategorisation.title"))) {
 
@@ -36,7 +36,7 @@ govukButton: GovukButton
         </strong>
     </div>
 
-    @formHelper(action = routes.CyaCategorisationController.onSubmit) {
+    @formHelper(action = routes.CyaCategorisationController.onSubmit(recordId)) {
         @govukButton(ButtonViewModel(messages("site.continue")))
     }
 }

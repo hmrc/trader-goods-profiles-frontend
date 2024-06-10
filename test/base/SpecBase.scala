@@ -129,6 +129,21 @@ trait SpecBase
       .success
       .value
 
+  def mandatoryAssessmentAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(HasSupplementaryUnitPage, false)
+      .success
+      .value
+
+  def fullAssessmentAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(HasSupplementaryUnitPage, false)
+      .success
+      .value
+      .set(SupplementaryUnitPage, 1)
+      .success
+      .value
+
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

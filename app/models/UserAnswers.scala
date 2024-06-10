@@ -37,11 +37,22 @@ final case class UserAnswers(
   def getPageValue[A](page: Gettable[A])(implicit rds: Reads[A]): EitherNec[ValidationError, A] =
     get(page).map(Right(_)).getOrElse(Left(NonEmptyChain.one(PageMissing(page))))
 
-  def getOptionalPageValue(
+  def getOptionalPageStringValue(
     answers: UserAnswers,
     questionPage: QuestionPage[Boolean],
     optionalPage: QuestionPage[String]
   ): EitherNec[ValidationError, Option[String]] =
+    getPageValue(questionPage) match {
+      case Right(true)  => getPageValue(optionalPage).map(Some(_))
+      case Right(false) => unexpectedValueDefined(answers, optionalPage)
+      case Left(errors) => Left(errors)
+    }
+
+  def getOptionalPageIntValue(
+    answers: UserAnswers,
+    questionPage: QuestionPage[Boolean],
+    optionalPage: QuestionPage[Int]
+  ): EitherNec[ValidationError, Option[Int]] =
     getPageValue(questionPage) match {
       case Right(true)  => getPageValue(optionalPage).map(Some(_))
       case Right(false) => unexpectedValueDefined(answers, optionalPage)

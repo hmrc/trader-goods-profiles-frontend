@@ -17,9 +17,8 @@
 package connectors
 
 import config.Service
-import models.GoodsRecord
-import models.router.{CreateOrUpdateRecordResponse, UpdateRecordRequest}
-import models.router.requests.CreateRecordRequest
+import models.{CategoryRecord, GoodsRecord}
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import play.api.Configuration
 import play.api.libs.json.Json
@@ -49,15 +48,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
 
-  def updateGoodsRecord(goodsRecord: GoodsRecord)(implicit
+  def updateGoodsRecord(categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
-  ): Future[CreateOrUpdateRecordResponse] =
+  ): Future[CreateGoodsRecordResponse] =
     httpClient
       .put(url"$tgpRouterBaseUrl/trader-goods-profiles-router/records")
-      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
-      .withBody(Json.toJson(UpdateRecordRequest.map(goodsRecord)))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
       .execute[HttpResponse]
-      .map(response => response.json.as[CreateOrUpdateRecordResponse])
+      .map(response => response.json.as[CreateGoodsRecordResponse])
 
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier

@@ -18,9 +18,8 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.GoodsRecord
-import models.router.{CreateOrUpdateRecordResponse, UpdateRecordRequest}
-import models.router.requests.CreateRecordRequest
+import models.{CategoryRecord, GoodsRecord}
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -99,18 +98,18 @@ class GoodsRecordConnectorSpec
   private val updateGoodsRecordUrl = s"/trader-goods-profiles-router/records"
   private val instant              = Instant.now
 
-  private val goodsRecord = GoodsRecord(
-    testEori,
-    "1",
-    "2",
-    "3",
-    "4",
-    instant,
-    None,
-    "recordId"
-  )
-
   ".submitGoodsRecord" - {
+
+    val goodsRecord = GoodsRecord(
+      testEori,
+      "1",
+      "2",
+      "3",
+      "4",
+      instant,
+      None,
+      testRecordId
+    )
 
     val createRecordRequest = CreateRecordRequest(
       testEori,
@@ -125,7 +124,7 @@ class GoodsRecordConnectorSpec
 
     "must submit a goods record" in {
 
-      val createGoodsRecordResponse = CreateGoodsRecordResponse("recordId")
+      val createGoodsRecordResponse = CreateGoodsRecordResponse(testRecordId)
 
       wireMockServer.stubFor(
         post(urlEqualTo(goodsRecordUrl))
@@ -152,50 +151,25 @@ class GoodsRecordConnectorSpec
 
   ".updateGoodsRecord" - {
 
+    val goodsRecord = CategoryRecord(
+      eori = testEori,
+      recordId = testRecordId,
+      category = Some(1),
+      measurementUnit = Some("1")
+    )
+
     val updateRecordRequest = UpdateRecordRequest(
       testEori,
-      "recordId",
+      testRecordId,
       testEori,
-      Some("1"),
-      Some("2"),
-      Some("3"),
-      Some("4"),
+      Some(1),
       None,
-      None,
-      None,
-      None,
-      Some(instant),
-      None
+      Some("1")
     )
 
     "must update a goods record" in {
 
-      val createOrUpdateRecordResponse = CreateOrUpdateRecordResponse(
-        "recordId",
-        "eori",
-        "eori",
-        "traderRef",
-        "comcode",
-        "accreditationStatus",
-        "goodsDescription",
-        "countryOfOrigin",
-        1,
-        None,
-        None,
-        None,
-        instant,
-        Some(instant),
-        1,
-        true,
-        true,
-        None,
-        "declarable",
-        None,
-        None,
-        None,
-        instant,
-        instant
-      )
+      val createOrUpdateRecordResponse = CreateGoodsRecordResponse(testRecordId)
 
       wireMockServer.stubFor(
         put(urlEqualTo(updateGoodsRecordUrl))
@@ -255,7 +229,5 @@ class GoodsRecordConnectorSpec
 
       connector.getRecord(testEori, testRecordId).failed.futureValue
     }
-
   }
-
 }

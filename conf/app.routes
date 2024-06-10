@@ -105,10 +105,10 @@ POST        /assessment/:id/check                            controllers.Assessm
 
 GET         /ukims-kick-out                                  controllers.UkimsKickOutController.onPageLoad()
 
-GET         /categorisation-result                           controllers.CategorisationResultController.onPageLoad()
+GET         /categorisation-result/:recordId                 controllers.CategorisationResultController.onPageLoad(recordId: String)
 
-GET         /cya-categorisation                              controllers.CyaCategorisationController.onPageLoad
-POST        /cya-categorisation                              controllers.CyaCategorisationController.onSubmit
+GET         /cya-categorisation/:recordId                    controllers.CyaCategorisationController.onPageLoad(recordId: String)
+POST        /cya-categorisation/:recordId                    controllers.CyaCategorisationController.onSubmit(recordId: String)
 
 GET         /advice-start                                    controllers.AdviceStartController.onPageLoad()
 POST        /advice-start                                    controllers.AdviceStartController.onSubmit()

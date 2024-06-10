@@ -36,7 +36,7 @@ object TraderProfile {
     (
       Right(eori),
       answers.getPageValue(UkimsNumberPage),
-      answers.getOptionalPageValue(answers, HasNirmsPage, NirmsNumberPage),
-      answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
+      answers.getOptionalPageStringValue(answers, HasNirmsPage, NirmsNumberPage),
+      answers.getOptionalPageStringValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
 }

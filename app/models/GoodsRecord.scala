@@ -32,12 +32,12 @@ final case class GoodsRecord(
   goodsDescription: String,
   countryOfOrigin: String,
   comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant],
+  comcodeEffectiveToDate: Option[Instant] = None,
   recordId: String = "",
   category: Option[Int] = None,
-  assessments: Option[Seq[Assessment]] = None,
   supplementaryUnit: Option[Int] = None,
-  measurementUnit: Option[String] = None
+  measurementUnit: Option[String] = None,
+  assessments: Option[Seq[Assessment]] = None
 )
 
 object GoodsRecord {
@@ -53,14 +53,14 @@ object GoodsRecord {
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
       GoodsRecord(
-        eori,
-        traderReference,
-        commodity.commodityCode,
-        goodsDescription,
-        countryOfOrigin,
-        commodity.validityStartDate,
-        commodity.validityEndDate,
-        recordId
+        eori = eori,
+        traderRef = traderReference,
+        comcode = commodity.commodityCode,
+        goodsDescription = goodsDescription,
+        countryOfOrigin = countryOfOrigin,
+        comcodeEffectiveFromDate = commodity.validityStartDate,
+        comcodeEffectiveToDate = commodity.validityEndDate,
+        recordId = recordId
       )
     )
 
