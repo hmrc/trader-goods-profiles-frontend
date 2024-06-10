@@ -19,6 +19,7 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import models.ott.CategorisationInfo
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationQuery, CommodityQuery}
@@ -27,7 +28,6 @@ import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
