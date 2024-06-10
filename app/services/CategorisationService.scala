@@ -56,7 +56,7 @@ class CategorisationService @Inject() (
                 recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
               )
             )
-          updated            <- sessionRepository.set(updatedAnswers)
+          _            <- sessionRepository.set(updatedAnswers)
         } yield updatedAnswers
     }
   }
