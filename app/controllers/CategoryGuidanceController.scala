@@ -70,7 +70,8 @@ class CategoryGuidanceController @Inject() (
           request.affinityGroup,
           "categorisation",
           recordId
-        ) // TODO
-        .map(_ => Redirect(routes.IndexController.onPageLoad.url))
+        )
+
+      Future.successful(Redirect(routes.IndexController.onPageLoad.url))
   }
 }
