@@ -716,6 +716,66 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "in Supplementary Unit Journey" - {
+
+        "must go from HasSupplementaryUnitPage" - {
+
+          "to SupplementaryUnitPage when answer is Yes and answer is undefined" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage, true).success.value
+            navigator.nextPage(HasSupplementaryUnitPage, CheckMode, answers) mustBe routes.SupplementaryUnitController
+              .onPageLoad(
+                CheckMode
+              )
+          }
+
+          "to Check Your Answers when answer is Yes and unit is already defined" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasSupplementaryUnitPage, true)
+              .success
+              .value
+              .set(SupplementaryUnitPage, 974)
+              .success
+              .value
+
+            navigator.nextPage(HasSupplementaryUnitPage, CheckMode, answers) mustBe routes.CyaCategorisationController
+              .onPageLoad("123")
+          }
+
+          "to Check Your Answers Page when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage, false).success.value
+            navigator.nextPage(HasSupplementaryUnitPage, CheckMode, answers) mustBe routes.CyaCategorisationController
+              .onPageLoad(
+                "123"
+              )
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasSupplementaryUnitPage,
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
+
+        "must go from SupplementaryUnitPage to Check Your Answers Page" in {
+
+          navigator.nextPage(
+            SupplementaryUnitPage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaCategorisationController.onPageLoad(
+            "123"
+          )
+        }
+
+      }
+
     }
   }
 }

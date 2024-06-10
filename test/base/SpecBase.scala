@@ -130,20 +130,24 @@ trait SpecBase
       .success
       .value
 
+  lazy val category1: CategoryAssessment =
+    CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+
+  lazy val category2: CategoryAssessment =
+    CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+
+  lazy val category3: CategoryAssessment = CategoryAssessment(
+    "3",
+    2,
+    Seq(
+      Certificate("Y737", "Y737", "Goods not containing ivory"),
+      Certificate("X812", "X812", "Goods not containing seal products")
+    )
+  )
+
   lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
     "1234567890",
-    Seq(
-      CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
-      CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
-      CategoryAssessment(
-        "3",
-        2,
-        Seq(
-          Certificate("Y737", "Y737", "Goods not containing ivory"),
-          Certificate("X812", "X812", "Goods not containing seal products")
-        )
-      )
-    )
+    Seq(category1, category2, category3)
   )
 
   lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers

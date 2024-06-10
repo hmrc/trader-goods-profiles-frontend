@@ -41,10 +41,11 @@ final case class MismatchedPage(query: Query) extends ValidationError {
 
 final case class UnexpectedNoExemption(query: Query) extends ValidationError {
 
-  val message: String = s"Assessment page has answer No Exemption but subsequent pages have been answered: ${query.path}"
+  val message: String =
+    s"Assessment page has answer No Exemption but subsequent pages have been answered: ${query.path}"
 }
 
 final case class MissingAssessmentAnswers(query: Query) extends ValidationError {
 
-  val message: String = s"At least one required assessment page is missing an answer. : ${query.path}"
+  val message: String = s"At least one required assessment page is missing an answer: ${query.path}"
 }

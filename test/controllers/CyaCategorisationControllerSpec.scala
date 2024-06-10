@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import models.AssessmentAnswer
 import models.AssessmentAnswer.NoExemption
-import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.i18n.Messages
@@ -40,35 +39,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
       "must return OK and the correct view" - {
         "when all category assessments answered" in {
 
-          val categoryQuery = CategorisationInfo(
-            "1234567890",
-            Seq(
-              CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
-              CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
-              CategoryAssessment(
-                "3",
-                2,
-                Seq(
-                  Certificate("Y737", "Y737", "Goods not containing ivory"),
-                  Certificate("X812", "X812", "Goods not containing seal products")
-                )
-              )
-            )
-          )
-
-          val userAnswers = emptyUserAnswers
-            .set(CategorisationQuery, categoryQuery)
-            .success
-            .value
-            .set(AssessmentPage("1"), AssessmentAnswer.Exemption("Y994"))
-            .success
-            .value
-            .set(AssessmentPage("2"), AssessmentAnswer.Exemption("NC123"))
-            .success
-            .value
-            .set(AssessmentPage("3"), AssessmentAnswer.Exemption("X812"))
-            .success
-            .value
+          val userAnswers = userAnswersForCategorisationCya
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
           implicit val localMessages: Messages = messages(application)
@@ -84,22 +55,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 //TODO copying test data about to pass in here bad
                 //TODO this is an option??
                 AssessmentsSummary
-                  .row(userAnswers, "1", 1, 3, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+                  .row(userAnswers, category1, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, "2", 2, 3, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+                  .row(userAnswers, category2, 2, 3)
                   .get,
                 AssessmentsSummary
-                  .row(
-                    userAnswers,
-                    "3",
-                    3,
-                    3,
-                    Seq(
-                      Certificate("Y737", "Y737", "Goods not containing ivory"),
-                      Certificate("X812", "X812", "Goods not containing seal products")
-                    )
-                  )
+                  .row(userAnswers, category3, 3, 3)
                   .get
               )
             )
@@ -116,22 +78,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         }
 
         "when no exemption is used, meaning some assessment pages are not answered" in {
-
-          val categoryQuery = CategorisationInfo(
-            "1234567890",
-            Seq(
-              CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
-              CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
-              CategoryAssessment(
-                "3",
-                2,
-                Seq(
-                  Certificate("Y737", "Y737", "Goods not containing ivory"),
-                  Certificate("X812", "X812", "Goods not containing seal products")
-                )
-              )
-            )
-          )
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationQuery, categoryQuery)
@@ -155,13 +101,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val view                   = application.injector.instanceOf[CyaCategorisationView]
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
-                //TODO copying test data about to pass in here bad
-                //TODO this is an option??
                 AssessmentsSummary
-                  .row(userAnswers, "1", 1, 3, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+                  .row(userAnswers, category1, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, "2", 2, 3, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+                  .row(userAnswers, category2, 2, 3)
                   .get
               )
             )
@@ -179,35 +123,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when supplementary unit is supplied" in {
 
-          val categoryQuery = CategorisationInfo(
-            "1234567890",
-            Seq(
-              CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
-              CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
-              CategoryAssessment(
-                "3",
-                2,
-                Seq(
-                  Certificate("Y737", "Y737", "Goods not containing ivory"),
-                  Certificate("X812", "X812", "Goods not containing seal products")
-                )
-              )
-            )
-          )
-
-          val userAnswers = emptyUserAnswers
-            .set(CategorisationQuery, categoryQuery)
-            .success
-            .value
-            .set(AssessmentPage("1"), AssessmentAnswer.Exemption("Y994"))
-            .success
-            .value
-            .set(AssessmentPage("2"), AssessmentAnswer.Exemption("NC123"))
-            .success
-            .value
-            .set(AssessmentPage("3"), AssessmentAnswer.Exemption("X812"))
-            .success
-            .value
+          val userAnswers = userAnswersForCategorisationCya
             .set(HasSupplementaryUnitPage, true)
             .success
             .value
@@ -226,25 +142,14 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val view                   = application.injector.instanceOf[CyaCategorisationView]
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
-                //TODO copying test data about to pass in here bad
-                //TODO this is an option??
                 AssessmentsSummary
-                  .row(userAnswers, "1", 1, 3, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+                  .row(userAnswers, category1, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, "2", 2, 3, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+                  .row(userAnswers, category2, 2, 3)
                   .get,
                 AssessmentsSummary
-                  .row(
-                    userAnswers,
-                    "3",
-                    3,
-                    3,
-                    Seq(
-                      Certificate("Y737", "Y737", "Goods not containing ivory"),
-                      Certificate("X812", "X812", "Goods not containing seal products")
-                    )
-                  )
+                  .row(userAnswers, category3, 3, 3)
                   .get
               )
             )
@@ -265,35 +170,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when supplementary unit is not supplied" in {
 
-          val categoryQuery = CategorisationInfo(
-            "1234567890",
-            Seq(
-              CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
-              CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
-              CategoryAssessment(
-                "3",
-                2,
-                Seq(
-                  Certificate("Y737", "Y737", "Goods not containing ivory"),
-                  Certificate("X812", "X812", "Goods not containing seal products")
-                )
-              )
-            )
-          )
-
-          val userAnswers = emptyUserAnswers
-            .set(CategorisationQuery, categoryQuery)
-            .success
-            .value
-            .set(AssessmentPage("1"), AssessmentAnswer.Exemption("Y994"))
-            .success
-            .value
-            .set(AssessmentPage("2"), AssessmentAnswer.Exemption("NC123"))
-            .success
-            .value
-            .set(AssessmentPage("3"), AssessmentAnswer.Exemption("X812"))
-            .success
-            .value
+          val userAnswers = userAnswersForCategorisationCya
             .set(HasSupplementaryUnitPage, false)
             .success
             .value
@@ -306,28 +183,18 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             val result = route(application, request).value
 
-            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val view = application.injector.instanceOf[CyaCategorisationView]
+
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
-                //TODO copying test data about to pass in here bad
-                //TODO this is an option??
                 AssessmentsSummary
-                  .row(userAnswers, "1", 1, 3, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+                  .row(userAnswers, category1, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, "2", 2, 3, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+                  .row(userAnswers, category2, 2, 3)
                   .get,
                 AssessmentsSummary
-                  .row(
-                    userAnswers,
-                    "3",
-                    3,
-                    3,
-                    Seq(
-                      Certificate("Y737", "Y737", "Goods not containing ivory"),
-                      Certificate("X812", "X812", "Goods not containing seal products")
-                    )
-                  )
+                  .row(userAnswers, category3, 3, 3)
                   .get
               )
             )
@@ -378,22 +245,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         }
 
         "when validation errors" in {
-
-          val categoryQuery = CategorisationInfo(
-            "1234567890",
-            Seq(
-              CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone"))),
-              CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required"))),
-              CategoryAssessment(
-                "3",
-                2,
-                Seq(
-                  Certificate("Y737", "Y737", "Goods not containing ivory"),
-                  Certificate("X812", "X812", "Goods not containing seal products")
-                )
-              )
-            )
-          )
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationQuery, categoryQuery)

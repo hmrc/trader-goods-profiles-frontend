@@ -27,26 +27,26 @@ import queries.CategorisationQuery
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ProfileSetupPage       => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
-    case UkimsNumberPage        => _ => routes.HasNirmsController.onPageLoad(NormalMode)
-    case HasNirmsPage           => navigateFromHasNirms
-    case NirmsNumberPage        => _ => routes.HasNiphlController.onPageLoad(NormalMode)
-    case HasNiphlPage           => navigateFromHasNiphl
-    case NiphlNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case CreateRecordStartPage  => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
-    case TraderReferencePage    => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
-    case UseTraderReferencePage => navigateFromUseTraderReference
-    case GoodsDescriptionPage   => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
-    case CountryOfOriginPage    => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
-    case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
-    case HasCorrectGoodsPage    => navigateFromHasCorrectGoods
-    case p: AssessmentPage      => navigateFromAssessment(p, NormalMode)
-    case AdviceStartPage        => _ => routes.NameController.onPageLoad(NormalMode)
-    case NamePage               => _ => routes.EmailController.onPageLoad(NormalMode)
-    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
+    case ProfileSetupPage         => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
+    case UkimsNumberPage          => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case HasNirmsPage             => navigateFromHasNirms
+    case NirmsNumberPage          => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case HasNiphlPage             => navigateFromHasNiphl
+    case NiphlNumberPage          => _ => routes.CyaCreateProfileController.onPageLoad
+    case CreateRecordStartPage    => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
+    case TraderReferencePage      => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
+    case UseTraderReferencePage   => navigateFromUseTraderReference
+    case GoodsDescriptionPage     => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
+    case CountryOfOriginPage      => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
+    case CommodityCodePage        => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case HasCorrectGoodsPage      => navigateFromHasCorrectGoods
+    case p: AssessmentPage        => navigateFromAssessment(p, NormalMode)
+    case AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode)
+    case NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode)
+    case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
     case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
-    case SupplementaryUnitPage => _ => routes.CyaCategorisationController.onPageLoad("123")
-    case _                      => _ => routes.IndexController.onPageLoad
+    case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
+    case _                        => _ => routes.IndexController.onPageLoad
 
   }
 
@@ -89,13 +89,12 @@ class Navigator @Inject() () {
   private def navigateFromHasSupplementaryUnit(answers: UserAnswers): Call =
     answers
       .get(HasSupplementaryUnitPage)
-      .map{
-        case true => routes.SupplementaryUnitController.onPageLoad(NormalMode)
+      .map {
+        case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode)
         case false => routes.CyaCategorisationController.onPageLoad("123")
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  //TODO remove mode
   private def navigateFromAssessment(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
     for {
       categorisationInfo <- answers.get(CategorisationQuery)
@@ -106,7 +105,13 @@ class Navigator @Inject() () {
       case AssessmentAnswer.Exemption(_) =>
         categorisationInfo.categoryAssessments
           .lift(assessmentIndex + 1)
-          .map(nextAssessment => routes.AssessmentController.onPageLoad(mode, nextAssessment.id))
+          .map { nextAssessment =>
+            if (mode == CheckMode && answers.isDefined(AssessmentPage(nextAssessment.id))) {
+              routes.CyaCategorisationController.onPageLoad("123")
+            } else {
+              routes.AssessmentController.onPageLoad(mode, nextAssessment.id)
+            }
+          }
           .getOrElse(routes.CyaCategorisationController.onPageLoad("123"))
 
       case AssessmentAnswer.NoExemption =>
@@ -115,23 +120,23 @@ class Navigator @Inject() () {
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
-    case UkimsNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case HasNirmsPage           => navigateFromHasNirmsCheck
-    case NirmsNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case HasNiphlPage           => navigateFromHasNiphlCheck
-    case NiphlNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case TraderReferencePage    => _ => routes.CyaCreateRecordController.onPageLoad
-    case UseTraderReferencePage => navigateFromUseTraderReferenceCheck
-    case GoodsDescriptionPage   => _ => routes.CyaCreateRecordController.onPageLoad
-    case CountryOfOriginPage    => _ => routes.CyaCreateRecordController.onPageLoad
-    case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
-    case HasCorrectGoodsPage    => navigateFromHasCorrectGoodsCheck
-    case NamePage               => _ => routes.CyaRequestAdviceController.onPageLoad
-    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
-    case p: AssessmentPage      => navigateFromAssessmentCheck(p)
+    case UkimsNumberPage          => _ => routes.CyaCreateProfileController.onPageLoad
+    case HasNirmsPage             => navigateFromHasNirmsCheck
+    case NirmsNumberPage          => _ => routes.CyaCreateProfileController.onPageLoad
+    case HasNiphlPage             => navigateFromHasNiphlCheck
+    case NiphlNumberPage          => _ => routes.CyaCreateProfileController.onPageLoad
+    case TraderReferencePage      => _ => routes.CyaCreateRecordController.onPageLoad
+    case UseTraderReferencePage   => navigateFromUseTraderReferenceCheck
+    case GoodsDescriptionPage     => _ => routes.CyaCreateRecordController.onPageLoad
+    case CountryOfOriginPage      => _ => routes.CyaCreateRecordController.onPageLoad
+    case CommodityCodePage        => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+    case HasCorrectGoodsPage      => navigateFromHasCorrectGoodsCheck
+    case NamePage                 => _ => routes.CyaRequestAdviceController.onPageLoad
+    case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
+    case p: AssessmentPage        => navigateFromAssessment(p, CheckMode)
     case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck
-    case SupplementaryUnitPage => _ => routes.CyaCategorisationController.onPageLoad("123")
-    case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
+    case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
+    case _                        => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
@@ -190,35 +195,11 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  //TODO dont like redoing all the logic
-  private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
-    for {
-      categorisationInfo <- answers.get(CategorisationQuery)
-      assessment <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
-      assessmentAnswer <- answers.get(assessmentPage)
-      assessmentIndex = categorisationInfo.categoryAssessments.indexOf(assessment)
-    } yield assessmentAnswer match {
-      case AssessmentAnswer.Exemption(_) =>
-        categorisationInfo.categoryAssessments
-          .lift(assessmentIndex + 1)
-          .map(nextAssessment =>
-            if (answers.isDefined(AssessmentPage(nextAssessment.id))) {
-              routes.CyaCategorisationController.onPageLoad("123")
-            } else {
-              routes.AssessmentController.onPageLoad(CheckMode, nextAssessment.id)
-            })
-          .getOrElse(routes.CyaCategorisationController.onPageLoad("123"))
-
-      case AssessmentAnswer.NoExemption =>
-        routes.CyaCategorisationController.onPageLoad("123")
-    }
-  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
   private def navigateFromHasSupplementaryUnitCheck(answers: UserAnswers): Call =
     answers
       .get(HasSupplementaryUnitPage)
       .map {
-        case true =>
+        case true  =>
           if (answers.isDefined(SupplementaryUnitPage)) {
             routes.CyaCategorisationController.onPageLoad("123")
           } else {
@@ -227,7 +208,6 @@ class Navigator @Inject() () {
         case false => routes.CyaCategorisationController.onPageLoad("123")
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>

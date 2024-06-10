@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data
-import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
@@ -53,22 +52,22 @@ class CyaCategorisationController @Inject() (
     implicit request =>
       CategorisationAnswers.build(request.userAnswers) match {
         case Right(_) =>
-
           val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
             case Some(categorisationInfo) =>
               categorisationInfo.categoryAssessments
                 .flatMap(assessment =>
                   AssessmentsSummary.row(
                     request.userAnswers,
-                    assessment.id,
+                    assessment,
                     categorisationInfo.categoryAssessments.indexOf(assessment) + 1,
-                    categorisationInfo.categoryAssessments.size,
-                    assessment.exemptions
+                    categorisationInfo.categoryAssessments.size
                   )
                 )
+
+            case None => Seq.empty
           }
 
-          val categorisationList    = SummaryListViewModel(
+          val categorisationList = SummaryListViewModel(
             rows = categorisationRows
           )
 
@@ -81,7 +80,7 @@ class CyaCategorisationController @Inject() (
 
           Ok(view(recordId, categorisationList, supplementaryUnitList))
 
-        case Left(errors: NonEmptyChain[ValidationError]) =>
+        case Left(errors) =>
           logErrorsAndContinue(recordId, errors)
 
       }

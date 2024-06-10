@@ -34,6 +34,6 @@ case object HasSupplementaryUnitPage extends QuestionPage[Boolean] {
   ): Try[UserAnswers] =
     updatedUserAnswers.get(HasSupplementaryUnitPage) match {
       case Some(false) => updatedUserAnswers.remove(SupplementaryUnitPage)
-      case _ => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }
 }

@@ -17,7 +17,8 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.ott.Exemption
+import models.AssessmentAnswer.NoExemption
+import models.ott.CategoryAssessment
 import models.{CheckMode, UserAnswers}
 import pages.AssessmentPage
 import play.api.i18n.Messages
@@ -27,31 +28,29 @@ import viewmodels.implicits._
 
 object AssessmentsSummary {
 
-  //TODO is this tested via CYA? Make sure case where can't find exemption is tested
-  //TODO this is a pain to use
   def row(
     answers: UserAnswers,
-    assessmentId: String,
+    assessment: CategoryAssessment,
     numberOfThisAssessment: Int,
-    numberOfAssessments: Int,
-    exemptions: Seq[Exemption]
+    numberOfAssessments: Int
   )(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(AssessmentPage(assessmentId)).map { answer =>
-      val value = answer.toString
-      val descriptiveText = if (value == "none") {
-        "assessment.exemption.none.checkYourAnswersLabel"
+    answers.get(AssessmentPage(assessment.id)).flatMap { answer =>
+      val descriptiveText = if (answer == NoExemption) {
+        Some("assessment.exemption.none.checkYourAnswersLabel")
       } else {
-        //TODO if it can't be found???
-        val exemption = exemptions.find(x => x.code == value).get
-        messages("assessment.exemption", exemption.code, exemption.description)
+        assessment.exemptions
+          .find(x => x.code == answer.toString)
+          .map(x => messages("assessment.exemption", x.code, x.description))
       }
 
-      SummaryListRowViewModel(
-        key = messages("assessment.checkYourAnswersLabel", numberOfThisAssessment, numberOfAssessments),
-        value = ValueViewModel(descriptiveText),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.AssessmentController.onPageLoad(CheckMode, assessmentId).url)
-            .withVisuallyHiddenText(messages("assessment.change.hidden"))
+      descriptiveText.map(description =>
+        SummaryListRowViewModel(
+          key = messages("assessment.checkYourAnswersLabel", numberOfThisAssessment, numberOfAssessments),
+          value = ValueViewModel(description),
+          actions = Seq(
+            ActionItemViewModel("site.change", routes.AssessmentController.onPageLoad(CheckMode, assessment.id).url)
+              .withVisuallyHiddenText(messages("assessment.change.hidden"))
+          )
         )
       )
     }

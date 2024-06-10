@@ -43,7 +43,7 @@ final case class UserAnswers(
     optionalPage: QuestionPage[A]
   )(implicit rds: Reads[A]): EitherNec[ValidationError, Option[A]] =
     getPageValue(questionPage) match {
-      case Right(true) => getPageValue(optionalPage).map(Some(_))
+      case Right(true)  => getPageValue(optionalPage).map(Some(_))
       case Right(false) => unexpectedValueDefined(answers, optionalPage)
       case Left(errors) => Left(errors)
     }
@@ -65,9 +65,9 @@ final case class UserAnswers(
     optionalPage: QuestionPage[A]
   )(implicit rds: Reads[A]): EitherNec[ValidationError, Option[A]] =
     getPageValue(questionPage) match {
-      case Right(true) => getPageValue(optionalPage).map(Some(_))
+      case Right(true)  => getPageValue(optionalPage).map(Some(_))
       case Right(false) => unexpectedValueDefined(answers, optionalPage)
-      case Left(_) => unexpectedValueDefined(answers, optionalPage)
+      case Left(_)      => unexpectedValueDefined(answers, optionalPage)
     }
 
   def unexpectedValueDefined(answers: UserAnswers, page: Gettable[_]): EitherNec[ValidationError, Option[Nothing]] =
