@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package base
+package forms
 
-object TestConstants {
-  val testEori: String      = "eori"
-  val userAnswersId: String = "id"
-  val testRecordId: String  = "b0082f50-f13b-416a-8071-3bd95107d44d"
+import forms.mappings.Mappings
+import play.api.data.Form
+
+import javax.inject.Inject
+
+class CategoryGuidanceFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("recordId.error.required")
+    )
 }

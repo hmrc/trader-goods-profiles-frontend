@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
 import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
@@ -302,7 +302,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             "updateSection",
-            "b0082f50-f13b-416a-8071-3bd95107d44d"
+            testRecordId
           )
         )
 
@@ -314,7 +314,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo("updateSection"),
-            eqTo("b0082f50-f13b-416a-8071-3bd95107d44d")
+            eqTo(testRecordId)
           )(any())
       }
 
@@ -337,7 +337,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             "updateSection",
-            "b0082f50-f13b-416a-8071-3bd95107d44d"
+            testRecordId
           )
         )
 
@@ -349,7 +349,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo("updateSection"),
-            eqTo("b0082f50-f13b-416a-8071-3bd95107d44d")
+            eqTo(testRecordId)
           )(any())
       }
 
@@ -370,7 +370,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             "updateSection",
-            "b0082f50-f13b-416a-8071-3bd95107d44d"
+            testRecordId
           )
         )
       }

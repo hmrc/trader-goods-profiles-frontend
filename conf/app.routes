@@ -51,7 +51,7 @@ GET         /ukims-number/check                              controllers.UkimsNu
 POST        /ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /categorisation-start/:recordId                  controllers.CategoryGuidanceController.onPageLoad(recordId: String)
-POST        /categorisation-start                            controllers.CategoryGuidanceController.onSubmit
+POST        /categorisation-start/:recordId                  controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
 GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)

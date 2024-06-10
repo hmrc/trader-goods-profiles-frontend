@@ -18,6 +18,7 @@ package controllers
 
 import connectors.OttConnector
 import controllers.actions._
+import forms.CategoryGuidanceFormProvider
 import models.ott.CategorisationInfo
 
 import javax.inject.Inject
@@ -28,6 +29,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -41,10 +43,13 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  auditService: AuditService
+  auditService: AuditService,
+  formProvider: CategoryGuidanceFormProvider
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
+
+  val form = formProvider()
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
@@ -55,16 +60,22 @@ class CategoryGuidanceController @Inject() (
             categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
             updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
             _                  <- sessionRepository.set(updatedAnswers)
-          } yield Ok(view())
+          } yield Ok(view(recordId))
         case None            =>
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
   }
 
   // TODO replace index route
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    auditService
-      .auditStartUpdateGoodsRecord(request.eori, request.affinityGroup, "updateSection", "b0082f50-f13b-416a-8071-3bd95107d44d") // TODO
-      .map(_ => Redirect(routes.IndexController.onPageLoad.url))
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          "updateSection",
+          recordId
+        ) // TODO
+        .map(_ => Redirect(routes.IndexController.onPageLoad.url))
   }
 }

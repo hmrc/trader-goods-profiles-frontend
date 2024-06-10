@@ -130,7 +130,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val view = application.injector.instanceOf[CategoryGuidanceView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(recordId)(request, messages(application)).toString
       }
     }
 
@@ -149,7 +149,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit.url)
+        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(recordId).url)
 
         val result = route(application, request).value
 
@@ -163,7 +163,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
               eqTo("updateSection"),
-              eqTo("b0082f50-f13b-416a-8071-3bd95107d44d")
+              eqTo(recordId)
             )(
               any()
             )
