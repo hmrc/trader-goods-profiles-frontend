@@ -297,7 +297,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createStartUpdateGoodsRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
 
       val result =
-        await(auditService.auditStartUpdateGoodsRecord(testEori, AffinityGroup.Individual, "updateSection", "recordId"))
+        await(
+          auditService.auditStartUpdateGoodsRecord(
+            testEori,
+            AffinityGroup.Individual,
+            "updateSection",
+            "b0082f50-f13b-416a-8071-3bd95107d44d"
+          )
+        )
 
       result mustBe Done
 
@@ -307,7 +314,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo("updateSection"),
-            eqTo("recordId")
+            eqTo("b0082f50-f13b-416a-8071-3bd95107d44d")
           )(any())
       }
 
@@ -325,7 +332,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createStartUpdateGoodsRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
 
       val result =
-        await(auditService.auditStartUpdateGoodsRecord(testEori, AffinityGroup.Individual, "updateSection", "recordId"))
+        await(
+          auditService.auditStartUpdateGoodsRecord(
+            testEori,
+            AffinityGroup.Individual,
+            "updateSection",
+            "b0082f50-f13b-416a-8071-3bd95107d44d"
+          )
+        )
 
       result mustBe Done
 
@@ -335,7 +349,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo("updateSection"),
-            eqTo("recordId")
+            eqTo("b0082f50-f13b-416a-8071-3bd95107d44d")
           )(any())
       }
 
@@ -356,7 +370,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             "updateSection",
-            "recordId"
+            "b0082f50-f13b-416a-8071-3bd95107d44d"
           )
         )
       }

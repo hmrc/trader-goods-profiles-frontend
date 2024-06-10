@@ -64,7 +64,7 @@ class CategoryGuidanceController @Inject() (
   // TODO replace index route
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     auditService
-      .auditStartUpdateGoodsRecord(request.eori, request.affinityGroup, "updateSection", "recordId") // TODO
+      .auditStartUpdateGoodsRecord(request.eori, request.affinityGroup, "updateSection", "b0082f50-f13b-416a-8071-3bd95107d44d") // TODO
       .map(_ => Redirect(routes.IndexController.onPageLoad.url))
   }
 }
