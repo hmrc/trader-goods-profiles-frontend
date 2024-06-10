@@ -53,7 +53,7 @@ class AssessmentController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        recordQuery                    <- Future.successful(userAnswersWithCategorisations.get(RecordCategorisationsQuery))
+        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
         categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
       } yield {
         val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
