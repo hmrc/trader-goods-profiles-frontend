@@ -21,9 +21,8 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
-import models.{RecordCategorisations, UserAnswers}
+import models.RecordCategorisations
 import models.router.responses.GetGoodsRecordResponse
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach

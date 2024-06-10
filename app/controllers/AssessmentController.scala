@@ -22,7 +22,7 @@ import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.CategorisationService
