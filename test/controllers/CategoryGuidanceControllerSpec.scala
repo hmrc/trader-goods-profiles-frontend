@@ -162,7 +162,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
             .auditStartUpdateGoodsRecord(
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
-              eqTo("updateSection"),
+              eqTo("categorisation"),
               eqTo(recordId)
             )(
               any()

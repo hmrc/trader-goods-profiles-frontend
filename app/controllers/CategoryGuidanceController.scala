@@ -73,7 +73,7 @@ class CategoryGuidanceController @Inject() (
         .auditStartUpdateGoodsRecord(
           request.eori,
           request.affinityGroup,
-          "updateSection",
+          "categorisation",
           recordId
         ) // TODO
         .map(_ => Redirect(routes.IndexController.onPageLoad.url))
