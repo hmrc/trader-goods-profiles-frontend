@@ -20,7 +20,6 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.{RecordCategorisations, UserAnswers}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import org.apache.pekko.Done
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
