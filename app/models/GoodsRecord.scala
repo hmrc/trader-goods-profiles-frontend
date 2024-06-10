@@ -18,7 +18,6 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
-import models.router.Assessment
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
@@ -32,12 +31,8 @@ final case class GoodsRecord(
   goodsDescription: String,
   countryOfOrigin: String,
   comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant] = None,
-  recordId: String = "",
-  category: Option[Int] = None,
-  supplementaryUnit: Option[Int] = None,
-  measurementUnit: Option[String] = None,
-  assessments: Option[Seq[Assessment]] = None
+  comcodeEffectiveToDate: Option[Instant],
+  recordId: String = ""
 )
 
 object GoodsRecord {
