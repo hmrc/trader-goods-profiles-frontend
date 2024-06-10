@@ -46,17 +46,17 @@ class CategorisationService @Inject() (
         Future.successful(request.userAnswers)
       case None                                         =>
         for {
-          goodsRecord        <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature  <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
-          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers     <-
+          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+          goodsNomenclature      <- ottConnector.getCategorisationInfo(getGoodsRecordResponse.commodityCode)
+          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          updatedAnswers         <-
             Future.fromTry(
               request.userAnswers.set(
                 RecordCategorisationsQuery,
                 recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
               )
             )
-          _            <- sessionRepository.set(updatedAnswers)
+          _                      <- sessionRepository.set(updatedAnswers)
         } yield updatedAnswers
     }
   }
