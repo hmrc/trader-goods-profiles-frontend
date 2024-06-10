@@ -17,7 +17,7 @@
 package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.RecordCategorisations
+import models.{RecordCategorisations, UserAnswers}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import org.apache.pekko.Done
@@ -35,18 +35,18 @@ class CategorisationService @Inject() (
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
-  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[Done] = {
+  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[UserAnswers] = {
 
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     recordCategorisations.records.get(recordId) match {
       case Some(categorisationInfo: CategorisationInfo) =>
-        Future.successful(Done)
+        Future.successful(request.userAnswers)
       case None                                         =>
         for {
           goodsRecord        <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature  <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
+          goodsNomenclature  <- ottConnector.getCategorisationInfo("0702000007")
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
           updatedAnswers     <-
             Future.fromTry(
@@ -55,8 +55,8 @@ class CategorisationService @Inject() (
                 recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
               )
             )
-          _                  <- sessionRepository.set(updatedAnswers)
-        } yield Done
+          updated                  <- sessionRepository.set(updatedAnswers)
+        } yield updatedAnswers
     }
   }
 }
