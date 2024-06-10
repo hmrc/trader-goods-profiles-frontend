@@ -36,7 +36,7 @@ object CategoryRecord {
   def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, CategoryRecord] =
     (
       getCategory(answers),
-      answers.getOptionalPageIntValue(answers, HasSupplementaryUnitPage, SupplementaryUnitPage),
+      answers.getOptionalPageValue(answers, HasSupplementaryUnitPage, SupplementaryUnitPage),
       getMeasurementUnit(answers)
     ).parMapN((category, supplementaryUnit, measurementUnit) =>
       CategoryRecord(
