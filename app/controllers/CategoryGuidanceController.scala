@@ -18,10 +18,7 @@ package controllers
 
 import connectors.OttConnector
 import controllers.actions._
-import forms.CategoryGuidanceFormProvider
 import models.ott.CategorisationInfo
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationQuery, CommodityQuery}
@@ -43,13 +40,10 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  auditService: AuditService,
-  formProvider: CategoryGuidanceFormProvider
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-
-  val form = formProvider()
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>

@@ -164,10 +164,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
               eqTo(AffinityGroup.Individual),
               eqTo("categorisation"),
               eqTo(recordId)
-            )(
-              any()
-            )
-
+            )(any())
         }
       }
     }
