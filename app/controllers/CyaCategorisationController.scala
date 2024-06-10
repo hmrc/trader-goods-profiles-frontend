@@ -41,13 +41,6 @@ class CyaCategorisationController @Inject() (
     with I18nSupport
     with Logging {
 
-  //TODO test cases to retest
-  // No hasSuppUnit but suppUnit
-  // hasSuppUnit false but SuppUnit
-  // assessment1 = ex, 2 = ex, 3 = None, 4 = ex - error
-  // assessment1 = ex, 2 = None, 3 = ex - error
-  // assessment1 = ex, 2 = (not answered) - error
-
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       CategorisationAnswers.build(request.userAnswers) match {

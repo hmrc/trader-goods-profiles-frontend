@@ -53,6 +53,7 @@ object CategorisationAnswers {
       answeredAssessments <- getAnsweredAssessments(categorisationInfo, userAnswers)
       _                   <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments)
       _                   <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
+      _                   <- ensureHaveNotSkippedAny(answeredAssessments, categorisationInfo)
       justTheAnswers       = answeredAssessments.map(_._2)
     } yield justTheAnswers
 
@@ -62,7 +63,7 @@ object CategorisationAnswers {
   ): EitherNec[ValidationError, Seq[(CategoryAssessment, AssessmentAnswer)]] = {
     val answers = categorisationInfo.categoryAssessments
       .map(assessment => (assessment, userAnswers.get(AssessmentPage(assessment.id))))
-      .takeWhile(x => x._2.isDefined)
+      .filter(x => x._2.isDefined)
       .map(x => (x._1, x._2.get))
 
     if (answers.isEmpty) {
@@ -90,6 +91,7 @@ object CategorisationAnswers {
 
   }
 
+
   private def ensureHaveAnsweredTheRightAmount(
     answeredAssessments: Seq[(CategoryAssessment, AssessmentAnswer)],
     assessmentCount: Int
@@ -104,6 +106,22 @@ object CategorisationAnswers {
       Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationQuery)))
     }
 
+  }
+
+  private def ensureHaveNotSkippedAny(
+    answeredAssessments: Seq[(CategoryAssessment, AssessmentAnswer)],
+    categorisationInfo: CategorisationInfo
+  ) = {
+
+    val haveNotSkippedAny = answeredAssessments.map { x => categorisationInfo.categoryAssessments.indexOf(x._1) }
+      .zipWithIndex.count(y => y._1 == y._2)
+      .equals(answeredAssessments.size)
+
+    if (haveNotSkippedAny) {
+      Right(Done)
+    } else {
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationQuery)))
+    }
   }
 
 }

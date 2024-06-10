@@ -39,7 +39,7 @@ object AssessmentsSummary {
         Some("assessment.exemption.none.checkYourAnswersLabel")
       } else {
         assessment.exemptions
-          .find(x => x.code == answer.toString)
+          .find(x => x.id == answer.toString)
           .map(x => messages("assessment.exemption", x.code, x.description))
       }
 
