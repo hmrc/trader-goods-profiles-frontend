@@ -342,7 +342,7 @@ name.heading = What is your name?
 name.hint = We need your name so we can contact you.
 name.checkYourAnswersLabel = Name
 name.error.required = Enter your name
-name.error.length = Enter a name with less than 70 characters
+name.error.length = Enter a name with 70 characters or less
 name.change.hidden = Name
 
 hasSupplementaryUnit.title = Supplementary unit
