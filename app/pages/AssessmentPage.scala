@@ -33,15 +33,15 @@ case class AssessmentPage(recordId: String, index: Int) extends QuestionPage[Ass
   ): Try[UserAnswers] =
     if (value.contains(AssessmentAnswer.NoExemption)) {
       (for {
-        recordQuery <- updatedUserAnswers.get(RecordCategorisationsQuery)
+        recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
         categorisationInfo <- recordQuery.records.get(recordId)
-        count = categorisationInfo.categoryAssessments.size
-        rangeToRemove = (index + 1) to count
-      } yield {
-        rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
-          acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
-        }
-      }).getOrElse(Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index")))
+        count               = categorisationInfo.categoryAssessments.size
+        rangeToRemove       = (index + 1) to count
+      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
+        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
+      }).getOrElse(
+        Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index"))
+      )
     } else {
       super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }

@@ -46,7 +46,7 @@ class CategorisationService @Inject() (
       case None                                         =>
         for {
           goodsRecord        <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature  <- ottConnector.getCategorisationInfo("0702000007")
+          goodsNomenclature  <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
           categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
           updatedAnswers     <-
             Future.fromTry(

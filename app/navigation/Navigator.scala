@@ -88,23 +88,25 @@ class Navigator @Inject() () {
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     for {
-      recordQuery <- answers.get(RecordCategorisationsQuery)
-      assessmentAnswer   <- answers.get(assessmentPage)
+      recordQuery      <- answers.get(RecordCategorisationsQuery)
+      assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
         val assessmentCount = Try {
           recordQuery.records
             .get(assessmentPage.recordId)
-            .get.categoryAssessments.size
+            .get
+            .categoryAssessments
+            .size
         }.getOrElse(0)
         if (assessmentPage.index + 1 < assessmentCount) {
           routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
         } else {
-          // no more assessments left
+          // TODO: no more assessments left
           routes.IndexController.onPageLoad
         }
-      case AssessmentAnswer.NoExemption =>
-        // user answered no to one of them, nick's work
+      case AssessmentAnswer.NoExemption  =>
+        // TODO: user answered no to one of them
         routes.IndexController.onPageLoad
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
