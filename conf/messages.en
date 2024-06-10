@@ -258,8 +258,8 @@ traderReference.error.length = Trader reference must be 512 characters or less
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
-assessment.title = Category assessment {0} of {1}
-assessment.heading = Category assessment {0} of {1}
+assessment.title = Categorisation question
+assessment.heading = Category assessment {0}
 assessment.guidance = You need to confirm which of these conditions you hold for {0}. We need this information to be able to categorise your goods.
 assessment.linkText = Review this code on the Online Tariff Tool (opens in a new tab)
 assessment.question = Do you meet one of the following conditions and can you supply the relevant document code on your movements?
