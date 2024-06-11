@@ -49,3 +49,7 @@ final case class MissingAssessmentAnswers(query: Query) extends ValidationError 
 
   val message: String = s"At least one required assessment page is missing an answer: ${query.path}"
 }
+
+final case class NoCategorisationDetailsForRecordId(query: Query, recordId: String) extends ValidationError {
+  override val message: String = s"No categorisation details for record id $recordId"
+}
