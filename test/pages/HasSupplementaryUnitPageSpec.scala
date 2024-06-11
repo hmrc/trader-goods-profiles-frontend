@@ -28,11 +28,30 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
 
     "removes SupplementaryUnit when the answer is No" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage, 42).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), 42).success.value
 
       val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), false).success.value
 
-      result.isDefined(SupplementaryUnitPage) mustBe false
+      result.isDefined(SupplementaryUnitPage(testRecordId)) mustBe false
+
+      result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe false
+
+    }
+
+    "removes SupplementaryUnit for a different record id" in {
+
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(SupplementaryUnitPage("differentRecordId"), 42)
+        .success
+        .value
+        .set(SupplementaryUnitPage(testRecordId), 43)
+        .success
+        .value
+
+      val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), false).success.value
+
+      result.isDefined(SupplementaryUnitPage(testRecordId)) mustBe false
+      result.get(SupplementaryUnitPage("differentRecordId")).value mustBe 42
 
       result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe false
 
@@ -40,11 +59,11 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
 
     "does not remove SupplementaryUnit when the answer is Yes" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage, 42).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), 42).success.value
 
       val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), true).success.value
 
-      result.isDefined(SupplementaryUnitPage) mustBe true
+      result.isDefined(SupplementaryUnitPage(testRecordId)) mustBe true
 
       result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe true
     }

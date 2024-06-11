@@ -82,7 +82,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage, 42)
+            .set(SupplementaryUnitPage(testRecordId), 42)
             .success
             .value
 
@@ -108,7 +108,7 @@ class CategorisationAnswersSpec extends SpecBase {
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage)
+          errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
         }
       }
 
@@ -116,14 +116,14 @@ class CategorisationAnswersSpec extends SpecBase {
 
         val answers =
           userAnswersForCategorisationCya
-            .set(SupplementaryUnitPage, 42)
+            .set(SupplementaryUnitPage(testRecordId), 42)
             .success
             .value
 
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage)
+          errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
         }
       }
 

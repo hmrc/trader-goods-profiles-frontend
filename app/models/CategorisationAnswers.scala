@@ -46,7 +46,7 @@ object CategorisationAnswers {
     userAnswers.getOptionalPageValueForOptionalBooleanPage(
       userAnswers,
       HasSupplementaryUnitPage(recordId),
-      SupplementaryUnitPage
+      SupplementaryUnitPage(recordId)
     )
 
   private def buildAssessmentDetails(

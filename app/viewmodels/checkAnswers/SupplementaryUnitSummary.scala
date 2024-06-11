@@ -26,13 +26,13 @@ import viewmodels.implicits._
 
 object SupplementaryUnitSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(SupplementaryUnitPage).map { answer =>
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(SupplementaryUnitPage(recordId)).map { answer =>
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(answer.toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )

@@ -75,7 +75,7 @@ class CyaCategorisationController @Inject() (
           val supplementaryUnitList = SummaryListViewModel(
             rows = Seq(
               HasSupplementaryUnitSummary.row(request.userAnswers, recordId),
-              SupplementaryUnitSummary.row(request.userAnswers)
+              SupplementaryUnitSummary.row(request.userAnswers, recordId)
             ).flatten
           )
 

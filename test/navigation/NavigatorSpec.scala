@@ -348,7 +348,8 @@ class NavigatorSpec extends SpecBase {
               answers
             ) mustBe routes.SupplementaryUnitController
               .onPageLoad(
-                NormalMode
+                NormalMode,
+                testRecordId
               )
           }
 
@@ -379,11 +380,11 @@ class NavigatorSpec extends SpecBase {
         "must go from SupplementaryUnitPage to Check Your Answers Page" in {
 
           navigator.nextPage(
-            SupplementaryUnitPage,
+            SupplementaryUnitPage(testRecordId),
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CyaCategorisationController.onPageLoad(
-            "123"
+            testRecordId
           )
         }
 
@@ -776,7 +777,8 @@ class NavigatorSpec extends SpecBase {
               answers
             ) mustBe routes.SupplementaryUnitController
               .onPageLoad(
-                CheckMode
+                CheckMode,
+                testRecordId
               )
           }
 
@@ -786,7 +788,7 @@ class NavigatorSpec extends SpecBase {
               .set(HasSupplementaryUnitPage(testRecordId), true)
               .success
               .value
-              .set(SupplementaryUnitPage, 974)
+              .set(SupplementaryUnitPage(testRecordId), 974)
               .success
               .value
 
@@ -825,11 +827,11 @@ class NavigatorSpec extends SpecBase {
         "must go from SupplementaryUnitPage to Check Your Answers Page" in {
 
           navigator.nextPage(
-            SupplementaryUnitPage,
+            SupplementaryUnitPage(testRecordId),
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCategorisationController.onPageLoad(
-            "123"
+            testRecordId
           )
         }
 

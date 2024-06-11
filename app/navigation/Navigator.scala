@@ -44,7 +44,7 @@ class Navigator @Inject() () {
     case HasCorrectGoodsPage      => navigateFromHasCorrectGoods
     case p: AssessmentPage        => navigateFromAssessment(p, NormalMode)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit(p.recordId)
-    case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
+    case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode)
     case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
@@ -92,7 +92,7 @@ class Navigator @Inject() () {
     answers
       .get(HasSupplementaryUnitPage(recordId))
       .map {
-        case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode)
+        case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode, recordId)
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
@@ -141,7 +141,7 @@ class Navigator @Inject() () {
     case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
     case p: AssessmentPage        => navigateFromAssessment(p, CheckMode)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck(p.recordId)
-    case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
+    case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case _                        => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -206,10 +206,10 @@ class Navigator @Inject() () {
       .get(HasSupplementaryUnitPage(recordId))
       .map {
         case true  =>
-          if (answers.isDefined(SupplementaryUnitPage)) {
+          if (answers.isDefined(SupplementaryUnitPage(recordId))) {
             routes.CyaCategorisationController.onPageLoad(recordId)
           } else {
-            routes.SupplementaryUnitController.onPageLoad(CheckMode)
+            routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
           }
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }

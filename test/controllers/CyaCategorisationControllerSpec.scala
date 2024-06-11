@@ -126,7 +126,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage, 1234)
+            .set(SupplementaryUnitPage(testRecordId), 1234)
             .success
             .value
 
@@ -156,7 +156,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedSupplementaryUnitList = SummaryListViewModel(
               rows = Seq(
                 HasSupplementaryUnitSummary.row(userAnswers, testRecordId),
-                SupplementaryUnitSummary.row(userAnswers)
+                SupplementaryUnitSummary.row(userAnswers, testRecordId)
               ).flatten
             )
             status(result) mustEqual OK
@@ -249,7 +249,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(SupplementaryUnitPage, 123)
+            .set(SupplementaryUnitPage(testRecordId), 123)
             .success
             .value
 
