@@ -83,7 +83,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               val expectedPayload = CategoryRecord(
                 eori = testEori,
                 recordId = testRecordId,
-                category = Some(1),
+                category = 1,
                 measurementUnit = Some("1")
               )
 

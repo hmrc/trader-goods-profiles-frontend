@@ -39,7 +39,7 @@ object UpdateRecordRequest {
       categoryRecord.eori,
       categoryRecord.recordId,
       categoryRecord.eori,
-      categoryRecord.category,
+      Some(categoryRecord.category),
       categoryRecord.supplementaryUnit,
       categoryRecord.measurementUnit
     )

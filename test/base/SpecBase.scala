@@ -18,6 +18,7 @@ package base
 
 import base.TestConstants.userAnswersId
 import controllers.actions._
+import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import models.{Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -29,7 +30,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.CommodityQuery
+import queries.{CategorisationQuery, CommodityQuery}
 
 import java.time.Instant
 
@@ -42,6 +43,14 @@ trait SpecBase
     with IntegrationPatience {
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
+  private val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")))
+  private val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")))
+  private val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
+  private val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
+
+  val categorisationInfo: CategorisationInfo =
+    CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
 
   def fullProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
     .set(UkimsNumberPage, "1")
@@ -132,6 +141,9 @@ trait SpecBase
   def mandatoryAssessmentAnswers: UserAnswers =
     UserAnswers(userAnswersId)
       .set(HasSupplementaryUnitPage, false)
+      .success
+      .value
+      .set(CategorisationQuery, categorisationInfo)
       .success
       .value
 

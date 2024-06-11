@@ -153,7 +153,7 @@ class GoodsRecordConnectorSpec
     val goodsRecord = CategoryRecord(
       eori = testEori,
       recordId = testRecordId,
-      category = Some(1),
+      category = 1,
       measurementUnit = Some("1")
     )
 
