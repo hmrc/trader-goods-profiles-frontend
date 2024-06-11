@@ -325,6 +325,14 @@ class NavigatorSpec extends SpecBase {
             answers
           ) mustEqual routes.IndexController.onPageLoad
         }
+
+        "to Journey Recovery when RecordCategorisationsQuery is not present" in {
+          navigator.nextPage(
+            AssessmentPage(recordId, index),
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.JourneyRecoveryController.onPageLoad()
+        }
       }
     }
 
