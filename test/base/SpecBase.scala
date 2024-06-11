@@ -16,10 +16,10 @@
 
 package base
 
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.{Commodity, UserAnswers}
+import models.{Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -30,7 +30,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CategorisationQuery, CommodityQuery}
+import queries.{CommodityQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -49,10 +49,13 @@ trait SpecBase
   private val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
   private val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
-  val categorisationInfo: CategorisationInfo =
+  private val categorisationInfo: CategorisationInfo =
     CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
 
-  def fullProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  val recordCategorisations: RecordCategorisations =
+    RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
+
+  def fullProfileUserAnswers: UserAnswers          = UserAnswers(userAnswersId)
     .set(UkimsNumberPage, "1")
     .success
     .value
@@ -143,7 +146,7 @@ trait SpecBase
       .set(HasSupplementaryUnitPage, false)
       .success
       .value
-      .set(CategorisationQuery, categorisationInfo)
+      .set(RecordCategorisationsQuery, recordCategorisations)
       .success
       .value
 

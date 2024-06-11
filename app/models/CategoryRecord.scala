@@ -21,7 +21,7 @@ import cats.implicits.catsSyntaxTuple3Parallel
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
 
 final case class CategoryRecord(
   eori: String,
@@ -37,7 +37,7 @@ object CategoryRecord {
 
   def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, CategoryRecord] =
     (
-      getCategory(answers),
+      getCategory(answers, recordId),
       answers.getOptionalPageValue(answers, HasSupplementaryUnitPage, SupplementaryUnitPage),
       getMeasurementUnit(answers)
     ).parMapN((category, supplementaryUnit, measurementUnit) =>
@@ -50,26 +50,51 @@ object CategoryRecord {
       )
     )
 
-  def getLastAssessmentPage(categorisationInfo: CategorisationInfo, category: Int): AssessmentPage =
-    AssessmentPage(categorisationInfo.categoryAssessments.filter(_.category == category).last.id)
-
-  def getCategory(answers: UserAnswers): EitherNec[ValidationError, Int] =
-    answers.get(CategorisationQuery) match {
-      case Some(categorisationInfo) =>
-        val lastCategory1AssessmentId = getLastAssessmentPage(categorisationInfo, 1)
-        answers.getPageValue(lastCategory1AssessmentId) match {
-          case Right(AssessmentAnswer.NoExemption) => Right(1)
-          case Right(_)                            =>
-            val lastCategory2AssessmentId = getLastAssessmentPage(categorisationInfo, 2)
-            answers.getPageValue(lastCategory2AssessmentId) match {
-              case Right(AssessmentAnswer.NoExemption) => Right(2)
-              case Right(_)                            => Right(3)
-              case _                                   => Right(2)
-            }
-          case _                                   => Right(1)
+  def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Int] =
+    answers.get(RecordCategorisationsQuery) match {
+      case Some(recordCategorisations) =>
+        recordCategorisations.records.get(recordId) match {
+          case Some(categorisationInfo) => chooseCategory(recordId, answers, categorisationInfo)
+          case _                        => Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery)))
         }
-      case _                        => Left(NonEmptyChain.one(PageMissing(CategorisationQuery)))
+      case _                           => Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery)))
     }
+
+  def chooseCategory2Or3(
+    recordId: String,
+    answers: UserAnswers,
+    categorisationInfo: CategorisationInfo
+  ): EitherNec[ValidationError, Int] = {
+    val category2AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 2)
+    if (category2AssessmentsCount > 0) {
+      answers.getPageValue(AssessmentPage(recordId, categorisationInfo.categoryAssessments.length - 1)) match {
+        case Right(AssessmentAnswer.NoExemption) => Right(2)
+        case Right(_)                            => Right(3)
+        case _                                   => Right(2)
+      }
+    } else {
+      Left(NonEmptyChain.one(NoCategory2Assessments(RecordCategorisationsQuery)))
+    }
+  }
+
+  def chooseCategory(
+    recordId: String,
+    answers: UserAnswers,
+    categorisationInfo: CategorisationInfo
+  ): EitherNec[ValidationError, Int] = {
+    val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 1)
+    if (category1AssessmentsCount > 0) {
+      answers.getPageValue(
+        AssessmentPage(recordId, category1AssessmentsCount - 1)
+      ) match {
+        case Right(AssessmentAnswer.NoExemption) => Right(1)
+        case Right(_)                            => chooseCategory2Or3(recordId, answers, categorisationInfo)
+        case _                                   => Right(1)
+      }
+    } else {
+      Left(NonEmptyChain.one(NoCategory1Assessments(RecordCategorisationsQuery)))
+    }
+  }
 
   //TODO: get measurementUnit from answers
   private def getMeasurementUnit(answers: UserAnswers): EitherNec[ValidationError, Option[String]] = Right(Some("1"))
