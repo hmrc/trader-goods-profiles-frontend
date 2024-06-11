@@ -41,11 +41,11 @@ class Navigator @Inject() () {
     case CommodityCodePage        => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage      => navigateFromHasCorrectGoods
     case p: AssessmentPage        => navigateFromAssessment(p, NormalMode)
+    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
+    case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
     case AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode)
     case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
-    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
-    case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
     case _                        => _ => routes.IndexController.onPageLoad
 
   }

@@ -36,7 +36,7 @@ object CategorisationAnswers {
 
   def build(userAnswers: UserAnswers): EitherNec[ValidationError, CategorisationAnswers] =
     (
-      getAssessmentAnswers(userAnswers),
+      buildAssessmentDetails(userAnswers),
       getSupplementaryUnit(userAnswers)
     ).parMapN(CategorisationAnswers.apply)
 
@@ -47,17 +47,17 @@ object CategorisationAnswers {
       SupplementaryUnitPage
     )
 
-  private def getAssessmentAnswers(userAnswers: UserAnswers) =
+  private def buildAssessmentDetails(userAnswers: UserAnswers) =
     for {
       categorisationInfo  <- userAnswers.getPageValue(CategorisationQuery)
-      answeredAssessments <- getAnsweredAssessments(categorisationInfo, userAnswers)
+      answeredAssessments <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers)
       _                   <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments)
       _                   <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
       _                   <- ensureHaveNotSkippedAny(answeredAssessments, categorisationInfo)
       justTheAnswers       = answeredAssessments.map(_._2)
     } yield justTheAnswers
 
-  private def getAnsweredAssessments(
+  private def getAssessmentsFromUserAnswers(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers
   ): EitherNec[ValidationError, Seq[(CategoryAssessment, AssessmentAnswer)]] = {
