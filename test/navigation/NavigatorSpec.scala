@@ -22,7 +22,7 @@ import controllers.routes
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 
 class NavigatorSpec extends SpecBase {
 

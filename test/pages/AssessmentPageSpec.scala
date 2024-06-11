@@ -21,7 +21,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 
 class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 

@@ -18,7 +18,7 @@ package pages
 
 import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 
 import scala.util.{Failure, Success, Try}
 

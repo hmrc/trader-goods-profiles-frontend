@@ -21,7 +21,7 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 
 import scala.util.Try
 

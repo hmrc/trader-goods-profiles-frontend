@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import services.CategorisationService
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
@@ -39,13 +38,12 @@ import scala.concurrent.Future
 
 class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
-  private def onwardRoute               = Call("GET", "/foo")
-  private val formProvider              = new AssessmentFormProvider()
-  private def assessmentId              = "321"
-  private def recordId                  = "1"
-  private def index                     = 0
-  private def assessmentRoute           = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
-  private def mockCategorisationService = mock[CategorisationService]
+  private def onwardRoute     = Call("GET", "/foo")
+  private val formProvider    = new AssessmentFormProvider()
+  private def assessmentId    = "321"
+  private def recordId        = "1"
+  private def index           = 0
+  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
 
   "AssessmentController" - {
 
