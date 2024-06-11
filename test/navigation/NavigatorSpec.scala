@@ -22,7 +22,7 @@ import controllers.routes
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
 
 class NavigatorSpec extends SpecBase {
 
@@ -263,38 +263,47 @@ class NavigatorSpec extends SpecBase {
       }
 
       "must go from an assessment" - {
-
-        val assessment1        = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
-        val assessment2        = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-        val categorisationInfo = CategorisationInfo("123", Seq(assessment1, assessment2))
+        val recordId              = "321"
+        val index                 = 0
+        val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2))
+        val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
 
         "to the next assessment when the answer is an exemption and at least one more assessment exists" in {
 
           val answers =
             emptyUserAnswers
-              .set(CategorisationQuery, categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
-              .set(AssessmentPage("id1"), AssessmentAnswer.Exemption("cert1"))
+              .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
               .success
               .value
 
-          navigator.nextPage(AssessmentPage("id1"), NormalMode, answers) mustEqual routes.AssessmentController
-            .onPageLoad(NormalMode, "id2")
+          navigator.nextPage(AssessmentPage(recordId, index), NormalMode, answers) mustEqual routes.AssessmentController
+            .onPageLoad(NormalMode, recordId, index + 1)
         }
 
         "to the Check Your Answers page when the answer is an exemption and this is the last assessment" in {
 
           val answers =
             emptyUserAnswers
-              .set(CategorisationQuery, categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
-              .set(AssessmentPage("id2"), AssessmentAnswer.Exemption("cert1"))
+              .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+              .success
+              .value
+              .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
               .success
               .value
 
-          navigator.nextPage(AssessmentPage("id2"), NormalMode, answers) mustEqual routes.CyaCategorisationController
+          navigator.nextPage(
+            AssessmentPage(recordId, index + 1),
+            NormalMode,
+            answers
+          ) mustEqual routes.CyaCategorisationController
             .onPageLoad("123")
         }
 
@@ -302,15 +311,23 @@ class NavigatorSpec extends SpecBase {
 
           val answers =
             emptyUserAnswers
-              .set(CategorisationQuery, categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
-              .set(AssessmentPage("id1"), AssessmentAnswer.NoExemption)
+              .set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption)
               .success
               .value
 
           navigator.nextPage(AssessmentPage("id1"), NormalMode, answers) mustEqual routes.CyaCategorisationController
             .onPageLoad("123")
+        }
+
+        "to Journey Recovery when RecordCategorisationsQuery is not present" in {
+          navigator.nextPage(
+            AssessmentPage(recordId, index),
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.JourneyRecoveryController.onPageLoad()
         }
       }
 

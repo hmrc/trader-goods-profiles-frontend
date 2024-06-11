@@ -21,7 +21,9 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
+
+import scala.util.Try
 
 @Singleton
 class Navigator @Inject() () {
@@ -97,24 +99,28 @@ class Navigator @Inject() () {
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
     for {
-      categorisationInfo <- answers.get(CategorisationQuery)
-      assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
-      assessmentAnswer   <- answers.get(assessmentPage)
-      assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
+      recordQuery      <- answers.get(RecordCategorisationsQuery)
+      assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
-        categorisationInfo.categoryAssessments
-          .lift(assessmentIndex + 1)
-          .map { nextAssessment =>
-            if (mode == CheckMode && answers.isDefined(AssessmentPage(nextAssessment.id))) {
-              routes.CyaCategorisationController.onPageLoad("123")
-            } else {
-              routes.AssessmentController.onPageLoad(mode, nextAssessment.id)
-            }
-          }
-          .getOrElse(routes.CyaCategorisationController.onPageLoad("123"))
+        val assessmentCount = Try {
+          recordQuery.records
+            .get(assessmentPage.recordId)
+            .get
+            .categoryAssessments
+            .size
+        }.getOrElse(0)
+        if (assessmentPage.index + 1 < assessmentCount) {
+          if (mode == CheckMode && answers.isDefined(AssessmentPage(nextAssessment.id))) {
+            routes.CyaCategorisationController.onPageLoad("123")
+          } else {
+            routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
 
-      case AssessmentAnswer.NoExemption =>
+          }
+          } else {
+          // TODO: no more assessments left
+          routes.CyaCategorisationController.onPageLoad("123")        }
+      case AssessmentAnswer.NoExemption  =>
         routes.CyaCategorisationController.onPageLoad("123")
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())

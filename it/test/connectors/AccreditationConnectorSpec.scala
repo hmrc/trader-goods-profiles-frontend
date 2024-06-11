@@ -16,7 +16,7 @@
 
 package connectors
 
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, testRecordId}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import io.jsonwebtoken.Jwts.header
 import models.AdviceRequest
@@ -48,7 +48,7 @@ class AccreditationConnectorSpec
   ".submitAdviceRequest" - {
 
     val adviceRequest =
-      AdviceRequest("eori", "Firstname Lastname", "actorId", "b0082f50-f13b-416a-8071-3bd95107d44d", "test@test.com")
+      AdviceRequest("eori", "Firstname Lastname", "actorId", testRecordId, "test@test.com")
 
     "must submit a advice request" in {
 

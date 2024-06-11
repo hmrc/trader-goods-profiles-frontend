@@ -20,7 +20,7 @@
         formHelper: FormWithCSRF
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("categoryGuidance.title"))) {
 
@@ -31,7 +31,7 @@
     <p class="govuk-body">@messages("categoryGuidance.p3")</p>
     <p class="govuk-body">@messages("categoryGuidance.p4")</p>
 
-    @formHelper(action = CategoryGuidanceController.onSubmit) {
+    @formHelper(action = CategoryGuidanceController.onSubmit(recordId)) {
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )

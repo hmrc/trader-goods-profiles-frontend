@@ -25,6 +25,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationQuery, CommodityQuery}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
 
@@ -39,7 +40,8 @@ class CategoryGuidanceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
   ottConnector: OttConnector,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -53,14 +55,23 @@ class CategoryGuidanceController @Inject() (
             categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
             updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
             _                  <- sessionRepository.set(updatedAnswers)
-          } yield Ok(view())
+          } yield Ok(view(recordId))
         case None            =>
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
   }
 
   // TODO replace index route
-  def onSubmit: Action[AnyContent] = (identify andThen getData) { implicit request =>
-    Redirect(routes.IndexController.onPageLoad.url)
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          "categorisation",
+          recordId
+        )
+
+      Future.successful(Redirect(routes.IndexController.onPageLoad.url))
   }
 }
