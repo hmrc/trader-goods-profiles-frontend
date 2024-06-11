@@ -23,7 +23,7 @@ import logging.Logging
 import models.{CategorisationAnswers, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
@@ -43,19 +43,27 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      CategorisationAnswers.build(request.userAnswers) match {
+      CategorisationAnswers.build(request.userAnswers, recordId) match {
         case Right(_) =>
-          val categorisationRows = request.userAnswers.get(CategorisationQuery) match {
+          val categorisationAnswers = for {
+            recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
+            categorisationAnswers <- recordCategorisations.records.get(recordId)
+          } yield categorisationAnswers
+
+          val categorisationRows = categorisationAnswers match {
             case Some(categorisationInfo) =>
-              categorisationInfo.categoryAssessments
+              val test = categorisationInfo.categoryAssessments
                 .flatMap(assessment =>
                   AssessmentsSummary.row(
+                    recordId,
                     request.userAnswers,
                     assessment,
-                    categorisationInfo.categoryAssessments.indexOf(assessment) + 1,
+                    categorisationInfo.categoryAssessments.indexOf(assessment),
                     categorisationInfo.categoryAssessments.size
                   )
                 )
+
+              test
 
             case None => Seq.empty
           }

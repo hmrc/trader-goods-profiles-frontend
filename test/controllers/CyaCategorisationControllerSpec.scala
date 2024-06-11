@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import models.AssessmentAnswer
 import models.AssessmentAnswer.NoExemption
 import org.scalatestplus.mockito.MockitoSugar
@@ -24,7 +25,7 @@ import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
@@ -45,23 +46,21 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
             val view                   = application.injector.instanceOf[CyaCategorisationView]
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
-                //TODO copying test data about to pass in here bad
-                //TODO this is an option??
                 AssessmentsSummary
-                  .row(userAnswers, category1, 1, 3)
+                  .row(testRecordId, userAnswers, category1, 0, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category2, 2, 3)
+                  .row(testRecordId, userAnswers, category2, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category3, 3, 3)
+                  .row(testRecordId, userAnswers, category3, 2, 3)
                   .get
               )
             )
@@ -70,7 +69,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               rows = Seq.empty
             )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view("123", expectedAssessmentList, list2)(
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, list2)(
               request,
               messages(application)
             ).toString
@@ -80,13 +79,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when no exemption is used, meaning some assessment pages are not answered" in {
 
           val userAnswers = emptyUserAnswers
-            .set(CategorisationQuery, categoryQuery)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage("1"), AssessmentAnswer.Exemption("Y994"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
             .success
             .value
-            .set(AssessmentPage("2"), NoExemption)
+            .set(AssessmentPage(testRecordId, 1), NoExemption)
             .success
             .value
 
@@ -94,7 +93,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -102,10 +101,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(userAnswers, category1, 1, 3)
+                  .row(testRecordId, userAnswers, category1, 0, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category2, 2, 3)
+                  .row(testRecordId, userAnswers, category2, 1, 3)
                   .get
               )
             )
@@ -114,7 +113,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               rows = Seq.empty
             )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view("123", expectedAssessmentList, list2)(
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, list2)(
               request,
               messages(application)
             ).toString
@@ -135,7 +134,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -143,25 +142,25 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(userAnswers, category1, 1, 3)
+                  .row(testRecordId, userAnswers, category1, 0, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category2, 2, 3)
+                  .row(testRecordId, userAnswers, category2, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category3, 3, 3)
+                  .row(testRecordId, userAnswers, category3, 2, 3)
                   .get
               )
             )
 
             val expectedSupplementaryUnitList = SummaryListViewModel(
               rows = Seq(
-                HasSupplementaryUnitSummary.row(userAnswers, "123"),
+                HasSupplementaryUnitSummary.row(userAnswers, testRecordId),
                 SupplementaryUnitSummary.row(userAnswers)
               ).flatten
             )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view("123", expectedAssessmentList, expectedSupplementaryUnitList)(
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, expectedSupplementaryUnitList)(
               request,
               messages(application)
             ).toString
@@ -179,7 +178,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -188,24 +187,24 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(userAnswers, category1, 1, 3)
+                  .row(testRecordId, userAnswers, category1, 0, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category2, 2, 3)
+                  .row(testRecordId, userAnswers, category2, 1, 3)
                   .get,
                 AssessmentsSummary
-                  .row(userAnswers, category3, 3, 3)
+                  .row(testRecordId, userAnswers, category3, 2, 3)
                   .get
               )
             )
 
             val expectedSupplementaryUnitList = SummaryListViewModel(
               rows = Seq(
-                HasSupplementaryUnitSummary.row(userAnswers, "123")
+                HasSupplementaryUnitSummary.row(userAnswers, testRecordId)
               ).flatten
             )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view("123", expectedAssessmentList, expectedSupplementaryUnitList)(
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, expectedSupplementaryUnitList)(
               request,
               messages(application)
             ).toString
@@ -218,10 +217,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when no answers are found" in {
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad("123").url)
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -235,7 +234,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -247,7 +246,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when validation errors" in {
 
           val userAnswers = emptyUserAnswers
-            .set(CategorisationQuery, categoryQuery)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(SupplementaryUnitPage, 123)
@@ -256,10 +255,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad("123").url)
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad("123").url)
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -281,7 +280,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad("test").url)
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
           val result = route(application, request).value
 

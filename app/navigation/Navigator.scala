@@ -98,30 +98,30 @@ class Navigator @Inject() () {
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage, mode: Mode)(answers: UserAnswers): Call = {
+    val recordId = assessmentPage.recordId
+
     for {
       recordQuery      <- answers.get(RecordCategorisationsQuery)
       assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
         val assessmentCount = Try {
-          recordQuery.records
-            .get(assessmentPage.recordId)
-            .get
+          recordQuery.records(recordId)
             .categoryAssessments
             .size
         }.getOrElse(0)
-        if (assessmentPage.index + 1 < assessmentCount) {
-          if (mode == CheckMode && answers.isDefined(AssessmentPage(nextAssessment.id))) {
-            routes.CyaCategorisationController.onPageLoad("123")
-          } else {
-            routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
 
-          }
+        if (assessmentPage.index + 1 < assessmentCount) {
+          if (mode == CheckMode && answers.isDefined(AssessmentPage(recordId, assessmentPage.index + 1))) {
+            routes.CyaCategorisationController.onPageLoad(recordId)
           } else {
-          // TODO: no more assessments left
-          routes.CyaCategorisationController.onPageLoad("123")        }
+            routes.AssessmentController.onPageLoad(mode, recordId, assessmentPage.index + 1)
+          }
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
       case AssessmentAnswer.NoExemption  =>
-        routes.CyaCategorisationController.onPageLoad("123")
+        routes.CyaCategorisationController.onPageLoad(recordId)
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

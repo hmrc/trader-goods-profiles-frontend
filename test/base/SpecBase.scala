@@ -16,10 +16,10 @@
 
 package base
 
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
-import models.{AssessmentAnswer, Commodity, UserAnswers}
+import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -30,7 +30,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CategorisationQuery, CommodityQuery}
+import queries.{CommodityQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -131,13 +131,13 @@ trait SpecBase
       .value
 
   lazy val category1: CategoryAssessment =
-    CategoryAssessment("1", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
 
   lazy val category2: CategoryAssessment =
-    CategoryAssessment("2", 1, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+    CategoryAssessment("2nghjghg4-fsdff4-hfgdhfg", 1, Seq(AdditionalCode("NC123", "NC123", "Not required")))
 
   lazy val category3: CategoryAssessment = CategoryAssessment(
-    "3",
+    "3fsdfsdf-r234fds-bfgbdfg",
     2,
     Seq(
       Certificate("Y737", "Y737", "Goods not containing ivory"),
@@ -145,22 +145,26 @@ trait SpecBase
     )
   )
 
-  lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
+  private lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3)
   )
 
+  lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQuery)
+  )
+
   lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers
-    .set(CategorisationQuery, categoryQuery)
+    .set(RecordCategorisationsQuery, recordCategorisations)
     .success
     .value
-    .set(AssessmentPage("1"), AssessmentAnswer.Exemption("Y994"))
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
     .success
     .value
-    .set(AssessmentPage("2"), AssessmentAnswer.Exemption("NC123"))
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
     .success
     .value
-    .set(AssessmentPage("3"), AssessmentAnswer.Exemption("X812"))
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
     .success
     .value
 

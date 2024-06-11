@@ -16,21 +16,16 @@
 
 package controllers
 
-import connectors.OttConnector
 import controllers.actions._
-import models.ott.CategorisationInfo
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationQuery, CommodityQuery}
-import repositories.SessionRepository
-import services.AuditService
+import queries.CommodityQuery
+import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -39,9 +34,8 @@ class CategoryGuidanceController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
-  ottConnector: OttConnector,
-  sessionRepository: SessionRepository,
-  auditService: AuditService
+  auditService: AuditService,
+  categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -49,14 +43,11 @@ class CategoryGuidanceController @Inject() (
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       request.userAnswers.get(CommodityQuery) match {
-        case Some(commodity) =>
+        case Some(_) =>
           for {
-            goodsNomenclature  <- ottConnector.getCategorisationInfo(commodity.commodityCode)
-            categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-            updatedAnswers     <- Future.fromTry(request.userAnswers.set(CategorisationQuery, categorisationInfo))
-            _                  <- sessionRepository.set(updatedAnswers)
+            _ <- categorisationService.requireCategorisation(request, recordId)
           } yield Ok(view(recordId))
-        case None            =>
+        case None    =>
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
   }

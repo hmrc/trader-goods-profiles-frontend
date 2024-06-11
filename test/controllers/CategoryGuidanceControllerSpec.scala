@@ -18,12 +18,10 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.OttConnector
 import models.Commodity
-import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, reset, times, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
@@ -31,7 +29,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.CommodityQuery
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
 
@@ -48,38 +46,32 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     .success
     .value
 
-  private val mockOttConnector = mock[OttConnector]
+  private val categorisationService = mock[CategorisationService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockOttConnector.getCategorisationInfo(any())(any())).thenReturn(
-      Future.successful(
-        OttResponse(
-          GoodsNomenclatureResponse("", ""),
-          Seq(),
-          Seq()
-        )
-      )
+    when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+      Future.successful(emptyUserAnswers)
     )
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
-    reset(mockOttConnector)
+    reset(categorisationService)
   }
 
   "CategoryGuidance Controller" - {
 
     val recordId = "test-record-id"
 
-    "must call OTT and save the response in user answers prior to loading on a GET" in {
+    "must call category guidance service to load and save ott info" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
         .overrides(
-          bind[OttConnector].toInstance(mockOttConnector),
+          bind[CategorisationService].toInstance(categorisationService),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
@@ -90,8 +82,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val result  = route(application, request).value
 
         status(result) mustEqual OK
-        verify(mockOttConnector, times(1)).getCategorisationInfo(any())(any())
-        verify(mockSessionRepository, times(1)).set(any())
+        verify(categorisationService, times(1)).requireCategorisation(any(), any())(any())
 
       }
     }
@@ -100,7 +91,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[CategorisationService].toInstance(categorisationService)
         )
         .build()
 
@@ -110,7 +101,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        verify(mockOttConnector, never()).getCategorisationInfo(any())(any())
+        verify(categorisationService, never()).requireCategorisation(any(), any())(any())
       }
     }
 
@@ -118,7 +109,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
         .overrides(
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[CategorisationService].toInstance(categorisationService)
         )
         .build()
 
@@ -143,7 +134,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
         .overrides(
-          bind[OttConnector].toInstance(mockOttConnector),
+          bind[CategorisationService].toInstance(categorisationService),
           bind[AuditService].toInstance(mockAuditService)
         )
         .build()

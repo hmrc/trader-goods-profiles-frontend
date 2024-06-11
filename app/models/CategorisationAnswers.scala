@@ -23,7 +23,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.apache.pekko.Done
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 
 final case class CategorisationAnswers(
   assessmentValues: Seq[AssessmentAnswer],
@@ -49,32 +49,36 @@ object CategorisationAnswers {
       SupplementaryUnitPage
     )
 
-  private def buildAssessmentDetails(userAnswers: UserAnswers, recordId: String): Either[NonEmptyChain[ValidationError], Seq[AssessmentAnswer]] =
+  private def buildAssessmentDetails(
+    userAnswers: UserAnswers,
+    recordId: String
+  ): Either[NonEmptyChain[ValidationError], Seq[AssessmentAnswer]] =
     for {
-      recordCategorisations  <- userAnswers.getPageValue(RecordCategorisationsQuery)
-      categorisationInfo <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
-      answeredAssessments <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
-      _                   <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
-      _                   <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
-      _                   <- ensureHaveNotSkippedAny(answeredAssessments, categorisationInfo)
-      justTheAnswers       = answeredAssessments.map(_.answer)
+      recordCategorisations <- userAnswers.getPageValue(RecordCategorisationsQuery)
+      categorisationInfo    <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
+      answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
+      _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
+      _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
+      _                     <- ensureHaveNotSkippedAny(answeredAssessments)
+      justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
   //TODO unit test this failing
-  private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) = {
-    recordCategorisations.records.get(recordId)
+  private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) =
+    recordCategorisations.records
+      .get(recordId)
       .map(Right(_))
       .getOrElse(Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(RecordCategorisationsQuery, recordId))))
-  }
 
   private def getAssessmentsFromUserAnswers(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
   ): EitherNec[ValidationError, Seq[CategorisationDetails]] = {
-    val answers = categorisationInfo.categoryAssessments
-      .zipWithIndex
-      .map(assessment => (assessment._2 + 1, assessment._1, userAnswers.get(AssessmentPage(recordId, assessment._2+1))))
+    val answers = categorisationInfo.categoryAssessments.zipWithIndex
+      .map(assessment =>
+        (assessment._2, assessment._1, userAnswers.get(AssessmentPage(recordId, assessment._2)))
+      )
       .filter(x => x._3.isDefined)
       .map(x => CategorisationDetails(x._1, x._2, x._3.get))
 
@@ -98,7 +102,8 @@ object CategorisationAnswers {
       Right(Done)
     } else {
       val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage(recordId, ass.index)))
-      val nec    = NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(UnexpectedNoExemption(CategorisationQuery)))
+      val nec    =
+        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(UnexpectedNoExemption(RecordCategorisationsQuery)))
       Left(nec)
     }
 
@@ -115,14 +120,13 @@ object CategorisationAnswers {
     if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
       Right(Done)
     } else {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationQuery)))
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
     }
 
   }
 
   private def ensureHaveNotSkippedAny(
-    answeredAssessments: Seq[CategorisationDetails],
-    categorisationInfo: CategorisationInfo
+    answeredAssessments: Seq[CategorisationDetails]
   ) = {
 
     val haveNotSkippedAny = answeredAssessments
@@ -134,7 +138,7 @@ object CategorisationAnswers {
     if (haveNotSkippedAny) {
       Right(Done)
     } else {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationQuery)))
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
     }
   }
 

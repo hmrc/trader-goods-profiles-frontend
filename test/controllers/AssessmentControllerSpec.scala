@@ -18,18 +18,18 @@ package controllers
 
 import base.SpecBase
 import forms.AssessmentFormProvider
-import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.AssessmentPage
-import play.api.mvc.Call
 import play.api.inject.bind
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
@@ -247,7 +247,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
         "when this assessment cannot be found" in {
 
           val categorisationInfo = CategorisationInfo("123", Nil)
-          val answers            = emptyUserAnswers.set(CategorisationQuery, categorisationInfo).success.value
+          val answers            = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
