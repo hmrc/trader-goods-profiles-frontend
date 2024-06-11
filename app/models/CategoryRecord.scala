@@ -73,7 +73,7 @@ object CategoryRecord {
         case _                                   => Right(2)
       }
     } else {
-      Left(NonEmptyChain.one(NoCategory2Assessments(RecordCategorisationsQuery)))
+      Right(3)
     }
   }
 
@@ -92,7 +92,7 @@ object CategoryRecord {
         case _                                   => Right(1)
       }
     } else {
-      Left(NonEmptyChain.one(NoCategory1Assessments(RecordCategorisationsQuery)))
+      chooseCategory2Or3(recordId, answers, categorisationInfo)
     }
   }
 

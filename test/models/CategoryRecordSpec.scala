@@ -34,12 +34,14 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
     val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
     val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
-    val categorisationInfo               = CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
-    val recordCategorisations            = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
-    val emptyRecordCategorisations       = RecordCategorisations(records = Map())
-    val noCategory1RecordCategorisations =
+    val categorisationInfo                  = CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
+    val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
+    val emptyRecordCategorisations          = RecordCategorisations(records = Map())
+    val noCategory1RecordCategorisations    =
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3))))
+    val noCategory1Or2RecordCategorisations =
       RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq())))
-    val noCategory2RecordCategorisations =
+    val noCategory2RecordCategorisations    =
       RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1))))
 
     "must return a CategoryRecord when all mandatory questions are answered" - {
@@ -271,6 +273,91 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           )
         )
       }
+
+      "where recordCategorisations is missing category 1 assessments but completed category 2 so is category 3" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasSupplementaryUnitPage, true)
+          .success
+          .value
+          .set(SupplementaryUnitPage, 1)
+          .success
+          .value
+          .set(RecordCategorisationsQuery, noCategory1RecordCategorisations)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+          .success
+          .value
+
+        val result = CategoryRecord.build(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          CategoryRecord(
+            testEori,
+            testRecordId,
+            3,
+            Some(1),
+            Some("1")
+          )
+        )
+      }
+
+      "when recordCategorisations is missing category 2 assessments but completed category 1 so is category 3" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasSupplementaryUnitPage, true)
+          .success
+          .value
+          .set(SupplementaryUnitPage, 1)
+          .success
+          .value
+          .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+          .success
+          .value
+
+        val result = CategoryRecord.build(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          CategoryRecord(
+            testEori,
+            testRecordId,
+            3,
+            Some(1),
+            Some("1")
+          )
+        )
+      }
+
+      "when recordCategorisations is missing any assessments so is category 3" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasSupplementaryUnitPage, true)
+          .success
+          .value
+          .set(SupplementaryUnitPage, 1)
+          .success
+          .value
+          .set(RecordCategorisationsQuery, noCategory1Or2RecordCategorisations)
+          .success
+          .value
+
+        val result = CategoryRecord.build(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          CategoryRecord(
+            testEori,
+            testRecordId,
+            3,
+            Some(1),
+            Some("1")
+          )
+        )
+      }
+
     }
 
     "must return errors" - {
@@ -293,53 +380,6 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
             RecordIdMissing(RecordCategorisationsQuery)
-          )
-        }
-      }
-
-      "when recordCategorisations is missing category1 assessments" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(HasSupplementaryUnitPage, true)
-          .success
-          .value
-          .set(SupplementaryUnitPage, 1)
-          .success
-          .value
-          .set(RecordCategorisationsQuery, noCategory1RecordCategorisations)
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            NoCategory1Assessments(RecordCategorisationsQuery)
-          )
-        }
-      }
-
-      "when recordCategorisations is missing category2 assessments" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(HasSupplementaryUnitPage, true)
-          .success
-          .value
-          .set(SupplementaryUnitPage, 1)
-          .success
-          .value
-          .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
-          .success
-          .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            NoCategory2Assessments(RecordCategorisationsQuery)
           )
         }
       }

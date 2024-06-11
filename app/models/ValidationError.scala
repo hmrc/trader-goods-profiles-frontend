@@ -43,13 +43,3 @@ final case class RecordIdMissing(query: Query) extends ValidationError {
 
   val message: String = s"Record ID Missing: ${query.path}"
 }
-
-final case class NoCategory1Assessments(query: Query) extends ValidationError {
-
-  val message: String = s"No Category 1 Assessments: ${query.path}"
-}
-
-final case class NoCategory2Assessments(query: Query) extends ValidationError {
-
-  val message: String = s"No Category 2 Assessments: ${query.path}"
-}
