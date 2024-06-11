@@ -91,7 +91,6 @@ object CategorisationAnswers {
 
   }
 
-
   private def ensureHaveAnsweredTheRightAmount(
     answeredAssessments: Seq[(CategoryAssessment, AssessmentAnswer)],
     assessmentCount: Int
@@ -113,8 +112,10 @@ object CategorisationAnswers {
     categorisationInfo: CategorisationInfo
   ) = {
 
-    val haveNotSkippedAny = answeredAssessments.map { x => categorisationInfo.categoryAssessments.indexOf(x._1) }
-      .zipWithIndex.count(y => y._1 == y._2)
+    val haveNotSkippedAny = answeredAssessments
+      .map(x => categorisationInfo.categoryAssessments.indexOf(x._1))
+      .zipWithIndex
+      .count(y => y._1 == y._2)
       .equals(answeredAssessments.size)
 
     if (haveNotSkippedAny) {
