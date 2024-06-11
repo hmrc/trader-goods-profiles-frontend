@@ -23,14 +23,16 @@ import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class AssessmentController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,71 +42,73 @@ class AssessmentController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
+  categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode, assessmentId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      {
-        for {
-          categorisationInfo <- request.userAnswers.get(CategorisationQuery)
-          assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
-          assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
-        } yield {
-
-          val form = formProvider(assessment.exemptions.map(_.id))
-
-          val preparedForm = request.userAnswers.get(AssessmentPage(assessmentId)) match {
-            case Some(value) => form.fill(value)
-            case None        => form
-          }
-
-          val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
-          val viewModel    = AssessmentViewModel(
-            commodityCode = categorisationInfo.commodityCode,
-            numberOfThisAssessment = assessmentIndex + 1,
-            numberOfAssessments = categorisationInfo.categoryAssessments.size,
-            radioOptions = radioOptions
-          )
-
-          Ok(view(preparedForm, mode, assessmentId, viewModel))
+  def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val categorisationResult = for {
+        userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
+        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
+        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
+      } yield {
+        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
+        val form         = formProvider(exemptions.map(_.id))
+        val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
+          case Some(value) => form.fill(value)
+          case None        => form
         }
-      }.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+
+        val radioOptions = AssessmentAnswer.radioOptions(exemptions)
+        val viewModel    = AssessmentViewModel(
+          commodityCode = categorisationInfo.commodityCode,
+          numberOfThisAssessment = index + 1,
+          numberOfAssessments = categorisationInfo.categoryAssessments.size,
+          radioOptions = radioOptions
+        )
+
+        Ok(view(preparedForm, mode, recordId, index, viewModel))
+      }
+
+      categorisationResult.recover { case _ =>
+        Redirect(routes.JourneyRecoveryController.onPageLoad())
+      }
     }
 
-  def onSubmit(mode: Mode, assessmentId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       {
         for {
-          categorisationInfo <- request.userAnswers.get(CategorisationQuery)
-          assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentId)
-          assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
+          recordQuery        <- request.userAnswers.get(RecordCategorisationsQuery)
+          categorisationInfo <- recordQuery.records.get(recordId)
         } yield {
 
-          val form = formProvider(assessment.exemptions.map(_.id))
+          val exemptions = categorisationInfo.categoryAssessments(index).exemptions
+          val form       = formProvider(exemptions.map(_.id))
 
           form
             .bindFromRequest()
             .fold(
               formWithErrors => {
-                val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)
+                val radioOptions = AssessmentAnswer.radioOptions(exemptions)
                 val viewModel    = AssessmentViewModel(
                   commodityCode = categorisationInfo.commodityCode,
-                  numberOfThisAssessment = assessmentIndex + 1,
+                  numberOfThisAssessment = index + 1,
                   numberOfAssessments = categorisationInfo.categoryAssessments.size,
                   radioOptions = radioOptions
                 )
 
-                Future.successful(BadRequest(view(formWithErrors, mode, assessmentId, viewModel)))
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, viewModel)))
               },
               value =>
                 for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(assessmentId), value))
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AssessmentPage(assessmentId), mode, updatedAnswers))
+                } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
             )
         }
       }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))

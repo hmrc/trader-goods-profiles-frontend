@@ -21,7 +21,9 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
+
+import scala.util.Try
 
 @Singleton
 class Navigator @Inject() () {
@@ -86,18 +88,25 @@ class Navigator @Inject() () {
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     for {
-      categorisationInfo <- answers.get(CategorisationQuery)
-      assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
-      assessmentAnswer   <- answers.get(assessmentPage)
-      assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
+      recordQuery      <- answers.get(RecordCategorisationsQuery)
+      assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
-        categorisationInfo.categoryAssessments
-          .lift(assessmentIndex + 1)
-          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, nextAssessment.id))
-          .getOrElse(routes.IndexController.onPageLoad)
-
-      case AssessmentAnswer.NoExemption =>
+        val assessmentCount = Try {
+          recordQuery.records
+            .get(assessmentPage.recordId)
+            .get
+            .categoryAssessments
+            .size
+        }.getOrElse(0)
+        if (assessmentPage.index + 1 < assessmentCount) {
+          routes.AssessmentController.onPageLoad(NormalMode, assessmentPage.recordId, assessmentPage.index + 1)
+        } else {
+          // TODO: no more assessments left
+          routes.IndexController.onPageLoad
+        }
+      case AssessmentAnswer.NoExemption  =>
+        // TODO: user answered no to one of them
         routes.IndexController.onPageLoad
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
