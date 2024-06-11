@@ -59,11 +59,10 @@ object CategorisationAnswers {
       answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
       _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
-      _                     <- ensureHaveNotSkippedAny(answeredAssessments)
+    //  _                     <- ensureHaveNotSkippedAny(answeredAssessments)
       justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
-  //TODO unit test this failing
   private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) =
     recordCategorisations.records
       .get(recordId)
@@ -125,21 +124,22 @@ object CategorisationAnswers {
 
   }
 
-  private def ensureHaveNotSkippedAny(
-    answeredAssessments: Seq[CategorisationDetails]
-  ) = {
-
-    val haveNotSkippedAny = answeredAssessments
-      .map(x => x.index)
-      .zipWithIndex
-      .count(y => y._1 == y._2)
-      .equals(answeredAssessments.size)
-
-    if (haveNotSkippedAny) {
-      Right(Done)
-    } else {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
-    }
-  }
+  //TODO no longer valid??
+//  private def ensureHaveNotSkippedAny(
+//    answeredAssessments: Seq[CategorisationDetails]
+//  ) = {
+//
+//    val haveNotSkippedAny = answeredAssessments
+//      .map(x => x.index)
+//      .zipWithIndex
+//      .count(y => y._1 == y._2)
+//      .equals(answeredAssessments.size)
+//
+//    if (haveNotSkippedAny) {
+//      Right(Done)
+//    } else {
+//      Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
+//    }
+  //}
 
 }
