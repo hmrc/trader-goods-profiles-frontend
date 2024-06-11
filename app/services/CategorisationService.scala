@@ -17,10 +17,9 @@
 package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.RecordCategorisations
+import models.{RecordCategorisations, UserAnswers}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import org.apache.pekko.Done
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
@@ -35,28 +34,30 @@ class CategorisationService @Inject() (
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
-  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit hc: HeaderCarrier): Future[Done] = {
+  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[UserAnswers] = {
 
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     recordCategorisations.records.get(recordId) match {
       case Some(categorisationInfo: CategorisationInfo) =>
-        Future.successful(Done)
+        Future.successful(request.userAnswers)
       case None                                         =>
         for {
-          goodsRecord        <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature  <- ottConnector.getCategorisationInfo(goodsRecord.commodityCode)
-          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers     <-
+          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+          goodsNomenclature      <- ottConnector.getCategorisationInfo(getGoodsRecordResponse.commodityCode)
+          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          updatedAnswers         <-
             Future.fromTry(
               request.userAnswers.set(
                 RecordCategorisationsQuery,
                 recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
               )
             )
-          _                  <- sessionRepository.set(updatedAnswers)
-        } yield Done
+          _                      <- sessionRepository.set(updatedAnswers)
+        } yield updatedAnswers
     }
   }
 }

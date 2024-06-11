@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.AssessmentFormProvider
-import models.{AssessmentAnswer, NormalMode}
+import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -29,7 +29,7 @@ import play.api.mvc.Call
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.CategorisationQuery
+import queries.{CategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
@@ -40,8 +40,10 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
-  private def assessmentId    = "1"
-  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, assessmentId).url
+  private def assessmentId    = "321"
+  private def recordId        = "1"
+  private def index           = 0
+  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
 
   "AssessmentController" - {
 
@@ -51,9 +53,10 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
         "and has not previously been answered" in {
 
-          val assessment         = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo = CategorisationInfo("123", Seq(assessment))
-          val answers            = emptyUserAnswers.set(CategorisationQuery, categorisationInfo).success.value
+          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
+          val categorisationInfo    = CategorisationInfo("123", Seq(assessment))
+          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
@@ -73,7 +76,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
             )
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, assessmentId, viewModel)(
+            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, viewModel)(
               request,
               messages(application)
             ).toString
@@ -82,15 +85,16 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
         "and has previously been answered" in {
 
-          val assessment         = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo = CategorisationInfo("123", Seq(assessment))
+          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
+          val categorisationInfo    = CategorisationInfo("123", Seq(assessment))
+          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
           val answers =
             emptyUserAnswers
-              .set(CategorisationQuery, categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
-              .set(AssessmentPage(assessmentId), AssessmentAnswer.NoExemption)
+              .set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption)
               .success
               .value
 
@@ -112,7 +116,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
             )
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, assessmentId, viewModel)(
+            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, viewModel)(
               request,
               messages(application)
             ).toString
@@ -136,10 +140,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           }
         }
 
-        "when this assessment cannot be found" in {
+        "when this assessment index cannot be found" in {
 
-          val categorisationInfo = CategorisationInfo("123", Nil)
-          val answers            = emptyUserAnswers.set(CategorisationQuery, categorisationInfo).success.value
+          val categorisationInfo    = CategorisationInfo("123", Nil)
+          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
@@ -159,13 +164,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
       "must save the answer and redirect to the next page when a valid value is submitted" in {
 
-        val assessment         = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-        val categorisationInfo = CategorisationInfo("123", Seq(assessment))
+        val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment))
+        val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
         val mockRepository = mock[SessionRepository]
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
-        val answers = emptyUserAnswers.set(CategorisationQuery, categorisationInfo).success.value
+        val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
         val application =
           applicationBuilder(userAnswers = Some(answers))
@@ -180,7 +186,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val expectedAnswers = answers.set(AssessmentPage(assessmentId), AssessmentAnswer.NoExemption).success.value
+          val expectedAnswers = answers.set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption).success.value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
@@ -190,9 +196,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val assessment         = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-        val categorisationInfo = CategorisationInfo("123", Seq(assessment))
-        val answers            = emptyUserAnswers.set(CategorisationQuery, categorisationInfo).success.value
+        val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment))
+        val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+
+        val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
         val application = applicationBuilder(userAnswers = Some(answers)).build()
 
@@ -213,7 +221,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           )
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode, assessmentId, viewModel)(
+          contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, index, viewModel)(
             request,
             messages(application)
           ).toString
