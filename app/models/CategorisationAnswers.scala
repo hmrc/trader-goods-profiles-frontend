@@ -39,13 +39,13 @@ object CategorisationAnswers {
   def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers] =
     (
       buildAssessmentDetails(userAnswers, recordId),
-      getSupplementaryUnit(userAnswers)
+      getSupplementaryUnit(userAnswers, recordId)
     ).parMapN(CategorisationAnswers.apply)
 
-  private def getSupplementaryUnit(userAnswers: UserAnswers) =
+  private def getSupplementaryUnit(userAnswers: UserAnswers, recordId: String) =
     userAnswers.getOptionalPageValueForOptionalBooleanPage(
       userAnswers,
-      HasSupplementaryUnitPage, //TODO recordId into this
+      HasSupplementaryUnitPage(recordId),
       SupplementaryUnitPage
     )
 

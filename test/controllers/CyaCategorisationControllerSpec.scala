@@ -123,7 +123,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when supplementary unit is supplied" in {
 
           val userAnswers = userAnswersForCategorisationCya
-            .set(HasSupplementaryUnitPage, true)
+            .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
             .set(SupplementaryUnitPage, 1234)
@@ -170,7 +170,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when supplementary unit is not supplied" in {
 
           val userAnswers = userAnswersForCategorisationCya
-            .set(HasSupplementaryUnitPage, false)
+            .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
 

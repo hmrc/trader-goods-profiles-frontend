@@ -43,7 +43,7 @@ class Navigator @Inject() () {
     case CommodityCodePage        => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage      => navigateFromHasCorrectGoods
     case p: AssessmentPage        => navigateFromAssessment(p, NormalMode)
-    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit
+    case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit(p.recordId)
     case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
     case AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode)
@@ -88,12 +88,12 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasSupplementaryUnit(answers: UserAnswers): Call =
+  private def navigateFromHasSupplementaryUnit(recordId: String)(answers: UserAnswers): Call =
     answers
-      .get(HasSupplementaryUnitPage)
+      .get(HasSupplementaryUnitPage(recordId))
       .map {
         case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode)
-        case false => routes.CyaCategorisationController.onPageLoad("123")
+        case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -140,7 +140,7 @@ class Navigator @Inject() () {
     case NamePage                 => _ => routes.CyaRequestAdviceController.onPageLoad
     case EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad
     case p: AssessmentPage        => navigateFromAssessment(p, CheckMode)
-    case HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck
+    case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad("123")
     case _                        => _ => routes.JourneyRecoveryController.onPageLoad()
   }
@@ -201,17 +201,17 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasSupplementaryUnitCheck(answers: UserAnswers): Call =
+  private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call =
     answers
-      .get(HasSupplementaryUnitPage)
+      .get(HasSupplementaryUnitPage(recordId))
       .map {
         case true  =>
           if (answers.isDefined(SupplementaryUnitPage)) {
-            routes.CyaCategorisationController.onPageLoad("123")
+            routes.CyaCategorisationController.onPageLoad(recordId)
           } else {
             routes.SupplementaryUnitController.onPageLoad(CheckMode)
           }
-        case false => routes.CyaCategorisationController.onPageLoad("123")
+        case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

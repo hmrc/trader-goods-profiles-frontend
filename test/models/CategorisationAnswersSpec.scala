@@ -64,7 +64,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
         val answers =
           userAnswersForCategorisationCya
-            .set(HasSupplementaryUnitPage, false)
+            .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
 
@@ -79,7 +79,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
         val answers =
           userAnswersForCategorisationCya
-            .set(HasSupplementaryUnitPage, true)
+            .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
             .set(SupplementaryUnitPage, 42)
@@ -101,7 +101,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
         val answers =
           userAnswersForCategorisationCya
-            .set(HasSupplementaryUnitPage, true)
+            .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
 

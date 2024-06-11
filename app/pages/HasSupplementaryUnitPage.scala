@@ -21,9 +21,9 @@ import play.api.libs.json.JsPath
 
 import scala.util.Try
 
-case object HasSupplementaryUnitPage extends QuestionPage[Boolean] {
+case class HasSupplementaryUnitPage(recordId: String) extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ toString \ recordId
 
   override def toString: String = "hasSupplementaryUnit"
 
@@ -32,7 +32,7 @@ case object HasSupplementaryUnitPage extends QuestionPage[Boolean] {
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasSupplementaryUnitPage) match {
+    updatedUserAnswers.get(HasSupplementaryUnitPage(recordId)) match {
       case Some(false) => updatedUserAnswers.remove(SupplementaryUnitPage)
       case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }

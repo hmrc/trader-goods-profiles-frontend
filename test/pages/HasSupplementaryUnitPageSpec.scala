@@ -16,7 +16,7 @@
 
 package pages
 
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import models.UserAnswers
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
@@ -30,11 +30,11 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
 
       val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage, 42).success.value
 
-      val result = userAnswers.set(HasSupplementaryUnitPage, false).success.value
+      val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), false).success.value
 
       result.isDefined(SupplementaryUnitPage) mustBe false
 
-      result.get(HasSupplementaryUnitPage).value mustBe false
+      result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe false
 
     }
 
@@ -42,11 +42,11 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
 
       val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage, 42).success.value
 
-      val result = userAnswers.set(HasSupplementaryUnitPage, true).success.value
+      val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), true).success.value
 
       result.isDefined(SupplementaryUnitPage) mustBe true
 
-      result.get(HasSupplementaryUnitPage).value mustBe true
+      result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe true
     }
   }
 }
