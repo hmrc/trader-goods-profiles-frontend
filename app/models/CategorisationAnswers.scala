@@ -35,6 +35,11 @@ object CategorisationAnswers {
   implicit lazy val format: OFormat[CategorisationAnswers] = Json.format
 
   private case class CategorisationDetails(index: Int, assessment: CategoryAssessment, answer: AssessmentAnswer)
+  private case class CategorisationDetailsOption(
+    index: Int,
+    assessment: CategoryAssessment,
+    answer: Option[AssessmentAnswer]
+  )
 
   def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers] =
     (
@@ -74,9 +79,15 @@ object CategorisationAnswers {
     recordId: String
   ): EitherNec[ValidationError, Seq[CategorisationDetails]] = {
     val answers = categorisationInfo.categoryAssessments.zipWithIndex
-      .map(assessment => (assessment._2, assessment._1, userAnswers.get(AssessmentPage(recordId, assessment._2))))
-      .filter(x => x._3.isDefined)
-      .map(x => CategorisationDetails(x._1, x._2, x._3.get))
+      .map(assessment =>
+        CategorisationDetailsOption(
+          assessment._2,
+          assessment._1,
+          userAnswers.get(AssessmentPage(recordId, assessment._2))
+        )
+      )
+      .filter(x => x.answer.isDefined)
+      .map(x => CategorisationDetails(x.index, x.assessment, x.answer.get))
 
     if (answers.isEmpty) {
       Left(NonEmptyChain(PageMissing(AssessmentPage(recordId, 1))))
