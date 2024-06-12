@@ -36,7 +36,8 @@ case class AssessmentPage(recordId: String, index: Int) extends QuestionPage[Ass
         recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
         categorisationInfo <- recordQuery.records.get(recordId)
         count               = categorisationInfo.categoryAssessments.size
-        rangeToRemove       = (index + 1) to count
+        //Go backwards to avoid recursion issues
+        rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
         acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
       }).getOrElse(
