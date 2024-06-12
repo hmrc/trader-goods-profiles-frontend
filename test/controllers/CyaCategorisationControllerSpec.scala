@@ -17,13 +17,12 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.CategoryRecord
+import models.{AssessmentAnswer, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
-import models.AssessmentAnswer
 import models.AssessmentAnswer.NoExemption
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
@@ -285,7 +284,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "must update the goods record and redirect to the CyaCategorisationController" in {
 
-          val userAnswers = mandatoryAssessmentAnswers
+          val userAnswers = UserAnswers(userAnswersId)
+            .set(RecordCategorisationsQuery, recordCategorisations)
+            .success
+            .value
 
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.updateGoodsRecord(any())(any()))
@@ -340,13 +342,15 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .url
             verify(mockConnector, never()).updateGoodsRecord(any())(any())
           }
-
         }
       }
 
       "must let the play error handler deal with connector failure" in {
 
-        val userAnswers = mandatoryAssessmentAnswers
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(RecordCategorisationsQuery, recordCategorisations)
+          .success
+          .value
 
         val mockConnector = mock[GoodsRecordConnector]
         when(mockConnector.updateGoodsRecord(any())(any()))

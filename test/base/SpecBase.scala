@@ -130,24 +130,6 @@ trait SpecBase
       .success
       .value
 
-  def mandatoryAssessmentAnswers: UserAnswers =
-    UserAnswers(userAnswersId)
-      .set(HasSupplementaryUnitPage(testRecordId), false)
-      .success
-      .value
-      .set(RecordCategorisationsQuery, recordCategorisations)
-      .success
-      .value
-
-  def fullAssessmentAnswers: UserAnswers =
-    UserAnswers(userAnswersId)
-      .set(HasSupplementaryUnitPage(testRecordId), false)
-      .success
-      .value
-      .set(SupplementaryUnitPage(testRecordId), 1)
-      .success
-      .value
-
   lazy val category1: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
 
