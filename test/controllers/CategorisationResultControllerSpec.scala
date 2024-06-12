@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import models.helper.Category1NoExemptions
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -31,7 +32,7 @@ class CategorisationResultControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId).url)
 
         val result = route(application, request).value
 

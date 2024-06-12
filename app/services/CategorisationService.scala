@@ -42,9 +42,9 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     recordCategorisations.records.get(recordId) match {
-      case Some(categorisationInfo: CategorisationInfo) =>
+      case Some(_) =>
         Future.successful(request.userAnswers)
-      case None                                         =>
+      case None    =>
         for {
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature      <- ottConnector.getCategorisationInfo(getGoodsRecordResponse.commodityCode)

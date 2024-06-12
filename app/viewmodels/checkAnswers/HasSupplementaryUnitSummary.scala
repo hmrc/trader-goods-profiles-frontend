@@ -27,7 +27,7 @@ import viewmodels.implicits._
 object HasSupplementaryUnitSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasSupplementaryUnitPage).map { answer =>
+    answers.get(HasSupplementaryUnitPage(recordId)).map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(

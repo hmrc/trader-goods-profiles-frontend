@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package forms
+package utils
 
-import javax.inject.Inject
-
-import forms.mappings.Mappings
-import play.api.data.Form
-import models.Category1Assesments
-
-class Category1AssesmentsFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[Category1Assesments] =
-    Form(
-      "value" -> enumerable[Category1Assesments]("category1Assesments.error.required")
-    )
+case object Constants {
+  val firstAssessmentIndex: Int = 0
 }

@@ -21,22 +21,21 @@ formHelper: FormWithCSRF,
 govukButton: GovukButton
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(recordId: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cyaCategorisation.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("cyaCategorisation.h1")</h1>
-    <h2 class="govuk-heading-m">@messages("cyaCategorisation.h2")</h2>
-    @govukSummaryList(list)
-    <div class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-            <span class="govuk-visually-hidden">@messages("cyaCategorisation.warning")</span>
-            @messages("cyaCategorisation.warningText")
-        </strong>
-    </div>
+    <h1 class="govuk-heading-l">@messages("cyaCategorisation.heading")</h1>
+    <h2 class="govuk-heading-m">@messages("cyaCategorisation.categorisationHeader")</h2>
 
-    @formHelper(action = routes.CyaCategorisationController.onSubmit) {
-        @govukButton(ButtonViewModel(messages("site.continue")))
+    @govukSummaryList(categorisationList)
+
+    @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
+        <h2 class="govuk-heading-m">@messages("cyaCategorisation.supplementaryUnitHeader")</h2>
+        @govukSummaryList(supplementaryUnitList)
+    }
+
+    @formHelper(action = routes.CyaCategorisationController.onSubmit(recordId)) {
+        @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
 }

@@ -36,13 +36,14 @@ import scala.concurrent.Future
 
 class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasSupplementaryUnitFormProvider()
-  val form         = formProvider()
-  val recordId     = "record id"
+  private val formProvider = new HasSupplementaryUnitFormProvider()
+  private val form         = formProvider()
+  private val recordId     = "record id"
 
-  lazy val hasSupplementaryUnitRoute = routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
+  private lazy val hasSupplementaryUnitRoute =
+    routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
 
   "HasSupplementaryUnit Controller" - {
 
@@ -64,7 +65,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(recordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,6 +78,27 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must not populate the view on a GET when the question has previously been answered for another recordId" in {
+
+      val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(s"${recordId}2"), true).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasSupplementaryUnitRoute)
+
+        val view = application.injector.instanceOf[HasSupplementaryUnitView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, recordId)(
           request,
           messages(application)
         ).toString

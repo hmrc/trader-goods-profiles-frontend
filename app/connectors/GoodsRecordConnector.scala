@@ -17,9 +17,10 @@
 package connectors
 
 import config.Service
-import models.GoodsRecord
-import models.router.requests.CreateRecordRequest
+import models.{CategoryRecord, GoodsRecord}
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
+import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -38,6 +39,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def getGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
+  private def updateGoodsRecordUrl(eori: String, recordId: String) =
+    url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
@@ -48,12 +52,22 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
 
+  def updateGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] =
+    httpClient
+      .put(updateGoodsRecordUrl(eori, recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
+
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[GetGoodsRecordResponse] =
     httpClient
       .get(getGoodsRecordUrl(eori, recordId))
-      .addHeaders(clientIdHeader)
+      .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
 }

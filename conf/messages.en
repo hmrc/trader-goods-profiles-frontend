@@ -46,6 +46,11 @@ cyaRequestAdvice.title = Check your answers before sending your request for advi
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
 cyaRequestAdvice.subheading = Contact details
 
+cyaCategorisation.title = Check your answers
+cyaCategorisation.heading = Check your answers
+cyaCategorisation.categorisationHeader = Categorisation
+cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
+
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
@@ -179,14 +184,6 @@ homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is corre
 homepage.h2.3 = Manage your profile
 homepage.p5.linkText = Manage your profile details
 
-category1Assesments.title = category1Assesments
-category1Assesments.heading = category1Assesments
-category1Assesments.option1 = Option 1
-category1Assesments.option2 = Option 2
-category1Assesments.checkYourAnswersLabel = category1Assesments
-category1Assesments.error.required = Select category1Assesments
-category1Assesments.change.hidden = Category1Assesments
-
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
 createRecordStart.p1 = To create a goods record, we’ll ask you for some information about the goods.
@@ -268,6 +265,8 @@ assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
 assessment.error.required = Select if you meet a condition
+assessment.exemption.none.checkYourAnswersLabel = None selected
+assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -345,13 +344,13 @@ hasSupplementaryUnit.h1 = Supplementary unit
 hasSupplementaryUnit.h2 = Do you want to add the supplementary unit?
 hasSupplementaryUnit.p1 = As your goods are Category 2, this means you’ll need to add a supplementary unit to your Internal Market Movement Information (IMMI).
 hasSupplementaryUnit.p2 = You can optionally store a supplementary unit in your TGP. This is useful if you move the same amount of goods often.
-hasSupplementaryUnit.checkYourAnswersLabel = hasSupplementaryUnit
+hasSupplementaryUnit.checkYourAnswersLabel = Do you want to add the supplementary unit?
 hasSupplementaryUnit.error.required = Select yes if you want to add the supplementary unit
 hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
 supplementaryUnit.title = SupplementaryUnit
 supplementaryUnit.heading = SupplementaryUnit
-supplementaryUnit.checkYourAnswersLabel = SupplementaryUnit
+supplementaryUnit.checkYourAnswersLabel = What is the good's supplementary unit?
 supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
 supplementaryUnit.error.required = Enter your supplementaryUnit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
