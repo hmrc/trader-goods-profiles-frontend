@@ -15,17 +15,19 @@
  *@
 
 @import models.Mode
+@import models.Country._
+
 @import viewmodels.LabelSize._
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
+    govukSelect: GovukSelect,
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("countryOfOrigin.title"))) {
 
@@ -43,10 +45,11 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukInput(
-            InputViewModel(
+        @govukSelect(
+            SelectViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
+                items = selectItems(countries),
+                label = LabelViewModel(messages("countryOfOrigin.heading"))
             )
         )
 

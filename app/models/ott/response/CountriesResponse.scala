@@ -16,20 +16,13 @@
 
 package models.ott.response
 
-import play.api.libs.functional.syntax._
+import models.Country
 import play.api.libs.json._
 
-final case class Country(
-  id: String,
-  description: String,
-  geographicalAreaId: String
+final case class CountriesResponse(
+  data: Seq[Country]
 )
 
-object Country {
-
-  implicit lazy val reads: Reads[Country] = (
-    (__ \ "attributes" \ "id").read[String] and
-      (__ \ "attributes" \ "description").read[String] and
-      (__ \ "attributes" \ "geographical_area_id").read[String]
-  )(Country.apply _)
+object CountriesResponse {
+  implicit lazy val format: OFormat[CountriesResponse] = Json.format
 }

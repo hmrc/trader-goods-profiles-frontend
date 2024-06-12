@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package queries
 
-import models.ott.response.Country
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import models.Country
+import play.api.libs.json.JsPath
 
-final case class Countries(
-  countries: Seq[Country]
-)
+case object CountriesQuery extends Gettable[Seq[Country]] with Settable[Seq[Country]] {
 
-object Countries {
-
-  implicit lazy val reads: Reads[Countries] = (
-    (__ \ "data").read[Seq[Country]] and
-      (__ \ "included").read[Seq[Country]]
-  )((countries, includedCountries) => Countries(List.concat(countries, includedCountries)))
+  override def path: JsPath = JsPath \ "countries"
 }

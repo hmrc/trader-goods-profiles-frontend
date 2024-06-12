@@ -17,8 +17,8 @@
 package connectors
 
 import config.Service
-import models.{Commodity, Countries}
-import models.ott.response.OttResponse
+import models.{Commodity, Country}
+import models.ott.response.{CountriesResponse, OttResponse}
 import play.api.Configuration
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.{JsResult, Reads}
@@ -79,6 +79,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
   def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] =
     getFromOttWithCommodityCode[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
 
-  def getCountries(implicit hc: HeaderCarrier): Future[Countries] =
-    getFromOtt[Countries](ottCountriesUrl, "bearerToken")
+  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
+    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken").map(_.data)
 }
