@@ -357,7 +357,7 @@ hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
 supplementaryUnit.title = What is the volume of goods you will be moving?
 supplementaryUnit.h1 = What is the volume of goods you will be moving?
-supplementaryUnit.checkYourAnswersLabel = SupplementaryUnit
+supplementaryUnit.checkYourAnswersLabel = What is the good's supplementary unit?
 supplementaryUnit.error.nonNumeric = Enter a supplementary unit in the correct format
 supplementaryUnit.error.required = Enter the goods supplementary unit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
