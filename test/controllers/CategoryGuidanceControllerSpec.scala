@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import models.Commodity
+import models.{Commodity, NormalMode}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -145,8 +145,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        // TODO replace index route
-        redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+        redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, 0).url
 
         withClue("must call the audit service with the correct details") {
           verify(mockAuditService, times(1))

@@ -246,8 +246,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
         "when this assessment cannot be found" in {
 
-          val categorisationInfo = CategorisationInfo("123", Nil)
-          val answers            = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
+          val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 

@@ -59,7 +59,6 @@ object CategorisationAnswers {
       answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
       _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
-    //  _                     <- ensureHaveNotSkippedAny(answeredAssessments)
       justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
@@ -75,9 +74,7 @@ object CategorisationAnswers {
     recordId: String
   ): EitherNec[ValidationError, Seq[CategorisationDetails]] = {
     val answers = categorisationInfo.categoryAssessments.zipWithIndex
-      .map(assessment =>
-        (assessment._2, assessment._1, userAnswers.get(AssessmentPage(recordId, assessment._2)))
-      )
+      .map(assessment => (assessment._2, assessment._1, userAnswers.get(AssessmentPage(recordId, assessment._2))))
       .filter(x => x._3.isDefined)
       .map(x => CategorisationDetails(x._1, x._2, x._3.get))
 

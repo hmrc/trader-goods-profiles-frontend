@@ -33,9 +33,9 @@ object AssessmentsSummary {
     answers: UserAnswers,
     assessment: CategoryAssessment,
     indexOfThisAssessment: Int,
-    numberOfAssessments: Int,
-  )(implicit messages: Messages): Option[SummaryListRow] = {
-    val b = answers.get(AssessmentPage(recordId, indexOfThisAssessment)).flatMap { answer =>
+    numberOfAssessments: Int
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(AssessmentPage(recordId, indexOfThisAssessment)).flatMap { answer =>
       val descriptiveText = if (answer == NoExemption) {
         Some("assessment.exemption.none.checkYourAnswersLabel")
       } else {
@@ -44,21 +44,18 @@ object AssessmentsSummary {
           .map(x => messages("assessment.exemption", x.code, x.description))
       }
 
-      descriptiveText.map(description => {
-        val a = SummaryListRowViewModel(
+      descriptiveText.map { description =>
+        SummaryListRowViewModel(
           key = messages("assessment.checkYourAnswersLabel", indexOfThisAssessment + 1, numberOfAssessments),
           value = ValueViewModel(description),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url)
+            ActionItemViewModel(
+              "site.change",
+              routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+            )
               .withVisuallyHiddenText(messages("assessment.change.hidden"))
           )
         )
-
-        a
       }
-      )
     }
-
-    b
-  }
 }

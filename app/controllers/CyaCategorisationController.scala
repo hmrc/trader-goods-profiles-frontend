@@ -52,7 +52,7 @@ class CyaCategorisationController @Inject() (
 
           val categorisationRows = categorisationAnswers match {
             case Some(categorisationInfo) =>
-              val test = categorisationInfo.categoryAssessments
+              categorisationInfo.categoryAssessments
                 .flatMap(assessment =>
                   AssessmentsSummary.row(
                     recordId,
@@ -62,10 +62,7 @@ class CyaCategorisationController @Inject() (
                     categorisationInfo.categoryAssessments.size
                   )
                 )
-
-              test
-
-            case None => Seq.empty
+            case None                     => Seq.empty
           }
 
           val categorisationList = SummaryListViewModel(

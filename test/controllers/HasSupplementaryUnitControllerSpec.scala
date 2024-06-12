@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.userAnswersId
 import forms.HasSupplementaryUnitFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -36,13 +36,13 @@ import scala.concurrent.Future
 
 class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   private val formProvider = new HasSupplementaryUnitFormProvider()
   private val form         = formProvider()
   private val recordId     = "record id"
 
-  lazy val hasSupplementaryUnitRoute = routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
+  private lazy val hasSupplementaryUnitRoute = routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
 
   "HasSupplementaryUnit Controller" - {
 

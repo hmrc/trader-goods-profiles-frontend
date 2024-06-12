@@ -127,27 +127,6 @@ class CategorisationAnswersSpec extends SpecBase {
         }
       }
 
-      //TODO no longer valid???
-      //      "when some category assessments have been skipped" in {
-      //
-      //        val answers = emptyUserAnswers
-      //          .set(RecordCategorisationsQuery, recordCategorisations)
-      //          .success
-      //          .value
-      //          .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
-      //          .success
-      //          .value
-      //          .set(AssessmentPage(testRecordId, 2), NoExemption)
-      //          .success
-      //          .value
-      //
-      //        val result = CategorisationAnswers.build(answers, testRecordId)
-      //
-      //        inside(result) { case Left(errors) =>
-      //          errors.toChain.toList must contain only MissingAssessmentAnswers(RecordCategorisationsQuery)
-      //        }
-      //      }
-
       "when additional assessments have been answered after a NoExemption" in {
 
         val answers = emptyUserAnswers
