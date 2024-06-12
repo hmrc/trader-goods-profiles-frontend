@@ -65,11 +65,6 @@ POST        /create-record/country-of-origin/check           controllers.Country
 
 GET         /homepage                                        controllers.HomePageController.onPageLoad()
 
-GET         /category1Assesments                             controllers.Category1AssesmentsController.onPageLoad(mode: Mode = NormalMode)
-POST        /category1Assesments                             controllers.Category1AssesmentsController.onSubmit(mode: Mode = NormalMode)
-GET         /changeCategory1Assesments                       controllers.Category1AssesmentsController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeCategory1Assesments                       controllers.Category1AssesmentsController.onSubmit(mode: Mode = CheckMode)
-
 GET         /create-record/create-record-start               controllers.CreateRecordStartController.onPageLoad()
 POST        /create-record/create-record-start               controllers.CreateRecordStartController.onSubmit()
 
@@ -105,7 +100,7 @@ POST      /update/:recordId/category-assessment/:index/check controllers.Assessm
 
 GET         /ukims-kick-out                                  controllers.UkimsKickOutController.onPageLoad()
 
-GET         /categorisation-result                           controllers.CategorisationResultController.onPageLoad()
+GET         /categorisation-result/:recordId                 controllers.CategorisationResultController.onPageLoad(recordId: String)
 
 GET         /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onSubmit(recordId:String)

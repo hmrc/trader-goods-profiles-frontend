@@ -46,6 +46,7 @@ class CategoryGuidanceController @Inject() (
     implicit request =>
       request.userAnswers.get(CommodityQuery) match {
         case Some(_) =>
+          println("hello")
           for {
             _ <- categorisationService.requireCategorisation(request, recordId)
           } yield Ok(view(recordId))

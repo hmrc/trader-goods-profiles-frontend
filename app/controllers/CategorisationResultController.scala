@@ -35,8 +35,9 @@ class CategorisationResultController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val scenario = CategorisationHelper.getScenario(request.userAnswers)
-    Ok(view(scenario))
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val scenario = CategorisationHelper.getScenario(request.userAnswers)
+      Ok(view(scenario))
   }
 }
