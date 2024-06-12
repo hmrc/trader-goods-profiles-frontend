@@ -53,7 +53,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ): Future[GetGoodsRecordResponse] =
     httpClient
       .get(getGoodsRecordUrl(eori, recordId))
-      .addHeaders(clientIdHeader)
+      .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
 }

@@ -52,10 +52,9 @@ class GoodsRecordConnectorSpec
   private val xClientId: String     = "tgp-frontend"
   private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
 
-  private val testRecordId = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private val testRecordId           = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
   private lazy val getRecordResponse = Json
-    .parse(
-      s"""
+    .parse(s"""
          |  {
          |    "eori": "$testEori",
          |    "actorId": "$testEori",
