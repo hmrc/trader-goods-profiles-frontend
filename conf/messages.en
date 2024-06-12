@@ -355,11 +355,11 @@ hasSupplementaryUnit.checkYourAnswersLabel = Do you want to add the supplementar
 hasSupplementaryUnit.error.required = Select yes if you want to add the supplementary unit
 hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
-supplementaryUnit.title = SupplementaryUnit
-supplementaryUnit.heading = SupplementaryUnit
-supplementaryUnit.checkYourAnswersLabel = What is the good's supplementary unit?
-supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
-supplementaryUnit.error.required = Enter your supplementaryUnit
+supplementaryUnit.title = What is the volume of goods you will be moving?
+supplementaryUnit.h1 = What is the volume of goods you will be moving?
+supplementaryUnit.checkYourAnswersLabel = SupplementaryUnit
+supplementaryUnit.error.nonNumeric = Enter a supplementary unit in the correct format
+supplementaryUnit.error.required = Enter the goods supplementary unit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit

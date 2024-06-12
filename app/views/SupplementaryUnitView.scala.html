@@ -28,6 +28,8 @@
 
 @layout(pageTitle = title(form, messages("supplementaryUnit.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("supplementaryUnit.h1")</h1>
+
     @formHelper(action = routes.SupplementaryUnitController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
@@ -37,10 +39,12 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("supplementaryUnit.heading")).asPageHeading()
+                label = Label(content = "supplementaryUnit.heading", classes = "govuk-visually-hidden")
             )
             .asNumeric()
-            .withWidth(Fixed10)
+            .withWidth(Fixed5)
+            .withSuffix(PrefixOrSuffix(content = "KGM"))
+            .withHint(Hint(content = Text("Weight, in kilograms")))
         )
 
         @govukButton(
