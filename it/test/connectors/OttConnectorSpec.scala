@@ -28,7 +28,6 @@ import uk.gov.hmrc.http.test.WireMockSupport
 
 import java.time.Instant
 
-
 class OttConnectorSpec
     extends AnyFreeSpec
     with Matchers
@@ -66,7 +65,12 @@ class OttConnectorSpec
       }
 
       "when validity end date is defined" in {
-        val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), Some(Instant.parse("2032-01-01T00:00:00.000Z")))
+        val commodity = Commodity(
+          "123456",
+          "Commodity description",
+          Instant.parse("2012-01-01T00:00:00.000Z"),
+          Some(Instant.parse("2032-01-01T00:00:00.000Z"))
+        )
 
         wireMockServer.stubFor(
           get(urlEqualTo(s"/ott/commodities/123456"))

@@ -23,11 +23,17 @@ import models.CategoryRecord
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
+import models.AssessmentAnswer
+import models.AssessmentAnswer.NoExemption
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
+import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import queries.RecordCategorisationsQuery
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
 
@@ -39,97 +45,251 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
     "for a GET" - {
 
-      "must return OK and the correct view" in {
+      "must return OK and the correct view" - {
+        "when all category assessments answered" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val userAnswers = userAnswersForCategorisationCya
 
-        running(application) {
-          val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
 
-          val result = route(application, request).value
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
-          val view = application.injector.instanceOf[CyaCategorisationView]
-          val list = SummaryListViewModel(
-            rows = Seq.empty
-          )
+            val result = route(application, request).value
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(list, testRecordId)(request, messages(application)).toString
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .get
+              )
+            )
+
+            val list2 = SummaryListViewModel(
+              rows = Seq.empty
+            )
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, list2)(
+              request,
+              messages(application)
+            ).toString
+          }
         }
+
+        "when no exemption is used, meaning some assessment pages are not answered" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(RecordCategorisationsQuery, recordCategorisations)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), NoExemption)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .get
+              )
+            )
+
+            val list2 = SummaryListViewModel(
+              rows = Seq.empty
+            )
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, list2)(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when supplementary unit is supplied" in {
+
+          val userAnswers = userAnswersForCategorisationCya
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), 1234)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .get
+              )
+            )
+
+            val expectedSupplementaryUnitList = SummaryListViewModel(
+              rows = Seq(
+                HasSupplementaryUnitSummary.row(userAnswers, testRecordId),
+                SupplementaryUnitSummary.row(userAnswers, testRecordId)
+              ).flatten
+            )
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, expectedSupplementaryUnitList)(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when supplementary unit is not supplied" in {
+
+          val userAnswers = userAnswersForCategorisationCya
+            .set(HasSupplementaryUnitPage(testRecordId), false)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[CyaCategorisationView]
+
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .get
+              )
+            )
+
+            val expectedSupplementaryUnitList = SummaryListViewModel(
+              rows = Seq(
+                HasSupplementaryUnitSummary.row(userAnswers, testRecordId)
+              ).flatten
+            )
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, expectedSupplementaryUnitList)(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
       }
 
-      "for a POST" - {
+      "must redirect to Journey Recovery" - {
 
-        "when user answers can update a valid goods record" - {
+        "when no answers are found" in {
+          val application = applicationBuilder(Some(emptyUserAnswers)).build()
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
-          "must update the goods record and redirect to the CyaCategorisationController" in {
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
-            val userAnswers = mandatoryAssessmentAnswers
+            val result = route(application, request).value
 
-            val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateGoodsRecord(any())(any()))
-              .thenReturn(Future.successful(Done))
-
-            val application =
-              applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-                .build()
-
-            running(application) {
-              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
-
-              val result = route(application, request).value
-
-              val expectedPayload = CategoryRecord(
-                eori = testEori,
-                recordId = testRecordId,
-                category = 1,
-                measurementUnit = Some("1")
-              )
-
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.CategorisationResultController
-                .onPageLoad(testRecordId)
-                .url
-              verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
-            }
-          }
-        }
-
-        "when user answers cannot update a goods record" - {
-
-          "must not submit anything, and redirect to Journey Recovery" in {
-
-            val mockConnector = mock[GoodsRecordConnector]
-            val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-
-            val application =
-              applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-                .build()
-
-            running(application) {
-              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
-
-              val result = route(application, request).value
-
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(continueUrl))
-                .url
-              verify(mockConnector, never()).updateGoodsRecord(any())(any())
-            }
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
 
           }
         }
 
-        "must let the play error handler deal with connector failure" in {
+        "when no existing data is found" in {
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
+
+        "when validation errors" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(RecordCategorisationsQuery, recordCategorisations)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), 123)
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          }
+        }
+
+      }
+
+    }
+
+    "for a POST" - {
+
+      "when user answers can update a valid goods record" - {
+
+        "must update the goods record and redirect to the CyaCategorisationController" in {
 
           val userAnswers = mandatoryAssessmentAnswers
 
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.updateGoodsRecord(any())(any()))
-            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+            .thenReturn(Future.successful(Done))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -139,15 +299,35 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           running(application) {
             val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
-            intercept[RuntimeException] {
-              await(route(application, request).value)
-            }
+            val result = route(application, request).value
+
+            val expectedPayload = CategoryRecord(
+              eori = testEori,
+              recordId = testRecordId,
+              category = 1,
+              measurementUnit = Some("1")
+            )
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.CategorisationResultController
+              .onPageLoad(testRecordId)
+              .url
+            verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
           }
         }
+      }
 
-        "must redirect to Journey Recovery if no existing data is found" in {
+      "when user answers cannot update a goods record" - {
 
-          val application = applicationBuilder(userAnswers = None).build()
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockConnector = mock[GoodsRecordConnector]
+          val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .build()
 
           running(application) {
             val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -155,8 +335,48 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+              .url
+            verify(mockConnector, never()).updateGoodsRecord(any())(any())
           }
+
+        }
+      }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers = mandatoryAssessmentAnswers
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.updateGoodsRecord(any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }

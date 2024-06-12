@@ -21,11 +21,13 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{CategoryRecord, ValidationError}
+import models.{CategorisationAnswers, CategoryRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
 
@@ -46,10 +48,45 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val list = SummaryListViewModel(
-        rows = Seq.empty
-      )
-      Ok(view(list, recordId))
+      CategorisationAnswers.build(request.userAnswers, recordId) match {
+        case Right(_) =>
+          val categorisationAnswers = for {
+            recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
+            categorisationAnswers <- recordCategorisations.records.get(recordId)
+          } yield categorisationAnswers
+
+          val categorisationRows = categorisationAnswers match {
+            case Some(categorisationInfo) =>
+              categorisationInfo.categoryAssessments
+                .flatMap(assessment =>
+                  AssessmentsSummary.row(
+                    recordId,
+                    request.userAnswers,
+                    assessment,
+                    categorisationInfo.categoryAssessments.indexOf(assessment),
+                    categorisationInfo.categoryAssessments.size
+                  )
+                )
+            case None                     => Seq.empty
+          }
+
+          val categorisationList = SummaryListViewModel(
+            rows = categorisationRows
+          )
+
+          val supplementaryUnitList = SummaryListViewModel(
+            rows = Seq(
+              HasSupplementaryUnitSummary.row(request.userAnswers, recordId),
+              SupplementaryUnitSummary.row(request.userAnswers, recordId)
+            ).flatten
+          )
+
+          Ok(view(recordId, categorisationList, supplementaryUnitList))
+
+        case Left(errors) =>
+          logErrorsAndContinue(errors, recordId)
+
+      }
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {

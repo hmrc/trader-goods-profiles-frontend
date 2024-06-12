@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import forms.SupplementaryUnitFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -36,14 +36,14 @@ import scala.concurrent.Future
 
 class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new SupplementaryUnitFormProvider()
-  private val form = formProvider()
+  private val formProvider = new SupplementaryUnitFormProvider()
+  private val form         = formProvider()
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer = 0
+  private val validAnswer = 0
 
-  private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode).url
+  private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
 
   "SupplementaryUnit Controller" - {
 
@@ -59,13 +59,13 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage, validAnswer).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,7 +77,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -126,7 +126,10 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

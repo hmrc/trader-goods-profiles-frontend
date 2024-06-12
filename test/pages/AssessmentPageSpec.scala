@@ -17,7 +17,7 @@
 package pages
 
 import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -42,7 +42,12 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
       3,
       Seq(Certificate("cert3", "code3", "description3"), Certificate("cert33", "code33", "description33"))
     )
-    val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2, assessment3))
+    val assessment4           = CategoryAssessment(
+      "id4",
+      4,
+      Seq(AdditionalCode("cert4", "code4", "description4"))
+    )
+    val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
     val recordId              = "321"
     val index                 = 0
     val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
@@ -87,12 +92,16 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
           .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
           .success
           .value
+          .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
+          .success
+          .value
 
       val result = answers.set(AssessmentPage(recordId, index + 1), AssessmentAnswer.NoExemption).success.value
 
       result.isDefined(AssessmentPage(recordId, index)) mustBe true
       result.isDefined(AssessmentPage(recordId, index + 1)) mustBe true
       result.isDefined(AssessmentPage(recordId, index + 2)) mustBe false
+      result.isDefined(AssessmentPage(recordId, index + 3)) mustBe false
     }
   }
 }

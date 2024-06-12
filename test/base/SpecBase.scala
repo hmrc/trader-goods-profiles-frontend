@@ -18,8 +18,8 @@ package base
 
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.{Commodity, RecordCategorisations, UserAnswers}
+import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
+import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -44,18 +44,7 @@ trait SpecBase
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
-  private val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")))
-  private val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")))
-  private val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
-  private val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
-
-  private val categorisationInfo: CategorisationInfo =
-    CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
-
-  val recordCategorisations: RecordCategorisations =
-    RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
-
-  def fullProfileUserAnswers: UserAnswers          = UserAnswers(userAnswersId)
+  def fullProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
     .set(UkimsNumberPage, "1")
     .success
     .value
@@ -143,7 +132,7 @@ trait SpecBase
 
   def mandatoryAssessmentAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(HasSupplementaryUnitPage, false)
+      .set(HasSupplementaryUnitPage(testRecordId), false)
       .success
       .value
       .set(RecordCategorisationsQuery, recordCategorisations)
@@ -152,12 +141,50 @@ trait SpecBase
 
   def fullAssessmentAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(HasSupplementaryUnitPage, false)
+      .set(HasSupplementaryUnitPage(testRecordId), false)
       .success
       .value
-      .set(SupplementaryUnitPage, 1)
+      .set(SupplementaryUnitPage(testRecordId), 1)
       .success
       .value
+
+  lazy val category1: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+
+  lazy val category2: CategoryAssessment =
+    CategoryAssessment("2nghjghg4-fsdff4-hfgdhfg", 1, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+
+  lazy val category3: CategoryAssessment = CategoryAssessment(
+    "3fsdfsdf-r234fds-bfgbdfg",
+    2,
+    Seq(
+      Certificate("Y737", "Y737", "Goods not containing ivory"),
+      Certificate("X812", "X812", "Goods not containing seal products")
+    )
+  )
+
+  private lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(category1, category2, category3)
+  )
+
+  lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQuery)
+  )
+
+  lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers
+    .set(RecordCategorisationsQuery, recordCategorisations)
+    .success
+    .value
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+    .success
+    .value
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+    .success
+    .value
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+    .success
+    .value
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

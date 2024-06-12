@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package queries
+package utils
 
-import models.ott.CategorisationInfo
-import play.api.libs.json.JsPath
-
-case object CategorisationQuery extends Gettable[CategorisationInfo] with Settable[CategorisationInfo] {
-
-  override def path: JsPath = JsPath \ "categorisationInfo"
+case object Constants {
+  val firstAssessmentIndex: Int = 0
 }

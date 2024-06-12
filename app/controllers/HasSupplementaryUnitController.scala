@@ -48,7 +48,7 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage) match {
+      val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -64,9 +64,9 @@ class HasSupplementaryUnitController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitPage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasSupplementaryUnitPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(HasSupplementaryUnitPage(recordId), mode, updatedAnswers))
         )
     }
 }
