@@ -39,6 +39,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def getGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
+  private def updateGoodsRecordUrl(eori: String, recordId: String) =
+    url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
@@ -49,11 +52,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
 
-  def updateGoodsRecord(categoryRecord: CategoryRecord)(implicit
+  def updateGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .put(url"$tgpRouterBaseUrl/trader-goods-profiles-router/records")
+      .put(updateGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
       .execute[HttpResponse]

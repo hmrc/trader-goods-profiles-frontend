@@ -290,7 +290,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .value
 
           val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.updateGoodsRecord(any())(any()))
+          when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           val application =
@@ -314,7 +314,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.CategorisationResultController
               .onPageLoad(testRecordId)
               .url
-            verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
+            verify(mockConnector, times(1))
+              .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
           }
         }
       }
@@ -340,7 +341,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
               .url
-            verify(mockConnector, never()).updateGoodsRecord(any())(any())
+            verify(mockConnector, never()).updateGoodsRecord(any(), any(), any())(any())
           }
         }
       }
@@ -353,7 +354,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           .value
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.updateGoodsRecord(any())(any()))
+        when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =

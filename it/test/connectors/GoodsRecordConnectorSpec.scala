@@ -95,8 +95,10 @@ class GoodsRecordConnectorSpec
          |  }
          |""".stripMargin)
 
-  private val updateGoodsRecordUrl = s"/trader-goods-profiles-router/records"
-  private val instant              = Instant.now
+  private val getGoodsRecordUrl    = s"/trader-goods-profiles-router/$testEori/records/$testRecordId"
+  private val updateGoodsRecordUrl = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
+
+  private val instant = Instant.now
 
   ".submitGoodsRecord" - {
 
@@ -175,7 +177,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateGoodsRecord(goodsRecord).futureValue
+      connector.updateGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -187,7 +189,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateGoodsRecord(goodsRecord).failed.futureValue
+      connector.updateGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
     }
   }
 
@@ -196,7 +198,7 @@ class GoodsRecordConnectorSpec
     "must get a goods record" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/$testRecordId"))
+        get(urlEqualTo(getGoodsRecordUrl))
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
@@ -210,7 +212,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/testRecordId"))
+        get(urlEqualTo(getGoodsRecordUrl))
           .willReturn(serverError())
       )
 
@@ -220,7 +222,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the json does not match the format" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/trader-goods-profiles-router/$testEori/records/testRecordId"))
+        get(urlEqualTo(getGoodsRecordUrl))
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 

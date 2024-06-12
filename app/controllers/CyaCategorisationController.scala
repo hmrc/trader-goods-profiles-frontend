@@ -93,7 +93,7 @@ class CyaCategorisationController @Inject() (
     implicit request =>
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
-          goodsRecordConnector.updateGoodsRecord(model).map { _ =>
+          goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
             Redirect(routes.CategorisationResultController.onPageLoad(recordId))
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
