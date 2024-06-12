@@ -50,30 +50,37 @@ object CategoryRecord {
       )
     )
 
+  private val CATEGORY_1 = 1
+  private val CATEGORY_2 = 2
+  private val STANDARD   = 3
+
   def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Int] =
-    answers.get(RecordCategorisationsQuery) match {
-      case Some(recordCategorisations) =>
-        recordCategorisations.records.get(recordId) match {
-          case Some(categorisationInfo) => chooseCategory(recordId, answers, categorisationInfo)
-          case _                        => Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery)))
-        }
-      case _                           => Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery)))
-    }
+    answers
+      .get(RecordCategorisationsQuery)
+      .map { recordCategorisations =>
+        recordCategorisations.records
+          .get(recordId)
+          .map { categorisationInfo =>
+            Right(chooseCategory(recordId, answers, categorisationInfo))
+          }
+          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
+      }
+      .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
 
   def chooseCategory2Or3(
     recordId: String,
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
-  ): EitherNec[ValidationError, Int] = {
+  ): Int = {
     val category2AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 2)
     if (category2AssessmentsCount > 0) {
       answers.getPageValue(AssessmentPage(recordId, categorisationInfo.categoryAssessments.length - 1)) match {
-        case Right(AssessmentAnswer.NoExemption) => Right(2)
-        case Right(_)                            => Right(3)
-        case _                                   => Right(2)
+        case Right(AssessmentAnswer.NoExemption) => CATEGORY_2
+        case Right(_)                            => STANDARD
+        case _                                   => CATEGORY_2
       }
     } else {
-      Right(3)
+      STANDARD
     }
   }
 
@@ -81,15 +88,15 @@ object CategoryRecord {
     recordId: String,
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
-  ): EitherNec[ValidationError, Int] = {
+  ): Int = {
     val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 1)
     if (category1AssessmentsCount > 0) {
       answers.getPageValue(
         AssessmentPage(recordId, category1AssessmentsCount - 1)
       ) match {
-        case Right(AssessmentAnswer.NoExemption) => Right(1)
+        case Right(AssessmentAnswer.NoExemption) => CATEGORY_1
         case Right(_)                            => chooseCategory2Or3(recordId, answers, categorisationInfo)
-        case _                                   => Right(1)
+        case _                                   => CATEGORY_1
       }
     } else {
       chooseCategory2Or3(recordId, answers, categorisationInfo)
