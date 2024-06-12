@@ -42,7 +42,8 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private val form         = formProvider()
   private val recordId     = "record id"
 
-  private lazy val hasSupplementaryUnitRoute = routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
+  private lazy val hasSupplementaryUnitRoute =
+    routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
 
   "HasSupplementaryUnit Controller" - {
 
