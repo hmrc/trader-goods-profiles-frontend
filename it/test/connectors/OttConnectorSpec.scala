@@ -28,7 +28,6 @@ import uk.gov.hmrc.http.test.WireMockSupport
 
 import java.time.Instant
 
-
 class OttConnectorSpec
     extends AnyFreeSpec
     with Matchers
@@ -66,7 +65,12 @@ class OttConnectorSpec
       }
 
       "when validity end date is defined" in {
-        val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), Some(Instant.parse("2032-01-01T00:00:00.000Z")))
+        val commodity = Commodity(
+          "123456",
+          "Commodity description",
+          Instant.parse("2012-01-01T00:00:00.000Z"),
+          Some(Instant.parse("2032-01-01T00:00:00.000Z"))
+        )
 
         wireMockServer.stubFor(
           get(urlEqualTo(s"/ott/commodities/123456"))
@@ -112,6 +116,66 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+    }
+  }
+
+  ".getCountries" - {
+
+    "must return countries object" in {
+
+      val body = """{
+                   |  "data": [{
+                   |    "attributes": {
+                   |      "id": "CN",
+                   |      "description": "China",
+                   |      "geographical_area_id": "CN"
+                   |      }
+                   |    }],
+                   |    "included": [{
+                   |    "attributes": {
+                   |      "id": "UK",
+                   |      "description": "United Kingdom",
+                   |      "geographical_area_id": "UK"
+                   |      }
+                   |    }]
+                   |}""".stripMargin
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/geographical_areas/countries"))
+          .willReturn(
+            ok().withBody(body)
+          )
+      )
+
+      val connectorResponse = connector.getCountries.futureValue
+      connectorResponse.countries.size mustEqual 2
+      connectorResponse.countries.head.id mustEqual "CN"
+      connectorResponse.countries.head.description mustEqual "China"
+      connectorResponse.countries.head.geographicalAreaId mustEqual "CN"
+      connectorResponse.countries(1).id mustEqual "UK"
+      connectorResponse.countries(1).description mustEqual "United Kingdom"
+      connectorResponse.countries(1).geographicalAreaId mustEqual "UK"
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      connector.getCountries.failed.futureValue
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCountries.failed.futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
     }
   }
@@ -202,7 +266,7 @@ class OttConnectorSpec
 
       val connectorResponse = connector.getCategorisationInfo("123456").futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
-      connectorResponse.categoryAssessments(0).id mustEqual "238dbab8cc5026c67757c7e05751f312"
+      connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
     }
 
     "must return a failed future when the server returns an error" in {

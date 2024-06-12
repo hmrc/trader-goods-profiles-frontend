@@ -17,7 +17,7 @@
 package connectors
 
 import config.Service
-import models.Commodity
+import models.{Commodity, Countries}
 import models.ott.response.OttResponse
 import play.api.Configuration
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
@@ -38,14 +38,17 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
-  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+  private def ottCountriesUrl =
+    url"$baseUrl/ott/geographical_areas/countries"
+
+  private def getFromOtt[T](url: URL, authToken: String)(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
     httpClient
-      .get(urlFunc(commodityCode))(newHeaderCarrier)
+      .get(url)(newHeaderCarrier)
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
@@ -64,10 +67,18 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
       }
   }
 
+  private def getFromOttWithCommodityCode[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+    hc: HeaderCarrier,
+    reads: Reads[T]
+  ): Future[T] =
+    getFromOtt(urlFunc(commodityCode), authToken)
+
   def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] =
-    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken")
+    getFromOttWithCommodityCode[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken")
 
   def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] =
-    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
+    getFromOttWithCommodityCode[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
 
+  def getCountries(implicit hc: HeaderCarrier): Future[Countries] =
+    getFromOtt[Countries](ottCountriesUrl, "bearerToken")
 }
