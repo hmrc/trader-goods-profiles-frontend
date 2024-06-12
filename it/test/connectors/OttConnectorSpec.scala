@@ -133,7 +133,8 @@ class OttConnectorSpec
                 |    "id": "54267",
                 |    "type": "goods_nomenclature",
                 |    "attributes": {
-                |      "goods_nomenclature_item_id": "9306210000"
+                |      "goods_nomenclature_item_id": "9306210000",
+                |      "supplementary_measure_unit": "1000 items (1000 p/st)"
                 |    },
                 |    "relationships": {
                 |      "applicable_category_assessments": {

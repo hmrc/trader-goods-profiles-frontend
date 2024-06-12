@@ -29,12 +29,13 @@ class GoodsNomenclatureResponseSpec extends AnyFreeSpec with Matchers {
       val json = Json.obj(
         "id"         -> "1",
         "attributes" -> Json.obj(
-          "goods_nomenclature_item_id" -> "foo"
+          "goods_nomenclature_item_id" -> "foo",
+          "supplementary_measure_unit" -> "bar"
         )
       )
 
       val result = json.validate[GoodsNomenclatureResponse]
-      result mustEqual JsSuccess(GoodsNomenclatureResponse("1", "foo"))
+      result mustEqual JsSuccess(GoodsNomenclatureResponse("1", "foo", "bar"))
     }
   }
 }
