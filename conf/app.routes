@@ -107,8 +107,8 @@ GET         /ukims-kick-out                                  controllers.UkimsKi
 
 GET         /categorisation-result/:recordId                 controllers.CategorisationResultController.onPageLoad(recordId: String)
 
-GET         /cya-categorisation/:recordId                    controllers.CyaCategorisationController.onPageLoad(recordId: String)
-POST        /cya-categorisation/:recordId                    controllers.CyaCategorisationController.onSubmit(recordId: String)
+GET         /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onPageLoad(recordId:String)
+POST        /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onSubmit(recordId:String)
 
 GET         /advice-start                                    controllers.AdviceStartController.onPageLoad()
 POST        /advice-start                                    controllers.AdviceStartController.onSubmit()
@@ -133,7 +133,7 @@ POST       /update/:recordId/supplementary-unit              controllers.HasSupp
 GET        /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /supplementaryUnit                                controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode)
-POST       /supplementaryUnit                                controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode)
-GET        /changeSupplementaryUnit                          controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeSupplementaryUnit                          controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode)
+GET        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
