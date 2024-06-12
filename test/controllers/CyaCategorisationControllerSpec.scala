@@ -17,19 +17,26 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testRecordId
-import models.AssessmentAnswer
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import connectors.GoodsRecordConnector
+import models.{AssessmentAnswer, CategoryRecord, UserAnswers}
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
 import models.AssessmentAnswer.NoExemption
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import queries.RecordCategorisationsQuery
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
+
+import scala.concurrent.Future
 
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
@@ -273,11 +280,100 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
     "for a POST" - {
 
-      "must redirect to ???" in {
+      "when user answers can update a valid goods record" - {
+
+        "must update the goods record and redirect to the CyaCategorisationController" in {
+
+          val userAnswers = UserAnswers(userAnswersId)
+            .set(RecordCategorisationsQuery, recordCategorisations)
+            .success
+            .value
+
+          val mockConnector = mock[GoodsRecordConnector]
+          when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val expectedPayload = CategoryRecord(
+              eori = testEori,
+              recordId = testRecordId,
+              category = 1,
+              measurementUnit = Some("1")
+            )
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.CategorisationResultController
+              .onPageLoad(testRecordId)
+              .url
+            verify(mockConnector, times(1))
+              .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+          }
+        }
+      }
+
+      "when user answers cannot update a goods record" - {
+
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockConnector = mock[GoodsRecordConnector]
+          val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+              .url
+            verify(mockConnector, never()).updateGoodsRecord(any(), any(), any())(any())
+          }
+        }
+      }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(RecordCategorisationsQuery, recordCategorisations)
+          .success
+          .value
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
           val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -285,10 +381,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.IndexController.onPageLoad.url
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }
   }
-
 }

@@ -18,17 +18,20 @@ package controllers
 
 import cats.data
 import com.google.inject.Inject
+import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{CategorisationAnswers, ValidationError}
+import models.{CategorisationAnswers, CategoryRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class CyaCategorisationController @Inject() (
   override val messagesApi: MessagesApi,
@@ -36,8 +39,10 @@ class CyaCategorisationController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaCategorisationView
-) extends FrontendBaseController
+  view: CyaCategorisationView,
+  goodsRecordConnector: GoodsRecordConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -79,24 +84,28 @@ class CyaCategorisationController @Inject() (
           Ok(view(recordId, categorisationList, supplementaryUnitList))
 
         case Left(errors) =>
-          logErrorsAndContinue(recordId, errors)
+          logErrorsAndContinue(errors, recordId)
 
       }
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      Redirect(routes.IndexController.onPageLoad)
+      CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
+        case Right(model) =>
+          goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
+            Redirect(routes.CategorisationResultController.onPageLoad(recordId))
+          }
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+      }
   }
 
-  def logErrorsAndContinue(recordId: String, errors: data.NonEmptyChain[ValidationError]): Result = {
-
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
-    logger.warn(s"Unable to create Categorisation details.  Missing pages: $errorMessages")
+    logger.warn(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
-
 }

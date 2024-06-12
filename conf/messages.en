@@ -183,14 +183,6 @@ homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is corre
 homepage.h2.3 = Manage your profile
 homepage.p5.linkText = Manage your profile details
 
-category1Assesments.title = category1Assesments
-category1Assesments.heading = category1Assesments
-category1Assesments.option1 = Option 1
-category1Assesments.option2 = Option 2
-category1Assesments.checkYourAnswersLabel = category1Assesments
-category1Assesments.error.required = Select category1Assesments
-category1Assesments.change.hidden = Category1Assesments
-
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
 createRecordStart.p1 = To create a goods record, we’ll ask you for some information about the goods.

@@ -39,6 +39,11 @@ final case class MismatchedPage(query: Query) extends ValidationError {
   val message: String = s"Mismatched page: ${query.path}"
 }
 
+final case class RecordIdMissing(query: Query) extends ValidationError {
+
+  val message: String = s"Record ID Missing: ${query.path}"
+}
+
 final case class UnexpectedNoExemption(query: Query) extends ValidationError {
 
   val message: String =
