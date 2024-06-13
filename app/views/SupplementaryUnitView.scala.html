@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, measureUnit: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("supplementaryUnit.title"))) {
 
@@ -44,7 +44,7 @@
             .asNumeric()
             .withWidth(Fixed5)
             .withSuffix(PrefixOrSuffix(content = "KGM"))
-            .withHint(Hint(content = Text("Weight, in kilograms")))
+            .withHint(Hint(content = Text(measureUnit)))
         )
 
         @govukButton(

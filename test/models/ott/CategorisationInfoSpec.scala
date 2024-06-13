@@ -40,7 +40,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         commodityCode = "commodity code",
         categoryAssessments = Seq(
           CategoryAssessment("assessmentId", 2, Nil)
-        )
+        ),
+        "some measure unit"
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -86,7 +87,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
               AdditionalCode("exemptionId2", "code2", "description2")
             )
           )
-        )
+        ),
+        "some measure unit"
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -168,7 +170,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
               AdditionalCode("exemptionId2", "code2", "description2")
             )
           )
-        )
+        ),
+        "some measure unit"
       )
 
       val result = CategorisationInfo.build(ottResponse)

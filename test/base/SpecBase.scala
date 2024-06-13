@@ -147,7 +147,8 @@ trait SpecBase
 
   private lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
     "1234567890",
-    Seq(category1, category2, category3)
+    Seq(category1, category2, category3),
+    "Weight, in kilograms"
   )
 
   lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(

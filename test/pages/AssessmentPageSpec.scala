@@ -47,7 +47,8 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
       4,
       Seq(AdditionalCode("cert4", "code4", "description4"))
     )
-    val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
+    val categorisationInfo    =
+      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), "some measure unit")
     val recordId              = "321"
     val index                 = 0
     val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))

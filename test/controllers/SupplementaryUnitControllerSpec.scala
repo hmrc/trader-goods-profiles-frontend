@@ -29,6 +29,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import views.html.SupplementaryUnitView
 
@@ -49,7 +50,12 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -59,13 +65,22 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "Weight, in kilograms")(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), validAnswer).success.value
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+        .set(SupplementaryUnitPage(testRecordId), validAnswer)
+        .success
+        .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,10 +92,12 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testRecordId)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(
+          form.fill(validAnswer),
+          NormalMode,
+          testRecordId,
+          "Weight, in kilograms"
+        )(request, messages(application)).toString
       }
     }
 
@@ -112,7 +129,12 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
@@ -126,7 +148,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "Weight, in kilograms")(
           request,
           messages(application)
         ).toString
