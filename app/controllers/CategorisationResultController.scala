@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import models.helper.CategorisationHelper
 
@@ -25,19 +26,25 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategorisationResultView
 
+import scala.concurrent.ExecutionContext
+
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView
-) extends FrontendBaseController
+  view: CategorisationResultView,
+  goodsRecordConnector: GoodsRecordConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val scenario = CategorisationHelper.getScenario(request.userAnswers)
-      Ok(view(scenario))
+      goodsRecordConnector.getRecord(request.eori, recordId).map { goodsRecord =>
+        val scenario = CategorisationHelper.getScenario(goodsRecord)
+        Ok(view(scenario))
+      }
   }
 }

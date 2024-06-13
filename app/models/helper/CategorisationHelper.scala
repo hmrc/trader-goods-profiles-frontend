@@ -16,14 +16,20 @@
 
 package models.helper
 
-import models.UserAnswers
+import models.router.responses.GetGoodsRecordResponse
 
 object CategorisationHelper {
 
-  def getScenario(userAnswers: UserAnswers): Scenario =
-    //TODO: Implement logic
-    Category1NoExemptions
-
+  def getScenario(goodsRecord: GetGoodsRecordResponse): Scenario =
+    goodsRecord.category match {
+      case 1 => Category1
+      case 2 => Category2
+      case 3 =>
+        goodsRecord.supplementaryUnit match {
+          case Some(_) => throw new Exception(s"${goodsRecord.recordId}: Category 3 with supplementary units")
+          case None    => StandardNoSupplementaryUnits
+        }
+    }
 }
 
 sealed trait Scenario
