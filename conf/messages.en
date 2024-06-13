@@ -355,3 +355,12 @@ supplementaryUnit.error.required = Enter your supplementaryUnit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit
+
+longerCommodityCode.title = LongerCommodityCode
+longerCommodityCode.heading = LongerCommodityCode
+longerCommodityCode.checkYourAnswersLabel = LongerCommodityCode
+longerCommodityCode.error.nonNumeric = Enter your longerCommodityCode using numbers
+longerCommodityCode.error.required = Enter your longerCommodityCode
+longerCommodityCode.error.wholeNumber = Enter your longerCommodityCode using whole numbers
+longerCommodityCode.error.outOfRange = LongerCommodityCode must be between {0} and {1}
+longerCommodityCode.change.hidden = LongerCommodityCode

@@ -132,3 +132,8 @@ GET        /update/:recordId/supplementary-unit-amount       controllers.Supplem
 POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
+GET        /longerCommodityCode                  controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST       /longerCommodityCode                  controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET        /changeLongerCommodityCode                        controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeLongerCommodityCode                        controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode)
