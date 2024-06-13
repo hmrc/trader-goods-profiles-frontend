@@ -19,15 +19,15 @@ package forms
 import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex
 
 class LongerCommodityCodeFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Int] =
+  def apply(): Form[String] =
     Form(
-      "value" -> int(
-        "longerCommodityCode.error.required",
-        "longerCommodityCode.error.wholeNumber",
-        "longerCommodityCode.error.nonNumeric")
-          .verifying(inRange(0, Int.MaxValue, "longerCommodityCode.error.outOfRange"))
+      "value" -> text("longerCommodityCode.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying(regexp(StringFieldRegex.longerCommodityCodeRegex, "longerCommodityCode.invalidFormat"))
     )
 }

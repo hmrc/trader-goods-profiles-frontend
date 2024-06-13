@@ -26,7 +26,7 @@ import viewmodels.implicits._
 
 object LongerCommodityCodeSummary  {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(LongerCommodityCodePage).map {
       answer =>
 
@@ -34,7 +34,7 @@ object LongerCommodityCodeSummary  {
           key     = "longerCommodityCode.checkYourAnswersLabel",
           value   = ValueViewModel(answer.toString),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
               .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
           )
         )
