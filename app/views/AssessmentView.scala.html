@@ -25,25 +25,28 @@
         govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, assessmentId: String, viewModel: AssessmentViewModel)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, index: Int, viewModel: AssessmentViewModel)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("assessment.title", viewModel.numberOfThisAssessment, viewModel.numberOfAssessments))) {
+@layout(pageTitle = title(form, messages("assessment.title"))) {
 
-    @formHelper(action = routes.AssessmentController.onSubmit(mode, assessmentId), 'autoComplete -> "off") {
+    @formHelper(action = routes.AssessmentController.onSubmit(mode, recordId, index), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
-        <h1 class="govuk-heading-l">@messages("assessment.heading", viewModel.numberOfThisAssessment, viewModel.numberOfAssessments)</h1>
+        <h1 class="govuk-heading-l">@messages("assessment.heading", viewModel.numberOfThisAssessment)</h1>
         <p class="govuk-body">@messages("assessment.guidance", viewModel.commodityCode)</p>
+        <p class="govuk-body">
+            <a href="https://www.trade-tariff.service.gov.uk/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
+        </p>
 
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("assessment.question")).withSize(Medium),
+                legend = LegendViewModel(HtmlContent("<h2 class='govuk-heading-m'>" + messages("assessment.question") + "</h2>")),
                 items  = viewModel.radioOptions
-            ).withHint(HintViewModel(content = "assessment.hint"))
+            )
         )
 
         @govukButton(

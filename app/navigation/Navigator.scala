@@ -21,30 +21,34 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.CategorisationQuery
+import queries.RecordCategorisationsQuery
+
+import scala.util.Try
 
 @Singleton
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ProfileSetupPage       => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
-    case UkimsNumberPage        => _ => routes.HasNirmsController.onPageLoad(NormalMode)
-    case HasNirmsPage           => navigateFromHasNirms
-    case NirmsNumberPage        => _ => routes.HasNiphlController.onPageLoad(NormalMode)
-    case HasNiphlPage           => navigateFromHasNiphl
-    case NiphlNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case CreateRecordStartPage  => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
-    case TraderReferencePage    => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
-    case UseTraderReferencePage => navigateFromUseTraderReference
-    case GoodsDescriptionPage   => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
-    case CountryOfOriginPage    => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
-    case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
-    case HasCorrectGoodsPage    => navigateFromHasCorrectGoods
-    case p: AssessmentPage      => navigateFromAssessment(p)
-    case AdviceStartPage        => _ => routes.NameController.onPageLoad(NormalMode)
-    case NamePage               => _ => routes.EmailController.onPageLoad(NormalMode)
-    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
-    case _                      => _ => routes.IndexController.onPageLoad
+    case ProfileSetupPage            => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
+    case UkimsNumberPage             => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case HasNirmsPage                => navigateFromHasNirms
+    case NirmsNumberPage             => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case HasNiphlPage                => navigateFromHasNiphl
+    case NiphlNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
+    case CreateRecordStartPage       => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
+    case TraderReferencePage         => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
+    case UseTraderReferencePage      => navigateFromUseTraderReference
+    case GoodsDescriptionPage        => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
+    case CountryOfOriginPage         => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
+    case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case HasCorrectGoodsPage         => navigateFromHasCorrectGoods
+    case p: AssessmentPage           => navigateFromAssessment(p)
+    case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit(p.recordId)
+    case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case AdviceStartPage             => _ => routes.NameController.onPageLoad(NormalMode)
+    case NamePage                    => _ => routes.EmailController.onPageLoad(NormalMode)
+    case EmailPage                   => _ => routes.CyaRequestAdviceController.onPageLoad
+    case _                           => _ => routes.IndexController.onPageLoad
 
   }
 
@@ -84,39 +88,55 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromHasSupplementaryUnit(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage(recordId))
+      .map {
+        case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        case false => routes.CyaCategorisationController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
+    val recordId = assessmentPage.recordId
+
     for {
-      categorisationInfo <- answers.get(CategorisationQuery)
-      assessment         <- categorisationInfo.categoryAssessments.find(_.id == assessmentPage.assessmentId)
-      assessmentAnswer   <- answers.get(assessmentPage)
-      assessmentIndex     = categorisationInfo.categoryAssessments.indexOf(assessment)
+      recordQuery      <- answers.get(RecordCategorisationsQuery)
+      assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
-        categorisationInfo.categoryAssessments
-          .lift(assessmentIndex + 1)
-          .map(nextAssessment => routes.AssessmentController.onPageLoad(NormalMode, nextAssessment.id))
-          .getOrElse(routes.IndexController.onPageLoad)
+        val assessmentCount = Try {
+          recordQuery.records(recordId).categoryAssessments.size
+        }.getOrElse(0)
 
-      case AssessmentAnswer.NoExemption =>
-        routes.IndexController.onPageLoad
+        if (assessmentPage.index + 1 < assessmentCount) {
+          routes.AssessmentController.onPageLoad(NormalMode, recordId, assessmentPage.index + 1)
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
+      case AssessmentAnswer.NoExemption  =>
+        routes.CyaCategorisationController.onPageLoad(recordId)
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private val checkRouteMap: Page => UserAnswers => Call = {
-    case UkimsNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case HasNirmsPage           => navigateFromHasNirmsCheck
-    case NirmsNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case HasNiphlPage           => navigateFromHasNiphlCheck
-    case NiphlNumberPage        => _ => routes.CyaCreateProfileController.onPageLoad
-    case TraderReferencePage    => _ => routes.CyaCreateRecordController.onPageLoad
-    case UseTraderReferencePage => navigateFromUseTraderReferenceCheck
-    case GoodsDescriptionPage   => _ => routes.CyaCreateRecordController.onPageLoad
-    case CountryOfOriginPage    => _ => routes.CyaCreateRecordController.onPageLoad
-    case CommodityCodePage      => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
-    case HasCorrectGoodsPage    => navigateFromHasCorrectGoodsCheck
-    case NamePage               => _ => routes.CyaRequestAdviceController.onPageLoad
-    case EmailPage              => _ => routes.CyaRequestAdviceController.onPageLoad
-    case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
+    case UkimsNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
+    case HasNirmsPage                => navigateFromHasNirmsCheck
+    case NirmsNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
+    case HasNiphlPage                => navigateFromHasNiphlCheck
+    case NiphlNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
+    case TraderReferencePage         => _ => routes.CyaCreateRecordController.onPageLoad
+    case UseTraderReferencePage      => navigateFromUseTraderReferenceCheck
+    case GoodsDescriptionPage        => _ => routes.CyaCreateRecordController.onPageLoad
+    case CountryOfOriginPage         => _ => routes.CyaCreateRecordController.onPageLoad
+    case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+    case HasCorrectGoodsPage         => navigateFromHasCorrectGoodsCheck
+    case NamePage                    => _ => routes.CyaRequestAdviceController.onPageLoad
+    case EmailPage                   => _ => routes.CyaRequestAdviceController.onPageLoad
+    case p: AssessmentPage           => navigateFromAssessmentCheck(p)
+    case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck(p.recordId)
+    case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case _                           => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
@@ -172,6 +192,46 @@ class Navigator @Inject() () {
             routes.CommodityCodeController.onPageLoad(CheckMode)
           }
         case false => routes.CommodityCodeController.onPageLoad(CheckMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
+    val recordId = assessmentPage.recordId
+
+    for {
+      recordQuery      <- answers.get(RecordCategorisationsQuery)
+      assessmentAnswer <- answers.get(assessmentPage)
+    } yield assessmentAnswer match {
+      case AssessmentAnswer.Exemption(_) =>
+        val assessmentCount = Try {
+          recordQuery.records(recordId).categoryAssessments.size
+        }.getOrElse(0)
+
+        if (assessmentPage.index + 1 < assessmentCount) {
+          if (answers.isDefined(AssessmentPage(recordId, assessmentPage.index + 1))) {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          } else {
+            routes.AssessmentController.onPageLoad(CheckMode, recordId, assessmentPage.index + 1)
+          }
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
+      case AssessmentAnswer.NoExemption  =>
+        routes.CyaCategorisationController.onPageLoad(recordId)
+    }
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage(recordId))
+      .map {
+        case true  =>
+          if (answers.isDefined(SupplementaryUnitPage(recordId))) {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          } else {
+            routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
+          }
+        case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

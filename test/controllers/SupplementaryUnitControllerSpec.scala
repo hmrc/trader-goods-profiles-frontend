@@ -17,66 +17,67 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
-import forms.Category1AssesmentsFormProvider
-import models.{Category1Assesments, NormalMode, UserAnswers}
+import base.TestConstants.{testRecordId, userAnswersId}
+import forms.SupplementaryUnitFormProvider
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.Category1AssesmentsPage
+import pages.SupplementaryUnitPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.Category1AssesmentsView
+import views.html.SupplementaryUnitView
 
 import scala.concurrent.Future
 
-class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
+class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
+
+  private val formProvider = new SupplementaryUnitFormProvider()
+  private val form         = formProvider()
 
   private def onwardRoute = Call("GET", "/foo")
 
-  private lazy val category1AssesmentsRoute = routes.Category1AssesmentsController.onPageLoad(NormalMode).url
+  private val validAnswer = 0
 
-  val formProvider = new Category1AssesmentsFormProvider()
-  private val form = formProvider()
+  private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
 
-  "Category1Assesments Controller" - {
+  "SupplementaryUnit Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, category1AssesmentsRoute)
+        val request = FakeRequest(GET, supplementaryUnitRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[Category1AssesmentsView]
+        val view = application.injector.instanceOf[SupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers =
-        UserAnswers(userAnswersId).set(Category1AssesmentsPage, Category1Assesments.values.head).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, category1AssesmentsRoute)
+        val request = FakeRequest(GET, supplementaryUnitRoute)
 
-        val view = application.injector.instanceOf[Category1AssesmentsView]
+        val view = application.injector.instanceOf[SupplementaryUnitView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(Category1Assesments.values.head), NormalMode)(
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -99,8 +100,8 @@ class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, category1AssesmentsRoute)
-            .withFormUrlEncodedBody(("value", Category1Assesments.values.head.toString))
+          FakeRequest(POST, supplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
@@ -115,17 +116,20 @@ class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, category1AssesmentsRoute)
+          FakeRequest(POST, supplementaryUnitRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[Category1AssesmentsView]
+        val view = application.injector.instanceOf[SupplementaryUnitView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -134,7 +138,7 @@ class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, category1AssesmentsRoute)
+        val request = FakeRequest(GET, supplementaryUnitRoute)
 
         val result = route(application, request).value
 
@@ -143,14 +147,14 @@ class Category1AssesmentsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, category1AssesmentsRoute)
-            .withFormUrlEncodedBody(("value", Category1Assesments.values.head.toString))
+          FakeRequest(POST, supplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 

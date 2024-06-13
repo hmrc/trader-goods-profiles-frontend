@@ -46,6 +46,11 @@ cyaRequestAdvice.title = Check your answers before sending your request for advi
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
 cyaRequestAdvice.subheading = Contact details
 
+cyaCategorisation.title = Check your answers
+cyaCategorisation.heading = Check your answers
+cyaCategorisation.categorisationHeader = Categorisation
+cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
+
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
 journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
@@ -178,14 +183,6 @@ homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is corre
 homepage.h2.3 = Manage your profile
 homepage.p5.linkText = Manage your profile details
 
-category1Assesments.title = category1Assesments
-category1Assesments.heading = category1Assesments
-category1Assesments.option1 = Option 1
-category1Assesments.option2 = Option 2
-category1Assesments.checkYourAnswersLabel = category1Assesments
-category1Assesments.error.required = Select category1Assesments
-category1Assesments.change.hidden = Category1Assesments
-
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
 createRecordStart.p1 = To create a goods record, we’ll ask you for some information about the goods.
@@ -258,13 +255,17 @@ traderReference.error.length = Trader reference must be 512 characters or less
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
-assessment.title = Category assessment {0} of {1}
-assessment.heading = Category assessment {0} of {1}
-assessment.guidance = You need to confirm which of these waivers you hold for {0}. We need this information to be ale to categorise your goods.
-assessment.question = Do you meet one of the following conditions and can supply the relevant document codes on your movements?
+assessment.title = Categorisation question
+assessment.heading = Category assessment {0}
+assessment.guidance = You need to confirm which of these conditions you hold for {0}. We need this information to be able to categorise your goods.
+assessment.linkText = Review this code on the Online Tariff Tool (opens in a new tab)
+assessment.question = Do you meet one of the following conditions and can you supply the relevant document code on your movements?
 assessment.hint = Select one answer.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
+assessment.error.required = Select if you meet a condition
+assessment.exemption.none.checkYourAnswersLabel = None selected
+assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -334,5 +335,23 @@ name.heading = What is your name?
 name.hint = We need your name so we can contact you.
 name.checkYourAnswersLabel = Name
 name.error.required = Enter your name
-name.error.length = Enter a name with less than 70 characters
+name.error.length = Enter a name with 70 characters or less
 name.change.hidden = Name
+
+hasSupplementaryUnit.title = Supplementary unit
+hasSupplementaryUnit.h1 = Supplementary unit
+hasSupplementaryUnit.h2 = Do you want to add the supplementary unit?
+hasSupplementaryUnit.p1 = As your goods are Category 2, this means you’ll need to add a supplementary unit to your Internal Market Movement Information (IMMI).
+hasSupplementaryUnit.p2 = You can optionally store a supplementary unit in your TGP. This is useful if you move the same amount of goods often.
+hasSupplementaryUnit.checkYourAnswersLabel = Do you want to add the supplementary unit?
+hasSupplementaryUnit.error.required = Select yes if you want to add the supplementary unit
+hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
+
+supplementaryUnit.title = SupplementaryUnit
+supplementaryUnit.heading = SupplementaryUnit
+supplementaryUnit.checkYourAnswersLabel = What is the good's supplementary unit?
+supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
+supplementaryUnit.error.required = Enter your supplementaryUnit
+supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
+supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
+supplementaryUnit.change.hidden = SupplementaryUnit

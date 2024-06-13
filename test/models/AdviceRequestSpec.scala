@@ -16,7 +16,7 @@
 
 package models
 
-import base.TestConstants.{testEori, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -40,7 +40,7 @@ class AdviceRequestSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       val result = AdviceRequest.build(answers, testEori)
 
-      result mustEqual Right(AdviceRequest(testEori, "1", "2"))
+      result mustEqual Right(AdviceRequest(testEori, "1", testEori, testRecordId, "2"))
     }
 
     "must return errors" - {

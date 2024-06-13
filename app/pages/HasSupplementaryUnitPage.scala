@@ -16,12 +16,24 @@
 
 package pages
 
-import models.Category1Assesments
+import models.UserAnswers
 import play.api.libs.json.JsPath
 
-case object Category1AssesmentsPage extends QuestionPage[Category1Assesments] {
+import scala.util.Try
 
-  override def path: JsPath = JsPath \ toString
+case class HasSupplementaryUnitPage(recordId: String) extends QuestionPage[Boolean] {
 
-  override def toString: String = "category1Assesments"
+  override def path: JsPath = JsPath \ toString \ recordId
+
+  override def toString: String = "hasSupplementaryUnit"
+
+  override def cleanup(
+    value: Option[Boolean],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
+    updatedUserAnswers.get(HasSupplementaryUnitPage(recordId)) match {
+      case Some(false) => updatedUserAnswers.remove(SupplementaryUnitPage(recordId))
+      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+    }
 }

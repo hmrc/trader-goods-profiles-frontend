@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package queries
+package forms
 
-import models.ott.CategorisationInfo
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-case object CategorisationQuery extends Gettable[CategorisationInfo] with Settable[CategorisationInfo] {
+class SupplementaryUnitFormProvider @Inject() extends Mappings {
 
-  override def path: JsPath = JsPath \ "categorisationInfo"
+  def apply(): Form[Int] =
+    Form(
+      "value" -> int(
+        "supplementaryUnit.error.required",
+        "supplementaryUnit.error.wholeNumber",
+        "supplementaryUnit.error.nonNumeric"
+      )
+        .verifying(inRange(0, Int.MaxValue, "supplementaryUnit.error.outOfRange"))
+    )
 }

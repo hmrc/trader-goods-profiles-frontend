@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
-import models.UserAnswers
+import models.RecordCategorisations
 import play.api.libs.json.JsPath
 
-import scala.util.Try
+case object RecordCategorisationsQuery extends Gettable[RecordCategorisations] with Settable[RecordCategorisations] {
 
-case object HasNiphlPage extends QuestionPage[Boolean] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "hasNiphl"
-
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasNiphlPage) match {
-      case Some(false) => updatedUserAnswers.remove(NiphlNumberPage)
-      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-    }
-
+  override def path: JsPath = JsPath \ "recordCategorisations"
 }

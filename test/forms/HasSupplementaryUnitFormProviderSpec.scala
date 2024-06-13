@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.{Json, OFormat}
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-final case class CreateGoodsRecordResponse(
-  recordId: String
-)
+class HasSupplementaryUnitFormProviderSpec extends BooleanFieldBehaviours {
 
-object CreateGoodsRecordResponse {
+  val requiredKey = "hasSupplementaryUnit.error.required"
+  val invalidKey  = "error.boolean"
 
-  implicit lazy val format: OFormat[CreateGoodsRecordResponse] = Json.format
+  val form = new HasSupplementaryUnitFormProvider()()
 
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package generators
+package models.router.responses
 
-import models._
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.libs.json.{Json, OFormat}
 
-trait ModelGenerators {
+final case class CreateGoodsRecordResponse(
+  recordId: String
+)
 
-  implicit lazy val arbitraryCategory1Assesments: Arbitrary[Category1Assesments] =
-    Arbitrary {
-      Gen.oneOf(Category1Assesments.values)
-    }
+object CreateGoodsRecordResponse {
+
+  implicit lazy val format: OFormat[CreateGoodsRecordResponse] = Json.format
+
 }

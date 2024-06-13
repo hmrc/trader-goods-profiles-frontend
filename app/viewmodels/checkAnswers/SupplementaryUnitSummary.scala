@@ -18,30 +18,22 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.Category1AssesmentsPage
+import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object Category1AssesmentsSummary {
+object SupplementaryUnitSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(Category1AssesmentsPage).map { answer =>
-      val value = ValueViewModel(
-        HtmlContent(
-          HtmlFormat.escape(messages(s"category1Assesments.$answer"))
-        )
-      )
-
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(SupplementaryUnitPage(recordId)).map { answer =>
       SummaryListRowViewModel(
-        key = "category1Assesments.checkYourAnswersLabel",
-        value = value,
+        key = "supplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(answer.toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.Category1AssesmentsController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("category1Assesments.change.hidden"))
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.router
+package models.router.requests
 
 import models.GoodsRecord
 import play.api.libs.functional.syntax.toFunctionalBuilderOps

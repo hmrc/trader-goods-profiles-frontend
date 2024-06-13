@@ -22,21 +22,26 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("category1Assesments.title"))) {
+@layout(pageTitle = title(form, messages("hasSupplementaryUnit.title"))) {
+    <h1 class="govuk-heading-l">@messages("hasSupplementaryUnit.h1")</h1>
 
-    @formHelper(action = routes.Category1AssesmentsController.onSubmit(mode), 'autoComplete -> "off") {
+    <p class="govuk-body">@messages("hasSupplementaryUnit.p1")</p>
+    <p class="govuk-body">@messages("hasSupplementaryUnit.p2")</p>
+
+    <h2 class="govuk-heading-m">@messages("hasSupplementaryUnit.h2")</h2>
+
+    @formHelper(action = routes.HasSupplementaryUnitController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
+            @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
         @govukRadios(
-            RadiosViewModel(
-                field  = form("value"),
-                legend = LegendViewModel(messages("category1Assesments.heading")).asPageHeading(),
-                items  = Category1Assesments.options
+            RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = Legend(content = "hasSupplementaryUnit.h1", classes = "govuk-visually-hidden")
             )
         )
 
