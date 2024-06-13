@@ -39,7 +39,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
   private def ottCountriesUrl =
-    url"$baseUrl/ott/geographical_areas/countries"
+    url"$baseUrl/xi/api/v2/geographical_areas/countries"
 
   private def getFromOtt[T](url: URL, authToken: String)(implicit
     hc: HeaderCarrier,

@@ -142,7 +142,7 @@ class OttConnectorSpec
                    |}""".stripMargin
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/geographical_areas/countries"))
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
           .willReturn(
             ok().withBody(body)
           )
@@ -159,7 +159,7 @@ class OttConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/geographical_areas/countries"))
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
           .willReturn(serverError())
       )
 
@@ -169,7 +169,7 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/geographical_areas/countries"))
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
           .willReturn(serverError())
       )
 
