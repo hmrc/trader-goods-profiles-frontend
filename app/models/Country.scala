@@ -23,8 +23,7 @@ import viewmodels.govuk.select._
 
 final case class Country(
   id: String,
-  description: String,
-  geographicalAreaId: String
+  description: String
 )
 
 object Country {
@@ -33,7 +32,7 @@ object Country {
     SelectItem(value = None, text = messages("countryOfOrigin.selectCountry")) +:
       countries.map { data =>
         SelectItemViewModel(
-          value = data.geographicalAreaId,
+          value = data.id,
           text = data.description
         )
       }
@@ -44,8 +43,7 @@ object Country {
 
     (
       (__ \ "attributes" \ "id").read[String] and
-        (__ \ "attributes" \ "description").read[String] and
-        (__ \ "attributes" \ "geographical_area_id").read[String]
+        (__ \ "attributes" \ "description").read[String]
     )(Country.apply _)
   }
 
@@ -55,8 +53,7 @@ object Country {
 
     (
       (__ \ "attributes" \ "id").write[String] and
-        (__ \ "attributes" \ "description").write[String] and
-        (__ \ "attributes" \ "geographical_area_id").write[String]
+        (__ \ "attributes" \ "description").write[String]
     )(unlift(Country.unapply))
   }
 

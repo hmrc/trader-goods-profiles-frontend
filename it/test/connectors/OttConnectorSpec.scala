@@ -125,20 +125,20 @@ class OttConnectorSpec
     "must return countries object" in {
 
       val body = """{
-                   |  "data": [{
+                   |  "data": [
+                   |  {
                    |    "attributes": {
                    |      "id": "CN",
-                   |      "description": "China",
-                   |      "geographical_area_id": "CN"
-                   |      }
-                   |    }],
-                   |    "included": [{
-                   |    "attributes": {
+                   |      "description": "China"
+                   |     }
+                   |   },
+                   |   {
+                   |     "attributes": {
                    |      "id": "UK",
-                   |      "description": "United Kingdom",
-                   |      "geographical_area_id": "UK"
-                   |      }
-                   |    }]
+                   |      "description": "United Kingdom"
+                   |     }
+                   |    }
+                   |  ]
                    |}""".stripMargin
 
       wireMockServer.stubFor(
@@ -148,14 +148,12 @@ class OttConnectorSpec
           )
       )
 
-      val connectorResponse = connector.getCountries.futureValue
-      connectorResponse.countries.size mustEqual 2
-      connectorResponse.countries.head.id mustEqual "CN"
-      connectorResponse.countries.head.description mustEqual "China"
-      connectorResponse.countries.head.geographicalAreaId mustEqual "CN"
-      connectorResponse.countries(1).id mustEqual "UK"
-      connectorResponse.countries(1).description mustEqual "United Kingdom"
-      connectorResponse.countries(1).geographicalAreaId mustEqual "UK"
+      val countries = connector.getCountries.futureValue
+      countries.size mustEqual 2
+      countries.head.id mustEqual "CN"
+      countries.head.description mustEqual "China"
+      countries(1).id mustEqual "UK"
+      countries(1).description mustEqual "United Kingdom"
     }
 
     "must return a failed future when the server returns an error" in {

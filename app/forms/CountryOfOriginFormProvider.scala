@@ -26,6 +26,6 @@ class CountryOfOriginFormProvider @Inject() extends Mappings {
   def apply(countries: Seq[Country]): Form[String] =
     Form(
       "value" -> text("countryOfOrigin.error.required")
-        .verifying("countryOfOrigin.error.required", value => countries.exists(_.geographicalAreaId == value))
+        .verifying("countryOfOrigin.error.invalid", value => countries.exists(_.id == value))
     )
 }

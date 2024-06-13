@@ -18,12 +18,14 @@ package controllers
 
 import cats.data
 import com.google.inject.Inject
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{GoodsRecord, ValidationError}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import models.{Country, GoodsRecord, UserAnswers, ValidationError}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import queries.CountriesQuery
+import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -41,27 +43,41 @@ class CyaCreateRecordController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
+  ottConnector: OttConnector,
+  sessionRepository: SessionRepository,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     GoodsRecord.build(request.userAnswers, request.eori) match {
       case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            TraderReferenceSummary.row(request.userAnswers),
-            UseTraderReferenceSummary.row(request.userAnswers),
-            GoodsDescriptionSummary.row(request.userAnswers),
-            CountryOfOriginSummary.row(request.userAnswers),
-            CommodityCodeSummary.row(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list))
-      case Left(errors) => logErrorsAndContinue(errors)
+        request.userAnswers.get(CountriesQuery) match {
+          case Some(countries) => Future.successful(displayView(request.userAnswers, countries))
+          case None            =>
+            for {
+              countries               <- ottConnector.getCountries
+              updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
+              _                       <- sessionRepository.set(updatedAnswersWithQuery)
+            } yield displayView(updatedAnswersWithQuery, countries)
+        }
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
     }
+  }
+
+  def displayView(userAnswers: UserAnswers, countries: Seq[Country])(implicit request: Request[_]): Result = {
+    val list = SummaryListViewModel(
+      rows = Seq(
+        TraderReferenceSummary.row(userAnswers),
+        UseTraderReferenceSummary.row(userAnswers),
+        GoodsDescriptionSummary.row(userAnswers),
+        CountryOfOriginSummary.row(userAnswers, countries),
+        CommodityCodeSummary.row(userAnswers)
+      ).flatten
+    )
+    Ok(view(list))
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
