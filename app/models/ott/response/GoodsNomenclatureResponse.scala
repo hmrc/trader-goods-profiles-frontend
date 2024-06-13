@@ -22,7 +22,7 @@ import play.api.libs.json._
 final case class GoodsNomenclatureResponse(
   id: String,
   commodityCode: String,
-  measureUnit: Option[String]
+  measurementUnit: Option[String]
 )
 
 object GoodsNomenclatureResponse {

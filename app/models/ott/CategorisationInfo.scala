@@ -23,7 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
-  measureUnit: Option[String]
+  measurementUnit: Option[String]
 )
 
 object CategorisationInfo {
@@ -33,7 +33,7 @@ object CategorisationInfo {
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
       .map { assessments =>
-        CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted, ott.goodsNomenclature.measureUnit)
+        CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted, ott.goodsNomenclature.measurementUnit)
       }
 
   implicit lazy val format: OFormat[CategorisationInfo] = Json.format

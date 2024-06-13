@@ -51,15 +51,15 @@ class SupplementaryUnitController @Inject() (
     implicit request =>
       (for {
         query <- request.userAnswers.get(RecordCategorisationsQuery)
-        unit  <- query.records(recordId).measureUnit
+        unit  <- query.records(recordId).measurementUnit
       } yield unit) match {
         case None              => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-        case Some(measureUnit) =>
+        case Some(measurementUnit) =>
           val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
-          Ok(view(preparedForm, mode, recordId, measureUnit))
+          Ok(view(preparedForm, mode, recordId, measurementUnit))
       }
   }
 
@@ -71,11 +71,11 @@ class SupplementaryUnitController @Inject() (
           formWithErrors =>
             (for {
               query <- request.userAnswers.get(RecordCategorisationsQuery)
-              unit  <- query.records(recordId).measureUnit
+              unit  <- query.records(recordId).measurementUnit
             } yield unit) match {
               case None              => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-              case Some(measureUnit) =>
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measureUnit)))
+              case Some(measurementUnit) =>
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
             },
           value =>
             for {

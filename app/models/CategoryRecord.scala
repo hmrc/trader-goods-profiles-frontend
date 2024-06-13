@@ -114,7 +114,7 @@ object CategoryRecord {
         recordCategorisations.records
           .get(recordId)
           .map { categorisationInfo =>
-            Right(categorisationInfo.measureUnit)
+            Right(categorisationInfo.measurementUnit)
           }
           .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
       }
