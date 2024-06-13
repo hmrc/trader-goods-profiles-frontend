@@ -352,6 +352,5 @@ supplementaryUnit.h1 = What is the good''s supplementary unit?
 supplementaryUnit.checkYourAnswersLabel = What is the good''s supplementary unit?
 supplementaryUnit.error.nonNumeric = Enter a supplementary unit in the correct format
 supplementaryUnit.error.required = Enter the goods supplementary unit
-supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit

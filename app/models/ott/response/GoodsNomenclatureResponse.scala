@@ -22,7 +22,7 @@ import play.api.libs.json._
 final case class GoodsNomenclatureResponse(
   id: String,
   commodityCode: String,
-  measureUnit: String
+  measureUnit: Option[String]
 )
 
 object GoodsNomenclatureResponse {
@@ -30,6 +30,6 @@ object GoodsNomenclatureResponse {
   implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
     (__ \ "id").read[String] and
       (__ \ "attributes" \ "goods_nomenclature_item_id").read[String] and
-      (__ \ "attributes" \ "supplementary_measure_unit").read[String]
+      (__ \ "attributes" \ "supplementary_measure_unit").readNullable[String]
   )(GoodsNomenclatureResponse.apply _)
 }

@@ -16,9 +16,9 @@
 
 package forms.mappings
 
+import models.Enumerable
 import play.api.data.FormError
 import play.api.data.format.Formatter
-import models.Enumerable
 
 import scala.util.control.Exception.nonFatalCatch
 
@@ -104,6 +104,29 @@ trait Formatters {
         }
 
       override def unbind(key: String, value: A): Map[String, String] =
+        baseFormatter.unbind(key, value.toString)
+    }
+
+  private[mappings] def doubleFormatter(
+    requiredKey: String,
+    nonNumericKey: String,
+    args: Seq[String] = Seq.empty
+  ): Formatter[Double] =
+    new Formatter[Double] {
+      private val baseFormatter = stringFormatter(requiredKey, args)
+
+      override def bind(key: String, data: Map[String, String]) =
+        baseFormatter
+          .bind(key, data)
+          .map(_.replace(",", ""))
+          .flatMap { s =>
+            nonFatalCatch
+              .either(s.toDouble)
+              .left
+              .map(_ => Seq(FormError(key, nonNumericKey, args)))
+          }
+
+      override def unbind(key: String, value: Double) =
         baseFormatter.unbind(key, value.toString)
     }
 }

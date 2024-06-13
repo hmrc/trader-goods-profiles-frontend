@@ -58,4 +58,11 @@ trait Mappings extends Formatters with Constraints {
     args: Seq[String] = Seq.empty
   )(implicit messages: Messages): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, args))
+
+  protected def double(
+    requiredKey: String = "error.required",
+    nonNumericKey: String = "error.nonNumeric",
+    args: Seq[String] = Seq.empty
+  ): FieldMapping[Double] =
+    of(doubleFormatter(requiredKey, nonNumericKey, args))
 }

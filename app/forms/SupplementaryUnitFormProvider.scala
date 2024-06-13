@@ -22,13 +22,12 @@ import play.api.data.Form
 
 class SupplementaryUnitFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Int] =
+  def apply(): Form[Double] =
     Form(
-      "value" -> int(
+      "value" -> double(
         "supplementaryUnit.error.required",
-        "supplementaryUnit.error.wholeNumber",
         "supplementaryUnit.error.nonNumeric"
       )
-        .verifying(inRange(0, Int.MaxValue, "supplementaryUnit.error.outOfRange"))
+        .verifying(inRange(0, Double.MaxValue, "supplementaryUnit.error.outOfRange"))
     )
 }

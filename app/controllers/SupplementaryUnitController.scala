@@ -49,15 +49,17 @@ class SupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
-      request.userAnswers.get(RecordCategorisationsQuery) match {
-        case Some(categorisationsQuery) =>
-          Ok(view(preparedForm, mode, recordId, categorisationsQuery.records(recordId).measureUnit))
-        case None                       => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      (for {
+        query <- request.userAnswers.get(RecordCategorisationsQuery)
+        unit  <- query.records(recordId).measureUnit
+      } yield unit) match {
+        case None              => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case Some(measureUnit) =>
+          val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(preparedForm, mode, recordId, measureUnit))
       }
   }
 
@@ -67,12 +69,13 @@ class SupplementaryUnitController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            request.userAnswers.get(RecordCategorisationsQuery) match {
-              case Some(categorisationsQuery) =>
-                Future.successful(
-                  BadRequest(view(formWithErrors, mode, recordId, categorisationsQuery.records(recordId).measureUnit))
-                )
-              case None                       => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+            (for {
+              query <- request.userAnswers.get(RecordCategorisationsQuery)
+              unit  <- query.records(recordId).measureUnit
+            } yield unit) match {
+              case None              => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+              case Some(measureUnit) =>
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measureUnit)))
             },
           value =>
             for {

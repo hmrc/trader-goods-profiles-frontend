@@ -23,7 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
-  measureUnit: String
+  measureUnit: Option[String]
 )
 
 object CategorisationInfo {

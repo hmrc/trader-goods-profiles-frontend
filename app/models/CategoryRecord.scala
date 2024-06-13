@@ -27,7 +27,7 @@ final case class CategoryRecord(
   eori: String,
   recordId: String,
   category: Int,
-  supplementaryUnit: Option[Int] = None,
+  supplementaryUnit: Option[Double] = None,
   measurementUnit: Option[String] = None
 )
 
@@ -43,7 +43,7 @@ object CategoryRecord {
         HasSupplementaryUnitPage(recordId),
         SupplementaryUnitPage(recordId)
       ),
-      getMeasurementUnit(answers)
+      getMeasurementUnit(answers, recordId)
     ).parMapN((category, supplementaryUnit, measurementUnit) =>
       CategoryRecord(
         eori = eori,
@@ -107,6 +107,16 @@ object CategoryRecord {
     }
   }
 
-  //TODO: get measurementUnit from answers
-  private def getMeasurementUnit(answers: UserAnswers): EitherNec[ValidationError, Option[String]] = Right(Some("1"))
+  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
+    answers
+      .get(RecordCategorisationsQuery)
+      .map { recordCategorisations =>
+        recordCategorisations.records
+          .get(recordId)
+          .map { categorisationInfo =>
+            Right(categorisationInfo.measureUnit)
+          }
+          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
+      }
+      .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
 }
