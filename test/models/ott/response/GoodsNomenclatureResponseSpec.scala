@@ -35,7 +35,7 @@ class GoodsNomenclatureResponseSpec extends AnyFreeSpec with Matchers {
       )
 
       val result = json.validate[GoodsNomenclatureResponse]
-      result mustEqual JsSuccess(GoodsNomenclatureResponse("1", "foo", "bar"))
+      result mustEqual JsSuccess(GoodsNomenclatureResponse("1", "foo", Some("bar")))
     }
   }
 }

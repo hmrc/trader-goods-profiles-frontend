@@ -28,7 +28,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return a model from a simple OTT response (one assessment, no exemptions)" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
         includedElements = Seq(
           CategoryAssessmentResponse("assessmentId", "themeId", Nil),
@@ -41,7 +41,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         categoryAssessments = Seq(
           CategoryAssessment("assessmentId", 2, Nil)
         ),
-        "some measure unit"
+        Some("some measure unit")
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -51,7 +51,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return a model from an OTT response (multiple assessments with exemptions)" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(
           CategoryAssessmentRelationship("assessmentId1"),
           CategoryAssessmentRelationship("assessmentId2")
@@ -88,7 +88,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
             )
           )
         ),
-        "some measure unit"
+        Some("some measure unit")
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -98,7 +98,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must order its assessments in order of category (lowest first) then number of exemptions (lowest first)" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(
           CategoryAssessmentRelationship("assessmentId1"),
           CategoryAssessmentRelationship("assessmentId2"),
@@ -171,7 +171,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
             )
           )
         ),
-        "some measure unit"
+        Some("some measure unit")
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -181,7 +181,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return None when a category assessment cannot be found" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
         includedElements = Seq(
           ThemeResponse("otherThemeId", 2)
@@ -194,7 +194,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return None when the correct theme cannot be found" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
         includedElements = Seq(
           CategoryAssessmentResponse("assessmentId", "themeId", Nil),
@@ -208,7 +208,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return None when a certificate cannot be found" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(
           CategoryAssessmentRelationship("assessmentId1")
         ),
@@ -232,7 +232,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return None when an additional code cannot be found" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", "some measure unit"),
+        goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit")),
         categoryAssessmentRelationships = Seq(
           CategoryAssessmentRelationship("assessmentId1")
         ),
