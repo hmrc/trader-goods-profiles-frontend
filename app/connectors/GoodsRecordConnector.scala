@@ -55,12 +55,14 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   def updateGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    httpClient
-      .put(updateGoodsRecordUrl(eori, recordId))
-      .setHeader(clientIdHeader)
-      .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
-      .execute[HttpResponse]
-      .map(_ => Done)
+     {
+      val a = httpClient
+        .put(updateGoodsRecordUrl(eori, recordId))
+        .setHeader(clientIdHeader)
+        .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
+        val b = a.execute[HttpResponse]
+        b.map(_ => Done)
+    }
 
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier

@@ -19,23 +19,22 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
+import models.AssessmentAnswer.NoExemption
 import models.{AssessmentAnswer, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
-import models.AssessmentAnswer.NoExemption
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.i18n.Messages
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.RecordCategorisationsQuery
-import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
-import play.api.test.Helpers.{await, _}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
 
@@ -337,14 +336,14 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           val mockConnector = mock[GoodsRecordConnector]
           val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditFinishUpdateGoodsRecord(any, any)(any))
-          .thenReturn(Future.successful(Done))
+          val mockAuditService = mock[AuditService]
+          when(mockAuditService.auditFinishUpdateGoodsRecord(any, any)(any))
+            .thenReturn(Future.successful(Done))
 
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .build()
 
           running(application) {
