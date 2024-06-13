@@ -47,8 +47,8 @@ class SupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
       val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -59,7 +59,7 @@ class SupplementaryUnitController @Inject() (
           Ok(view(preparedForm, mode, recordId, categorisationsQuery.records(recordId).measureUnit))
         case None                       => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
-    }
+  }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
