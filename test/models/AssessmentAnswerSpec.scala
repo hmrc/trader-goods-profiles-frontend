@@ -52,7 +52,7 @@ class AssessmentAnswerSpec extends SpecBase {
 
       implicit val testMessages: Messages = messages(applicationBuilder(None).build())
 
-     val result = AssessmentAnswer.radioOptions(exemptions)
+      val result = AssessmentAnswer.radioOptions(exemptions)
 
       result.size mustBe 4
       result.count(x => x.value.contains("id1")) mustBe 1
