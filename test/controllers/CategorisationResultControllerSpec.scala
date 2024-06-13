@@ -17,29 +17,149 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testRecordId
-import models.helper.Category1NoExemptions
+import base.TestConstants.{testEori, testRecordId}
+import connectors.GoodsRecordConnector
+import models.helper.{Category1, Category2, StandardNoSupplementaryUnits}
+import models.router.responses.GetGoodsRecordResponse
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CategorisationResultView
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.when
+import play.api.inject.bind
+
+import scala.concurrent.Future
 
 class CategorisationResultControllerSpec extends SpecBase {
 
   "CategorisationResult Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET" - {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      "Category1" in {
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.getRecord(eqTo(testEori), eqTo(testRecordId))(any()))
+          .thenReturn(
+            Future.successful(
+              GetGoodsRecordResponse(
+                testRecordId,
+                "10410100",
+                "EC",
+                1,
+                None
+              )
+            )
+          )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(Category1)(request, messages(application)).toString
+        }
+      }
+
+      "Category2" in {
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.getRecord(eqTo(testEori), eqTo(testRecordId))(any()))
+          .thenReturn(
+            Future.successful(
+              GetGoodsRecordResponse(
+                testRecordId,
+                "10410100",
+                "EC",
+                2,
+                None
+              )
+            )
+          )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(Category2)(request, messages(application)).toString
+        }
+      }
+
+      "StandardNoSupplementaryUnits" in {
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.getRecord(eqTo(testEori), eqTo(testRecordId))(any()))
+          .thenReturn(
+            Future.successful(
+              GetGoodsRecordResponse(
+                testRecordId,
+                "10410100",
+                "EC",
+                3,
+                None
+              )
+            )
+          )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(StandardNoSupplementaryUnits)(request, messages(application)).toString
+        }
+      }
+    }
+
+    "must error if the goods record has supplementary units and is category 1" in {
+
+      val mockConnector = mock[GoodsRecordConnector]
+      when(mockConnector.getRecord(eqTo(testEori), eqTo(testRecordId))(any()))
+        .thenReturn(
+          Future.successful(
+            GetGoodsRecordResponse(
+              testRecordId,
+              "10410100",
+              "EC",
+              3,
+              Some(1)
+            )
+          )
+        )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId).url)
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CategorisationResultView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(Category1NoExemptions)(request, messages(application)).toString
+        intercept[Exception] {
+          await(route(application, request).value)
+        }
       }
     }
   }
