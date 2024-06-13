@@ -46,7 +46,7 @@ object AssessmentAnswer {
     }
 
   def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =
-    exemptions.zipWithIndex.map { case (exemption, index) =>
+    exemptions.distinct.zipWithIndex.map { case (exemption, index) =>
       RadioItem(
         content = Text(messages("assessment.exemption", exemption.code, exemption.description)),
         value = Some(exemption.id),
