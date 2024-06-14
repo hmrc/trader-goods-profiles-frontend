@@ -50,8 +50,8 @@ POST        /ukims-number                                    controllers.UkimsNu
 GET         /ukims-number/check                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /categorisation-start/:recordId                  controllers.CategoryGuidanceController.onPageLoad(recordId: String)
-POST        /categorisation-start/:recordId                  controllers.CategoryGuidanceController.onSubmit(recordId: String)
+GET         /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onPageLoad(recordId: String)
+POST        /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
 GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
