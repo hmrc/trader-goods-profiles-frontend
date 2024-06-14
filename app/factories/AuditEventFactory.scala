@@ -22,6 +22,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
 
+import java.time.Instant
+
 case class AuditEventFactory() {
 
   private val auditSource = "trader-goods-profiles-frontend"
@@ -115,11 +117,40 @@ case class AuditEventFactory() {
     )
   }
 
-  def createValidateCommodityCodeEvent(eori: String, affinityGroup: AffinityGroup)(implicit hc: HeaderCarrier): DataEvent = {
+  def createValidateCommodityCodeEvent(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: String,
+    recordId: String,
+    commodityCode: String,
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    commodityCodeStatus: Boolean,
+    statusString: String,
+    statusCode: Int,
+    failureReason: String,
+    commodityCodeDescription: String,
+    commodityCodeEffectiveTo: Option[Instant],
+    commodityCodeEffectiveFrom: Instant
+  )(implicit hc: HeaderCarrier): DataEvent = {
 
+    //TODO will this look right
+    //TODO cleanup parameters
     val auditDetails = Map(
       "eori" -> eori,
-      "affinityGroup" -> affinityGroup.toString
+      "affinityGroup" -> affinityGroup.toString,
+      "journey" -> journey,
+      "recordId" -> recordId,
+      "commodityCode" -> commodityCode,
+      "requestDateTime" -> requestDateTime.toString,
+      "responseDateTime" -> responseDateTime.toString,
+      "outcome.commodityCodeStatus" -> (if (commodityCodeStatus) "valid" else "invalid"), //TODO test both
+      "outcome.status" -> statusString,
+      "outcome.statusCode" -> statusCode.toString,
+      "outcome.failureReason" -> failureReason,
+      "commodityDescription" -> commodityCodeDescription,
+      "commodityCodeEffectiveTo" -> commodityCodeEffectiveTo.map(_.toString).getOrElse("null"), //TODO test both
+      "commodityCodeEffectiveFrom" -> commodityCodeEffectiveFrom.toString
     )
 
     DataEvent(

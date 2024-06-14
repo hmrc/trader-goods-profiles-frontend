@@ -17,7 +17,7 @@
 package factories
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, testRecordId}
 import models.{Commodity, GoodsRecord, TraderProfile}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -173,7 +173,22 @@ class AuditEventFactorySpec extends SpecBase {
 
       "create event" in {
 
-        val result = AuditEventFactory().createValidateCommodityCodeEvent(testEori, AffinityGroup.Individual)
+        val result = AuditEventFactory().createValidateCommodityCodeEvent(
+          testEori,
+          AffinityGroup.Individual,
+          "CreateRecord",
+          testRecordId,
+          testCommodity.commodityCode,
+          Instant.parse("2024-06-03T15:19:18.399Z"),
+          Instant.parse("2024-06-03T15:19:20.399Z"),
+          true,
+          "OK",
+          200,
+          "null",
+          "meat",
+          None,
+          Instant.parse("2012-01-01T00:00:00Z")
+        )
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
         result.auditType mustBe "ValidateCommodityCode"
@@ -181,10 +196,21 @@ class AuditEventFactorySpec extends SpecBase {
 
         val auditDetails = result.detail
 
-        auditDetails.size mustBe 2
+        auditDetails.size mustBe 14
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
-
+        auditDetails("journey") mustBe "CreateRecord"
+        auditDetails("recordId") mustBe testRecordId
+        auditDetails("commodityCode") mustBe testCommodity.commodityCode
+        auditDetails("requestDateTime") mustBe "2024-06-03T15:19:18.399Z"
+        auditDetails("responseDateTime") mustBe "2024-06-03T15:19:20.399Z"
+        auditDetails("outcome.commodityCodeStatus") mustBe "valid"
+        auditDetails("outcome.status") mustBe "OK"
+        auditDetails("outcome.statusCode") mustBe "200"
+        auditDetails("outcome.failureReason") mustBe "null"
+        auditDetails("commodityDescription") mustBe "meat"
+        auditDetails("commodityCodeEffectiveTo") mustBe "null"
+        auditDetails("commodityCodeEffectiveFrom") mustBe "2012-01-01T00:00:00Z"
 
       }
 
