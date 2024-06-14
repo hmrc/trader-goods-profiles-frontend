@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory: AuditEventFactory)(implicit
@@ -89,6 +90,34 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       logger.info(s"StartUpdateGoodsRecord audit event status: $auditResult")
       Done
     }
+  }
+
+  def auditValidateCommodityCode(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: String,
+    recordId: String,
+    commodityCode: String,
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    commodityCodeStatus: Boolean,
+    statusString: String,
+    statusCode: Int,
+    failureReason: String,
+    commodityCodeDescription: String,
+    commodityCodeEffectiveTo: Option[Instant],
+    commodityCodeEffectiveFrom: Instant
+  )(implicit hc: HeaderCarrier): Future[Done] = {
+
+    val event = auditEventFactory.createValidateCommodityCodeEvent(
+      eori, affinityGroup, journey, recordId, commodityCode, requestDateTime, responseDateTime, commodityCodeStatus, statusString, statusCode, failureReason, commodityCodeDescription, commodityCodeEffectiveTo, commodityCodeEffectiveFrom
+    )
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"ValidateCommodityCode audit event status: $auditResult")
+      Done
+    }
+
   }
 
 }
