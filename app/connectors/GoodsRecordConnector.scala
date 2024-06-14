@@ -32,21 +32,19 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val tgpRouterBaseUrl: Service                         = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private val clientIdHeader                                    = ("X-Client-ID", "tgp-frontend")
-  private def createUpdateGoodsRecordUrl(eori: String)          =
+  private val tgpRouterBaseUrl: Service                = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val clientIdHeader                           = ("X-Client-ID", "tgp-frontend")
+  private def createGoodsRecordUrl(eori: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
-  private def getGoodsRecordUrl(eori: String, recordId: String) =
-    url"$tgpRouterBaseUrl/trader-goods-profiles-router/$eori/records/$recordId"
 
-  private def updateGoodsRecordUrl(eori: String, recordId: String) =
+  private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
     httpClient
-      .post(createUpdateGoodsRecordUrl(goodsRecord.eori))
+      .post(createGoodsRecordUrl(goodsRecord.eori))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
@@ -56,7 +54,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .put(updateGoodsRecordUrl(eori, recordId))
+      .put(singleGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
       .execute[HttpResponse]
@@ -66,7 +64,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[GetGoodsRecordResponse] =
     httpClient
-      .get(getGoodsRecordUrl(eori, recordId))
+      .get(singleGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
