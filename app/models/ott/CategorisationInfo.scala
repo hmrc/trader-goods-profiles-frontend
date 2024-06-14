@@ -33,7 +33,11 @@ object CategorisationInfo {
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
       .map { assessments =>
-        CategorisationInfo(ott.goodsNomenclature.commodityCode, assessments.sorted, ott.goodsNomenclature.measurementUnit)
+        CategorisationInfo(
+          ott.goodsNomenclature.commodityCode,
+          assessments.sorted,
+          ott.goodsNomenclature.measurementUnit
+        )
       }
 
   implicit lazy val format: OFormat[CategorisationInfo] = Json.format

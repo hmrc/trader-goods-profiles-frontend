@@ -95,7 +95,7 @@ class GoodsRecordConnectorSpec
          |  }
          |""".stripMargin)
 
-  private val getUpdateGoodsRecordUrl    = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
+  private val getUpdateGoodsRecordUrl = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
 
   private val instant = Instant.now
 

@@ -53,7 +53,7 @@ class SupplementaryUnitController @Inject() (
         query <- request.userAnswers.get(RecordCategorisationsQuery)
         unit  <- query.records(recordId).measurementUnit
       } yield unit) match {
-        case None              => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         case Some(measurementUnit) =>
           val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
             case None        => form
@@ -73,7 +73,7 @@ class SupplementaryUnitController @Inject() (
               query <- request.userAnswers.get(RecordCategorisationsQuery)
               unit  <- query.records(recordId).measurementUnit
             } yield unit) match {
-              case None              => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+              case None                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
               case Some(measurementUnit) =>
                 Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
             },
