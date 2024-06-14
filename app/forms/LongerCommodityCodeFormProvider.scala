@@ -28,6 +28,8 @@ class LongerCommodityCodeFormProvider @Inject() extends Mappings {
     Form(
       "value" -> text("longerCommodityCode.error.required")
         .transform(removeWhitespace, identity[String])
-        .verifying(regexp(StringFieldRegex.longerCommodityCodeRegex, "longerCommodityCode.invalidFormat"))
+        .verifying(
+          regexp(StringFieldRegex.commodityCodeAdditionalNumbersRegex, "longerCommodityCode.error.invalidFormat")
+        )
     )
 }

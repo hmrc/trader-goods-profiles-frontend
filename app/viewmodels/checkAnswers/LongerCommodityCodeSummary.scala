@@ -24,19 +24,17 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object LongerCommodityCodeSummary  {
+object LongerCommodityCodeSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(LongerCommodityCodePage).map {
-      answer =>
-
-        SummaryListRowViewModel(
-          key     = "longerCommodityCode.checkYourAnswersLabel",
-          value   = ValueViewModel(answer.toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
-              .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
-          )
+    answers.get(LongerCommodityCodePage).map { answer =>
+      SummaryListRowViewModel(
+        key = "longerCommodityCode.checkYourAnswersLabel",
+        value = ValueViewModel(answer.toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
         )
+      )
     }
 }

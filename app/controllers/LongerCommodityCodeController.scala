@@ -32,49 +32,50 @@ import views.html.LongerCommodityCodeView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class LongerCommodityCodeController @Inject()(
-                                        override val messagesApi: MessagesApi,
-                                        sessionRepository: SessionRepository,
-                                        navigator: Navigator,
-                                        identify: IdentifierAction,
-                                        getData: DataRetrievalAction,
-                                        requireData: DataRequiredAction,
-                                        formProvider: LongerCommodityCodeFormProvider,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        view: LongerCommodityCodeView
-                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class LongerCommodityCodeController @Inject() (
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  formProvider: LongerCommodityCodeFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: LongerCommodityCodeView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
       val preparedForm = request.userAnswers.get(LongerCommodityCodePage) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) => Ok(view(preparedForm, mode, commodity, recordId))
-        case None => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
-  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          request.userAnswers.get(CommodityQuery) match {
-            case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity, recordId)))
-            case None => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-          },
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(LongerCommodityCodePage, mode, updatedAnswers))
-      )
-  }
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            request.userAnswers.get(CommodityQuery) match {
+              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity, recordId)))
+              case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+            },
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(LongerCommodityCodePage, mode, updatedAnswers))
+        )
+    }
 }
