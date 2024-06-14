@@ -119,4 +119,13 @@ trait Generators {
       Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDate
     }
   }
+
+  def doublesInRangeWithCommas(min: Double, max: Double): Gen[String] = {
+    val numberGen = choose[Double](min, max).map(_.toString)
+    genIntersperseString(numberGen, ",")
+  }
+
+//  def doublesBelowValue(value: Double): Gen[Double] =
+//    arbitrary[Double] retryUntil (_ < value)
+
 }

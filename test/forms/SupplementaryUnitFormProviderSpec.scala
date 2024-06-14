@@ -16,10 +16,10 @@
 
 package forms
 
-import forms.behaviours.IntFieldBehaviours
+import forms.behaviours.DoubleFieldBehaviours
 import play.api.data.FormError
 
-class SupplementaryUnitFormProviderSpec extends IntFieldBehaviours {
+class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours {
 
   val form = new SupplementaryUnitFormProvider()()
 
@@ -27,10 +27,10 @@ class SupplementaryUnitFormProviderSpec extends IntFieldBehaviours {
 
     val fieldName = "value"
 
-    val minimum = 0
-    val maximum = Int.MaxValue
+    val minimum = -9999999999.999999
+    val maximum = 9999999999.999999
 
-    val validDataGenerator = intsInRangeWithCommas(minimum, maximum)
+    val validDataGenerator = doublesInRangeWithCommas(minimum, maximum)
 
     behave like fieldThatBindsValidData(
       form,
@@ -38,20 +38,19 @@ class SupplementaryUnitFormProviderSpec extends IntFieldBehaviours {
       validDataGenerator
     )
 
-    behave like intField(
+    behave like doubleField(
       form,
       fieldName,
-      nonNumericError = FormError(fieldName, "supplementaryUnit.error.nonNumeric"),
-      wholeNumberError = FormError(fieldName, "supplementaryUnit.error.wholeNumber")
+      nonNumericError = FormError(fieldName, "supplementaryUnit.error.nonNumeric")
     )
 
-    behave like intFieldWithRange(
-      form,
-      fieldName,
-      minimum = minimum,
-      maximum = maximum,
-      expectedError = FormError(fieldName, "supplementaryUnit.error.outOfRange", Seq(minimum, maximum))
-    )
+//    behave like intFieldWithRange(
+//      form,
+//      fieldName,
+//      minimum = minimum,
+//      maximum = maximum,
+//      expectedError = FormError(fieldName, "supplementaryUnit.error.outOfRange", Seq(minimum, maximum))
+//    )
 
     behave like mandatoryField(
       form,

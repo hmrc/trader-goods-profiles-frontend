@@ -35,19 +35,15 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
     val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
     val categorisationInfo                  =
-      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("some measure unit"))
+      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"))
     val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
     val emptyRecordCategorisations          = RecordCategorisations(records = Map())
     val noCategory1RecordCategorisations    =
-      RecordCategorisations(records =
-        Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("some measure unit")))
-      )
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"))))
     val noCategory1Or2RecordCategorisations =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("some measure unit"))))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"))))
     val noCategory2RecordCategorisations    =
-      RecordCategorisations(records =
-        Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("some measure unit")))
-      )
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"))))
 
     "must return a CategoryRecord when all mandatory questions are answered" - {
 
@@ -73,7 +69,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             Some(1.0),
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -94,7 +90,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -118,7 +114,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -145,7 +141,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -175,7 +171,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             2,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -208,7 +204,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             2,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -241,7 +237,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -264,7 +260,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -287,7 +283,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -307,7 +303,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }

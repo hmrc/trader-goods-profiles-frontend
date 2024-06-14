@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package forms
+package forms.behaviours
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import generators.Generators
+import org.scalacheck.Gen
+import play.api.data.{Form, FormError}
 
-class SupplementaryUnitFormProvider @Inject() extends Mappings {
+trait DoubleFieldBehaviours extends FieldBehaviours with Generators {
 
-  def apply(): Form[Double] =
-    Form(
-      "value" -> double(
-        "supplementaryUnit.error.required",
-        "supplementaryUnit.error.nonNumeric"
-      )
-        .verifying(inRange(-9999999999.999999, 9999999999.999999, "supplementaryUnit.error.outOfRange"))
-    )
+  def doubleField(form: Form[_], fieldName: String, nonNumericError: FormError): Unit =
+    "must not bind non-numeric numbers" in {
+
+      forAll(nonNumerics -> "nonNumeric") { nonNumeric =>
+        val result = form.bind(Map(fieldName -> nonNumeric)).apply(fieldName)
+        result.errors mustEqual Seq(nonNumericError)
+      }
+    }
 }

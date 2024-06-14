@@ -113,17 +113,23 @@ trait Formatters {
     args: Seq[String] = Seq.empty
   ): Formatter[Double] =
     new Formatter[Double] {
+
+      val decimalPattern = """^\d{1,10}(\.\d{1,6})?$"""
+
       private val baseFormatter = stringFormatter(requiredKey, args)
 
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
-          .map(_.replace(",", ""))
-          .flatMap { s =>
-            nonFatalCatch
-              .either(s.toDouble)
-              .left
-              .map(_ => Seq(FormError(key, nonNumericKey, args)))
+          .map(_.replace(",", "").replace(" ", ""))
+          .flatMap {
+            case s if s.matches(decimalPattern) =>
+              Left(Seq(FormError(key, nonNumericKey, args)))
+            case s                              =>
+              nonFatalCatch
+                .either(s.toDouble)
+                .left
+                .map(_ => Seq(FormError(key, nonNumericKey, args)))
           }
 
       override def unbind(key: String, value: Double) =
