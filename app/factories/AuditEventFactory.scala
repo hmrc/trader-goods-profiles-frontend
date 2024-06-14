@@ -115,6 +115,21 @@ case class AuditEventFactory() {
     )
   }
 
+  def createValidateCommodityCodeEvent(eori: String, affinityGroup: AffinityGroup)(implicit hc: HeaderCarrier): DataEvent = {
+
+    val auditDetails = Map(
+      "eori" -> eori,
+      "affinityGroup" -> affinityGroup.toString
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "ValidateCommodityCode",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
   private def writeOptional(containsValueDescription: String, valueDescription: String, optionalValue: Option[String]) =
     optionalValue
       .map { value =>

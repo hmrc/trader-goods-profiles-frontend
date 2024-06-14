@@ -169,6 +169,27 @@ class AuditEventFactorySpec extends SpecBase {
 
     }
 
+    "create validate commodity code event" - {
+
+      "create event" in {
+
+        val result = AuditEventFactory().createValidateCommodityCodeEvent(testEori, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "ValidateCommodityCode"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+
+        auditDetails.size mustBe 2
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+
+
+      }
+
+    }
+
   }
 
 }
