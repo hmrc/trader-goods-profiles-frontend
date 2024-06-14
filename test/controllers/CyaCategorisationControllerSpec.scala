@@ -307,7 +307,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               eori = testEori,
               recordId = testRecordId,
               category = 1,
-              measurementUnit = Some("1")
+              measurementUnit = Some("Weight, in kilograms")
             )
 
             status(result) mustEqual SEE_OTHER
