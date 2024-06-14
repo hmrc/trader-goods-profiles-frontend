@@ -323,6 +323,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
+            RecordIdMissing(RecordCategorisationsQuery),
             RecordIdMissing(RecordCategorisationsQuery)
           )
         }
@@ -336,6 +337,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(RecordCategorisationsQuery),
             PageMissing(RecordCategorisationsQuery)
           )
         }

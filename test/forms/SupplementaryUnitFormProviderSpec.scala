@@ -44,13 +44,13 @@ class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours {
       nonNumericError = FormError(fieldName, "supplementaryUnit.error.nonNumeric")
     )
 
-//    behave like intFieldWithRange(
-//      form,
-//      fieldName,
-//      minimum = minimum,
-//      maximum = maximum,
-//      expectedError = FormError(fieldName, "supplementaryUnit.error.outOfRange", Seq(minimum, maximum))
-//    )
+    behave like doubleFieldWithRange(
+      form,
+      fieldName,
+      minimum = minimum,
+      maximum = maximum,
+      expectedError = FormError(fieldName, "supplementaryUnit.error.outOfRange", Seq(minimum, maximum))
+    )
 
     behave like mandatoryField(
       form,

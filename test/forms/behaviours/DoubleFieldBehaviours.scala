@@ -17,7 +17,6 @@
 package forms.behaviours
 
 import generators.Generators
-import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 
 trait DoubleFieldBehaviours extends FieldBehaviours with Generators {
@@ -28,6 +27,21 @@ trait DoubleFieldBehaviours extends FieldBehaviours with Generators {
       forAll(nonNumerics -> "nonNumeric") { nonNumeric =>
         val result = form.bind(Map(fieldName -> nonNumeric)).apply(fieldName)
         result.errors mustEqual Seq(nonNumericError)
+      }
+    }
+
+  def doubleFieldWithRange(
+    form: Form[_],
+    fieldName: String,
+    minimum: Double,
+    maximum: Double,
+    expectedError: FormError
+  ): Unit =
+    s"not bind integers outside the range $minimum to $maximum" in {
+
+      forAll(doublesOutsideRange(minimum, maximum) -> "doubleOutsideRange") { number =>
+        val result = form.bind(Map(fieldName -> number.toString)).apply(fieldName)
+        result.errors must contain only expectedError
       }
     }
 }

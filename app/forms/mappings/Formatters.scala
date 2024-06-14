@@ -124,7 +124,10 @@ trait Formatters {
           .map(_.replace(",", "").replace(" ", ""))
           .flatMap {
             case s if s.matches(decimalPattern) =>
-              Left(Seq(FormError(key, nonNumericKey, args)))
+              nonFatalCatch
+                .either(s.toDouble)
+                .left
+                .map(_ => Seq(FormError(key, nonNumericKey, args)))
             case s                              =>
               nonFatalCatch
                 .either(s.toDouble)

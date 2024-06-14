@@ -125,7 +125,7 @@ trait Generators {
     genIntersperseString(numberGen, ",")
   }
 
-//  def doublesBelowValue(value: Double): Gen[Double] =
-//    arbitrary[Double] retryUntil (_ < value)
+  def doublesOutsideRange(min: Double, max: Double): Gen[Double] =
+    arbitrary[Double] suchThat (x => x < min || x > max)
 
 }
