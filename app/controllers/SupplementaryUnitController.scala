@@ -49,17 +49,18 @@ class SupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      (for {
-        query <- request.userAnswers.get(RecordCategorisationsQuery)
-        unit  <- query.records(recordId).measurementUnit
-      } yield unit) match {
-        case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-        case Some(measurementUnit) =>
-          val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
-            case None        => form
-            case Some(value) => form.fill(value)
+      val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      request.userAnswers.get(RecordCategorisationsQuery) match {
+        case None        => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case Some(query) =>
+          query.records(recordId).measurementUnit match {
+            case None                  => Ok(view(preparedForm, mode, recordId, ""))
+            case Some(measurementUnit) => Ok(view(preparedForm, mode, recordId, measurementUnit))
           }
-          Ok(view(preparedForm, mode, recordId, measurementUnit))
       }
   }
 
@@ -69,13 +70,14 @@ class SupplementaryUnitController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            (for {
-              query <- request.userAnswers.get(RecordCategorisationsQuery)
-              unit  <- query.records(recordId).measurementUnit
-            } yield unit) match {
-              case None                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-              case Some(measurementUnit) =>
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+            request.userAnswers.get(RecordCategorisationsQuery) match {
+              case None        => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+              case Some(query) =>
+                query.records(recordId).measurementUnit match {
+                  case None                  => Future.successful(BadRequest(view(formWithErrors, mode, recordId, "")))
+                  case Some(measurementUnit) =>
+                    Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+                }
             },
           value =>
             for {
