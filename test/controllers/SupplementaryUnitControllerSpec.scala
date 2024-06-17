@@ -72,6 +72,30 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must return OK and the correct view for a GET When Measurement Unit is Empty" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisationsEmptyMeasurementUnit)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, supplementaryUnitRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[SupplementaryUnitView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "")(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId)
@@ -154,6 +178,34 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "Weight, in kilograms")(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted and Measurement Unit is Empty" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisationsEmptyMeasurementUnit)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, supplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
+
+        val boundForm = form.bind(Map("value" -> "invalid value"))
+
+        val view = application.injector.instanceOf[SupplementaryUnitView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "")(
           request,
           messages(application)
         ).toString
