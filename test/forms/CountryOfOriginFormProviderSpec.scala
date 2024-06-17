@@ -17,15 +17,15 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
+import models.Country
 import play.api.data.FormError
 
 class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "countryOfOrigin.error.required"
-  val lengthKey   = "countryOfOrigin.error.length"
-  val maxLength   = 100
-
-  val form = new CountryOfOriginFormProvider()()
+  val invalidKey  = "countryOfOrigin.error.invalid"
+  val countries   = Seq(Country("CN", "China"))
+  val form        = new CountryOfOriginFormProvider()(countries)
 
   ".value" - {
 
@@ -34,20 +34,20 @@ class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      "CN"
     )
 
     behave like mandatoryField(
       form,
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
+    )
+
+    behave like fieldThatErrorsOnInvalidData(
+      form,
+      fieldName,
+      "TEST",
+      FormError(fieldName, invalidKey)
     )
   }
 }

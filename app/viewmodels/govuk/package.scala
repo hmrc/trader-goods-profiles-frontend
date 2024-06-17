@@ -25,6 +25,7 @@ package object govuk {
       with CheckboxFluency
       with DateFluency
       with ErrorSummaryFluency
+      with SelectFluency
       with FieldsetFluency
       with HintFluency
       with InputFluency
