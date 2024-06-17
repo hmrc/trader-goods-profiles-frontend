@@ -95,7 +95,6 @@ class CyaCategorisationController @Inject() (
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
-            println(model.category)
             Redirect(
               routes.CategorisationResultController.onPageLoad(recordId, Scenario.getScenario(model))
             )
