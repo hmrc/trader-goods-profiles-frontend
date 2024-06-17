@@ -16,7 +16,6 @@
 
 package models.router.responses
 
-import models.router.Assessment
 import play.api.libs.json.{OWrites, Reads, __}
 
 final case class GetGoodsRecordResponse(

@@ -16,17 +16,13 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
 import controllers.actions._
-import models.helper.CategorisationHelper
-
+import models.Scenario
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategorisationResultView
-
-import scala.concurrent.ExecutionContext
 
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,17 +30,12 @@ class CategorisationResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView,
-  goodsRecordConnector: GoodsRecordConnector
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+  view: CategorisationResultView
+) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { goodsRecord =>
-        val scenario = CategorisationHelper.getScenario(goodsRecord)
-        Ok(view(scenario))
-      }
-  }
+  def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      Ok(view(recordId, scenario))
+    }
 }
