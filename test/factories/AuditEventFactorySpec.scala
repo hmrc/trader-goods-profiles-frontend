@@ -177,7 +177,7 @@ class AuditEventFactorySpec extends SpecBase {
           testEori,
           AffinityGroup.Individual,
           "CreateRecord",
-          testRecordId,
+          Some(testRecordId),
           testCommodity.commodityCode,
           Instant.parse("2024-06-03T15:19:18.399Z"),
           Instant.parse("2024-06-03T15:19:20.399Z"),

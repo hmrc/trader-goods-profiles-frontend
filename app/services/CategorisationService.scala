@@ -20,10 +20,12 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.{RecordCategorisations, UserAnswers}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
+import pages.CountryOfOriginPage
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -47,7 +49,10 @@ class CategorisationService @Inject() (
       case None    =>
         for {
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature      <- ottConnector.getCategorisationInfo(getGoodsRecordResponse.commodityCode)
+          goodsNomenclature      <- ottConnector.getCategorisationInfo(getGoodsRecordResponse.commodityCode, request.eori,
+            request.affinityGroup, Some(recordId), getGoodsRecordResponse.countryOfOrigin,
+            LocalDate.now(), //TODO??
+          )
           categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
           updatedAnswers         <-
             Future.fromTry(

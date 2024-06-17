@@ -96,7 +96,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     eori: String,
     affinityGroup: AffinityGroup,
     journey: String,
-    recordId: String,
+    recordId: Option[String],
     commodityCode: String,
     requestDateTime: Instant,
     responseDateTime: Instant,
@@ -122,7 +122,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     def auditGetCategorisationAssessmentDetails(
       eori: String,
       affinityGroup: AffinityGroup,
-      recordId: String,
+      recordId: Option[String],
       commodityCode: String,
       countryOfOrigin: String,
       dateOfTrade: LocalDate,

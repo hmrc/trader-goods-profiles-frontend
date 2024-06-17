@@ -25,7 +25,8 @@ import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpException, HttpResponse, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
+import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.net.URL
 import java.time.{Instant, LocalDate}
@@ -43,7 +44,14 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
-  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String,mode: String
+  private def getFromOtt[T](
+    commodityCode: String, urlFunc: String => URL, authToken: String,mode: String,
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: String,
+    recordId: Option[String],
+    countryOfOrigin: String,
+    dateOfTrade: LocalDate
   )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
@@ -66,39 +74,38 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
               .map(result => {
                 if (mode == "commodity") {
                   auditService.auditValidateCommodityCode(
-                    "eori",
-                    AffinityGroup.Individual,
-                    "create",
-                    "recId",
+                    eori,
+                    affinityGroup,
+                    journey,
+                    recordId,
                     commodityCode,
                     requestStartTime,
                     requestEndTime,
                     true,
-                    "OK",
-                    200,
+                    codeDescriptions(response.status),
+                    response.status,
                     "null",
-                    "todo",
-                    None,
-                    Instant.now
+                    result.asInstanceOf[Commodity].description,
+                    result.asInstanceOf[Commodity].validityEndDate,
+                    result.asInstanceOf[Commodity].validityStartDate
                   )
                 } else {
                   auditService.auditGetCategorisationAssessmentDetails(
-                    "eori",
-                    AffinityGroup.Individual,
-                    "recorId",
+                    eori,
+                    affinityGroup,
+                    recordId,
                     commodityCode,
-                    "AZ",
-                    LocalDate.now(),
+                    countryOfOrigin,
+                    dateOfTrade,
                     requestStartTime,
                     requestEndTime,
-                    "OK",
-                    200,
+                    codeDescriptions(response.status),
+                    response.status,
                     "null",
-                    27,
-                    37
+                    result.asInstanceOf[OttResponse].categoryAssessments.size,
+                    result.asInstanceOf[OttResponse].categoryAssessments.map(x => x.exemptions.size).sum
                   )
                 }
-
 
                 Future.successful(result)
               })
@@ -111,110 +118,110 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
           if (mode == "commodity") {
             auditService.auditValidateCommodityCode(
-              "eori",
-              AffinityGroup.Individual,
-              "create",
-              "recId",
+              eori,
+              affinityGroup,
+              journey,
+              recordId,
               commodityCode,
               requestStartTime,
               Instant.now,
-              true,
-              "OK",
-              200,
+              false,
+              codeDescriptions(e.responseCode),
+              e.responseCode,
+              e.message,
               "null",
-              "todo",
               None,
               Instant.now
             )
           } else {
             auditService.auditGetCategorisationAssessmentDetails(
-              "eori",
-              AffinityGroup.Individual,
-              "recorId",
+              eori,
+              affinityGroup,
+              recordId,
               commodityCode,
-              "AZ",
-              LocalDate.now(),
+              countryOfOrigin,
+              dateOfTrade,
               requestStartTime,
               Instant.now,
-              "OK",
-              200,
-              "null",
-              27,
-              37
+              codeDescriptions(e.responseCode),
+              e.responseCode,
+              e.message,
+              0,
+              0
             )
           }
           Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
         case e: Upstream5xxResponse =>
           if (mode == "commodity") {
             auditService.auditValidateCommodityCode(
-              "eori",
-              AffinityGroup.Individual,
-              "create",
-              "recId",
+              eori,
+              affinityGroup,
+              journey,
+              recordId,
               commodityCode,
               requestStartTime,
               Instant.now,
-              true,
-              "OK",
-              200,
+              false,
+              codeDescriptions(e.statusCode),
+              e.statusCode,
+              e.message,
               "null",
-              "todo",
               None,
               Instant.now
             )
           } else {
             auditService.auditGetCategorisationAssessmentDetails(
-              "eori",
-              AffinityGroup.Individual,
-              "recorId",
+              eori,
+              affinityGroup,
+              recordId,
               commodityCode,
-              "AZ",
-              LocalDate.now(),
+              countryOfOrigin,
+              dateOfTrade,
               requestStartTime,
               Instant.now,
-              "OK",
-              200,
-              "null",
-              27,
-              37
+              codeDescriptions(e.statusCode),
+              e.statusCode,
+              e.message,
+              0,
+              0
             )
           }
 
           Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
 
-        case f =>
+        case f: UpstreamErrorResponse =>
           if (mode == "commodity") {
             auditService.auditValidateCommodityCode(
-              "eori",
-              AffinityGroup.Individual,
-              "create",
-              "recId",
-              commodityCode,
-              requestStartTime,
-              Instant.now,
-              true,
-              "OK",
-              200,
-              "null",
-              "todo",
-              None,
-              Instant.now
+              eori, //bef
+              affinityGroup, //bef
+              journey, //bef
+              recordId, //bef
+              commodityCode, //bef
+              requestStartTime, //loc
+              Instant.now, //loc
+              false, //resp
+              codeDescriptions(f.statusCode), //resp
+              f.statusCode, //resp
+              f.message, //resp
+              "null", //res
+              None, //res
+              Instant.now //res
             )
           } else {
             auditService.auditGetCategorisationAssessmentDetails(
-              "eori",
-              AffinityGroup.Individual,
-              "recorId",
-              commodityCode,
-              "AZ",
-              LocalDate.now(),
-              requestStartTime,
-              Instant.now,
-              "OK",
-              200,
-              "null",
-              27,
-              37
+              eori, //bef
+              affinityGroup, //bef
+              recordId, //bef
+              commodityCode, //bef
+              countryOfOrigin,//bef
+              LocalDate.now(),//bef
+              requestStartTime, //local
+              Instant.now, //local
+              codeDescriptions(f.statusCode), //response
+              f.statusCode, //response
+              f.message, // response
+              0, //result
+              0 //result
             )
           }
 
@@ -224,10 +231,14 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       }
   }
 
-  def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] =
-    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken", "commodity")
+  def getCommodityCode(commodityCode: String, eori: String, affinityGroup: AffinityGroup, journey: String,
+                       recordId: Option[String])(implicit hc: HeaderCarrier): Future[Commodity] =
+    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken", "commodity", eori, affinityGroup, journey
+    , recordId, "N/A", LocalDate.now())
 
-  def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] =
-    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken", "cat")
+  def getCategorisationInfo(commodityCode: String, eori: String, affinityGroup: AffinityGroup
+                           ,recordId: Option[String], countryOfOrigin: String, dateOfTrade: LocalDate)(implicit hc: HeaderCarrier): Future[OttResponse] =
+    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken", "cat", eori,
+      affinityGroup, "N/A", recordId, countryOfOrigin, dateOfTrade)
 
 }

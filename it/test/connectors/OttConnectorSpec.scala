@@ -16,6 +16,7 @@
 
 package connectors
 
+import base.TestConstants.{testEori, testRecordId}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.Commodity
 import org.apache.pekko.Done
@@ -30,10 +31,11 @@ import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.libs.json.{JsResult, JsResultException}
 import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.{ForbiddenException, HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.http.test.WireMockSupport
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import scala.concurrent.Future
 
 class OttConnectorSpec
@@ -81,7 +83,7 @@ class OttConnectorSpec
             )
         )
 
-        connector.getCommodityCode("123456").futureValue mustBe commodity
+        connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None).futureValue mustBe commodity
 
         withClue("must have audited the request") {
           verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any,any, any, any, any, any, any, any, any)(any)
@@ -107,7 +109,7 @@ class OttConnectorSpec
             )
         )
 
-        connector.getCommodityCode("123456").futureValue mustBe commodity
+        connector.getCommodityCode("123456",testEori, AffinityGroup.Individual, "CreateRecord", None).futureValue mustBe commodity
 
         withClue("must have audited the request") {
           verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
@@ -123,7 +125,7 @@ class OttConnectorSpec
           .willReturn(notFound())
       )
 
-      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      val connectorFailure = connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None).failed.futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
 
       withClue("must have audited the request") {
@@ -138,7 +140,8 @@ class OttConnectorSpec
           .willReturn(serverError())
       )
 
-      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      val connectorFailure = connector.getCommodityCode("123456",testEori, AffinityGroup.Individual, "CreateRecord",
+        None).failed.futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
@@ -153,7 +156,8 @@ class OttConnectorSpec
           .willReturn(forbidden())
       )
 
-      connector.getCommodityCode("123456").failed.futureValue
+      connector.getCommodityCode("123456",testEori, AffinityGroup.Individual, "CreateRecord",
+        None).failed.futureValue
 
       withClue("must have audited the request") {
         verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
@@ -169,7 +173,8 @@ class OttConnectorSpec
           ))
       )
 
-      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      val connectorFailure = connector.getCommodityCode("123456",testEori, AffinityGroup.Individual, "CreateRecord",
+        None).failed.futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
@@ -263,7 +268,8 @@ class OttConnectorSpec
           )
       )
 
-      val connectorResponse = connector.getCategorisationInfo("123456").futureValue
+      val connectorResponse = connector.getCategorisationInfo("123456",testEori, AffinityGroup.Individual,
+        Some(testRecordId), "CX", LocalDate.now()).futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
 
@@ -279,7 +285,8 @@ class OttConnectorSpec
           .willReturn(notFound())
       )
 
-      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      val connectorFailure = connector.getCategorisationInfo("123456",testEori, AffinityGroup.Individual,
+        Some(testRecordId), "CX", LocalDate.now()).failed.futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
 
       withClue("must have audited the request") {
@@ -294,7 +301,8 @@ class OttConnectorSpec
           .willReturn(serverError())
       )
 
-      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      val connectorFailure = connector.getCategorisationInfo("123456",testEori, AffinityGroup.Individual,
+        Some(testRecordId), "CX", LocalDate.now()).failed.futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
@@ -309,7 +317,8 @@ class OttConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.getCategorisationInfo("123456").failed.futureValue
+      connector.getCategorisationInfo("123456",testEori, AffinityGroup.Individual,
+        Some(testRecordId), "CX", LocalDate.now()).failed.futureValue
 
       withClue("must have audited the request") {
         verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
@@ -325,7 +334,8 @@ class OttConnectorSpec
           ))
       )
 
-      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      val connectorFailure = connector.getCategorisationInfo("123456",testEori, AffinityGroup.Individual,
+        Some(testRecordId), "CX", LocalDate.now()).failed.futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {

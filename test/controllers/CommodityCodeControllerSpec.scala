@@ -17,12 +17,12 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.OttConnector
 import forms.CommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.CommodityCodePage
@@ -91,7 +91,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val mockOttConnector = mock[OttConnector]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.successful(
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future.successful(
         Commodity("654321", "Description", Instant.now, None)
       )
 
@@ -114,7 +114,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any()
+        , any())(any())
       }
     }
 
@@ -162,7 +163,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       val mockOttConnector = mock[OttConnector]
 
-      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.failed(
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any()
+      ,any())(any())) thenReturn Future.failed(
         UpstreamErrorResponse(" ", NOT_FOUND)
       )
 
@@ -186,7 +188,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(),
+          any())(any())
       }
     }
 
