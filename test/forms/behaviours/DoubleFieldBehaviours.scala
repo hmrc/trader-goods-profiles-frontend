@@ -19,7 +19,7 @@ package forms.behaviours
 import generators.Generators
 import play.api.data.{Form, FormError}
 
-trait DoubleFieldWith10DigitsAnd6DecimalsBehaviours extends FieldBehaviours with Generators {
+trait DoubleFieldBehaviours extends FieldBehaviours with Generators {
 
   def doubleField(form: Form[_], fieldName: String, nonNumericError: FormError): Unit =
     "must not bind non-numeric numbers" in {

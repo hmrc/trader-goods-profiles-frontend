@@ -16,10 +16,11 @@
 
 package forms
 
-import forms.behaviours.DoubleFieldWith10DigitsAnd6DecimalsBehaviours
+import forms.behaviours.DoubleFieldBehaviours
 import play.api.data.FormError
+import generators.SupplementaryUnitAmountGenerator
 
-class SupplementaryUnitFormProviderSpec extends DoubleFieldWith10DigitsAnd6DecimalsBehaviours {
+class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours with SupplementaryUnitAmountGenerator {
 
   val form = new SupplementaryUnitFormProvider()()
 
