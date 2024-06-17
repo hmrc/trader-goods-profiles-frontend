@@ -53,9 +53,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
     "comcode",
-    "countryOfOrigin",
-    1,
-    None
+    "countryOfOrigin"
   )
 
   private val categorisationService =

@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, Category1, Category2, CategoryRecord, Standard, UserAnswers}
+import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -45,6 +45,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
     "for a GET" - {
 
       "must return OK and the correct view" - {
+
         "when all category assessments answered" in {
 
           val userAnswers = userAnswersForCategorisationCya
@@ -217,7 +218,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             ).toString
           }
         }
-
       }
 
       "must redirect to Journey Recovery" - {
@@ -273,9 +273,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
           }
         }
-
       }
-
     }
 
     "for a POST" - {
@@ -318,7 +316,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
           }
         }
-
       }
 
       "when user answers cannot update a goods record" - {

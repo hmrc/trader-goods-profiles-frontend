@@ -205,9 +205,7 @@ class GoodsRecordConnectorSpec
       connector.getRecord(testEori, testRecordId).futureValue mustBe GetGoodsRecordResponse(
         testRecordId,
         "10410100",
-        "EC",
-        3,
-        Some(500)
+        "EC"
       )
     }
 
