@@ -16,11 +16,10 @@
 
 package connectors
 
-import config.Service
 import models.Commodity
 import models.ott.response.OttResponse
 import play.api.Configuration
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status.NOT_FOUND
 import play.api.libs.json.{JsResult, Reads}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
-  private val baseUrl: Service                         = config.get[Service]("microservice.services.online-trade-tariff-api")
+  private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private def ottCommoditiesUrl(commodityCode: String) =
     url"$baseUrl/ott/commodities/$commodityCode"
 
@@ -48,19 +47,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
       .get(urlFunc(commodityCode))(newHeaderCarrier)
       .execute[HttpResponse]
       .flatMap { response =>
-        response.status match {
-          case OK =>
-            response.json
-              .validate[T]
-              .map(result => Future.successful(result))
-              .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-        }
+        response.json
+          .validate[T]
+          .map(result => Future.successful(result))
+          .recoverTotal(error => Future.failed(JsResult.Exception(error)))
       }
-      .recoverWith {
-        case e: NotFoundException   =>
-          Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
-        case e: Upstream5xxResponse =>
-          Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
+      .recoverWith { case e: NotFoundException =>
+        Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
       }
   }
 

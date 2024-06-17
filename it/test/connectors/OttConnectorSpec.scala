@@ -37,7 +37,7 @@ class OttConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.online-trade-tariff-api.port" -> wireMockPort)
+      .configure("microservice.services.online-trade-tariff-api.url" -> wireMockUrl)
       .build()
 
   private lazy val connector = app.injector.instanceOf[OttConnector]
