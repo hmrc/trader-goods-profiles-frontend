@@ -126,7 +126,7 @@ case class AuditEventFactory() {
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
-    errorMessage: String,
+    errorMessage: Option[String],
     commodityDetails: Option[Commodity]
   )(implicit hc: HeaderCarrier): DataEvent = {
 
@@ -142,9 +142,9 @@ case class AuditEventFactory() {
       "outcome.commodityCodeStatus" -> (if (responseStatus == OK) "valid" else "invalid"), //TODO test both
       "outcome.status"              -> codeDescriptions(responseStatus),
       "outcome.statusCode"          -> responseStatus.toString,
-      "outcome.failureReason"       -> (if (responseStatus == OK) "null" else errorMessage),
+      "outcome.failureReason"       -> errorMessage.getOrElse("null"),
       "commodityDescription"        -> commodityDetails.map(_.description).getOrElse("null"),
-      "commodityCodeEffectiveTo"    -> commodityDetails.map(_.validityEndDate.toString).getOrElse("null"), //TODO test both
+      "commodityCodeEffectiveTo"    -> commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"), //TODO test both
       "commodityCodeEffectiveFrom"  -> commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
     )
 
@@ -161,7 +161,7 @@ case class AuditEventFactory() {
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
-    errorMessage: String,
+    errorMessage: Option[String],
     ottResponse: Option[OttResponse]
   )(implicit hc: HeaderCarrier): DataEvent = {
 
@@ -177,7 +177,7 @@ case class AuditEventFactory() {
       "responseDateTime"          -> responseDateTime.toString,
       "outcome.status"            -> codeDescriptions(responseStatus),
       "outcome.statusCode"        -> responseStatus.toString,
-      "outcome.failureReason"     -> (if (responseStatus == OK) "null" else errorMessage),
+      "outcome.failureReason"     -> errorMessage.getOrElse("null"),
       "categoryAssessmentOptions" -> ottResponse.map(_.categoryAssessments.size.toString).getOrElse("null"),
       "exemptionOptions"          -> ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString).getOrElse("null")
     )

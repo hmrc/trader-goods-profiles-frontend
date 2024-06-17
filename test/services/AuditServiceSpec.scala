@@ -421,7 +421,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           startTime,
           endTime,
           OK,
-          responseBody,
+          Some(responseBody),
           Some(testCommodity)
         )
       )
@@ -435,7 +435,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
-            eqTo(responseBody),
+            eqTo(Some(responseBody)),
             eqTo(Some(testCommodity))
           )(any())
       }
@@ -469,7 +469,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           startTime,
           endTime,
           OK,
-          responseBody,
+          Some(responseBody),
           Some(testCommodity)
         )
       )
@@ -483,7 +483,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
-            eqTo(responseBody),
+            eqTo(Some(responseBody)),
             eqTo(Some(testCommodity))
           )(any())
       }
@@ -505,7 +505,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             startTime,
             endTime,
             OK,
-            responseBody,
+            Some(responseBody),
             Some(testCommodity)
           )
         )
@@ -558,7 +558,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           startTime,
           endTime,
           OK,
-          responseBody,
+          Some(responseBody),
           Some(testOttResponse)
         )
       )
@@ -572,7 +572,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
-            eqTo(responseBody),
+            eqTo(Some(responseBody)),
             eqTo(Some(testOttResponse))
           )(any())
       }
@@ -606,7 +606,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           startTime,
           endTime,
           OK,
-          responseBody,
+          Some(responseBody),
           Some(testOttResponse)
         )
       )
@@ -620,7 +620,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
-            eqTo(responseBody),
+            eqTo(Some(responseBody)),
             eqTo(Some(testOttResponse))
           )(any())
       }
@@ -642,7 +642,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             startTime,
             endTime,
             OK,
-            responseBody,
+            Some(responseBody),
             Some(testOttResponse)
           )
         )

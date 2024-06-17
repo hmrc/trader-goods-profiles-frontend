@@ -101,7 +101,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
-    errorMessage: String,
+    errorMessage: Option[String],
     commodityDetails: Option[Commodity]
   )(implicit hc: HeaderCarrier): Future[Done] = {
 
@@ -125,7 +125,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
-    errorMessage: String,
+    errorMessage: Option[String],
     ottResponse: Option[OttResponse]
   )(implicit hc: HeaderCarrier): Future[Done] = {
 

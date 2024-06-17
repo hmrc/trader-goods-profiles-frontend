@@ -52,7 +52,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     urlFunc: String => URL,
     authToken: String,
     auditDetails: OttAuditData,
-    auditFunction: (OttAuditData, Instant, Instant, Int, String, Option[T]) => Future[Done]
+    auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
   )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
@@ -77,7 +77,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
                 requestStartTime,
                 requestEndTime,
                 response.status,
-                response.body,
+                None,
                 Some(result)
               )
               Future.successful(result)
@@ -90,22 +90,22 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     }.recoverWith {
 
       case e: NotFoundException   =>
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, e.message, None)
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, Some(e.message), None)
 
         Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
 
       case e: Upstream5xxResponse =>
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, e.message, None)
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
 
         Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
 
       case e: UpstreamErrorResponse =>
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, e.message, None)
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
         Future.failed(e)
 
       case e: Exception =>
         //E.g. Any error not directly related to the http call, e.g. Json parsing
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, e.getMessage, None)
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, Some(e.getMessage), None)
         Future.failed(e)
 
     }
