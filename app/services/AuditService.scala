@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory: AuditEventFactory)(implicit
@@ -117,7 +117,32 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       logger.info(s"ValidateCommodityCode audit event status: $auditResult")
       Done
     }
-
   }
+
+    def auditGetCategorisationAssessmentDetails(
+      eori: String,
+      affinityGroup: AffinityGroup,
+      recordId: String,
+      commodityCode: String,
+      countryOfOrigin: String,
+      dateOfTrade: LocalDate,
+      requestDateTime: Instant,
+      responseDateTime: Instant,
+      statusString: String,
+      statusCode: Int,
+      failureReason: String,
+      categoryAssessmentOptions: Int,
+      exemptionOptions: Int
+    )(implicit hc: HeaderCarrier): Future[Done] = {
+
+      val event = auditEventFactory.createGetCategorisationAssessmentDetailsEvent(eori, affinityGroup, recordId, commodityCode, countryOfOrigin, dateOfTrade, requestDateTime, responseDateTime, statusString, statusCode, failureReason, categoryAssessmentOptions, exemptionOptions)
+
+      auditConnector.sendEvent(event).map { auditResult =>
+        logger.info(s"GetCategorisationAssessmentDetails audit event status: $auditResult")
+        Done
+      }
+
+
+    }
 
 }

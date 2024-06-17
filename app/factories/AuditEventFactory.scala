@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 case class AuditEventFactory() {
 
@@ -156,6 +156,48 @@ case class AuditEventFactory() {
     DataEvent(
       auditSource = auditSource,
       auditType = "ValidateCommodityCode",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
+  def createGetCategorisationAssessmentDetailsEvent(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    recordId: String,
+    commodityCode: String,
+    countryOfOrigin: String,
+    dateOfTrade: LocalDate,
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    statusString: String,
+    statusCode: Int,
+    failureReason: String,
+    categoryAssessmentOptions: Int,
+    exemptionOptions: Int
+  )(implicit hc: HeaderCarrier): DataEvent = {
+
+    //TODO will this look right
+    //TODO cleanup parameters
+    val auditDetails = Map(
+      "eori" -> eori,
+      "affinityGroup" -> affinityGroup.toString,
+      "recordId" -> recordId,
+      "commodityCode" -> commodityCode,
+      "countryOfOrigin" -> countryOfOrigin,
+      "dateOfTrade" -> dateOfTrade.toString,
+      "requestDateTime" -> requestDateTime.toString,
+      "responseDateTime" -> responseDateTime.toString,
+      "outcome.status" -> statusString,
+      "outcome.statusCode" -> statusCode.toString,
+      "outcome.failureReason" -> failureReason,
+      "categoryAssessmentOptions" -> categoryAssessmentOptions.toString,
+      "exemptionOptions" -> exemptionOptions.toString,
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "GetCategorisationAssessmentDetails",
       tags = hc.toAuditTags(),
       detail = auditDetails
     )

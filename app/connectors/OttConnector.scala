@@ -22,14 +22,19 @@ import models.ott.response.OttResponse
 import play.api.Configuration
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.{JsResult, Reads}
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
 
 import java.net.URL
+import java.time.{Instant, LocalDate}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
+class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, auditService: AuditService)(implicit
+  ec: ExecutionContext
+) {
 
   private val baseUrl: Service                         = config.get[Service]("microservice.services.online-trade-tariff-api")
   private def ottCommoditiesUrl(commodityCode: String) =
@@ -38,36 +43,191 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
-  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String,mode: String
+  )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
+    val requestStartTime = Instant.now
     httpClient
       .get(urlFunc(commodityCode))(newHeaderCarrier)
       .execute[HttpResponse]
       .flatMap { response =>
+
+        val requestEndTime = Instant.now
+
         response.status match {
           case OK =>
+
             response.json
               .validate[T]
-              .map(result => Future.successful(result))
+              .map(result => {
+                if (mode == "commodity") {
+                  auditService.auditValidateCommodityCode(
+                    "eori",
+                    AffinityGroup.Individual,
+                    "create",
+                    "recId",
+                    commodityCode,
+                    requestStartTime,
+                    requestEndTime,
+                    true,
+                    "OK",
+                    200,
+                    "null",
+                    "todo",
+                    None,
+                    Instant.now
+                  )
+                } else {
+                  auditService.auditGetCategorisationAssessmentDetails(
+                    "eori",
+                    AffinityGroup.Individual,
+                    "recorId",
+                    commodityCode,
+                    "AZ",
+                    LocalDate.now(),
+                    requestStartTime,
+                    requestEndTime,
+                    "OK",
+                    200,
+                    "null",
+                    27,
+                    37
+                  )
+                }
+
+
+                Future.successful(result)
+              })
               .recoverTotal(error => Future.failed(JsResult.Exception(error)))
         }
       }
       .recoverWith {
+
         case e: NotFoundException   =>
+
+          if (mode == "commodity") {
+            auditService.auditValidateCommodityCode(
+              "eori",
+              AffinityGroup.Individual,
+              "create",
+              "recId",
+              commodityCode,
+              requestStartTime,
+              Instant.now,
+              true,
+              "OK",
+              200,
+              "null",
+              "todo",
+              None,
+              Instant.now
+            )
+          } else {
+            auditService.auditGetCategorisationAssessmentDetails(
+              "eori",
+              AffinityGroup.Individual,
+              "recorId",
+              commodityCode,
+              "AZ",
+              LocalDate.now(),
+              requestStartTime,
+              Instant.now,
+              "OK",
+              200,
+              "null",
+              27,
+              37
+            )
+          }
           Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
         case e: Upstream5xxResponse =>
+          if (mode == "commodity") {
+            auditService.auditValidateCommodityCode(
+              "eori",
+              AffinityGroup.Individual,
+              "create",
+              "recId",
+              commodityCode,
+              requestStartTime,
+              Instant.now,
+              true,
+              "OK",
+              200,
+              "null",
+              "todo",
+              None,
+              Instant.now
+            )
+          } else {
+            auditService.auditGetCategorisationAssessmentDetails(
+              "eori",
+              AffinityGroup.Individual,
+              "recorId",
+              commodityCode,
+              "AZ",
+              LocalDate.now(),
+              requestStartTime,
+              Instant.now,
+              "OK",
+              200,
+              "null",
+              27,
+              37
+            )
+          }
+
           Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
+
+        case f =>
+          if (mode == "commodity") {
+            auditService.auditValidateCommodityCode(
+              "eori",
+              AffinityGroup.Individual,
+              "create",
+              "recId",
+              commodityCode,
+              requestStartTime,
+              Instant.now,
+              true,
+              "OK",
+              200,
+              "null",
+              "todo",
+              None,
+              Instant.now
+            )
+          } else {
+            auditService.auditGetCategorisationAssessmentDetails(
+              "eori",
+              AffinityGroup.Individual,
+              "recorId",
+              commodityCode,
+              "AZ",
+              LocalDate.now(),
+              requestStartTime,
+              Instant.now,
+              "OK",
+              200,
+              "null",
+              27,
+              37
+            )
+          }
+
+          Future.failed(f)
+
+
       }
   }
 
   def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] =
-    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken")
+    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken", "commodity")
 
   def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] =
-    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
+    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken", "cat")
 
 }

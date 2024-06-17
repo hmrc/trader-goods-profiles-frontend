@@ -387,72 +387,43 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createValidateCommodityCodeEvent(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(
+        mockAuditFactory.createValidateCommodityCodeEvent(
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any()
+        )(any())
+      ).thenReturn(fakeAuditEvent)
 
-      val result = await(auditService.auditValidateCommodityCode(testEori,
-        AffinityGroup.Individual,
-        "CreateRecord",
-        testRecordId,
-        testCommodity.commodityCode,
-        Instant.parse("2024-06-03T15:19:18.399Z"),
-        Instant.parse("2024-06-03T15:19:20.399Z"),
-        true,
-        "OK",
-        200,
-        "null",
-        "meat",
-        None,
-        Instant.parse("2012-01-01T00:00:00Z")))
-
-      result mustBe Done
-
-      withClue("Should have supplied the parameters to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
-          .createValidateCommodityCodeEvent(
-            eqTo(testEori),
-            eqTo(AffinityGroup.Individual),
-            eqTo("CreateRecord"),
-              eqTo(testRecordId),
-                eqTo(testCommodity.commodityCode),
-                  eqTo(Instant.parse("2024-06-03T15:19:18.399Z")),
-                    eqTo(Instant.parse("2024-06-03T15:19:20.399Z")),
-                      eqTo(true),
-                        eqTo("OK"),
-                          eqTo(200),
-                            eqTo("null"),
-                              eqTo("meat"),
-                                eqTo(None),
-                                  eqTo(Instant.parse("2012-01-01T00:00:00Z")))(any())
-      }
-
-      withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
-      }
-
-    }
-
-    "return Done when audit return type is failure" in {
-
-      val auditFailure = AuditResult.Failure("Failed audit event creation")
-      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
-
-      val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createValidateCommodityCodeEvent(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
-
-      val result = await(auditService.auditValidateCommodityCode(testEori,
-        AffinityGroup.Individual,
-        "CreateRecord",
-        testRecordId,
-        testCommodity.commodityCode,
-        Instant.parse("2024-06-03T15:19:18.399Z"),
-        Instant.parse("2024-06-03T15:19:20.399Z"),
-        true,
-        "OK",
-        200,
-        "null",
-        "meat",
-        None,
-        Instant.parse("2012-01-01T00:00:00Z")))
+      val result = await(
+        auditService.auditValidateCommodityCode(
+          testEori,
+          AffinityGroup.Individual,
+          "CreateRecord",
+          testRecordId,
+          testCommodity.commodityCode,
+          Instant.parse("2024-06-03T15:19:18.399Z"),
+          Instant.parse("2024-06-03T15:19:20.399Z"),
+          true,
+          "OK",
+          200,
+          "null",
+          "meat",
+          None,
+          Instant.parse("2012-01-01T00:00:00Z")
+        )
+      )
 
       result mustBe Done
 
@@ -472,7 +443,80 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo("null"),
             eqTo("meat"),
             eqTo(None),
-            eqTo(Instant.parse("2012-01-01T00:00:00Z")))(any())
+            eqTo(Instant.parse("2012-01-01T00:00:00Z"))
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(
+        mockAuditFactory.createValidateCommodityCodeEvent(
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          any()
+        )(any())
+      ).thenReturn(fakeAuditEvent)
+
+      val result = await(
+        auditService.auditValidateCommodityCode(
+          testEori,
+          AffinityGroup.Individual,
+          "CreateRecord",
+          testRecordId,
+          testCommodity.commodityCode,
+          Instant.parse("2024-06-03T15:19:18.399Z"),
+          Instant.parse("2024-06-03T15:19:20.399Z"),
+          true,
+          "OK",
+          200,
+          "null",
+          "meat",
+          None,
+          Instant.parse("2012-01-01T00:00:00Z")
+        )
+      )
+
+      result mustBe Done
+
+      withClue("Should have supplied the parameters to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createValidateCommodityCodeEvent(
+            eqTo(testEori),
+            eqTo(AffinityGroup.Individual),
+            eqTo("CreateRecord"),
+            eqTo(testRecordId),
+            eqTo(testCommodity.commodityCode),
+            eqTo(Instant.parse("2024-06-03T15:19:18.399Z")),
+            eqTo(Instant.parse("2024-06-03T15:19:20.399Z")),
+            eqTo(true),
+            eqTo("OK"),
+            eqTo(200),
+            eqTo("null"),
+            eqTo("meat"),
+            eqTo(None),
+            eqTo(Instant.parse("2012-01-01T00:00:00Z"))
+          )(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -486,25 +530,29 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.failed(new RuntimeException("audit error")))
 
       intercept[RuntimeException] {
-        await(auditService.auditValidateCommodityCode(testEori,
-          AffinityGroup.Individual,
-          "CreateRecord",
-          testRecordId,
-          testCommodity.commodityCode,
-          Instant.parse("2024-06-03T15:19:18.399Z"),
-          Instant.parse("2024-06-03T15:19:20.399Z"),
-          true,
-          "OK",
-          200,
-          "null",
-          "meat",
-          None,
-          Instant.parse("2012-01-01T00:00:00Z")))      }
+        await(
+          auditService.auditValidateCommodityCode(
+            testEori,
+            AffinityGroup.Individual,
+            "CreateRecord",
+            testRecordId,
+            testCommodity.commodityCode,
+            Instant.parse("2024-06-03T15:19:18.399Z"),
+            Instant.parse("2024-06-03T15:19:20.399Z"),
+            true,
+            "OK",
+            200,
+            "null",
+            "meat",
+            None,
+            Instant.parse("2012-01-01T00:00:00Z")
+          )
+        )
+      }
 
     }
 
   }
-
 
   private def generateUserAnswersForFinishCreateGoodsTest(useTraderRef: Boolean) = {
     val ua = emptyUserAnswers
