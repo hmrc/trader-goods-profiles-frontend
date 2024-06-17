@@ -114,7 +114,7 @@ trait Formatters {
   ): Formatter[Double] =
     new Formatter[Double] {
 
-      val decimalPattern = """^-?\d{1,10}(\.\d{1,6})?$"""
+      val decimalFormatPatternFor10DigitsAnd6Decimals = """^-?\d{1,10}(\.\d{1,6})?$"""
 
       private val baseFormatter = stringFormatter(requiredKey, args)
 
@@ -123,12 +123,12 @@ trait Formatters {
           .bind(key, data)
           .map(_.replace(",", "").replace(" ", ""))
           .flatMap {
-            case s if s.matches(decimalPattern) =>
+            case s if s.matches(decimalFormatPatternFor10DigitsAnd6Decimals) =>
               nonFatalCatch
                 .either(s.toDouble)
                 .left
                 .map(_ => Seq(FormError(key, nonNumericKey, args)))
-            case _                              =>
+            case _                                                           =>
               Left(Seq(FormError(key, nonNumericKey, args)))
           }
 
