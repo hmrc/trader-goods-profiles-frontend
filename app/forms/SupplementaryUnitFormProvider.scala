@@ -24,7 +24,7 @@ class SupplementaryUnitFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Double] =
     Form(
-      "value" -> double(
+      "value" -> doubleWith10DigitsAnd6Decimals(
         "supplementaryUnit.error.required",
         "supplementaryUnit.error.nonNumeric"
       )

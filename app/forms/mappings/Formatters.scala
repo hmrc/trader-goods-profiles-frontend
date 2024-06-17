@@ -107,7 +107,7 @@ trait Formatters {
         baseFormatter.unbind(key, value.toString)
     }
 
-  private[mappings] def doubleFormatter(
+  private[mappings] def doubleWith10DigitsAnd6DecimalsFormatter(
     requiredKey: String,
     nonNumericKey: String,
     args: Seq[String] = Seq.empty
