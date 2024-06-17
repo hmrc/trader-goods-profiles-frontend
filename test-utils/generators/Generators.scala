@@ -119,5 +119,4 @@ trait Generators {
       Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDate
     }
   }
-
 }
