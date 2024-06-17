@@ -34,7 +34,7 @@ import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 
 import java.time.{Instant, LocalDate}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -401,9 +401,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "return Done when built up an audit event and submitted it" in {
 
-      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+      when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
-      val fakeAuditEvent = DataEvent("source", "type")
+      val fakeAuditEvent = ExtendedDataEvent("source", "type")
       when(
         mockAuditFactory.createValidateCommodityCodeEvent(
           any(),
@@ -441,7 +441,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -449,9 +449,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
     "return Done when audit return type is failure" in {
 
       val auditFailure = AuditResult.Failure("Failed audit event creation")
-      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+      when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
-      val fakeAuditEvent = DataEvent("source", "type")
+      val fakeAuditEvent = ExtendedDataEvent("source", "type")
       when(
         mockAuditFactory.createValidateCommodityCodeEvent(
           any(),
@@ -489,13 +489,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
 
     "must let the play error handler deal with an future failure" in {
-      when(mockAuditConnector.sendEvent(any())(any(), any()))
+      when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
         .thenReturn(Future.failed(new RuntimeException("audit error")))
 
       intercept[RuntimeException] {
@@ -538,9 +538,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "return Done when built up an audit event and submitted it" in {
 
-      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+      when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
-      val fakeAuditEvent = DataEvent("source", "type")
+      val fakeAuditEvent = ExtendedDataEvent("source", "type")
       when(
         mockAuditFactory.createGetCategorisationAssessmentDetailsEvent(
           any(),
@@ -578,7 +578,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -586,9 +586,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
     "return Done when audit return type is failure" in {
 
       val auditFailure = AuditResult.Failure("Failed audit event creation")
-      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+      when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
-      val fakeAuditEvent = DataEvent("source", "type")
+      val fakeAuditEvent = ExtendedDataEvent("source", "type")
       when(
         mockAuditFactory.createGetCategorisationAssessmentDetailsEvent(
           any(),
@@ -626,13 +626,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
 
     "must let the play error handler deal with an future failure" in {
-      when(mockAuditConnector.sendEvent(any())(any(), any()))
+      when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
         .thenReturn(Future.failed(new RuntimeException("audit error")))
 
       intercept[RuntimeException] {

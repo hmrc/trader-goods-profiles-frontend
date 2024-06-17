@@ -16,17 +16,19 @@
 
 package factories
 
-import models.audits.OttAuditData
+import models.audits.{GetCategorisationAssessmentDetailsEvent, GetCategorisationAssessmentDetailsEventOutcome, OttAuditData, ValidateCommodityCodeEvent, ValidateCommodityCodeEventOutcome}
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.OK
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
-import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.{Instant, LocalDate}
+import scala.util.parsing.json.JSONObject
 
 case class AuditEventFactory() {
 
@@ -128,31 +130,32 @@ case class AuditEventFactory() {
     responseStatus: Int,
     errorMessage: Option[String],
     commodityDetails: Option[Commodity]
-  )(implicit hc: HeaderCarrier): DataEvent = {
+  )(implicit hc: HeaderCarrier): ExtendedDataEvent = {
 
     //TODO will this look right
-    val auditDetails = Map(
-      "eori"                        -> auditData.eori,
-      "affinityGroup"               -> auditData.affinityGroup.toString,
-      "journey"                     -> auditData.journey.getOrElse("null"),
-      "recordId"                    -> auditData.recordId.getOrElse("null"),
-      "commodityCode"               -> auditData.commodityCode,
-      "requestDateTime"             -> requestDateTime.toString,
-      "responseDateTime"            -> responseDateTime.toString,
-      "outcome.commodityCodeStatus" -> (if (responseStatus == OK) "valid" else "invalid"), //TODO test both
-      "outcome.status"              -> codeDescriptions(responseStatus),
-      "outcome.statusCode"          -> responseStatus.toString,
-      "outcome.failureReason"       -> errorMessage.getOrElse("null"),
-      "commodityDescription"        -> commodityDetails.map(_.description).getOrElse("null"),
-      "commodityCodeEffectiveTo"    -> commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"), //TODO test both
-      "commodityCodeEffectiveFrom"  -> commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
+    val auditDetails = ValidateCommodityCodeEvent(
+      auditData.eori,
+      auditData.affinityGroup.toString,
+      auditData.journey.getOrElse("null"),
+      auditData.recordId.getOrElse("null"),
+      auditData.commodityCode,
+      requestDateTime.toString,
+      responseDateTime.toString,
+      ValidateCommodityCodeEventOutcome(
+        (if (responseStatus == OK) "valid" else "invalid"),
+        codeDescriptions(responseStatus),
+        responseStatus.toString,
+        errorMessage.getOrElse("null")),
+      commodityDetails.map(_.description).getOrElse("null"),
+      commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"), //TODO test both
+      commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
     )
 
-    DataEvent(
+    ExtendedDataEvent(
       auditSource = auditSource,
       auditType = "ValidateCommodityCode",
       tags = hc.toAuditTags(),
-      detail = auditDetails
+      detail = Json.toJson(auditDetails)
     )
   }
 
@@ -163,30 +166,31 @@ case class AuditEventFactory() {
     responseStatus: Int,
     errorMessage: Option[String],
     ottResponse: Option[OttResponse]
-  )(implicit hc: HeaderCarrier): DataEvent = {
+  )(implicit hc: HeaderCarrier): ExtendedDataEvent = {
 
-    //TODO will this look right
-    val auditDetails = Map(
-      "eori"                      -> auditData.eori,
-      "affinityGroup"             -> auditData.affinityGroup.toString,
-      "recordId"                  -> auditData.recordId.getOrElse("null"),
-      "commodityCode"             -> auditData.commodityCode,
-      "countryOfOrigin"           -> auditData.countryOfOrigin.getOrElse("null"),
-      "dateOfTrade"               -> auditData.dateOfTrade.map(_.toString).getOrElse("null"),
-      "requestDateTime"           -> requestDateTime.toString,
-      "responseDateTime"          -> responseDateTime.toString,
-      "outcome.status"            -> codeDescriptions(responseStatus),
-      "outcome.statusCode"        -> responseStatus.toString,
-      "outcome.failureReason"     -> errorMessage.getOrElse("null"),
-      "categoryAssessmentOptions" -> ottResponse.map(_.categoryAssessments.size.toString).getOrElse("null"),
-      "exemptionOptions"          -> ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString).getOrElse("null")
+    val auditDetails = GetCategorisationAssessmentDetailsEvent(
+      auditData.eori,
+      auditData.affinityGroup.toString,
+      auditData.recordId.getOrElse("null"),
+      auditData.commodityCode,
+      auditData.countryOfOrigin.getOrElse("null"),
+      auditData.dateOfTrade.map(_.toString).getOrElse("null"),
+      requestDateTime.toString,
+      responseDateTime.toString,
+      GetCategorisationAssessmentDetailsEventOutcome(
+        codeDescriptions(responseStatus),
+        responseStatus.toString,
+        errorMessage.getOrElse("null")
+      ),
+      ottResponse.map(_.categoryAssessments.size.toString).getOrElse("null"),
+      ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString).getOrElse("null")
     )
 
-    DataEvent(
+    ExtendedDataEvent(
       auditSource = auditSource,
       auditType = "GetCategorisationAssessmentDetails",
       tags = hc.toAuditTags(),
-      detail = auditDetails
+      detail = Json.toJson(auditDetails)
     )
   }
 

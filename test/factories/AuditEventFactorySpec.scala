@@ -18,11 +18,12 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import models.audits.OttAuditData
+import models.audits.{GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
 import models.ott.response.{AdditionalCodeResponse, CategoryAssessmentRelationship, CategoryAssessmentResponse, CertificateResponse, ExemptionResponse, ExemptionType, GoodsNomenclatureResponse, OttResponse, ThemeResponse}
 import models.{Commodity, GoodsRecord, TraderProfile}
 import org.apache.pekko.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -202,23 +203,21 @@ class AuditEventFactorySpec extends SpecBase {
           result.auditType mustBe "ValidateCommodityCode"
           result.tags.isEmpty mustBe false
 
-          val auditDetails = result.detail
-
-          auditDetails.size mustBe 14
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Individual"
-          auditDetails("journey") mustBe "CreateRecord"
-          auditDetails("recordId") mustBe "null"
-          auditDetails("commodityCode") mustBe "1234567890"
-          auditDetails("requestDateTime") mustBe "2024-06-03T15:19:18.399Z"
-          auditDetails("responseDateTime") mustBe "2024-06-03T15:19:20.399Z"
-          auditDetails("outcome.commodityCodeStatus") mustBe "valid"
-          auditDetails("outcome.status") mustBe "OK"
-          auditDetails("outcome.statusCode") mustBe "200"
-          auditDetails("outcome.failureReason") mustBe "null"
-          auditDetails("commodityDescription") mustBe "test"
-          auditDetails("commodityCodeEffectiveTo") mustBe "null"
-          auditDetails("commodityCodeEffectiveFrom") mustBe "2007-12-03T10:15:30Z"
+          val auditDetails = Json.fromJson[ValidateCommodityCodeEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.journey mustBe "CreateRecord"
+          auditDetails.recordId mustBe "null"
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.commodityCodeStatus mustBe "valid"
+          auditDetails.outcome.status mustBe "OK"
+          auditDetails.outcome.statusCode mustBe "200"
+          auditDetails.outcome.failureReason mustBe "null"
+          auditDetails.commodityDescription mustBe "test"
+          auditDetails.commodityCodeEffectiveTo mustBe "null"
+          auditDetails.commodityCodeEffectiveFrom mustBe "2007-12-03T10:15:30Z"
 
         }
 
@@ -250,23 +249,21 @@ class AuditEventFactorySpec extends SpecBase {
           result.auditType mustBe "ValidateCommodityCode"
           result.tags.isEmpty mustBe false
 
-          val auditDetails = result.detail
-
-          auditDetails.size mustBe 14
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Individual"
-          auditDetails("journey") mustBe "UpdateRecord"
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("commodityCode") mustBe "1234567890"
-          auditDetails("requestDateTime") mustBe "2024-06-03T15:19:18.399Z"
-          auditDetails("responseDateTime") mustBe "2024-06-03T15:19:20.399Z"
-          auditDetails("outcome.commodityCodeStatus") mustBe "valid"
-          auditDetails("outcome.status") mustBe "OK"
-          auditDetails("outcome.statusCode") mustBe "200"
-          auditDetails("outcome.failureReason") mustBe "null"
-          auditDetails("commodityDescription") mustBe "test"
-          auditDetails("commodityCodeEffectiveTo") mustBe "2024-07-31T23:59:59.999Z"
-          auditDetails("commodityCodeEffectiveFrom") mustBe "2007-12-03T10:15:30Z"
+          val auditDetails = Json.fromJson[ValidateCommodityCodeEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.journey mustBe "UpdateRecord"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.commodityCodeStatus mustBe "valid"
+          auditDetails.outcome.status mustBe "OK"
+          auditDetails.outcome.statusCode mustBe "200"
+          auditDetails.outcome.failureReason mustBe "null"
+          auditDetails.commodityDescription mustBe "test"
+          auditDetails.commodityCodeEffectiveTo mustBe "2024-07-31T23:59:59.999Z"
+          auditDetails.commodityCodeEffectiveFrom mustBe "2007-12-03T10:15:30Z"
 
         }
 
@@ -295,23 +292,21 @@ class AuditEventFactorySpec extends SpecBase {
           result.auditType mustBe "ValidateCommodityCode"
           result.tags.isEmpty mustBe false
 
-          val auditDetails = result.detail
-
-          auditDetails.size mustBe 14
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Individual"
-          auditDetails("journey") mustBe "UpdateRecord"
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("commodityCode") mustBe "1234567890"
-          auditDetails("requestDateTime") mustBe "2024-06-03T15:19:18.399Z"
-          auditDetails("responseDateTime") mustBe "2024-06-03T15:19:20.399Z"
-          auditDetails("outcome.commodityCodeStatus") mustBe "invalid"
-          auditDetails("outcome.status") mustBe "Not Found"
-          auditDetails("outcome.statusCode") mustBe "404"
-          auditDetails("outcome.failureReason") mustBe "Commodity not valid"
-          auditDetails("commodityDescription") mustBe "null"
-          auditDetails("commodityCodeEffectiveTo") mustBe "null"
-          auditDetails("commodityCodeEffectiveFrom") mustBe "null"
+          val auditDetails = Json.fromJson[ValidateCommodityCodeEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.journey mustBe "UpdateRecord"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.commodityCodeStatus mustBe "invalid"
+          auditDetails.outcome.status mustBe "Not Found"
+          auditDetails.outcome.statusCode mustBe "404"
+          auditDetails.outcome.failureReason mustBe "Commodity not valid"
+          auditDetails.commodityDescription mustBe "null"
+          auditDetails.commodityCodeEffectiveTo mustBe "null"
+          auditDetails.commodityCodeEffectiveFrom mustBe "null"
 
         }
 
@@ -359,7 +354,6 @@ class AuditEventFactorySpec extends SpecBase {
             )
           )
 
-
           val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
             auditData,
             Instant.parse("2024-06-03T15:19:18.399Z"),
@@ -373,22 +367,20 @@ class AuditEventFactorySpec extends SpecBase {
           result.auditType mustBe "GetCategorisationAssessmentDetails"
           result.tags.isEmpty mustBe false
 
-          val auditDetails = result.detail
-
-          auditDetails.size mustBe 13
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Individual"
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("commodityCode") mustBe "1234567890"
-          auditDetails("countryOfOrigin") mustBe "US"
-          auditDetails("dateOfTrade") mustBe "2024-06-18"
-          auditDetails("requestDateTime") mustBe "2024-06-03T15:19:18.399Z"
-          auditDetails("responseDateTime") mustBe "2024-06-03T15:19:20.399Z"
-          auditDetails("outcome.status") mustBe "OK"
-          auditDetails("outcome.statusCode") mustBe "200"
-          auditDetails("outcome.failureReason") mustBe "null"
-          auditDetails("categoryAssessmentOptions") mustBe "2"
-          auditDetails("exemptionOptions") mustBe "2"
+          val auditDetails = Json.fromJson[GetCategorisationAssessmentDetailsEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.countryOfOrigin mustBe "US"
+          auditDetails.dateOfTrade mustBe "2024-06-18"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.status mustBe "OK"
+          auditDetails.outcome.statusCode mustBe "200"
+          auditDetails.outcome.failureReason mustBe "null"
+          auditDetails.categoryAssessmentOptions mustBe "2"
+          auditDetails.exemptionOptions mustBe "2"
 
         }
 
@@ -417,22 +409,20 @@ class AuditEventFactorySpec extends SpecBase {
           result.auditType mustBe "GetCategorisationAssessmentDetails"
           result.tags.isEmpty mustBe false
 
-          val auditDetails = result.detail
-
-          auditDetails.size mustBe 13
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Individual"
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("commodityCode") mustBe "1234567890"
-          auditDetails("countryOfOrigin") mustBe "US"
-          auditDetails("dateOfTrade") mustBe "2024-06-18"
-          auditDetails("requestDateTime") mustBe "2024-06-03T15:19:18.399Z"
-          auditDetails("responseDateTime") mustBe "2024-06-03T15:19:20.399Z"
-          auditDetails("outcome.status") mustBe "Not Found"
-          auditDetails("outcome.statusCode") mustBe "404"
-          auditDetails("outcome.failureReason") mustBe "Commodity not valid"
-          auditDetails("categoryAssessmentOptions") mustBe "null"
-          auditDetails("exemptionOptions") mustBe "null"
+          val auditDetails = Json.fromJson[GetCategorisationAssessmentDetailsEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.countryOfOrigin mustBe "US"
+          auditDetails.dateOfTrade mustBe "2024-06-18"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.status mustBe "Not Found"
+          auditDetails.outcome.statusCode mustBe "404"
+          auditDetails.outcome.failureReason mustBe "Commodity not valid"
+          auditDetails.categoryAssessmentOptions mustBe "null"
+          auditDetails.exemptionOptions mustBe "null"
         }
 
       }

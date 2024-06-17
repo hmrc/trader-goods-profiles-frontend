@@ -114,7 +114,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       commodityDetails
     )
 
-    auditConnector.sendEvent(event).map { auditResult =>
+    auditConnector.sendExtendedEvent(event).map { auditResult =>
       logger.info(s"ValidateCommodityCode audit event status: $auditResult")
       Done
     }
@@ -138,7 +138,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       ottResponse
     )
 
-    auditConnector.sendEvent(event).map { auditResult =>
+    auditConnector.sendExtendedEvent(event).map { auditResult =>
       logger.info(s"GetCategorisationAssessmentDetails audit event status: $auditResult")
       Done
     }
