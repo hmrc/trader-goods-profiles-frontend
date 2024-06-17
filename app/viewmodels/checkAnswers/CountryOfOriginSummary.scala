@@ -29,10 +29,10 @@ object CountryOfOriginSummary {
 
   def row(answers: UserAnswers, countries: Seq[Country])(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CountryOfOriginPage).map { answer =>
-      val id = countries.find(country => country.description == answer).map(_.id).getOrElse(answer)
+      val description = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
       SummaryListRowViewModel(
         key = "countryOfOrigin.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(id).toString),
+        value = ValueViewModel(HtmlFormat.escape(description).toString),
         actions = Seq(
           ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
