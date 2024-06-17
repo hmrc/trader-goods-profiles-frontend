@@ -95,8 +95,7 @@ class GoodsRecordConnectorSpec
          |  }
          |""".stripMargin)
 
-  private val getGoodsRecordUrl    = s"/trader-goods-profiles-router/$testEori/records/$testRecordId"
-  private val updateGoodsRecordUrl = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
+  private val getUpdateGoodsRecordUrl    = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
 
   private val instant = Instant.now
 
@@ -171,7 +170,7 @@ class GoodsRecordConnectorSpec
     "must update a goods record" in {
 
       wireMockServer.stubFor(
-        put(urlEqualTo(updateGoodsRecordUrl))
+        put(urlEqualTo(getUpdateGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
@@ -183,7 +182,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        put(urlEqualTo(updateGoodsRecordUrl))
+        put(urlEqualTo(getUpdateGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
@@ -198,7 +197,7 @@ class GoodsRecordConnectorSpec
     "must get a goods record" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(getGoodsRecordUrl))
+        get(urlEqualTo(getUpdateGoodsRecordUrl))
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
@@ -212,7 +211,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(getGoodsRecordUrl))
+        get(urlEqualTo(getUpdateGoodsRecordUrl))
           .willReturn(serverError())
       )
 
@@ -222,7 +221,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the json does not match the format" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(getGoodsRecordUrl))
+        get(urlEqualTo(getUpdateGoodsRecordUrl))
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
