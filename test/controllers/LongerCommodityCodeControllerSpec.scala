@@ -17,19 +17,22 @@
 package controllers
 
 import base.SpecBase
+import connectors.OttConnector
 import forms.LongerCommodityCodeFormProvider
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.LongerCommodityCodePage
+import pages.{CommodityCodePage, LongerCommodityCodePage}
+import play.api.data.FormError
+import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.CommodityQuery
 import repositories.SessionRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.LongerCommodityCodeView
 
 import java.time.Instant
@@ -37,9 +40,10 @@ import scala.concurrent.Future
 
 class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
-  private val formProvider = new LongerCommodityCodeFormProvider()
-  private val form         = formProvider()
-  private val recordId     = "123"
+  private val formProvider   = new LongerCommodityCodeFormProvider()
+  private val form           = formProvider()
+  private val recordId       = "123"
+  private val shortCommodity = "654321"
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -49,8 +53,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val commodity   = Commodity("654321", "Description", Instant.now, None)
-      val userAnswers = emptyUserAnswers.set(CommodityQuery, commodity).success.value
+      val userAnswers = emptyUserAnswers.set(CommodityCodePage, shortCommodity).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -61,7 +64,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[LongerCommodityCodeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, commodity, recordId)(
+        contentAsString(result) mustEqual view(form, NormalMode, shortCommodity, recordId)(
           request,
           messages(application)
         ).toString
@@ -82,9 +85,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val commodity   = Commodity("654321", "Description", Instant.now, None)
       val userAnswers = emptyUserAnswers
-        .set(CommodityQuery, commodity)
+        .set(CommodityCodePage, shortCommodity)
         .success
         .value
         .set(LongerCommodityCodePage, "answer")
@@ -101,7 +103,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, commodity, recordId)(
+        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, shortCommodity, recordId)(
           request,
           messages(application)
         ).toString
@@ -111,14 +113,26 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
+      val mockOttConnector      = mock[OttConnector]
+      val userAnswers           = emptyUserAnswers
+        .set(CommodityCodePage, shortCommodity)
+        .success
+        .value
+        .set(LongerCommodityCodePage, "answer")
+        .success
+        .value
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.successful(
+        Commodity("654321", "Description", Instant.now, None)
+      )
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[OttConnector].toInstance(mockOttConnector)
           )
           .build()
 
@@ -131,27 +145,19 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-      }
-    }
 
-    "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, longerCommodityCodeRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
       }
     }
 
     "must return a Bad Request and errors when invalid is submitted" in {
-      val commodity   = Commodity("654321", "Description", Instant.now, None)
-      val userAnswers = emptyUserAnswers.set(CommodityQuery, commodity).success.value
+      val userAnswers = emptyUserAnswers
+        .set(CommodityCodePage, shortCommodity)
+        .success
+        .value
+        .set(LongerCommodityCodePage, "answer")
+        .success
+        .value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -166,13 +172,54 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, commodity, recordId)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, recordId)(
           request,
           messages(application)
         ).toString
       }
     }
 
+    "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
+      val mockOttConnector = mock[OttConnector]
+      val userAnswers      = emptyUserAnswers
+        .set(CommodityCodePage, shortCommodity)
+        .success
+        .value
+        .set(LongerCommodityCodePage, "answer")
+        .success
+        .value
+
+      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.failed(
+        UpstreamErrorResponse(" ", NOT_FOUND)
+      )
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, longerCommodityCodeRoute)
+            .withFormUrlEncodedBody(("value", "1234"))
+
+        val boundForm = form.copy(errors = Seq(elems = FormError("value", "longerCommodityCode.error.invalid")))
+
+        val view = application.injector.instanceOf[LongerCommodityCodeView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, recordId)(
+          request,
+          messages(application)
+        ).toString
+
+        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
+      }
+
+    }
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()

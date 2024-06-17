@@ -16,17 +16,20 @@
 
 package controllers
 
+import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
 
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.LongerCommodityCodePage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import pages.{CommodityCodePage, LongerCommodityCodePage}
+import play.api.data.FormError
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CommodityQuery
 import repositories.SessionRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.LongerCommodityCodeView
 
@@ -40,13 +43,14 @@ class LongerCommodityCodeController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: LongerCommodityCodeFormProvider,
+  ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
   view: LongerCommodityCodeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  private val form = formProvider()
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -55,27 +59,38 @@ class LongerCommodityCodeController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      request.userAnswers.get(CommodityQuery) match {
+      request.userAnswers.get(CommodityCodePage) match {
         case Some(commodity) => Ok(view(preparedForm, mode, commodity, recordId))
         case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
-  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            request.userAnswers.get(CommodityQuery) match {
-              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity, recordId)))
-              case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-            },
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(LongerCommodityCodePage, mode, updatedAnswers))
-        )
+      request.userAnswers.get(CommodityCodePage) match {
+        case Some(shortCommodity) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortCommodity, recordId))),
+              value => {
+                val longCommodityCode = s"$shortCommodity$value"
+                (for {
+                  validCommodityCode      <- ottConnector.getCommodityCode(longCommodityCode)
+                  updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
+                  updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, validCommodityCode))
+                  _                       <- sessionRepository.set(updatedAnswersWithQuery)
+                } yield Redirect(navigator.nextPage(LongerCommodityCodePage, mode, updatedAnswers))).recover {
+                  case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                    val formWithApiErrors =
+                      form
+                        .copy(errors = Seq(elems = FormError("value", getMessage("longerCommodityCode.error.invalid"))))
+                    BadRequest(view(formWithApiErrors, mode, shortCommodity, recordId))
+                }
+              }
+            )
+      }
+
     }
+  private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 }

@@ -25,12 +25,12 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, commodity: Commodity, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, commodity: String, recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("longerCommodityCode.title"))) {
 
     <h1 class="govuk-heading-l">@messages("longerCommodityCode.h1")</h1>
-    <p class="govuk-body">@messages("longerCommodityCode.p1", commodity.commodityCode)</p>
+    <p class="govuk-body">@messages("longerCommodityCode.p1", commodity)</p>
     <p class="govuk-body">@messages("longerCommodityCode.p2")</p>
     <p class="govuk-inset-text">@messages("longerCommodityCode.insetText")</p>
 
@@ -47,7 +47,7 @@
                 field = form("value"),
                 label = Label(content = "longerCommodityCode.h2", classes = "govuk-visually-hidden")
             ).withHint(Hint(content = Text(messages("longerCommodityCode.hint"))))
-            .withPrefix(PrefixOrSuffix(content = Text(messages(commodity.commodityCode))))
+            .withPrefix(PrefixOrSuffix(content = Text(messages(commodity))))
             .asNumeric()
             .withWidth(Fixed4)
         )
