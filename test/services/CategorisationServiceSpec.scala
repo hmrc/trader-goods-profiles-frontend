@@ -63,8 +63,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockOttConnector.getCategorisationInfo(any(), any(), any(),
-      any(), any(), any())(any())).thenReturn(Future.successful(mockOttResponse))
+    when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(mockOttResponse))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
   }
@@ -92,8 +92,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), eqTo(testEori), any(),
-          any(), any(), any())(any())
+        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
+          any()
+        )
       }
 
       withClue("Should call session repository to update user answers") {
@@ -120,8 +121,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector, never()).getCategorisationInfo(any(), any(), any(), any(),
-          any(), any())(any())
+        verify(mockOttConnector, never()).getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())
       }
 
       withClue("Should call session repository to update user answers") {

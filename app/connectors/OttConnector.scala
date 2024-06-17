@@ -19,7 +19,7 @@ package connectors
 import com.fasterxml.jackson.core.JsonParseException
 import config.Service
 import models.Commodity
-import models.audits.OttAuditDetails
+import models.audits.OttAuditData
 import models.ott.response.OttResponse
 import org.apache.pekko.Done
 import play.api.Configuration
@@ -48,72 +48,98 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
   private def getFromOtt[T](
-    commodityCode: String, urlFunc: String => URL, authToken: String,mode: String,
-    auditDetails: OttAuditDetails,
-    auditFunction: (OttAuditDetails, Instant, Instant, Int, String, Option[T]) => Future[Done]
+    commodityCode: String,
+    urlFunc: String => URL,
+    authToken: String,
+    auditDetails: OttAuditData,
+    auditFunction: (OttAuditData, Instant, Instant, Int, String, Option[T]) => Future[Done]
   )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
-    val requestStartTime = Instant.now
+    val requestStartTime        = Instant.now
     val x: Future[HttpResponse] = httpClient
       .get(urlFunc(commodityCode))(newHeaderCarrier)
       .execute[HttpResponse]
 
-      x.flatMap { response =>
+    x.flatMap { response =>
+      val requestEndTime = Instant.now
 
-        val requestEndTime = Instant.now
-
-        response.status match {
-          case OK =>
-
-            response.json
-              .validate[T]
-              .map(result => {
-                auditFunction.apply(auditDetails, requestStartTime, requestEndTime, response.status, response.body, Some(result))
-                Future.successful(result)
-              })
-              .recoverTotal((error: JsError) => {
-                Future.failed(JsResult.Exception(error))
-              })
-
-        }
-      }
-      .recoverWith {
-
-        case e: NotFoundException   =>
-          auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, e.message, None)
-
-          Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
-        case e: Upstream5xxResponse =>
-          auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, e.message, None)
-
-          Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
-
-        case e: UpstreamErrorResponse =>
-          auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, e.message, None)
-          Future.failed(e)
-
-        case e: Exception =>
-          //E.g. Any error not directly related to the http call, e.g. Json parsing
-          auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, e.getMessage, None)
-          Future.failed(e)
+      response.status match {
+        case OK =>
+          response.json
+            .validate[T]
+            .map { result =>
+              auditFunction.apply(
+                auditDetails,
+                requestStartTime,
+                requestEndTime,
+                response.status,
+                response.body,
+                Some(result)
+              )
+              Future.successful(result)
+            }
+            .recoverTotal { (error: JsError) =>
+              Future.failed(JsResult.Exception(error))
+            }
 
       }
+    }.recoverWith {
+
+      case e: NotFoundException   =>
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, e.message, None)
+
+        Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
+
+      case e: Upstream5xxResponse =>
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, e.message, None)
+
+        Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
+
+      case e: UpstreamErrorResponse =>
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, e.message, None)
+        Future.failed(e)
+
+      case e: Exception =>
+        //E.g. Any error not directly related to the http call, e.g. Json parsing
+        auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, e.getMessage, None)
+        Future.failed(e)
+
+    }
   }
 
-  def getCommodityCode(commodityCode: String, eori: String, affinityGroup: AffinityGroup, journey: String,
-                       recordId: Option[String])(implicit hc: HeaderCarrier): Future[Commodity] =
-    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken", "commodity", OttAuditDetails(eori, affinityGroup, recordId
-    , commodityCode, "N/A", LocalDate.now(), journey),
-      auditService.auditValidateCommodityCode)
+  def getCommodityCode(
+    commodityCode: String,
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: String,
+    recordId: Option[String]
+  )(implicit hc: HeaderCarrier): Future[Commodity] =
+    getFromOtt[Commodity](
+      commodityCode,
+      ottCommoditiesUrl,
+      "bearerToken",
+      OttAuditData(eori, affinityGroup, recordId, commodityCode, None, None, Some(journey)),
+      auditService.auditValidateCommodityCode
+    )
 
-  def getCategorisationInfo(commodityCode: String, eori: String, affinityGroup: AffinityGroup
-                            , recordId: Option[String], countryOfOrigin: String, dateOfTrade: LocalDate)(implicit hc: HeaderCarrier): Future[OttResponse] =
-    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken", "cat", OttAuditDetails(eori,
-      affinityGroup, recordId, commodityCode, countryOfOrigin, dateOfTrade, "N/A"),
-      auditService.auditGetCategorisationAssessmentDetails)
+  def getCategorisationInfo(
+    commodityCode: String,
+    eori: String,
+    affinityGroup: AffinityGroup,
+    recordId: Option[String],
+    countryOfOrigin: String,
+    dateOfTrade: LocalDate
+  )(implicit hc: HeaderCarrier): Future[OttResponse] =
+    getFromOtt[OttResponse](
+      commodityCode,
+      ottGreenLanesUrl,
+      "bearerToken",
+      OttAuditData(eori, affinityGroup, recordId, commodityCode, Some(countryOfOrigin), Some(dateOfTrade), None),
+      auditService.auditGetCategorisationAssessmentDetails
+    )
 
 }

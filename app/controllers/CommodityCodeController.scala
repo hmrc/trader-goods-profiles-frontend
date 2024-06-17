@@ -68,8 +68,8 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             (for {
-              commodity               <- ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, "CreateRecord",
-                None)
+              commodity               <-
+                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, "CreateRecord", None)
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)

@@ -16,11 +16,15 @@
 
 package factories
 
+import models.audits.OttAuditData
+import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile}
+import play.api.http.Status.OK
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
+import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.{Instant, LocalDate}
 
@@ -118,39 +122,30 @@ case class AuditEventFactory() {
   }
 
   def createValidateCommodityCodeEvent(
-    eori: String,
-    affinityGroup: AffinityGroup,
-    journey: String,
-    recordId: Option[String],
-    commodityCode: String,
+    auditData: OttAuditData,
     requestDateTime: Instant,
     responseDateTime: Instant,
-    commodityCodeStatus: Boolean,
-    statusString: String,
-    statusCode: Int,
-    failureReason: String,
-    commodityCodeDescription: Option[String],
-    commodityCodeEffectiveTo: Option[Instant],
-    commodityCodeEffectiveFrom: Option[Instant]
+    responseStatus: Int,
+    errorMessage: String,
+    commodityDetails: Option[Commodity]
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     //TODO will this look right
-    //TODO cleanup parameters
     val auditDetails = Map(
-      "eori" -> eori,
-      "affinityGroup" -> affinityGroup.toString,
-      "journey" -> journey,
-      "recordId" -> recordId.getOrElse("null"),
-      "commodityCode" -> commodityCode,
-      "requestDateTime" -> requestDateTime.toString,
-      "responseDateTime" -> responseDateTime.toString,
-      "outcome.commodityCodeStatus" -> (if (commodityCodeStatus) "valid" else "invalid"), //TODO test both
-      "outcome.status" -> statusString,
-      "outcome.statusCode" -> statusCode.toString,
-      "outcome.failureReason" -> failureReason,
-      "commodityDescription" -> commodityCodeDescription.getOrElse("null"),
-      "commodityCodeEffectiveTo" -> commodityCodeEffectiveTo.map(_.toString).getOrElse("null"), //TODO test both
-      "commodityCodeEffectiveFrom" -> commodityCodeEffectiveFrom.map(_.toString).getOrElse("null")
+      "eori"                        -> auditData.eori,
+      "affinityGroup"               -> auditData.affinityGroup.toString,
+      "journey"                     -> auditData.journey.getOrElse("null"),
+      "recordId"                    -> auditData.recordId.getOrElse("null"),
+      "commodityCode"               -> auditData.commodityCode,
+      "requestDateTime"             -> requestDateTime.toString,
+      "responseDateTime"            -> responseDateTime.toString,
+      "outcome.commodityCodeStatus" -> (if (responseStatus == OK) "valid" else "invalid"), //TODO test both
+      "outcome.status"              -> codeDescriptions(responseStatus),
+      "outcome.statusCode"          -> responseStatus.toString,
+      "outcome.failureReason"       -> (if (responseStatus == OK) "null" else errorMessage),
+      "commodityDescription"        -> commodityDetails.map(_.description).getOrElse("null"),
+      "commodityCodeEffectiveTo"    -> commodityDetails.map(_.validityEndDate.toString).getOrElse("null"), //TODO test both
+      "commodityCodeEffectiveFrom"  -> commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
     )
 
     DataEvent(
@@ -162,37 +157,29 @@ case class AuditEventFactory() {
   }
 
   def createGetCategorisationAssessmentDetailsEvent(
-    eori: String,
-    affinityGroup: AffinityGroup,
-    recordId: Option[String],
-    commodityCode: String,
-    countryOfOrigin: String,
-    dateOfTrade: LocalDate,
+    auditData: OttAuditData,
     requestDateTime: Instant,
     responseDateTime: Instant,
-    statusString: String,
-    statusCode: Int,
-    failureReason: String,
-    categoryAssessmentOptions: Option[Int],
-    exemptionOptions: Option[Int]
+    responseStatus: Int,
+    errorMessage: String,
+    ottResponse: Option[OttResponse]
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     //TODO will this look right
-    //TODO cleanup parameters
     val auditDetails = Map(
-      "eori" -> eori,
-      "affinityGroup" -> affinityGroup.toString,
-      "recordId" -> recordId.getOrElse("null"),
-      "commodityCode" -> commodityCode,
-      "countryOfOrigin" -> countryOfOrigin,
-      "dateOfTrade" -> dateOfTrade.toString,
-      "requestDateTime" -> requestDateTime.toString,
-      "responseDateTime" -> responseDateTime.toString,
-      "outcome.status" -> statusString,
-      "outcome.statusCode" -> statusCode.toString,
-      "outcome.failureReason" -> failureReason,
-      "categoryAssessmentOptions" -> categoryAssessmentOptions.map(_.toString).getOrElse("null"),
-      "exemptionOptions" -> exemptionOptions.map(_.toString).getOrElse("null"),
+      "eori"                      -> auditData.eori,
+      "affinityGroup"             -> auditData.affinityGroup.toString,
+      "recordId"                  -> auditData.recordId.getOrElse("null"),
+      "commodityCode"             -> auditData.commodityCode,
+      "countryOfOrigin"           -> auditData.countryOfOrigin.getOrElse("null"),
+      "dateOfTrade"               -> auditData.dateOfTrade.map(_.toString).getOrElse("null"),
+      "requestDateTime"           -> requestDateTime.toString,
+      "responseDateTime"          -> responseDateTime.toString,
+      "outcome.status"            -> codeDescriptions(responseStatus),
+      "outcome.statusCode"        -> responseStatus.toString,
+      "outcome.failureReason"     -> (if (responseStatus == OK) "null" else errorMessage),
+      "categoryAssessmentOptions" -> ottResponse.map(_.categoryAssessments.size.toString).getOrElse("null"),
+      "exemptionOptions"          -> ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString).getOrElse("null")
     )
 
     DataEvent(
