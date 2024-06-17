@@ -355,3 +355,6 @@ supplementaryUnit.error.required = Enter your supplementaryUnit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit
+
+goodsRecords.title = goodsRecords
+goodsRecords.heading = goodsRecords
