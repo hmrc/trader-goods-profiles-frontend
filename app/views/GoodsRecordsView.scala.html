@@ -14,14 +14,36 @@
  * limitations under the License.
  *@
 
+@import viewmodels.InputWidth._
+
 @this(
-        layout: templates.Layout,
-        govukButton: GovukButton
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukInput: GovukInput,
+    govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("goodsRecords.title"))) {
+@layout(pageTitle = title(form, messages("goodsRecords.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("goodsRecords.heading")</h1>
+    @formHelper(action = routes.GoodsRecordsController.onSubmit(mode)) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @govukInput(
+            InputViewModel(
+                field = form("value"),
+                label = LabelViewModel(messages("goodsRecords.heading")).asPageHeading()
+            )
+            .withWidth(Full)
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }

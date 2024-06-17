@@ -356,5 +356,10 @@ supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole n
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit
 
+
 goodsRecords.title = goodsRecords
 goodsRecords.heading = goodsRecords
+goodsRecords.checkYourAnswersLabel = goodsRecords
+goodsRecords.error.required = Enter goodsRecords
+goodsRecords.error.length = GoodsRecords must be 100 characters or less
+goodsRecords.change.hidden = GoodsRecords
