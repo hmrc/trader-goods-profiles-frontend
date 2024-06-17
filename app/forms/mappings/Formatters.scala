@@ -114,7 +114,7 @@ trait Formatters {
   ): Formatter[Double] =
     new Formatter[Double] {
 
-      val decimalPattern = """^\d{1,10}(\.\d{1,6})?$"""
+      val decimalPattern = """^-?\d{1,10}(\.\d{1,6})?$"""
 
       private val baseFormatter = stringFormatter(requiredKey, args)
 
@@ -128,11 +128,8 @@ trait Formatters {
                 .either(s.toDouble)
                 .left
                 .map(_ => Seq(FormError(key, nonNumericKey, args)))
-            case s                              =>
-              nonFatalCatch
-                .either(s.toDouble)
-                .left
-                .map(_ => Seq(FormError(key, nonNumericKey, args)))
+            case _                              =>
+              Left(Seq(FormError(key, nonNumericKey, args)))
           }
 
       override def unbind(key: String, value: Double) =

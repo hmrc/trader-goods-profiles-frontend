@@ -121,11 +121,31 @@ trait Generators {
   }
 
   def doublesInRangeWithCommas(min: Double, max: Double): Gen[String] = {
-    val numberGen = choose[Double](min, max).map(_.toString)
-    genIntersperseString(numberGen, ",")
+    val numberGen = choose(min, max).map(formatDoubleWithCommas)
+    numberGen
   }
 
-  def doublesOutsideRange(min: Double, max: Double): Gen[Double] =
-    arbitrary[Double] suchThat (x => x < min || x > max)
+  def formatDoubleWithCommas(value: Double): String = {
+    val formatted   = f"$value%.6f" // Format with 6 decimal places
+    val parts       = formatted.split("\\.")
+    val integerPart = parts(0).reverse.grouped(3).mkString(",").reverse // Add commas every three digits
+    val decimalPart = if (parts.length > 1) "." + parts(1) else "" // Append decimal part if present
+    integerPart + decimalPart
+  }
+
+  def genDoublesperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
+
+    val genValue: Gen[Option[String]] = Gen.frequency(frequencyN -> None, frequencyV -> Gen.const(Some(value)))
+
+    for {
+      seq1 <- gen
+      seq2 <- Gen.listOfN(seq1.length, genValue)
+    } yield seq1.toSeq.zip(seq2).foldLeft("") {
+      case (acc, (n, Some(v))) =>
+        acc + n + v
+      case (acc, (n, _))       =>
+        acc + n
+    }
+  }
 
 }

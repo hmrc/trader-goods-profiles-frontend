@@ -28,6 +28,5 @@ class SupplementaryUnitFormProvider @Inject() extends Mappings {
         "supplementaryUnit.error.required",
         "supplementaryUnit.error.nonNumeric"
       )
-        .verifying(inRange(-9999999999.999999, 9999999999.999999, "supplementaryUnit.error.outOfRange"))
     )
 }

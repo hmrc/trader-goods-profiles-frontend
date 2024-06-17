@@ -16,10 +16,10 @@
 
 package forms
 
-import forms.behaviours.DoubleFieldBehaviours
+import forms.behaviours.DoubleFieldWith10DigitsAnd6DecimalsBehaviours
 import play.api.data.FormError
 
-class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours {
+class SupplementaryUnitFormProviderSpec extends DoubleFieldWith10DigitsAnd6DecimalsBehaviours {
 
   val form = new SupplementaryUnitFormProvider()()
 
@@ -42,14 +42,6 @@ class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours {
       form,
       fieldName,
       nonNumericError = FormError(fieldName, "supplementaryUnit.error.nonNumeric")
-    )
-
-    behave like doubleFieldWithRange(
-      form,
-      fieldName,
-      minimum = minimum,
-      maximum = maximum,
-      expectedError = FormError(fieldName, "supplementaryUnit.error.outOfRange", Seq(minimum, maximum))
     )
 
     behave like mandatoryField(
