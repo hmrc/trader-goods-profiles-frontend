@@ -48,7 +48,7 @@ cyaRequestAdvice.subheading = Contact details
 
 cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your answers
-cyaCategorisation.categorisationHeader = Categorisation
+cyaCategorisation.categorisationHeader = Conditions
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
@@ -351,7 +351,7 @@ hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
 supplementaryUnit.title = SupplementaryUnit
 supplementaryUnit.heading = SupplementaryUnit
-supplementaryUnit.checkYourAnswersLabel = What is the good's supplementary unit?
+supplementaryUnit.checkYourAnswersLabel = What is the good’s supplementary unit?
 supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
 supplementaryUnit.error.required = Enter your supplementaryUnit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers
