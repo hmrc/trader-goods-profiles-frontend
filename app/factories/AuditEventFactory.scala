@@ -129,9 +129,9 @@ case class AuditEventFactory() {
     statusString: String,
     statusCode: Int,
     failureReason: String,
-    commodityCodeDescription: String,
+    commodityCodeDescription: Option[String],
     commodityCodeEffectiveTo: Option[Instant],
-    commodityCodeEffectiveFrom: Instant
+    commodityCodeEffectiveFrom: Option[Instant]
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     //TODO will this look right
@@ -148,9 +148,9 @@ case class AuditEventFactory() {
       "outcome.status" -> statusString,
       "outcome.statusCode" -> statusCode.toString,
       "outcome.failureReason" -> failureReason,
-      "commodityDescription" -> commodityCodeDescription,
+      "commodityDescription" -> commodityCodeDescription.getOrElse("null"),
       "commodityCodeEffectiveTo" -> commodityCodeEffectiveTo.map(_.toString).getOrElse("null"), //TODO test both
-      "commodityCodeEffectiveFrom" -> commodityCodeEffectiveFrom.toString
+      "commodityCodeEffectiveFrom" -> commodityCodeEffectiveFrom.map(_.toString).getOrElse("null")
     )
 
     DataEvent(
@@ -173,8 +173,8 @@ case class AuditEventFactory() {
     statusString: String,
     statusCode: Int,
     failureReason: String,
-    categoryAssessmentOptions: Int,
-    exemptionOptions: Int
+    categoryAssessmentOptions: Option[Int],
+    exemptionOptions: Option[Int]
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     //TODO will this look right
@@ -191,8 +191,8 @@ case class AuditEventFactory() {
       "outcome.status" -> statusString,
       "outcome.statusCode" -> statusCode.toString,
       "outcome.failureReason" -> failureReason,
-      "categoryAssessmentOptions" -> categoryAssessmentOptions.toString,
-      "exemptionOptions" -> exemptionOptions.toString,
+      "categoryAssessmentOptions" -> categoryAssessmentOptions.map(_.toString).getOrElse("null"),
+      "exemptionOptions" -> exemptionOptions.map(_.toString).getOrElse("null"),
     )
 
     DataEvent(

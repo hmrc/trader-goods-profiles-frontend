@@ -19,16 +19,20 @@ package services
 import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
-import models.{GoodsRecord, TraderProfile, UserAnswers}
+import models.audits.OttAuditDetails
+import models.ott.response.OttResponse
+import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
+import play.api.http.Status.OK
 import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import utils.HttpStatusCodeDescriptions.codeDescriptions
 
-import java.time.{Instant, LocalDate}
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory: AuditEventFactory)(implicit
@@ -93,24 +97,33 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   }
 
   def auditValidateCommodityCode(
-    eori: String,
-    affinityGroup: AffinityGroup,
-    journey: String,
-    recordId: Option[String],
-    commodityCode: String,
+    auditDetails: OttAuditDetails,
     requestDateTime: Instant,
     responseDateTime: Instant,
-    commodityCodeStatus: Boolean,
-    statusString: String,
-    statusCode: Int,
-    failureReason: String,
-    commodityCodeDescription: String,
-    commodityCodeEffectiveTo: Option[Instant],
-    commodityCodeEffectiveFrom: Instant
+    responseStatus: Int,
+    errorMessage: String,
+    commodityDetails: Option[Commodity]
   )(implicit hc: HeaderCarrier): Future[Done] = {
 
     val event = auditEventFactory.createValidateCommodityCodeEvent(
-      eori, affinityGroup, journey, recordId, commodityCode, requestDateTime, responseDateTime, commodityCodeStatus, statusString, statusCode, failureReason, commodityCodeDescription, commodityCodeEffectiveTo, commodityCodeEffectiveFrom
+      auditDetails.eori,
+      auditDetails.affinityGroup,
+      auditDetails.journey,
+      auditDetails.recordId,
+      auditDetails.commodityCode,
+      requestDateTime,
+      responseDateTime,
+      responseStatus == OK,
+      codeDescriptions(responseStatus),
+      responseStatus,
+      if (responseStatus == OK) {
+        "null"
+      } else {
+        errorMessage
+      },
+      commodityDetails.map(_.description),
+      commodityDetails.flatMap(_.validityEndDate),
+      commodityDetails.map(_.validityStartDate)
     )
 
     auditConnector.sendEvent(event).map { auditResult =>
@@ -119,30 +132,40 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
-    def auditGetCategorisationAssessmentDetails(
-      eori: String,
-      affinityGroup: AffinityGroup,
-      recordId: Option[String],
-      commodityCode: String,
-      countryOfOrigin: String,
-      dateOfTrade: LocalDate,
-      requestDateTime: Instant,
-      responseDateTime: Instant,
-      statusString: String,
-      statusCode: Int,
-      failureReason: String,
-      categoryAssessmentOptions: Int,
-      exemptionOptions: Int
-    )(implicit hc: HeaderCarrier): Future[Done] = {
+  def auditGetCategorisationAssessmentDetails(
+    auditDetails: OttAuditDetails,
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    responseStatus: Int,
+    errorMessage: String,
+    ottResponse: Option[OttResponse]
+  )(implicit hc: HeaderCarrier): Future[Done] = {
 
-      val event = auditEventFactory.createGetCategorisationAssessmentDetailsEvent(eori, affinityGroup, recordId, commodityCode, countryOfOrigin, dateOfTrade, requestDateTime, responseDateTime, statusString, statusCode, failureReason, categoryAssessmentOptions, exemptionOptions)
+    val event = auditEventFactory.createGetCategorisationAssessmentDetailsEvent(
+      auditDetails.eori,
+      auditDetails.affinityGroup,
+      auditDetails.recordId,
+      auditDetails.commodityCode,
+      auditDetails.countryOfOrigin,
+      auditDetails.dateOfTrade,
+      requestDateTime,
+      responseDateTime,
+      codeDescriptions(responseStatus),
+      responseStatus,
+      if (responseStatus == OK) {
+        "null"
+      } else {
+        errorMessage
+      },
+      ottResponse.map(_.categoryAssessments.size),
+      ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum)
+    )
 
-      auditConnector.sendEvent(event).map { auditResult =>
-        logger.info(s"GetCategorisationAssessmentDetails audit event status: $auditResult")
-        Done
-      }
-
-
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"GetCategorisationAssessmentDetails audit event status: $auditResult")
+      Done
     }
+
+  }
 
 }

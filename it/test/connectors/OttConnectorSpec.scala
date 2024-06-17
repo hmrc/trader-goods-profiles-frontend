@@ -60,7 +60,7 @@ class OttConnectorSpec
   override def beforeEach(): Unit = {
     reset(auditService)
 
-    when(auditService.auditValidateCommodityCode(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any, any)(any()))
+    when(auditService.auditValidateCommodityCode(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(Done))
 
     super.beforeEach()
@@ -86,7 +86,7 @@ class OttConnectorSpec
         connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None).futureValue mustBe commodity
 
         withClue("must have audited the request") {
-          verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any,any, any, any, any, any, any, any, any)(any)
+          verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
         }
 
       }
@@ -112,7 +112,7 @@ class OttConnectorSpec
         connector.getCommodityCode("123456",testEori, AffinityGroup.Individual, "CreateRecord", None).futureValue mustBe commodity
 
         withClue("must have audited the request") {
-          verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+          verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
         }
       }
 
@@ -129,7 +129,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
       }
     }
 
@@ -145,7 +145,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
       }
     }
 
@@ -160,16 +160,16 @@ class OttConnectorSpec
         None).failed.futureValue
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
       }
     }
 
-    "must return a Js exception future when json cannot be parsed" in {
+    "must return an exception future when json cannot be parsed at all" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(s"/ott/commodities/123456"))
           .willReturn(ok().withBody(
-            "{\n \"description\": \"Commodity description\",\n}"
+            "{\n \"description\": \"Commodity description\", \"\"\n}"
           ))
       )
 
@@ -178,7 +178,25 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+      }
+    }
+
+    "must return an Js exception future when json is parsable but does not match Commodity format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(ok().withBody(
+            "{\n \"description\": \"Commodity description\"\n}"
+          ))
+      )
+
+      val connectorFailure = connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord",
+        None).failed.futureValue
+      connectorFailure.isInstanceOf[Exception] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
       }
     }
 
@@ -274,7 +292,7 @@ class OttConnectorSpec
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
       }
     }
 
@@ -290,7 +308,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
       }
     }
 
@@ -306,7 +324,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
       }
     }
 
@@ -321,7 +339,7 @@ class OttConnectorSpec
         Some(testRecordId), "CX", LocalDate.now()).failed.futureValue
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
       }
     }
 
@@ -339,7 +357,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any, any, any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
       }
     }
 
