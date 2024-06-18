@@ -16,24 +16,17 @@
 
 package connectors
 
-import com.fasterxml.jackson.core.JsonParseException
-import config.Service
-import models.Commodity
+import models.{Commodity, Country}
 import models.audits.OttAuditData
-import models.ott.response.OttResponse
-import models.Country
-import models.ott.response.CountriesResponse
+import models.ott.response.{CountriesResponse, OttResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.NOT_FOUND
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.{JsResult, Reads}
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
-import play.api.libs.json.{JsError, JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpException, HttpResponse, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
-import utils.HttpStatusCodeDescriptions.codeDescriptions
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
 
 import java.net.URL
 import java.time.{Instant, LocalDate}
@@ -65,7 +58,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
-    val requestStartTime        = Instant.now
+    val requestStartTime = Instant.now
 
     httpClient
       .get(url)(newHeaderCarrier)
@@ -75,7 +68,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
         response.json
           .validate[T]
-          .map(result => {
+          .map { result =>
             auditFunction.apply(
               auditDetails,
               requestStartTime,
@@ -85,31 +78,34 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
               Some(result)
             )
             Future.successful(result)
-          })
+          }
           .recoverTotal(error => Future.failed(JsResult.Exception(error)))
       }
-      .recoverWith { case e: NotFoundException =>
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, Some(e.message), None)
+      .recoverWith {
+        case e: NotFoundException =>
+          auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, Some(e.message), None)
 
-        Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
+          Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
 
-      case e: UpstreamErrorResponse =>
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
-        Future.failed(e)
+        case e: UpstreamErrorResponse =>
+          auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
+          Future.failed(e)
 
-      case e: Exception =>
-        //E.g. Any error not directly related to the http call, e.g. Json parsing
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, Some(e.getMessage), None)
-        Future.failed(e)
+        case e: Exception =>
+          //E.g. Any error not directly related to the http call, e.g. Json parsing
+          auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, Some(e.getMessage), None)
+          Future.failed(e)
 
       }
   }
 
-  private def getFromOttWithCommodityCode[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+  private def getFromOttWithCommodityCode[T](commodityCode: String, urlFunc: String => URL, authToken: String, auditDetails: OttAuditData,
+                                             auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
+                                            )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] =
-    getFromOtt(urlFunc(commodityCode), authToken)
+    getFromOtt(urlFunc(commodityCode), authToken, auditDetails, auditFunction)
 
   def getCommodityCode(
     commodityCode: String,
@@ -133,7 +129,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     recordId: Option[String],
     countryOfOrigin: String,
     dateOfTrade: LocalDate
-  )(implicit hc: HeaderCarrier): Future[OttResponse] =
+  )(implicit hc: HeaderCarrier): Future[OttResponse]                 =
     getFromOttWithCommodityCode[OttResponse](
       commodityCode,
       ottGreenLanesUrl,
@@ -142,5 +138,5 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       auditService.auditGetCategorisationAssessmentDetails
     )
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
-    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken").map(_.data)
+    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken", OttAuditData("make opt", AffinityGroup.Individual, None, "a", None, None, None), (_,_,_,_, _, _) => Future.successful(Done)).map(_.data)
 }
