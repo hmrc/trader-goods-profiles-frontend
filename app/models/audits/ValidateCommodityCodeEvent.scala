@@ -26,7 +26,7 @@ case class ValidateCommodityCodeEventOutcome(
   failureReason: String
 )
 
-object ValidateCommodityCodeEventOutcome{
+object ValidateCommodityCodeEventOutcome {
   implicit val format: OFormat[ValidateCommodityCodeEventOutcome] = Json.format[ValidateCommodityCodeEventOutcome]
 }
 
@@ -44,6 +44,6 @@ case class ValidateCommodityCodeEvent(
   commodityCodeEffectiveFrom: String
 )
 
-object ValidateCommodityCodeEvent{
+object ValidateCommodityCodeEvent {
   implicit val format: OFormat[ValidateCommodityCodeEvent] = Json.format[ValidateCommodityCodeEvent]
 }

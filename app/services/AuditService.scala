@@ -110,7 +110,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       requestDateTime,
       responseDateTime,
       responseStatus,
-        errorMessage,
+      errorMessage,
       commodityDetails
     )
 
@@ -134,7 +134,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       requestDateTime,
       responseDateTime,
       responseStatus,
-        errorMessage,
+      errorMessage,
       ottResponse
     )
 

@@ -25,8 +25,9 @@ case class GetCategorisationAssessmentDetailsEventOutcome(
   failureReason: String
 )
 
-object GetCategorisationAssessmentDetailsEventOutcome{
-  implicit val format: OFormat[GetCategorisationAssessmentDetailsEventOutcome] = Json.format[GetCategorisationAssessmentDetailsEventOutcome]
+object GetCategorisationAssessmentDetailsEventOutcome {
+  implicit val format: OFormat[GetCategorisationAssessmentDetailsEventOutcome] =
+    Json.format[GetCategorisationAssessmentDetailsEventOutcome]
 }
 
 case class GetCategorisationAssessmentDetailsEvent(
@@ -43,6 +44,7 @@ case class GetCategorisationAssessmentDetailsEvent(
   exemptionOptions: String
 )
 
-object GetCategorisationAssessmentDetailsEvent{
-  implicit val format: OFormat[GetCategorisationAssessmentDetailsEvent] = Json.format[GetCategorisationAssessmentDetailsEvent]
+object GetCategorisationAssessmentDetailsEvent {
+  implicit val format: OFormat[GetCategorisationAssessmentDetailsEvent] =
+    Json.format[GetCategorisationAssessmentDetailsEvent]
 }
