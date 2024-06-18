@@ -60,7 +60,13 @@ class GoodsRecordsController @Inject() (
         rows = Seq(headers()) ++ rows(goodsRecordResponse.goodsItemRecords)
       )
 
-      Ok(view(preparedForm, list))
+      val numRecordsOnPage =
+        math.ceil(goodsRecordResponse.pagination.totalRecords / goodsRecordResponse.pagination.totalPages).toInt
+      val firstRecordPos   = goodsRecordResponse.pagination.currentPage * numRecordsOnPage
+      val firstRecord      = firstRecordPos + 1
+      val lastRecord       = goodsRecordResponse.goodsItemRecords.size + firstRecordPos
+
+      Ok(view(preparedForm, list, goodsRecordResponse.pagination.totalRecords, firstRecord, lastRecord))
     }
   }
 
@@ -80,7 +86,7 @@ class GoodsRecordsController @Inject() (
           content = Text(goodsRecord.commodityCode)
         ),
         TableRowViewModel(
-          content = Text("STATUS")
+          content = Text("to be implemented in TGP-1220")
         ),
         TableRowViewModel(
           content = Text("ACTIONS")
@@ -114,7 +120,8 @@ class GoodsRecordsController @Inject() (
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, TableViewModel(rows = Seq.empty)))),
+        formWithErrors =>
+          Future.successful(BadRequest(view(formWithErrors, TableViewModel(rows = Seq.empty), 0, 0, 0))),
         value =>
           for {
             updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
@@ -125,7 +132,13 @@ class GoodsRecordsController @Inject() (
               rows = Seq(headers()) ++ rows(goodsRecordResponse.goodsItemRecords)
             )
 
-            Ok(view(form.fill(value), list))
+            val numRecordsOnPage =
+              math.ceil(goodsRecordResponse.pagination.totalRecords / goodsRecordResponse.pagination.totalPages).toInt
+            val firstRecordPos   = goodsRecordResponse.pagination.currentPage * numRecordsOnPage
+            val firstRecord      = firstRecordPos + 1
+            val lastRecord       = goodsRecordResponse.goodsItemRecords.size + firstRecordPos
+
+            Ok(view(form.fill(value), list, goodsRecordResponse.pagination.totalRecords, firstRecord, lastRecord))
           }
       )
   }

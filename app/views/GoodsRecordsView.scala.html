@@ -25,7 +25,7 @@
     govukTable: GovukTable
 )
 
-@(form: Form[_], list: Table)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], list: Table, totalRecords: Int, firstRecord: Int, lastRecord: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("goodsRecords.title"))) {
 
@@ -41,7 +41,6 @@
     </ul>
 
     @formHelper(action = routes.GoodsRecordsController.onSearch) {
-
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
@@ -59,10 +58,14 @@
         )
     }
 
+    <p class="govuk-body">@messages("goodsRecords.pagination", firstRecord, lastRecord, totalRecords)</p>
+
+    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+
     @govukTable(list)
 
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link2")</a></p>
 
-    <p class="govuk-body"><a href="#" class="govuk-link">@messages("goodsRecords.link2", "600")</a></p>
+    <p class="govuk-body"><a href="#" class="govuk-link">@messages("goodsRecords.link3", "600")</a></p>
 }
 
