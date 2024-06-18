@@ -21,7 +21,9 @@ import play.api.libs.json.{OWrites, Reads, __}
 final case class GetGoodsRecordResponse(
   recordId: String,
   commodityCode: String,
-  countryOfOrigin: String
+  countryOfOrigin: String,
+  traderRef: String,
+  goodsDescription: String
 )
 
 object GetGoodsRecordResponse {
@@ -33,7 +35,9 @@ object GetGoodsRecordResponse {
     (
       (__ \ "recordId").read[String] and
         (__ \ "comcode").read[String] and
-        (__ \ "countryOfOrigin").read[String]
+        (__ \ "countryOfOrigin").read[String] and
+        (__ \ "traderRef").read[String] and
+        (__ \ "goodsDescription").read[String]
     )(GetGoodsRecordResponse.apply _)
   }
 
@@ -44,7 +48,9 @@ object GetGoodsRecordResponse {
     (
       (__ \ "recordId").write[String] and
         (__ \ "comcode").write[String] and
-        (__ \ "countryOfOrigin").write[String]
+        (__ \ "countryOfOrigin").write[String] and
+        (__ \ "traderRef").write[String] and
+        (__ \ "goodsDescription").write[String]
     )(unlift(GetGoodsRecordResponse.unapply))
   }
 }

@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package viewmodels
+package models.router.responses
 
-package object govuk {
+import play.api.libs.json.{Json, OFormat}
 
-  object all
-      extends ImplicitConversions
-      with BackLinkFluency
-      with ButtonFluency
-      with CheckboxFluency
-      with DateFluency
-      with ErrorSummaryFluency
-      with FieldsetFluency
-      with HintFluency
-      with InputFluency
-      with LabelFluency
-      with RadiosFluency
-      with SummaryListFluency
-      with TagFluency
-      with TableFluency
+case class Pagination(
+  totalRecords: Int,
+  currentPage: Int,
+  totalPages: Int,
+  nextPage: Option[Int],
+  prevPage: Option[Int]
+)
+
+object Pagination {
+  implicit val format: OFormat[Pagination] = Json.format[Pagination]
 }

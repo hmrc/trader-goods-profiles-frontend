@@ -95,7 +95,7 @@ class GoodsRecordConnectorSpec
          |  }
          |""".stripMargin)
 
-  private val getUpdateGoodsRecordUrl    = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
+  private val getUpdateGoodsRecordUrl = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
 
   private val instant = Instant.now
 
@@ -204,7 +204,9 @@ class GoodsRecordConnectorSpec
       connector.getRecord(testEori, testRecordId).futureValue mustBe GetGoodsRecordResponse(
         testRecordId,
         "10410100",
-        "EC"
+        "EC",
+        "BAN001001",
+        "Organic bananas"
       )
     }
 

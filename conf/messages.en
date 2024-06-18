@@ -12,7 +12,7 @@ site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
 site.or = or
-
+site.search = Search
 
 date.day = Day
 date.month = Month
@@ -356,10 +356,22 @@ supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole n
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit
 
+goodsRecords.error.required = Enter search term
+goodsRecords.error.length = Search term must be 100 characters or less
+goodsRecords.title = Goods profile
+goodsRecords.heading = Goods profile
+goodsRecords.p1 = This is a list of goods in your TGP. If a goods record is ready for Internal Market Movement Information (IMMI), you can use that record to help complete the IMMI form.
+goodsRecords.p2 = When you, a haulier or other intermediary can complete the IMMI on your behalf, you should use or share the:
+goodsRecords.li1 = 'Trader reference'
+goodsRecords.li2 = 'Goods description'
+goodsRecords.label = Search by trader reference, goods description or commodity code
+goodsRecords.link1 = Go to homepage
+goodsRecords.link2 = Download your goods records (CSV, {0}kb)
+goodsRecords.tableHeader.traderReference = Trader reference
+goodsRecords.tableHeader.goodsDescription = Goods description
+goodsRecords.tableHeader.countryOfOrigin = Country of origin
+goodsRecords.tableHeader.commodityCode = Commodity code
+goodsRecords.tableHeader.status = Status
+goodsRecords.tableHeader.actions = Actions
 
-goodsRecords.title = goodsRecords
-goodsRecords.heading = goodsRecords
-goodsRecords.checkYourAnswersLabel = goodsRecords
-goodsRecords.error.required = Enter goodsRecords
-goodsRecords.error.length = GoodsRecords must be 100 characters or less
-goodsRecords.change.hidden = GoodsRecords
+

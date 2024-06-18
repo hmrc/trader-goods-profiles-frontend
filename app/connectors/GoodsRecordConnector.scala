@@ -19,7 +19,7 @@ package connectors
 import config.Service
 import models.{CategoryRecord, GoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
-import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.libs.json.Json
@@ -32,13 +32,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val tgpRouterBaseUrl: Service          = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
+
   private val clientIdHeader                     = ("X-Client-ID", "tgp-frontend")
   private def createGoodsRecordUrl(eori: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+
+  private val dataStoreBaseUrl: Service     = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private def goodsRecordsUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -68,4 +73,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
+
+  def getRecords(eori: String)(implicit
+    hc: HeaderCarrier
+  ): Future[GetRecordsResponse] =
+    httpClient
+      .get(goodsRecordsUrl(eori))
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
 }

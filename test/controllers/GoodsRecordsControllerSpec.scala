@@ -1,9 +1,25 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
 import forms.GoodsRecordsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -15,6 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.GoodsRecordsView
+import viewmodels.govuk.table._
 
 import scala.concurrent.Future
 
@@ -24,8 +41,11 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new GoodsRecordsFormProvider()
   private val form = formProvider()
+  private val list = TableViewModel(
+    rows = Seq.empty
+  )
 
-  private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(NormalMode).url
+  private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad.url
 
   "GoodsRecords Controller" - {
 
@@ -41,7 +61,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[GoodsRecordsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, list)(request, messages(application)).toString
       }
     }
 
@@ -59,7 +79,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), list)(request, messages(application)).toString
       }
     }
 
@@ -105,7 +125,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, list)(request, messages(application)).toString
       }
     }
 

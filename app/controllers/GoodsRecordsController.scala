@@ -16,56 +16,117 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
+import models.router.responses.GetGoodsRecordResponse
+
 import javax.inject.Inject
-import models.Mode
-import navigation.Navigator
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import uk.gov.hmrc.govukfrontend.views.Aliases.{TableRow, Text}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.GoodsRecordsView
+import viewmodels.govuk.table._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: GoodsRecordsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: GoodsRecordsView
+  view: GoodsRecordsView,
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     val preparedForm = request.userAnswers.get(GoodsRecordsPage) match {
       case None        => form
       case Some(value) => form.fill(value)
     }
 
-    Ok(view(preparedForm, mode))
+    goodsRecordConnector.getRecords(request.eori).map { goodsRecordResponse =>
+      val list = TableViewModel(
+        rows = Seq(headers()) ++ rows(goodsRecordResponse.goodsItemRecords)
+      )
+
+      Ok(view(preparedForm, list))
+    }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(GoodsRecordsPage, mode, updatedAnswers))
+  private[this] def rows(goodsRecords: Seq[GetGoodsRecordResponse])(implicit messages: Messages): Seq[Seq[TableRow]] =
+    goodsRecords.map { goodsRecord =>
+      Seq(
+        TableRowViewModel(
+          content = Text(goodsRecord.traderRef)
+        ),
+        TableRowViewModel(
+          content = Text(goodsRecord.goodsDescription)
+        ),
+        TableRowViewModel(
+          content = Text(goodsRecord.countryOfOrigin)
+        ),
+        TableRowViewModel(
+          content = Text(goodsRecord.commodityCode)
+        ),
+        TableRowViewModel(
+          content = Text("STATUS")
+        ),
+        TableRowViewModel(
+          content = Text("ACTIONS")
         )
+      )
+    }
+
+  private[this] def headers()(implicit messages: Messages): Seq[TableRow] =
+    Seq(
+      TableRowViewModel(
+        content = Text(messages("goodsRecords.tableHeader.traderReference"))
+      ).withCssClass("govuk-!-font-weight-bold"),
+      TableRowViewModel(
+        content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+      ).withCssClass("govuk-!-font-weight-bold"),
+      TableRowViewModel(
+        content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+      ).withCssClass("govuk-!-font-weight-bold"),
+      TableRowViewModel(
+        content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+      ).withCssClass("govuk-!-font-weight-bold"),
+      TableRowViewModel(
+        content = Text(messages("goodsRecords.tableHeader.status"))
+      ).withCssClass("govuk-!-font-weight-bold"),
+      TableRowViewModel(
+        content = Text(messages("goodsRecords.tableHeader.actions"))
+      ).withCssClass("govuk-!-font-weight-bold")
+    )
+
+  def onSearch: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, TableViewModel(rows = Seq.empty)))),
+        value =>
+          for {
+            updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
+            _                   <- sessionRepository.set(updatedAnswers)
+            goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori)
+          } yield {
+            val list = TableViewModel(
+              rows = Seq(headers()) ++ rows(goodsRecordResponse.goodsItemRecords)
+            )
+
+            Ok(view(form.fill(value), list))
+          }
+      )
   }
 }
