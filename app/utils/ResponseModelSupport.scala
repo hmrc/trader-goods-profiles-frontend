@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package base
+package utils
 
-import java.time.Instant
+import play.api.libs.json.{JsNull, JsObject}
 
-object TestConstants {
-  val testEori: String      = "eori"
-  val userAnswersId: String = "id"
-  val testRecordId: String  = "b0082f50-f13b-416a-8071-3bd95107d44d"
-  val lastUpdatedDate       = Instant.now().toString
-  val recordsize            = 20
-  val page                  = 1
+object ResponseModelSupport {
+
+  def removeNulls(jsObject: JsObject): JsObject =
+    JsObject(jsObject.fields.collect {
+      case (s, j: JsObject)            =>
+        (s, removeNulls(j))
+      case other if other._2 != JsNull =>
+        other
+    })
 }

@@ -17,11 +17,8 @@
 package connectors
 
 import config.Service
-import models.TraderProfile
-import org.apache.pekko.Done
+import models.router.responses.GetRecordsResponse
 import play.api.Configuration
-import play.api.http.Status.OK
-import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -33,6 +30,7 @@ class GetGoodsRecordsConnector @Inject() (config: Configuration, httpClient: Htt
 ) {
 
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
   private def getGoodsRecordsUrl(
     eori: String,
     lastUpdatedDate: Option[String] = None,
@@ -46,9 +44,10 @@ class GetGoodsRecordsConnector @Inject() (config: Configuration, httpClient: Htt
     lastUpdatedDate: Option[String] = None,
     page: Option[Int] = None,
     size: Option[Int] = None
-  )(implicit hc: HeaderCarrier): Future[TraderProfile] =
+  )(implicit hc: HeaderCarrier): Future[GetRecordsResponse] =
     httpClient
-      .get(getGoodsRecordsUrl(eori))
+      .get(getGoodsRecordsUrl(eori, lastUpdatedDate, page, size))
+      .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[TraderProfile])
+      .map(response => response.json.as[GetRecordsResponse])
 }

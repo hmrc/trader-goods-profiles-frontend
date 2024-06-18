@@ -16,21 +16,30 @@
 
 package controllers
 
+import connectors.GetGoodsRecordsConnector
 import controllers.actions._
-import javax.inject.Inject
+import pages.PreviousMovementRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.GetGoodsRecordsQuery
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.PreviousMovementRecordsView
 
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+
 class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView
-) extends FrontendBaseController
+  view: PreviousMovementRecordsView,
+  getGoodsRecordConnector: GetGoodsRecordsConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
@@ -38,7 +47,15 @@ class PreviousMovementRecordsController @Inject() (
   }
 
   //TODO navigate to good record page once available
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(routes.HomePageController.onPageLoad())
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    for {
+      getGoodsRecordResponse  <- getGoodsRecordConnector.getRecords(request.eori)
+      updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(GetGoodsRecordsQuery, getGoodsRecordResponse))
+      updatedAnswersWithFlag  <-
+        Future.fromTry(updatedAnswersWithQuery.set(PreviousMovementRecordsPage, "hasLoadedRecords"))
+      _                       <- sessionRepository.set(updatedAnswersWithFlag)
+
+    } yield Redirect(routes.HomePageController.onPageLoad())
+
   }
 }
