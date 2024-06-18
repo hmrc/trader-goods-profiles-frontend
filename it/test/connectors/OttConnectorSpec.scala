@@ -52,7 +52,7 @@ class OttConnectorSpec
         val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), None)
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/ott/commodities/123456"))
+          get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
             .willReturn(
               ok().withBody(
                 "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
@@ -73,7 +73,7 @@ class OttConnectorSpec
         )
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/ott/commodities/123456"))
+          get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
             .willReturn(
               ok().withBody(
                 "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
@@ -90,7 +90,7 @@ class OttConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
           .willReturn(serverError())
       )
 
@@ -100,7 +100,7 @@ class OttConnectorSpec
     "must return a not found future when the server returns a not found" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
           .willReturn(notFound())
       )
 
@@ -111,7 +111,7 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
           .willReturn(serverError())
       )
 
@@ -183,7 +183,7 @@ class OttConnectorSpec
     "must return correct OttResponse object" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(
             ok().withBody(
               """{
@@ -270,7 +270,7 @@ class OttConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(serverError())
       )
 
@@ -280,7 +280,7 @@ class OttConnectorSpec
     "must return a not found future when the server returns a not found" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(notFound())
       )
 
@@ -291,7 +291,7 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(serverError())
       )
 
