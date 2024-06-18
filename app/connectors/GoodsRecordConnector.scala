@@ -54,7 +54,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .patch(singleGoodsRecordUrl(eori, recordId))
+      .put(singleGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
       .execute[HttpResponse]
