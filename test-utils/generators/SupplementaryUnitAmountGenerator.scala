@@ -21,16 +21,16 @@ import org.scalacheck.Gen.choose
 
 trait SupplementaryUnitAmountGenerator extends Generators {
 
-  def doublesInRangeWithCommas(min: Double, max: Double): Gen[String] = {
-    val numberGen = choose(min, max).map(formatDoubleWithCommas)
+  def doublesInRange(min: Double, max: Double): Gen[String] = {
+    val numberGen = choose(min, max).map(formatDouble)
     numberGen
   }
 
-  def formatDoubleWithCommas(value: Double): String = {
-    val formatted   = f"$value%.6f" // Format with 6 decimal places
+  def formatDouble(value: Double): String = {
+    val formatted   = f"$value%.6f"
     val parts       = formatted.split("\\.")
-    val integerPart = parts(0).reverse.grouped(3).mkString(",").reverse // Add commas every three digits
-    val decimalPart = if (parts.length > 1) "." + parts(1) else "" // Append decimal part if present
+    val integerPart = parts(0)
+    val decimalPart = if (parts.length > 1) "." + parts(1) else ""
     integerPart + decimalPart
   }
 }

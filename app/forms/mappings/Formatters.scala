@@ -106,33 +106,4 @@ trait Formatters {
       override def unbind(key: String, value: A): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
-
-  private[mappings] def doubleWith10DigitsAnd6DecimalsFormatter(
-    requiredKey: String,
-    nonNumericKey: String,
-    args: Seq[String] = Seq.empty
-  ): Formatter[Double] =
-    new Formatter[Double] {
-
-      val decimalFormatPatternFor10DigitsAnd6Decimals = """^-?\d{1,10}(\.\d{1,6})?$"""
-
-      private val baseFormatter = stringFormatter(requiredKey, args)
-
-      override def bind(key: String, data: Map[String, String]) =
-        baseFormatter
-          .bind(key, data)
-          .map(_.replace(",", "").replace(" ", ""))
-          .flatMap {
-            case s if s.matches(decimalFormatPatternFor10DigitsAnd6Decimals) =>
-              nonFatalCatch
-                .either(s.toDouble)
-                .left
-                .map(_ => Seq(FormError(key, nonNumericKey, args)))
-            case _                                                           =>
-              Left(Seq(FormError(key, nonNumericKey, args)))
-          }
-
-      override def unbind(key: String, value: Double) =
-        baseFormatter.unbind(key, value.toString)
-    }
 }

@@ -42,7 +42,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  private val validAnswer = 10.0
+  private val validAnswer = "10.0"
 
   private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
 

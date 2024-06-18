@@ -27,7 +27,7 @@ final case class CategoryRecord(
   eori: String,
   recordId: String,
   category: Int,
-  supplementaryUnit: Option[Double] = None,
+  supplementaryUnit: Option[String] = None,
   measurementUnit: Option[String] = None
 )
 

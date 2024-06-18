@@ -30,7 +30,7 @@ object SupplementaryUnitSummary {
     answers.get(SupplementaryUnitPage(recordId)).map { answer =>
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
-        value = ValueViewModel(answer.toString),
+        value = ValueViewModel(answer),
         actions = Seq(
           ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))

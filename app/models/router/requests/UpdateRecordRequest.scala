@@ -40,7 +40,7 @@ object UpdateRecordRequest {
       categoryRecord.recordId,
       categoryRecord.eori,
       Some(categoryRecord.category),
-      categoryRecord.supplementaryUnit,
+      convertToDouble(categoryRecord.supplementaryUnit),
       categoryRecord.measurementUnit
     )
 
@@ -59,4 +59,7 @@ object UpdateRecordRequest {
       (JsPath \ "category").writeNullable[Int] and
       (JsPath \ "supplementaryUnit").writeNullable[Double] and
       (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
+
+  private def convertToDouble(value: Option[String]): Option[Double] =
+    value.map(_.toDouble)
 }

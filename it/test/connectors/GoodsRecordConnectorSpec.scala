@@ -155,7 +155,8 @@ class GoodsRecordConnectorSpec
       eori = testEori,
       recordId = testRecordId,
       category = 1,
-      measurementUnit = Some("1")
+      measurementUnit = Some("1"),
+      supplementaryUnit = Some("123.123")
     )
 
     val updateRecordRequest = UpdateRecordRequest(
@@ -163,14 +164,14 @@ class GoodsRecordConnectorSpec
       testRecordId,
       testEori,
       Some(1),
-      None,
+      Some(123.123),
       Some("1")
     )
 
     "must update a goods record" in {
 
       wireMockServer.stubFor(
-        put(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(getUpdateGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
@@ -182,7 +183,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        put(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(getUpdateGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())

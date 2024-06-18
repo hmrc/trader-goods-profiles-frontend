@@ -133,7 +133,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 1234.0)
+            .set(SupplementaryUnitPage(testRecordId), "1234.0")
             .success
             .value
 
@@ -256,7 +256,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 123.0)
+            .set(SupplementaryUnitPage(testRecordId), "123.0")
             .success
             .value
 

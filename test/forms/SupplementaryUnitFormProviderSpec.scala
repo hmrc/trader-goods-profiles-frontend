@@ -16,13 +16,16 @@
 
 package forms
 
-import forms.behaviours.DoubleFieldBehaviours
+import forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
 import generators.SupplementaryUnitAmountGenerator
+import org.scalacheck.Gen
 
-class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours with SupplementaryUnitAmountGenerator {
+class SupplementaryUnitFormProviderSpec extends StringFieldBehaviours with SupplementaryUnitAmountGenerator {
 
-  val form = new SupplementaryUnitFormProvider()()
+  val form                  = new SupplementaryUnitFormProvider()()
+  private val requiredKey   = "supplementaryUnit.error.required"
+  private val nonNumericKey = "supplementaryUnit.error.nonNumeric"
 
   ".value" - {
 
@@ -31,7 +34,7 @@ class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours with Suppl
     val minimum = -9999999999.999999
     val maximum = 9999999999.999999
 
-    val validDataGenerator = doublesInRangeWithCommas(minimum, maximum)
+    val validDataGenerator = doublesInRange(minimum, maximum)
 
     behave like fieldThatBindsValidData(
       form,
@@ -39,16 +42,21 @@ class SupplementaryUnitFormProviderSpec extends DoubleFieldBehaviours with Suppl
       validDataGenerator
     )
 
-    behave like doubleField(
+    val invalidNonNumericDataGenerator: Gen[String] = for {
+      chars <- Gen.listOfN(16, Gen.alphaChar)
+    } yield chars.mkString
+
+    behave like fieldThatErrorsOnInvalidData(
       form,
       fieldName,
-      nonNumericError = FormError(fieldName, "supplementaryUnit.error.nonNumeric")
+      invalidNonNumericDataGenerator,
+      FormError(fieldName, nonNumericKey)
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, "supplementaryUnit.error.required")
+      requiredError = FormError(fieldName, requiredKey)
     )
   }
 }

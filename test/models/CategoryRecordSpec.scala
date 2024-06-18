@@ -54,7 +54,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 1.0)
+            .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
             .set(RecordCategorisationsQuery, recordCategorisations)
@@ -68,7 +68,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testEori,
             testRecordId,
             1,
-            Some(1.0),
+            Some("1.0"),
             Some("kg")
           )
         )
@@ -368,7 +368,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 1.0)
+            .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
             .set(RecordCategorisationsQuery, recordCategorisations)

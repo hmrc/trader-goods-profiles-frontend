@@ -788,7 +788,7 @@ class NavigatorSpec extends SpecBase {
               .set(HasSupplementaryUnitPage(testRecordId), true)
               .success
               .value
-              .set(SupplementaryUnitPage(testRecordId), 974.0)
+              .set(SupplementaryUnitPage(testRecordId), "974.0")
               .success
               .value
 

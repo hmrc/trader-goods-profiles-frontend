@@ -17,16 +17,19 @@
 package forms
 
 import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import models.StringFieldRegex.supplementaryUnitRegex
+
 import javax.inject.Inject
 import play.api.data.Form
 
 class SupplementaryUnitFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Double] =
+  def apply(): Form[String] =
     Form(
-      "value" -> doubleWith10DigitsAnd6Decimals(
-        "supplementaryUnit.error.required",
-        "supplementaryUnit.error.nonNumeric"
-      )
+      "value" -> text(
+        "supplementaryUnit.error.required"
+      ).transform(removeWhitespace, identity[String])
+        .verifying(regexp(supplementaryUnitRegex, "supplementaryUnit.error.nonNumeric"))
     )
 }
