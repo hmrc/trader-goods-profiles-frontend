@@ -146,7 +146,7 @@ case class AuditEventFactory() {
         errorMessage.getOrElse("null")
       ),
       commodityDetails.map(_.description).getOrElse("null"),
-      commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"), //TODO test both
+      commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"),
       commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
     )
 

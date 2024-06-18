@@ -19,6 +19,7 @@ package connectors
 import base.TestConstants.{testEori, testRecordId}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.Commodity
+import models.helper.CreateRecordJourney
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -83,7 +84,7 @@ class OttConnectorSpec
         )
 
         connector
-          .getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None)
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
@@ -111,7 +112,7 @@ class OttConnectorSpec
         )
 
         connector
-          .getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None)
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
@@ -129,7 +130,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
@@ -147,7 +148,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
@@ -164,7 +165,7 @@ class OttConnectorSpec
           .willReturn(forbidden())
       )
 
-      connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None).failed.futureValue
+      connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None).failed.futureValue
 
       withClue("must have audited the request") {
         verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
@@ -183,7 +184,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true
@@ -205,7 +206,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, "CreateRecord", None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true

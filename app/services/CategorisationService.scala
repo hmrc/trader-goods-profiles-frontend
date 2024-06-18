@@ -54,7 +54,7 @@ class CategorisationService @Inject() (
                                       request.affinityGroup,
                                       Some(recordId),
                                       getGoodsRecordResponse.countryOfOrigin,
-                                      LocalDate.now() //TODO??
+                                      LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
           categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
           updatedAnswers         <-
