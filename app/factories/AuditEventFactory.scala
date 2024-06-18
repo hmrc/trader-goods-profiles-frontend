@@ -16,19 +16,18 @@
 
 package factories
 
-import models.audits.{GetCategorisationAssessmentDetailsEvent, GetCategorisationAssessmentDetailsEventOutcome, OttAuditData, ValidateCommodityCodeEvent, ValidateCommodityCodeEventOutcome}
+import models.audits._
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.OK
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
-import java.time.{Instant, LocalDate}
-import scala.util.parsing.json.JSONObject
+import java.time.Instant
 
 case class AuditEventFactory() {
 
@@ -142,10 +141,11 @@ case class AuditEventFactory() {
       requestDateTime.toString,
       responseDateTime.toString,
       ValidateCommodityCodeEventOutcome(
-        (if (responseStatus == OK) "valid" else "invalid"),
+        if (responseStatus == OK) "valid" else "invalid",
         codeDescriptions(responseStatus),
         responseStatus.toString,
-        errorMessage.getOrElse("null")),
+        errorMessage.getOrElse("null")
+      ),
       commodityDetails.map(_.description).getOrElse("null"),
       commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"), //TODO test both
       commodityDetails.map(_.validityStartDate.toString).getOrElse("null")

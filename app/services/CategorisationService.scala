@@ -17,10 +17,9 @@
 package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.{RecordCategorisations, UserAnswers}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import pages.CountryOfOriginPage
+import models.{RecordCategorisations, UserAnswers}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier

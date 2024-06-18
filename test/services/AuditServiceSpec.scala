@@ -21,13 +21,13 @@ import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
 import models.audits.OttAuditData
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage, UseTraderReferencePage}
+import pages._
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.CommodityQuery

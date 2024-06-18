@@ -17,15 +17,14 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
+import models.RecordCategorisations
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
-import models.RecordCategorisations
 import models.router.responses.GetGoodsRecordResponse
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, reset, times, verify, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.mvc.AnyContent

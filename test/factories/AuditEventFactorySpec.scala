@@ -19,15 +19,14 @@ package factories
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.audits.{GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
-import models.ott.response.{AdditionalCodeResponse, CategoryAssessmentRelationship, CategoryAssessmentResponse, CertificateResponse, ExemptionResponse, ExemptionType, GoodsNomenclatureResponse, OttResponse, ThemeResponse}
+import models.ott.response._
 import models.{Commodity, GoodsRecord, TraderProfile}
-import org.apache.pekko.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.{Instant, LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate}
 
 class AuditEventFactorySpec extends SpecBase {
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
