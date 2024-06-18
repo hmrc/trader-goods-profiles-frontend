@@ -29,7 +29,7 @@ final case class Country(
 object Country {
 
   def selectItems(countries: Seq[Country])(implicit messages: Messages): Seq[SelectItem] =
-    SelectItem(value = None, text = messages("countryOfOrigin.selectCountry")) +:
+    SelectItem(value = None, text = "") +:
       countries.map { data =>
         SelectItemViewModel(
           value = data.id,
