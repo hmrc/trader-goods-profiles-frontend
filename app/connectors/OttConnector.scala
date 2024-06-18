@@ -16,9 +16,9 @@
 
 package connectors
 
-import models.{Commodity, Country}
 import models.audits.OttAuditData
 import models.ott.response.{CountriesResponse, OttResponse}
+import models.{Commodity, Country}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{NOT_FOUND, OK}
@@ -99,9 +99,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       }
   }
 
-  private def getFromOttWithCommodityCode[T](commodityCode: String, urlFunc: String => URL, authToken: String, auditDetails: OttAuditData,
-                                             auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
-                                            )(implicit
+  private def getFromOttWithCommodityCode[T](
+    commodityCode: String,
+    urlFunc: String => URL,
+    authToken: String,
+    auditDetails: OttAuditData,
+    auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
+  )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] =
@@ -138,5 +142,10 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       auditService.auditGetCategorisationAssessmentDetails
     )
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
-    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken", OttAuditData("make opt", AffinityGroup.Individual, None, "a", None, None, None), (_,_,_,_, _, _) => Future.successful(Done)).map(_.data)
+    getFromOtt[CountriesResponse](
+      ottCountriesUrl,
+      "bearerToken",
+      OttAuditData("make opt", AffinityGroup.Individual, None, "a", None, None, None),
+      (_, _, _, _, _, _) => Future.successful(Done)
+    ).map(_.data)
 }
