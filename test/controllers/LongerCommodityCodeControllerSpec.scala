@@ -83,6 +83,19 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect on GET to JourneyRecovery Page if user's commodity code is 10 digits" in {
+      val userAnswers = emptyUserAnswers.set(CommodityCodePage, "1234567890").success.value
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, longerCommodityCodeRoute)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = emptyUserAnswers

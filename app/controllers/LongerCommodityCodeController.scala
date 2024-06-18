@@ -60,15 +60,16 @@ class LongerCommodityCodeController @Inject() (
       }
 
       request.userAnswers.get(CommodityCodePage) match {
-        case Some(commodity) => Ok(view(preparedForm, mode, commodity, recordId))
-        case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case Some(shortCommodity) if shortCommodity.length != 10 =>
+          Ok(view(preparedForm, mode, shortCommodity, recordId))
+        case _                                                   => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(CommodityCodePage) match {
-        case Some(shortCommodity) =>
+        case Some(shortCommodity) if shortCommodity.length != 10 =>
           form
             .bindFromRequest()
             .fold(
