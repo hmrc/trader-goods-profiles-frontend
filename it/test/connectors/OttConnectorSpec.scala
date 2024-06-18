@@ -120,6 +120,64 @@ class OttConnectorSpec
     }
   }
 
+  ".getCountries" - {
+
+    "must return countries object" in {
+
+      val body = """{
+                   |  "data": [
+                   |  {
+                   |    "attributes": {
+                   |      "id": "CN",
+                   |      "description": "China"
+                   |     }
+                   |   },
+                   |   {
+                   |     "attributes": {
+                   |      "id": "UK",
+                   |      "description": "United Kingdom"
+                   |     }
+                   |    }
+                   |  ]
+                   |}""".stripMargin
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(
+            ok().withBody(body)
+          )
+      )
+
+      val countries = connector.getCountries.futureValue
+      countries.size mustEqual 2
+      countries.head.id mustEqual "CN"
+      countries.head.description mustEqual "China"
+      countries(1).id mustEqual "UK"
+      countries(1).description mustEqual "United Kingdom"
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      connector.getCountries.failed.futureValue
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCountries.failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+    }
+  }
+
   ".getCategorisationInfo" - {
 
     "must return correct OttResponse object" in {
@@ -206,7 +264,7 @@ class OttConnectorSpec
 
       val connectorResponse = connector.getCategorisationInfo("123456").futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
-      connectorResponse.categoryAssessments(0).id mustEqual "238dbab8cc5026c67757c7e05751f312"
+      connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
     }
 
     "must return a failed future when the server returns an error" in {
