@@ -48,7 +48,7 @@ cyaRequestAdvice.subheading = Contact details
 
 cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your answers
-cyaCategorisation.categorisationHeader = Categorisation
+cyaCategorisation.categorisationHeader = Conditions
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
@@ -169,8 +169,10 @@ countryOfOrigin.p2 = If the country of origin is different to the country of dep
 countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens in new tab)
 countryOfOrigin.heading = What is the country of origin of the goods?
 countryOfOrigin.error.required = Enter the country of origin
+countryOfOrigin.error.invalid = Select a valid country of origin
 countryOfOrigin.checkYourAnswersLabel = Country of origin
 countryOfOrigin.change.hidden = Country of origin
+countryOfOrigin.selectCountry = Select country of origin
 
 homepage.title = Trader Goods Profile homepage
 homepage.h1 = Trader Goods Profile homepage
@@ -349,7 +351,7 @@ hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
 supplementaryUnit.title = SupplementaryUnit
 supplementaryUnit.heading = SupplementaryUnit
-supplementaryUnit.checkYourAnswersLabel = What is the good's supplementary unit?
+supplementaryUnit.checkYourAnswersLabel = What is the good’s supplementary unit?
 supplementaryUnit.error.nonNumeric = Enter your supplementaryUnit using numbers
 supplementaryUnit.error.required = Enter your supplementaryUnit
 supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole numbers

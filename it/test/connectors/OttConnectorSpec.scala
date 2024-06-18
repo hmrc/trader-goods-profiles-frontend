@@ -49,7 +49,7 @@ class OttConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.online-trade-tariff-api.port" -> wireMockPort)
+      .configure("microservice.services.online-trade-tariff-api.url" -> wireMockUrl)
       .overrides(bind[AuditService].toInstance(auditService))
       .build()
 
@@ -200,6 +200,64 @@ class OttConnectorSpec
       }
     }
 
+  }
+
+  ".getCountries" - {
+
+    "must return countries object" in {
+
+      val body = """{
+                   |  "data": [
+                   |  {
+                   |    "attributes": {
+                   |      "id": "CN",
+                   |      "description": "China"
+                   |     }
+                   |   },
+                   |   {
+                   |     "attributes": {
+                   |      "id": "UK",
+                   |      "description": "United Kingdom"
+                   |     }
+                   |    }
+                   |  ]
+                   |}""".stripMargin
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(
+            ok().withBody(body)
+          )
+      )
+
+      val countries = connector.getCountries.futureValue
+      countries.size mustEqual 2
+      countries.head.id mustEqual "CN"
+      countries.head.description mustEqual "China"
+      countries(1).id mustEqual "UK"
+      countries(1).description mustEqual "United Kingdom"
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      connector.getCountries.failed.futureValue
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCountries.failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+    }
   }
 
   ".getCategorisationInfo" - {

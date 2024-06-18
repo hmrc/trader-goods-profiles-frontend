@@ -21,8 +21,12 @@ import config.Service
 import models.Commodity
 import models.audits.OttAuditData
 import models.ott.response.OttResponse
+import models.Country
+import models.ott.response.CountriesResponse
 import org.apache.pekko.Done
 import play.api.Configuration
+import play.api.http.Status.NOT_FOUND
+import play.api.libs.json.{JsResult, Reads}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.{JsError, JsResult, Reads}
 import services.AuditService
@@ -40,16 +44,18 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ec: ExecutionContext
 ) {
 
-  private val baseUrl: Service                         = config.get[Service]("microservice.services.online-trade-tariff-api")
+  private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private def ottCommoditiesUrl(commodityCode: String) =
     url"$baseUrl/ott/commodities/$commodityCode"
 
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
 
+  private def ottCountriesUrl =
+    url"$baseUrl/xi/api/v2/geographical_areas/countries"
+
   private def getFromOtt[T](
-    commodityCode: String,
-    urlFunc: String => URL,
+    url: URL,
     authToken: String,
     auditDetails: OttAuditData,
     auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
@@ -60,44 +66,32 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
     val requestStartTime        = Instant.now
-    val x: Future[HttpResponse] = httpClient
-      .get(urlFunc(commodityCode))(newHeaderCarrier)
+
+    httpClient
+      .get(url)(newHeaderCarrier)
       .execute[HttpResponse]
+      .flatMap { response =>
+        val requestEndTime = Instant.now
 
-    x.flatMap { response =>
-      val requestEndTime = Instant.now
-
-      response.status match {
-        case OK =>
-          response.json
-            .validate[T]
-            .map { result =>
-              auditFunction.apply(
-                auditDetails,
-                requestStartTime,
-                requestEndTime,
-                response.status,
-                None,
-                Some(result)
-              )
-              Future.successful(result)
-            }
-            .recoverTotal { (error: JsError) =>
-              Future.failed(JsResult.Exception(error))
-            }
-
+        response.json
+          .validate[T]
+          .map(result => {
+            auditFunction.apply(
+              auditDetails,
+              requestStartTime,
+              requestEndTime,
+              response.status,
+              None,
+              Some(result)
+            )
+            Future.successful(result)
+          })
+          .recoverTotal(error => Future.failed(JsResult.Exception(error)))
       }
-    }.recoverWith {
-
-      case e: NotFoundException   =>
+      .recoverWith { case e: NotFoundException =>
         auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, Some(e.message), None)
 
         Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
-
-      case e: Upstream5xxResponse =>
-        auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
-
-        Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
 
       case e: UpstreamErrorResponse =>
         auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
@@ -108,8 +102,14 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
         auditFunction.apply(auditDetails, requestStartTime, Instant.now, OK, Some(e.getMessage), None)
         Future.failed(e)
 
-    }
+      }
   }
+
+  private def getFromOttWithCommodityCode[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+    hc: HeaderCarrier,
+    reads: Reads[T]
+  ): Future[T] =
+    getFromOtt(urlFunc(commodityCode), authToken)
 
   def getCommodityCode(
     commodityCode: String,
@@ -118,7 +118,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     journey: String,
     recordId: Option[String]
   )(implicit hc: HeaderCarrier): Future[Commodity] =
-    getFromOtt[Commodity](
+    getFromOttWithCommodityCode[Commodity](
       commodityCode,
       ottCommoditiesUrl,
       "bearerToken",
@@ -134,12 +134,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     countryOfOrigin: String,
     dateOfTrade: LocalDate
   )(implicit hc: HeaderCarrier): Future[OttResponse] =
-    getFromOtt[OttResponse](
+    getFromOttWithCommodityCode[OttResponse](
       commodityCode,
       ottGreenLanesUrl,
       "bearerToken",
       OttAuditData(eori, affinityGroup, recordId, commodityCode, Some(countryOfOrigin), Some(dateOfTrade), None),
       auditService.auditGetCategorisationAssessmentDetails
     )
-
+  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
+    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken").map(_.data)
 }

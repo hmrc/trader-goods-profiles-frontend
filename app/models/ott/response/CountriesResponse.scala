@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package forms
+package models.ott.response
 
-import javax.inject.Inject
-import forms.mappings.Mappings
 import models.Country
-import play.api.data.Form
+import play.api.libs.json._
 
-class CountryOfOriginFormProvider @Inject() extends Mappings {
+final case class CountriesResponse(
+  data: Seq[Country]
+)
 
-  def apply(countries: Seq[Country]): Form[String] =
-    Form(
-      "value" -> text("countryOfOrigin.error.required")
-        .verifying("countryOfOrigin.error.invalid", value => countries.exists(_.id == value))
-    )
+object CountriesResponse {
+  implicit lazy val format: OFormat[CountriesResponse] = Json.format
 }

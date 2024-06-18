@@ -18,10 +18,11 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import models.router.responses.CreateGoodsRecordResponse
-import models.{GoodsRecord, UserAnswers}
+import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
+import org.apache.pekko.util.Helpers.Requiring
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -29,6 +30,7 @@ import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.CountriesQuery
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -48,7 +50,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         TraderReferenceSummary.row(userAnswers)(messages(app)),
         UseTraderReferenceSummary.row(userAnswers)(messages(app)),
         GoodsDescriptionSummary.row(userAnswers)(messages(app)),
-        CountryOfOriginSummary.row(userAnswers)(messages(app)),
+        CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")))(messages(app)),
         CommodityCodeSummary.row(userAnswers)(messages(app))
       ).flatten
     )
@@ -57,9 +59,46 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
       "must return OK and the correct view with valid mandatory data" in {
 
-        val userAnswers = mandatoryRecordUserAnswers
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          Seq(Country("CN", "China"))
+        )
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application =
+          applicationBuilder(userAnswers = Some(mandatoryRecordUserAnswers))
+            .overrides(
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CyaCreateRecordView]
+          val list = createChangeList(mandatoryRecordUserAnswers, application)
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        }
+      }
+
+      "must return OK and the correct view with all data (including optional)" in {
+
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          Seq(Country("CN", "China"))
+        )
+
+        val userAnswers = fullRecordUserAnswers
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
@@ -74,11 +113,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
       }
 
-      "must return OK and the correct view with all data (including optional)" in {
+      "must return OK and the correct view when countries query has countries in it" in {
 
-        val userAnswers = fullRecordUserAnswers
+        val userAnswers = fullRecordUserAnswers.set(CountriesQuery, Seq(Country("CN", "China"))).success.value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
