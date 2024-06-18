@@ -22,12 +22,12 @@ import models.ott.response.{CountriesResponse, OttResponse}
 import models.{Commodity, Country}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpException, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
 
 import java.net.URL
 import java.time.{Instant, LocalDate}
@@ -83,10 +83,10 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
           .recoverTotal(error => Future.failed(JsResult.Exception(error)))
       }
       .recoverWith {
-        case e: NotFoundException =>
+        case e: HttpException =>
           auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.responseCode, Some(e.message), None)
 
-          Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
+          Future.failed(UpstreamErrorResponse(e.message, e.responseCode))
 
         case e: UpstreamErrorResponse =>
           auditFunction.apply(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
@@ -146,7 +146,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     getFromOtt[CountriesResponse](
       ottCountriesUrl,
       "bearerToken",
-None,
-(_, _, _, _, _, _) => Future.successful(Done)
+      None,
+      (_, _, _, _, _, _) => Future.successful(Done)
     ).map(_.data)
 }

@@ -21,6 +21,6 @@ sealed trait Journey
 case object CreateRecordJourney extends Journey {
   override def toString: String = "CreateRecord"
 }
-case object UpdateRecordJourney extends Journey{
+case object UpdateRecordJourney extends Journey {
   override def toString: String = "UpdateRecord"
 }

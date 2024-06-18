@@ -28,8 +28,10 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Application
+import play.api.http.Status.{BAD_GATEWAY, BAD_REQUEST, IM_A_TEAPOT}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.Results.BadGateway
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.test.WireMockSupport
@@ -162,7 +164,7 @@ class OttConnectorSpec
 
       wireMockServer.stubFor(
         get(urlEqualTo(s"/ott/commodities/123456"))
-          .willReturn(forbidden())
+          .willReturn(status(IM_A_TEAPOT))
       )
 
       connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None).failed.futureValue
@@ -178,7 +180,7 @@ class OttConnectorSpec
         get(urlEqualTo(s"/ott/commodities/123456"))
           .willReturn(
             ok().withBody(
-              "{\n \"description\": \"Commodity description\", \"\"\n}"
+              "{\n \"description\": \"Commodity description, \"\"\n}"
             )
           )
       )
