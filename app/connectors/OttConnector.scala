@@ -16,11 +16,12 @@
 
 package connectors
 
-import config.Service
 import models.Commodity
 import models.ott.response.OttResponse
+import models.Country
+import models.ott.response.CountriesResponse
 import play.api.Configuration
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status.NOT_FOUND
 import play.api.libs.json.{JsResult, Reads}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, Upstream5xxResponse, UpstreamErrorResponse}
@@ -31,43 +32,48 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
-  private val baseUrl: Service                         = config.get[Service]("microservice.services.online-trade-tariff-api")
+  private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private def ottCommoditiesUrl(commodityCode: String) =
-    url"$baseUrl/ott/commodities/$commodityCode"
+    url"$baseUrl/xi/api/v2/commodities/$commodityCode"
 
   private def ottGreenLanesUrl(commodityCode: String) =
-    url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
+    url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode"
 
-  private def getFromOtt[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+  private def ottCountriesUrl =
+    url"$baseUrl/xi/api/v2/geographical_areas/countries"
+
+  private def getFromOtt[T](url: URL, authToken: String)(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
 
     httpClient
-      .get(urlFunc(commodityCode))(newHeaderCarrier)
+      .get(url)(newHeaderCarrier)
       .execute[HttpResponse]
       .flatMap { response =>
-        response.status match {
-          case OK =>
-            response.json
-              .validate[T]
-              .map(result => Future.successful(result))
-              .recoverTotal(error => Future.failed(JsResult.Exception(error)))
-        }
+        response.json
+          .validate[T]
+          .map(result => Future.successful(result))
+          .recoverTotal(error => Future.failed(JsResult.Exception(error)))
       }
-      .recoverWith {
-        case e: NotFoundException   =>
-          Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
-        case e: Upstream5xxResponse =>
-          Future.failed(UpstreamErrorResponse(e.message, INTERNAL_SERVER_ERROR))
+      .recoverWith { case e: NotFoundException =>
+        Future.failed(UpstreamErrorResponse(e.message, NOT_FOUND))
       }
   }
 
+  private def getFromOttWithCommodityCode[T](commodityCode: String, urlFunc: String => URL, authToken: String)(implicit
+    hc: HeaderCarrier,
+    reads: Reads[T]
+  ): Future[T] =
+    getFromOtt(urlFunc(commodityCode), authToken)
+
   def getCommodityCode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Commodity] =
-    getFromOtt[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken")
+    getFromOttWithCommodityCode[Commodity](commodityCode, ottCommoditiesUrl, "bearerToken")
 
   def getCategorisationInfo(commodityCode: String)(implicit hc: HeaderCarrier): Future[OttResponse] =
-    getFromOtt[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
+    getFromOttWithCommodityCode[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
 
+  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
+    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken").map(_.data)
 }

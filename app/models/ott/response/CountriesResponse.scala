@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package viewmodels
+package models.ott.response
 
-package object govuk {
+import models.Country
+import play.api.libs.json._
 
-  object all
-      extends ImplicitConversions
-      with BackLinkFluency
-      with ButtonFluency
-      with CheckboxFluency
-      with DateFluency
-      with ErrorSummaryFluency
-      with SelectFluency
-      with FieldsetFluency
-      with HintFluency
-      with InputFluency
-      with LabelFluency
-      with RadiosFluency
-      with SummaryListFluency
-      with TagFluency
-      with TableFluency
+final case class CountriesResponse(
+  data: Seq[Country]
+)
+
+object CountriesResponse {
+  implicit lazy val format: OFormat[CountriesResponse] = Json.format
 }
