@@ -37,7 +37,7 @@ class OttConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.online-trade-tariff-api.port" -> wireMockPort)
+      .configure("microservice.services.online-trade-tariff-api.url" -> wireMockUrl)
       .build()
 
   private lazy val connector = app.injector.instanceOf[OttConnector]
@@ -52,7 +52,7 @@ class OttConnectorSpec
         val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), None)
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/ott/commodities/123456"))
+          get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
             .willReturn(
               ok().withBody(
                 "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
@@ -73,7 +73,7 @@ class OttConnectorSpec
         )
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/ott/commodities/123456"))
+          get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
             .willReturn(
               ok().withBody(
                 "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
@@ -90,7 +90,7 @@ class OttConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
           .willReturn(serverError())
       )
 
@@ -100,7 +100,7 @@ class OttConnectorSpec
     "must return a not found future when the server returns a not found" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
           .willReturn(notFound())
       )
 
@@ -111,11 +111,69 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
           .willReturn(serverError())
       )
 
       val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+    }
+  }
+
+  ".getCountries" - {
+
+    "must return countries object" in {
+
+      val body = """{
+                   |  "data": [
+                   |  {
+                   |    "attributes": {
+                   |      "id": "CN",
+                   |      "description": "China"
+                   |     }
+                   |   },
+                   |   {
+                   |     "attributes": {
+                   |      "id": "UK",
+                   |      "description": "United Kingdom"
+                   |     }
+                   |    }
+                   |  ]
+                   |}""".stripMargin
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(
+            ok().withBody(body)
+          )
+      )
+
+      val countries = connector.getCountries.futureValue
+      countries.size mustEqual 2
+      countries.head.id mustEqual "CN"
+      countries.head.description mustEqual "China"
+      countries(1).id mustEqual "UK"
+      countries(1).description mustEqual "United Kingdom"
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      connector.getCountries.failed.futureValue
+    }
+
+    "must return a server error future when ott returns a 5xx status" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getCountries.failed.futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
     }
   }
@@ -125,7 +183,7 @@ class OttConnectorSpec
     "must return correct OttResponse object" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(
             ok().withBody(
               """{
@@ -206,13 +264,13 @@ class OttConnectorSpec
 
       val connectorResponse = connector.getCategorisationInfo("123456").futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
-      connectorResponse.categoryAssessments(0).id mustEqual "238dbab8cc5026c67757c7e05751f312"
+      connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(serverError())
       )
 
@@ -222,7 +280,7 @@ class OttConnectorSpec
     "must return a not found future when the server returns a not found" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(notFound())
       )
 
@@ -233,7 +291,7 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(serverError())
       )
 
