@@ -53,7 +53,11 @@ class AccreditationConnectorSpec
     "must submit a advice request" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-router/createaccreditation"))
+        post(
+          urlEqualTo(
+            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+          )
+        )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withRequestBody(equalTo(Json.toJson(adviceRequest).toString))
           .willReturn(ok())
@@ -65,7 +69,11 @@ class AccreditationConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-router/createaccreditation"))
+        post(
+          urlEqualTo(
+            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+          )
+        )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withRequestBody(equalTo(Json.toJson(adviceRequest).toString))
           .willReturn(serverError())

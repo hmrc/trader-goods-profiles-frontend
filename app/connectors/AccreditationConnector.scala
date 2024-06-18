@@ -32,11 +32,13 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
 ) {
 
   private val routerBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private def accreditationUrl       = url"$routerBaseUrl/trader-goods-profiles-router/createaccreditation"
+
+  private def accreditationUrl(eori: String, recordId: String) =
+    url"$routerBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId/advice"
 
   def submitRequestAccreditation(adviceRequest: AdviceRequest)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .post(accreditationUrl)
+      .post(accreditationUrl(adviceRequest.eori, adviceRequest.recordId))
       .setHeader(header = ("X-Client-ID", "tgp-frontend"))
       .withBody(Json.toJson(adviceRequest))
       .execute[HttpResponse]

@@ -40,10 +40,10 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
   private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private def ottCommoditiesUrl(commodityCode: String) =
-    url"$baseUrl/ott/commodities/$commodityCode"
+    url"$baseUrl/xi/api/v2/commodities/$commodityCode"
 
   private def ottGreenLanesUrl(commodityCode: String) =
-    url"$baseUrl/ott/goods-nomenclatures/$commodityCode"
+    url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode"
 
   private def ottCountriesUrl =
     url"$baseUrl/xi/api/v2/geographical_areas/countries"
