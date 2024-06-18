@@ -134,7 +134,7 @@ case class AuditEventFactory() {
     val auditDetails = ValidateCommodityCodeEvent(
       auditData.map(_.eori).getOrElse("null"),
       auditData.map(_.affinityGroup).map(_.toString).getOrElse("null"),
-      auditData.flatMap(_.journey).getOrElse("null"),
+      auditData.flatMap(_.journey).map(_.toString).getOrElse("null"),
       auditData.flatMap(_.recordId).getOrElse("null"),
       auditData.map(_.commodityCode).getOrElse("null"),
       requestDateTime.toString,

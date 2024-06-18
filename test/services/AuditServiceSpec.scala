@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
 import models.audits.OttAuditData
+import models.helper.CreateRecordJourney
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
@@ -392,7 +393,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       testCommodity.commodityCode,
       None,
       None,
-      Some("CreateRecord")
+      Some(CreateRecordJourney)
     )
     val startTime = Instant.parse("2024-06-03T15:19:18.399Z")
     val endTime   = Instant.parse("2024-06-03T15:19:20.399Z")

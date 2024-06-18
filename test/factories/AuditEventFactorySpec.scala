@@ -19,6 +19,7 @@ package factories
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.audits.{GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
+import models.helper.{CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response._
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.{NOT_FOUND, OK}
@@ -186,7 +187,7 @@ class AuditEventFactorySpec extends SpecBase {
             testCommodity.commodityCode,
             None,
             None,
-            Some("CreateRecord")
+            Some(CreateRecordJourney)
           )
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
@@ -229,7 +230,7 @@ class AuditEventFactorySpec extends SpecBase {
             testCommodity.commodityCode,
             None,
             None,
-            Some("UpdateRecord")
+            Some(UpdateRecordJourney)
           )
 
           val testCommodityWithExpiryDate =
@@ -275,7 +276,7 @@ class AuditEventFactorySpec extends SpecBase {
             testCommodity.commodityCode,
             None,
             None,
-            Some("UpdateRecord")
+            Some(UpdateRecordJourney)
           )
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(

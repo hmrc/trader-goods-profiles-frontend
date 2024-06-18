@@ -17,6 +17,7 @@
 package connectors
 
 import models.audits.OttAuditData
+import models.helper.Journey
 import models.ott.response.{CountriesResponse, OttResponse}
 import models.{Commodity, Country}
 import org.apache.pekko.Done
@@ -115,7 +116,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     commodityCode: String,
     eori: String,
     affinityGroup: AffinityGroup,
-    journey: String,
+    journey: Journey,
     recordId: Option[String]
   )(implicit hc: HeaderCarrier): Future[Commodity] =
     getFromOttWithCommodityCode[Commodity](

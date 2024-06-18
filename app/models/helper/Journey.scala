@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package models.audits
+package models.helper
 
-import models.helper.Journey
-import uk.gov.hmrc.auth.core.AffinityGroup
+sealed trait Journey
 
-import java.time.LocalDate
-case class OttAuditData(
-  eori: String,
-  affinityGroup: AffinityGroup,
-  recordId: Option[String],
-  commodityCode: String,
-  countryOfOrigin: Option[String],
-  dateOfTrade: Option[LocalDate],
-  journey: Option[Journey]
-)
+case object CreateRecordJourney extends Journey {
+  override def toString: String = "CreateRecord"
+}
+case object UpdateRecordJourney extends Journey{
+  override def toString: String = "UpdateRecord"
+}
