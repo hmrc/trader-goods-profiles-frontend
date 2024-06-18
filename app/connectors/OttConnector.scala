@@ -50,8 +50,8 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private def getFromOtt[T](
     url: URL,
     authToken: String,
-    auditDetails: OttAuditData,
-    auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
+    auditDetails: Option[OttAuditData],
+    auditFunction: (Option[OttAuditData], Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
   )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
@@ -103,8 +103,8 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     commodityCode: String,
     urlFunc: String => URL,
     authToken: String,
-    auditDetails: OttAuditData,
-    auditFunction: (OttAuditData, Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
+    auditDetails: Option[OttAuditData],
+    auditFunction: (Option[OttAuditData], Instant, Instant, Int, Option[String], Option[T]) => Future[Done]
   )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
@@ -122,7 +122,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       commodityCode,
       ottCommoditiesUrl,
       "bearerToken",
-      OttAuditData(eori, affinityGroup, recordId, commodityCode, None, None, Some(journey)),
+      Some(OttAuditData(eori, affinityGroup, recordId, commodityCode, None, None, Some(journey))),
       auditService.auditValidateCommodityCode
     )
 
@@ -138,14 +138,14 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       commodityCode,
       ottGreenLanesUrl,
       "bearerToken",
-      OttAuditData(eori, affinityGroup, recordId, commodityCode, Some(countryOfOrigin), Some(dateOfTrade), None),
+      Some(OttAuditData(eori, affinityGroup, recordId, commodityCode, Some(countryOfOrigin), Some(dateOfTrade), None)),
       auditService.auditGetCategorisationAssessmentDetails
     )
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
     getFromOtt[CountriesResponse](
       ottCountriesUrl,
       "bearerToken",
-      OttAuditData("make opt", AffinityGroup.Individual, None, "a", None, None, None),
-      (_, _, _, _, _, _) => Future.successful(Done)
+None,
+(_, _, _, _, _, _) => Future.successful(Done)
     ).map(_.data)
 }

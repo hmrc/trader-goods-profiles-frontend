@@ -16,7 +16,6 @@
 
 package models.audits
 
-import models.RecordCategorisations
 import play.api.libs.json.{Json, OFormat}
 
 case class GetCategorisationAssessmentDetailsEventOutcome(

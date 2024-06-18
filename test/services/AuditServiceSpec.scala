@@ -417,7 +417,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = await(
         auditService.auditValidateCommodityCode(
-          auditData,
+          Some(auditData),
           startTime,
           endTime,
           OK,
@@ -431,7 +431,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createValidateCommodityCodeEvent(
-            eqTo(auditData),
+            eqTo(Some(auditData)),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -465,7 +465,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = await(
         auditService.auditValidateCommodityCode(
-          auditData,
+          Some(auditData),
           startTime,
           endTime,
           OK,
@@ -479,7 +479,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createValidateCommodityCodeEvent(
-            eqTo(auditData),
+            eqTo(Some(auditData)),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -501,7 +501,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       intercept[RuntimeException] {
         await(
           auditService.auditValidateCommodityCode(
-            auditData,
+            Some(auditData),
             startTime,
             endTime,
             OK,
@@ -554,7 +554,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = await(
         auditService.auditGetCategorisationAssessmentDetails(
-          auditData,
+          Some(auditData),
           startTime,
           endTime,
           OK,
@@ -568,7 +568,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createGetCategorisationAssessmentDetailsEvent(
-            eqTo(auditData),
+            eqTo(Some(auditData)),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -602,7 +602,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = await(
         auditService.auditGetCategorisationAssessmentDetails(
-          auditData,
+          Some(auditData),
           startTime,
           endTime,
           OK,
@@ -616,7 +616,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createGetCategorisationAssessmentDetailsEvent(
-            eqTo(auditData),
+            eqTo(Some(auditData)),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -638,7 +638,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       intercept[RuntimeException] {
         await(
           auditService.auditGetCategorisationAssessmentDetails(
-            auditData,
+            Some(auditData),
             startTime,
             endTime,
             OK,

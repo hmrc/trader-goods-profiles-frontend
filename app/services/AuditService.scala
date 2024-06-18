@@ -25,12 +25,10 @@ import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
-import play.api.http.Status.OK
 import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
@@ -97,7 +95,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   }
 
   def auditValidateCommodityCode(
-    auditDetails: OttAuditData,
+    auditDetails: Option[OttAuditData],
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
@@ -121,7 +119,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   }
 
   def auditGetCategorisationAssessmentDetails(
-    auditDetails: OttAuditData,
+    auditDetails: Option[OttAuditData],
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,

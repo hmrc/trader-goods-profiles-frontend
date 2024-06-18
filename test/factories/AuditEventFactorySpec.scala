@@ -190,7 +190,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
-            auditData,
+            Some(auditData),
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
@@ -236,7 +236,7 @@ class AuditEventFactorySpec extends SpecBase {
             testCommodity.copy(validityEndDate = Some(Instant.parse("2024-07-31T23:59:59.999Z")))
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
-            auditData,
+            Some(auditData),
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
@@ -279,7 +279,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
-            auditData,
+            Some(auditData),
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             NOT_FOUND,
@@ -354,7 +354,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
-            auditData,
+            Some(auditData),
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
@@ -396,7 +396,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
-            auditData,
+            Some(auditData),
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             NOT_FOUND,
