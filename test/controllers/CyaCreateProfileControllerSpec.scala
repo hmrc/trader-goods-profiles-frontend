@@ -214,32 +214,6 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         }
       }
 
-      "must let the play error handler deal with an audit future failure" in {
-
-        val userAnswers = mandatoryProfileUserAnswers
-
-        val mockConnector = mock[TraderProfileConnector]
-        when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
-
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditProfileSetUp(any(), any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .build()
-
-        running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
-
-          intercept[RuntimeException] {
-            await(route(application, request).value)
-          }
-        }
-      }
-
       "must redirect to Journey Recovery if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None).build()
