@@ -46,7 +46,7 @@
 
  @formHelper(action = PreviousMovementRecordsController.onSubmit(),Symbol("id") -> "previousMovementForm") {
   @govukButton(
-   ButtonViewModel(messages("previousMovementRecords.loadrecord")).withAttribute(("id", "load-button")).withAttribute("onclick", "showTheSpinner()")
+   ButtonViewModel(messages("previousMovementRecords.loadrecord")).withAttribute(("id", "load-button"))
   )
  }
 
