@@ -102,11 +102,10 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     errorMessage: Option[String],
     response: Option[T]
   )(implicit hc: HeaderCarrier): Future[Done] =
-
     auditDetails match {
       case Some(details) =>
         details.auditMode match {
-          case AuditValidateCommodityCode       =>
+          case AuditValidateCommodityCode =>
             auditValidateCommodityCode(
               details,
               requestDateTime,
@@ -127,7 +126,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
             )
         }
 
-      case _             => Future.successful(Done)
+      case _ => Future.successful(Done)
     }
 
   private def auditValidateCommodityCode(

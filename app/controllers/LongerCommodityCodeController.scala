@@ -78,7 +78,13 @@ class LongerCommodityCodeController @Inject() (
               value => {
                 val longCommodityCode = s"$shortCommodity$value"
                 (for {
-                  validCommodityCode      <- ottConnector.getCommodityCode(longCommodityCode, request.eori, request.affinityGroup, UpdateRecordJourney, Some(recordId))
+                  validCommodityCode      <- ottConnector.getCommodityCode(
+                                               longCommodityCode,
+                                               request.eori,
+                                               request.affinityGroup,
+                                               UpdateRecordJourney,
+                                               Some(recordId)
+                                             )
                   updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
                   updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, validCommodityCode))
                   _                       <- sessionRepository.set(updatedAnswersWithQuery)
