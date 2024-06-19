@@ -11,7 +11,8 @@
       "validity_end_date": null,
       "description_plain": "Cartridges",
       "producline_suffix": "80",
-      "parent_sid": 54266
+      "parent_sid": 54266,
+      "supplementary_measure_unit": "1000 items (1000 p/st)"
     },
     "relationships": {
       "applicable_category_assessments": {

@@ -147,11 +147,22 @@ trait SpecBase
 
   private lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
     "1234567890",
-    Seq(category1, category2, category3)
+    Seq(category1, category2, category3),
+    Some("Weight, in kilograms")
+  )
+
+  private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(category1, category2, category3),
+    None
   )
 
   lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
     Map(testRecordId -> categoryQuery)
+  )
+
+  lazy val recordCategorisationsEmptyMeasurementUnit: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
   )
 
   lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers

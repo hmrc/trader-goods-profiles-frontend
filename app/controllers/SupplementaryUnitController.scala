@@ -24,6 +24,7 @@ import navigation.Navigator
 import pages.SupplementaryUnitPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SupplementaryUnitView
@@ -53,7 +54,15 @@ class SupplementaryUnitController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, recordId))
+      val result = for {
+        query              <- request.userAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- query.records.get(recordId)
+      } yield {
+        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+        Ok(view(preparedForm, mode, recordId, measurementUnit))
+      }
+
+      result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
   }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
@@ -61,7 +70,16 @@ class SupplementaryUnitController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
+          formWithErrors => {
+            val result = for {
+              query              <- request.userAnswers.get(RecordCategorisationsQuery)
+              categorisationInfo <- query.records.get(recordId)
+            } yield {
+              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+            }
+            result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+          },
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))

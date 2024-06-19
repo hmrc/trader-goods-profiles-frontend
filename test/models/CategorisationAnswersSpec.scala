@@ -82,14 +82,14 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 42)
+            .set(SupplementaryUnitPage(testRecordId), "42.0")
             .success
             .value
 
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         result mustEqual Right(
-          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), Some(42))
+          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), Some("42.0"))
         )
       }
 
@@ -116,7 +116,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
         val answers =
           userAnswersForCategorisationCya
-            .set(SupplementaryUnitPage(testRecordId), 42)
+            .set(SupplementaryUnitPage(testRecordId), "42.0")
             .success
             .value
 

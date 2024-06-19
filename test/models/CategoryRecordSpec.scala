@@ -34,15 +34,16 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
     val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
     val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
-    val categorisationInfo                  = CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4))
+    val categorisationInfo                  =
+      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"))
     val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
     val emptyRecordCategorisations          = RecordCategorisations(records = Map())
     val noCategory1RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3))))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"))))
     val noCategory1Or2RecordCategorisations =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq())))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"))))
     val noCategory2RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1))))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"))))
 
     "must return a CategoryRecord when all mandatory questions are answered" - {
 
@@ -53,7 +54,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 1)
+            .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
             .set(RecordCategorisationsQuery, recordCategorisations)
@@ -67,8 +68,8 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testEori,
             testRecordId,
             1,
-            Some(1),
-            Some("1")
+            Some("1.0"),
+            Some("kg")
           )
         )
       }
@@ -89,7 +90,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -113,7 +114,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -140,7 +141,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             1,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -170,7 +171,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             2,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -203,7 +204,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             2,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -236,7 +237,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -259,7 +260,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -282,7 +283,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -302,7 +303,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testRecordId,
             3,
             None,
-            Some("1")
+            Some("kg")
           )
         )
       }
@@ -322,6 +323,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
+            RecordIdMissing(RecordCategorisationsQuery),
             RecordIdMissing(RecordCategorisationsQuery)
           )
         }
@@ -335,6 +337,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(RecordCategorisationsQuery),
             PageMissing(RecordCategorisationsQuery)
           )
         }
@@ -365,7 +368,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 1)
+            .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
             .set(RecordCategorisationsQuery, recordCategorisations)
