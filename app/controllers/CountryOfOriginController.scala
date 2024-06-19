@@ -16,14 +16,17 @@
 
 package controllers
 
+import connectors.OttConnector
 import controllers.actions._
 import forms.CountryOfOriginFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
 import pages.CountryOfOriginPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import queries.CountriesQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CountryOfOriginView
@@ -39,33 +42,59 @@ class CountryOfOriginController @Inject() (
   requireData: DataRequiredAction,
   formProvider: CountryOfOriginFormProvider,
   val controllerComponents: MessagesControllerComponents,
+  ottConnector: OttConnector,
   view: CountryOfOriginView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      request.userAnswers
+        .get(CountriesQuery) match {
+        case Some(countries) => Future.successful(displayView(countries, mode, request.userAnswers))
+        case None            =>
+          for {
+            countries               <- ottConnector.getCountries
+            updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
+            _                       <- sessionRepository.set(updatedAnswersWithQuery)
+          } yield displayView(countries, mode, updatedAnswersWithQuery)
+      }
+  }
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(CountryOfOriginPage) match {
+  def displayView(countries: Seq[Country], mode: Mode, userAnswers: UserAnswers)(implicit
+    request: Request[_]
+  ): Result = {
+    val form         = formProvider(countries)
+    val preparedForm = userAnswers.get(CountryOfOriginPage) match {
       case None        => form
       case Some(value) => form.fill(value)
     }
+    Ok(view(preparedForm, mode, countries))
+  }
 
-    Ok(view(preparedForm, mode))
+  def submitForm(countries: Seq[Country], mode: Mode, userAnswers: UserAnswers)(implicit
+    request: Request[_]
+  ): Future[Result] = {
+    val form = formProvider(countries)
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, countries))),
+        value =>
+          for {
+            updatedAnswers <- Future.fromTry(userAnswers.set(CountryOfOriginPage, value))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(CountryOfOriginPage, mode, updatedAnswers))
+      )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CountryOfOriginPage, mode, updatedAnswers))
-        )
+      request.userAnswers
+        .get(CountriesQuery) match {
+        case Some(countries) => submitForm(countries, mode, request.userAnswers)
+        case None            => throw new Exception("Countries should have been populated on page load.")
+      }
   }
 }
