@@ -22,13 +22,13 @@
         govukPanel: GovukPanel
 )
 
-@(scenario: Scenario)(implicit request: Request[_], messages: Messages)
+@(recordId: String, scenario: Scenario)(implicit request: Request[_], messages: Messages)
 
 @panel = @{
     val panelContent = scenario match {
         case Category1NoExemptions => messages("categorisationResult.Category1NoExemptions.panelBody")
-        case Category3NoAssessments => messages("categorisationResult.Category3NoAssessments.panelBody")
-        case StandardNoSupplementaryUnits => messages("categorisationResult.StandardNoSupplementaryUnits.panelBody")
+        case StandardNoAssessments => messages("categorisationResult.StandardNoAssessments.panelBody")
+        case Standard => messages("categorisationResult.Standard.panelBody")
         case Category1 => messages("categorisationResult.Category1.panelBody")
         case Category2 => messages("categorisationResult.Category2.panelBody")
     }
@@ -38,8 +38,8 @@
 @paragraphContent = @{
     scenario match {
         case Category1NoExemptions => Some(messages("categorisationResult.Category1NoExemptions.p1"))
-        case Category3NoAssessments => Some(messages("categorisationResult.Category3NoAssessments.p1"))
-        case StandardNoSupplementaryUnits => None
+        case StandardNoAssessments => Some(messages("categorisationResult.Category3NoAssessments.p1"))
+        case Standard => None
         case Category1 => None
         case Category2 => None
     }

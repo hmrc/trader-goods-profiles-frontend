@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.Scenario
 import models.{CategorisationAnswers, CategoryRecord, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -94,7 +95,9 @@ class CyaCategorisationController @Inject() (
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
-            Redirect(routes.CategorisationResultController.onPageLoad(recordId))
+            Redirect(
+              routes.CategorisationResultController.onPageLoad(recordId, Scenario.getScenario(model))
+            )
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
       }

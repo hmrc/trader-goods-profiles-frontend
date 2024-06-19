@@ -93,14 +93,18 @@ POST        /create/trader-reference                         controllers.TraderR
 GET         /create/trader-reference/check                   controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
 POST        /create/trader-reference/check                   controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
-GET       /update/:recordId/category-assessment/:index       controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
-POST      /update/:recordId/category-assessment/:index       controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
-GET       /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
-POST      /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
+GET         /update/:recordId/category-assessment/:index       controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
+POST        /update/:recordId/category-assessment/:index       controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
+GET         /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
+POST        /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
 
-GET         /ukims-kick-out                                  controllers.UkimsKickOutController.onPageLoad()
+GET         /ukims-kick-out                                    controllers.UkimsKickOutController.onPageLoad()
 
-GET         /categorisation-result/:recordId                 controllers.CategorisationResultController.onPageLoad(recordId: String)
+GET         /categorisation-result/:recordId/category-1               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1)
+GET         /categorisation-result/:recordId/category-2               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2)
+GET         /categorisation-result/:recordId/standard                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Standard)
+GET         /categorisation-result/:recordId/category-1-no-exemptions controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptions)
+GET         /categorisation-result/:recordId/standard-no-assessments  controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardNoAssessments)
 
 GET         /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onSubmit(recordId:String)

@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, CategoryRecord, UserAnswers}
+import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -45,6 +45,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
     "for a GET" - {
 
       "must return OK and the correct view" - {
+
         "when all category assessments answered" in {
 
           val userAnswers = userAnswersForCategorisationCya
@@ -217,7 +218,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             ).toString
           }
         }
-
       }
 
       "must redirect to Journey Recovery" - {
@@ -273,16 +273,14 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
           }
         }
-
       }
-
     }
 
     "for a POST" - {
 
       "when user answers can update a valid goods record" - {
 
-        "must update the goods record and redirect to the CyaCategorisationController" in {
+        "must update the goods record and redirect to the CategorisationResultController with correct view" in {
 
           val userAnswers = UserAnswers(userAnswersId)
             .set(RecordCategorisationsQuery, recordCategorisations)
@@ -312,7 +310,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CategorisationResultController
-              .onPageLoad(testRecordId)
+              .onPageLoad(testRecordId, Category1)
               .url
             verify(mockConnector, times(1))
               .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())

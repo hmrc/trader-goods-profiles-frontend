@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package models.helper
+package models
 
-import models.UserAnswers
-
-object CategorisationHelper {
-
-  def getScenario(userAnswers: UserAnswers): Scenario =
-    //TODO: Implement logic
-    Category1NoExemptions
-
-}
+import play.api.mvc.JavascriptLiteral
 
 sealed trait Scenario
 
 case object Category1NoExemptions extends Scenario
-case object Category3NoAssessments extends Scenario
-case object StandardNoSupplementaryUnits extends Scenario
+case object StandardNoAssessments extends Scenario
+case object Standard extends Scenario
 case object Category1 extends Scenario
 case object Category2 extends Scenario
+
+object Scenario {
+
+  def getScenario(goodsRecord: CategoryRecord): Scenario =
+    goodsRecord.category match {
+      case 1 => Category1
+      case 2 => Category2
+      case 3 => Standard
+    }
+
+  implicit val jsLiteral: JavascriptLiteral[Scenario] = {
+    case Category1NoExemptions => "Category1NoExemptions"
+    case StandardNoAssessments => "StandardNoAssessments"
+    case Standard              => "Standard"
+    case Category1             => "Category1"
+    case Category2             => "Category2"
+  }
+}
