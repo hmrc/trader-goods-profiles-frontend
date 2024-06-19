@@ -17,11 +17,11 @@
 package models
 
 object StringFieldRegex {
-  val ukimsNumberRegex: String         = "^(GB|XI)UKIM[0-9]{12}[0-9]{14}$"
-  val nirmsRegex: String               = "RMS-?(GB|NI)-?[0-9]{6}"
-  val niphlRegex: String               = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
-  val commodityCodeFormatRegex: String = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
-  val emailRegex: String               = """^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"""
+  val ukimsNumberRegex: String                    = "^(GB|XI)UKIM[0-9]{12}[0-9]{14}$"
+  val nirmsRegex: String                          = "RMS-?(GB|NI)-?[0-9]{6}"
+  val niphlRegex: String                          = "^([0-9]{4,6}|[a-zA-Z]{1,2}[0-9]{5})$"
+  val commodityCodeFormatRegex: String            = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
+  val emailRegex: String                          = """^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"""
   val commodityCodeAdditionalNumbersRegex: String = "^([0-9]{2}|[0-9]{4})$"
-  val supplementaryUnitRegex           = """^-?\d{1,10}(\.\d{1,6})?$"""
+  val supplementaryUnitRegex                      = """^-?\d{1,10}(\.\d{1,6})?$"""
 }
