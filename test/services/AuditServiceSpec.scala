@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
-import models.audits.OttAuditData
+import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.CreateRecordJourney
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.{GoodsRecord, TraderProfile}
@@ -387,6 +387,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   "auditValidateCommodityCode" - {
 
     val auditData = OttAuditData(
+      AuditValidateCommodityCode,
       testEori,
       AffinityGroup.Individual,
       Some(testRecordId),
@@ -417,7 +418,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       ).thenReturn(fakeAuditEvent)
 
       val result = await(
-        auditService.auditValidateCommodityCode(
+        auditService.auditOttCall(
           Some(auditData),
           startTime,
           endTime,
@@ -432,7 +433,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createValidateCommodityCodeEvent(
-            eqTo(Some(auditData)),
+            eqTo(auditData),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -465,7 +466,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       ).thenReturn(fakeAuditEvent)
 
       val result = await(
-        auditService.auditValidateCommodityCode(
+        auditService.auditOttCall(
           Some(auditData),
           startTime,
           endTime,
@@ -480,7 +481,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createValidateCommodityCodeEvent(
-            eqTo(Some(auditData)),
+            eqTo(auditData),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -501,7 +502,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       intercept[RuntimeException] {
         await(
-          auditService.auditValidateCommodityCode(
+          auditService.auditOttCall(
             Some(auditData),
             startTime,
             endTime,
@@ -519,6 +520,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   "auditGetCategorisationAssessmentDetails" - {
 
     val auditData = OttAuditData(
+      AuditGetCategorisationAssessment,
       testEori,
       AffinityGroup.Individual,
       Some(testRecordId),
@@ -554,7 +556,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       ).thenReturn(fakeAuditEvent)
 
       val result = await(
-        auditService.auditGetCategorisationAssessmentDetails(
+        auditService.auditOttCall(
           Some(auditData),
           startTime,
           endTime,
@@ -569,7 +571,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createGetCategorisationAssessmentDetailsEvent(
-            eqTo(Some(auditData)),
+            eqTo(auditData),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -602,7 +604,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       ).thenReturn(fakeAuditEvent)
 
       val result = await(
-        auditService.auditGetCategorisationAssessmentDetails(
+        auditService.auditOttCall(
           Some(auditData),
           startTime,
           endTime,
@@ -617,7 +619,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should have supplied the parameters to the factory to create the event") {
         verify(mockAuditFactory, times(1))
           .createGetCategorisationAssessmentDetailsEvent(
-            eqTo(Some(auditData)),
+            eqTo(auditData),
             eqTo(startTime),
             eqTo(endTime),
             eqTo(OK),
@@ -638,7 +640,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       intercept[RuntimeException] {
         await(
-          auditService.auditGetCategorisationAssessmentDetails(
+          auditService.auditOttCall(
             Some(auditData),
             startTime,
             endTime,
