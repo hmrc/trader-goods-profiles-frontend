@@ -54,14 +54,15 @@ class SupplementaryUnitController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      request.userAnswers.get(RecordCategorisationsQuery) match {
-        case None        => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-        case Some(query) =>
-          query.records(recordId).measurementUnit match {
-            case None                  => Ok(view(preparedForm, mode, recordId, ""))
-            case Some(measurementUnit) => Ok(view(preparedForm, mode, recordId, measurementUnit))
-          }
+      val result = for {
+        query              <- request.userAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- query.records.get(recordId)
+      } yield {
+        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+        Ok(view(preparedForm, mode, recordId, measurementUnit))
       }
+
+      result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
   }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
@@ -69,16 +70,16 @@ class SupplementaryUnitController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors =>
-            request.userAnswers.get(RecordCategorisationsQuery) match {
-              case None        => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-              case Some(query) =>
-                query.records(recordId).measurementUnit match {
-                  case None                  => Future.successful(BadRequest(view(formWithErrors, mode, recordId, "")))
-                  case Some(measurementUnit) =>
-                    Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
-                }
-            },
+          formWithErrors => {
+            val result = for {
+              query              <- request.userAnswers.get(RecordCategorisationsQuery)
+              categorisationInfo <- query.records.get(recordId)
+            } yield {
+              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+            }
+            result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+          },
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))
