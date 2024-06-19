@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import connectors.GetGoodsRecordsConnector
+import connectors.GoodsRecordConnector
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -54,7 +54,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val mockSessionRepository = mock[SessionRepository]
 
-      val mockGetGoodsRecordsconnector = mock[GetGoodsRecordsConnector]
+      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockGetGoodsRecordsconnector.getRecords(any(), any(), any(), any())(any())) thenReturn Future.successful(
@@ -65,7 +65,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GetGoodsRecordsConnector].toInstance(mockGetGoodsRecordsconnector)
+            bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
           )
           .build()
 

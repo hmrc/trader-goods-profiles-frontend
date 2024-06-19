@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.GetGoodsRecordsConnector
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import pages.PreviousMovementRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,7 +37,7 @@ class PreviousMovementRecordsController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
-  getGoodsRecordConnector: GetGoodsRecordsConnector
+  getGoodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
