@@ -357,6 +357,20 @@ supplementaryUnit.error.wholeNumber = Enter your supplementaryUnit using whole n
 supplementaryUnit.error.outOfRange = SupplementaryUnit must be between {0} and {1}
 supplementaryUnit.change.hidden = SupplementaryUnit
 
+longerCommodityCode.title = You need to enter a longer commodity code
+longerCommodityCode.h1 = You need to enter a longer commodity code
+longerCommodityCode.p1 = The commodity code you entered is {0}.
+longerCommodityCode.p2 = We need you to provide a 8 or 10 digit commodity code so we can categorise your goods.
+longerCommodityCode.insetText = As you are providing a longer commodity code, some of the category assessments may no longer be relevant to your goods. If that’s the case, any previous answers you provided for the category assessments will be removed.
+longerCommodityCode.h2 = What are the additional numbers in the commodity code?
+longerCommodityCode.hint = Enter 2 or 4 digits
+longerCommodityCode.linkText = If you do not know the next 2 or 4 digits, review this code on the Online Tariff Tool (opens in a new tab)
+longerCommodityCode.checkYourAnswersLabel = LongerCommodityCode
+longerCommodityCode.error.required = Enter 2 or 4 digits
+longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct format
+longerCommodityCode.error.invalid = Enter a real commodity code
+longerCommodityCode.change.hidden = LongerCommodityCode
+
 previousMovementRecords.title = Previous movement records
 previousMovementRecords.h1 = Previous movement records
 previousMovementRecords.p1 = TGP has your previous movement information saved as individual records. HMRC have removed any duplicate records.
