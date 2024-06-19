@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package queries
 
-import javax.inject.Inject
-import forms.mappings.Mappings
 import models.Country
-import play.api.data.Form
+import play.api.libs.json.JsPath
 
-class CountryOfOriginFormProvider @Inject() extends Mappings {
+case object CountriesQuery extends Gettable[Seq[Country]] with Settable[Seq[Country]] {
 
-  def apply(countries: Seq[Country]): Form[String] =
-    Form(
-      "value" -> text("countryOfOrigin.error.required")
-        .verifying("countryOfOrigin.error.invalid", value => countries.exists(_.id == value))
-    )
+  override def path: JsPath = JsPath \ "countries"
 }

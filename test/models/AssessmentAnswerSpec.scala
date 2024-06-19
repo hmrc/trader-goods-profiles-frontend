@@ -18,8 +18,6 @@ package models
 
 import base.SpecBase
 import models.ott.Certificate
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
 import play.api.i18n.Messages
 import play.api.libs.json.{JsString, JsSuccess, Json}
 
