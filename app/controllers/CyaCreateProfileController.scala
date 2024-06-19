@@ -67,9 +67,10 @@ class CyaCreateProfileController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
-        auditService.auditProfileSetUp(model, request.affinityGroup)
-        traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
-          Redirect(routes.HomePageController.onPageLoad())
+        auditService.auditProfileSetUp(model, request.affinityGroup).flatMap { _ =>
+          traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
+            Redirect(routes.HomePageController.onPageLoad())
+          }
         }
 
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
