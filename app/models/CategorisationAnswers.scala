@@ -27,7 +27,7 @@ import queries.RecordCategorisationsQuery
 
 final case class CategorisationAnswers(
   assessmentValues: Seq[AssessmentAnswer],
-  supplementaryUnit: Option[Int]
+  supplementaryUnit: Option[String]
 )
 
 object CategorisationAnswers {

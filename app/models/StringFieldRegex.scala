@@ -23,4 +23,5 @@ object StringFieldRegex {
   val commodityCodeFormatRegex: String            = "^([0-9]{6}|[0-9]{8}|[0-9]{10})$"
   val emailRegex: String                          = """^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"""
   val commodityCodeAdditionalNumbersRegex: String = "^([0-9]{2}|[0-9]{4})$"
+  val supplementaryUnitRegex                      = """^-?\d{1,10}(\.\d{1,6})?$"""
 }

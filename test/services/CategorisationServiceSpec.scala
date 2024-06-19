@@ -45,7 +45,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   private val mockOttResponse = OttResponse(
-    GoodsNomenclatureResponse("some id", "some comcode"),
+    GoodsNomenclatureResponse("some id", "some comcode", Some("some measure unit")),
     Seq[CategoryAssessmentRelationship](),
     Seq[IncludedElement]()
   )
@@ -79,7 +79,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should store category assessments if they are not present, then return successful updated answers" in {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq())
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
       val expectedRecordCategorisations = RecordCategorisations(records = Map("recordId" -> expectedCategorisationInfo))
 
       val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
@@ -99,9 +99,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "should not call for category assessments if they are already present, then return successful updated answers" in {
-      val expectedRecordCategorisations = RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq())))
+      val expectedRecordCategorisations =
+        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"))))
 
-      val userAnswers = emptyUserAnswers
+      val userAnswers                   = emptyUserAnswers
         .set(RecordCategorisationsQuery, expectedRecordCategorisations)
         .success
         .value
