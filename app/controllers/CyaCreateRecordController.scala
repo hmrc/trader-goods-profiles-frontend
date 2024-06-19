@@ -83,9 +83,9 @@ class CyaCreateRecordController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     GoodsRecord.build(request.userAnswers, request.eori) match {
       case Right(model) =>
+        auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
         for {
           goodsRecordResponse <- goodsRecordConnector.submitGoodsRecord(model)
-          _                    = auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
     }
