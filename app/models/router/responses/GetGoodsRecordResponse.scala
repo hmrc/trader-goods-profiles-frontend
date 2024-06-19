@@ -26,6 +26,7 @@ final case class GetGoodsRecordResponse(
   countryOfOrigin: String,
   traderRef: String,
   goodsDescription: String,
+  adviceStatus: String,
   createdDateTime: Instant,
   updatedDateTime: Instant
 )
@@ -42,6 +43,7 @@ object GetGoodsRecordResponse {
         (__ \ "countryOfOrigin").read[String] and
         (__ \ "traderRef").read[String] and
         (__ \ "goodsDescription").read[String] and
+        (__ \ "adviceStatus").read[String] and
         (__ \ "createdDateTime").read[Instant] and
         (__ \ "updatedDateTime").read[Instant]
     )(GetGoodsRecordResponse.apply _)
@@ -57,6 +59,7 @@ object GetGoodsRecordResponse {
         (__ \ "countryOfOrigin").write[String] and
         (__ \ "traderRef").write[String] and
         (__ \ "goodsDescription").write[String] and
+        (__ \ "adviceStatus").write[String] and
         (__ \ "createdDateTime").write[Instant] and
         (__ \ "updatedDateTime").write[Instant]
     )(unlift(GetGoodsRecordResponse.unapply))

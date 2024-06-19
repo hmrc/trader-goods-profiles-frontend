@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.GoodsRecordsView
-import viewmodels.govuk.table._
 
 import scala.concurrent.Future
 
@@ -41,9 +40,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new GoodsRecordsFormProvider()
   private val form = formProvider()
-  private val list = TableViewModel(
-    rows = Seq.empty
-  )
 
   private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad.url
 
@@ -61,7 +57,10 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[GoodsRecordsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, list)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, Seq.empty, Seq.empty, 0, 0, 0)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -79,7 +78,10 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), list)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), Seq.empty, Seq.empty, 0, 0, 0)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -125,7 +127,10 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, list)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, Seq.empty, Seq.empty, 0, 0, 0)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

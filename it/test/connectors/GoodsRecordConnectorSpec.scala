@@ -61,7 +61,7 @@ class GoodsRecordConnectorSpec
          |    "recordId": "$testRecordId",
          |    "traderRef": "BAN001001",
          |    "comcode": "10410100",
-         |    "accreditationStatus": "Not requested",
+         |    "adviceStatus": "Not requested",
          |    "goodsDescription": "Organic bananas",
          |    "countryOfOrigin": "EC",
          |    "category": 3,
@@ -206,7 +206,10 @@ class GoodsRecordConnectorSpec
         "10410100",
         "EC",
         "BAN001001",
-        "Organic bananas"
+        "Organic bananas",
+        "Not requested",
+        Instant.parse("2024-11-18T23:20:19Z"),
+        Instant.parse("2024-11-18T23:20:19Z")
       )
     }
 

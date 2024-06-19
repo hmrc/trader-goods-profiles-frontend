@@ -19,14 +19,14 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
-import models.router.responses.GetGoodsRecordResponse
 
 import javax.inject.Inject
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.{TableRow, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.GoodsRecordsView
 import viewmodels.govuk.table._
@@ -56,43 +56,24 @@ class GoodsRecordsController @Inject() (
     }
 
     goodsRecordConnector.getRecords(request.eori).map { goodsRecordResponse =>
-      val list = TableViewModel(
-        rows = Seq(headers()) ++ rows(goodsRecordResponse.goodsItemRecords)
-      )
-
       val numRecordsOnPage =
         math.ceil(goodsRecordResponse.pagination.totalRecords / goodsRecordResponse.pagination.totalPages).toInt
       val firstRecordPos   = goodsRecordResponse.pagination.currentPage * numRecordsOnPage
       val firstRecord      = firstRecordPos + 1
       val lastRecord       = goodsRecordResponse.goodsItemRecords.size + firstRecordPos
 
-      Ok(view(preparedForm, list, goodsRecordResponse.pagination.totalRecords, firstRecord, lastRecord))
-    }
-  }
-
-  private[this] def rows(goodsRecords: Seq[GetGoodsRecordResponse])(implicit messages: Messages): Seq[Seq[TableRow]] =
-    goodsRecords.map { goodsRecord =>
-      Seq(
-        TableRowViewModel(
-          content = Text(goodsRecord.traderRef)
-        ),
-        TableRowViewModel(
-          content = Text(goodsRecord.goodsDescription)
-        ),
-        TableRowViewModel(
-          content = Text(goodsRecord.countryOfOrigin)
-        ),
-        TableRowViewModel(
-          content = Text(goodsRecord.commodityCode)
-        ),
-        TableRowViewModel(
-          content = Text("to be implemented in TGP-1220")
-        ),
-        TableRowViewModel(
-          content = Text("ACTIONS")
+      Ok(
+        view(
+          preparedForm,
+          headers(),
+          goodsRecordResponse.goodsItemRecords,
+          goodsRecordResponse.pagination.totalRecords,
+          firstRecord,
+          lastRecord
         )
       )
     }
+  }
 
   private[this] def headers()(implicit messages: Messages): Seq[TableRow] =
     Seq(
@@ -120,25 +101,29 @@ class GoodsRecordsController @Inject() (
     form
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, TableViewModel(rows = Seq.empty), 0, 0, 0))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, headers(), Seq.empty, 0, 0, 0))),
         value =>
           for {
             updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
             _                   <- sessionRepository.set(updatedAnswers)
             goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori)
           } yield {
-            val list = TableViewModel(
-              rows = Seq(headers()) ++ rows(goodsRecordResponse.goodsItemRecords)
-            )
-
             val numRecordsOnPage =
               math.ceil(goodsRecordResponse.pagination.totalRecords / goodsRecordResponse.pagination.totalPages).toInt
             val firstRecordPos   = goodsRecordResponse.pagination.currentPage * numRecordsOnPage
             val firstRecord      = firstRecordPos + 1
             val lastRecord       = goodsRecordResponse.goodsItemRecords.size + firstRecordPos
 
-            Ok(view(form.fill(value), list, goodsRecordResponse.pagination.totalRecords, firstRecord, lastRecord))
+            Ok(
+              view(
+                form.fill(value),
+                headers(),
+                goodsRecordResponse.goodsItemRecords,
+                goodsRecordResponse.pagination.totalRecords,
+                firstRecord,
+                lastRecord
+              )
+            )
           }
       )
   }
