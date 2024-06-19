@@ -183,7 +183,7 @@ class OttConnectorSpec
     "must return correct OttResponse object" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo("/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(
             ok().withBody(
               """{
