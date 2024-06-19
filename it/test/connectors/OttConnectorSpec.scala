@@ -28,10 +28,9 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Application
-import play.api.http.Status.{BAD_GATEWAY, BAD_REQUEST, IM_A_TEAPOT}
+import play.api.http.Status.IM_A_TEAPOT
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.Results.BadGateway
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.test.WireMockSupport
@@ -62,7 +61,7 @@ class OttConnectorSpec
   override def beforeEach(): Unit = {
     reset(auditService)
 
-    when(auditService.auditValidateCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+    when(auditService.auditOttCall(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(Done))
 
     super.beforeEach()
@@ -90,7 +89,7 @@ class OttConnectorSpec
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
-          verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+          verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
         }
 
       }
@@ -118,7 +117,7 @@ class OttConnectorSpec
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
-          verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+          verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
         }
       }
 
@@ -138,7 +137,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -156,7 +155,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -167,10 +166,13 @@ class OttConnectorSpec
           .willReturn(status(IM_A_TEAPOT))
       )
 
-      connector.getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None).failed.futureValue
+      connector
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .failed
+        .futureValue
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -192,7 +194,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -214,7 +216,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditValidateCommodityCode(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -369,7 +371,9 @@ class OttConnectorSpec
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
       }
     }
 
@@ -387,7 +391,9 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
       }
     }
 
@@ -405,7 +411,9 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
       }
     }
 
@@ -422,7 +430,9 @@ class OttConnectorSpec
         .futureValue
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
       }
     }
 
@@ -444,7 +454,9 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditGetCategorisationAssessmentDetails(any, any, any, any, any, any)(any)
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
       }
     }
 

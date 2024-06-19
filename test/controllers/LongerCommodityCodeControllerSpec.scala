@@ -136,9 +136,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .value
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.successful(
-        Commodity("654321", "Description", Instant.now, None)
-      )
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+        .successful(
+          Commodity("654321", "Description", Instant.now, None)
+        )
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
@@ -159,7 +160,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
       }
     }
 
@@ -202,7 +203,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .success
         .value
 
-      when(mockOttConnector.getCommodityCode(anyString())(any())) thenReturn Future.failed(
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future.failed(
         UpstreamErrorResponse(" ", NOT_FOUND)
       )
 
@@ -229,7 +230,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
       }
 
     }

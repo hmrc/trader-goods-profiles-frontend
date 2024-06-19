@@ -21,6 +21,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 
 import java.time.LocalDate
 case class OttAuditData(
+  auditMode: OttAuditMode,
   eori: String,
   affinityGroup: AffinityGroup,
   recordId: Option[String],
@@ -29,3 +30,8 @@ case class OttAuditData(
   dateOfTrade: Option[LocalDate],
   journey: Option[Journey]
 )
+
+sealed trait OttAuditMode
+
+case object AuditValidateCommodityCode extends OttAuditMode
+case object AuditGetCategorisationAssessment extends OttAuditMode

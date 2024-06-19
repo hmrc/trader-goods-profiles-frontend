@@ -19,7 +19,7 @@ package services
 import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
-import models.audits.OttAuditData
+import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
@@ -94,8 +94,44 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
-  def auditValidateCommodityCode(
+  def auditOttCall[T](
     auditDetails: Option[OttAuditData],
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    responseStatus: Int,
+    errorMessage: Option[String],
+    response: Option[T]
+  )(implicit hc: HeaderCarrier): Future[Done] =
+
+    auditDetails match {
+      case Some(details) =>
+        details.auditMode match {
+          case AuditValidateCommodityCode       =>
+            auditValidateCommodityCode(
+              details,
+              requestDateTime,
+              responseDateTime,
+              responseStatus,
+              errorMessage,
+              response.map(x => x.asInstanceOf[Commodity])
+            )
+
+          case AuditGetCategorisationAssessment =>
+            auditGetCategorisationAssessmentDetails(
+              details,
+              requestDateTime,
+              responseDateTime,
+              responseStatus,
+              errorMessage,
+              response.map(x => x.asInstanceOf[OttResponse])
+            )
+        }
+
+      case _             => Future.successful(Done)
+    }
+
+  private def auditValidateCommodityCode(
+    auditDetails: OttAuditData,
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
@@ -118,8 +154,8 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
-  def auditGetCategorisationAssessmentDetails(
-    auditDetails: Option[OttAuditData],
+  private def auditGetCategorisationAssessmentDetails(
+    auditDetails: OttAuditData,
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,

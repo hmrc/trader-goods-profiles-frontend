@@ -22,6 +22,7 @@ import forms.LongerCommodityCodeFormProvider
 
 import javax.inject.Inject
 import models.Mode
+import models.helper.UpdateRecordJourney
 import navigation.Navigator
 import pages.{CommodityCodePage, LongerCommodityCodePage}
 import play.api.data.FormError
@@ -77,7 +78,7 @@ class LongerCommodityCodeController @Inject() (
               value => {
                 val longCommodityCode = s"$shortCommodity$value"
                 (for {
-                  validCommodityCode      <- ottConnector.getCommodityCode(longCommodityCode)
+                  validCommodityCode      <- ottConnector.getCommodityCode(longCommodityCode, request.eori, request.affinityGroup, UpdateRecordJourney, Some(recordId))
                   updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
                   updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, validCommodityCode))
                   _                       <- sessionRepository.set(updatedAnswersWithQuery)

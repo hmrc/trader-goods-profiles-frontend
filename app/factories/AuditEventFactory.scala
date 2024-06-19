@@ -123,7 +123,7 @@ case class AuditEventFactory() {
   }
 
   def createValidateCommodityCodeEvent(
-    auditData: Option[OttAuditData],
+    auditData: OttAuditData,
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
@@ -132,11 +132,11 @@ case class AuditEventFactory() {
   )(implicit hc: HeaderCarrier): ExtendedDataEvent = {
 
     val auditDetails = ValidateCommodityCodeEvent(
-      auditData.map(_.eori).getOrElse("null"),
-      auditData.map(_.affinityGroup).map(_.toString).getOrElse("null"),
-      auditData.flatMap(_.journey).map(_.toString).getOrElse("null"),
-      auditData.flatMap(_.recordId).getOrElse("null"),
-      auditData.map(_.commodityCode).getOrElse("null"),
+      auditData.eori,
+      auditData.affinityGroup.toString,
+      auditData.journey.map(_.toString).getOrElse("null"),
+      auditData.recordId.getOrElse("null"),
+      auditData.commodityCode,
       requestDateTime.toString,
       responseDateTime.toString,
       ValidateCommodityCodeEventOutcome(
@@ -159,7 +159,7 @@ case class AuditEventFactory() {
   }
 
   def createGetCategorisationAssessmentDetailsEvent(
-    auditData: Option[OttAuditData],
+    auditData: OttAuditData,
     requestDateTime: Instant,
     responseDateTime: Instant,
     responseStatus: Int,
@@ -168,12 +168,12 @@ case class AuditEventFactory() {
   )(implicit hc: HeaderCarrier): ExtendedDataEvent = {
 
     val auditDetails = GetCategorisationAssessmentDetailsEvent(
-      auditData.map(_.eori).getOrElse("null"),
-      auditData.map(_.affinityGroup).map(_.toString).getOrElse("null"),
-      auditData.flatMap(_.recordId).getOrElse("null"),
-      auditData.map(_.commodityCode).getOrElse("null"),
-      auditData.flatMap(_.countryOfOrigin).getOrElse("null"),
-      auditData.flatMap(_.dateOfTrade).map(_.toString).getOrElse("null"),
+      auditData.eori,
+      auditData.affinityGroup.toString,
+      auditData.recordId.getOrElse("null"),
+      auditData.commodityCode,
+      auditData.countryOfOrigin.getOrElse("null"),
+      auditData.dateOfTrade.map(_.toString).getOrElse("null"),
       requestDateTime.toString,
       responseDateTime.toString,
       GetCategorisationAssessmentDetailsEventOutcome(

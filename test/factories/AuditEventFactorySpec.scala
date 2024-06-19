@@ -18,7 +18,7 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import models.audits.{GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
+import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
 import models.helper.{CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response._
 import models.{Commodity, GoodsRecord, TraderProfile}
@@ -181,6 +181,7 @@ class AuditEventFactorySpec extends SpecBase {
         "when all is valid in CreateRecord journey" in {
 
           val auditData = OttAuditData(
+            AuditValidateCommodityCode,
             testEori,
             AffinityGroup.Individual,
             None,
@@ -191,7 +192,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
-            Some(auditData),
+            auditData,
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
@@ -224,6 +225,7 @@ class AuditEventFactorySpec extends SpecBase {
         "when all is valid in UpdateRecord journey" in {
 
           val auditData = OttAuditData(
+            AuditValidateCommodityCode,
             testEori,
             AffinityGroup.Individual,
             Some(testRecordId),
@@ -237,7 +239,7 @@ class AuditEventFactorySpec extends SpecBase {
             testCommodity.copy(validityEndDate = Some(Instant.parse("2024-07-31T23:59:59.999Z")))
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
-            Some(auditData),
+            auditData,
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
@@ -270,6 +272,7 @@ class AuditEventFactorySpec extends SpecBase {
         "when invalid commodity code" in {
 
           val auditData = OttAuditData(
+            AuditValidateCommodityCode,
             testEori,
             AffinityGroup.Individual,
             Some(testRecordId),
@@ -280,7 +283,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
-            Some(auditData),
+            auditData,
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             NOT_FOUND,
@@ -320,6 +323,7 @@ class AuditEventFactorySpec extends SpecBase {
         "when all is valid" in {
 
           val auditData = OttAuditData(
+            AuditGetCategorisationAssessment,
             testEori,
             AffinityGroup.Individual,
             Some(testRecordId),
@@ -355,7 +359,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
-            Some(auditData),
+            auditData,
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
@@ -387,6 +391,7 @@ class AuditEventFactorySpec extends SpecBase {
         "when lookup fails" in {
 
           val auditData = OttAuditData(
+            AuditGetCategorisationAssessment,
             testEori,
             AffinityGroup.Individual,
             Some(testRecordId),
@@ -397,7 +402,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
-            Some(auditData),
+            auditData,
             Instant.parse("2024-06-03T15:19:18.399Z"),
             Instant.parse("2024-06-03T15:19:20.399Z"),
             NOT_FOUND,
