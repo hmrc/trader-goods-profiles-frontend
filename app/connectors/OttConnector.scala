@@ -36,7 +36,9 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ec: ExecutionContext
 ) {
 
-  private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
+  private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
+  private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
+
   private def ottCommoditiesUrl(commodityCode: String) =
     url"$baseUrl/xi/api/v2/commodities/$commodityCode"
 
@@ -48,14 +50,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
   private def getFromOtt[T](
     url: URL,
-    authToken: String,
     auditDetails: Option[OttAuditData]
   )(implicit
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
-
+    println(s"ccccccccc - $authToken")
     val requestStartTime = Instant.now
 
     httpClient
@@ -77,11 +78,18 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
             )
             Future.successful(result)
           }
-          .recoverTotal(error => {
-            auditService.auditOttCall(auditDetails, requestStartTime, Instant.now, response.status, Some(error.errors.toString()), None)
+          .recoverTotal { error =>
+            auditService.auditOttCall(
+              auditDetails,
+              requestStartTime,
+              Instant.now,
+              response.status,
+              Some(error.errors.toString()),
+              None
+            )
 
             Future.failed(JsResult.Exception(error))
-          })
+          }
       }
       .recoverWith {
         case e: HttpException =>
@@ -117,7 +125,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
     getFromOtt[Commodity](
       ottCommoditiesUrl(commodityCode),
-      "bearerToken",
       Some(auditDetails)
     )
   }
@@ -143,7 +150,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
     getFromOtt[OttResponse](
       ottGreenLanesUrl(commodityCode),
-      "bearerToken",
       Some(auditDetails)
     )
   }
@@ -151,7 +157,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
     getFromOtt[CountriesResponse](
       ottCountriesUrl,
-      "bearerToken",
       None
     ).map(_.data)
 }
