@@ -117,7 +117,7 @@ if (loadButton) {
     loadButton.style.display = 'none';
     setTimeout(function () {
       document.getElementById("previousMovementForm").submit();
-    }, 12000);
+    }, 720000);
   });
 }
 
