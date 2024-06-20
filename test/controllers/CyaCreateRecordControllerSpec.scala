@@ -22,7 +22,6 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.router.responses.CreateGoodsRecordResponse
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
-import org.apache.pekko.util.Helpers.Requiring
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar

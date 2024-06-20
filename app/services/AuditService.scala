@@ -19,7 +19,9 @@ package services
 import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
-import models.{GoodsRecord, TraderProfile, UserAnswers}
+import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
+import models.ott.response.OttResponse
+import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
@@ -28,6 +30,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory: AuditEventFactory)(implicit
@@ -89,6 +92,90 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       logger.info(s"StartUpdateGoodsRecord audit event status: $auditResult")
       Done
     }
+  }
+
+  def auditOttCall[T](
+    auditDetails: Option[OttAuditData],
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    responseStatus: Int,
+    errorMessage: Option[String],
+    response: Option[T]
+  )(implicit hc: HeaderCarrier): Future[Done] =
+    auditDetails match {
+      case Some(details) =>
+        details.auditMode match {
+          case AuditValidateCommodityCode =>
+            auditValidateCommodityCode(
+              details,
+              requestDateTime,
+              responseDateTime,
+              responseStatus,
+              errorMessage,
+              response.map(x => x.asInstanceOf[Commodity])
+            )
+
+          case AuditGetCategorisationAssessment =>
+            auditGetCategorisationAssessmentDetails(
+              details,
+              requestDateTime,
+              responseDateTime,
+              responseStatus,
+              errorMessage,
+              response.map(x => x.asInstanceOf[OttResponse])
+            )
+        }
+
+      case _ => Future.successful(Done)
+    }
+
+  private def auditValidateCommodityCode(
+    auditDetails: OttAuditData,
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    responseStatus: Int,
+    errorMessage: Option[String],
+    commodityDetails: Option[Commodity]
+  )(implicit hc: HeaderCarrier): Future[Done] = {
+
+    val event = auditEventFactory.createValidateCommodityCodeEvent(
+      auditDetails,
+      requestDateTime,
+      responseDateTime,
+      responseStatus,
+      errorMessage,
+      commodityDetails
+    )
+
+    auditConnector.sendExtendedEvent(event).map { auditResult =>
+      logger.info(s"ValidateCommodityCode audit event status: $auditResult")
+      Done
+    }
+  }
+
+  private def auditGetCategorisationAssessmentDetails(
+    auditDetails: OttAuditData,
+    requestDateTime: Instant,
+    responseDateTime: Instant,
+    responseStatus: Int,
+    errorMessage: Option[String],
+    ottResponse: Option[OttResponse]
+  )(implicit hc: HeaderCarrier): Future[Done] = {
+
+    val event = auditEventFactory.createGetCategorisationAssessmentDetailsEvent(
+      auditDetails,
+      requestDateTime,
+      responseDateTime,
+      responseStatus,
+      errorMessage,
+      ottResponse
+    )
+
+    auditConnector.sendExtendedEvent(event).map { auditResult =>
+      logger.info(s"GetCategorisationAssessmentDetails audit event status: $auditResult")
+      Done
+    }
+
   }
 
 }

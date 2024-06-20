@@ -17,12 +17,17 @@
 package factories
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, testRecordId}
+import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
+import models.helper.{CreateRecordJourney, UpdateRecordJourney}
+import models.ott.response._
 import models.{Commodity, GoodsRecord, TraderProfile}
+import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 class AuditEventFactorySpec extends SpecBase {
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -167,6 +172,265 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails("commodityCodeEffectiveTo") mustBe "null"
       }
 
+    }
+
+    "create validate commodity code event" - {
+
+      "create event" - {
+
+        "when all is valid in CreateRecord journey" in {
+
+          val auditData = OttAuditData(
+            AuditValidateCommodityCode,
+            testEori,
+            AffinityGroup.Individual,
+            None,
+            testCommodity.commodityCode,
+            None,
+            None,
+            Some(CreateRecordJourney)
+          )
+
+          val result = AuditEventFactory().createValidateCommodityCodeEvent(
+            auditData,
+            Instant.parse("2024-06-03T15:19:18.399Z"),
+            Instant.parse("2024-06-03T15:19:20.399Z"),
+            OK,
+            None,
+            Some(testCommodity)
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "ValidateCommodityCode"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = Json.fromJson[ValidateCommodityCodeEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.journey mustBe "CreateRecord"
+          auditDetails.recordId mustBe "null"
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.commodityCodeStatus mustBe "valid"
+          auditDetails.outcome.status mustBe "OK"
+          auditDetails.outcome.statusCode mustBe "200"
+          auditDetails.outcome.failureReason mustBe "null"
+          auditDetails.commodityDescription mustBe "test"
+          auditDetails.commodityCodeEffectiveTo mustBe "null"
+          auditDetails.commodityCodeEffectiveFrom mustBe "2007-12-03T10:15:30Z"
+
+        }
+
+        "when all is valid in UpdateRecord journey" in {
+
+          val auditData = OttAuditData(
+            AuditValidateCommodityCode,
+            testEori,
+            AffinityGroup.Individual,
+            Some(testRecordId),
+            testCommodity.commodityCode,
+            None,
+            None,
+            Some(UpdateRecordJourney)
+          )
+
+          val testCommodityWithExpiryDate =
+            testCommodity.copy(validityEndDate = Some(Instant.parse("2024-07-31T23:59:59.999Z")))
+
+          val result = AuditEventFactory().createValidateCommodityCodeEvent(
+            auditData,
+            Instant.parse("2024-06-03T15:19:18.399Z"),
+            Instant.parse("2024-06-03T15:19:20.399Z"),
+            OK,
+            None,
+            Some(testCommodityWithExpiryDate)
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "ValidateCommodityCode"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = Json.fromJson[ValidateCommodityCodeEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.journey mustBe "UpdateRecord"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.commodityCodeStatus mustBe "valid"
+          auditDetails.outcome.status mustBe "OK"
+          auditDetails.outcome.statusCode mustBe "200"
+          auditDetails.outcome.failureReason mustBe "null"
+          auditDetails.commodityDescription mustBe "test"
+          auditDetails.commodityCodeEffectiveTo mustBe "2024-07-31T23:59:59.999Z"
+          auditDetails.commodityCodeEffectiveFrom mustBe "2007-12-03T10:15:30Z"
+
+        }
+
+        "when invalid commodity code" in {
+
+          val auditData = OttAuditData(
+            AuditValidateCommodityCode,
+            testEori,
+            AffinityGroup.Individual,
+            Some(testRecordId),
+            testCommodity.commodityCode,
+            None,
+            None,
+            Some(UpdateRecordJourney)
+          )
+
+          val result = AuditEventFactory().createValidateCommodityCodeEvent(
+            auditData,
+            Instant.parse("2024-06-03T15:19:18.399Z"),
+            Instant.parse("2024-06-03T15:19:20.399Z"),
+            NOT_FOUND,
+            Some("Commodity not valid"),
+            None
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "ValidateCommodityCode"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = Json.fromJson[ValidateCommodityCodeEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.journey mustBe "UpdateRecord"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.commodityCodeStatus mustBe "invalid"
+          auditDetails.outcome.status mustBe "Not Found"
+          auditDetails.outcome.statusCode mustBe "404"
+          auditDetails.outcome.failureReason mustBe "Commodity not valid"
+          auditDetails.commodityDescription mustBe "null"
+          auditDetails.commodityCodeEffectiveTo mustBe "null"
+          auditDetails.commodityCodeEffectiveFrom mustBe "null"
+
+        }
+
+      }
+    }
+
+    "create get categorisation assessment details event" - {
+
+      "create event" - {
+
+        "when all is valid" in {
+
+          val auditData = OttAuditData(
+            AuditGetCategorisationAssessment,
+            testEori,
+            AffinityGroup.Individual,
+            Some(testRecordId),
+            testCommodity.commodityCode,
+            Some("US"),
+            Some(LocalDate.of(2024, 6, 18)),
+            None
+          )
+
+          val ottResponse = OttResponse(
+            goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code"),
+            categoryAssessmentRelationships = Seq(
+              CategoryAssessmentRelationship("assessmentId1"),
+              CategoryAssessmentRelationship("assessmentId2")
+            ),
+            includedElements = Seq(
+              CategoryAssessmentResponse("assessmentId1", "themeId1", Nil),
+              ThemeResponse("themeId1", 1),
+              CategoryAssessmentResponse(
+                "assessmentId2",
+                "themeId2",
+                Seq(
+                  ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                  ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+                )
+              ),
+              ThemeResponse("themeId2", 2),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+              ThemeResponse("ignoredTheme", 3),
+              CertificateResponse("ignoredExemption", "code3", "description3")
+            )
+          )
+
+          val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
+            auditData,
+            Instant.parse("2024-06-03T15:19:18.399Z"),
+            Instant.parse("2024-06-03T15:19:20.399Z"),
+            OK,
+            None,
+            Some(ottResponse)
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "GetCategorisationAssessmentDetails"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = Json.fromJson[GetCategorisationAssessmentDetailsEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.countryOfOrigin mustBe "US"
+          auditDetails.dateOfTrade mustBe "2024-06-18"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.status mustBe "OK"
+          auditDetails.outcome.statusCode mustBe "200"
+          auditDetails.outcome.failureReason mustBe "null"
+          auditDetails.categoryAssessmentOptions mustBe "2"
+          auditDetails.exemptionOptions mustBe "2"
+
+        }
+
+        "when lookup fails" in {
+
+          val auditData = OttAuditData(
+            AuditGetCategorisationAssessment,
+            testEori,
+            AffinityGroup.Individual,
+            Some(testRecordId),
+            testCommodity.commodityCode,
+            Some("US"),
+            Some(LocalDate.of(2024, 6, 18)),
+            None
+          )
+
+          val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(
+            auditData,
+            Instant.parse("2024-06-03T15:19:18.399Z"),
+            Instant.parse("2024-06-03T15:19:20.399Z"),
+            NOT_FOUND,
+            Some("Commodity not valid"),
+            None
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "GetCategorisationAssessmentDetails"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = Json.fromJson[GetCategorisationAssessmentDetailsEvent](result.detail).get
+          auditDetails.eori mustBe testEori
+          auditDetails.affinityGroup mustBe "Individual"
+          auditDetails.recordId mustBe testRecordId
+          auditDetails.commodityCode mustBe "1234567890"
+          auditDetails.countryOfOrigin mustBe "US"
+          auditDetails.dateOfTrade mustBe "2024-06-18"
+          auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
+          auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
+          auditDetails.outcome.status mustBe "Not Found"
+          auditDetails.outcome.statusCode mustBe "404"
+          auditDetails.outcome.failureReason mustBe "Commodity not valid"
+          auditDetails.categoryAssessmentOptions mustBe "null"
+          auditDetails.exemptionOptions mustBe "null"
+        }
+
+      }
     }
 
   }

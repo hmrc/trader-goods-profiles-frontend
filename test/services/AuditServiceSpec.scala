@@ -19,20 +19,25 @@ package services
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
+import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
+import models.helper.CreateRecordJourney
+import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage, UseTraderReferencePage}
+import pages._
+import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 
+import java.time.{Instant, LocalDate}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -287,7 +292,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
-  "createStartUpdateGoodsRecord" - {
+  "auditStartUpdateGoodsRecord" - {
 
     "return Done when built up an audit event and submitted it" in {
 
@@ -374,6 +379,300 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           )
         )
       }
+
+    }
+
+  }
+
+  "auditOttCall" - {
+
+    "when in auditValidateCommodityCode mode" - {
+
+      val auditData = OttAuditData(
+        AuditValidateCommodityCode,
+        testEori,
+        AffinityGroup.Individual,
+        Some(testRecordId),
+        testCommodity.commodityCode,
+        None,
+        None,
+        Some(CreateRecordJourney)
+      )
+      val startTime = Instant.parse("2024-06-03T15:19:18.399Z")
+      val endTime   = Instant.parse("2024-06-03T15:19:20.399Z")
+
+      val responseBody = "responseBody"
+
+      "return Done when built up an audit event and submitted it" in {
+
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
+          .thenReturn(Future.successful(AuditResult.Success))
+
+        val fakeAuditEvent = ExtendedDataEvent("source", "type")
+        when(
+          mockAuditFactory.createValidateCommodityCodeEvent(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+          )(any())
+        ).thenReturn(fakeAuditEvent)
+
+        val result = await(
+          auditService.auditOttCall(
+            Some(auditData),
+            startTime,
+            endTime,
+            OK,
+            Some(responseBody),
+            Some(testCommodity)
+          )
+        )
+
+        result mustBe Done
+
+        withClue("Should have supplied the parameters to the factory to create the event") {
+          verify(mockAuditFactory, times(1))
+            .createValidateCommodityCodeEvent(
+              eqTo(auditData),
+              eqTo(startTime),
+              eqTo(endTime),
+              eqTo(OK),
+              eqTo(Some(responseBody)),
+              eqTo(Some(testCommodity))
+            )(any())
+        }
+
+        withClue("Should have submitted the created event to the audit connector") {
+          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+        }
+
+      }
+
+      "return Done when audit return type is failure" in {
+
+        val auditFailure = AuditResult.Failure("Failed audit event creation")
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+        val fakeAuditEvent = ExtendedDataEvent("source", "type")
+        when(
+          mockAuditFactory.createValidateCommodityCodeEvent(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+          )(any())
+        ).thenReturn(fakeAuditEvent)
+
+        val result = await(
+          auditService.auditOttCall(
+            Some(auditData),
+            startTime,
+            endTime,
+            OK,
+            Some(responseBody),
+            Some(testCommodity)
+          )
+        )
+
+        result mustBe Done
+
+        withClue("Should have supplied the parameters to the factory to create the event") {
+          verify(mockAuditFactory, times(1))
+            .createValidateCommodityCodeEvent(
+              eqTo(auditData),
+              eqTo(startTime),
+              eqTo(endTime),
+              eqTo(OK),
+              eqTo(Some(responseBody)),
+              eqTo(Some(testCommodity))
+            )(any())
+        }
+
+        withClue("Should have submitted the created event to the audit connector") {
+          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+        }
+
+      }
+
+      "must let the play error handler deal with an future failure" in {
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
+          .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+        intercept[RuntimeException] {
+          await(
+            auditService.auditOttCall(
+              Some(auditData),
+              startTime,
+              endTime,
+              OK,
+              Some(responseBody),
+              Some(testCommodity)
+            )
+          )
+        }
+
+      }
+
+    }
+
+    "when in auditGetCategorisationAssessmentDetails mode" - {
+
+      val auditData = OttAuditData(
+        AuditGetCategorisationAssessment,
+        testEori,
+        AffinityGroup.Individual,
+        Some(testRecordId),
+        testCommodity.commodityCode,
+        Some("CX"),
+        Some(LocalDate.now),
+        None
+      )
+      val startTime = Instant.parse("2024-06-03T15:19:18.399Z")
+      val endTime   = Instant.parse("2024-06-03T15:19:20.399Z")
+
+      val responseBody    = "responseBody"
+      val testOttResponse = OttResponse(
+        GoodsNomenclatureResponse("1", testCommodity.commodityCode),
+        Seq.empty[CategoryAssessmentRelationship],
+        Seq.empty[IncludedElement]
+      )
+
+      "return Done when built up an audit event and submitted it" in {
+
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
+          .thenReturn(Future.successful(AuditResult.Success))
+
+        val fakeAuditEvent = ExtendedDataEvent("source", "type")
+        when(
+          mockAuditFactory.createGetCategorisationAssessmentDetailsEvent(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+          )(any())
+        ).thenReturn(fakeAuditEvent)
+
+        val result = await(
+          auditService.auditOttCall(
+            Some(auditData),
+            startTime,
+            endTime,
+            OK,
+            Some(responseBody),
+            Some(testOttResponse)
+          )
+        )
+
+        result mustBe Done
+
+        withClue("Should have supplied the parameters to the factory to create the event") {
+          verify(mockAuditFactory, times(1))
+            .createGetCategorisationAssessmentDetailsEvent(
+              eqTo(auditData),
+              eqTo(startTime),
+              eqTo(endTime),
+              eqTo(OK),
+              eqTo(Some(responseBody)),
+              eqTo(Some(testOttResponse))
+            )(any())
+        }
+
+        withClue("Should have submitted the created event to the audit connector") {
+          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+        }
+
+      }
+
+      "return Done when audit return type is failure" in {
+
+        val auditFailure = AuditResult.Failure("Failed audit event creation")
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+        val fakeAuditEvent = ExtendedDataEvent("source", "type")
+        when(
+          mockAuditFactory.createGetCategorisationAssessmentDetailsEvent(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+          )(any())
+        ).thenReturn(fakeAuditEvent)
+
+        val result = await(
+          auditService.auditOttCall(
+            Some(auditData),
+            startTime,
+            endTime,
+            OK,
+            Some(responseBody),
+            Some(testOttResponse)
+          )
+        )
+
+        result mustBe Done
+
+        withClue("Should have supplied the parameters to the factory to create the event") {
+          verify(mockAuditFactory, times(1))
+            .createGetCategorisationAssessmentDetailsEvent(
+              eqTo(auditData),
+              eqTo(startTime),
+              eqTo(endTime),
+              eqTo(OK),
+              eqTo(Some(responseBody)),
+              eqTo(Some(testOttResponse))
+            )(any())
+        }
+
+        withClue("Should have submitted the created event to the audit connector") {
+          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+        }
+
+      }
+
+      "must let the play error handler deal with an future failure" in {
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
+          .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+        intercept[RuntimeException] {
+          await(
+            auditService.auditOttCall(
+              Some(auditData),
+              startTime,
+              endTime,
+              OK,
+              Some(responseBody),
+              Some(testOttResponse)
+            )
+          )
+        }
+
+      }
+
+    }
+
+    "not audit anything when no auditDetails supplied" in {
+
+      val result = await(
+        auditService.auditOttCall(
+          None,
+          Instant.now,
+          Instant.now,
+          OK,
+          None,
+          None
+        )
+      )
+
+      result mustBe Done
 
     }
 
