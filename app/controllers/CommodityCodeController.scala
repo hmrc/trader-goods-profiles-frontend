@@ -20,6 +20,7 @@ import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
 import models.Mode
+import models.helper.CreateRecordJourney
 import navigation.Navigator
 import pages.CommodityCodePage
 import play.api.data.FormError
@@ -68,7 +69,8 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             (for {
-              commodity               <- ottConnector.getCommodityCode(value)
+              commodity               <-
+                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)

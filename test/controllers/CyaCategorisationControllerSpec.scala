@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, CategoryRecord, UserAnswers}
+import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -45,6 +45,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
     "for a GET" - {
 
       "must return OK and the correct view" - {
+
         "when all category assessments answered" in {
 
           val userAnswers = userAnswersForCategorisationCya
@@ -133,7 +134,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 1234)
+            .set(SupplementaryUnitPage(testRecordId), "1234.0")
             .success
             .value
 
@@ -217,7 +218,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             ).toString
           }
         }
-
       }
 
       "must redirect to Journey Recovery" - {
@@ -256,7 +256,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), 123)
+            .set(SupplementaryUnitPage(testRecordId), "123.0")
             .success
             .value
 
@@ -273,16 +273,14 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
           }
         }
-
       }
-
     }
 
     "for a POST" - {
 
       "when user answers can update a valid goods record" - {
 
-        "must update the goods record and redirect to the CyaCategorisationController" in {
+        "must update the goods record and redirect to the CategorisationResultController with correct view" in {
 
           val userAnswers = UserAnswers(userAnswersId)
             .set(RecordCategorisationsQuery, recordCategorisations)
@@ -307,12 +305,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               eori = testEori,
               recordId = testRecordId,
               category = 1,
-              measurementUnit = Some("1")
+              measurementUnit = Some("Weight, in kilograms")
             )
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CategorisationResultController
-              .onPageLoad(testRecordId)
+              .onPageLoad(testRecordId, Category1)
               .url
             verify(mockConnector, times(1))
               .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())

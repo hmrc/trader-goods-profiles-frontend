@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package models.helper
+package models.router.responses
 
-import models.UserAnswers
+import play.api.libs.json._
 
-object CategorisationHelper {
+case class Condition(
+  `type`: Option[String],
+  conditionId: Option[String],
+  conditionDescription: Option[String],
+  conditionTraderText: Option[String]
+)
 
-  def getScenario(userAnswers: UserAnswers): Scenario =
-    //TODO: Implement logic
-    Category1NoExemptions
-
+object Condition {
+  implicit val conditionFormat: OFormat[Condition] = Json.format[Condition]
 }
-
-sealed trait Scenario
-
-case object Category1NoExemptions extends Scenario
-case object Category3NoAssessments extends Scenario
-case object StandardNoSupplementaryUnits extends Scenario
-case object Category1 extends Scenario
-case object Category2 extends Scenario

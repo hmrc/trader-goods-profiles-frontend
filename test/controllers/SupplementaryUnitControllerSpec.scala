@@ -29,6 +29,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import views.html.SupplementaryUnitView
 
@@ -41,7 +42,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  private val validAnswer = 0
+  private val validAnswer = "10.0"
 
   private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
 
@@ -49,7 +50,12 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -59,13 +65,46 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "Weight, in kilograms")(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET When Measurement Unit is Empty" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisationsEmptyMeasurementUnit)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, supplementaryUnitRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[SupplementaryUnitView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "")(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), validAnswer).success.value
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+        .set(SupplementaryUnitPage(testRecordId), validAnswer)
+        .success
+        .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,21 +116,28 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testRecordId)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(
+          form.fill(validAnswer),
+          NormalMode,
+          testRecordId,
+          "Weight, in kilograms"
+        )(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
 
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -101,7 +147,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, supplementaryUnitRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+            .withFormUrlEncodedBody(("value", validAnswer))
 
         val result = route(application, request).value
 
@@ -112,7 +158,12 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
@@ -126,7 +177,35 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "Weight, in kilograms")(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted and Measurement Unit is Empty" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisationsEmptyMeasurementUnit)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, supplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
+
+        val boundForm = form.bind(Map("value" -> "invalid value"))
+
+        val view = application.injector.instanceOf[SupplementaryUnitView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "")(
           request,
           messages(application)
         ).toString
@@ -154,7 +233,39 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, supplementaryUnitRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+            .withFormUrlEncodedBody(("value", validAnswer))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery when the RecordCategorisationsQuery is empty for a GET" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, supplementaryUnitRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery when invalid data is submitted and RecordCategorisationsQuery is empty " in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, supplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
         val result = route(application, request).value
 

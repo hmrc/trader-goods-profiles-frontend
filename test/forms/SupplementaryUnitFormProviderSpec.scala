@@ -16,21 +16,25 @@
 
 package forms
 
-import forms.behaviours.IntFieldBehaviours
+import forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
+import generators.SupplementaryUnitAmountGenerator
+import org.scalacheck.Gen
 
-class SupplementaryUnitFormProviderSpec extends IntFieldBehaviours {
+class SupplementaryUnitFormProviderSpec extends StringFieldBehaviours with SupplementaryUnitAmountGenerator {
 
-  val form = new SupplementaryUnitFormProvider()()
+  val form                  = new SupplementaryUnitFormProvider()()
+  private val requiredKey   = "supplementaryUnit.error.required"
+  private val nonNumericKey = "supplementaryUnit.error.nonNumeric"
 
   ".value" - {
 
     val fieldName = "value"
 
-    val minimum = 0
-    val maximum = Int.MaxValue
+    val minimum = -9999999999.999999
+    val maximum = 9999999999.999999
 
-    val validDataGenerator = intsInRangeWithCommas(minimum, maximum)
+    val validDataGenerator = doublesInRange(minimum, maximum)
 
     behave like fieldThatBindsValidData(
       form,
@@ -38,25 +42,21 @@ class SupplementaryUnitFormProviderSpec extends IntFieldBehaviours {
       validDataGenerator
     )
 
-    behave like intField(
-      form,
-      fieldName,
-      nonNumericError = FormError(fieldName, "supplementaryUnit.error.nonNumeric"),
-      wholeNumberError = FormError(fieldName, "supplementaryUnit.error.wholeNumber")
-    )
+    val invalidNonNumericDataGenerator: Gen[String] = for {
+      chars <- Gen.listOfN(16, Gen.alphaChar)
+    } yield chars.mkString
 
-    behave like intFieldWithRange(
+    behave like fieldThatErrorsOnInvalidData(
       form,
       fieldName,
-      minimum = minimum,
-      maximum = maximum,
-      expectedError = FormError(fieldName, "supplementaryUnit.error.outOfRange", Seq(minimum, maximum))
+      invalidNonNumericDataGenerator,
+      FormError(fieldName, nonNumericKey)
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, "supplementaryUnit.error.required")
+      requiredError = FormError(fieldName, requiredKey)
     )
   }
 }

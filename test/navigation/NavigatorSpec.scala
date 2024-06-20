@@ -267,7 +267,7 @@ class NavigatorSpec extends SpecBase {
         val index                 = 0
         val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
         val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-        val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2), Some("some measure unit"))
         val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
 
         "to the next assessment when the answer is an exemption and at least one more assessment exists" in {
@@ -682,7 +682,7 @@ class NavigatorSpec extends SpecBase {
         val index                 = 0
         val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
         val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-        val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment1, assessment2), Some("some measure unit"))
         val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
 
         "to the Check Your Answers Page when the answer is an exemption and the next assessment has been answered" in {
@@ -788,7 +788,7 @@ class NavigatorSpec extends SpecBase {
               .set(HasSupplementaryUnitPage(testRecordId), true)
               .success
               .value
-              .set(SupplementaryUnitPage(testRecordId), 974)
+              .set(SupplementaryUnitPage(testRecordId), "974.0")
               .success
               .value
 

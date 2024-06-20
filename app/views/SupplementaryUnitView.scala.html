@@ -24,9 +24,11 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, measurementUnit: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("supplementaryUnit.title"))) {
+
+    <h1 class="govuk-heading-l">@messages("supplementaryUnit.h1")</h1>
 
     @formHelper(action = routes.SupplementaryUnitController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
@@ -37,10 +39,11 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("supplementaryUnit.heading")).asPageHeading()
+                label = Label(content = "supplementaryUnit.h1", classes = "govuk-visually-hidden")
             )
             .asNumeric()
             .withWidth(Fixed10)
+            .withHint(Hint(content = Text(measurementUnit)))
         )
 
         @govukButton(

@@ -18,13 +18,13 @@ package services
 
 import base.SpecBase
 import connectors.{GoodsRecordConnector, OttConnector}
+import models.RecordCategorisations
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
-import models.RecordCategorisations
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, reset, times, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.mvc.AnyContent
@@ -46,7 +46,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   private val mockOttResponse = OttResponse(
-    GoodsNomenclatureResponse("some id", "some comcode"),
+    GoodsNomenclatureResponse("some id", "some comcode", Some("some measure unit")),
     Seq[CategoryAssessmentRelationship](),
     Seq[IncludedElement]()
   )
@@ -68,7 +68,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockOttConnector.getCategorisationInfo(any())(any())).thenReturn(Future.successful(mockOttResponse))
+    when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(mockOttResponse))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
   }
@@ -85,7 +86,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should store category assessments if they are not present, then return successful updated answers" in {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq())
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
       val expectedRecordCategorisations = RecordCategorisations(records = Map("recordId" -> expectedCategorisationInfo))
 
       val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
@@ -96,7 +97,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector, times(1)).getCategorisationInfo(any())(any())
+        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
+          any()
+        )
       }
 
       withClue("Should call session repository to update user answers") {
@@ -105,9 +108,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "should not call for category assessments if they are already present, then return successful updated answers" in {
-      val expectedRecordCategorisations = RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq())))
+      val expectedRecordCategorisations =
+        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"))))
 
-      val userAnswers = emptyUserAnswers
+      val userAnswers                   = emptyUserAnswers
         .set(RecordCategorisationsQuery, expectedRecordCategorisations)
         .success
         .value
@@ -123,7 +127,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector, never()).getCategorisationInfo(any())(any())
+        verify(mockOttConnector, never()).getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())
       }
 
       withClue("Should call session repository to update user answers") {
@@ -168,7 +172,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should return future failed when the call to OTT fails" in {
       reset(mockOttConnector)
       val expectedException = new RuntimeException("Failed communicating with OTT")
-      when(mockOttConnector.getCategorisationInfo(any())(any()))
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.failed(expectedException))
 
       val mockDataRequest = mock[DataRequest[AnyContent]]

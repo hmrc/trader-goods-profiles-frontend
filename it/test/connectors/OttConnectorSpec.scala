@@ -16,17 +16,28 @@
 
 package connectors
 
+import base.TestConstants.{testEori, testRecordId}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.Commodity
+import models.helper.CreateRecordJourney
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Application
+import play.api.http.Status.IM_A_TEAPOT
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.test.WireMockSupport
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
+import scala.concurrent.Future
 
 class OttConnectorSpec
     extends AnyFreeSpec
@@ -35,14 +46,26 @@ class OttConnectorSpec
     with ScalaFutures
     with IntegrationPatience {
 
+  private val auditService = mock[AuditService]
+
   private lazy val app: Application =
     new GuiceApplicationBuilder()
       .configure("microservice.services.online-trade-tariff-api.url" -> wireMockUrl)
+      .overrides(bind[AuditService].toInstance(auditService))
       .build()
 
   private lazy val connector = app.injector.instanceOf[OttConnector]
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  override def beforeEach(): Unit = {
+    reset(auditService)
+
+    when(auditService.auditOttCall(any(), any(), any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(Done))
+
+    super.beforeEach()
+  }
 
   ".getCommodityCode" - {
 
@@ -61,7 +84,14 @@ class OttConnectorSpec
             )
         )
 
-        connector.getCommodityCode("123456").futureValue mustBe commodity
+        connector
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+          .futureValue mustBe commodity
+
+        withClue("must have audited the request") {
+          verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        }
+
       }
 
       "when validity end date is defined" in {
@@ -82,19 +112,15 @@ class OttConnectorSpec
             )
         )
 
-        connector.getCommodityCode("123456").futureValue mustBe commodity
+        connector
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+          .futureValue mustBe commodity
+
+        withClue("must have audited the request") {
+          verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        }
       }
 
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
-          .willReturn(serverError())
-      )
-
-      connector.getCommodityCode("123456").failed.futureValue
     }
 
     "must return a not found future when the server returns a not found" in {
@@ -104,8 +130,15 @@ class OttConnectorSpec
           .willReturn(notFound())
       )
 
-      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      val connectorFailure = connector
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .failed
+        .futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+      }
     }
 
     "must return a server error future when ott returns a 5xx status" in {
@@ -115,9 +148,78 @@ class OttConnectorSpec
           .willReturn(serverError())
       )
 
-      val connectorFailure = connector.getCommodityCode("123456").failed.futureValue
+      val connectorFailure = connector
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .failed
+        .futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+      }
     }
+
+    "must return a failed future when the server returns any other error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(status(IM_A_TEAPOT))
+      )
+
+      connector
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .failed
+        .futureValue
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+      }
+    }
+
+    "must return an exception future when json cannot be parsed at all" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(
+            ok().withBody(
+              "{\n \"description\": \"Commodity description, \"\"\n}"
+            )
+          )
+      )
+
+      val connectorFailure = connector
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .failed
+        .futureValue
+      connectorFailure.isInstanceOf[Exception] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+      }
+    }
+
+    "must return an Js exception future when json is parsable but does not match Commodity format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/commodities/123456"))
+          .willReturn(
+            ok().withBody(
+              "{\n \"description\": \"Commodity description\"\n}"
+            )
+          )
+      )
+
+      val connectorFailure = connector
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .failed
+        .futureValue
+      connectorFailure.isInstanceOf[Exception] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+      }
+    }
+
   }
 
   ".getCountries" - {
@@ -191,7 +293,8 @@ class OttConnectorSpec
                 |    "id": "54267",
                 |    "type": "goods_nomenclature",
                 |    "attributes": {
-                |      "goods_nomenclature_item_id": "9306210000"
+                |      "goods_nomenclature_item_id": "9306210000",
+                |      "supplementary_measure_unit": "1000 items (1000 p/st)"
                 |    },
                 |    "relationships": {
                 |      "applicable_category_assessments": {
@@ -262,19 +365,17 @@ class OttConnectorSpec
           )
       )
 
-      val connectorResponse = connector.getCategorisationInfo("123456").futureValue
+      val connectorResponse = connector
+        .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
+        .futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
-    }
 
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
-          .willReturn(serverError())
-      )
-
-      connector.getCategorisationInfo("123456").failed.futureValue
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
+      }
     }
 
     "must return a not found future when the server returns a not found" in {
@@ -284,8 +385,17 @@ class OttConnectorSpec
           .willReturn(notFound())
       )
 
-      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      val connectorFailure = connector
+        .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
+        .failed
+        .futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
+      }
     }
 
     "must return a server error future when ott returns a 5xx status" in {
@@ -295,8 +405,61 @@ class OttConnectorSpec
           .willReturn(serverError())
       )
 
-      val connectorFailure = connector.getCategorisationInfo("123456").failed.futureValue
+      val connectorFailure = connector
+        .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
+        .failed
+        .futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
+      }
     }
+
+    "must return a failed future when the server returns any other error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(serverError())
+      )
+
+      connector
+        .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
+        .failed
+        .futureValue
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
+      }
+    }
+
+    "must return a Js exception future when json cannot be parsed" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/ott/goods-nomenclatures/123456"))
+          .willReturn(
+            ok().withBody(
+              "{\n \"description\": \"Commodity description\",\n}"
+            )
+          )
+      )
+
+      val connectorFailure = connector
+        .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
+        .failed
+        .futureValue
+      connectorFailure.isInstanceOf[Exception] mustBe true
+
+      withClue("must have audited the request") {
+        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+          any
+        )
+      }
+    }
+
   }
 }

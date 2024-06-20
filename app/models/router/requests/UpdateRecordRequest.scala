@@ -28,7 +28,7 @@ case class UpdateRecordRequest(
   recordId: String,
   actorId: String,
   category: Option[Int],
-  supplementaryUnit: Option[Int],
+  supplementaryUnit: Option[Double],
   measurementUnit: Option[String]
 )
 
@@ -40,7 +40,7 @@ object UpdateRecordRequest {
       categoryRecord.recordId,
       categoryRecord.eori,
       Some(categoryRecord.category),
-      categoryRecord.supplementaryUnit,
+      convertToDouble(categoryRecord.supplementaryUnit),
       categoryRecord.measurementUnit
     )
 
@@ -49,7 +49,7 @@ object UpdateRecordRequest {
       (JsPath \ "recordId").read[String] and
       (JsPath \ "actorId").read[String] and
       (JsPath \ "category").readNullable[Int] and
-      (JsPath \ "supplementaryUnit").readNullable[Int] and
+      (JsPath \ "supplementaryUnit").readNullable[Double] and
       (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[UpdateRecordRequest] =
@@ -57,6 +57,9 @@ object UpdateRecordRequest {
       (JsPath \ "recordId").write[String] and
       (JsPath \ "actorId").write[String] and
       (JsPath \ "category").writeNullable[Int] and
-      (JsPath \ "supplementaryUnit").writeNullable[Int] and
+      (JsPath \ "supplementaryUnit").writeNullable[Double] and
       (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
+
+  private def convertToDouble(value: Option[String]): Option[Double] =
+    value.map(_.toDouble)
 }
