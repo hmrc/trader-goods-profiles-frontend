@@ -16,11 +16,11 @@
 
 package connectors
 
-import base.TestConstants.testEori
+import base.TestConstants.{lastUpdatedDate, page, recordsize, testEori}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.{CategoryRecord, GoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
-import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -29,6 +29,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
+import utils.GetRecordsResponseUtil
 
 import java.time.Instant
 
@@ -37,11 +38,13 @@ class GoodsRecordConnectorSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
-    with IntegrationPatience {
+    with IntegrationPatience
+    with GetRecordsResponseUtil {
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
       .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+      .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
       .build()
 
   private lazy val connector = app.injector.instanceOf[GoodsRecordConnector]
@@ -51,6 +54,8 @@ class GoodsRecordConnectorSpec
   private val xClientIdName: String = "X-Client-ID"
   private val xClientId: String     = "tgp-frontend"
   private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
+  private def getGoodsRecordsUrl    =
+    s"/trader-goods-profiles-data-store/traders/$testEori/records"
 
   private val testRecordId           = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
   private lazy val getRecordResponse = Json
@@ -229,4 +234,40 @@ class GoodsRecordConnectorSpec
       connector.getRecord(testEori, testRecordId).failed.futureValue
     }
   }
+
+  ".getRecords" - {
+
+    "must get goods records" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(getGoodsRecordsUrl))
+          .willReturn(ok().withBody(getMultipleRecordResponseData.toString()))
+      )
+
+      connector
+        .getRecords(testEori)
+        .futureValue mustBe getMultipleRecordResponseData.as[GetRecordsResponse]
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer
+        .stubFor(
+          get(urlEqualTo(getGoodsRecordsUrl))
+            .willReturn(serverError())
+        )
+      connector.getRecords(testEori).failed.futureValue
+    }
+
+    "must return a failed future when the json does not match the format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(getGoodsRecordsUrl))
+          .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+      )
+
+      connector.getRecords(testEori).failed.futureValue
+    }
+  }
+
 }

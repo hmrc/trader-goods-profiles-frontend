@@ -19,9 +19,10 @@ package connectors
 import config.Service
 import models.{CategoryRecord, GoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
-import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse}
+import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -33,12 +34,18 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ec: ExecutionContext
 ) {
   private val tgpRouterBaseUrl: Service          = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val dataStoreBaseUrl: Service          = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader                     = ("X-Client-ID", "tgp-frontend")
   private def createGoodsRecordUrl(eori: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+
+  private def getGoodsRecordsUrl(
+    eori: String
+  ) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -68,4 +75,30 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
+
+  def getRecords(
+    eori: String
+  )(implicit hc: HeaderCarrier): Future[GetRecordsResponse] =
+    httpClient
+      .get(getGoodsRecordsUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
+
+  def doRecordsExist(
+    eori: String
+  )(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] =
+    httpClient
+      .get(getGoodsRecordsUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK        =>
+            Some(response.json.as[GetRecordsResponse])
+          case NOT_FOUND =>
+            None
+
+        }
+      }
 }

@@ -108,3 +108,16 @@ if (typeof accessibleAutocomplete != 'undefined' && document.querySelector('.aut
     }
   }
 }
+
+var loadButton = document.getElementById('load-button');
+if (loadButton) {
+  loadButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById("spinning-wheel").hidden = false;
+    loadButton.style.display = 'none';
+    setTimeout(function () {
+      document.getElementById("previousMovementForm").submit();
+    }, 720000);
+  });
+}
+
