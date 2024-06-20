@@ -36,7 +36,16 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
+      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
+        mockGetRecordsResponseOption
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
@@ -47,6 +56,59 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
+        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
+      }
+    }
+    // TODO change it to actual controller (goods page without records) when available
+    "must skip page when records not available" in {
+
+      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
+      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
+        None
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[PreviousMovementRecordsView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
+      }
+    }
+
+    "must skip page when records are empty" in {
+
+      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
+      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
+        mockGetRecordsEmpty
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[PreviousMovementRecordsView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
       }
     }
 

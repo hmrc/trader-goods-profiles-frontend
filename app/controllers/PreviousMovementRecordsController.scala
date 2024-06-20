@@ -42,8 +42,18 @@ class PreviousMovementRecordsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Ok(view())
+  //TODO change navigation to proper view(instead of Journey recovery) when records not available
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    getGoodsRecordConnector.doRecordsExist(request.eori).map {
+      case Some(getGoodsRecordResponse) if getGoodsRecordResponse.goodsItemRecords.nonEmpty =>
+        Ok(view())
+
+      case Some(_) =>
+        Redirect(routes.JourneyRecoveryController.onPageLoad())
+
+      case None =>
+        Redirect(routes.JourneyRecoveryController.onPageLoad())
+    }
   }
 
   //TODO navigate to good record page once available

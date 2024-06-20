@@ -22,6 +22,7 @@ import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -83,4 +84,21 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetRecordsResponse])
+
+  def doRecordsExist(
+    eori: String
+  )(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] =
+    httpClient
+      .get(getGoodsRecordsUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK        =>
+            Some(response.json.as[GetRecordsResponse])
+          case NOT_FOUND =>
+            None
+
+        }
+      }
 }

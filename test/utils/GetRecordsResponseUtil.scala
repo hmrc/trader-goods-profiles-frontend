@@ -173,4 +173,18 @@ trait GetRecordsResponseUtil {
     pagination = mockPagination
   )
 
+  val mockGetRecordsResponseOption = Some(
+    GetRecordsResponse(
+      goodsItemRecords = Seq(mockGoodsItemRecords),
+      pagination = mockPagination
+    )
+  )
+
+  val mockGetRecordsEmpty = Some(
+    GetRecordsResponse(
+      goodsItemRecords = Seq.empty,
+      pagination = mockPagination
+    )
+  )
+
 }
