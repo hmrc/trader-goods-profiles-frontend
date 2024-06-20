@@ -21,7 +21,6 @@ import models.helper.Journey
 import models.ott.response.{CountriesResponse, OttResponse}
 import models.{Commodity, Country}
 import play.api.Configuration
-import play.api.http.Status.OK
 import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -78,7 +77,11 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
             )
             Future.successful(result)
           }
-          .recoverTotal(error => Future.failed(JsResult.Exception(error)))
+          .recoverTotal(error => {
+            auditService.auditOttCall(auditDetails, requestStartTime, Instant.now, response.status, Some(error.errors.toString()), None)
+
+            Future.failed(JsResult.Exception(error))
+          })
       }
       .recoverWith {
         case e: HttpException =>
@@ -88,11 +91,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
         case e: UpstreamErrorResponse =>
           auditService.auditOttCall(auditDetails, requestStartTime, Instant.now, e.statusCode, Some(e.message), None)
-          Future.failed(e)
-
-        case e: Exception =>
-          //E.g. Any error not directly related to the http call, e.g. Json parsing
-          auditService.auditOttCall(auditDetails, requestStartTime, Instant.now, OK, Some(e.getMessage), None)
           Future.failed(e)
 
       }
