@@ -133,6 +133,5 @@ POST        /update/:recordId/supplementary-unit-amount       controllers.Supple
 GET         /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-
-GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad
-POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch
+GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad(page: Int)
+POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)

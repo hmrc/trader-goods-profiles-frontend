@@ -75,5 +75,5 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(i
     getFromOttWithCommodityCode[OttResponse](commodityCode, ottGreenLanesUrl, "bearerToken")
 
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
-    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken").map(_.data)
+    getFromOtt[CountriesResponse](ottCountriesUrl, "bearerToken").map(_.data.sortWith(_.description < _.description))
 }

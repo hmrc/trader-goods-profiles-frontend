@@ -41,10 +41,12 @@ trait TableFluency {
   object TableRowViewModel {
 
     def apply(
-      content: Content
+      content: Content,
+      colspan: Option[Int] = None
     ): TableRow =
       TableRow(
-        content = content
+        content = content,
+        colspan = colspan
       )
 
   }

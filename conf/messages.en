@@ -365,6 +365,7 @@ goodsRecords.p1 = This is a list of goods in your TGP. If a goods record is read
 goodsRecords.p2 = When you, a haulier or other intermediary can complete the IMMI on your behalf, you should use or share the:
 goodsRecords.li1 = 'Trader reference'
 goodsRecords.li2 = 'Goods description'
+goodsRecords.p3 = You do not have any records in your records list.
 goodsRecords.label = Search by trader reference, goods description or commodity code
 goodsRecords.link1 = Create a new record
 goodsRecords.link2 = Go to homepage

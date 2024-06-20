@@ -16,11 +16,12 @@
 
 package models.router.responses
 
+import models.GoodsRecordsPagination
 import play.api.libs.json._
 
 case class GetRecordsResponse(
   goodsItemRecords: Seq[GetGoodsRecordResponse],
-  pagination: Pagination
+  pagination: GoodsRecordsPagination
 )
 
 object GetRecordsResponse {
@@ -28,7 +29,7 @@ object GetRecordsResponse {
     JsSuccess(
       GetRecordsResponse(
         (json \ "goodsItemRecords").as[Seq[GetGoodsRecordResponse]],
-        (json \ "pagination").as[Pagination]
+        (json \ "pagination").as[GoodsRecordsPagination]
       )
     )
 

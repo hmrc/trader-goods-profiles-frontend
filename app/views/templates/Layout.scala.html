@@ -30,10 +30,11 @@
     hmrcTimeoutDialog: HmrcTimeoutDialog,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcScripts: HmrcScripts,
-    betaBanner: StandardBetaBanner
+    betaBanner: StandardBetaBanner,
+    fullWidthWrapper: components.FullWidthWrapper
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -78,7 +79,7 @@
 @content = {
     @contentBlock
 
-    <div class="govuk-!-margin-top-8">
+    <div class="govuk-!-margin-top-8 govuk-grid-column-two-thirds">
         @hmrcReportTechnicalIssueHelper()
     </div>
 }
@@ -91,6 +92,7 @@
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
         phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
     )),
+    mainContentLayout = if(isFullWidth) Some(mainContent => fullWidthWrapper(mainContent)) else None,
     beforeContentBlock = Some(beforeContent),
     footerBlock        = Some(hmrcStandardFooter()),
     scriptsBlock       = Some(hmrcScripts(

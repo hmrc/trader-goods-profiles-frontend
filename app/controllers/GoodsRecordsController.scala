@@ -16,19 +16,21 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
+import models.GoodsRecordsPagination._
+import models.router.responses.GetGoodsRecordResponse
 
 import javax.inject.Inject
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.Aliases.{Pagination, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.GoodsRecordsView
+import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 import viewmodels.govuk.table._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,37 +44,44 @@ class GoodsRecordsController @Inject() (
   formProvider: GoodsRecordsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsView,
-  goodsRecordConnector: GoodsRecordConnector
+  emptyView: GoodsRecordsEmptyView,
+  goodsRecordConnector: GoodsRecordConnector,
+  ottConnector: OttConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    val preparedForm = request.userAnswers.get(GoodsRecordsPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      for {
+        goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, Some(page))
+        countries           <- ottConnector.getCountries
+      } yield
+        if (goodsRecordResponse.pagination.totalRecords != 0) {
+          val preparedForm                                                   = request.userAnswers.get(GoodsRecordsPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          implicit val goodsRecordOrdering: Ordering[GetGoodsRecordResponse] = Ordering.by(_.updatedDateTime)
 
-    goodsRecordConnector.getRecords(request.eori).map { goodsRecordResponse =>
-      val numRecordsOnPage =
-        math.ceil(goodsRecordResponse.pagination.totalRecords / goodsRecordResponse.pagination.totalPages).toInt
-      val firstRecordPos   = goodsRecordResponse.pagination.currentPage * numRecordsOnPage
-      val firstRecord      = firstRecordPos + 1
-      val lastRecord       = goodsRecordResponse.goodsItemRecords.size + firstRecordPos
-
-      Ok(
-        view(
-          preparedForm,
-          headers(),
-          goodsRecordResponse.goodsItemRecords,
-          goodsRecordResponse.pagination.totalRecords,
-          firstRecord,
-          lastRecord
-        )
-      )
-    }
+          Ok(
+            view(
+              preparedForm,
+              headers(),
+              goodsRecordResponse.goodsItemRecords.sorted,
+              goodsRecordResponse.pagination.totalRecords,
+              getFirstRecord(goodsRecordResponse),
+              getLastRecord(goodsRecordResponse),
+              countries,
+              getPagination(goodsRecordResponse.pagination),
+              page
+            )
+          )
+        } else {
+          Ok(emptyView())
+        }
   }
 
   private[this] def headers()(implicit messages: Messages): Seq[TableRow] =
@@ -97,34 +106,34 @@ class GoodsRecordsController @Inject() (
       ).withCssClass("govuk-!-font-weight-bold")
     )
 
-  def onSearch: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, headers(), Seq.empty, 0, 0, 0))),
-        value =>
-          for {
-            updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
-            _                   <- sessionRepository.set(updatedAnswers)
-            goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori)
-          } yield {
-            val numRecordsOnPage =
-              math.ceil(goodsRecordResponse.pagination.totalRecords / goodsRecordResponse.pagination.totalPages).toInt
-            val firstRecordPos   = goodsRecordResponse.pagination.currentPage * numRecordsOnPage
-            val firstRecord      = firstRecordPos + 1
-            val lastRecord       = goodsRecordResponse.goodsItemRecords.size + firstRecordPos
-
-            Ok(
+  def onSearch(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(formWithErrors, headers(), Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
+            ),
+          value =>
+            for {
+              updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
+              _                   <- sessionRepository.set(updatedAnswers)
+              goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, Some(page))
+              countries           <- ottConnector.getCountries
+            } yield Ok(
               view(
                 form.fill(value),
                 headers(),
                 goodsRecordResponse.goodsItemRecords,
                 goodsRecordResponse.pagination.totalRecords,
-                firstRecord,
-                lastRecord
+                getFirstRecord(goodsRecordResponse),
+                getLastRecord(goodsRecordResponse),
+                countries,
+                getPagination(goodsRecordResponse.pagination),
+                page
               )
             )
-          }
-      )
+        )
   }
 }

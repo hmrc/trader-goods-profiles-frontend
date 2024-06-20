@@ -34,16 +34,18 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 ) {
   private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
 
-  private val clientIdHeader                     = ("X-Client-ID", "tgp-frontend")
+  private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
+
   private def createGoodsRecordUrl(eori: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
 
-  private val dataStoreBaseUrl: Service     = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
-  private def goodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
+  private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+
+  private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -74,11 +76,25 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
 
-  def getRecords(eori: String)(implicit
+  def getRecords(
+    eori: String,
+    page: Option[Int] = None,
+    size: Option[Int] = None
+  )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] =
+  ): Future[GetRecordsResponse] = {
+
+    val pageNumber  = 1
+    val pageSize    = 10
+    val queryParams = Map(
+      "page" -> page.getOrElse(pageNumber).toString,
+      "size" -> size.getOrElse(pageSize).toString
+    )
+
     httpClient
-      .get(goodsRecordsUrl(eori))
+      .get(goodsRecordsUrl(eori, queryParams))
+      .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetRecordsResponse])
+  }
 }

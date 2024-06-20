@@ -24,13 +24,18 @@
     govukInput: GovukInput,
     govukButton: GovukButton,
     govukTable: GovukTable,
-    tableRowActionList: components.TableRowActionList
+    tableRowActionList: components.TableRowActionList,
+    boldWrapper: components.BoldWrapper,
+    govukPagination: GovukPagination
 )
 
-@(form: Form[_], headers: Seq[TableRow], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], headers: Seq[TableRow], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("goodsRecords.title"))) {
+@layout(
+    pageTitle = title(form, messages("goodsRecords.title")), isFullWidth = true
+  ) {
 
+<div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1>
 
     <p class="govuk-body">@messages("goodsRecords.p1")</p>
@@ -38,70 +43,79 @@
     <p class="govuk-body">@messages("goodsRecords.p2")</p>
 
     <ul class="govuk-body">
-      <li>@messages("goodsRecords.li1")</li>
-      <li>@messages("goodsRecords.li2")</li>
+      <li>'@messages("goodsRecords.li1")'</li>
+      <li>'@messages("goodsRecords.li2")'</li>
     </ul>
 
-    @formHelper(action = routes.GoodsRecordsController.onSearch) {
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
+        @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
+            @if(form.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummaryViewModel(form))
+            }
+            <div style="display: flex; align-items: flex-end;">
+                @govukInput(
+                    InputViewModel(
+                        field = form("value"),
+                        label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
+                    )
+                )
+
+                @govukButton(
+                    ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+                )
+            </div>
         }
+</div>
 
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("goodsRecords.label"))
-            )
-            .withWidth(Full)
-        )
+<div class="govuk-grid-column-full">
 
-        @govukButton(
-            ButtonViewModel(messages("site.search"))
-        )
-    }
-
-    <p class="govuk-body">@messages("goodsRecords.pagination", firstRecord, lastRecord, totalRecords)</p>
+        <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
 
     <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
-    @govukTable(
-        Table(
-            rows = Seq(headers) ++ goodsRecordsItems.map{
-                goodsRecord =>  Seq(
-                    TableRow(
-                        content = Text(goodsRecord.traderRef)
-                    ),
-                    TableRow(
-                        content = Text(goodsRecord.goodsDescription)
-                    ),
-                    TableRow(
-                        content = Text(goodsRecord.countryOfOrigin)
-                    ),
-                    TableRow(
-                        content = Text(goodsRecord.commodityCode)
-                    ),
-                    TableRow(
-                        content = Text(goodsRecord.adviceStatus)
-                    ),
-                    TableRow(
-                        content = HtmlContent(
-                            tableRowActionList(
-                                text1 = messages("site.change"),
-                                text2 = messages("site.remove"),
-                                visuallyHiddenContent1 = messages("goodsRecords.hidden.change"),
-                                visuallyHiddenContent2 = messages("goodsRecords.hidden.remove"),
-                                href1 = "TODO",
-                                href2 = "TODO"
+        @govukTable(
+            Table(
+                rows = Seq(headers) ++ goodsRecordsItems.map{
+                    goodsRecord =>  Seq(
+                        TableRow(
+                            content = Text(goodsRecord.traderRef)
+                        ),
+                        TableRow(
+                            content = Text(goodsRecord.goodsDescription)
+                        ),
+                        TableRow(
+                            content = Text(
+                                countries.find(_.id == goodsRecord.countryOfOrigin)
+                                    .map(_.description)
+                                    .getOrElse(goodsRecord.countryOfOrigin)
+                                )
+                        ),
+                        TableRow(
+                            content = Text(goodsRecord.commodityCode)
+                        ),
+                        TableRow(
+                            content = Text(goodsRecord.adviceStatus)
+                        ),
+                        TableRow(
+                            content = HtmlContent(
+                                tableRowActionList(
+                                    text1 = messages("site.change"),
+                                    text2 = messages("site.remove"),
+                                    visuallyHiddenContent1 = messages("goodsRecords.hidden.change"),
+                                    visuallyHiddenContent2 = messages("goodsRecords.hidden.remove"),
+                                    href1 = "TODO",
+                                    href2 = "TODO"
+                                )
                             )
                         )
                     )
-                )
-            }
+                }
+            )
         )
-    )
+
+        @govukPagination(pagination)
 
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link2")</a></p>
 
-    <p class="govuk-body"><a href="#" class="govuk-link">@messages("goodsRecords.link3", "600")</a></p>
+        <p class="govuk-body"><a href="#" class="govuk-link">@messages("goodsRecords.link3", "600")</a></p>
+</div>
 }
-
