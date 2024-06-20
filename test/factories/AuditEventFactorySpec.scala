@@ -44,12 +44,12 @@ class AuditEventFactorySpec extends SpecBase {
 
         val auditDetails = result.detail
         auditDetails.size mustBe 7
-        auditDetails("EORINumber") mustBe testEori
+        auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("isNIRMSRegistered") mustBe "true"
+        auditDetails("NIRMSRegistered") mustBe "true"
         auditDetails("NIRMSNumber") mustBe "RMS-GB-123456"
-        auditDetails("isNIPHLRegistered") mustBe "true"
+        auditDetails("NIPHLRegistered") mustBe "true"
         auditDetails("NIPHLNumber") mustBe "612345"
 
       }
@@ -66,12 +66,12 @@ class AuditEventFactorySpec extends SpecBase {
 
         val auditDetails = result.detail
         auditDetails.size mustBe 5
-        auditDetails("EORINumber") mustBe testEori
+        auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("UKIMSNumber") mustBe "XIUKIM47699357400020231115081800"
-        auditDetails("isNIRMSRegistered") mustBe "false"
+        auditDetails("NIRMSRegistered") mustBe "false"
         auditDetails.get("NIRMSNumber") mustBe None
-        auditDetails("isNIPHLRegistered") mustBe "false"
+        auditDetails("NIPHLRegistered") mustBe "false"
         auditDetails.get("NIPHLNumber") mustBe None
 
       }
