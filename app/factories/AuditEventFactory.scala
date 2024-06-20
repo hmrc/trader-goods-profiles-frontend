@@ -17,6 +17,7 @@
 package factories
 
 import models.audits._
+import models.helper.{Journey, UpdateSection}
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.OK
@@ -42,8 +43,8 @@ case class AuditEventFactory() {
       "affinityGroup" -> affinityGroup.toString,
       "UKIMSNumber"   -> traderProfile.ukimsNumber
     ) ++
-      writeOptional("NIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++
-      writeOptional("NIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber)
+      writeOptionalWithAssociatedBooleanFlag("NIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++
+      writeOptionalWithAssociatedBooleanFlag("NIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber)
 
     DataEvent(
       auditSource = auditSource,
@@ -51,6 +52,31 @@ case class AuditEventFactory() {
       tags = hc.toAuditTags(),
       detail = auditDetails
     )
+  }
+
+  def createStartManageGoodsRecordEvent(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    updateSection: Option[UpdateSection],
+    recordId: Option[String]
+  )(implicit hc: HeaderCarrier): DataEvent = {
+
+    val auditDetails = Map(
+      "journey" -> journey.toString,
+      "eori" -> eori,
+      "affinityGroup" -> affinityGroup.toString,
+    ) ++
+      writeOptional("updateSection", updateSection.map(_.toString)) ++
+      writeOptional("recordId", recordId)
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "StartManageGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+
   }
 
   def createStartCreateGoodsRecord(
@@ -193,11 +219,16 @@ case class AuditEventFactory() {
     )
   }
 
-  private def writeOptional(containsValueDescription: String, valueDescription: String, optionalValue: Option[String]) =
+  private def writeOptionalWithAssociatedBooleanFlag(booleanFlagDescription: String, valueDescription: String, optionalValue: Option[String]) =
     optionalValue
       .map { value =>
-        Map(containsValueDescription -> "true", valueDescription -> value)
+        Map(booleanFlagDescription -> "true", valueDescription -> value)
       }
-      .getOrElse(Map(containsValueDescription -> "false"))
+      .getOrElse(Map(booleanFlagDescription -> "false"))
 
+  private def writeOptional(valueDescription: String, optionalValue: Option[String]) =
+    optionalValue
+      .map { value =>
+        Map(valueDescription -> value)
+      }.getOrElse(Map.empty)
 }

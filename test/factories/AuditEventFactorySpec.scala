@@ -19,7 +19,7 @@ package factories
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
-import models.helper.{CreateRecordJourney, UpdateRecordJourney}
+import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response._
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.{NOT_FOUND, OK}
@@ -78,6 +78,45 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails.get("NIRMSNumber") mustBe None
         auditDetails("NIPHLRegistered") mustBe "false"
         auditDetails.get("NIPHLNumber") mustBe None
+
+      }
+
+    }
+
+    "create start manage goods record event" - {
+
+      "create event when its a create record" in {
+
+        val result = AuditEventFactory().createStartManageGoodsRecordEvent(testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "StartManageGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 3
+        auditDetails("journey") mustBe "CreateRecord"
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+
+      }
+
+      "create event when its an update record" in {
+
+        val result = AuditEventFactory().createStartManageGoodsRecordEvent(testEori, AffinityGroup.Individual, UpdateRecordJourney,
+          Some(CategorisationUpdate), Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"))
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "StartManageGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 5
+        auditDetails("journey") mustBe "UpdateRecord"
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+        auditDetails("updateSection") mustBe "categorisation"
+        auditDetails("recordId") mustBe "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
       }
 
