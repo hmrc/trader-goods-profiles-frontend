@@ -56,7 +56,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     reads: Reads[T]
   ): Future[T] = {
     val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
-    println(s"ccccccccc - $authToken")
     val requestStartTime = Instant.now
 
     httpClient
