@@ -334,7 +334,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val ottResponse = OttResponse(
-            goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code"),
+            goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", None),
             categoryAssessmentRelationships = Seq(
               CategoryAssessmentRelationship("assessmentId1"),
               CategoryAssessmentRelationship("assessmentId2")
