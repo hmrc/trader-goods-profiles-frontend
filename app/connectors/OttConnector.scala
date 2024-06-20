@@ -25,7 +25,7 @@ import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpException, HttpResponse, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HeaderNames, HttpException, HttpResponse, StringContextOps, UpstreamErrorResponse}
 
 import java.net.URL
 import java.time.{Instant, LocalDate}
@@ -55,11 +55,11 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     hc: HeaderCarrier,
     reads: Reads[T]
   ): Future[T] = {
-    val newHeaderCarrier = hc.copy(authorization = Some(Authorization(authToken)))
     val requestStartTime = Instant.now
 
     httpClient
-      .get(url)(newHeaderCarrier)
+      .get(url)(hc)
+      .setHeader(HeaderNames.authorisation -> authToken)
       .execute[HttpResponse]
       .flatMap { response =>
         val requestEndTime = Instant.now
