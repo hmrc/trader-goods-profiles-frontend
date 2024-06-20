@@ -252,8 +252,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         when(mockConnector.submitGoodsRecord(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
@@ -263,6 +267,11 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           intercept[RuntimeException] {
             await(route(application, request).value)
           }
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService, times(1))
+              .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+          }
+
         }
       }
 
