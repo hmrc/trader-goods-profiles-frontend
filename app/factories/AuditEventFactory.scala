@@ -31,12 +31,12 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "EORINumber"    -> traderProfile.actorId,
+      "eori"          -> traderProfile.actorId,
       "affinityGroup" -> affinityGroup.toString,
       "UKIMSNumber"   -> traderProfile.ukimsNumber
     ) ++
-      writeOptional("isNIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++
-      writeOptional("isNIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber)
+      writeOptional("NIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber) ++
+      writeOptional("NIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber)
 
     DataEvent(
       auditSource = auditSource,
