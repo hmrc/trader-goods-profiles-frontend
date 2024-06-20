@@ -57,7 +57,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
       val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockGetGoodsRecordsconnector.getRecords(any(), any(), any(), any())(any())) thenReturn Future.successful(
+      when(mockGetGoodsRecordsconnector.getRecords(any())(any())) thenReturn Future.successful(
         mockGetRecordsResponse
       )
 
@@ -79,7 +79,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         //TODO change it to actual when available
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
 
-        verify(mockGetGoodsRecordsconnector, times(1)).getRecords(any(), any(), any(), any())(any())
+        verify(mockGetGoodsRecordsconnector, times(1)).getRecords(any())(any())
       }
     }
   }

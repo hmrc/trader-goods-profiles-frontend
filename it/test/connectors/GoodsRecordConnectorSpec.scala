@@ -55,7 +55,7 @@ class GoodsRecordConnectorSpec
   private val xClientId: String     = "tgp-frontend"
   private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
   private def getGoodsRecordsUrl    =
-    s"/trader-goods-profiles-data-store/traders/$testEori/records?lastUpdatedDate=$lastUpdatedDate&page=$page&size=$recordsize"
+    s"/trader-goods-profiles-data-store/traders/$testEori/records"
 
   private val testRecordId           = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
   private lazy val getRecordResponse = Json
@@ -244,7 +244,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector
-        .getRecords(testEori, Some(lastUpdatedDate), Some(page), Some(recordsize))
+        .getRecords(testEori)
         .futureValue mustBe getMultipleRecordResponseData.as[GetRecordsResponse]
     }
 
@@ -255,7 +255,7 @@ class GoodsRecordConnectorSpec
           get(urlEqualTo(getGoodsRecordsUrl))
             .willReturn(serverError())
         )
-      connector.getRecords(testEori, Some(lastUpdatedDate), Some(page), Some(recordsize)).failed.futureValue
+      connector.getRecords(testEori).failed.futureValue
     }
 
     "must return a failed future when the json does not match the format" in {
@@ -265,7 +265,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
-      connector.getRecords(testEori, Some(lastUpdatedDate), Some(page), Some(recordsize)).failed.futureValue
+      connector.getRecords(testEori).failed.futureValue
     }
   }
 
