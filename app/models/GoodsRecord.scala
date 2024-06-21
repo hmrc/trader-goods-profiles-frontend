@@ -22,8 +22,6 @@ import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
 
-import java.time.Instant
-
 final case class GoodsRecord(
   eori: String,
   traderRef: String,

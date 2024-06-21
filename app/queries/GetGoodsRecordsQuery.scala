@@ -16,7 +16,6 @@
 
 package queries
 
-import models.RecordCategorisations
 import models.router.responses.GetRecordsResponse
 import play.api.libs.json.JsPath
 

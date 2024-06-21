@@ -38,8 +38,7 @@ class CreateRecordStartController @Inject() (
   view: CreateRecordStartView,
   navigator: Navigator,
   auditService: AuditService
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>

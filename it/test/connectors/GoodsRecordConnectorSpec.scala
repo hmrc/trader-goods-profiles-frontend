@@ -16,11 +16,11 @@
 
 package connectors
 
-import base.TestConstants.{lastUpdatedDate, page, recordsize, testEori}
+import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{CategoryRecord, Commodity, GoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
+import models.{CategoryRecord, Commodity, GoodsRecord}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers

@@ -45,12 +45,12 @@ object CategoryRecord {
         SupplementaryUnitPage(recordId)
       ),
       getMeasurementUnit(answers, recordId)
-    ).parMapN((category, supplementaryUnit, measurementUnit) =>
+    ).parMapN((categoryDetails, supplementaryUnit, measurementUnit) =>
       CategoryRecord(
         eori = eori,
         recordId = recordId,
-        category = category._1,
-        answeredAssessmentCount = category._2,
+        category = categoryDetails.category,
+        answeredAssessmentCount = categoryDetails.answeredAssessmentCount,
         supplementaryUnit = supplementaryUnit,
         measurementUnit = measurementUnit
       )
@@ -60,7 +60,9 @@ object CategoryRecord {
   private val CATEGORY_2 = 2
   private val STANDARD   = 3
 
-  private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, (Int, Int)] =
+  private case class GetCategoryReturn(category: Int, answeredAssessmentCount: Int)
+
+  private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, GetCategoryReturn] =
     answers
       .get(RecordCategorisationsQuery)
       .map { recordCategorisations =>
@@ -70,7 +72,7 @@ object CategoryRecord {
             val answeredCount = getHowManyAssessmentsWereAnswered(recordId, answers, categorisationInfo)
             val category      = chooseCategory(recordId, answers, categorisationInfo)
 
-            Right(category, answeredCount)
+            Right(GetCategoryReturn(category, answeredCount))
           }
           .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
       }
