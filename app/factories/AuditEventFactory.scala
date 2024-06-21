@@ -17,7 +17,7 @@
 package factories
 
 import models.audits._
-import models.helper.{Journey, UpdateSection}
+import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.OK
@@ -79,6 +79,82 @@ case class AuditEventFactory() {
 
   }
 
+  def createSubmitGoodsRecordEventForCreateRecord(
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    goodsRecord: GoodsRecord,
+    isUsingGoodsDescription: Boolean
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori" -> goodsRecord.eori,
+      "affinityGroup" -> affinityGroup.toString,
+      "journey" -> journey.toString,
+      "traderReference" -> goodsRecord.traderRef,
+      "goodsDescription" -> goodsRecord.goodsDescription,
+      "specifiedGoodsDescription" -> isUsingGoodsDescription.toString,
+      "countryOfOrigin" -> goodsRecord.countryOfOrigin,
+      "commodityCode" -> goodsRecord.commodity.commodityCode,
+      "commodityDescription" -> goodsRecord.commodity.description,
+      "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
+      "commodityCodeEffectiveTo" -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
+    )
+
+    createSubmitGoodsRecordEvent(auditDetails)
+  }
+
+  def createSubmitGoodsRecordEventForCategorisation(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    recordId: String,
+    categoryAssessmentsWithExemptions: Int,
+    category: Int //TODO not an int use type
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori" -> eori,
+      "affinityGroup" -> affinityGroup.toString,
+      "journey" -> journey.toString,
+      "updateSection" -> CategorisationUpdate.toString,
+      "recordId" -> recordId,
+      "categoryAssessmentsWithExemptions" -> categoryAssessmentsWithExemptions.toString,
+      "category" -> category.toString
+    )
+
+    createSubmitGoodsRecordEvent(auditDetails)
+  }
+
+  def createSubmitGoodsRecordEventForUpdateRecord(
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    goodsRecord: GoodsRecord
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori" -> goodsRecord.eori,
+      "affinityGroup" -> affinityGroup.toString,
+      "journey" -> journey.toString,
+      "updateSection" -> GoodsDetailsUpdate.toString,
+      "traderReference" -> goodsRecord.traderRef,
+      "goodsDescription" -> goodsRecord.goodsDescription,
+      "countryOfOrigin" -> goodsRecord.countryOfOrigin,
+      "commodityCode" -> goodsRecord.commodity.commodityCode,
+      "commodityDescription" -> goodsRecord.commodity.description,
+      "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
+      "commodityCodeEffectiveTo" -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
+    )
+
+    createSubmitGoodsRecordEvent(auditDetails)
+  }
+
+
+  private def createSubmitGoodsRecordEvent(auditDetails: Map[String, String])(implicit hc: HeaderCarrier) = {
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "SubmitGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
   def createStartCreateGoodsRecord(
     eori: String,
     affinityGroup: AffinityGroup
@@ -98,6 +174,7 @@ case class AuditEventFactory() {
 
   }
 
+  //TODO remove
   def createStartUpdateGoodsRecord(
     eori: String,
     affinityGroup: AffinityGroup,
@@ -121,6 +198,7 @@ case class AuditEventFactory() {
 
   }
 
+  //TODO remove
   def createFinishCreateGoodsRecord(
     affinityGroup: AffinityGroup,
     goodsRecord: GoodsRecord,
@@ -131,7 +209,7 @@ case class AuditEventFactory() {
       "EORINumber"                 -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
       "traderReference"            -> goodsRecord.traderRef,
-      "commodityCode"              -> goodsRecord.comcode,
+      "commodityCode"              -> goodsRecord.commodity.commodityCode,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityDescription"       -> commodity.description,
       "commodityCodeEffectiveFrom" -> commodity.validityStartDate.toString,

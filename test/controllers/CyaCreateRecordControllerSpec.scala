@@ -193,11 +193,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val expectedPayload = GoodsRecord(
               testEori,
               "123",
-              testCommodity.commodityCode,
+              testCommodity,
               "123",
-              "1",
-              testCommodity.validityStartDate,
-              testCommodity.validityEndDate
+              "1"
             )
 
             status(result) mustEqual SEE_OTHER

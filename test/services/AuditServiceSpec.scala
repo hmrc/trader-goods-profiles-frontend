@@ -190,11 +190,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         GoodsRecord(
           testEori,
           "trader reference",
-          testCommodity.commodityCode,
+          testCommodity,
           "trader reference",
-          "PF",
-          testCommodity.validityStartDate,
-          testCommodity.validityEndDate
+          "PF"
         )
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
@@ -227,15 +225,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
       val expectedGoodsRecord =
-        GoodsRecord(
-          testEori,
-          "trader reference",
-          testCommodity.commodityCode,
-          "goods description",
-          "PF",
-          testCommodity.validityStartDate,
-          testCommodity.validityEndDate
-        )
+        GoodsRecord(testEori, "trader reference", testCommodity, "goods description", "PF")
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
 

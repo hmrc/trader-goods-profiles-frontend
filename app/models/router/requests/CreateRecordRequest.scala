@@ -43,11 +43,11 @@ object CreateRecordRequest {
       goodsRecord.eori,
       goodsRecord.eori,
       goodsRecord.traderRef,
-      goodsRecord.comcode,
+      goodsRecord.commodity.commodityCode,
       goodsRecord.goodsDescription,
       goodsRecord.countryOfOrigin,
-      goodsRecord.comcodeEffectiveFromDate,
-      goodsRecord.comcodeEffectiveToDate
+      goodsRecord.commodity.validityStartDate,
+      goodsRecord.commodity.validityEndDate
     )
 
   implicit val reads: Reads[CreateRecordRequest] =
