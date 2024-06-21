@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package base
+package queries
 
-import java.time.Instant
+import models.RecordCategorisations
+import models.router.responses.GetRecordsResponse
+import play.api.libs.json.JsPath
 
-object TestConstants {
-  val testEori: String      = "eori"
-  val userAnswersId: String = "id"
-  val testRecordId: String  = "b0082f50-f13b-416a-8071-3bd95107d44d"
-  val lastUpdatedDate       = Instant.now().toString
-  val recordsize            = 20
-  val page                  = 1
+case object GetGoodsRecordsQuery extends Gettable[GetRecordsResponse] with Settable[GetRecordsResponse] {
+
+  override def path: JsPath = JsPath \ "getRecordsResponse"
 }

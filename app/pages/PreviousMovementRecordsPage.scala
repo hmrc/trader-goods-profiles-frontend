@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package base
+package pages
 
-import java.time.Instant
+import play.api.libs.json.JsPath
 
-object TestConstants {
-  val testEori: String      = "eori"
-  val userAnswersId: String = "id"
-  val testRecordId: String  = "b0082f50-f13b-416a-8071-3bd95107d44d"
-  val lastUpdatedDate       = Instant.now().toString
-  val recordsize            = 20
-  val page                  = 1
+case object PreviousMovementRecordsPage extends QuestionPage[String] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "previousMovementRecords"
 }

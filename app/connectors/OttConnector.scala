@@ -59,7 +59,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
     httpClient
       .get(url)(hc)
-      .setHeader(HeaderNames.authorisation -> authToken)
+      .setHeader(HeaderNames.authorisation -> s"Token $authToken")
       .execute[HttpResponse]
       .flatMap { response =>
         val requestEndTime = Instant.now

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package base
+package models.router.responses
 
-import java.time.Instant
+import play.api.libs.json._
 
-object TestConstants {
-  val testEori: String      = "eori"
-  val userAnswersId: String = "id"
-  val testRecordId: String  = "b0082f50-f13b-416a-8071-3bd95107d44d"
-  val lastUpdatedDate       = Instant.now().toString
-  val recordsize            = 20
-  val page                  = 1
+case class Condition(
+  `type`: Option[String],
+  conditionId: Option[String],
+  conditionDescription: Option[String],
+  conditionTraderText: Option[String]
+)
+
+object Condition {
+  implicit val conditionFormat: OFormat[Condition] = Json.format[Condition]
 }

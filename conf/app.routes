@@ -137,6 +137,9 @@ POST       /update/:recordId/supplementary-unit-amount       controllers.Supplem
 GET        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
+GET        /previous-movement-records                        controllers.PreviousMovementRecordsController.onPageLoad()
+POST       /previous-movement-records                        controllers.PreviousMovementRecordsController.onSubmit()
+
 GET        /update/:recordId/longer-commodity-code           controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update/:recordId/longer-commodity-code           controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update/:recordId/longer-commodity-code/check     controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)

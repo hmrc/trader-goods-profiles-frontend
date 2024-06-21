@@ -144,7 +144,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit.url)
 
             val result = route(application, request).value
 
@@ -168,7 +168,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
           val mockConnector    = mock[TraderProfileConnector]
           val mockAuditService = mock[AuditService]
-          val continueUrl      = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+          val continueUrl      = RedirectUrl(routes.ProfileSetupController.onSubmit().url)
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -200,43 +200,25 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         when(mockConnector.submitTraderProfile(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
-            .build()
-
-        running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
-
-          intercept[RuntimeException] {
-            await(route(application, request).value)
-          }
-        }
-      }
-
-      "must let the play error handler deal with an audit future failure" in {
-
-        val userAnswers = mandatoryProfileUserAnswers
-
-        val mockConnector = mock[TraderProfileConnector]
-        when(mockConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
-
         val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditProfileSetUp(any(), any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
+        when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
             .overrides(bind[AuditService].toInstance(mockAuditService))
+            .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
-
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit.url)
           intercept[RuntimeException] {
             await(route(application, request).value)
           }
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService, times(1))
+              .auditProfileSetUp(any(), any())(any())
+          }
+
         }
       }
 
@@ -245,7 +227,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit.url)
 
           val result = route(application, request).value
 
