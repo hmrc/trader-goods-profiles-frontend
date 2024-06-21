@@ -92,26 +92,6 @@ class CreateRecordStartControllerSpec extends SpecBase {
         }
       }
 
-      "must let the play error handler deal with an audit future failure" in {
-
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditStartCreateGoodsRecord(any(), any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("Audit failed")))
-
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .build()
-
-        running(application) {
-          val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
-
-          intercept[RuntimeException] {
-            await(route(application, request).value)
-          }
-        }
-      }
-
     }
   }
 }

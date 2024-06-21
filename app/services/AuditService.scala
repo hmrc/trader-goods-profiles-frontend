@@ -51,7 +51,8 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   def auditStartCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup)(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, CreateRecordJourney, None, None)
+    val event =
+      auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, CreateRecordJourney, None, None)
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"StartCreateGoodsRecord audit event status: $auditResult")
@@ -84,11 +85,45 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
   }
 
-  def auditStartUpdateGoodsRecord(eori: String, affinityGroup: AffinityGroup, updateSection: UpdateSection, recordId: String)(
-    implicit hc: HeaderCarrier
+  def auditFinishCategorisation(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    recordId: String,
+    categoryAssessmentsWithExemptions: Int,
+    category: Int
+  )(implicit hc: HeaderCarrier): Future[Done] = {
+
+    val event = auditEventFactory.createSubmitGoodsRecordEventForCategorisation(
+      eori,
+      affinityGroup,
+      UpdateRecordJourney,
+      recordId,
+      categoryAssessmentsWithExemptions,
+      category
+    )
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"SubmitGoodsRecordEvent audit event status: $auditResult")
+      Done
+    }
+
+  }
+
+  def auditStartUpdateGoodsRecord(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    updateSection: UpdateSection,
+    recordId: String
+  )(implicit
+    hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, UpdateRecordJourney,
-      Some(updateSection), Some(recordId))
+    val event = auditEventFactory.createStartManageGoodsRecordEvent(
+      eori,
+      affinityGroup,
+      UpdateRecordJourney,
+      Some(updateSection),
+      Some(recordId)
+    )
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"StartUpdateGoodsRecord audit event status: $auditResult")

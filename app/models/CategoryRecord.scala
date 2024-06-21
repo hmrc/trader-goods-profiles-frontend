@@ -27,6 +27,7 @@ final case class CategoryRecord(
   eori: String,
   recordId: String,
   category: Int,
+  answeredAssessmentCount: Int,
   supplementaryUnit: Option[String] = None,
   measurementUnit: Option[String] = None
 )
@@ -48,7 +49,8 @@ object CategoryRecord {
       CategoryRecord(
         eori = eori,
         recordId = recordId,
-        category = category,
+        category = category._1,
+        answeredAssessmentCount = category._2,
         supplementaryUnit = supplementaryUnit,
         measurementUnit = measurementUnit
       )
@@ -58,20 +60,23 @@ object CategoryRecord {
   private val CATEGORY_2 = 2
   private val STANDARD   = 3
 
-  def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Int] =
+  private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, (Int, Int)] =
     answers
       .get(RecordCategorisationsQuery)
       .map { recordCategorisations =>
         recordCategorisations.records
           .get(recordId)
           .map { categorisationInfo =>
-            Right(chooseCategory(recordId, answers, categorisationInfo))
+            val answeredCount = getHowManyAssessmentsWereAnswered(recordId, answers, categorisationInfo)
+            val category      = chooseCategory(recordId, answers, categorisationInfo)
+
+            Right(category, answeredCount)
           }
           .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
       }
       .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
 
-  def chooseCategory2Or3(
+  private def chooseCategory2Or3(
     recordId: String,
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
@@ -88,7 +93,7 @@ object CategoryRecord {
     }
   }
 
-  def chooseCategory(
+  private def chooseCategory(
     recordId: String,
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
@@ -106,6 +111,15 @@ object CategoryRecord {
       chooseCategory2Or3(recordId, answers, categorisationInfo)
     }
   }
+
+  private def getHowManyAssessmentsWereAnswered(
+    recordId: String,
+    answers: UserAnswers,
+    categorisationInfo: CategorisationInfo
+  ): Int =
+    categorisationInfo.categoryAssessments.zipWithIndex
+      .map(assessment => answers.get(AssessmentPage(recordId, assessment._2)))
+      .count(optionalAnswer => optionalAnswer.isDefined)
 
   private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
     answers

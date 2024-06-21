@@ -63,9 +63,9 @@ case class AuditEventFactory() {
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     val auditDetails = Map(
-      "journey" -> journey.toString,
-      "eori" -> eori,
-      "affinityGroup" -> affinityGroup.toString,
+      "journey"       -> journey.toString,
+      "eori"          -> eori,
+      "affinityGroup" -> affinityGroup.toString
     ) ++
       writeOptional("updateSection", updateSection.map(_.toString)) ++
       writeOptional("recordId", recordId)
@@ -86,17 +86,17 @@ case class AuditEventFactory() {
     isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori" -> goodsRecord.eori,
-      "affinityGroup" -> affinityGroup.toString,
-      "journey" -> journey.toString,
-      "traderReference" -> goodsRecord.traderRef,
-      "goodsDescription" -> goodsRecord.goodsDescription,
-      "specifiedGoodsDescription" -> isUsingGoodsDescription.toString,
-      "countryOfOrigin" -> goodsRecord.countryOfOrigin,
-      "commodityCode" -> goodsRecord.commodity.commodityCode,
-      "commodityDescription" -> goodsRecord.commodity.description,
+      "eori"                       -> goodsRecord.eori,
+      "affinityGroup"              -> affinityGroup.toString,
+      "journey"                    -> journey.toString,
+      "traderReference"            -> goodsRecord.traderRef,
+      "goodsDescription"           -> goodsRecord.goodsDescription,
+      "specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
+      "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
+      "commodityCode"              -> goodsRecord.commodity.commodityCode,
+      "commodityDescription"       -> goodsRecord.commodity.description,
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo" -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
+      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
 
     createSubmitGoodsRecordEvent(auditDetails)
@@ -111,13 +111,13 @@ case class AuditEventFactory() {
     category: Int //TODO not an int use type
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori" -> eori,
-      "affinityGroup" -> affinityGroup.toString,
-      "journey" -> journey.toString,
-      "updateSection" -> CategorisationUpdate.toString,
-      "recordId" -> recordId,
+      "eori"                              -> eori,
+      "affinityGroup"                     -> affinityGroup.toString,
+      "journey"                           -> journey.toString,
+      "updateSection"                     -> CategorisationUpdate.toString,
+      "recordId"                          -> recordId,
       "categoryAssessmentsWithExemptions" -> categoryAssessmentsWithExemptions.toString,
-      "category" -> category.toString
+      "category"                          -> category.toString
     )
 
     createSubmitGoodsRecordEvent(auditDetails)
@@ -129,31 +129,29 @@ case class AuditEventFactory() {
     goodsRecord: GoodsRecord
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori" -> goodsRecord.eori,
-      "affinityGroup" -> affinityGroup.toString,
-      "journey" -> journey.toString,
-      "updateSection" -> GoodsDetailsUpdate.toString,
-      "traderReference" -> goodsRecord.traderRef,
-      "goodsDescription" -> goodsRecord.goodsDescription,
-      "countryOfOrigin" -> goodsRecord.countryOfOrigin,
-      "commodityCode" -> goodsRecord.commodity.commodityCode,
-      "commodityDescription" -> goodsRecord.commodity.description,
+      "eori"                       -> goodsRecord.eori,
+      "affinityGroup"              -> affinityGroup.toString,
+      "journey"                    -> journey.toString,
+      "updateSection"              -> GoodsDetailsUpdate.toString,
+      "traderReference"            -> goodsRecord.traderRef,
+      "goodsDescription"           -> goodsRecord.goodsDescription,
+      "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
+      "commodityCode"              -> goodsRecord.commodity.commodityCode,
+      "commodityDescription"       -> goodsRecord.commodity.description,
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo" -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
+      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
 
     createSubmitGoodsRecordEvent(auditDetails)
   }
 
-
-  private def createSubmitGoodsRecordEvent(auditDetails: Map[String, String])(implicit hc: HeaderCarrier) = {
+  private def createSubmitGoodsRecordEvent(auditDetails: Map[String, String])(implicit hc: HeaderCarrier) =
     DataEvent(
       auditSource = auditSource,
       auditType = "SubmitGoodsRecord",
       tags = hc.toAuditTags(),
       detail = auditDetails
     )
-  }
 
   def createValidateCommodityCodeEvent(
     auditData: OttAuditData,
@@ -226,7 +224,11 @@ case class AuditEventFactory() {
     )
   }
 
-  private def writeOptionalWithAssociatedBooleanFlag(booleanFlagDescription: String, valueDescription: String, optionalValue: Option[String]) =
+  private def writeOptionalWithAssociatedBooleanFlag(
+    booleanFlagDescription: String,
+    valueDescription: String,
+    optionalValue: Option[String]
+  )                                                                                  =
     optionalValue
       .map { value =>
         Map(booleanFlagDescription -> "true", valueDescription -> value)
@@ -237,5 +239,6 @@ case class AuditEventFactory() {
     optionalValue
       .map { value =>
         Map(valueDescription -> value)
-      }.getOrElse(Map.empty)
+      }
+      .getOrElse(Map.empty)
 }

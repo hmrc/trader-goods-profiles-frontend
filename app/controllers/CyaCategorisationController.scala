@@ -23,10 +23,13 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.Scenario
 import models.{CategorisationAnswers, CategoryRecord, ValidationError}
+import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.RecordCategorisationsQuery
+import services.AuditService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
@@ -41,7 +44,8 @@ class CyaCategorisationController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
-  goodsRecordConnector: GoodsRecordConnector
+  goodsRecordConnector: GoodsRecordConnector,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -94,6 +98,14 @@ class CyaCategorisationController @Inject() (
     implicit request =>
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishCategorisation(
+            request.eori,
+            request.affinityGroup,
+            recordId,
+            model.answeredAssessmentCount,
+            model.category
+          )
+
           goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
             Redirect(
               routes.CategorisationResultController.onPageLoad(recordId, Scenario.getScenario(model))

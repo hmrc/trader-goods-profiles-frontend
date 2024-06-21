@@ -55,7 +55,7 @@ class CategoryGuidanceController @Inject() (
       }
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       auditService
         .auditStartUpdateGoodsRecord(
@@ -65,8 +65,7 @@ class CategoryGuidanceController @Inject() (
           recordId
         )
 
-      Future.successful(
-        Redirect(routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex).url)
-      )
+      Redirect(routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex).url)
+
   }
 }

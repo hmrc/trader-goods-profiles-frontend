@@ -109,7 +109,8 @@ class GoodsRecordConnectorSpec
     val goodsRecord = GoodsRecord(
       testEori,
       "1",
-      Commodity("2", "desc", instant, None),      "3",
+      Commodity("2", "desc", instant, None),
+      "3",
       "4"
     )
 
@@ -157,6 +158,7 @@ class GoodsRecordConnectorSpec
       eori = testEori,
       recordId = testRecordId,
       category = 1,
+      answeredAssessmentCount = 3,
       measurementUnit = Some("1"),
       supplementaryUnit = Some("123.123")
     )

@@ -124,7 +124,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val result = await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
 
@@ -132,7 +133,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       withClue("Should have supplied the sensible details to the factory to create the event") {
         verify(mockAuditFactory, times(1))
-          .createStartManageGoodsRecordEvent(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(CreateRecordJourney), any(), any())(any())
+          .createStartManageGoodsRecordEvent(
+            eqTo(testEori),
+            eqTo(AffinityGroup.Individual),
+            eqTo(CreateRecordJourney),
+            any(),
+            any()
+          )(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -147,7 +154,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val result = await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
 
@@ -155,7 +163,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       withClue("Should have supplied sensible details to the factory to create the event") {
         verify(mockAuditFactory, times(1))
-          .createStartManageGoodsRecordEvent(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(CreateRecordJourney), any(), any())(any())
+          .createStartManageGoodsRecordEvent(
+            eqTo(testEori),
+            eqTo(AffinityGroup.Individual),
+            eqTo(CreateRecordJourney),
+            any(),
+            any()
+          )(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -183,7 +197,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
       val expectedGoodsRecord =
@@ -221,7 +236,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
       val expectedGoodsRecord =
@@ -289,7 +305,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val result =
         await(
@@ -325,7 +342,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val result =
         await(

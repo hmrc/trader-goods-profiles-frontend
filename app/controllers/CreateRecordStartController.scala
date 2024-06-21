@@ -46,9 +46,9 @@ class CreateRecordStartController @Inject() (
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    auditService
-      .auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
-      .map(_ => Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers)))
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    auditService.auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
+
+    Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers))
   }
 }
