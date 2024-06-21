@@ -20,6 +20,7 @@ import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
+import models.helper.{CreateRecordJourney, UpdateRecordJourney, UpdateSection}
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
@@ -50,7 +51,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   def auditStartCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup)(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createStartCreateGoodsRecord(eori, affinityGroup)
+    val event = auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, CreateRecordJourney, None, None)
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"StartCreateGoodsRecord audit event status: $auditResult")
@@ -64,10 +65,10 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
     val buildEvent = (
       Right(affinityGroup),
+      Right(CreateRecordJourney),
       GoodsRecord.build(userAnswers, eori),
-      userAnswers.getPageValue(CommodityQuery),
       userAnswers.getPageValue(UseTraderReferencePage).map(!_)
-    ).parMapN(auditEventFactory.createFinishCreateGoodsRecord)
+    ).parMapN(auditEventFactory.createSubmitGoodsRecordEventForCreateRecord)
 
     buildEvent match {
       case Right(event) =>
@@ -83,10 +84,11 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
   }
 
-  def auditStartUpdateGoodsRecord(eori: String, affinityGroup: AffinityGroup, updateSection: String, recordId: String)(
+  def auditStartUpdateGoodsRecord(eori: String, affinityGroup: AffinityGroup, updateSection: UpdateSection, recordId: String)(
     implicit hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createStartUpdateGoodsRecord(eori, affinityGroup, updateSection, recordId)
+    val event = auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, UpdateRecordJourney,
+      Some(updateSection), Some(recordId))
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"StartUpdateGoodsRecord audit event status: $auditResult")

@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions._
 import models.NormalMode
+import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CommodityQuery
@@ -60,7 +61,7 @@ class CategoryGuidanceController @Inject() (
         .auditStartUpdateGoodsRecord(
           request.eori,
           request.affinityGroup,
-          "categorisation",
+          CategorisationUpdate,
           recordId
         )
 
