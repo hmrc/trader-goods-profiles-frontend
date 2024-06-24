@@ -16,8 +16,10 @@
 
 @this()
 
-@(content: Html)
+@(contentBlock: Html)
 
 <div class="govuk-grid-row">
- @content
+ <div class="govuk-grid-column-full">
+  @contentBlock
+ </div>
 </div>

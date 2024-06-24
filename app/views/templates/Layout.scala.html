@@ -17,6 +17,7 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import views.html.helper.CSPNonce
+@import views.html.components.fullWidthMainContent
 
 @this(
     appConfig: FrontendAppConfig,
@@ -31,7 +32,8 @@
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcScripts: HmrcScripts,
     betaBanner: StandardBetaBanner,
-    fullWidthWrapper: components.FullWidthWrapper
+    twoThirdsMainContent: TwoThirdsMainContent,
+    fullWidthMainContent: fullWidthMainContent
 )
 
 @(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
@@ -80,9 +82,15 @@
 @content = {
     @contentBlock
 
-    <div class="govuk-!-margin-top-8 govuk-grid-column-two-thirds">
-        @hmrcReportTechnicalIssueHelper()
-    </div>
+    @if(isFullWidth) {
+        <div class="govuk-grid-column-full govuk-!-margin-top-8">
+            @hmrcReportTechnicalIssueHelper()
+        </div>
+    } else {
+        <div class="govuk-!-margin-top-8">
+            @hmrcReportTechnicalIssueHelper()
+        </div>
+    }
 }
 
 @govukLayout(
@@ -93,7 +101,7 @@
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
         phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
     )),
-    mainContentLayout = if(isFullWidth) Some(mainContent => fullWidthWrapper(mainContent)) else None,
+    mainContentLayout = Some(if(isFullWidth) fullWidthMainContent(_) else twoThirdsMainContent(_)),
     beforeContentBlock = Some(beforeContent),
     footerBlock        = Some(hmrcStandardFooter()),
     scriptsBlock       = Some(hmrcScripts(
