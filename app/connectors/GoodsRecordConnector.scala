@@ -120,10 +120,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK        =>
+          case OK =>
             Some(response.json.as[GetRecordsResponse])
-          case NOT_FOUND =>
-            None
 
         }
       }

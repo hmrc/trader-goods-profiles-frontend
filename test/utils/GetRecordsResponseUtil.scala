@@ -119,6 +119,23 @@ trait GetRecordsResponseUtil {
          |}
          |""".stripMargin)
 
+  def getEmptyResponseData: JsValue =
+    Json.parse(s"""
+                  |{
+                  |"goodsItemRecords":
+                  |[
+                  |],
+                  |"pagination":
+                  | {
+                  |   "totalRecords": 2,
+                  |   "currentPage": 0,
+                  |   "totalPages": 1,
+                  |   "nextPage": null,
+                  |   "prevPage": null
+                  | }
+                  |}
+                  |""".stripMargin)
+
   val mockAssessment: Assessment = Assessment(
     assessmentId = Some("abc123"),
     primaryCategory = Some(1),

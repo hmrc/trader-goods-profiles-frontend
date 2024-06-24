@@ -60,30 +60,6 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
       }
     }
 
-    "must skip page when records not available" in {
-
-      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
-        None
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(1).url
-        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
-      }
-    }
-
     "must skip page when records are empty" in {
 
       val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]

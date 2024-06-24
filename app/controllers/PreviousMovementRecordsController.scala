@@ -50,9 +50,6 @@ class PreviousMovementRecordsController @Inject() (
 
       case Some(_) =>
         Redirect(routes.GoodsRecordsController.onPageLoad(1))
-
-      case None =>
-        Redirect(routes.GoodsRecordsController.onPageLoad(1))
     }
   }
 

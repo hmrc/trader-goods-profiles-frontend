@@ -20,24 +20,22 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
-import models.{Country, GoodsRecordsPagination, UserAnswers}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
+import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.GoodsRecordsPage
 import play.api.i18n.Messages
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Pagination, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
-import views.html.GoodsRecordsView
-import views.html.GoodsRecordsEmptyView
 import viewmodels.govuk.table._
+import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -402,5 +400,100 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
+
+    "must return OK and the correct view for a GET with records on a middle page" in {
+
+      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+      val middlePageResponse       = response.copy(
+        pagination = GoodsRecordsPagination(10, 2, 4, Some(3), Some(1))
+      )
+
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(2)), any())(any())) thenReturn Future
+        .successful(middlePageResponse)
+
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        Seq(Country("EC", "Ecuador"))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.GoodsRecordsController.onPageLoad(2).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GoodsRecordsView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          form,
+          headers()(messages(application)),
+          middlePageResponse.goodsItemRecords,
+          10,
+          3,
+          5,
+          Seq(Country("EC", "Ecuador")),
+          GoodsRecordsPagination.getPagination(middlePageResponse.pagination),
+          2
+        )(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET with records on the last page" in {
+
+      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+      val lastPageResponse         = response.copy(
+        pagination = GoodsRecordsPagination(10, 4, 4, None, Some(3))
+      )
+
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(4)), any())(any())) thenReturn Future
+        .successful(lastPageResponse)
+
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        Seq(Country("EC", "Ecuador"))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.GoodsRecordsController.onPageLoad(4).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GoodsRecordsView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          form,
+          headers()(messages(application)),
+          lastPageResponse.goodsItemRecords,
+          10,
+          7,
+          9,
+          Seq(Country("EC", "Ecuador")),
+          GoodsRecordsPagination.getPagination(lastPageResponse.pagination),
+          4
+        )(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
   }
 }

@@ -16,11 +16,11 @@
 
 package connectors
 
-import base.TestConstants.{lastUpdatedDate, page, recordSize, testEori}
+import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{CategoryRecord, GoodsRecord, GoodsRecordsPagination}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
+import models.{CategoryRecord, GoodsRecord, GoodsRecordsPagination}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -472,6 +472,42 @@ class GoodsRecordConnectorSpec
 
       connector.getAllRecords(testEori).failed.futureValue
     }
+  }
+
+  ".doRecordsExist" - {
+
+    "must check if goods records exist" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(getGoodsRecordsUrl))
+          .willReturn(ok().withBody(getMultipleRecordResponseData.toString()))
+      )
+
+      connector
+        .doRecordsExist(testEori)
+        .futureValue mustBe Some(getMultipleRecordResponseData.as[GetRecordsResponse])
+    }
+
+    "must check if goods not found for the eori" in {
+
+      wireMockServer
+        .stubFor(
+          get(urlEqualTo(getGoodsRecordsUrl))
+            .willReturn(serverError())
+        )
+      connector.doRecordsExist(testEori).failed.futureValue
+    }
+
+    "must check if goods records response is empty for the eori" in {
+
+      wireMockServer
+        .stubFor(
+          get(urlEqualTo(getGoodsRecordsUrl))
+            .willReturn(ok().withBody(getEmptyResponseData.toString()))
+        )
+      connector.doRecordsExist(testEori).futureValue mustBe Some(getEmptyResponseData.as[GetRecordsResponse])
+    }
+
   }
 
 }
