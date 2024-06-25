@@ -22,16 +22,12 @@ import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
 
-import java.time.Instant
-
 final case class GoodsRecord(
   eori: String,
   traderRef: String,
-  comcode: String,
+  commodity: Commodity,
   goodsDescription: String,
-  countryOfOrigin: String,
-  comcodeEffectiveFromDate: Instant,
-  comcodeEffectiveToDate: Option[Instant]
+  countryOfOrigin: String
 )
 
 object GoodsRecord {
@@ -49,11 +45,9 @@ object GoodsRecord {
       GoodsRecord(
         eori,
         traderReference,
-        commodity.commodityCode,
+        commodity,
         goodsDescription,
-        countryOfOrigin,
-        commodity.validityStartDate,
-        commodity.validityEndDate
+        countryOfOrigin
       )
     )
 

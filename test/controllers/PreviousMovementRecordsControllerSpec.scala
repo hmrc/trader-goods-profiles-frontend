@@ -78,8 +78,6 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[PreviousMovementRecordsView]
-
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
@@ -103,8 +101,6 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[PreviousMovementRecordsView]
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url

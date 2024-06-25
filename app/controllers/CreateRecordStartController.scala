@@ -38,17 +38,16 @@ class CreateRecordStartController @Inject() (
   view: CreateRecordStartView,
   navigator: Navigator,
   auditService: AuditService
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    auditService
-      .auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
-      .map(_ => Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers)))
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    auditService.auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
+
+    Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers))
   }
 }

@@ -28,7 +28,7 @@ final case class Country(
 
 object Country {
 
-  def selectItems(countries: Seq[Country])(implicit messages: Messages): Seq[SelectItem] =
+  def selectItems(countries: Seq[Country]): Seq[SelectItem] =
     SelectItem(value = None, text = "") +:
       countries.map { data =>
         SelectItemViewModel(
