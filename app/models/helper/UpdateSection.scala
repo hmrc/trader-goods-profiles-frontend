@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package queries
+package models.helper
 
-import models.router.responses.GetRecordsResponse
-import play.api.libs.json.JsPath
+sealed trait UpdateSection
 
-case object GetGoodsRecordsQuery extends Gettable[GetRecordsResponse] with Settable[GetRecordsResponse] {
+case object CategorisationUpdate extends UpdateSection {
+  override def toString: String = "categorisation"
+}
 
-  override def path: JsPath = JsPath \ "getRecordsResponse"
+case object GoodsDetailsUpdate extends UpdateSection {
+  override def toString: String = "goodsDetails"
 }

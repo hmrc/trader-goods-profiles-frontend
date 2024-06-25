@@ -36,9 +36,9 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ec: ExecutionContext
 ) {
 
-  private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
-  private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
-
+  private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
+  private val authToken: String                        = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
+  private val useProxy: Boolean                        = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
   private def ottCommoditiesUrl(commodityCode: String) =
     url"$baseUrl/xi/api/v2/commodities/$commodityCode"
 
@@ -57,9 +57,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ): Future[T] = {
     val requestStartTime = Instant.now
 
-    httpClient
+    val request        = httpClient
       .get(url)(hc)
       .setHeader(HeaderNames.authorisation -> s"Token $authToken")
+
+    val updatedRequest = if (useProxy) request.withProxy else request
+
+    updatedRequest
       .execute[HttpResponse]
       .flatMap { response =>
         val requestEndTime = Instant.now

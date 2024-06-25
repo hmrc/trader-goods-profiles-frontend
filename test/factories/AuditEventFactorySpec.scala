@@ -19,7 +19,7 @@ package factories
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
-import models.helper.{CreateRecordJourney, UpdateRecordJourney}
+import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response._
 import models.{Commodity, GoodsRecord, TraderProfile}
 import play.api.http.Status.{NOT_FOUND, OK}
@@ -83,93 +83,200 @@ class AuditEventFactorySpec extends SpecBase {
 
     }
 
-    "create start create goods record" - {
+    "create start manage goods record event" - {
 
-      "create event" in {
+      "create event when journey is create record" in {
 
-        val result = AuditEventFactory().createStartCreateGoodsRecord(testEori, AffinityGroup.Individual)
+        val result = AuditEventFactory()
+          .createStartManageGoodsRecordEvent(testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
-        result.auditType mustBe "StartCreateGoodsRecord"
+        result.auditType mustBe "StartManageGoodsRecord"
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 2
-        auditDetails("EORINumber") mustBe testEori
+        auditDetails.size mustBe 3
+        auditDetails("journey") mustBe "CreateRecord"
+        auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
+
+      }
+
+      "create event when journey is update record" in {
+
+        val result = AuditEventFactory().createStartManageGoodsRecordEvent(
+          testEori,
+          AffinityGroup.Individual,
+          UpdateRecordJourney,
+          Some(CategorisationUpdate),
+          Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f")
+        )
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "StartManageGoodsRecord"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 5
+        auditDetails("journey") mustBe "UpdateRecord"
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+        auditDetails("updateSection") mustBe "categorisation"
+        auditDetails("recordId") mustBe "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
       }
 
     }
 
-    "create finish create goods record" - {
+    "create submit goods record event" - {
 
-      "create event when all optional fields populated" in {
+      "create event when journey is creating a goods record" - {
 
-        val effectiveFrom = Instant.now
-        val effectiveTo   = effectiveFrom.plusSeconds(99)
+        "and specified goods description and there is an effective-to date" in {
 
-        val result = AuditEventFactory().createFinishCreateGoodsRecord(
-          AffinityGroup.Organisation,
-          GoodsRecord(
-            testEori,
-            "trader reference",
-            "030821",
-            "goods description",
-            "AG",
-            Instant.now,
-            Some(Instant.now)
-          ),
-          Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo)),
-          isUsingGoodsDescription = true
-        )
+          val effectiveFrom = Instant.now
+          val effectiveTo   = effectiveFrom.plusSeconds(99)
+          val commodity     = Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo))
 
-        result.auditSource mustBe "trader-goods-profiles-frontend"
-        result.auditType mustBe "FinishCreateGoodsRecord"
-        result.tags.isEmpty mustBe false
+          val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
+            AffinityGroup.Organisation,
+            CreateRecordJourney,
+            GoodsRecord(
+              testEori,
+              "trader reference",
+              commodity,
+              "goods description",
+              "AG"
+            ),
+            isUsingGoodsDescription = true
+          )
 
-        val auditDetails = result.detail
-        auditDetails.size mustBe 10
-        auditDetails("EORINumber") mustBe testEori
-        auditDetails("affinityGroup") mustBe "Organisation"
-        auditDetails("traderReference") mustBe "trader reference"
-        auditDetails("specifiedGoodsDescription") mustBe "true"
-        auditDetails("goodsDescription") mustBe "goods description"
-        auditDetails("countryOfOrigin") mustBe "AG"
-        auditDetails("commodityDescription") mustBe "Sea urchins"
-        auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
-        auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "SubmitGoodsRecord"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = result.detail
+          auditDetails.size mustBe 11
+          auditDetails("journey") mustBe "CreateRecord"
+          auditDetails("eori") mustBe testEori
+          auditDetails("affinityGroup") mustBe "Organisation"
+          auditDetails("traderReference") mustBe "trader reference"
+          auditDetails("specifiedGoodsDescription") mustBe "true"
+          auditDetails("goodsDescription") mustBe "goods description"
+          auditDetails("countryOfOrigin") mustBe "AG"
+          auditDetails("commodityCode") mustBe "030821"
+          auditDetails("commodityDescription") mustBe "Sea urchins"
+          auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
+          auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
+
+        }
+
+        "and not specified goods description" in {
+
+          val effectiveFrom = Instant.now
+          val commodity     = Commodity("030821", "Sea urchins", effectiveFrom, None)
+
+          val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
+            AffinityGroup.Organisation,
+            CreateRecordJourney,
+            GoodsRecord(
+              testEori,
+              "trader reference",
+              commodity,
+              "trader reference",
+              "AG"
+            ),
+            isUsingGoodsDescription = false
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "SubmitGoodsRecord"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = result.detail
+          auditDetails.size mustBe 11
+          auditDetails("journey") mustBe "CreateRecord"
+          auditDetails("eori") mustBe testEori
+          auditDetails("affinityGroup") mustBe "Organisation"
+          auditDetails("traderReference") mustBe "trader reference"
+          auditDetails("specifiedGoodsDescription") mustBe "false"
+          auditDetails("goodsDescription") mustBe "trader reference"
+          auditDetails("countryOfOrigin") mustBe "AG"
+          auditDetails("commodityCode") mustBe "030821"
+          auditDetails("commodityDescription") mustBe "Sea urchins"
+          auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
+          auditDetails("commodityCodeEffectiveTo") mustBe "null"
+
+        }
+
       }
 
-      "create event when optional fields are not defined" in {
+      "create event when journey is updating a goods record" - {
 
-        val effectiveFrom = Instant.now
+        "and update is for categorisation" in {
 
-        val result = AuditEventFactory().createFinishCreateGoodsRecord(
-          AffinityGroup.Organisation,
-          GoodsRecord(
+          val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
             testEori,
-            "trader reference",
-            "030821",
-            "trader reference",
-            "AG",
-            Instant.now,
-            Some(Instant.now)
-          ),
-          Commodity("030821", "Sea urchins", effectiveFrom, None),
-          isUsingGoodsDescription = false
-        )
+            AffinityGroup.Organisation,
+            UpdateRecordJourney,
+            testRecordId,
+            2,
+            1
+          )
 
-        result.auditSource mustBe "trader-goods-profiles-frontend"
-        result.auditType mustBe "FinishCreateGoodsRecord"
-        result.tags.isEmpty mustBe false
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "SubmitGoodsRecord"
+          result.tags.isEmpty mustBe false
 
-        val auditDetails = result.detail
-        auditDetails.size mustBe 10
-        auditDetails("specifiedGoodsDescription") mustBe "false"
-        auditDetails("goodsDescription") mustBe "trader reference"
-        auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
-        auditDetails("commodityCodeEffectiveTo") mustBe "null"
+          val auditDetails = result.detail
+          auditDetails.size mustBe 7
+          auditDetails("journey") mustBe "UpdateRecord"
+          auditDetails("updateSection") mustBe "categorisation"
+          auditDetails("eori") mustBe testEori
+          auditDetails("affinityGroup") mustBe "Organisation"
+          auditDetails("recordId") mustBe testRecordId
+          auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+          auditDetails("category") mustBe "1"
+        }
+
+        "and update is for goods details" in {
+
+          val effectiveFrom = Instant.now
+          val effectiveTo   = effectiveFrom.plusSeconds(99)
+          val commodity     = Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo))
+
+          val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateRecord(
+            AffinityGroup.Organisation,
+            CreateRecordJourney,
+            GoodsRecord(
+              testEori,
+              "trader reference",
+              commodity,
+              "goods description",
+              "AG"
+            )
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "SubmitGoodsRecord"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = result.detail
+          auditDetails.size mustBe 11
+          auditDetails("journey") mustBe "CreateRecord"
+          auditDetails("updateSection") mustBe "goodsDetails"
+          auditDetails("eori") mustBe testEori
+          auditDetails("affinityGroup") mustBe "Organisation"
+          auditDetails("traderReference") mustBe "trader reference"
+          auditDetails("goodsDescription") mustBe "goods description"
+          auditDetails("countryOfOrigin") mustBe "AG"
+          auditDetails("commodityCode") mustBe "030821"
+          auditDetails("commodityDescription") mustBe "Sea urchins"
+          auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
+          auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
+
+        }
+
       }
 
     }

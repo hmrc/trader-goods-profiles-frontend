@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
+import models.helper.CategorisationUpdate
 import models.{Commodity, NormalMode}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -152,7 +153,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
             .auditStartUpdateGoodsRecord(
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
-              eqTo("categorisation"),
+              eqTo(CategorisationUpdate),
               eqTo(recordId)
             )(any())
         }

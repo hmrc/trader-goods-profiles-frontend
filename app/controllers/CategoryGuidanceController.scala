@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions._
 import models.NormalMode
+import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CommodityQuery
@@ -54,18 +55,17 @@ class CategoryGuidanceController @Inject() (
       }
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       auditService
         .auditStartUpdateGoodsRecord(
           request.eori,
           request.affinityGroup,
-          "categorisation",
+          CategorisationUpdate,
           recordId
         )
 
-      Future.successful(
-        Redirect(routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex).url)
-      )
+      Redirect(routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex).url)
+
   }
 }

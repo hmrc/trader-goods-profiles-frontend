@@ -32,6 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.RecordCategorisationsQuery
+import services.AuditService
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
@@ -280,42 +281,104 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
       "when user answers can update a valid goods record" - {
 
-        "must update the goods record and redirect to the CategorisationResultController with correct view" in {
+        "must update the goods record and redirect to the CategorisationResultController with correct view" - {
 
-          val userAnswers = UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
+          "when audit service works" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
-            .thenReturn(Future.successful(Done))
+            val userAnswers = UserAnswers(userAnswersId)
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
 
-          val application =
-            applicationBuilder(userAnswers = Some(userAnswers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-              .build()
+            val mockConnector = mock[GoodsRecordConnector]
+            when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
 
-          running(application) {
-            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+            val mockAuditService = mock[AuditService]
+            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
 
-            val result = route(application, request).value
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+                .overrides(bind[AuditService].toInstance(mockAuditService))
+                .build()
 
-            val expectedPayload = CategoryRecord(
-              eori = testEori,
-              recordId = testRecordId,
-              category = 1,
-              measurementUnit = Some("Weight, in kilograms")
-            )
+            running(application) {
+              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.CategorisationResultController
-              .onPageLoad(testRecordId, Category1)
-              .url
-            verify(mockConnector, times(1))
-              .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+              val result = route(application, request).value
+
+              val expectedPayload = CategoryRecord(
+                eori = testEori,
+                recordId = testRecordId,
+                category = 1,
+                answeredAssessmentCount = 0,
+                measurementUnit = Some("Weight, in kilograms")
+              )
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1)
+                .url
+              verify(mockConnector, times(1))
+                .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+
+              withClue("audit event has been fired") {
+                verify(mockAuditService, times(1))
+                  .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
+              }
+
+            }
+          }
+
+          "when audit service fails" in {
+
+            val userAnswers = UserAnswers(userAnswersId)
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+
+            val mockConnector = mock[GoodsRecordConnector]
+            when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+
+            val mockAuditService = mock[AuditService]
+            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+              .thenReturn(Future.failed(new RuntimeException(":(")))
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+                .overrides(bind[AuditService].toInstance(mockAuditService))
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+              val result = route(application, request).value
+
+              val expectedPayload = CategoryRecord(
+                eori = testEori,
+                recordId = testRecordId,
+                category = 1,
+                answeredAssessmentCount = 0,
+                measurementUnit = Some("Weight, in kilograms")
+              )
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1)
+                .url
+
+              withClue("connector was called even though audit failed") {
+                verify(mockConnector, times(1))
+                  .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+              }
+            }
           }
         }
+
       }
 
       "when user answers cannot update a goods record" - {
@@ -355,9 +418,14 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
             .build()
 
         running(application) {
@@ -365,6 +433,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           intercept[RuntimeException] {
             await(route(application, request).value)
+          }
+
+          withClue("audit event has been fired even though connector failed") {
+            verify(mockAuditService, times(1))
+              .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
           }
         }
       }
