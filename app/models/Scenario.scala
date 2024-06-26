@@ -30,7 +30,12 @@ object Scenario {
 
   def getScenario(goodsRecord: CategoryRecord): Scenario =
     goodsRecord.category match {
-      case 1 => Category1
+      case 1 =>
+        if (goodsRecord.answeredAssessmentCount == 0) {
+          Category1NoExemptions
+        } else {
+          Category1
+        }
       case 2 => Category2
       case 3 =>
         if (goodsRecord.answeredAssessmentCount == 0) {

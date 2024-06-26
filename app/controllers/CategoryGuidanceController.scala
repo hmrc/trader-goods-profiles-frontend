@@ -54,7 +54,7 @@ class CategoryGuidanceController @Inject() (
           val scenario = Scenario.getScenario(categoryRecord)
           val isRedirectScenario = (scenario == StandardNoAssessments || scenario == Category1NoExemptions)
           if (isRedirectScenario) {
-            Future.successful(Redirect(routes.IndexController.onPageLoad.url))
+            Future.successful(Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url))
           } else {
             Future.successful(Ok(view(recordId)))
           }

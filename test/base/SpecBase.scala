@@ -194,6 +194,21 @@ trait SpecBase
     .success
     .value
 
+  private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(category1),
+    Some("Weight, in kilograms")
+  )
+
+  lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryNoExemptions)
+  )
+
+  lazy val uaForCategorisationCategory1NoExemptions: UserAnswers = emptyUserAnswers
+    .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
+    .success
+    .value
+
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
