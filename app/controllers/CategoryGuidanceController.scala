@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions._
-import models.NormalMode
+import models.{Category1NoExemptions, CategoryRecord, GoodsRecord, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,6 +29,7 @@ import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -48,8 +49,15 @@ class CategoryGuidanceController @Inject() (
       request.userAnswers.get(CommodityQuery) match {
         case Some(_) =>
           for {
-            _ <- categorisationService.requireCategorisation(request, recordId)
-          } yield Ok(view(recordId))
+            ua <- categorisationService.requireCategorisation(request, recordId)
+            categoryRecord <- Future.fromTry(Try(CategoryRecord.build(ua, request.eori, recordId).right.get))
+            scenario = Scenario.getScenario(categoryRecord)
+            isRedirectScenario = (scenario == StandardNoAssessments || scenario == Category1NoExemptions)
+          } yield if(isRedirectScenario) {
+            Redirect(routes.IndexController.onPageLoad.url)
+          } else {
+            Ok(view(recordId))
+          }
         case None    =>
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
