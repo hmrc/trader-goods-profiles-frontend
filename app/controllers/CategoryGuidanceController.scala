@@ -17,11 +17,10 @@
 package controllers
 
 import controllers.actions._
-import models.{Category1NoExemptions, CategoryRecord, GoodsRecord, NormalMode, Scenario, StandardNoAssessments}
+import models.{Category1NoExemptions, CategoryRecord, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CommodityQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Constants.firstAssessmentIndex
@@ -29,7 +28,6 @@ import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
