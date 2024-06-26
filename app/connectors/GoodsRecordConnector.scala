@@ -33,14 +33,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val tgpRouterBaseUrl: Service          = config.get[Service]("microservice.services.trader-goods-profiles-router")
-  private val dataStoreBaseUrl: Service          = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
-  private val clientIdHeader                     = ("X-Client-ID", "tgp-frontend")
+  private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
+
   private def createGoodsRecordUrl(eori: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+
+  private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
 
   private def getGoodsRecordsUrl(
     eori: String
@@ -77,6 +81,28 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .map(response => response.json.as[GetGoodsRecordResponse])
 
   def getRecords(
+    eori: String,
+    page: Option[Int] = None,
+    size: Option[Int] = None
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[GetRecordsResponse] = {
+
+    val pageNumber  = 1
+    val pageSize    = 10
+    val queryParams = Map(
+      "page" -> page.getOrElse(pageNumber).toString,
+      "size" -> size.getOrElse(pageSize).toString
+    )
+
+    httpClient
+      .get(goodsRecordsUrl(eori, queryParams))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
+  }
+
+  def getAllRecords(
     eori: String
   )(implicit hc: HeaderCarrier): Future[GetRecordsResponse] =
     httpClient
@@ -94,10 +120,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK        =>
+          case OK =>
             Some(response.json.as[GetRecordsResponse])
-          case NOT_FOUND =>
-            None
 
         }
       }

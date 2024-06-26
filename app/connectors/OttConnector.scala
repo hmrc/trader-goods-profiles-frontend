@@ -158,8 +158,5 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   }
 
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
-    getFromOtt[CountriesResponse](
-      ottCountriesUrl,
-      None
-    ).map(_.data)
+    getFromOtt[CountriesResponse](ottCountriesUrl, None).map(_.data.sortWith(_.description < _.description))
 }

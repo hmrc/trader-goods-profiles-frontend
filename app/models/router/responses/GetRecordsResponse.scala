@@ -16,19 +16,20 @@
 
 package models.router.responses
 
+import models.GoodsRecordsPagination
 import play.api.libs.json._
 
 case class GetRecordsResponse(
-  goodsItemRecords: Seq[GoodsItemRecords],
-  pagination: Pagination
+  goodsItemRecords: Seq[GetGoodsRecordResponse],
+  pagination: GoodsRecordsPagination
 )
 
 object GetRecordsResponse {
   implicit val recordsReads: Reads[GetRecordsResponse] = (json: JsValue) =>
     JsSuccess(
       GetRecordsResponse(
-        (json \ "goodsItemRecords").as[Seq[GoodsItemRecords]],
-        (json \ "pagination").as[Pagination]
+        (json \ "goodsItemRecords").as[Seq[GetGoodsRecordResponse]],
+        (json \ "pagination").as[GoodsRecordsPagination]
       )
     )
 

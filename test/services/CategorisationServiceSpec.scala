@@ -33,6 +33,7 @@ import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
+import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -53,7 +54,12 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
     "comcode",
-    "countryOfOrigin"
+    "countryOfOrigin",
+    "traderRef",
+    "goodsDescription",
+    "adviceStatus",
+    Instant.now(),
+    Instant.now()
   )
 
   private val categorisationService =

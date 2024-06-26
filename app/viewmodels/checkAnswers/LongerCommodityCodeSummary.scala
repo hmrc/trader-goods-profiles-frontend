@@ -30,7 +30,7 @@ object LongerCommodityCodeSummary {
     answers.get(LongerCommodityCodePage).map { answer =>
       SummaryListRowViewModel(
         key = "longerCommodityCode.checkYourAnswersLabel",
-        value = ValueViewModel(answer.toString),
+        value = ValueViewModel(answer),
         actions = Seq(
           ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))

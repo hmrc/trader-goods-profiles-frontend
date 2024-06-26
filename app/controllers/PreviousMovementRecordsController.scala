@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.GetGoodsRecordsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.PreviousMovementRecordsView
+import views.html.{GoodsRecordsEmptyView, PreviousMovementRecordsView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,35 +37,31 @@ class PreviousMovementRecordsController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
+  emptyView: GoodsRecordsEmptyView,
   getGoodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  //TODO change navigation to proper view(instead of Journey recovery) when records not available
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     getGoodsRecordConnector.doRecordsExist(request.eori).map {
       case Some(getGoodsRecordResponse) if getGoodsRecordResponse.goodsItemRecords.nonEmpty =>
         Ok(view())
 
       case Some(_) =>
-        Redirect(routes.JourneyRecoveryController.onPageLoad())
-
-      case None =>
-        Redirect(routes.JourneyRecoveryController.onPageLoad())
+        Redirect(routes.GoodsRecordsController.onPageLoad(1))
     }
   }
 
-  //TODO navigate to good record page once available
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     for {
-      getGoodsRecordResponse  <- getGoodsRecordConnector.getRecords(request.eori)
+      getGoodsRecordResponse  <- getGoodsRecordConnector.getAllRecords(request.eori)
       updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(GetGoodsRecordsQuery, getGoodsRecordResponse))
       updatedAnswersWithFlag  <-
         Future.fromTry(updatedAnswersWithQuery.set(PreviousMovementRecordsPage, "hasLoadedRecords"))
       _                       <- sessionRepository.set(updatedAnswersWithFlag)
 
-    } yield Redirect(routes.HomePageController.onPageLoad())
+    } yield Redirect(routes.GoodsRecordsController.onPageLoad(1))
 
   }
 }

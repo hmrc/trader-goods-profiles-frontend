@@ -18,10 +18,17 @@ package models.router.responses
 
 import play.api.libs.json.{OWrites, Reads, __}
 
+import java.time.Instant
+
 final case class GetGoodsRecordResponse(
   recordId: String,
   commodityCode: String,
-  countryOfOrigin: String
+  countryOfOrigin: String,
+  traderRef: String,
+  goodsDescription: String,
+  adviceStatus: String,
+  createdDateTime: Instant,
+  updatedDateTime: Instant
 )
 
 object GetGoodsRecordResponse {
@@ -33,7 +40,12 @@ object GetGoodsRecordResponse {
     (
       (__ \ "recordId").read[String] and
         (__ \ "comcode").read[String] and
-        (__ \ "countryOfOrigin").read[String]
+        (__ \ "countryOfOrigin").read[String] and
+        (__ \ "traderRef").read[String] and
+        (__ \ "goodsDescription").read[String] and
+        (__ \ "adviceStatus").read[String] and
+        (__ \ "createdDateTime").read[Instant] and
+        (__ \ "updatedDateTime").read[Instant]
     )(GetGoodsRecordResponse.apply _)
   }
 
@@ -44,7 +56,12 @@ object GetGoodsRecordResponse {
     (
       (__ \ "recordId").write[String] and
         (__ \ "comcode").write[String] and
-        (__ \ "countryOfOrigin").write[String]
+        (__ \ "countryOfOrigin").write[String] and
+        (__ \ "traderRef").write[String] and
+        (__ \ "goodsDescription").write[String] and
+        (__ \ "adviceStatus").write[String] and
+        (__ \ "createdDateTime").write[Instant] and
+        (__ \ "updatedDateTime").write[Instant]
     )(unlift(GetGoodsRecordResponse.unapply))
   }
 }

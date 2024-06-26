@@ -147,7 +147,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, supplementaryUnitRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+            .withFormUrlEncodedBody(("value", validAnswer))
 
         val result = route(application, request).value
 
@@ -233,7 +233,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, supplementaryUnitRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+            .withFormUrlEncodedBody(("value", validAnswer))
 
         val result = route(application, request).value
 

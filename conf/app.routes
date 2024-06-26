@@ -127,15 +127,15 @@ POST        /advice/name                                     controllers.NameCon
 GET         /changeName                                      controllers.NameController.onPageLoad(mode: Mode = CheckMode)
 POST        /changeName                                      controllers.NameController.onSubmit(mode: Mode = CheckMode)
 
-GET        /update/:recordId/supplementary-unit              controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST       /update/:recordId/supplementary-unit              controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET        /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST       /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET         /update/:recordId/supplementary-unit              controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update/:recordId/supplementary-unit              controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST       /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET         /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET        /previous-movement-records                        controllers.PreviousMovementRecordsController.onPageLoad()
 POST       /previous-movement-records                        controllers.PreviousMovementRecordsController.onSubmit()
@@ -144,3 +144,6 @@ GET        /update/:recordId/longer-commodity-code           controllers.LongerC
 POST       /update/:recordId/longer-commodity-code           controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update/:recordId/longer-commodity-code/check     controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update/:recordId/longer-commodity-code/check     controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
+GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad(page: Int)
+POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)

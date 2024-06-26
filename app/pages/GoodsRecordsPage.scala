@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package viewmodels
+package pages
 
-package object govuk {
+import play.api.libs.json.JsPath
 
-  object all
-      extends ImplicitConversions
-      with BackLinkFluency
-      with ButtonFluency
-      with CheckboxFluency
-      with DateFluency
-      with ErrorSummaryFluency
-      with SelectFluency
-      with FieldsetFluency
-      with HintFluency
-      with InputFluency
-      with LabelFluency
-      with RadiosFluency
-      with SummaryListFluency
-      with TagFluency
-      with TableFluency
+case object GoodsRecordsPage extends QuestionPage[String] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "goodsRecords"
 }

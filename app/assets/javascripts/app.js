@@ -115,9 +115,7 @@ if (loadButton) {
     e.preventDefault();
     document.getElementById("spinning-wheel").hidden = false;
     loadButton.style.display = 'none';
-    setTimeout(function () {
-      document.getElementById("previousMovementForm").submit();
-    }, 720000);
+    document.getElementById("previousMovementForm").submit();
   });
 }
 

@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package viewmodels
+package forms
 
-package object govuk {
+import javax.inject.Inject
 
-  object all
-      extends ImplicitConversions
-      with BackLinkFluency
-      with ButtonFluency
-      with CheckboxFluency
-      with DateFluency
-      with ErrorSummaryFluency
-      with SelectFluency
-      with FieldsetFluency
-      with HintFluency
-      with InputFluency
-      with LabelFluency
-      with RadiosFluency
-      with SummaryListFluency
-      with TagFluency
-      with TableFluency
+import forms.mappings.Mappings
+import play.api.data.Form
+
+class GoodsRecordsFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("goodsRecords.error.required")
+        .verifying(maxLength(100, "goodsRecords.error.length"))
+    )
 }

@@ -17,7 +17,8 @@
 package utils
 
 import base.TestConstants.{testEori, testRecordId}
-import models.router.responses.{Assessment, Condition, GetRecordsResponse, GoodsItemRecords, Pagination}
+import models.GoodsRecordsPagination
+import models.router.responses.{Assessment, Condition, GetGoodsRecordResponse, GetRecordsResponse}
 import play.api.libs.json.{JsValue, Json}
 
 import java.time.Instant
@@ -118,7 +119,24 @@ trait GetRecordsResponseUtil {
          |}
          |""".stripMargin)
 
-  val mockAssessment = Assessment(
+  def getEmptyResponseData: JsValue =
+    Json.parse(s"""
+                  |{
+                  |"goodsItemRecords":
+                  |[
+                  |],
+                  |"pagination":
+                  | {
+                  |   "totalRecords": 2,
+                  |   "currentPage": 0,
+                  |   "totalPages": 1,
+                  |   "nextPage": null,
+                  |   "prevPage": null
+                  | }
+                  |}
+                  |""".stripMargin)
+
+  val mockAssessment: Assessment = Assessment(
     assessmentId = Some("abc123"),
     primaryCategory = Some(1),
     condition = Some(
@@ -132,35 +150,18 @@ trait GetRecordsResponseUtil {
     )
   )
 
-  val mockGoodsItemRecords = GoodsItemRecords(
-    eori = "GB123456789001",
-    actorId = "GB098765432112",
+  val mockGoodsItemRecords: GetGoodsRecordResponse = GetGoodsRecordResponse(
     recordId = "c89e1d92-129e-47c3-aa37-3569f21133aa",
     traderRef = "BAN001001",
-    comcode = "11063010",
+    commodityCode = "11063010",
     adviceStatus = "Not requested",
     goodsDescription = "Organic bananas",
     countryOfOrigin = "EC",
-    category = 1,
-    assessments = Some(Seq(mockAssessment)),
-    supplementaryUnit = Some(500),
-    measurementUnit = Some("square meters(m^2)"),
-    comcodeEffectiveFromDate = Instant.parse("2024-10-12T16:12:34Z"),
-    comcodeEffectiveToDate = Some(Instant.parse("2024-10-12T16:12:34Z")),
-    version = 1,
-    active = true,
-    toReview = false,
-    reviewReason = Some("no reason"),
-    declarable = "IMMI ready",
-    ukimsNumber = "XIUKIM47699357400020231115081800",
-    nirmsNumber = "RMS-GB-123456",
-    niphlNumber = "6 S12345",
-    locked = false,
     createdDateTime = Instant.parse("2024-10-12T16:12:34Z"),
     updatedDateTime = Instant.parse("2024-10-12T16:12:34Z")
   )
 
-  val mockPagination = Pagination(
+  val mockPagination: GoodsRecordsPagination = GoodsRecordsPagination(
     totalRecords = 15,
     currentPage = 1,
     totalPages = 2,
@@ -168,19 +169,19 @@ trait GetRecordsResponseUtil {
     prevPage = Some(0)
   )
 
-  val mockGetRecordsResponse = GetRecordsResponse(
+  val mockGetRecordsResponse: GetRecordsResponse = GetRecordsResponse(
     goodsItemRecords = Seq(mockGoodsItemRecords),
     pagination = mockPagination
   )
 
-  val mockGetRecordsResponseOption = Some(
+  val mockGetRecordsResponseOption: Option[GetRecordsResponse] = Some(
     GetRecordsResponse(
       goodsItemRecords = Seq(mockGoodsItemRecords),
       pagination = mockPagination
     )
   )
 
-  val mockGetRecordsEmpty = Some(
+  val mockGetRecordsEmpty: Option[GetRecordsResponse] = Some(
     GetRecordsResponse(
       goodsItemRecords = Seq.empty,
       pagination = mockPagination
