@@ -65,7 +65,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   "CategoryGuidance Controller" - {
 
-    "must call category guidance service to load and save ott info" in {
+    "must call categorisation service to load and save ott info" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -107,7 +107,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 //      }
 //    }
 
-    "must return OK and the correct view for a GET" in {
+    "must OK with correct view and not redirect on a GET when scenario is NOT Category1NoExemptions or StandardNoAssessments" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
         .overrides(
@@ -116,14 +116,14 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CategoryGuidanceView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(recordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
       }
     }
 
@@ -142,12 +142,12 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(recordId).url)
+        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(testRecordId).url)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, 0).url
+        redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 0).url
 
         withClue("must call the audit service with the correct details") {
           verify(mockAuditService, times(1))
@@ -155,7 +155,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
               eqTo(CategorisationUpdate),
-              eqTo(recordId)
+              eqTo(testRecordId)
             )(any())
         }
       }

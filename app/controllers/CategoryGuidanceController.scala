@@ -46,21 +46,21 @@ class CategoryGuidanceController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-          (for {
-            ua <- categorisationService.requireCategorisation(request, recordId)
-            categoryRecordEither = CategoryRecord.build(ua, request.eori, recordId)
-          } yield categoryRecordEither match {
-            case Right(categoryRecord) =>
-              val scenario = Scenario.getScenario(categoryRecord)
-              val isRedirectScenario = (scenario == StandardNoAssessments || scenario == Category1NoExemptions)
-              if (isRedirectScenario) {
-                Future.successful(Redirect(routes.IndexController.onPageLoad.url))
-              } else {
-                Future.successful(Ok(view(recordId)))
-              }
-            case Left(_) =>
-              Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-          }).flatten
+      (for {
+        ua <- categorisationService.requireCategorisation(request, recordId)
+        categoryRecordEither = CategoryRecord.build(ua, request.eori, recordId)
+      } yield categoryRecordEither match {
+        case Right(categoryRecord) =>
+          val scenario = Scenario.getScenario(categoryRecord)
+          val isRedirectScenario = (scenario == StandardNoAssessments || scenario == Category1NoExemptions)
+          if (isRedirectScenario) {
+            Future.successful(Redirect(routes.IndexController.onPageLoad.url))
+          } else {
+            Future.successful(Ok(view(recordId)))
+          }
+        case Left(_) =>
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+      }).flatten
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
