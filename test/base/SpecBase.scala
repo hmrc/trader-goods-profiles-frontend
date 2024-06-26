@@ -165,7 +165,7 @@ trait SpecBase
     Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
   )
 
-  lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers
+  lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
     .set(RecordCategorisationsQuery, recordCategorisations)
     .success
     .value

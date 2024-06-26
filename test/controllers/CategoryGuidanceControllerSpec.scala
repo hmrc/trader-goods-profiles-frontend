@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, testRecordId}
 import models.helper.CategorisationUpdate
 import models.{Commodity, NormalMode}
 import org.apache.pekko.Done
@@ -47,12 +47,14 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     .success
     .value
 
+
+
   private val categorisationService = mock[CategorisationService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-      Future.successful(emptyUserAnswers)
+      Future.successful(userAnswersForCategorisation)
     )
   }
 
@@ -63,14 +65,12 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   "CategoryGuidance Controller" - {
 
-    val recordId = "test-record-id"
-
     "must call category guidance service to load and save ott info" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
+      val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
           bind[SessionRepository].toInstance(mockSessionRepository)
@@ -79,7 +79,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
 
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
         val result  = route(application, request).value
 
         status(result) mustEqual OK
@@ -88,23 +88,24 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to Journey Recover when no commodity query has been provided" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
-        val result  = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        verify(categorisationService, never()).requireCategorisation(any(), any())(any())
-      }
-    }
+//    Doesn't apply anymore. We get the comcode elsewhere
+//    "must redirect to Journey Recover when no commodity query has been provided" in {
+//
+//      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+//        .overrides(
+//          bind[CategorisationService].toInstance(categorisationService)
+//        )
+//        .build()
+//
+//      running(application) {
+//        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(recordId).url)
+//        val result  = route(application, request).value
+//
+//        status(result) mustEqual SEE_OTHER
+//        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+//        verify(categorisationService, never()).requireCategorisation(any(), any())(any())
+//      }
+//    }
 
     "must return OK and the correct view for a GET" in {
 
