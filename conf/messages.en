@@ -103,7 +103,7 @@ niphlNumber.change.hidden = NIPHL number
 
 nirmsNumber.title = Northern Ireland Retail Movement Scheme number
 nirmsNumber.heading = What is your NIRMS number?
-nirmsNumber.hint = NIRMS numbers are 11 characters, start with RMS followed by GB or NI then 6 numbers. For example, RMS-GB-123456.
+nirmsNumber.hint = NIRMS numbers are 13 characters, start with RMS with a dash followed by GB or NI, a dash then 6 numbers. For example, RMS-GB-123456.
 nirmsNumber.checkYourAnswersLabel = NIRMS number
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
