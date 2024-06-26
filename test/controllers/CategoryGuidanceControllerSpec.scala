@@ -107,6 +107,26 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 //      }
 //    }
 
+    "must redirect to CategorisationResult when scenario is StandardNoAssessments" in {
+
+      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
+        .overrides(
+          bind[CategorisationService].toInstance(categorisationService)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CategoryGuidanceView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
+      }
+    }
+
     "must OK with correct view and not redirect on a GET when scenario is NOT Category1NoExemptions or StandardNoAssessments" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithCommodity))
