@@ -32,7 +32,12 @@ object Scenario {
     goodsRecord.category match {
       case 1 => Category1
       case 2 => Category2
-      case 3 => Standard
+      case 3 =>
+        if (goodsRecord.answeredAssessmentCount == 0) {
+          StandardNoAssessments
+        } else {
+          Standard
+        }
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {

@@ -109,6 +109,10 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     "must redirect to CategorisationResult when scenario is StandardNoAssessments" in {
 
+      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+        Future.successful(uaForCategorisationStandardNoAssessments)
+      )
+
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService)
@@ -120,10 +124,10 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CategoryGuidanceView]
+//        val view = application.injector.instanceOf[CategoryGuidanceView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
+        status(result) mustEqual SEE_OTHER
+//        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
       }
     }
 
