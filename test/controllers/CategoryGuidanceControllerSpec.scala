@@ -55,6 +55,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
   override def afterEach(): Unit = {
     super.afterEach()
     reset(categorisationService)
+    reset(mockGoodsRecordsConnector)
   }
 
   "CategoryGuidance Controller" - {
@@ -146,6 +147,14 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         redirectLocation(result).get mustEqual routes.CategorisationResultController
           .onPageLoad(testRecordId, StandardNoAssessments)
           .url
+
+        withClue("must make a call to update goodsRecord with category info") {
+          verify(mockGoodsRecordsConnector, times(1)).updateGoodsRecord(
+            any(),
+            any(),
+            any()
+          )(any())
+        }
       }
     }
 
@@ -169,6 +178,14 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         redirectLocation(result).get mustEqual routes.CategorisationResultController
           .onPageLoad(testRecordId, Category1NoExemptions)
           .url
+
+        withClue("must make a call to update goodsRecord with category info") {
+          verify(mockGoodsRecordsConnector, times(1)).updateGoodsRecord(
+            any(),
+            any(),
+            any()
+          )(any())
+        }
       }
     }
 
@@ -176,7 +193,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
-          bind[CategorisationService].toInstance(categorisationService)
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -189,6 +207,14 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
+      }
+
+      withClue("must NOT make a call to update goodsRecord with category info") {
+        verify(mockGoodsRecordsConnector, never()).updateGoodsRecord(
+          any(),
+          any(),
+          any()
+        )(any())
       }
     }
 
