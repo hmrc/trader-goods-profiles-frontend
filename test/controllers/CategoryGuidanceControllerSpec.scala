@@ -78,7 +78,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to JourneyRecover when categorisationRecord model cannot be built from user answers" in {
+    "must redirect to JourneyRecovery when categorisationRecord model cannot be built from user answers" in {
 
       when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
         Future.successful(emptyUserAnswers)
@@ -92,7 +92,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
@@ -112,9 +112,11 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.CategorisationResultController.onPageLoad(testRecordId, StandardNoAssessments).url
+        redirectLocation(result).get mustEqual routes.CategorisationResultController
+          .onPageLoad(testRecordId, StandardNoAssessments)
+          .url
       }
     }
 
@@ -132,9 +134,11 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.CategorisationResultController.onPageLoad(testRecordId, Category1NoExemptions).url
+        redirectLocation(result).get mustEqual routes.CategorisationResultController
+          .onPageLoad(testRecordId, Category1NoExemptions)
+          .url
       }
     }
 

@@ -17,10 +17,11 @@
 package controllers
 
 import controllers.actions._
-import models.{Category1NoExemptions, CategoryRecord, NormalMode, Scenario, StandardNoAssessments}
+import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.RecordCategorisationsQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Constants.firstAssessmentIndex
@@ -28,6 +29,7 @@ import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -46,19 +48,12 @@ class CategoryGuidanceController @Inject() (
     implicit request =>
       (for {
         ua <- categorisationService.requireCategorisation(request, recordId)
-        categoryRecordEither = CategoryRecord.build(ua, request.eori, recordId)
-      } yield categoryRecordEither match {
-        case Right(categoryRecord) =>
-          val scenario = Scenario.getScenario(categoryRecord)
-          val isRedirectScenario = (scenario == StandardNoAssessments || scenario == Category1NoExemptions)
-          if (isRedirectScenario) {
-            Future.successful(Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url))
-          } else {
-            Future.successful(Ok(view(recordId)))
-          }
-        case Left(_) =>
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-      }).flatten
+        scenario = Scenario.getRedirectScenarios(ua, recordId)
+      } yield scenario match {
+        case Category1NoExemptions => Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+        case StandardNoAssessments => Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+        case NoRedirectScenario => Ok(view(recordId))
+      })
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {

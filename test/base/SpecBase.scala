@@ -194,9 +194,12 @@ trait SpecBase
     .success
     .value
 
+  lazy val category1NoExemptions: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
+
   private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
     "1234567890",
-    Seq(category1),
+    Seq(category1NoExemptions),
     Some("Weight, in kilograms")
   )
 
