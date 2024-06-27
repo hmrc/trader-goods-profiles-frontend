@@ -52,8 +52,7 @@ class CategoryGuidanceController @Inject() (
         categorisationInfo <- Future.fromTry(Try(recordCategorisations.records.get(recordId).get))
         scenario = Scenario.getRedirectScenarios(recordCategorisations, categorisationInfo)
       } yield scenario match {
-        case Category1NoExemptions => Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
-        case StandardNoAssessments => Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+        case Category1NoExemptions | StandardNoAssessments => Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
         case NoRedirectScenario => Ok(view(recordId))
       }).recover {
         case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
