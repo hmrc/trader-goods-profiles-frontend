@@ -29,7 +29,7 @@
     govukPagination: GovukPagination
 )
 
-@(form: Form[_], headers: Seq[TableRow], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(form, messages("goodsRecords.title")), isFullWidth = true
@@ -74,7 +74,27 @@
 
         @govukTable(
             Table(
-                rows = Seq(headers) ++ goodsRecordsItems.map{
+                head = Some(Seq(
+                    HeadCell(
+                        content = Text(messages("goodsRecords.tableHeader.traderReference"))
+                    ),
+                    HeadCell(
+                        content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+                    ),
+                    HeadCell(
+                        content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+                    ),
+                    HeadCell(
+                        content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+                    ),
+                    HeadCell(
+                        content = Text(messages("goodsRecords.tableHeader.status"))
+                    ),
+                    HeadCell(
+                        content = Text(messages("goodsRecords.tableHeader.actions"))
+                    )
+                )),
+                rows = goodsRecordsItems.map{
                     goodsRecord =>  Seq(
                         TableRow(
                             content = Text(goodsRecord.traderRef)
@@ -102,8 +122,8 @@
                                     text2 = messages("site.remove"),
                                     visuallyHiddenContent1 = messages("goodsRecords.hidden.change"),
                                     visuallyHiddenContent2 = messages("goodsRecords.hidden.remove"),
-                                    href1 = "TODO",
-                                    href2 = "TODO"
+                                    href1 = "TODO-change",
+                                    href2 = "TODO-remove"
                                 )
                             )
                         )

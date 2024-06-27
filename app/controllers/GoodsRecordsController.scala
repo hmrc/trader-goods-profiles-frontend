@@ -69,7 +69,6 @@ class GoodsRecordsController @Inject() (
           Ok(
             view(
               preparedForm,
-              headers(),
               goodsRecordResponse.goodsItemRecords.sorted,
               goodsRecordResponse.pagination.totalRecords,
               getFirstRecord(goodsRecordResponse),
@@ -84,28 +83,6 @@ class GoodsRecordsController @Inject() (
         }
   }
 
-  private[this] def headers()(implicit messages: Messages): Seq[TableRow] =
-    Seq(
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.traderReference"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.commodityCode"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.status"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.actions"))
-      ).withCssClass("govuk-!-font-weight-bold")
-    )
-
   def onSearch(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
@@ -113,7 +90,7 @@ class GoodsRecordsController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, headers(), Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
+              BadRequest(view(formWithErrors, Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
             ),
           value =>
             for {
@@ -124,7 +101,6 @@ class GoodsRecordsController @Inject() (
             } yield Ok(
               view(
                 form.fill(value),
-                headers(),
                 goodsRecordResponse.goodsItemRecords,
                 goodsRecordResponse.pagination.totalRecords,
                 getFirstRecord(goodsRecordResponse),
