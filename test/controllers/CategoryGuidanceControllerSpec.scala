@@ -78,7 +78,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to JourneyRecovery when categorisationRecord model cannot be built from user answers" in {
+    "must redirect to JourneyRecovery when determining scenario fails due to invalid user answers" in {
 
       when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
         Future.successful(emptyUserAnswers)

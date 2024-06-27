@@ -32,10 +32,7 @@ case object Category2 extends Scenario
 
 object Scenario {
 
-  def getRedirectScenarios(userAnswers: UserAnswers, recordId: String): Scenario = {
-    val recordCategorisationsQuery = userAnswers.get(RecordCategorisationsQuery).get
-    val categorisationInfo = recordCategorisationsQuery.records.get(recordId).get
-
+  def getRedirectScenarios(recordCategorisations: RecordCategorisations, categorisationInfo: CategorisationInfo): Scenario = {
     val hasCategoryAssessments: Boolean =
       categorisationInfo.categoryAssessments.length >= 1
 
