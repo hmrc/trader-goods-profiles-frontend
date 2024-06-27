@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
@@ -39,7 +40,8 @@ class CategoryGuidanceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
   auditService: AuditService,
-  categorisationService: CategorisationService
+  categorisationService: CategorisationService,
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -51,12 +53,19 @@ class CategoryGuidanceController @Inject() (
         recordCategorisations <- Future.fromTry(Try(ua.get(RecordCategorisationsQuery).get))
         categorisationInfo <- Future.fromTry(Try(recordCategorisations.records.get(recordId).get))
         scenario = Scenario.getRedirectScenarios(categorisationInfo)
+        categoryRecord <- Future.fromTry(Try(CategoryRecord.build(ua, request.eori, recordId).right.get))
       } yield scenario match {
-        case Category1NoExemptions | StandardNoAssessments => Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
-        case NoRedirectScenario => Ok(view(recordId))
+        case Category1NoExemptions | StandardNoAssessments =>
+          goodsRecordConnector.updateGoodsRecord(request.eori, recordId, categoryRecord).map { _ =>
+            Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+          }.recover {
+            case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          }
+        case NoRedirectScenario =>
+          Future.successful(Ok(view(recordId)))
       }).recover {
-        case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-      }
+        case _ => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+      }.flatMap(identity)
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {

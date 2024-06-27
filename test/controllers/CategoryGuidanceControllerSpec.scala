@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
+import connectors.GoodsRecordConnector
 import models.helper.CategorisationUpdate
 import models.{Category1NoExemptions, Commodity, NormalMode, StandardNoAssessments}
 import org.apache.pekko.Done
@@ -40,12 +41,15 @@ import scala.concurrent.Future
 class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   private val categorisationService = mock[CategorisationService]
+  private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
       Future.successful(userAnswersForCategorisation)
     )
+    when(mockGoodsRecordsConnector.updateGoodsRecord(any(), any(), any())(any()))
+      .thenReturn(Future.successful(Done))
   }
 
   override def afterEach(): Unit = {
@@ -98,6 +102,30 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
+    "must redirect to JourneyRecovery when call to connector fails in a redirect scenario" in {
+
+      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+        Future.successful(uaForCategorisationStandardNoAssessments)
+      )
+
+      when(mockGoodsRecordsConnector.updateGoodsRecord(any(), any(), any())(any()))
+        .thenReturn(Future.failed(new RuntimeException("Something went very wrong")))
+
+      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
+        .overrides(
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+        val result = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must redirect to CategorisationResult when scenario is StandardNoAssessments" in {
 
       when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
@@ -106,7 +134,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
         .overrides(
-          bind[CategorisationService].toInstance(categorisationService)
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -128,7 +157,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
         .overrides(
-          bind[CategorisationService].toInstance(categorisationService)
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
