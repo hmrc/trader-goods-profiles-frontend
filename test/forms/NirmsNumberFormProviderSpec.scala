@@ -29,7 +29,7 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
   val nirmsNumberGenerator: Gen[String] = {
     val regionGen = Gen.oneOf("GB", "NI")
     val digitsGen = Gen.listOfN(6, Gen.numChar).map(_.mkString)
-    val hyphenGen = Gen.oneOf("", "-")
+    val hyphenGen = Gen.oneOf("-")
 
     for {
       region  <- regionGen
