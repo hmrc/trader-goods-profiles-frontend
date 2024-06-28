@@ -59,11 +59,6 @@
     <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" />
 }
 
-<script>
-    let jsData = "twirlData"; // where twirlData is an existing variable
-    console.log("@appConfig.googleTagId")
-</script>
-
 @additionalScripts = {
     <script src='@controllers.routes.Assets.versioned("javascripts/accessible-autocomplete.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascripts/application.js")' @CSPNonce.attr></script>
