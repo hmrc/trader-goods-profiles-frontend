@@ -57,4 +57,5 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val tgpEnrolmentIdentifier: EnrolmentConfig = configuration.get[EnrolmentConfig]("enrolment-config")
 
+  val googleTagId: String = configuration.get[String]("gaTrackingId")
 }
