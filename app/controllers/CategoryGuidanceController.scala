@@ -49,22 +49,25 @@ class CategoryGuidanceController @Inject() (
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        ua <- categorisationService.requireCategorisation(request, recordId)
+        ua                    <- categorisationService.requireCategorisation(request, recordId)
         recordCategorisations <- Future.fromTry(Try(ua.get(RecordCategorisationsQuery).get))
-        categorisationInfo <- Future.fromTry(Try(recordCategorisations.records.get(recordId).get))
-        scenario = Scenario.getRedirectScenarios(categorisationInfo)
-        categoryRecord <- Future.fromTry(Try(CategoryRecord.build(ua, request.eori, recordId).right.get))
+        categorisationInfo    <- Future.fromTry(Try(recordCategorisations.records.get(recordId).get))
+        scenario               = Scenario.getRedirectScenarios(categorisationInfo)
+        categoryRecord        <- Future.fromTry(Try(CategoryRecord.build(ua, request.eori, recordId).right.get))
       } yield scenario match {
         case Category1NoExemptions | StandardNoAssessments =>
-          goodsRecordConnector.updateGoodsRecord(request.eori, recordId, categoryRecord).map { _ =>
-            Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
-          }.recover {
-            case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-          }
-        case NoRedirectScenario =>
+          goodsRecordConnector
+            .updateGoodsRecord(request.eori, recordId, categoryRecord)
+            .map { _ =>
+              Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+            }
+            .recover { case _ =>
+              Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+            }
+        case NoRedirectScenario                            =>
           Future.successful(Ok(view(recordId)))
-      }).recover {
-        case _ => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+      }).recover { case _ =>
+        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }.flatMap(identity)
   }
 

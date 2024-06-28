@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationUpdate
-import models.{Category1NoExemptions, Commodity, NormalMode, StandardNoAssessments}
+import models.{Category1NoExemptions, NormalMode, StandardNoAssessments}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -29,18 +29,16 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.CommodityQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val categorisationService = mock[CategorisationService]
+  private val categorisationService     = mock[CategorisationService]
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
@@ -121,7 +119,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }

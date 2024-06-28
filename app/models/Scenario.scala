@@ -17,9 +17,7 @@
 package models
 
 import models.ott.CategorisationInfo
-import pages.AssessmentPage
 import play.api.mvc.JavascriptLiteral
-import queries.RecordCategorisationsQuery
 
 sealed trait Scenario
 
@@ -48,27 +46,17 @@ object Scenario {
         .length >= 1
 
     (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions) match {
-      case (true, true, false) => Category1NoExemptions
+      case (true, true, false)   => Category1NoExemptions
       case (false, false, false) => StandardNoAssessments
-      case (_, _, _) => NoRedirectScenario
+      case (_, _, _)             => NoRedirectScenario
     }
   }
 
   def getScenario(goodsRecord: CategoryRecord): Scenario =
     goodsRecord.category match {
-      case 1 =>
-        if (goodsRecord.answeredAssessmentCount == 0) {
-          Category1NoExemptions
-        } else {
-          Category1
-        }
+      case 1 => Category1
       case 2 => Category2
-      case 3 =>
-        if (goodsRecord.answeredAssessmentCount == 0) {
-          StandardNoAssessments
-        } else {
-          Standard
-        }
+      case 3 => Standard
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
