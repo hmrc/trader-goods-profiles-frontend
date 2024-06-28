@@ -49,7 +49,7 @@ class PreviousMovementRecordsController @Inject() (
         Ok(view())
 
       case Some(_) =>
-        Redirect(routes.GoodsRecordsController.onPageLoad(1))
+        Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
     }
   }
 

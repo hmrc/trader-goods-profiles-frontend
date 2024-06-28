@@ -188,11 +188,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val view = application.injector.instanceOf[GoodsRecordsEmptyView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(
-          request,
-          messages(application)
-        ).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
       }
     }
 
