@@ -79,8 +79,12 @@ class GoodsRecordsController @Inject() (
             )
           )
         } else {
-          Ok(emptyView())
+          Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
         }
+  }
+
+  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    Ok(emptyView())
   }
 
   def onSearch(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
