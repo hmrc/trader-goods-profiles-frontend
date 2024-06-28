@@ -10,45 +10,45 @@ GET         /language/:lang                                  controllers.Languag
 
 GET         /refresh-session                                 controllers.KeepAliveController.keepAlive
 
-GET         /there-is-a-problem                              controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /problem/technical-issue                              controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /cya-nirms-niphls                                controllers.CyaCreateProfileController.onPageLoad
-POST        /cya-nirms-niphls                                controllers.CyaCreateProfileController.onSubmit
+GET         /create-profile/cya-nirms-niphl                                controllers.CyaCreateProfileController.onPageLoad
+POST        /create-profile/cya-nirms-niphl                                controllers.CyaCreateProfileController.onSubmit
 
 GET         /account/sign-out-survey                         controllers.auth.AuthController.signOut
 GET         /account/sign-out                                controllers.auth.AuthController.signOutNoSurvey
 GET         /account/sign-out-no-session                     controllers.auth.AuthController.signOutNoSession
-GET         /signed-out                                      controllers.auth.SignedOutController.onPageLoad
+GET         /problem/signed-out                                      controllers.auth.SignedOutController.onPageLoad
 
-GET         /unauthorised                                    controllers.UnauthorisedController.onPageLoad
+GET         /problem/unauthorised-sign-in                                    controllers.UnauthorisedController.onPageLoad
 
-GET         /niphl-question                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-question                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-question/check                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-question/check                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/niphl-question                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/niphl-question                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/niphl-question/check                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/niphl-question/check                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
 
-GET         /nirms-question                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-question                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-question/check                            controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-question/check                            controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/nirms-question                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/nirms-question                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/nirms-question/check                            controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/nirms-question/check                            controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
 
-GET         /niphl-number                                    controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-number                                    controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-number/check                              controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-number/check                              controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/niphl-number                                    controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/niphl-number                                    controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/niphl-number/check                              controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/niphl-number/check                              controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /nirms-number                                    controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-number                                    controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-number/check                              controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-number/check                              controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/nirms-number                                    controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/nirms-number                                    controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/nirms-number/check                              controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/nirms-number/check                              controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /profile-setup                                   controllers.ProfileSetupController.onPageLoad()
-POST        /profile-setup                                   controllers.ProfileSetupController.onSubmit()
+GET         /create-profile/profile-setup                                   controllers.ProfileSetupController.onPageLoad()
+POST        /create-profile/profile-setup                                   controllers.ProfileSetupController.onSubmit()
 
-GET         /ukims-number                                    controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /ukims-number                                    controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /ukims-number/check                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/ukims-number                                    controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/ukims-number                                    controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/ukims-number/check                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onSubmit(recordId: String)
@@ -88,42 +88,42 @@ POST        /create-record/goods-description-question/check  controllers.UseTrad
 GET         /create-record/cya-create-record                 controllers.CyaCreateRecordController.onPageLoad
 POST        /create-record/cya-create-record                 controllers.CyaCreateRecordController.onSubmit
 
-GET         /create/trader-reference                         controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
-POST        /create/trader-reference                         controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
-GET         /create/trader-reference/check                   controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
-POST        /create/trader-reference/check                   controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/trader-reference                         controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/trader-reference                         controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/trader-reference/check                   controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/trader-reference/check                   controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
 GET         /update/:recordId/category-assessment/:index       controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
 POST        /update/:recordId/category-assessment/:index       controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
 GET         /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
 POST        /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
 
-GET         /ukims-kick-out                                    controllers.UkimsKickOutController.onPageLoad()
+GET         /create-profile/ukims-kickout                                    controllers.UkimsKickOutController.onPageLoad()
 
-GET         /categorisation-result/:recordId/category-1               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1)
-GET         /categorisation-result/:recordId/category-2               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2)
-GET         /categorisation-result/:recordId/standard                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Standard)
-GET         /categorisation-result/:recordId/category-1-no-exemptions controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptions)
-GET         /categorisation-result/:recordId/standard-no-assessments  controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardNoAssessments)
+GET         /update/:recordId/categorisation-result/category-1               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1)
+GET         /update/:recordId/categorisation-result/category-2               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2)
+GET         /update/:recordId/categorisation-result/standard                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Standard)
+GET         /update/:recordId/categorisation-result/category-1-no-exemptions controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptions)
+GET         /update/:recordId/categorisation-result/standard-no-assessments  controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardNoAssessments)
 
 GET         /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onSubmit(recordId:String)
 
-GET         /advice-start                                    controllers.AdviceStartController.onPageLoad()
-POST        /advice-start                                    controllers.AdviceStartController.onSubmit()
+GET         /create/advice-start                                    controllers.AdviceStartController.onPageLoad()
+POST        /create/advice-start                                    controllers.AdviceStartController.onSubmit()
 
-GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
-POST        /advice/check-your-answers                       controllers.CyaRequestAdviceController.onSubmit
+GET         /create/cya-advice                       controllers.CyaRequestAdviceController.onPageLoad
+POST        /create/cya-advice                       controllers.CyaRequestAdviceController.onSubmit
 
-GET         /advice/success                                  controllers.AdviceSuccessController.onPageLoad()
+GET         /create/advice-success                                  controllers.AdviceSuccessController.onPageLoad()
 
-GET         /advice/email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
-POST        /advice/email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode)
-GET         /advice/email/check                              controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
-POST        /advice/email/check                              controllers.EmailController.onSubmit(mode: Mode = CheckMode)
+GET         /create/advice-email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
+POST        /create/advice-email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode)
+GET         /create/advice-email/check                              controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
+POST        /create/advice-email/check                              controllers.EmailController.onSubmit(mode: Mode = CheckMode)
 
-GET         /advice/name                                     controllers.NameController.onPageLoad(mode: Mode = NormalMode)
-POST        /advice/name                                     controllers.NameController.onSubmit(mode: Mode = NormalMode)
+GET         /create/advice-name                                     controllers.NameController.onPageLoad(mode: Mode = NormalMode)
+POST        /create/advice-name                                     controllers.NameController.onSubmit(mode: Mode = NormalMode)
 GET         /changeName                                      controllers.NameController.onPageLoad(mode: Mode = CheckMode)
 POST        /changeName                                      controllers.NameController.onSubmit(mode: Mode = CheckMode)
 

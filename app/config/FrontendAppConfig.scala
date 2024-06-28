@@ -40,7 +40,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val signOutContinueUrl: String = configuration.get[String]("urls.signOutContinue")
 
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
-  val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/trader-goods-profiles-frontend"
+  val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback-form/trader-goods-profiles-frontend"
 
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")
