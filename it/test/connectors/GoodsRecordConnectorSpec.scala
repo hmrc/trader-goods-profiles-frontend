@@ -339,7 +339,7 @@ class GoodsRecordConnectorSpec
         "EC",
         "BAN001001",
         "Organic bananas",
-        "Not requested",
+        "IMMI declarable",
         Instant.parse("2024-11-18T23:20:19Z"),
         Instant.parse("2024-11-18T23:20:19Z")
       )
@@ -386,7 +386,7 @@ class GoodsRecordConnectorSpec
             "EC",
             "BAN0010011",
             "Organic bananas",
-            "Not requested",
+            "IMMI declarable",
             Instant.parse("2022-11-18T23:20:19Z"),
             Instant.parse("2022-11-18T23:20:19Z")
           ),
@@ -396,7 +396,7 @@ class GoodsRecordConnectorSpec
             "EC",
             "BAN0010012",
             "Organic bananas",
-            "Not requested",
+            "IMMI declarable",
             Instant.parse("2023-11-18T23:20:19Z"),
             Instant.parse("2023-11-18T23:20:19Z")
           ),
@@ -406,7 +406,7 @@ class GoodsRecordConnectorSpec
             "EC",
             "BAN0010013",
             "Organic bananas",
-            "Not requested",
+            "IMMI declarable",
             Instant.parse("2024-11-18T23:20:19Z"),
             Instant.parse("2024-11-18T23:20:19Z")
           )
