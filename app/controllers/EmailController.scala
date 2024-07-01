@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions._
 import forms.EmailFormProvider
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.EmailPage
@@ -28,6 +27,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.EmailView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailController @Inject() (
@@ -46,26 +46,27 @@ class EmailController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(EmailPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(EmailPage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-    Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, recordId))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(EmailPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(EmailPage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(EmailPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(EmailPage(recordId), mode, updatedAnswers))
         )
-  }
+    }
 }

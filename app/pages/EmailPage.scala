@@ -18,9 +18,9 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case object EmailPage extends QuestionPage[String] {
+case class EmailPage(recordId: String) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ toString \ recordId
 
   override def toString: String = "email"
 }

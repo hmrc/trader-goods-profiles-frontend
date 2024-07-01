@@ -33,12 +33,12 @@ object AdviceRequest {
 
   implicit lazy val format: OFormat[AdviceRequest] = Json.format
 
-  def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, AdviceRequest] =
+  def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, AdviceRequest] =
     (
       Right(eori),
-      answers.getPageValue(NamePage),
+      answers.getPageValue(NamePage(recordId)),
       Right(eori),
       Right("b0082f50-f13b-416a-8071-3bd95107d44d"),
-      answers.getPageValue(EmailPage)
+      answers.getPageValue(EmailPage(recordId))
     ).parMapN(AdviceRequest.apply)
 }
