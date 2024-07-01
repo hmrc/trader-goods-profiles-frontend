@@ -16,7 +16,7 @@
 
 package utils
 
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.testEori
 import models.GoodsRecordsPagination
 import models.router.responses.{Assessment, Condition, GetGoodsRecordResponse, GetRecordsResponse}
 import play.api.libs.json.{JsValue, Json}
