@@ -108,7 +108,7 @@ case class AuditEventFactory() {
     journey: Journey,
     recordId: String,
     categoryAssessmentsWithExemptions: Int,
-    category: Int //TODO not an int use type
+    category: Int
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "eori"                              -> eori,
