@@ -481,17 +481,17 @@ class AuditEventFactorySpec extends SpecBase {
           val auditDetails = Json.fromJson[GetCategorisationAssessmentDetailsEvent](result.detail).get
           auditDetails.eori mustBe testEori
           auditDetails.affinityGroup mustBe "Individual"
-          auditDetails.recordId mustBe testRecordId
+          auditDetails.recordId mustBe Some(testRecordId)
           auditDetails.commodityCode mustBe "1234567890"
-          auditDetails.countryOfOrigin mustBe "US"
-          auditDetails.dateOfTrade mustBe "2024-06-18"
+          auditDetails.countryOfOrigin mustBe Some("US")
+          auditDetails.dateOfTrade mustBe Some("2024-06-18")
           auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
           auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
           auditDetails.outcome.status mustBe "OK"
           auditDetails.outcome.statusCode mustBe "200"
-          auditDetails.outcome.failureReason mustBe "null"
-          auditDetails.categoryAssessmentOptions mustBe "2"
-          auditDetails.exemptionOptions mustBe "2"
+          auditDetails.outcome.failureReason mustBe None
+          auditDetails.categoryAssessmentOptions mustBe Some("2")
+          auditDetails.exemptionOptions mustBe Some("2")
 
         }
 
@@ -524,17 +524,17 @@ class AuditEventFactorySpec extends SpecBase {
           val auditDetails = Json.fromJson[GetCategorisationAssessmentDetailsEvent](result.detail).get
           auditDetails.eori mustBe testEori
           auditDetails.affinityGroup mustBe "Individual"
-          auditDetails.recordId mustBe testRecordId
+          auditDetails.recordId mustBe Some(testRecordId)
           auditDetails.commodityCode mustBe "1234567890"
-          auditDetails.countryOfOrigin mustBe "US"
-          auditDetails.dateOfTrade mustBe "2024-06-18"
+          auditDetails.countryOfOrigin mustBe Some("US")
+          auditDetails.dateOfTrade mustBe Some("2024-06-18")
           auditDetails.requestDateTime mustBe "2024-06-03T15:19:18.399Z"
           auditDetails.responseDateTime mustBe "2024-06-03T15:19:20.399Z"
           auditDetails.outcome.status mustBe "Not Found"
           auditDetails.outcome.statusCode mustBe "404"
-          auditDetails.outcome.failureReason mustBe "Commodity not valid"
-          auditDetails.categoryAssessmentOptions mustBe "null"
-          auditDetails.exemptionOptions mustBe "null"
+          auditDetails.outcome.failureReason mustBe Some("Commodity not valid")
+          auditDetails.categoryAssessmentOptions mustBe None
+          auditDetails.exemptionOptions mustBe None
         }
 
       }

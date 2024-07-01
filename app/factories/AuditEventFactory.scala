@@ -202,19 +202,19 @@ case class AuditEventFactory() {
     val auditDetails = GetCategorisationAssessmentDetailsEvent(
       auditData.eori,
       auditData.affinityGroup.toString,
-      auditData.recordId.getOrElse("null"),
+      auditData.recordId,
       auditData.commodityCode,
-      auditData.countryOfOrigin.getOrElse("null"),
-      auditData.dateOfTrade.map(_.toString).getOrElse("null"),
+      auditData.countryOfOrigin,
+      auditData.dateOfTrade.map(_.toString),
       requestDateTime.toString,
       responseDateTime.toString,
       GetCategorisationAssessmentDetailsEventOutcome(
         codeDescriptions(responseStatus),
         responseStatus.toString,
-        errorMessage.getOrElse("null")
+        errorMessage
       ),
-      ottResponse.map(_.categoryAssessments.size.toString).getOrElse("null"),
-      ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString).getOrElse("null")
+      ottResponse.map(_.categoryAssessments.size.toString),
+      ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString)
     )
 
     ExtendedDataEvent(
