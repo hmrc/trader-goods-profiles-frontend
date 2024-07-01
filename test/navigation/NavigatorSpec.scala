@@ -17,7 +17,7 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
 import pages._
 import models._
@@ -390,6 +390,25 @@ class NavigatorSpec extends SpecBase {
 
       }
 
+      "must go from CategoryGuidancePage to Category Assessment page" in {
+        val recordId = testRecordId
+        val index    = 0
+        navigator.nextPage(
+          CategoryGuidancePage(recordId),
+          NormalMode,
+          emptyUserAnswers
+        ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
+      }
+
+      "must go from CyaCategorisationPage to CategorisationResult page" in {
+        val categoryRecord = CategoryRecord(
+          eori = testEori,
+          recordId = testRecordId,
+          category = 1,
+          answeredAssessmentCount = 0
+        )
+        navigator.nextPage(CyaCategorisationPage(testRecordId, categoryRecord), NormalMode, emptyUserAnswers)
+      }
     }
 
     "in Check mode" - {

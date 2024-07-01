@@ -18,4 +18,4 @@ package pages
 
 import models.CategoryRecord
 
-case class CyaCategorisationPage(recordId: String, model: CategoryRecord) extends Page
+case class CyaCategorisationPage(recordId: String, categoryRecord: CategoryRecord) extends Page
