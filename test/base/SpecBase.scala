@@ -165,7 +165,7 @@ trait SpecBase
     Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
   )
 
-  lazy val userAnswersForCategorisationCya: UserAnswers = emptyUserAnswers
+  lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
     .set(RecordCategorisationsQuery, recordCategorisations)
     .success
     .value
@@ -176,6 +176,39 @@ trait SpecBase
     .success
     .value
     .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+    .success
+    .value
+
+  private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(),
+    Some("Weight, in kilograms")
+  )
+
+  lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryNoAssessments)
+  )
+
+  lazy val uaForCategorisationStandardNoAssessments: UserAnswers = emptyUserAnswers
+    .set(RecordCategorisationsQuery, recordCategorisationsNoAssessments)
+    .success
+    .value
+
+  lazy val category1NoExemptions: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
+
+  private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(category1NoExemptions),
+    Some("Weight, in kilograms")
+  )
+
+  lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryNoExemptions)
+  )
+
+  lazy val uaForCategorisationCategory1NoExemptions: UserAnswers = emptyUserAnswers
+    .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
     .success
     .value
 
