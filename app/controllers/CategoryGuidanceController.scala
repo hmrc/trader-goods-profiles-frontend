@@ -21,7 +21,7 @@ import controllers.actions._
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.RecordCategorisationsQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -49,26 +49,25 @@ class CategoryGuidanceController @Inject() (
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        ua                    <- categorisationService.requireCategorisation(request, recordId)
-        recordCategorisations <- Future.fromTry(Try(ua.get(RecordCategorisationsQuery).get))
-        categorisationInfo    <- Future.fromTry(Try(recordCategorisations.records.get(recordId).get))
-        scenario               = Scenario.getRedirectScenarios(categorisationInfo)
-        categoryRecord        <- Future.fromTry(Try(CategoryRecord.build(ua, request.eori, recordId).right.get))
-      } yield scenario match {
-        case Category1NoExemptions | StandardNoAssessments =>
-          goodsRecordConnector
-            .updateGoodsRecord(request.eori, recordId, categoryRecord)
-            .map { _ =>
-              Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
-            }
-            .recover { case _ =>
-              Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-            }
-        case NoRedirectScenario                            =>
-          Future.successful(Ok(view(recordId)))
-      }).recover { case _ =>
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-      }.flatMap(identity)
+        ua <- categorisationService.requireCategorisation(request, recordId)
+        recordCategorisations = ua.get(RecordCategorisationsQuery).get
+        categorisationInfo = recordCategorisations.records.get(recordId).get
+        scenario = Scenario.getRedirectScenarios(categorisationInfo)
+        categoryRecord = CategoryRecord.build(ua, request.eori, recordId).right.get
+      } yield {
+        scenario match {
+          case Category1NoExemptions | StandardNoAssessments =>
+            goodsRecordConnector
+              .updateGoodsRecord(request.eori, recordId, categoryRecord)
+              .map { _ =>
+                Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+              }
+          case NoRedirectScenario =>
+            Future.successful(Ok(view(recordId)))
+        }
+      }).flatMap(identity).recover {
+        case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
