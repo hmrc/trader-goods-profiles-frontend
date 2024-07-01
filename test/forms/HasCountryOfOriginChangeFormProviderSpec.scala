@@ -6,7 +6,7 @@ import play.api.data.FormError
 class HasCountryOfOriginChangeFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "hasCountryOfOriginChange.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new HasCountryOfOriginChangeFormProvider()()
 

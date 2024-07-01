@@ -22,7 +22,7 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasCountryOfOriginChangeFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val hasCountryOfOriginChangeRoute = routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode).url
 
