@@ -26,6 +26,14 @@
 
 @layout(pageTitle = title(form, messages("hasCommodityCodeChange.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("hasCommodityCodeChange.h1")</h1>
+
+    <p class="govuk-body">@messages("hasCommodityCodeChange.p1")</p>
+
+    <p class="govuk-body">@messages("hasCommodityCodeChange.p2")</p>
+
+    <h2 class="govuk-heading-m">@messages("hasCommodityCodeChange.h2")</h2>
+
     @formHelper(action = routes.HasCommodityCodeChangeController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
@@ -35,7 +43,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("hasCommodityCodeChange.heading")).asPageHeading()
+                legend = Legend(content = "hasCommodityCodeChange.h2", classes = "govuk-visually-hidden")
             )
         )
 

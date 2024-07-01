@@ -22,7 +22,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasCommodityCodeChangeFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val hasCommodityCodeChangeRoute = routes.HasCommodityCodeChangeController.onPageLoad(NormalMode).url
 

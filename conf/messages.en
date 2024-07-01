@@ -404,8 +404,11 @@ goodsRecords.tableHeader.actions = Actions
 
 
 
-hasCommodityCodeChange.title = hasCommodityCodeChange
-hasCommodityCodeChange.heading = hasCommodityCodeChange
+hasCommodityCodeChange.title = Change record information
+hasCommodityCodeChange.h1 = Changing the commodity code
+hasCommodityCodeChange.h2 = Do you want to change the commodity code?
+hasCommodityCodeChange.p1 = Changing the data item(commodity code) on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
+hasCommodityCodeChange.p2 = You'll need to recategorise this goods record if you change the commodity code.
 hasCommodityCodeChange.checkYourAnswersLabel = hasCommodityCodeChange
-hasCommodityCodeChange.error.required = Select yes if hasCommodityCodeChange
+hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 hasCommodityCodeChange.change.hidden = HasCommodityCodeChange
