@@ -22,10 +22,10 @@ GET         /signed-out                                                         
 
 GET         /problem/unauthorised-sign-in                                                   controllers.UnauthorisedController.onPageLoad
 
-GET         /niphl-question                                                                 controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-question                                                                 controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-question/check                                                           controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-question/check                                                           controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/niphl-question                                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
 
 GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
