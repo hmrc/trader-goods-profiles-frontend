@@ -19,6 +19,8 @@ package controllers
 import controllers.actions._
 import models.NormalMode
 import models.helper.CategorisationUpdate
+import navigation.Navigator
+import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CommodityQuery
@@ -38,7 +40,8 @@ class CategoryGuidanceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
   auditService: AuditService,
-  categorisationService: CategorisationService
+  categorisationService: CategorisationService,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -65,7 +68,7 @@ class CategoryGuidanceController @Inject() (
           recordId
         )
 
-      Redirect(routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex).url)
+      Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
 
   }
 }

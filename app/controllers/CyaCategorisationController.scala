@@ -21,7 +21,9 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{CategorisationAnswers, CategoryRecord, Scenario, ValidationError}
+import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario, ValidationError}
+import navigation.Navigator
+import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.RecordCategorisationsQuery
@@ -42,7 +44,8 @@ class CyaCategorisationController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
   goodsRecordConnector: GoodsRecordConnector,
-  auditService: AuditService
+  auditService: AuditService,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -104,9 +107,7 @@ class CyaCategorisationController @Inject() (
           )
 
           goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
-            Redirect(
-              routes.CategorisationResultController.onPageLoad(recordId, Scenario.getScenario(model))
-            )
+            Redirect(navigator.nextPage(CyaCategorisationPage(recordId, model), NormalMode, request.userAnswers))
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
       }
