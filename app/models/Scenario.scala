@@ -35,15 +35,11 @@ object Scenario {
       categorisationInfo.categoryAssessments.nonEmpty
 
     val hasCategory1Assessments: Boolean =
-      categorisationInfo.categoryAssessments
-        .filter(_.category == 1)
-        .nonEmpty
+      categorisationInfo.categoryAssessments.exists(_.category == 1)
 
     val hasCategory1Exemptions: Boolean =
       categorisationInfo.categoryAssessments
-        .filter(_.category == 1)
-        .flatMap(categoryAssessment => categoryAssessment.exemptions)
-        .nonEmpty
+        .exists(assessment => assessment.category == 1 && assessment.exemptions.nonEmpty)
 
     (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions) match {
       case (true, true, false)   => Category1NoExemptions
