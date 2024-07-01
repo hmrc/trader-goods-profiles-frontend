@@ -26,7 +26,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CommodityQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Constants.firstAssessmentIndex
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject

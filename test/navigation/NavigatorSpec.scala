@@ -407,7 +407,11 @@ class NavigatorSpec extends SpecBase {
           category = 1,
           answeredAssessmentCount = 0
         )
-        navigator.nextPage(CyaCategorisationPage(testRecordId, categoryRecord), NormalMode, emptyUserAnswers)
+        navigator.nextPage(
+          CyaCategorisationPage(testRecordId, categoryRecord, Scenario.getScenario(categoryRecord)),
+          NormalMode,
+          emptyUserAnswers
+        )
       }
     }
 
