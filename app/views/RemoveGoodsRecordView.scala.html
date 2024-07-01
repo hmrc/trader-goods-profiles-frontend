@@ -19,12 +19,20 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukWarningText: GovukWarningText
 )
 
 @(form: Form[_], recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("removeGoodsRecord.title"))) {
+
+      <h1 class="govuk-heading-xl">@messages("removeGoodsRecord.heading")</h1>
+
+    @govukWarningText(WarningText(
+        iconFallbackText = Some(messages("removeGoodsRecord.warning")),
+        content = Text(messages("removeGoodsRecord.warningText"))
+    ))
 
     @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId), Symbol("autoComplete") -> "off") {
 
@@ -33,14 +41,18 @@
         }
 
         @govukRadios(
-            RadiosViewModel.yesNo(
+            RadiosViewModel.apply(
                 field = form("value"),
-                legend = LegendViewModel(messages("removeGoodsRecord.heading")).asPageHeading()
+                legend = LegendViewModel(messages("removeGoodsRecord.question")).asSecondaryHeading(),
+                  items = Seq(
+                                RadioItem(content = messages("removeGoodsRecord.yes"), value = Some("true")),
+                                RadioItem(content = messages("removeGoodsRecord.no"), value = Some("false"))
+                            )
             )
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.save.continue"))
         )
     }
 }

@@ -22,7 +22,6 @@ import models.router.responses.{Assessment, Condition, GetGoodsRecordResponse, G
 import play.api.libs.json.{JsValue, Json}
 
 import java.time.Instant
-import scala.language.postfixOps
 
 trait GetRecordsResponseUtil {
 

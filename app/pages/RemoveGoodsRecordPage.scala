@@ -16,11 +16,4 @@
 
 package pages
 
-import play.api.libs.json.JsPath
-
-case object RemoveGoodsRecordPage extends QuestionPage[Boolean] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "removeGoodsRecord"
-}
+case object RemoveGoodsRecordPage extends Page
