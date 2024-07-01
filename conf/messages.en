@@ -403,3 +403,9 @@ goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
 
 
+
+removeGoodsRecord.title = removeGoodsRecord
+removeGoodsRecord.heading = removeGoodsRecord
+removeGoodsRecord.checkYourAnswersLabel = removeGoodsRecord
+removeGoodsRecord.error.required = Select yes if removeGoodsRecord
+removeGoodsRecord.change.hidden = RemoveGoodsRecord
