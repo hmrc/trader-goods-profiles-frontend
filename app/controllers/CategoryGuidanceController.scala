@@ -50,21 +50,20 @@ class CategoryGuidanceController @Inject() (
     implicit request =>
       (for {
         ua <- categorisationService.requireCategorisation(request, recordId)
-        recordCategorisations = ua.get(RecordCategorisationsQuery).get
-        categorisationInfo = recordCategorisations.records.get(recordId).get
-        scenario = Scenario.getRedirectScenarios(categorisationInfo)
-        categoryRecord = CategoryRecord.build(ua, request.eori, recordId).right.get
-      } yield {
-        scenario match {
-          case Category1NoExemptions | StandardNoAssessments =>
+        recordCategorisations <- Future.successful(ua.get(RecordCategorisationsQuery))
+        categorisationInfo <- Future.successful(recordCategorisations.flatMap(_.records.get(recordId)))
+        scenario = categorisationInfo.map(Scenario.getRedirectScenarios)
+      } yield scenario match {
+        case Some(Category1NoExemptions | StandardNoAssessments) =>
+          CategoryRecord.build(ua, request.eori, recordId).map { categoryRecord =>
             goodsRecordConnector
               .updateGoodsRecord(request.eori, recordId, categoryRecord)
               .map { _ =>
-                Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario).url)
+                Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
               }
-          case NoRedirectScenario =>
-            Future.successful(Ok(view(recordId)))
-        }
+          }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+        case Some(NoRedirectScenario) =>
+          Future.successful(Ok(view(recordId)))
       }).flatMap(identity).recover {
         case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
