@@ -107,7 +107,13 @@ class CyaCategorisationController @Inject() (
           )
 
           goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
-            Redirect(navigator.nextPage(CyaCategorisationPage(recordId, model, Scenario.getScenario(model)), NormalMode, request.userAnswers))
+            Redirect(
+              navigator.nextPage(
+                CyaCategorisationPage(recordId, model, Scenario.getScenario(model)),
+                NormalMode,
+                request.userAnswers
+              )
+            )
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
       }
