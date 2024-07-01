@@ -165,8 +165,8 @@ case class AuditEventFactory() {
     val auditDetails = ValidateCommodityCodeEvent(
       auditData.eori,
       auditData.affinityGroup.toString,
-      auditData.journey.map(_.toString).getOrElse("null"),
-      auditData.recordId.getOrElse("null"),
+      auditData.journey.map(_.toString),
+      auditData.recordId,
       auditData.commodityCode,
       requestDateTime.toString,
       responseDateTime.toString,
@@ -174,11 +174,12 @@ case class AuditEventFactory() {
         if (responseStatus == OK) "valid" else "invalid",
         codeDescriptions(responseStatus),
         responseStatus.toString,
-        errorMessage.getOrElse("null")
+        errorMessage
       ),
-      commodityDetails.map(_.description).getOrElse("null"),
-      commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"),
-      commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
+      commodityDetails.map(_.description),
+      // If commodityDetails are defined and no endDate then we got sent a null for this so pass it on.
+      commodityDetails.map(_.validityEndDate.map(_.toString).getOrElse("null")),
+      commodityDetails.map(_.validityStartDate.toString)
     )
 
     ExtendedDataEvent(
