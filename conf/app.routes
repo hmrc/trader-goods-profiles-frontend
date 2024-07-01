@@ -148,4 +148,3 @@ POST       /update-record/:recordId/categorisation/longer-commodity-code/check  
 GET         /goods-profile                                                                  controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                                                  controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
-GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
