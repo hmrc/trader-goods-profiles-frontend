@@ -68,7 +68,7 @@ class NameController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(
               navigator.nextPage(NamePage(recordId), mode, updatedAnswers)
-            ) //TODO navigate to correct page
+            )
         )
     }
 }
