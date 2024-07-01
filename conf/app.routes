@@ -148,3 +148,8 @@ POST       /update/:recordId/longer-commodity-code/check     controllers.LongerC
 GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
+
+GET        /hasCountryOfOriginChange                        controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = NormalMode)
+POST       /hasCountryOfOriginChange                        controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = NormalMode)
+GET        /changeHasCountryOfOriginChange                  controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeHasCountryOfOriginChange                  controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = CheckMode)

@@ -403,3 +403,9 @@ goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
 
 
+
+hasCountryOfOriginChange.title = hasCountryOfOriginChange
+hasCountryOfOriginChange.heading = hasCountryOfOriginChange
+hasCountryOfOriginChange.checkYourAnswersLabel = hasCountryOfOriginChange
+hasCountryOfOriginChange.error.required = Select yes if hasCountryOfOriginChange
+hasCountryOfOriginChange.change.hidden = HasCountryOfOriginChange
