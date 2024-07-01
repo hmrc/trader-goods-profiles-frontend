@@ -22,11 +22,11 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("removeGoodsRecord.title"))) {
 
-    @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

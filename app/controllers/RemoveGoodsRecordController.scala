@@ -16,15 +16,16 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.RemoveGoodsRecordFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.NormalMode
 import navigation.Navigator
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RemoveGoodsRecordView
 
@@ -32,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveGoodsRecordController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
+  goodsRecordConnector: GoodsRecordConnector,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
@@ -46,26 +47,25 @@ class RemoveGoodsRecordController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(RemoveGoodsRecordPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
-
-    Ok(view(preparedForm, mode))
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      Ok(view(form, recordId))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(RemoveGoodsRecordPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(RemoveGoodsRecordPage, mode, updatedAnswers))
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
+          {
+            case true  =>
+              goodsRecordConnector
+                .removeGoodsRecord(request.eori, recordId)
+                .map(_ => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
+            case false =>
+              Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
+          }
         )
   }
 }

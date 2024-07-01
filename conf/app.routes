@@ -149,7 +149,5 @@ GET         /goods-profile                                    controllers.GoodsR
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
 
-GET        /removeGoodsRecord                        controllers.RemoveGoodsRecordController.onPageLoad(mode: Mode = NormalMode)
-POST       /removeGoodsRecord                        controllers.RemoveGoodsRecordController.onSubmit(mode: Mode = NormalMode)
-GET        /changeRemoveGoodsRecord                  controllers.RemoveGoodsRecordController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeRemoveGoodsRecord                  controllers.RemoveGoodsRecordController.onSubmit(mode: Mode = CheckMode)
+GET         /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String)
+POST        /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String)
