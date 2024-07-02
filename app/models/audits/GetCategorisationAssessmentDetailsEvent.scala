@@ -21,7 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 case class GetCategorisationAssessmentDetailsEventOutcome(
   status: String,
   statusCode: String,
-  failureReason: String
+  failureReason: Option[String]
 )
 
 object GetCategorisationAssessmentDetailsEventOutcome {
@@ -32,15 +32,15 @@ object GetCategorisationAssessmentDetailsEventOutcome {
 case class GetCategorisationAssessmentDetailsEvent(
   eori: String,
   affinityGroup: String,
-  recordId: String,
+  recordId: Option[String],
   commodityCode: String,
-  countryOfOrigin: String,
-  dateOfTrade: String,
+  countryOfOrigin: Option[String],
+  dateOfTrade: Option[String],
   requestDateTime: String,
   responseDateTime: String,
   outcome: GetCategorisationAssessmentDetailsEventOutcome,
-  categoryAssessmentOptions: String,
-  exemptionOptions: String
+  categoryAssessmentOptions: Option[String],
+  exemptionOptions: Option[String]
 )
 
 object GetCategorisationAssessmentDetailsEvent {
