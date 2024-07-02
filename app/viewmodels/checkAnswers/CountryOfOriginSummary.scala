@@ -24,6 +24,7 @@ import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+import models.GoodsRecord
 
 object CountryOfOriginSummary {
 
@@ -39,4 +40,15 @@ object CountryOfOriginSummary {
         )
       )
     }
+
+  //TBD - this will be updated to route to the update trader reference page
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "countryOfOrigin.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
+      )
+    )
 }

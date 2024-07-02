@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, GoodsRecord, UserAnswers}
 import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -38,4 +38,15 @@ object GoodsDescriptionSummary {
         )
       )
     }
+
+  //TBD - this will be updated to route to the update trader reference page
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "goodsDescription.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+      )
+    )
 }

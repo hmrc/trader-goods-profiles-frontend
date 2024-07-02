@@ -145,9 +145,11 @@ POST       /update-record/:recordId/categorisation/longer-commodity-code        
 GET        /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad(page: Int)
-POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
-GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
+GET         /goods-profile                                                                  controllers.GoodsRecordsController.onPageLoad(page: Int)
+POST        /goods-profile                                                                  controllers.GoodsRecordsController.onSearch(page: Int)
+GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
 
-GET         /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String)
-POST        /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String)
+GET         /remove-record/:recordId                                                        controllers.RemoveGoodsRecordController.onPageLoad(recordId: String)
+POST        /remove-record/:recordId                                                        controllers.RemoveGoodsRecordController.onSubmit(recordId: String)
+
+GET         /goods-record/:recordId                                                         controllers.SingleRecordController.onPageLoad(recordId: String)
