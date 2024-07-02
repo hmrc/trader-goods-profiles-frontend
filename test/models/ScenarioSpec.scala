@@ -33,7 +33,7 @@ class ScenarioSpec extends AnyFreeSpec with Matchers with TryValues with OptionV
           eori = testEori,
           recordId = testRecordId,
           category = 1,
-          answeredAssessmentCount = 3,
+          categoryAssessmentsWithExemptions = 3,
           measurementUnit = Some("1")
         )
 
@@ -48,7 +48,7 @@ class ScenarioSpec extends AnyFreeSpec with Matchers with TryValues with OptionV
           eori = testEori,
           recordId = testRecordId,
           category = 2,
-          answeredAssessmentCount = 3,
+          categoryAssessmentsWithExemptions = 3,
           measurementUnit = Some("1")
         )
 
@@ -63,7 +63,7 @@ class ScenarioSpec extends AnyFreeSpec with Matchers with TryValues with OptionV
           eori = testEori,
           recordId = testRecordId,
           category = 3,
-          answeredAssessmentCount = 3,
+          categoryAssessmentsWithExemptions = 3,
           measurementUnit = Some("1")
         )
 

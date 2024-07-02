@@ -16,7 +16,6 @@
 
 package models
 
-import play.api.i18n.Messages
 import play.api.libs.json._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import viewmodels.govuk.select._

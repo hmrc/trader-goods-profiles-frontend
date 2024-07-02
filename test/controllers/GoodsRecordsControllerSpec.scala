@@ -26,16 +26,13 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.GoodsRecordsPage
-import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Pagination, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
-import viewmodels.govuk.table._
-import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
+import views.html.GoodsRecordsView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -46,28 +43,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
 
   private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(1).url
-
-  private[this] def headers()(implicit messages: Messages): Seq[TableRow] =
-    Seq(
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.traderReference"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.commodityCode"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.status"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.actions"))
-      ).withCssClass("govuk-!-font-weight-bold")
-    )
 
   private val response = GetRecordsResponse(
     Seq(
@@ -165,7 +140,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
-          headers()(messages(application)),
           response.goodsItemRecords,
           10,
           1,
@@ -209,13 +183,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[GoodsRecordsEmptyView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(
-          request,
-          messages(application)
-        ).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
       }
     }
 
@@ -250,7 +219,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form.fill("answer"),
-          headers()(messages(application)),
           response.goodsItemRecords,
           10,
           1,
@@ -302,7 +270,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form.fill("answer"),
-          headers()(messages(application)),
           response.goodsItemRecords,
           10,
           1,
@@ -356,7 +323,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
           boundForm,
-          headers()(messages(application)),
           Seq.empty,
           0,
           0,
@@ -433,7 +399,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
-          headers()(messages(application)),
           middlePageResponse.goodsItemRecords,
           10,
           3,
@@ -480,7 +445,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
-          headers()(messages(application)),
           lastPageResponse.goodsItemRecords,
           10,
           7,

@@ -27,7 +27,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CreateRecordStartView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class CreateRecordStartController @Inject() (
   override val messagesApi: MessagesApi,

@@ -16,13 +16,12 @@
 
 package utils
 
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.testEori
 import models.GoodsRecordsPagination
 import models.router.responses.{Assessment, Condition, GetGoodsRecordResponse, GetRecordsResponse}
 import play.api.libs.json.{JsValue, Json}
 
 import java.time.Instant
-import scala.language.postfixOps
 
 trait GetRecordsResponseUtil {
 
@@ -154,7 +153,7 @@ trait GetRecordsResponseUtil {
     recordId = "c89e1d92-129e-47c3-aa37-3569f21133aa",
     traderRef = "BAN001001",
     commodityCode = "11063010",
-    adviceStatus = "Not requested",
+    declarable = "Not requested",
     goodsDescription = "Organic bananas",
     countryOfOrigin = "EC",
     createdDateTime = Instant.parse("2024-10-12T16:12:34Z"),

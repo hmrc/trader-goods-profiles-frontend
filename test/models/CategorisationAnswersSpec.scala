@@ -51,7 +51,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "all assessments are answered and supplementary unit was not asked" in {
 
         val answers =
-          userAnswersForCategorisationCya
+          userAnswersForCategorisation
 
         val result = CategorisationAnswers.build(answers, testRecordId)
 
@@ -63,7 +63,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "and supplementary unit was asked for and the answer was no" in {
 
         val answers =
-          userAnswersForCategorisationCya
+          userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
@@ -78,7 +78,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "and supplementary unit was asked for and the answer was yes and it was supplied" in {
 
         val answers =
-          userAnswersForCategorisationCya
+          userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
@@ -100,7 +100,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "when the user said they have a supplementary unit but it is missing" in {
 
         val answers =
-          userAnswersForCategorisationCya
+          userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
@@ -115,7 +115,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "when the user has a supplementary unit without being asked about it " in {
 
         val answers =
-          userAnswersForCategorisationCya
+          userAnswersForCategorisation
             .set(SupplementaryUnitPage(testRecordId), "42.0")
             .success
             .value

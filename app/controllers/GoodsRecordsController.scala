@@ -21,18 +21,15 @@ import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import models.router.responses.GetGoodsRecordResponse
-
-import javax.inject.Inject
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Pagination, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
+import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
-import viewmodels.govuk.table._
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsController @Inject() (
@@ -69,7 +66,6 @@ class GoodsRecordsController @Inject() (
           Ok(
             view(
               preparedForm,
-              headers(),
               goodsRecordResponse.goodsItemRecords.sorted,
               goodsRecordResponse.pagination.totalRecords,
               getFirstRecord(goodsRecordResponse),
@@ -80,31 +76,13 @@ class GoodsRecordsController @Inject() (
             )
           )
         } else {
-          Ok(emptyView())
+          Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
         }
   }
 
-  private[this] def headers()(implicit messages: Messages): Seq[TableRow] =
-    Seq(
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.traderReference"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.commodityCode"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.status"))
-      ).withCssClass("govuk-!-font-weight-bold"),
-      TableRowViewModel(
-        content = Text(messages("goodsRecords.tableHeader.actions"))
-      ).withCssClass("govuk-!-font-weight-bold")
-    )
+  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    Ok(emptyView())
+  }
 
   def onSearch(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
@@ -113,7 +91,7 @@ class GoodsRecordsController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, headers(), Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
+              BadRequest(view(formWithErrors, Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
             ),
           value =>
             for {
@@ -124,7 +102,6 @@ class GoodsRecordsController @Inject() (
             } yield Ok(
               view(
                 form.fill(value),
-                headers(),
                 goodsRecordResponse.goodsItemRecords,
                 goodsRecordResponse.pagination.totalRecords,
                 getFirstRecord(goodsRecordResponse),

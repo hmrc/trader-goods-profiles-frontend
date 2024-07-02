@@ -152,3 +152,7 @@ POST       /update/:recordId/longer-commodity-code/check     controllers.LongerC
 
 GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
+GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
+
+GET         /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String)
+POST        /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String)
