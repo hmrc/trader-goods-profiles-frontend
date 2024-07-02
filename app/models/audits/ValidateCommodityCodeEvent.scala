@@ -22,7 +22,7 @@ case class ValidateCommodityCodeEventOutcome(
   commodityCodeStatus: String,
   status: String,
   statusCode: String,
-  failureReason: String
+  failureReason: Option[String]
 )
 
 object ValidateCommodityCodeEventOutcome {
@@ -32,15 +32,15 @@ object ValidateCommodityCodeEventOutcome {
 case class ValidateCommodityCodeEvent(
   eori: String,
   affinityGroup: String,
-  journey: String,
-  recordId: String,
+  journey: Option[String],
+  recordId: Option[String],
   commodityCode: String,
   requestDateTime: String,
   responseDateTime: String,
   outcome: ValidateCommodityCodeEventOutcome,
-  commodityDescription: String,
-  commodityCodeEffectiveTo: String,
-  commodityCodeEffectiveFrom: String
+  commodityDescription: Option[String],
+  commodityCodeEffectiveTo: Option[String],
+  commodityCodeEffectiveFrom: Option[String]
 )
 
 object ValidateCommodityCodeEvent {

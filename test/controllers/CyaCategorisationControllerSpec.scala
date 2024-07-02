@@ -313,7 +313,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 eori = testEori,
                 recordId = testRecordId,
                 category = 1,
-                answeredAssessmentCount = 0,
+                categoryAssessmentsWithExemptions = 0,
                 measurementUnit = Some("Weight, in kilograms")
               )
 
@@ -362,7 +362,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 eori = testEori,
                 recordId = testRecordId,
                 category = 1,
-                answeredAssessmentCount = 0,
+                categoryAssessmentsWithExemptions = 0,
                 measurementUnit = Some("Weight, in kilograms")
               )
 
