@@ -40,6 +40,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def createGoodsRecordUrl(eori: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
 
+  private def deleteGoodsRecordUrl(eori: String, recordId: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
+
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
 
@@ -60,6 +63,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.json.as[CreateGoodsRecordResponse])
+
+  def removeGoodsRecord(eori: String, recordId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] =
+    httpClient
+      .delete(deleteGoodsRecordUrl(eori, recordId))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def updateGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
