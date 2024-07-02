@@ -48,6 +48,7 @@ class Navigator @Inject() () {
     case p: AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
+    case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
     case _                           => _ => routes.IndexController.onPageLoad
 
   }

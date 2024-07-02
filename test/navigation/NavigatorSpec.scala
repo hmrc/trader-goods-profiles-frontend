@@ -337,6 +337,11 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
+        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, emptyUserAnswers) mustEqual routes.GoodsRecordsController
+          .onPageLoad(1)
+      }
+
       "in Supplementary Unit Journey" - {
 
         "must go from HasSupplementaryUnitPage" - {
