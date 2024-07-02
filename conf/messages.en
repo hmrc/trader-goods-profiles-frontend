@@ -411,7 +411,6 @@ removeGoodsRecord.question = Are you sure you want to remove this goods record?
 removeGoodsRecord.yes = Yes, remove this goods record
 removeGoodsRecord.no = No, return to goods profile
 
-
 hasCountryOfOriginChange.title = Changing the country of origin
 hasCountryOfOriginChange.h1 = Changing the country of origin
 hasCountryOfOriginChange.p1 = You will need to recategorise the goods record if you change the country of origin
