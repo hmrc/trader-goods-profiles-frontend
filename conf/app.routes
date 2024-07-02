@@ -53,15 +53,15 @@ POST        /ukims-number/check                              controllers.UkimsNu
 GET         /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
-GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/commodity-code/check              controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/commodity-code/check              controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-record/commodity-code/check              controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-record/commodity-code/check              controllers.CommodityCodeController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
-POST        /update-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
-GET         /update-record/commodity-code/check              controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
-POST        /update-record/commodity-code/check              controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+GET         /update-record/:recordId/commodity-code          controllers.CommodityCodeController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/commodity-code          controllers.CommodityCodeController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/commodity-code/check    controllers.CommodityCodeController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/commodity-code/check    controllers.CommodityCodeController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
 GET         /create-record/country-of-origin                 controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/country-of-origin                 controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
