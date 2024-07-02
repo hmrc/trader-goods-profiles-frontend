@@ -28,7 +28,7 @@ import java.time.Instant
 
 class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
-  private val testCommodity = Commodity("1234567890", "test", Instant.now, None)
+  private val testCommodity = Commodity("1234567890", List("test"), Instant.now, None)
 
   ".build" - {
 

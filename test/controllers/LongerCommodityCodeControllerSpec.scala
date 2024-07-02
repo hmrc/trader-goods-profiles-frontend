@@ -138,7 +138,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
         .successful(
-          Commodity("654321", "Description", Instant.now, None)
+          Commodity("654321", List("Description"), Instant.now, None)
         )
 
       val application =

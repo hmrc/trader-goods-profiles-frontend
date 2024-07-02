@@ -72,14 +72,25 @@ class OttConnectorSpec
     "must return correct commodity object" - {
 
       "when validity end date is undefined" in {
-        val commodity = Commodity("123456", "Commodity description", Instant.parse("2012-01-01T00:00:00.000Z"), None)
+        val commodity =
+          Commodity(
+            "123456",
+            List("Other", "Prepared explosives, other than propellent powders", "Of cotton"),
+            Instant.parse("2012-01-01T00:00:00.000Z"),
+            None
+          )
 
         wireMockServer.stubFor(
           get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
             .willReturn(
               ok().withBody(
-                "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
-                  "\"validity_start_date\": \"2012-01-01T00:00:00.000Z\",\n            \"validity_end_date\": null }\n  }\n}"
+                "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Other\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
+                  "\"validity_start_date\": \"2012-01-01T00:00:00.000Z\",\n            \"validity_end_date\": null }\n  }\n, \"included\": [{\n      \"id\": \"38195\",\n      " +
+                  "\"type\": \"heading\",\n      \"attributes\": {\n        \"goods_nomenclature_item_id\": \"3602000000\",\n        \"description\": \"Prepared explosives, other than propellent powders\",\n        " +
+                  "\"formatted_description\": \"Prepared explosives, other than propellent powders\",\n        \"description_plain\": \"Prepared explosives, other than propellent powders\",\n        " +
+                  "\"validity_start_date\": \"1972-01-01T00:00:00.000Z\",\n        \"validity_end_date\": null\n      }\n    }\n,{\n      \"id\": \"43521\",\n      \"type\": \"commodity\",\n      \"attributes\": {\n        " +
+                  "\"producline_suffix\": \"80\",\n        \"description\": \"Of cotton\",\n        \"number_indents\": 2,\n        \"goods_nomenclature_item_id\": \"6211320000\",\n        \"formatted_description\": \"Of cotton\",\n        " +
+                  "\"description_plain\": \"Of cotton\",\n        \"validity_start_date\": \"1972-01-01T00:00:00.000Z\",\n        \"validity_end_date\": null\n      }\n    }\n  ]\n}"
               )
             )
         )
@@ -97,7 +108,7 @@ class OttConnectorSpec
       "when validity end date is defined" in {
         val commodity = Commodity(
           "123456",
-          "Commodity description",
+          List("Commodity description"),
           Instant.parse("2012-01-01T00:00:00.000Z"),
           Some(Instant.parse("2032-01-01T00:00:00.000Z"))
         )

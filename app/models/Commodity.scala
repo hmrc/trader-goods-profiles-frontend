@@ -18,12 +18,13 @@ package models
 
 import play.api.libs.json.OFormat
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 import java.time.Instant
 
 case class Commodity(
   commodityCode: String,
-  description: String,
+  descriptions: List[String],
   validityStartDate: Instant,
   validityEndDate: Option[Instant]
 )
@@ -32,11 +33,25 @@ object Commodity {
 
   val reads: Reads[Commodity] = {
 
-    import play.api.libs.functional.syntax._
+    def extractDescriptions(json: JsValue): List[String] = {
+      val description        = (json \ "data" \ "attributes" \ "description").asOpt[String].toList
+      val included           = (json \ "included").asOpt[JsArray].getOrElse(JsArray())
+      val headingDescription = included.value.collect {
+        case obj if (obj \ "type").asOpt[String].contains("heading") =>
+          (obj \ "attributes" \ "description").asOpt[String]
+      }.flatten
+
+      val subheadingDescription = included.value.collect {
+        case obj if (obj \ "type").asOpt[String].contains("commodity") =>
+          (obj \ "attributes" \ "description").asOpt[String]
+      }.flatten
+
+      description ++ headingDescription ++ subheadingDescription
+    }
 
     (
       (__ \ "data" \ "attributes" \ "goods_nomenclature_item_id").read[String] and
-        (__ \ "data" \ "attributes" \ "description").read[String] and
+        __.read[JsValue].map(extractDescriptions) and
         (__ \ "data" \ "attributes" \ "validity_start_date").read[Instant] and
         (__ \ "data" \ "attributes" \ "validity_end_date").readNullable[Instant]
     )(Commodity.apply _)
@@ -44,11 +59,37 @@ object Commodity {
 
   val writes: OWrites[Commodity] = {
 
-    import play.api.libs.functional.syntax._
+    def writeDescriptions(descriptions: List[String]): JsValue = {
+      val description = descriptions.headOption
+        .map { desc =>
+          Json.obj("data" -> Json.obj("attributes" -> Json.obj("description" -> desc)))
+        }
+        .getOrElse(Json.obj())
+      val included = {
+        val heading = descriptions.lift(1).map { desc =>
+          Json.obj(
+            "type"       -> "heading",
+            "attributes" -> Json.obj("description" -> desc)
+          )
+        }
+
+        val subheading = descriptions.lift(2).map { desc =>
+          Json.obj(
+            "type"       -> "commodity",
+            "attributes" -> Json.obj("description" -> desc)
+          )
+        }
+
+        Json.arr(heading, subheading)
+      }
+
+      description ++ Json.obj("included" -> included)
+
+    }
 
     (
       (__ \ "data" \ "attributes" \ "goods_nomenclature_item_id").write[String] and
-        (__ \ "data" \ "attributes" \ "description").write[String] and
+        __.write[JsValue].contramap(writeDescriptions) and
         (__ \ "data" \ "attributes" \ "validity_start_date").write[Instant] and
         (__ \ "data" \ "attributes" \ "validity_end_date").writeOptionWithNull[Instant]
     )(unlift(Commodity.unapply))
