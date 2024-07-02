@@ -21,8 +21,6 @@ import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import models.router.responses.GetGoodsRecordResponse
-
-import javax.inject.Inject
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,6 +29,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsController @Inject() (

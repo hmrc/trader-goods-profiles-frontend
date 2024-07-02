@@ -108,7 +108,7 @@ case class AuditEventFactory() {
     journey: Journey,
     recordId: String,
     categoryAssessmentsWithExemptions: Int,
-    category: Int //TODO not an int use type
+    category: Int
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "eori"                              -> eori,
@@ -165,8 +165,8 @@ case class AuditEventFactory() {
     val auditDetails = ValidateCommodityCodeEvent(
       auditData.eori,
       auditData.affinityGroup.toString,
-      auditData.journey.map(_.toString).getOrElse("null"),
-      auditData.recordId.getOrElse("null"),
+      auditData.journey.map(_.toString),
+      auditData.recordId,
       auditData.commodityCode,
       requestDateTime.toString,
       responseDateTime.toString,
@@ -174,11 +174,12 @@ case class AuditEventFactory() {
         if (responseStatus == OK) "valid" else "invalid",
         codeDescriptions(responseStatus),
         responseStatus.toString,
-        errorMessage.getOrElse("null")
+        errorMessage
       ),
-      commodityDetails.map(_.description).getOrElse("null"),
-      commodityDetails.flatMap(_.validityEndDate.map(_.toString)).getOrElse("null"),
-      commodityDetails.map(_.validityStartDate.toString).getOrElse("null")
+      commodityDetails.map(_.description),
+      // If commodityDetails are defined and no endDate then we got sent a null for this so pass it on.
+      commodityDetails.map(_.validityEndDate.map(_.toString).getOrElse("null")),
+      commodityDetails.map(_.validityStartDate.toString)
     )
 
     ExtendedDataEvent(
@@ -201,19 +202,19 @@ case class AuditEventFactory() {
     val auditDetails = GetCategorisationAssessmentDetailsEvent(
       auditData.eori,
       auditData.affinityGroup.toString,
-      auditData.recordId.getOrElse("null"),
+      auditData.recordId,
       auditData.commodityCode,
-      auditData.countryOfOrigin.getOrElse("null"),
-      auditData.dateOfTrade.map(_.toString).getOrElse("null"),
+      auditData.countryOfOrigin,
+      auditData.dateOfTrade.map(_.toString),
       requestDateTime.toString,
       responseDateTime.toString,
       GetCategorisationAssessmentDetailsEventOutcome(
         codeDescriptions(responseStatus),
         responseStatus.toString,
-        errorMessage.getOrElse("null")
+        errorMessage
       ),
-      ottResponse.map(_.categoryAssessments.size.toString).getOrElse("null"),
-      ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString).getOrElse("null")
+      ottResponse.map(_.categoryAssessments.size.toString),
+      ottResponse.map(_.categoryAssessments.map(_.exemptions.size).sum.toString)
     )
 
     ExtendedDataEvent(

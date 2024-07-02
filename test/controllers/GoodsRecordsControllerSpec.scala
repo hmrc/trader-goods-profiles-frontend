@@ -32,7 +32,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
-import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
+import views.html.GoodsRecordsView
 
 import java.time.Instant
 import scala.concurrent.Future

@@ -324,7 +324,7 @@ class GoodsRecordConnectorSpec
       eori = testEori,
       recordId = testRecordId,
       category = 1,
-      answeredAssessmentCount = 3,
+      categoryAssessmentsWithExemptions = 3,
       measurementUnit = Some("1"),
       supplementaryUnit = Some("123.123")
     )
