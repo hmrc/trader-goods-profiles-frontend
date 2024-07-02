@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import connectors.AccreditationConnector
 import models.UserAnswers
 import org.apache.pekko.Done
@@ -41,8 +42,8 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
-        NameSummary.row(userAnswers)(messages(app)),
-        EmailSummary.row(userAnswers)(messages(app))
+        NameSummary.row(userAnswers, testRecordId)(messages(app)),
+        EmailSummary.row(userAnswers, testRecordId)(messages(app))
       ).flatten
     )
 
@@ -55,7 +56,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
           val result = route(application, request).value
 
@@ -63,17 +64,17 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           val list = createChangeList(userAnswers, application)
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(list, testRecordId)(request, messages(application)).toString
         }
       }
 
       "must redirect to Journey Recovery if no answers are found" in {
 
         val application = applicationBuilder(Some(emptyUserAnswers)).build()
-        val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+        val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(testRecordId).url)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
           val result = route(application, request).value
 
@@ -88,7 +89,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
           val result = route(application, request).value
 
@@ -113,12 +114,12 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad().url
+          redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad(testRecordId).url
         }
       }
 
@@ -127,7 +128,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[AccreditationConnector]
-          val continueUrl   = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+          val continueUrl   = RedirectUrl(routes.AdviceStartController.onPageLoad(testRecordId).url)
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -135,7 +136,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
             val result = route(application, request).value
 
@@ -160,7 +161,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -173,7 +174,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
 
           val result = route(application, request).value
 
