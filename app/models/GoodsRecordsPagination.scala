@@ -33,35 +33,51 @@ case class GoodsRecordsPagination(
 object GoodsRecordsPagination {
   implicit val format: OFormat[GoodsRecordsPagination] = Json.format[GoodsRecordsPagination]
 
-  private def getPageSize(totalRecords: Int, recordsSize: Int, totalPages: Int): Int =
-    (totalRecords - recordsSize) / (totalPages - 1)
+  private def getPageSize(totalRecords: Int, totalPages: Int): Int =
+    (totalRecords - (totalRecords % totalPages)) / (totalPages - 1)
 
   def getFirstRecord(goodsRecordResponse: GetRecordsResponse): Int =
     getFirstRecordPos(
       goodsRecordResponse.pagination.totalRecords,
-      goodsRecordResponse.goodsItemRecords.size,
       goodsRecordResponse.pagination.totalPages,
       goodsRecordResponse.pagination.currentPage
     ) + 1
 
-  private def getFirstRecordPos(totalRecords: Int, recordsSize: Int, totalPages: Int, currentPage: Int): Int =
-    (currentPage - 1) * getPageSize(totalRecords, recordsSize, totalPages)
+  private def getFirstRecordPos(totalRecords: Int, totalPages: Int, currentPage: Int): Int =
+    (currentPage - 1) * getPageSize(totalRecords, totalPages)
 
   def getLastRecord(goodsRecordResponse: GetRecordsResponse): Int =
     goodsRecordResponse.goodsItemRecords.size + getFirstRecordPos(
       goodsRecordResponse.pagination.totalRecords,
-      goodsRecordResponse.goodsItemRecords.size,
       goodsRecordResponse.pagination.totalPages,
       goodsRecordResponse.pagination.currentPage
     )
 
-  def getPagination(pagination: GoodsRecordsPagination): Pagination =
+  def getPagination(pagination: GoodsRecordsPagination): Pagination = {
+    val start = if (pagination.currentPage <= 2) {
+      1
+    } else {
+      pagination.currentPage - 2
+    }
+
+    val end = if (pagination.currentPage >= pagination.totalPages - 2) {
+      pagination.totalPages + 1
+    } else {
+      pagination.currentPage + 3
+    }
+
     Pagination(
-      items = Some((0 until pagination.totalPages).map { index =>
+      items = Some((start until end).map { page =>
+        val ellipsis = if (page < pagination.currentPage - 1 || page > pagination.currentPage + 1) {
+          true
+        } else {
+          false
+        }
         PaginationItem(
-          number = Some((index + 1).toString()),
-          current = Some(pagination.currentPage == (index + 1)),
-          href = routes.GoodsRecordsController.onPageLoad(index + 1).url
+          number = Some(page.toString()),
+          current = Some(pagination.currentPage == page),
+          href = routes.GoodsRecordsController.onPageLoad(page).url,
+          ellipsis = Some(ellipsis)
         )
       }),
       previous = if (pagination.currentPage == 1) {
@@ -75,4 +91,5 @@ object GoodsRecordsPagination {
         Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(pagination.currentPage + 1).url))
       }
     )
+  }
 }

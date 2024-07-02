@@ -53,32 +53,36 @@ class GoodsRecordsController @Inject() (
 
   def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      for {
-        goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, Some(page))
-        countries           <- ottConnector.getCountries
-      } yield
-        if (goodsRecordResponse.pagination.totalRecords != 0) {
-          val preparedForm                                                   = request.userAnswers.get(GoodsRecordsPage) match {
-            case None        => form
-            case Some(value) => form.fill(value)
-          }
-          implicit val goodsRecordOrdering: Ordering[GetGoodsRecordResponse] = Ordering.by(_.updatedDateTime)
+      goodsRecordConnector.getRecordsCount(request.eori).flatMap {
+        case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
+        case _ =>
+          for {
+//            _                   <- goodsRecordConnector.storeLatestRecords(request.eori)
+            goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, Some(page))
+            countries           <- ottConnector.getCountries
+          } yield
+            if (goodsRecordResponse.pagination.totalRecords != 0) {
+              val preparedForm = request.userAnswers.get(GoodsRecordsPage) match {
+                case None        => form
+                case Some(value) => form.fill(value)
+              }
 
-          Ok(
-            view(
-              preparedForm,
-              goodsRecordResponse.goodsItemRecords.sorted,
-              goodsRecordResponse.pagination.totalRecords,
-              getFirstRecord(goodsRecordResponse),
-              getLastRecord(goodsRecordResponse),
-              countries,
-              getPagination(goodsRecordResponse.pagination),
-              page
-            )
-          )
-        } else {
-          Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
-        }
+              Ok(
+                view(
+                  preparedForm,
+                  goodsRecordResponse.goodsItemRecords,
+                  goodsRecordResponse.pagination.totalRecords,
+                  getFirstRecord(goodsRecordResponse),
+                  getLastRecord(goodsRecordResponse),
+                  countries,
+                  getPagination(goodsRecordResponse.pagination),
+                  page
+                )
+              )
+            } else {
+              Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
+            }
+      }
   }
 
   def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>

@@ -22,7 +22,6 @@ import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -49,7 +48,16 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
 
-  private def getGoodsRecordsUrl(
+  private def checkGoodsRecordsUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/check"
+
+  private def storeLatestGoodsRecordsUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/latest"
+
+  private def getGoodsRecordCountsUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
+
+  private def storeAllGoodsRecordsUrl(
     eori: String
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
@@ -100,7 +108,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[GetRecordsResponse] = {
 
-    val pageNumber  = 1
+    val pageNumber  = 0
     val pageSize    = 10
     val queryParams = Map(
       "page" -> page.getOrElse(pageNumber).toString,
@@ -114,27 +122,44 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .map(response => response.json.as[GetRecordsResponse])
   }
 
-  def getAllRecords(
+  def getRecordsCount(
     eori: String
-  )(implicit hc: HeaderCarrier): Future[GetRecordsResponse] =
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Int] =
     httpClient
-      .get(getGoodsRecordsUrl(eori))
+      .get(getGoodsRecordCountsUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[GetRecordsResponse])
+      .map(response => response.json.as[Int])
+
+  def storeAllRecords(
+    eori: String
+  )(implicit hc: HeaderCarrier): Future[Done] =
+    httpClient
+      .head(storeAllGoodsRecordsUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(_ => Done)
+
+  def storeLatestRecords(
+    eori: String
+  )(implicit hc: HeaderCarrier): Future[Done] =
+    httpClient
+      .head(storeLatestGoodsRecordsUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def doRecordsExist(
     eori: String
-  )(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] =
+  )(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .get(getGoodsRecordsUrl(eori))
+      .get(checkGoodsRecordsUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK =>
-            Some(response.json.as[GetRecordsResponse])
-
-        }
+      .map(_ => true)
+      .recover { case _: NotFoundException =>
+        false
       }
 }
