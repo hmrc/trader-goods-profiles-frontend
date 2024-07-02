@@ -21,17 +21,17 @@ import controllers.actions._
 import logging.Logging
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
+import navigation.Navigator
+import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.RecordCategorisationsQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Constants.firstAssessmentIndex
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -42,6 +42,7 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   auditService: AuditService,
   categorisationService: CategorisationService,
+  navigator: Navigator,
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -88,7 +89,7 @@ class CategoryGuidanceController @Inject() (
           recordId
         )
 
-      Redirect(routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex).url)
+      Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
 
   }
 }
