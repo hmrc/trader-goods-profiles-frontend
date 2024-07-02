@@ -17,7 +17,7 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
 import pages._
 import models._
@@ -42,24 +42,26 @@ class NavigatorSpec extends SpecBase {
 
         "must go from AdviceStartPage to NamePage" in {
 
-          navigator.nextPage(AdviceStartPage, NormalMode, emptyUserAnswers) mustBe routes.NameController
-            .onPageLoad(NormalMode)
+          navigator.nextPage(AdviceStartPage(testRecordId), NormalMode, emptyUserAnswers) mustBe routes.NameController
+            .onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from NamePage to EmailPage" in {
 
-          navigator.nextPage(NamePage, NormalMode, emptyUserAnswers) mustBe routes.EmailController.onPageLoad(
-            NormalMode
-          )
+          navigator.nextPage(NamePage(testRecordId), NormalMode, emptyUserAnswers) mustBe routes.EmailController
+            .onPageLoad(
+              NormalMode,
+              testRecordId
+            )
         }
 
         "must go from EmailPage to CyaRequestAdviceController" in {
 
           navigator.nextPage(
-            EmailPage,
+            EmailPage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
       }
 
@@ -395,6 +397,29 @@ class NavigatorSpec extends SpecBase {
 
       }
 
+      "must go from CategoryGuidancePage to Category Assessment page" in {
+        val recordId = testRecordId
+        val index    = 0
+        navigator.nextPage(
+          CategoryGuidancePage(recordId),
+          NormalMode,
+          emptyUserAnswers
+        ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
+      }
+
+      "must go from CyaCategorisationPage to CategorisationResult page" in {
+        val categoryRecord = CategoryRecord(
+          eori = testEori,
+          recordId = testRecordId,
+          category = 1,
+          categoryAssessmentsWithExemptions = 0
+        )
+        navigator.nextPage(
+          CyaCategorisationPage(testRecordId, categoryRecord, Scenario.getScenario(categoryRecord)),
+          NormalMode,
+          emptyUserAnswers
+        )
+      }
     }
 
     "in Check mode" - {
@@ -527,16 +552,20 @@ class NavigatorSpec extends SpecBase {
 
         "must go from NamePage to CyaRequestAdviceController" in {
 
-          navigator.nextPage(NamePage, CheckMode, emptyUserAnswers) mustBe routes.CyaRequestAdviceController.onPageLoad
+          navigator.nextPage(
+            NamePage(testRecordId),
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
 
         "must go from EmailPage to CyaRequestAdviceController" in {
 
           navigator.nextPage(
-            EmailPage,
+            EmailPage(testRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
       }
 
