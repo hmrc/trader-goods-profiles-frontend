@@ -402,12 +402,10 @@ goodsRecords.tableHeader.commodityCode = Commodity code
 goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
 
-
-
 hasCountryOfOriginChange.title = Changing the country of origin
 hasCountryOfOriginChange.h1 = Changing the country of origin
 hasCountryOfOriginChange.p1 = You will need to recategorise the goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin and goods description
 hasCountryOfOriginChange.checkYourAnswersLabel = hasCountryOfOriginChange
-hasCountryOfOriginChange.error.required = select if you want to change the country of origin
+hasCountryOfOriginChange.error.required = Select if you want to change the country of origin
 hasCountryOfOriginChange.change.hidden = HasCountryOfOriginChange

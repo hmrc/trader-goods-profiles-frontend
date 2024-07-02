@@ -1,6 +1,23 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import base.SpecBase
+import base.TestConstants.{testRecordId, userAnswersId}
 import forms.HasCountryOfOriginChangeFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -24,7 +41,8 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
   val formProvider = new HasCountryOfOriginChangeFormProvider()
   val form         = formProvider()
 
-  lazy val hasCountryOfOriginChangeRoute = routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode).url
+  lazy val hasCountryOfOriginChangeRoute =
+    routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
 
   "HasCountryOfOriginChange Controller" - {
 
@@ -40,13 +58,13 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
         val view = application.injector.instanceOf[HasCountryOfOriginChangeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasCountryOfOriginChangePage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasCountryOfOriginChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -58,7 +76,10 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -104,7 +125,10 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

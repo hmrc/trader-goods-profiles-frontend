@@ -30,43 +30,43 @@ import views.html.HasCountryOfOriginChangeView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasCountryOfOriginChangeController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         sessionRepository: SessionRepository,
-                                         navigator: Navigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         formProvider: HasCountryOfOriginChangeFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: HasCountryOfOriginChangeView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class HasCountryOfOriginChangeController @Inject() (
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  formProvider: HasCountryOfOriginChangeFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HasCountryOfOriginChangeView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      val preparedForm = request.userAnswers.get(HasCountryOfOriginChangePage) match {
-        case None => form
+      val preparedForm = request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, recordId))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage, value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage, mode, updatedAnswers))
-      )
-  }
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers))
+        )
+    }
 }

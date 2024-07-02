@@ -149,7 +149,7 @@ GET         /goods-profile                                    controllers.GoodsR
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
 
-GET        /hasCountryOfOriginChange                        controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = NormalMode)
-POST       /hasCountryOfOriginChange                        controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasCountryOfOriginChange                  controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasCountryOfOriginChange                  controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = CheckMode)
+GET        /update-record/:recordId/change-record-warning                        controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning                        controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/check                  controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/check                  controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)

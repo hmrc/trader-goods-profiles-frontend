@@ -24,21 +24,22 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object HasCountryOfOriginChangeSummary  {
+object HasCountryOfOriginChangeSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasCountryOfOriginChangePage).map {
-      answer =>
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(HasCountryOfOriginChangePage(recordId)).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
 
-        val value = if (answer) "site.yes" else "site.no"
-
-        SummaryListRowViewModel(
-          key     = "hasCountryOfOriginChange.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.HasCountryOfOriginChangeController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("hasCountryOfOriginChange.change.hidden"))
+      SummaryListRowViewModel(
+        key = "hasCountryOfOriginChange.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel(
+            "site.change",
+            routes.HasCountryOfOriginChangeController.onPageLoad(CheckMode, recordId).url
           )
+            .withVisuallyHiddenText(messages("hasCountryOfOriginChange.change.hidden"))
         )
+      )
     }
 }
