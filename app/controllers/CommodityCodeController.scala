@@ -52,27 +52,29 @@ class CommodityCodeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(CommodityCodePage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(CommodityCodePage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-    val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
+      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
 
-    Ok(view(preparedForm, onSubmitAction))
+      Ok(view(preparedForm, onSubmitAction))
   }
 
-  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(CommodityCodePage) match {
-      case None => form
-      case Some(value) => form.fill(value)
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(CommodityCodePage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+
+      Ok(view(preparedForm, onSubmitAction))
     }
-
-    val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
-
-    Ok(view(preparedForm, onSubmitAction))
-  }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
@@ -106,11 +108,11 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             (for {
-              commodity <-
+              commodity               <-
                 ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
+              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
-              _ <- sessionRepository.set(updatedAnswersWithQuery)
+              _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 val formWithApiErrors =
