@@ -16,12 +16,14 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
-import models.NormalMode
+import logging.Logging
+import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import models.helper.CategorisationUpdate
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CommodityQuery
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import queries.RecordCategorisationsQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Constants.firstAssessmentIndex
@@ -29,6 +31,7 @@ import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -38,21 +41,41 @@ class CategoryGuidanceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
   auditService: AuditService,
-  categorisationService: CategorisationService
+  categorisationService: CategorisationService,
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userAnswers.get(CommodityQuery) match {
-        case Some(_) =>
-          for {
-            _ <- categorisationService.requireCategorisation(request, recordId)
-          } yield Ok(view(recordId))
-        case None    =>
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-      }
+      categorisationService
+        .requireCategorisation(request, recordId)
+        .flatMap { userAnswers =>
+          val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
+          val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
+          val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
+          scenario match {
+            case Some(Category1NoExemptions | StandardNoAssessments) =>
+              CategoryRecord
+                .build(userAnswers, request.eori, recordId)
+                .map { categoryRecord =>
+                  goodsRecordConnector
+                    .updateGoodsRecord(request.eori, recordId, categoryRecord)
+                    .map { _ =>
+                      Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
+                    }
+                }
+                .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+            case Some(NoRedirectScenario)                            =>
+              Future.successful(Ok(view(recordId)))
+          }
+        }
+        .recover { e =>
+          logger.error(e.getMessage)
+          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        }
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {

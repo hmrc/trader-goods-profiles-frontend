@@ -49,7 +49,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when all category assessments answered" in {
 
-          val userAnswers = userAnswersForCategorisationCya
+          val userAnswers = userAnswersForCategorisation
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
           implicit val localMessages: Messages = messages(application)
@@ -131,7 +131,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when supplementary unit is supplied" in {
 
-          val userAnswers = userAnswersForCategorisationCya
+          val userAnswers = userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
@@ -178,7 +178,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when supplementary unit is not supplied" in {
 
-          val userAnswers = userAnswersForCategorisationCya
+          val userAnswers = userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value

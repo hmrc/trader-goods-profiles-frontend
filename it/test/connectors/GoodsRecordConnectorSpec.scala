@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination}
+import org.apache.pekko.Done
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -276,6 +277,44 @@ class GoodsRecordConnectorSpec
       )
 
       connector.submitGoodsRecord(goodsRecord).failed.futureValue
+    }
+  }
+
+  ".removeGoodsRecord" - {
+
+    val removeGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+
+    "must remove a goods record" in {
+
+      wireMockServer.stubFor(
+        delete(urlEqualTo(removeGoodsRecordUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(noContent())
+      )
+
+      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe Done
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        delete(urlEqualTo(removeGoodsRecordUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
+    }
+
+    "must return a failed future when the server returns not found" in {
+
+      wireMockServer.stubFor(
+        delete(urlEqualTo(removeGoodsRecordUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(notFound())
+      )
+
+      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
     }
   }
 
