@@ -58,7 +58,7 @@ class HasCorrectGoodsController @Inject() (
       case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
     }
   }
-  // TODO - this is still not functional, it is just to create the url. Implement this properly in UPDATE JOURNEY
+  // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
@@ -89,7 +89,7 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
         )
   }
-  // TODO - this is still not functional, it is just to create the url. Implement this properly in UPDATE JOURNEY
+  // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       form
