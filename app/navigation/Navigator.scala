@@ -53,6 +53,7 @@ class Navigator @Inject() () {
       _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentIndex)
     case p: CyaCategorisationPage    =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
+    case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
     case _                           => _ => routes.IndexController.onPageLoad
 
   }

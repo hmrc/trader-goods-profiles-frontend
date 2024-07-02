@@ -102,7 +102,7 @@ class CyaCategorisationController @Inject() (
             request.eori,
             request.affinityGroup,
             recordId,
-            model.answeredAssessmentCount,
+            model.categoryAssessmentsWithExemptions,
             model.category
           )
 

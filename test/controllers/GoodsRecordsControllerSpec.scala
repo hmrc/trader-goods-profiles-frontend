@@ -26,16 +26,13 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.GoodsRecordsPage
-import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Pagination, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
-import viewmodels.govuk.table._
-import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
+import views.html.GoodsRecordsView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -186,13 +183,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[GoodsRecordsEmptyView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(
-          request,
-          messages(application)
-        ).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
       }
     }
 

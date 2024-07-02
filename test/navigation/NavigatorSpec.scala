@@ -335,6 +335,11 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
+        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, emptyUserAnswers) mustEqual routes.GoodsRecordsController
+          .onPageLoad(1)
+      }
+
       "in Supplementary Unit Journey" - {
 
         "must go from HasSupplementaryUnitPage" - {
@@ -405,7 +410,7 @@ class NavigatorSpec extends SpecBase {
           eori = testEori,
           recordId = testRecordId,
           category = 1,
-          answeredAssessmentCount = 0
+          categoryAssessmentsWithExemptions = 0
         )
         navigator.nextPage(
           CyaCategorisationPage(testRecordId, categoryRecord, Scenario.getScenario(categoryRecord)),
