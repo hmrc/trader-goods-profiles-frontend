@@ -27,7 +27,7 @@ import viewmodels.implicits._
 object LongerCommodityCodeSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(LongerCommodityCodePage).map { answer =>
+    answers.get(LongerCommodityCodePage(recordId)).map { answer =>
       SummaryListRowViewModel(
         key = "longerCommodityCode.checkYourAnswersLabel",
         value = ValueViewModel(answer),

@@ -54,6 +54,7 @@ class Navigator @Inject() () {
     case p: CyaCategorisationPage    =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
+    case p: LongerCommodityCodePage  => _ => routes.LongerCommodityCodeController.onPageLoad(NormalMode, p.recordId) //TODO test
     case _                           => _ => routes.IndexController.onPageLoad
 
   }
@@ -108,6 +109,7 @@ class Navigator @Inject() () {
 
     for {
       recordQuery      <- answers.get(RecordCategorisationsQuery)
+      record <- recordQuery.records.get(recordId)
       assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
@@ -121,10 +123,17 @@ class Navigator @Inject() () {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        routes.CyaCategorisationController.onPageLoad(recordId)
+
+        if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length == 6) {
+          routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
+
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  //TODO checkmode
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                => navigateFromHasNirmsCheck
