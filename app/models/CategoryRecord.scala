@@ -18,6 +18,7 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple3Parallel
+import models.AssessmentAnswer.NoExemption
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
@@ -27,7 +28,7 @@ final case class CategoryRecord(
   eori: String,
   recordId: String,
   category: Int,
-  answeredAssessmentCount: Int,
+  categoryAssessmentsWithExemptions: Int,
   supplementaryUnit: Option[String] = None,
   measurementUnit: Option[String] = None
 )
@@ -50,7 +51,7 @@ object CategoryRecord {
         eori = eori,
         recordId = recordId,
         category = categoryDetails.category,
-        answeredAssessmentCount = categoryDetails.answeredAssessmentCount,
+        categoryAssessmentsWithExemptions = categoryDetails.categoryAssessmentsWithExemptions,
         supplementaryUnit = supplementaryUnit,
         measurementUnit = measurementUnit
       )
@@ -60,7 +61,7 @@ object CategoryRecord {
   private val CATEGORY_2 = 2
   private val STANDARD   = 3
 
-  private case class GetCategoryReturn(category: Int, answeredAssessmentCount: Int)
+  private case class GetCategoryReturn(category: Int, categoryAssessmentsWithExemptions: Int)
 
   private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, GetCategoryReturn] =
     answers
@@ -69,10 +70,10 @@ object CategoryRecord {
         recordCategorisations.records
           .get(recordId)
           .map { categorisationInfo =>
-            val answeredCount = getHowManyAssessmentsWereAnswered(recordId, answers, categorisationInfo)
-            val category      = chooseCategory(recordId, answers, categorisationInfo)
+            val exemptionsCount = getHowManyAssessmentsHadExemptions(recordId, answers, categorisationInfo)
+            val category        = chooseCategory(recordId, answers, categorisationInfo)
 
-            Right(GetCategoryReturn(category, answeredCount))
+            Right(GetCategoryReturn(category, exemptionsCount))
           }
           .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
       }
@@ -114,14 +115,14 @@ object CategoryRecord {
     }
   }
 
-  private def getHowManyAssessmentsWereAnswered(
+  private def getHowManyAssessmentsHadExemptions(
     recordId: String,
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
   ): Int =
     categorisationInfo.categoryAssessments.zipWithIndex
       .map(assessment => answers.get(AssessmentPage(recordId, assessment._2)))
-      .count(optionalAnswer => optionalAnswer.isDefined)
+      .count(optionalAnswer => optionalAnswer.isDefined && !optionalAnswer.contains(NoExemption))
 
   private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
     answers

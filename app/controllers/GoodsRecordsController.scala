@@ -21,18 +21,15 @@ import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import models.router.responses.GetGoodsRecordResponse
-
-import javax.inject.Inject
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Pagination, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
+import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
-import viewmodels.govuk.table._
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsController @Inject() (

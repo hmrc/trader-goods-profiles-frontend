@@ -402,6 +402,15 @@ goodsRecords.tableHeader.commodityCode = Commodity code
 goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
 
+removeGoodsRecord.title = Removing goods record
+removeGoodsRecord.heading = Removing goods record
+removeGoodsRecord.error.required = Select if you wish to remove the record
+removeGoodsRecord.warning = Warning
+removeGoodsRecord.warningText = If you remove this goods record, you will not be able to use it for movements. Once removed, you will not be able to restore this goods record.
+removeGoodsRecord.question = Are you sure you want to remove this goods record?
+removeGoodsRecord.yes = Yes, remove this goods record
+removeGoodsRecord.no = No, return to goods profile
+
 
 
 hasCommodityCodeChange.title = Change record information

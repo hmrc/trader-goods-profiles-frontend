@@ -16,10 +16,12 @@
 
 package models
 
+import models.ott.CategorisationInfo
 import play.api.mvc.JavascriptLiteral
 
 sealed trait Scenario
 
+case object NoRedirectScenario extends Scenario
 case object Category1NoExemptions extends Scenario
 case object StandardNoAssessments extends Scenario
 case object Standard extends Scenario
@@ -27,6 +29,24 @@ case object Category1 extends Scenario
 case object Category2 extends Scenario
 
 object Scenario {
+
+  def getRedirectScenarios(categorisationInfo: CategorisationInfo): Scenario = {
+    val hasCategoryAssessments: Boolean =
+      categorisationInfo.categoryAssessments.nonEmpty
+
+    val hasCategory1Assessments: Boolean =
+      categorisationInfo.categoryAssessments.exists(_.category == 1)
+
+    val hasCategory1Exemptions: Boolean =
+      categorisationInfo.categoryAssessments
+        .exists(assessment => assessment.category == 1 && assessment.exemptions.nonEmpty)
+
+    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions) match {
+      case (true, true, false)   => Category1NoExemptions
+      case (false, false, false) => StandardNoAssessments
+      case (_, _, _)             => NoRedirectScenario
+    }
+  }
 
   def getScenario(goodsRecord: CategoryRecord): Scenario =
     goodsRecord.category match {

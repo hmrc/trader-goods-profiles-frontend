@@ -149,6 +149,9 @@ GET         /goods-profile                                    controllers.GoodsR
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
 
+GET         /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String)
+POST        /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String)
+
 GET        /update/:recordId/change-record-information          controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update/:recordId/change-record-information          controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update/:recordId/change-record-information/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
