@@ -179,9 +179,8 @@ homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a go
 homepage.h2.1 = Goods records
 homepage.p2.linkText = View or update your goods records
 homepage.p3.linkText = Create a new goods record
-homepage.h2.2 = Ask for advice
+homepage.h2.2 = Manage your profile
 homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
-homepage.h2.3 = Manage your profile
 homepage.p5.linkText = Manage your profile details
 
 createRecordStart.title = Creating a goods record

@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import forms.EmailFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -42,7 +42,7 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
   val validEmail   = "test@test.com"
 
-  private lazy val emailRoute = routes.EmailController.onPageLoad(NormalMode).url
+  private lazy val emailRoute = routes.EmailController.onPageLoad(NormalMode, testRecordId).url
 
   "Email Controller" - {
 
@@ -58,13 +58,13 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[EmailView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(EmailPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(EmailPage(testRecordId), "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -76,7 +76,10 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -122,7 +125,10 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import navigation.{FakeNavigator, Navigator}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -33,14 +34,14 @@ class AdviceStartControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.AdviceStartController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.AdviceStartController.onPageLoad(testRecordId).url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[AdviceStartView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
       }
     }
 
@@ -55,7 +56,7 @@ class AdviceStartControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.AdviceStartController.onSubmit().url)
+        val request = FakeRequest(POST, routes.AdviceStartController.onSubmit(testRecordId).url)
 
         val result = route(application, request).value
 
