@@ -42,7 +42,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
   private val userAnswersWithCommodity = emptyUserAnswers
     .set(
       CommodityQuery,
-      Commodity(commodityCode = "123", description = "test commodity", Instant.now, None)
+      Commodity(commodityCode = "123", descriptions = List("test commodity"), Instant.now, None)
     )
     .success
     .value
