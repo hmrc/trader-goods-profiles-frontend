@@ -19,7 +19,7 @@ package controllers
 import cats.data
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
 import logging.Logging
 import models.{TraderProfile, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,6 +38,7 @@ class CyaCreateProfileController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
@@ -47,21 +48,22 @@ class CyaCreateProfileController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.build(request.userAnswers, request.eori) match {
-      case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            UkimsNumberSummary.row(request.userAnswers),
-            HasNirmsSummary.row(request.userAnswers),
-            NirmsNumberSummary.row(request.userAnswers),
-            HasNiphlSummary.row(request.userAnswers),
-            NiphlNumberSummary.row(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list))
-      case Left(errors) => logErrorsAndContinue(errors)
-    }
+  def onPageLoad(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
+    implicit request =>
+      TraderProfile.build(request.userAnswers, request.eori) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              UkimsNumberSummary.row(request.userAnswers),
+              HasNirmsSummary.row(request.userAnswers),
+              NirmsNumberSummary.row(request.userAnswers),
+              HasNiphlSummary.row(request.userAnswers),
+              NiphlNumberSummary.row(request.userAnswers)
+            ).flatten
+          )
+          Ok(view(list))
+        case Left(errors) => logErrorsAndContinue(errors)
+      }
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
