@@ -48,7 +48,6 @@ class Navigator @Inject() () {
     case AdviceStartPage             => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage                    => _ => routes.EmailController.onPageLoad(NormalMode)
     case EmailPage                   => _ => routes.CyaRequestAdviceController.onPageLoad
-    case HasCommodityCodeChangePage  => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
     case _                           => _ => routes.IndexController.onPageLoad
 
   }

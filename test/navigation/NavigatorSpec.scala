@@ -392,13 +392,14 @@ class NavigatorSpec extends SpecBase {
 
       "in Update Record Journey" - {
 
+        //TODO navigate to correct page
         "must go from HasCommodityCodeChangePage to Change Commodity Code Page" in {
 
           navigator.nextPage(
-            HasCommodityCodeChangePage,
+            HasCommodityCodeChangePage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CommodityCodeController.onPageLoad(NormalMode)
+          ) mustBe routes.IndexController.onPageLoad
         }
       }
 

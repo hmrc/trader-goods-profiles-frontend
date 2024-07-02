@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import forms.HasCommodityCodeChangeFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -41,7 +41,8 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasCommodityCodeChangeFormProvider()
   val form         = formProvider()
 
-  lazy val hasCommodityCodeChangeRoute = routes.HasCommodityCodeChangeController.onPageLoad(NormalMode).url
+  lazy val hasCommodityCodeChangeRoute =
+    routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
 
   "HasCommodityCodeChange Controller" - {
 
@@ -57,13 +58,13 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -75,7 +76,10 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -121,7 +125,10 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

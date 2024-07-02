@@ -149,7 +149,7 @@ GET         /goods-profile                                    controllers.GoodsR
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                          controllers.GoodsRecordsController.onPageLoadNoRecords()
 
-GET        /hasCommodityCodeChange                        controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode)
-POST       /hasCommodityCodeChange                        controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasCommodityCodeChange                  controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasCommodityCodeChange                  controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode)
+GET        /update/:recordId/change-record-information          controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update/:recordId/change-record-information          controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update/:recordId/change-record-information/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update/:recordId/change-record-information/check    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
