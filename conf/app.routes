@@ -53,6 +53,11 @@ POST        /ukims-number/check                              controllers.UkimsNu
 GET         /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
+GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code/check              controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code/check              controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+
 GET         /update-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
 POST        /update-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
 GET         /update-record/commodity-code/check              controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
