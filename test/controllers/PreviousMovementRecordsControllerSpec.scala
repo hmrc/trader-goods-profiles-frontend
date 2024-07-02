@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.GoodsRecordConnector
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -38,7 +39,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
       when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
-        mockGetRecordsResponseOption
+        false
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -64,10 +65,12 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
       when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
-        mockGetRecordsEmpty
+        true
       )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      when(mockGetGoodsRecordsconnector.storeLatestRecords(any())(any())) thenReturn Future.successful(
+        Done
+      )
+      val application                  = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
         )
@@ -92,8 +95,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      when(mockGetGoodsRecordsconnector.getAllRecords(any())(any())) thenReturn Future.successful(
-        mockGetRecordsResponse
+      when(mockGetGoodsRecordsconnector.storeAllRecords(any())(any())) thenReturn Future.successful(
+        Done
       )
 
       val application =
@@ -113,7 +116,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(1).url
 
-        verify(mockGetGoodsRecordsconnector, times(1)).getAllRecords(any())(any())
+        verify(mockGetGoodsRecordsconnector, times(1)).storeAllRecords(any())(any())
       }
     }
   }
