@@ -22,6 +22,7 @@ import controllers.routes
 import pages._
 import models._
 import queries.RecordCategorisationsQuery
+import utils.Constants.firstAssessmentIndex
 
 import scala.util.Try
 
@@ -48,6 +49,10 @@ class Navigator @Inject() () {
     case AdviceStartPage             => _ => routes.NameController.onPageLoad(NormalMode)
     case NamePage                    => _ => routes.EmailController.onPageLoad(NormalMode)
     case EmailPage                   => _ => routes.CyaRequestAdviceController.onPageLoad
+    case p: CategoryGuidancePage     =>
+      _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentIndex)
+    case p: CyaCategorisationPage    =>
+      _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
     case _                           => _ => routes.IndexController.onPageLoad
 
