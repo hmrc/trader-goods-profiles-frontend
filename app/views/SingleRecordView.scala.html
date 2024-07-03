@@ -44,6 +44,6 @@
         </strong>
     </div>
 
-    <p class="govuk-body"><a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link" >@messages("singleRecord.goodsProfile.link")</a></p>
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("singleRecord.goodsProfile.link")</a></p>
     <p class="govuk-body"><a href="@routes.RemoveGoodsRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("singleRecord.removeRecord.link")</a></p>
 }
