@@ -136,7 +136,17 @@ class AuditEventFactorySpec extends SpecBase {
 
           val effectiveFrom = Instant.now
           val effectiveTo   = effectiveFrom.plusSeconds(99)
-          val commodity     = Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo))
+          val commodity     =
+            Commodity(
+              "030821",
+              List(
+                "Sea urchins",
+                "Live, fresh or chilled",
+                "Aquatic invertebrates other than crustaceans and molluscs "
+              ),
+              effectiveFrom,
+              Some(effectiveTo)
+            )
 
           val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
             AffinityGroup.Organisation,
@@ -174,7 +184,16 @@ class AuditEventFactorySpec extends SpecBase {
         "and not specified goods description" in {
 
           val effectiveFrom = Instant.now
-          val commodity     = Commodity("030821", "Sea urchins", effectiveFrom, None)
+          val commodity     = Commodity(
+            "030821",
+            List(
+              "Sea urchins",
+              "Live, fresh or chilled",
+              "Aquatic invertebrates other than crustaceans and molluscs "
+            ),
+            effectiveFrom,
+            None
+          )
 
           val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
             AffinityGroup.Organisation,
@@ -243,7 +262,16 @@ class AuditEventFactorySpec extends SpecBase {
 
           val effectiveFrom = Instant.now
           val effectiveTo   = effectiveFrom.plusSeconds(99)
-          val commodity     = Commodity("030821", "Sea urchins", effectiveFrom, Some(effectiveTo))
+          val commodity     = Commodity(
+            "030821",
+            List(
+              "Sea urchins",
+              "Live, fresh or chilled",
+              "Aquatic invertebrates other than crustaceans and molluscs "
+            ),
+            effectiveFrom,
+            Some(effectiveTo)
+          )
 
           val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateRecord(
             AffinityGroup.Organisation,

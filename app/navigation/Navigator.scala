@@ -21,7 +21,7 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.RecordCategorisationsQuery
+import queries.{LongerCommodityCodeRecordCategorisationsQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
 import utils.Constants.firstAssessmentIndex
 
 import scala.util.Try
@@ -54,6 +54,8 @@ class Navigator @Inject() () {
     case p: CyaCategorisationPage    =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
+    case p: LongerCommodityCodePage  => _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
+    case p: HasCorrectGoodsLongerCommodityCodePage => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId)
     case _                           => _ => routes.IndexController.onPageLoad
 
   }
@@ -75,6 +77,29 @@ class Navigator @Inject() () {
         case false => routes.CommodityCodeController.onPageLoad(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String)(answers: UserAnswers): Call = {
+     answers
+      .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      .flatMap {
+        case true =>
+         for {
+            recordQueryLongerCode <- answers.get(RecordCategorisationsQuery)
+            commodityShorter <- answers.get(OldCommodityCodeCategorisationQuery(recordId))
+            commodityLonger <- recordQueryLongerCode.records.get(recordId)
+          } yield {
+            if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments)
+              && commodityShorter.measurementUnit.isEmpty && commodityLonger.measurementUnit.isEmpty){
+              routes.CyaCategorisationController.onPageLoad(recordId)
+            } else {
+              routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
+            }
+          }
+
+        case false => Some(routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId))
+      }
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
     answers
@@ -108,6 +133,7 @@ class Navigator @Inject() () {
 
     for {
       recordQuery      <- answers.get(RecordCategorisationsQuery)
+      record <- recordQuery.records.get(recordId)
       assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
@@ -121,10 +147,17 @@ class Navigator @Inject() () {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        routes.CyaCategorisationController.onPageLoad(recordId)
+
+        if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length == 6) {
+          routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
+
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  //TODO checkmode
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                => navigateFromHasNirmsCheck

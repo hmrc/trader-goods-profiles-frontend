@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
+import models.RecordCategorisations
+import models.ott.CategorisationInfo
 import play.api.libs.json.JsPath
 
-case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String] {
+case class OldCommodityCodeCategorisationQuery(recordId: String) extends Gettable[CategorisationInfo] with Settable[CategorisationInfo] {
 
-  override def path: JsPath = JsPath \ toString \ recordId
-
-  override def toString: String = "longerCommodityCode"
+  override def path: JsPath = JsPath \ "oldCommodityCodeCategorisation" \ recordId
 }

@@ -17,11 +17,13 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.{recordSize, testRecordId}
 import connectors.OttConnector
 import forms.LongerCommodityCodeFormProvider
-import models.{Commodity, NormalMode}
+import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.{ArgumentCaptor, Captor}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CommodityCodePage, LongerCommodityCodePage}
@@ -31,6 +33,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.LongerCommodityCodeView
@@ -40,20 +43,25 @@ import scala.concurrent.Future
 
 class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
-  private val formProvider   = new LongerCommodityCodeFormProvider()
-  private val form           = formProvider()
-  private val recordId       = "123"
-  private val shortCommodity = "654321"
+  private val formProvider                        = new LongerCommodityCodeFormProvider()
+  private val form                                = formProvider()
+  private val shortCommodity                      = "654321"
+  private val categoryQueryShortCommodity         = categoryQuery.copy(commodityCode = shortCommodity)
+  private val recordCategorisationsShortCommodity = RecordCategorisations(
+    Map(testRecordId -> categoryQueryShortCommodity)
+  )
 
   private def onwardRoute = Call("GET", "/foo")
 
-  private lazy val longerCommodityCodeRoute = routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId).url
+  private lazy val longerCommodityCodeRoute =
+    routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
 
   "LongerCommodityCode Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val userAnswers = emptyUserAnswers.set(CommodityCodePage, shortCommodity).success.value
+      val userAnswers =
+        emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisationsShortCommodity).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -64,7 +72,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[LongerCommodityCodeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, shortCommodity, recordId)(
+        contentAsString(result) mustEqual view(form, NormalMode, shortCommodity, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -84,7 +92,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect on GET to JourneyRecovery Page if user's commodity code is 10 digits" in {
-      val userAnswers = emptyUserAnswers.set(CommodityCodePage, "1234567890").success.value
+      val userAnswers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -99,10 +107,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage, "answer")
+        .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
 
@@ -116,7 +124,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, shortCommodity, recordId)(
+        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, shortCommodity, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -128,17 +136,20 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
       val mockOttConnector      = mock[OttConnector]
       val userAnswers           = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage, "answer")
+        .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
+
+      val testCommodity = Commodity("654321", List("Description"), Instant.now, None)
       when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
         .successful(
-          Commodity("654321", "Description", Instant.now, None)
+          testCommodity
         )
 
       val application =
@@ -161,15 +172,22 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
 
         verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
+
+        withClue("ensure user answers has set the new commodity query") {
+          val finalUserAnswers = uaCaptor.getValue
+
+          finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "12"
+          finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+        }
       }
     }
 
     "must return a Bad Request and errors when invalid is submitted" in {
       val userAnswers = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage, "answer")
+        .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
@@ -186,7 +204,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, recordId)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -196,10 +214,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
       val mockOttConnector = mock[OttConnector]
       val userAnswers      = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage, "answer")
+        .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
 
@@ -225,7 +243,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, recordId)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
           request,
           messages(application)
         ).toString
