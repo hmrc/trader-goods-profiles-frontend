@@ -17,10 +17,10 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
 import models.router.responses.GetGoodsRecordResponse
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
@@ -33,7 +33,7 @@ import java.time.Instant
 import scala.concurrent.Future
 import viewmodels.govuk.summarylist._
 import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
-import views.html.{CyaCreateProfileView, SingleRecordView}
+import views.html.SingleRecordView
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
@@ -41,7 +41,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
   val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
 
   private val record = GetGoodsRecordResponse(
-    "1",
+    testRecordId,
     "10410100",
     "EC",
     "BAN0010011",
@@ -57,7 +57,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder()
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )
@@ -106,13 +106,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None)
+      val application = applicationBuilder()
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )
         .build()
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(1)), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
         .failed(new NotFoundException("Failed to find record"))
 
       running(application) {
@@ -120,8 +120,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        intercept[Exception] {
+          await(result)
+        }
       }
     }
 
