@@ -46,9 +46,9 @@ class Navigator @Inject() () {
     case p: AssessmentPage           => navigateFromAssessment(p)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit(p.recordId)
     case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
-    case AdviceStartPage             => _ => routes.NameController.onPageLoad(NormalMode)
-    case NamePage                    => _ => routes.EmailController.onPageLoad(NormalMode)
-    case EmailPage                   => _ => routes.CyaRequestAdviceController.onPageLoad
+    case p: AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
+    case p: NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
+    case p: EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: CategoryGuidancePage     =>
       _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentIndex)
     case p: CyaCategorisationPage    =>
@@ -180,8 +180,8 @@ class Navigator @Inject() () {
     case CountryOfOriginPage         => _ => routes.CyaCreateRecordController.onPageLoad
     case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoodsCheck
-    case NamePage                    => _ => routes.CyaRequestAdviceController.onPageLoad
-    case EmailPage                   => _ => routes.CyaRequestAdviceController.onPageLoad
+    case p: NamePage                 => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
+    case p: EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: AssessmentPage           => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)

@@ -42,24 +42,26 @@ class NavigatorSpec extends SpecBase {
 
         "must go from AdviceStartPage to NamePage" in {
 
-          navigator.nextPage(AdviceStartPage, NormalMode, emptyUserAnswers) mustBe routes.NameController
-            .onPageLoad(NormalMode)
+          navigator.nextPage(AdviceStartPage(testRecordId), NormalMode, emptyUserAnswers) mustBe routes.NameController
+            .onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from NamePage to EmailPage" in {
 
-          navigator.nextPage(NamePage, NormalMode, emptyUserAnswers) mustBe routes.EmailController.onPageLoad(
-            NormalMode
-          )
+          navigator.nextPage(NamePage(testRecordId), NormalMode, emptyUserAnswers) mustBe routes.EmailController
+            .onPageLoad(
+              NormalMode,
+              testRecordId
+            )
         }
 
         "must go from EmailPage to CyaRequestAdviceController" in {
 
           navigator.nextPage(
-            EmailPage,
+            EmailPage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
       }
 
@@ -699,16 +701,20 @@ class NavigatorSpec extends SpecBase {
 
         "must go from NamePage to CyaRequestAdviceController" in {
 
-          navigator.nextPage(NamePage, CheckMode, emptyUserAnswers) mustBe routes.CyaRequestAdviceController.onPageLoad
+          navigator.nextPage(
+            NamePage(testRecordId),
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
 
         "must go from EmailPage to CyaRequestAdviceController" in {
 
           navigator.nextPage(
-            EmailPage,
+            EmailPage(testRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad
+          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
       }
 

@@ -45,36 +45,38 @@ class CyaRequestAdviceController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    AdviceRequest.build(request.userAnswers, request.eori) match {
-      case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            NameSummary.row(request.userAnswers),
-            EmailSummary.row(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list))
-      case Left(errors) => logErrorsAndContinue(errors)
-    }
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              NameSummary.row(request.userAnswers, recordId),
+              EmailSummary.row(request.userAnswers, recordId)
+            ).flatten
+          )
+          Ok(view(list, recordId))
+        case Left(errors) => logErrorsAndContinue(errors, recordId)
+      }
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad().url)
+    val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(recordId).url)
 
     logger.warn(s"Unable to create Request Advice.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    AdviceRequest.build(request.userAnswers, request.eori) match {
-      case Right(model) =>
-        accreditationConnector
-          .submitRequestAccreditation(model)
-          .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad().url))
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
-    }
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
+        case Right(model) =>
+          accreditationConnector
+            .submitRequestAccreditation(model)
+            .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url))
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+      }
   }
 }

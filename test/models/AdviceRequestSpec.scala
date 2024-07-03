@@ -31,14 +31,14 @@ class AdviceRequestSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       val answers =
         UserAnswers(userAnswersId)
-          .set(NamePage, "1")
+          .set(NamePage(testRecordId), "1")
           .success
           .value
-          .set(EmailPage, "2")
+          .set(EmailPage(testRecordId), "2")
           .success
           .value
 
-      val result = AdviceRequest.build(answers, testEori)
+      val result = AdviceRequest.build(answers, testEori, testRecordId)
 
       result mustEqual Right(AdviceRequest(testEori, "1", testEori, testRecordId, "2"))
     }
@@ -49,12 +49,12 @@ class AdviceRequestSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = AdviceRequest.build(answers, testEori)
+        val result = AdviceRequest.build(answers, testEori, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(NamePage),
-            PageMissing(EmailPage)
+            PageMissing(NamePage(testRecordId)),
+            PageMissing(EmailPage(testRecordId))
           )
         }
       }
