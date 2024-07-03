@@ -23,19 +23,24 @@ import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
 import play.api.inject.bind
+
 import java.time.Instant
 import scala.concurrent.Future
+import viewmodels.govuk.summarylist._
+import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import views.html.{CyaCreateProfileView, SingleRecordView}
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val singleRecordRoute = routes.SingleRecordController.onPageLoad(testRecordId).url
   val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
 
-  private val response = GetGoodsRecordResponse(
+  private val record = GetGoodsRecordResponse(
     "1",
     "10410100",
     "EC",
@@ -59,14 +64,43 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
-        .successful(response)
+        .successful(record)
+
+      implicit val message: Messages = messages(application)
+
+      val detailsList = SummaryListViewModel(
+        rows = Seq(
+          TraderReferenceSummary.row(record.traderRef),
+          GoodsDescriptionSummary.row(record.goodsDescription),
+          CountryOfOriginSummary.row(record.countryOfOrigin),
+          CommodityCodeSummary.row(record.commodityCode)
+        )
+      )
+
+      val categorisationList = SummaryListViewModel(
+        rows = Seq(
+          CategorySummary.row(record.category.toString)
+        )
+      )
+
+      val adviceList = SummaryListViewModel(
+        rows = Seq(
+          AdviceStatusSummary.row(record.adviceStatus)
+        )
+      )
 
       running(application) {
         val request = FakeRequest(GET, singleRecordRoute)
 
         val result = route(application, request).value
 
+        val view = application.injector.instanceOf[SingleRecordView]
+
         status(result) mustEqual OK
+        contentAsString(result) mustEqual view(detailsList, categorisationList, adviceList)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
