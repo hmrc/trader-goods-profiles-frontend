@@ -19,24 +19,21 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.UpdateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, LongerCommodityQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import services.CategorisationService
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.LongerCommodityCodeView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class LongerCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
@@ -48,8 +45,7 @@ class LongerCommodityCodeController @Inject() (
   formProvider: LongerCommodityCodeFormProvider,
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: LongerCommodityCodeView,
-  categorisationService: CategorisationService
+  view: LongerCommodityCodeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -63,7 +59,9 @@ class LongerCommodityCodeController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      val commodityCodeOption = request.userAnswers.get(RecordCategorisationsQuery).flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
+      val commodityCodeOption = request.userAnswers
+        .get(RecordCategorisationsQuery)
+        .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
 
       commodityCodeOption match {
         case Some(shortCommodity) if shortCommodity.length != 10 =>
@@ -75,9 +73,11 @@ class LongerCommodityCodeController @Inject() (
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
 
-       val commodityCodeOption = request.userAnswers.get(RecordCategorisationsQuery).flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
+      val commodityCodeOption = request.userAnswers
+        .get(RecordCategorisationsQuery)
+        .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
 
-    commodityCodeOption match {
+      commodityCodeOption match {
         case Some(shortCommodity) if shortCommodity.length != 10 =>
           form
             .bindFromRequest()
@@ -86,7 +86,6 @@ class LongerCommodityCodeController @Inject() (
               value => {
                 val longCommodityCode = s"$shortCommodity$value"
                 (for {
-                  //TODO ewwww
                   validCommodityCode      <- ottConnector.getCommodityCode(
                                                longCommodityCode,
                                                request.eori,
@@ -95,7 +94,8 @@ class LongerCommodityCodeController @Inject() (
                                                Some(recordId)
                                              )
                   updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-                  updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
+                  updatedAnswersWithQuery <-
+                    Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
                   _                       <- sessionRepository.set(updatedAnswersWithQuery)
                 } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswers))).recover {
                   case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
