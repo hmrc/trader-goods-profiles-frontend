@@ -159,10 +159,10 @@ GET        /remove-record/:recordId/goods-record                          contro
 POST       /remove-record/:recordId/good-profile                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsProfileLocation)
 POST       /remove-record/:recordId/goods-record                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsRecordLocation)
 
-GET        /update-record/:recordId/change-record-information/commodity-code          controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST       /update-record/:recordId/change-record-information/commodity-code          controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET        /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST       /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/commodity-code          controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/commodity-code          controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/commodity-code/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/commodity-code/check    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET        /update-record/:recordId/change-record-warning/country-of-origin                        controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/country-of-origin                        controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
