@@ -102,7 +102,7 @@ class Navigator @Inject() () {
             if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments) && commodityShorter.measurementUnit.equals(commodityLonger.measurementUnit)){
               routes.CyaCategorisationController.onPageLoad(recordId)
             } else {
-              routes.CategoryGuidanceController.onPageLoad(recordId)
+              routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
             }
           }
 

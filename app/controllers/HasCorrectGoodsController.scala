@@ -119,7 +119,7 @@ class HasCorrectGoodsController @Inject() (
               updatedAnswersWithQuery15 <- if (value) Future.fromTry(updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation)) else Future.successful(updatedAnswers)
               updatedAnswersWithQuery2 <- if (value) categorisationService.updateCategorisationWithNewCommodityCode(request.copy(userAnswers = updatedAnswersWithQuery15), recordId) else Future.successful(updatedAnswersWithQuery15)
               _              <- sessionRepository.set(updatedAnswersWithQuery2)
-            } yield Redirect(navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery2))
         )
     }
 }
