@@ -30,7 +30,7 @@ import queries.RecordCategorisationsQuery
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
 
@@ -86,7 +86,13 @@ class CyaCategorisationController @Inject() (
             ).flatten
           )
 
-          Ok(view(recordId, categorisationList, supplementaryUnitList))
+          val longerCommodityCodeList = SummaryListViewModel(
+            rows = Seq(
+              LongerCommodityCodeSummary.row(request.userAnswers, recordId)
+            ).flatten
+          )
+
+          Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
 
         case Left(errors) =>
           logErrorsAndContinue(errors, recordId)
