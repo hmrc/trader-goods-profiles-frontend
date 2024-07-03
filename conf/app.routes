@@ -167,7 +167,7 @@ POST       /update-record/:recordId/change-record-warning/country-of-origin     
 GET        /update-record/:recordId/change-record-warning/country-of-origin/check                  controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/country-of-origin/check                  controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /hasGoodDescriptionChange                        controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = NormalMode)
-POST       /hasGoodDescriptionChange                        controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasGoodDescriptionChange                  controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasGoodDescriptionChange                  controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = CheckMode)
+GET        /update-record/:recordId/change-record-warning/goods-description                        controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/goods-description                        controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/goods-description/check                  controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/goods-description/check                  controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
