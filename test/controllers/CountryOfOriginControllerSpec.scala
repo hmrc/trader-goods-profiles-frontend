@@ -17,10 +17,10 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{newRecordId, userAnswersId}
+import base.TestConstants.{newRecordId, testEori, userAnswersId}
 import connectors.OttConnector
 import forms.CountryOfOriginFormProvider
-import models.{Country, NormalMode, UserAnswers}
+import models.{CheckMode, Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -72,6 +72,37 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, countries, newRecordId)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET when updating" in {
+      val countryOfOriginUpdateRoute = routes.CountryOfOriginController.onPageLoad(CheckMode, testEori).url
+
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        countries
+      )
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[OttConnector].toInstance(mockOttConnector)
+          )
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, countryOfOriginUpdateRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CountryOfOriginView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, CheckMode, countries, testEori)(
           request,
           messages(application)
         ).toString

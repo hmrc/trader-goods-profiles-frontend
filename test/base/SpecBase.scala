@@ -78,7 +78,7 @@ trait SpecBase
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(TraderReferencePage, "123")
+      .set(TraderReferencePage(newRecordId), "123")
       .success
       .value
       .set(CommodityCodePage, testCommodity.commodityCode)
@@ -93,7 +93,7 @@ trait SpecBase
       .set(HasCorrectGoodsPage, true)
       .success
       .value
-      .set(GoodsDescriptionPage, "DESCRIPTION")
+      .set(GoodsDescriptionPage(newRecordId), "DESCRIPTION")
       .success
       .value
       .set(CommodityQuery, testCommodity)
@@ -102,7 +102,7 @@ trait SpecBase
 
   def mandatoryRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(TraderReferencePage, "123")
+      .set(TraderReferencePage(newRecordId), "123")
       .success
       .value
       .set(CommodityCodePage, testCommodity.commodityCode)

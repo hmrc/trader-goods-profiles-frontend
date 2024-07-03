@@ -27,15 +27,17 @@ import viewmodels.implicits._
 
 object TraderReferenceSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(TraderReferencePage).map { answer =>
+  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] = {
+    val newRecordId = "new-record"
+    answers.get(TraderReferencePage(newRecordId)).map { answer =>
       SummaryListRowViewModel(
         key = "traderReference.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoad(CheckMode, newRecordId).url)
             .withVisuallyHiddenText(messages("traderReference.change.hidden"))
         )
       )
     }
+  }
 }

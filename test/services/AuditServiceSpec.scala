@@ -693,7 +693,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(CommodityQuery, testCommodity)
       .success
       .value
-      .set(TraderReferencePage, "trader reference")
+      .set(TraderReferencePage(newRecordId), "trader reference")
       .success
       .value
       .set(CountryOfOriginPage(newRecordId), "PF")
@@ -715,7 +715,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       ua.set(UseTraderReferencePage, false)
         .success
         .value
-        .set(GoodsDescriptionPage, "goods description")
+        .set(GoodsDescriptionPage(newRecordId), "goods description")
         .success
         .value
     }

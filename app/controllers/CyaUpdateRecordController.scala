@@ -21,7 +21,9 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{Country, UpdateGoodsRecord, UserAnswers, ValidationError}
+import models.PageUpdate._
+import models.{Country, CountryOfOriginPageUpdate, PageUpdate, UpdateGoodsRecord, UserAnswers, ValidationError}
+import pages.CountryOfOriginPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
@@ -49,37 +51,78 @@ class CyaUpdateRecordController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId) match {
+  def onPageLoad(recordId: String, pageUpdate: PageUpdate): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId, pageUpdate) match {
         case Right(_)     =>
-          request.userAnswers.get(CountriesQuery) match {
-            case Some(countries) => Future.successful(displayView(request.userAnswers, countries, recordId))
-            case None            =>
-              for {
-                countries               <- ottConnector.getCountries
-                updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
-                _                       <- sessionRepository.set(updatedAnswersWithQuery)
-              } yield displayView(updatedAnswersWithQuery, countries, recordId)
+          pageUpdate match {
+            case CountryOfOriginPageUpdate =>
+              getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
+                displayView(recordId, pageUpdate, answer)
+              }
+            case _                         =>
+              Future.successful(displayView(recordId, pageUpdate, getAnswer(request.userAnswers, recordId, pageUpdate)))
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }
-  }
+    }
 
-  def displayView(userAnswers: UserAnswers, countries: Seq[Country], recordId: String)(implicit
+  def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
+    request: Request[_]
+  ): Future[String] =
+    userAnswers.get(CountryOfOriginPage(recordId)) match {
+      case Some(answer) =>
+        userAnswers.get(CountriesQuery) match {
+          case Some(countries) => Future.successful(findCountryName(countries, answer))
+          case None            =>
+            getCountries(userAnswers).map { countries =>
+              findCountryName(countries, answer)
+            }
+        }
+    }
+
+  def getAnswer(userAnswers: UserAnswers, recordId: String, pageUpdate: PageUpdate)(implicit
+    request: Request[_]
+  ): String =
+    userAnswers.get(getPage(pageUpdate, recordId)) match {
+      case Some(answer) => answer
+    }
+
+  def findCountryName(countries: Seq[Country], answer: String)(implicit
+    request: Request[_]
+  ): String =
+    countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
+
+  def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
+    userAnswers.get(CountriesQuery) match {
+      case Some(countries) => Future.successful(countries)
+      case None            =>
+        for {
+          countries               <- ottConnector.getCountries
+          updatedAnswersWithQuery <- Future.fromTry(userAnswers.set(CountriesQuery, countries))
+          _                       <- sessionRepository.set(updatedAnswersWithQuery)
+        } yield countries
+    }
+
+  def displayView(recordId: String, pageUpdate: PageUpdate, answer: String)(implicit
     request: Request[_]
   ): Result = {
     val list = SummaryListViewModel(
       rows = Seq(
-        CountryOfOriginSummary.row(userAnswers, countries, recordId)
-      ).flatten
+        UpdateRecordSummary.row(
+          answer,
+          getPageUpdateLabel(pageUpdate),
+          getPageUpdateHidden(pageUpdate),
+          getPageUpdateChangeLink(pageUpdate, recordId)
+        )
+      )
     )
-    Ok(view(list, recordId))
+    Ok(view(list, recordId, pageUpdate))
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId) match {
+  def onSubmit(recordId: String, pageUpdate: PageUpdate): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId, pageUpdate) match {
         case Right(model) =>
           for {
             _ <- goodsRecordConnector.updateGoodsRecord(model)
@@ -87,7 +130,7 @@ class CyaUpdateRecordController @Inject() (
           } yield Redirect(routes.HomePageController.onPageLoad())
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }
-  }
+    }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")

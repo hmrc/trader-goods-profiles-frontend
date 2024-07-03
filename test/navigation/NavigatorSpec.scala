@@ -162,13 +162,13 @@ class NavigatorSpec extends SpecBase {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.TraderReferenceController
-            .onPageLoad(NormalMode)
+            .onPageLoad(NormalMode, newRecordId)
         }
 
         "must go from TraderReferencePage to UseTraderReferencePage" in {
 
           navigator.nextPage(
-            TraderReferencePage,
+            TraderReferencePage(newRecordId),
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.UseTraderReferenceController
@@ -182,7 +182,8 @@ class NavigatorSpec extends SpecBase {
             val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, false).success.value
             navigator.nextPage(UseTraderReferencePage, NormalMode, answers) mustBe routes.GoodsDescriptionController
               .onPageLoad(
-                NormalMode
+                NormalMode,
+                newRecordId
               )
           }
 
@@ -206,7 +207,7 @@ class NavigatorSpec extends SpecBase {
 
         "must go from GoodsDescriptionPage to CountryOfOriginPage" in {
           navigator.nextPage(
-            GoodsDescriptionPage,
+            GoodsDescriptionPage(newRecordId),
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CountryOfOriginController.onPageLoad(
@@ -575,7 +576,7 @@ class NavigatorSpec extends SpecBase {
         "must go from TraderReferencePage to CyaCreateRecord" in {
 
           navigator.nextPage(
-            TraderReferencePage,
+            TraderReferencePage(newRecordId),
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateRecordController.onPageLoad
@@ -590,7 +591,8 @@ class NavigatorSpec extends SpecBase {
               val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, false).success.value
               navigator.nextPage(UseTraderReferencePage, CheckMode, answers) mustBe routes.GoodsDescriptionController
                 .onPageLoad(
-                  CheckMode
+                  CheckMode,
+                  newRecordId
                 )
             }
 
@@ -601,7 +603,7 @@ class NavigatorSpec extends SpecBase {
                   .set(UseTraderReferencePage, false)
                   .success
                   .value
-                  .set(GoodsDescriptionPage, "1234")
+                  .set(GoodsDescriptionPage(newRecordId), "1234")
                   .success
                   .value
               navigator.nextPage(
@@ -635,7 +637,7 @@ class NavigatorSpec extends SpecBase {
 
         "must go from GoodsDescriptionPage to CyaCreateRecord" in {
           navigator.nextPage(
-            GoodsDescriptionPage,
+            GoodsDescriptionPage(newRecordId),
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateRecordController.onPageLoad
@@ -708,6 +710,17 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad()
           }
+        }
+      }
+
+      "in Update Record Journey" - {
+
+        "must go from CountryOfOriginPage to CyaUpdateRecord" in {
+          navigator.nextPage(
+            CountryOfOriginPage(testRecordId),
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, CountryOfOriginPageUpdate)
         }
       }
 

@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{newRecordId, userAnswersId}
 import forms.GoodsDescriptionFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -42,7 +42,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new GoodsDescriptionFormProvider()
   private val form = formProvider()
 
-  private lazy val goodsDescriptionRoute = routes.GoodsDescriptionController.onPageLoad(NormalMode).url
+  private lazy val goodsDescriptionRoute = routes.GoodsDescriptionController.onPageLoad(NormalMode, newRecordId).url
 
   "GoodsDescription Controller" - {
 
@@ -58,13 +58,13 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[GoodsDescriptionView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, newRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage(newRecordId), "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -76,7 +76,10 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -125,7 +128,10 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -148,7 +154,10 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

@@ -27,10 +27,11 @@ import viewmodels.implicits._
 
 object CountryOfOriginSummary {
 
-  def row(answers: UserAnswers, countries: Seq[Country], recordId: String)(implicit
+  def row(answers: UserAnswers, countries: Seq[Country])(implicit
     messages: Messages
-  ): Option[SummaryListRow] =
-    answers.get(CountryOfOriginPage(recordId)).map { answer =>
+  ): Option[SummaryListRow] = {
+    val defaultRecordId = "new-record"
+    answers.get(CountryOfOriginPage(defaultRecordId)).map { answer =>
       val description = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
       SummaryListRowViewModel(
         key = "countryOfOrigin.checkYourAnswersLabel",
@@ -38,10 +39,11 @@ object CountryOfOriginSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            routes.CountryOfOriginController.onPageLoad(CheckMode, recordId).url
+            routes.CountryOfOriginController.onPageLoad(CheckMode, defaultRecordId).url
           )
             .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
       )
     }
+  }
 }

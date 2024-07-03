@@ -18,9 +18,9 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest}
+import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination}
+import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -360,6 +360,48 @@ class GoodsRecordConnectorSpec
       )
 
       connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+    }
+  }
+
+  ".updateGoodsRecord" - {
+
+    val goodsRecord = UpdateGoodsRecord(
+      eori = testEori,
+      recordId = testRecordId,
+      countryOfOrigin = Some("CN")
+    )
+
+    val updateRecordRequest = UpdateRecordRequest(
+      testEori,
+      testRecordId,
+      testEori,
+      Some("CN"),
+      None,
+      None
+    )
+
+    "must update a goods record" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok())
+      )
+
+      connector.updateGoodsRecord(goodsRecord).futureValue
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.updateGoodsRecord(goodsRecord).failed.futureValue
     }
   }
 

@@ -21,7 +21,7 @@
     govukButton: GovukButton
 )
 
-@(list: SummaryList, recordId: String)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, recordId: String, pageUpdate: PageUpdate)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cyaUpdateRecord.title"))) {
 
@@ -29,7 +29,7 @@
     <p class="govuk-body">@messages("cyaUpdateRecord.h2")</p>
     @govukSummaryList(list)
 
-    @formHelper(action = routes.CyaUpdateRecordController.onSubmit(recordId)) {
+    @formHelper(action = routes.CyaUpdateRecordController.onSubmit(recordId, pageUpdate)) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
 }

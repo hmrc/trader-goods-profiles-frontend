@@ -18,29 +18,51 @@ package models
 
 import cats.data.EitherNec
 import cats.implicits.catsSyntaxTuple3Parallel
-import pages.CountryOfOriginPage
+import models.PageUpdate.getPage
 import play.api.libs.json.{Json, OFormat}
 
 final case class UpdateGoodsRecord(
   eori: String,
   recordId: String,
-  countryOfOrigin: String
+  countryOfOrigin: Option[String] = None,
+  goodsDescription: Option[String] = None,
+  traderReference: Option[String] = None
 )
 
 object UpdateGoodsRecord {
 
   implicit lazy val format: OFormat[UpdateGoodsRecord] = Json.format
 
-  def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, UpdateGoodsRecord] =
+  def build(
+    answers: UserAnswers,
+    eori: String,
+    recordId: String,
+    pageUpdate: PageUpdate
+  ): EitherNec[ValidationError, UpdateGoodsRecord] =
     (
       Right(eori),
       Right(recordId),
-      answers.getPageValue(CountryOfOriginPage(recordId))
-    ).parMapN((eori, recordId, countryOfOrigin) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        countryOfOrigin
-      )
+      answers.getPageValue(getPage(pageUpdate, recordId))
+    ).parMapN((eori, recordId, value) =>
+      pageUpdate match {
+        case CountryOfOriginPageUpdate  =>
+          UpdateGoodsRecord(
+            eori,
+            recordId,
+            countryOfOrigin = Some(value)
+          )
+        case GoodsDescriptionPageUpdate =>
+          UpdateGoodsRecord(
+            eori,
+            recordId,
+            goodsDescription = Some(value)
+          )
+        case TraderReferencePageUpdate  =>
+          UpdateGoodsRecord(
+            eori,
+            recordId,
+            traderReference = Some(value)
+          )
+      }
     )
 }

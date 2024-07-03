@@ -16,28 +16,24 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object GoodsDescriptionSummary {
+object UpdateRecordSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] = {
-    val newRecordId = "new-record"
-    answers.get(GoodsDescriptionPage(newRecordId)).map { answer =>
-      SummaryListRowViewModel(
-        key = "goodsDescription.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(answer).toString),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode, newRecordId).url)
-            .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+  def row(value: String, key: String, hidden: String, url: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = key,
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel(
+          "site.change",
+          url
         )
+          .withVisuallyHiddenText(messages(hidden))
       )
-    }
-  }
+    )
 }

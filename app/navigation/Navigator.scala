@@ -36,10 +36,10 @@ class Navigator @Inject() () {
     case NirmsNumberPage             => _ => routes.HasNiphlController.onPageLoad(NormalMode)
     case HasNiphlPage                => navigateFromHasNiphl
     case NiphlNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
-    case CreateRecordStartPage       => _ => routes.TraderReferenceController.onPageLoad(NormalMode)
-    case TraderReferencePage         => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
+    case CreateRecordStartPage       => _ => routes.TraderReferenceController.onPageLoad(NormalMode, defaultRecordId)
+    case p: TraderReferencePage      => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case UseTraderReferencePage      => navigateFromUseTraderReference
-    case GoodsDescriptionPage        => _ => routes.CountryOfOriginController.onPageLoad(NormalMode, defaultRecordId)
+    case p: GoodsDescriptionPage     => _ => routes.CountryOfOriginController.onPageLoad(NormalMode, defaultRecordId)
     case p: CountryOfOriginPage      => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
     case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoods
@@ -62,7 +62,7 @@ class Navigator @Inject() () {
     answers
       .get(UseTraderReferencePage)
       .map {
-        case false => routes.GoodsDescriptionController.onPageLoad(NormalMode)
+        case false => routes.GoodsDescriptionController.onPageLoad(NormalMode, defaultRecordId)
         case true  => routes.CountryOfOriginController.onPageLoad(NormalMode, defaultRecordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
@@ -131,9 +131,9 @@ class Navigator @Inject() () {
     case NirmsNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNiphlPage                => navigateFromHasNiphlCheck
     case NiphlNumberPage             => _ => routes.CyaCreateProfileController.onPageLoad
-    case TraderReferencePage         => _ => routes.CyaCreateRecordController.onPageLoad
+    case p: TraderReferencePage      => _ => navigateFromTraderReferenceCheck(p.recordId)
     case UseTraderReferencePage      => navigateFromUseTraderReferenceCheck
-    case GoodsDescriptionPage        => _ => routes.CyaCreateRecordController.onPageLoad
+    case p: GoodsDescriptionPage     => _ => navigateFromGoodsDescriptionCheck(p.recordId)
     case p: CountryOfOriginPage      => _ => navigateFromCountryOfOriginCheck(p.recordId)
     case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoodsCheck
@@ -149,7 +149,21 @@ class Navigator @Inject() () {
     if (recordId == defaultRecordId) {
       routes.CyaCreateRecordController.onPageLoad
     } else {
-      routes.CyaUpdateRecordController.onPageLoad(recordId)
+      routes.CyaUpdateRecordController.onPageLoad(recordId, CountryOfOriginPageUpdate)
+    }
+
+  private def navigateFromGoodsDescriptionCheck(recordId: String): Call =
+    if (recordId == defaultRecordId) {
+      routes.CyaCreateRecordController.onPageLoad
+    } else {
+      routes.CyaUpdateRecordController.onPageLoad(recordId, GoodsDescriptionPageUpdate)
+    }
+
+  private def navigateFromTraderReferenceCheck(recordId: String): Call =
+    if (recordId == defaultRecordId) {
+      routes.CyaCreateRecordController.onPageLoad
+    } else {
+      routes.CyaUpdateRecordController.onPageLoad(recordId, TraderReferencePageUpdate)
     }
 
   private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
@@ -185,10 +199,10 @@ class Navigator @Inject() () {
       .get(UseTraderReferencePage)
       .map {
         case false =>
-          if (answers.isDefined(GoodsDescriptionPage)) {
+          if (answers.isDefined(GoodsDescriptionPage(defaultRecordId))) {
             routes.CyaCreateRecordController.onPageLoad
           } else {
-            routes.GoodsDescriptionController.onPageLoad(CheckMode)
+            routes.GoodsDescriptionController.onPageLoad(CheckMode, defaultRecordId)
           }
         case true  => routes.CyaCreateRecordController.onPageLoad
       }

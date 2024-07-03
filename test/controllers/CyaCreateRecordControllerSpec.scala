@@ -49,7 +49,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         TraderReferenceSummary.row(userAnswers)(messages(app)),
         UseTraderReferenceSummary.row(userAnswers)(messages(app)),
         GoodsDescriptionSummary.row(userAnswers)(messages(app)),
-        CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")), "new-record")(messages(app)),
+        CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")))(messages(app)),
         CommodityCodeSummary.row(userAnswers)(messages(app))
       ).flatten
     )

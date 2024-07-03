@@ -37,7 +37,7 @@ object GoodsRecord {
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
-      answers.getPageValue(TraderReferencePage),
+      answers.getPageValue(TraderReferencePage("new-record")),
       getCommodity(answers),
       answers.getPageValue(CountryOfOriginPage("new-record")),
       getGoodsDescription(answers)
@@ -52,9 +52,9 @@ object GoodsRecord {
     )
 
   private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
-    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
+    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage("new-record")) match {
       case Right(Some(data)) => Right(data)
-      case Right(None)       => answers.getPageValue(TraderReferencePage)
+      case Right(None)       => answers.getPageValue(TraderReferencePage("new-record"))
       case Left(errors)      => Left(errors)
     }
 

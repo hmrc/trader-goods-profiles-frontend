@@ -24,11 +24,11 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("traderReference.title"))) {
 
-    @formHelper(action = routes.TraderReferenceController.onSubmit(mode)) {
+    @formHelper(action = routes.TraderReferenceController.onSubmit(mode, recordId)) {
 
         <h1 class="govuk-heading-l">@messages("traderReference.h1")</h1>
         <p class="govuk-body">@messages("traderReference.p1")</p>

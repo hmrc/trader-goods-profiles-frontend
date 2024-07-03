@@ -33,7 +33,7 @@ case object UseTraderReferencePage extends QuestionPage[Boolean] {
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
     updatedUserAnswers.get(UseTraderReferencePage) match {
-      case Some(true) => updatedUserAnswers.remove(GoodsDescriptionPage)
+      case Some(true) => updatedUserAnswers.remove(GoodsDescriptionPage("new-record"))
       case _          => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }
 }

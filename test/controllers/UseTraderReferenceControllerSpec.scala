@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.newRecordId
 import forms.UseTraderReferenceFormProvider
 import models.NormalMode
 import navigation.{FakeNavigator, Navigator}
@@ -47,7 +48,7 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET" in {
 
       val userAnswers = emptyUserAnswers
-        .set(TraderReferencePage, "trader reference")
+        .set(TraderReferencePage(newRecordId), "trader reference")
         .success
         .value
 
@@ -87,7 +88,7 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         .set(UseTraderReferencePage, true)
         .success
         .value
-        .set(TraderReferencePage, "trader reference")
+        .set(TraderReferencePage(newRecordId), "trader reference")
         .success
         .value
 
@@ -151,7 +152,7 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val userAnswers = emptyUserAnswers.set(TraderReferencePage, "trader reference").success.value
+      val userAnswers = emptyUserAnswers.set(TraderReferencePage(newRecordId), "trader reference").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
