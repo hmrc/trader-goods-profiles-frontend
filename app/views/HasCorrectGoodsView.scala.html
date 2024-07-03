@@ -35,7 +35,7 @@
 
     <ul class="govuk-body">
         @commodity.descriptions.zipWithIndex.map { case (description, index) =>
-            <li>@messages(description)</li>
+            <li>@messages(description.toLowerCase)</li>
         }
     </ul>
 
