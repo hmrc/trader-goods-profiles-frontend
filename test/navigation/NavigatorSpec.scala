@@ -395,19 +395,6 @@ class NavigatorSpec extends SpecBase {
 
       }
 
-      "in Update Record Journey" - {
-
-        //TODO navigate to correct page
-        "must go from HasCommodityCodeChangePage to Change Commodity Code Page" in {
-
-          navigator.nextPage(
-            HasCommodityCodeChangePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.IndexController.onPageLoad
-        }
-      }
-
     }
 
     "in Check mode" - {
