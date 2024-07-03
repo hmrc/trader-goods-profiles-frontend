@@ -61,16 +61,15 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
       }
     }
 
-    "must redirect to goods list page for a GET when this the users records have been stored and only store latest" in {
+    "must redirect to goods list page for a GET when this the users records have been stored" in {
       val totalRecords                 = 10
-      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(true)
-      when(mockGetGoodsRecordsconnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
-      when(mockGetGoodsRecordsconnector.storeLatestRecords(any())(any())) thenReturn Future.successful(Done)
+      val mockGetGoodsRecordsConnector = mock[GoodsRecordConnector]
+      when(mockGetGoodsRecordsConnector.doRecordsExist(any())(any())) thenReturn Future.successful(true)
+      when(mockGetGoodsRecordsConnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector)
         )
         .build()
 
@@ -79,11 +78,10 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         val result = route(application, request).value
 
-        status(result) mustEqual OK
+        status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(1).url
-        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
-        verify(mockGetGoodsRecordsconnector, times(1)).getRecordsCount(any())(any())
-        verify(mockGetGoodsRecordsconnector, times(1)).storeLatestRecords(any())(any())
+        verify(mockGetGoodsRecordsConnector, times(1)).doRecordsExist(any())(any())
+        verify(mockGetGoodsRecordsConnector, times(1)).getRecordsCount(any())(any())
 
       }
     }

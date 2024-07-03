@@ -358,6 +358,21 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to JourneyRecovery when page number is less than 1" in {
+      val badPageRoute = routes.GoodsRecordsController.onPageLoad(0).url
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, badPageRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the search has previously been filled in" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, "answer").success.value
@@ -522,6 +537,5 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }
