@@ -22,7 +22,7 @@ import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 
-class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues{
+class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
   "clean up" - {
 
     "removes HasCorrectGoodsPage when commodity code has changed" in {
