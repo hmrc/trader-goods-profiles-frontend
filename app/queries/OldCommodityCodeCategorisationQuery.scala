@@ -16,7 +16,6 @@
 
 package queries
 
-import models.RecordCategorisations
 import models.ott.CategorisationInfo
 import play.api.libs.json.JsPath
 

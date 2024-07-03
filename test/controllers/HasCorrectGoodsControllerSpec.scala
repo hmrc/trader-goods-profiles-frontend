@@ -19,12 +19,11 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.HasCorrectGoodsFormProvider
-import models.requests.DataRequest
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage}
 import play.api.inject.bind

@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.RecordCategorisations
 import models.ott.CategorisationInfo
@@ -28,7 +28,6 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.LongerCommodityCodePage
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
@@ -89,9 +88,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
       val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
-      val expectedRecordCategorisations = RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
+      val expectedRecordCategorisations =
+        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
-      val result = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
+      val result                        = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call the router to get the goods record") {
@@ -197,13 +197,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val newCommodity = testCommodity.copy(commodityCode = "newComCode")
 
       val mockDataRequest = mock[DataRequest[AnyContent]]
-      val userAnswers = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), newCommodity).success.value
+      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), newCommodity).success.value
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
-      val expectedCategorisationInfo = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
-      val expectedRecordCategorisations = RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
+      val expectedRecordCategorisations =
+        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
-      val result = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
+      val result                        = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should not need to call the goods record connector") {
@@ -223,8 +224,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should replace existing category assessments if they are already present, then return successful updated answers" in {
       val initialRecordCategorisations =
-        RecordCategorisations(Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit"))))
-      val newCommodity = testCommodity.copy(commodityCode = "newComCode")
+        RecordCategorisations(
+          Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit")))
+        )
+      val newCommodity                 = testCommodity.copy(commodityCode = "newComCode")
 
       when(mockOttConnector.getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(mockOttResponse("newComCode")))
@@ -232,7 +235,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val expectedRecordCategorisations =
         RecordCategorisations(Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"))))
 
-      val userAnswers = emptyUserAnswers
+      val userAnswers                   = emptyUserAnswers
         .set(RecordCategorisationsQuery, initialRecordCategorisations)
         .success
         .value
@@ -280,7 +283,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 
-      val actualException = intercept[RuntimeException] {
+      intercept[RuntimeException] {
         val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
         await(result)
       }
@@ -293,7 +296,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.failed(expectedException))
 
       val mockDataRequest = mock[DataRequest[AnyContent]]
-      val userAnswers = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
+      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val actualException = intercept[RuntimeException] {
@@ -310,7 +313,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.failed(expectedException))
 
       val mockDataRequest = mock[DataRequest[AnyContent]]
-      val userAnswers = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
+      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val actualException = intercept[RuntimeException] {

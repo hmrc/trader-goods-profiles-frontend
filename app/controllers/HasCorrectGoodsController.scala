@@ -18,7 +18,8 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
-import models.Mode
+import models.requests.DataRequest
+import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.{HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -26,6 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CommodityQuery, LongerCommodityQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
 
@@ -79,7 +81,6 @@ class HasCorrectGoodsController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent]                                      = (identify andThen getData andThen requireData).async {
     implicit request =>
-
       val submitAction = routes.HasCorrectGoodsController.onSubmit(mode)
       form
         .bindFromRequest()
@@ -99,7 +100,6 @@ class HasCorrectGoodsController @Inject() (
   // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
 
       form
@@ -113,13 +113,36 @@ class HasCorrectGoodsController @Inject() (
             },
           value =>
             for {
-              recordCategorisations <- Future.fromTry(request.userAnswers.get(RecordCategorisationsQuery).toRight(new Exception()).toTry)
-              oldCommodityCategorisation <- Future.fromTry(recordCategorisations.records.get(recordId).toRight(new Exception()).toTry)
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
-              updatedAnswersWithQuery15 <- if (value) Future.fromTry(updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation)) else Future.successful(updatedAnswers)
-              updatedAnswersWithQuery2 <- if (value) categorisationService.updateCategorisationWithNewCommodityCode(request.copy(userAnswers = updatedAnswersWithQuery15), recordId) else Future.successful(updatedAnswersWithQuery15)
-              _              <- sessionRepository.set(updatedAnswersWithQuery2)
-            } yield Redirect(navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery2))
+              updatedAnswers               <-
+                Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
+              updatedCategorisationAnswers <- updateCategorisationDetails(request, updatedAnswers, recordId, value)
+              _                            <- sessionRepository.set(updatedCategorisationAnswers)
+            } yield Redirect(
+              navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedCategorisationAnswers)
+            )
         )
     }
+
+  private def updateCategorisationDetails(
+    request: DataRequest[_],
+    updatedAnswers: UserAnswers,
+    recordId: String,
+    value: Boolean
+  )(implicit hc: HeaderCarrier): Future[UserAnswers] =
+    if (value) {
+      for {
+        recordCategorisations <- updatedAnswers.get(RecordCategorisationsQuery)
+        oldCommodityCategorisation <- recordCategorisations.records.get(recordId)
+        updatedAnswers <-
+          updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation).toOption
+      } yield updatedAnswers
+
+      categorisationService.updateCategorisationWithNewCommodityCode(
+        request.copy(userAnswers = updatedAnswers),
+        recordId
+      )
+    } else {
+      Future.successful(updatedAnswers)
+    }
+
 }
