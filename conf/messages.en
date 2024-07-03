@@ -420,3 +420,9 @@ hasCommodityCodeChange.p2 = You''ll need to recategorise this goods record if yo
 hasCommodityCodeChange.checkYourAnswersLabel = hasCommodityCodeChange
 hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 hasCommodityCodeChange.change.hidden = HasCommodityCodeChange
+
+hasGoodDescriptionChange.title = hasGoodDescriptionChange
+hasGoodDescriptionChange.heading = hasGoodDescriptionChange
+hasGoodDescriptionChange.checkYourAnswersLabel = hasGoodDescriptionChange
+hasGoodDescriptionChange.error.required = Select yes if hasGoodDescriptionChange
+hasGoodDescriptionChange.change.hidden = HasGoodDescriptionChange

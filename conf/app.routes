@@ -161,3 +161,8 @@ GET        /update-record/:recordId/change-record-information/commodity-code    
 POST       /update-record/:recordId/change-record-information/commodity-code          controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
+GET        /hasGoodDescriptionChange                        controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = NormalMode)
+POST       /hasGoodDescriptionChange                        controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = NormalMode)
+GET        /changeHasGoodDescriptionChange                  controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeHasGoodDescriptionChange                  controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = CheckMode)
