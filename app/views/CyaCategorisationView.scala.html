@@ -36,7 +36,7 @@ govukButton: GovukButton
     }
 
     @if(longerCommodityCodeList != SummaryListViewModel(rows = Seq.empty)) {
-        <h2 class="govuk-heading-m">@messages("SOME PLACEMENT TEXT")</h2>
+        <h2 class="govuk-heading-m">@messages("cyaCategorisation.longerCommodityCode")</h2>
         @govukSummaryList(longerCommodityCodeList)
     }
 

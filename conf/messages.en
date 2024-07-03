@@ -50,6 +50,7 @@ cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your answers
 cyaCategorisation.categorisationHeader = Conditions
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
+cyaCategorisation.longerCommodityCode = Longer commodity code
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service
@@ -362,7 +363,7 @@ longerCommodityCode.insetText = As you are providing a longer commodity code, so
 longerCommodityCode.h2 = What are the additional numbers in the commodity code?
 longerCommodityCode.hint = Enter 2 or 4 digits
 longerCommodityCode.linkText = If you do not know the next 2 or 4 digits, review this code on the Online Tariff Tool (opens in a new tab)
-longerCommodityCode.checkYourAnswersLabel = LongerCommodityCode
+longerCommodityCode.checkYourAnswersLabel = Longer commodity code
 longerCommodityCode.error.required = Enter 2 or 4 digits
 longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct format
 longerCommodityCode.error.invalid = Enter a real commodity code
