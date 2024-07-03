@@ -22,7 +22,7 @@ import controllers.routes
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import queries.{LongerCommodityCodeRecordCategorisationsQuery, RecordCategorisationsQuery, OldCommodityCodeCategorisationQuery}
+import queries.{LongerCommodityCodeRecordCategorisationsQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
 
 class NavigatorSpec extends SpecBase {
 
@@ -266,12 +266,12 @@ class NavigatorSpec extends SpecBase {
 
       "in Categorisation Journey" - {
 
-        val recordId = testRecordId
-        val indexAssessment1 = 0
-        val indexAssessment2 = 1
-        val assessment1 = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
-        val assessment2 = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-        val categorisationInfo =
+        val recordId              = testRecordId
+        val indexAssessment1      = 0
+        val indexAssessment2      = 1
+        val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo    =
           CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"))
         val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
 
@@ -366,7 +366,7 @@ class NavigatorSpec extends SpecBase {
               val eightDigitsRecordCat =
                 RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
 
-              val answers =
+              val answers              =
                 emptyUserAnswers
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
@@ -393,7 +393,7 @@ class NavigatorSpec extends SpecBase {
             val sixDigitsRecordCat =
               RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "123456")))
 
-            val answers =
+            val answers            =
               emptyUserAnswers
                 .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                 .success
@@ -479,7 +479,7 @@ class NavigatorSpec extends SpecBase {
 
         "must go from CategoryGuidancePage to Category Assessment page" in {
           val recordId = testRecordId
-          val index = 0
+          val index    = 0
           navigator.nextPage(
             CategoryGuidancePage(recordId),
             NormalMode,
@@ -514,9 +514,16 @@ class NavigatorSpec extends SpecBase {
 
           "to CyaCategorisation when answer is Yes and category assessments are same for both codes" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
-              .set(RecordCategorisationsQuery, recordCategorisations).success.value
-              .set(OldCommodityCodeCategorisationQuery(testRecordId),categorisationInfo).success.value
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfo)
+              .success
+              .value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
@@ -527,14 +534,22 @@ class NavigatorSpec extends SpecBase {
 
           "to CategoryGuidance when answer is Yes and category assessments are different for the longer code" in {
 
-            val assessment1Shorter = assessment1
-            val assessment2Shorter = assessment2.copy(id = "id432")
-            val categorisationInfoShorter = CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
+            val assessment1Shorter           = assessment1
+            val assessment2Shorter           = assessment2.copy(id = "id432")
+            val categorisationInfoShorter    =
+              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
             val recordCategorisationsShorter = RecordCategorisations(Map(recordId -> categorisationInfoShorter))
 
-            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
-              .set(RecordCategorisationsQuery, recordCategorisations).success.value
-              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfoShorter).success.value
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfoShorter)
+              .success
+              .value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
@@ -545,7 +560,8 @@ class NavigatorSpec extends SpecBase {
 
           "to LongerCommodityCodePage when answer is No" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
+            val answers =
+              UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, answers) mustBe
               routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
           }
@@ -560,7 +576,6 @@ class NavigatorSpec extends SpecBase {
               .onPageLoad()
           }
         }
-
 
       }
 

@@ -87,8 +87,6 @@ class LongerCommodityCodeController @Inject() (
                 val longCommodityCode = s"$shortCommodity$value"
                 (for {
                   //TODO ewwww
-                  recordCategorisations <- Future.fromTry(request.userAnswers.get(RecordCategorisationsQuery).toRight(new Exception()).toTry)
-                  oldCommodityCategorisation <- Future.fromTry(recordCategorisations.records.get(recordId).toRight(new Exception()).toTry)
                   validCommodityCode      <- ottConnector.getCommodityCode(
                                                longCommodityCode,
                                                request.eori,
@@ -98,9 +96,7 @@ class LongerCommodityCodeController @Inject() (
                                              )
                   updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
                   updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
-                  updatedAnswersWithQuery15 <- Future.fromTry(updatedAnswersWithQuery.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation))
-                  updatedAnswersWithQuery2 <- categorisationService.requireCategorisationLongerCommodityCode(request.copy(userAnswers = updatedAnswersWithQuery15), recordId)
-                  _                       <- sessionRepository.set(updatedAnswersWithQuery2)
+                  _                       <- sessionRepository.set(updatedAnswersWithQuery)
                 } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswers))).recover {
                   case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                     val formWithApiErrors =

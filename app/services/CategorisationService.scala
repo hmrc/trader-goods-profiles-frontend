@@ -20,7 +20,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{RecordCategorisations, UserAnswers}
-import queries.{LongerCommodityCodeRecordCategorisationsQuery, RecordCategorisationsQuery}
+import queries.{LongerCommodityCodeRecordCategorisationsQuery, RecordCategorisationsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -112,9 +112,10 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
         for {
+          newCommodityCode <- Future.fromTry(request.userAnswers.get(LongerCommodityQuery(recordId)).toRight(new Exception()).toTry)
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature <- ottConnector.getCategorisationInfo(
-            getGoodsRecordResponse.commodityCode,
+            newCommodityCode.commodityCode,
             request.eori,
             request.affinityGroup,
             Some(recordId),

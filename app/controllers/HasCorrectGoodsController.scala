@@ -20,11 +20,12 @@ import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{HasCorrectGoodsPage, HasCorrectGoodsLongerCommodityCodePage}
+import pages.{HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, LongerCommodityQuery}
+import queries.{CommodityQuery, LongerCommodityQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
 
@@ -40,7 +41,8 @@ class HasCorrectGoodsController @Inject() (
   requireData: DataRequiredAction,
   formProvider: HasCorrectGoodsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasCorrectGoodsView
+  view: HasCorrectGoodsView,
+  categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -111,8 +113,12 @@ class HasCorrectGoodsController @Inject() (
             },
           value =>
             for {
+              recordCategorisations <- Future.fromTry(request.userAnswers.get(RecordCategorisationsQuery).toRight(new Exception()).toTry)
+              oldCommodityCategorisation <- Future.fromTry(recordCategorisations.records.get(recordId).toRight(new Exception()).toTry)
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
-              _              <- sessionRepository.set(updatedAnswers)
+              updatedAnswersWithQuery15 <- if (value) Future.fromTry(updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation)) else Future.successful(updatedAnswers)
+              updatedAnswersWithQuery2 <- if (value) categorisationService.updateCategorisationWithNewCommodityCode(request.copy(userAnswers = updatedAnswersWithQuery15), recordId) else Future.successful(updatedAnswersWithQuery15)
+              _              <- sessionRepository.set(updatedAnswersWithQuery2)
             } yield Redirect(navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers))
         )
     }

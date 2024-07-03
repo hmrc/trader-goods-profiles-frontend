@@ -99,7 +99,7 @@ class Navigator @Inject() () {
             commodityLonger <- recordQueryLongerCode.records.get(recordId)
           } yield {
 
-            if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments)){
+            if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments) && commodityShorter.measurementUnit.equals(commodityLonger.measurementUnit)){
               routes.CyaCategorisationController.onPageLoad(recordId)
             } else {
               routes.CategoryGuidanceController.onPageLoad(recordId)
