@@ -16,11 +16,4 @@
 
 package pages
 
-import play.api.libs.json.JsPath
-
-case class NamePage(recordId: String) extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString \ recordId
-
-  override def toString: String = "name"
-}
+case class CategoryGuidancePage(recordId: String) extends Page

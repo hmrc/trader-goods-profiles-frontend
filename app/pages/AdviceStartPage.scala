@@ -16,4 +16,4 @@
 
 package pages
 
-case object AdviceStartPage extends Page
+case class AdviceStartPage(recordId: String) extends Page

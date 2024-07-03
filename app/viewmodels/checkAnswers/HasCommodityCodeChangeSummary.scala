@@ -18,23 +18,27 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.EmailPage
+import pages.HasCommodityCodeChangePage
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object EmailSummary {
+object HasCommodityCodeChangeSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(EmailPage(recordId)).map { answer =>
+    answers.get(HasCommodityCodeChangePage(recordId)).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+
       SummaryListRowViewModel(
-        key = "email.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(answer).toString),
+        key = "hasCommodityCodeChange.checkYourAnswersLabel",
+        value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.EmailController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("email.change.hidden"))
+          ActionItemViewModel(
+            "site.change",
+            routes.HasCommodityCodeChangeController.onPageLoad(CheckMode, recordId).url
+          )
+            .withVisuallyHiddenText(messages("hasCommodityCodeChange.change.hidden"))
         )
       )
     }

@@ -179,9 +179,8 @@ homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a go
 homepage.h2.1 = Goods records
 homepage.p2.linkText = View or update your goods records
 homepage.p3.linkText = Create a new goods record
-homepage.h2.2 = Ask for advice
+homepage.h2.2 = Manage your profile
 homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
-homepage.h2.3 = Manage your profile
 homepage.p5.linkText = Manage your profile details
 
 createRecordStart.title = Creating a goods record
@@ -226,8 +225,8 @@ goodsDescription.change.hidden = Goods description
 
 hasCorrectGoods.title = Results for {0}
 hasCorrectGoods.heading = Results for {0}
-hasCorrectGoods.p1 = Classification: {0}
-hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool
+hasCorrectGoods.p1 = Classification:
+hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool (opens in a new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select if these are the correct goods
 
@@ -412,3 +411,12 @@ removeGoodsRecord.yes = Yes, remove this goods record
 removeGoodsRecord.no = No, return to goods profile
 
 
+
+hasCommodityCodeChange.title = Change record information
+hasCommodityCodeChange.h1 = Changing the commodity code
+hasCommodityCodeChange.h2 = Do you want to change the commodity code?
+hasCommodityCodeChange.p1 = Changing the data item(commodity code) on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
+hasCommodityCodeChange.p2 = You''ll need to recategorise this goods record if you change the commodity code.
+hasCommodityCodeChange.checkYourAnswersLabel = hasCommodityCodeChange
+hasCommodityCodeChange.error.required = Select if you want to change the commodity code
+hasCommodityCodeChange.change.hidden = HasCommodityCodeChange

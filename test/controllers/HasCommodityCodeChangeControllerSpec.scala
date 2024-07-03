@@ -18,43 +18,44 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import forms.NameFormProvider
+import forms.HasCommodityCodeChangeFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.NamePage
+import pages.HasCommodityCodeChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.NameView
+import views.html.HasCommodityCodeChangeView
 
 import scala.concurrent.Future
 
-class NameControllerSpec extends SpecBase with MockitoSugar {
+class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  private def onwardRoute = Call("GET", "/foo")
+  def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new NameFormProvider()
-  private val form = formProvider()
+  val formProvider = new HasCommodityCodeChangeFormProvider()
+  val form         = formProvider()
 
-  private lazy val nameRoute = routes.NameController.onPageLoad(NormalMode, testRecordId).url
+  lazy val hasCommodityCodeChangeRoute =
+    routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
 
-  "Name Controller" - {
+  "HasCommodityCodeChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, nameRoute)
+        val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[NameView]
+        val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
@@ -63,19 +64,19 @@ class NameControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(NamePage(testRecordId), "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, nameRoute)
+        val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
 
-        val view = application.injector.instanceOf[NameView]
+        val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, testRecordId)(
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -98,8 +99,8 @@ class NameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, nameRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+          FakeRequest(POST, hasCommodityCodeChangeRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -114,12 +115,12 @@ class NameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, nameRoute)
+          FakeRequest(POST, hasCommodityCodeChangeRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[NameView]
+        val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
         val result = route(application, request).value
 
@@ -136,7 +137,7 @@ class NameControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, nameRoute)
+        val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
 
         val result = route(application, request).value
 
@@ -151,8 +152,8 @@ class NameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, nameRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+          FakeRequest(POST, hasCommodityCodeChangeRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
