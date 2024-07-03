@@ -46,14 +46,13 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val hasNiphlRoute = routes.HasNiphlController.onPageLoad(NormalMode).url
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
   "HasNiphl Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val mockTraderProfileConnector = mock[TraderProfileConnector]
-      implicit val hc: HeaderCarrier = mock[HeaderCarrier]
-
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -77,7 +76,11 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = UserAnswers(userAnswersId).set(HasNiphlPage, true).success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNiphlRoute)
@@ -139,7 +142,11 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNiphlRoute)
@@ -164,6 +171,28 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Home page for a GET if profile already exists" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasNiphlRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
       }
     }
   }

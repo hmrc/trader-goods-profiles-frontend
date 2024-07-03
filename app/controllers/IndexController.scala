@@ -17,8 +17,7 @@
 package controllers
 
 import connectors.TraderProfileConnector
-import controllers.actions.{DataRetrievalOrCreateAction, IdentifierAction, ProfileCheckAction}
-
+import controllers.actions.IdentifierAction
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,14 +28,15 @@ import scala.concurrent.ExecutionContext
 class IndexController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   identify: IdentifierAction,
-  checkProfile: ProfileCheckAction,
-  getOrCreate: DataRetrievalOrCreateAction,
   traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen checkProfile) { implicit request =>
-    Ok
+  def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
+    traderProfileConnector.checkTraderProfile(request.eori).map {
+      case true  => Redirect(routes.HomePageController.onPageLoad())
+      case false => Redirect(routes.ProfileSetupController.onPageLoad())
+    }
   }
 }
