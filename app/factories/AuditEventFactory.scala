@@ -94,7 +94,7 @@ case class AuditEventFactory() {
       "specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityCode"              -> goodsRecord.commodity.commodityCode,
-      "commodityDescription"       -> goodsRecord.commodity.description,
+      "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
@@ -137,7 +137,7 @@ case class AuditEventFactory() {
       "goodsDescription"           -> goodsRecord.goodsDescription,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityCode"              -> goodsRecord.commodity.commodityCode,
-      "commodityDescription"       -> goodsRecord.commodity.description,
+      "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
@@ -176,7 +176,7 @@ case class AuditEventFactory() {
         responseStatus.toString,
         errorMessage
       ),
-      commodityDetails.map(_.description),
+      commodityDetails.flatMap(_.descriptions.headOption),
       // If commodityDetails are defined and no endDate then we got sent a null for this so pass it on.
       commodityDetails.map(_.validityEndDate.map(_.toString).getOrElse("null")),
       commodityDetails.map(_.validityStartDate.toString)
