@@ -22,11 +22,11 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.CommodityCodePage
+import pages.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.CommodityQuery
+import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -66,7 +66,7 @@ class CommodityCodeController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(CommodityCodePage) match {
+      val preparedForm = request.userAnswers.get(CommodityCodeUpdatePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -110,8 +110,8 @@ class CommodityCodeController @Inject() (
             (for {
               commodity               <-
                 ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
-              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
-              updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
+              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
+              updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityUpdateQuery, commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>

@@ -25,7 +25,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CommodityCodePage
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, QuestionPage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -51,21 +51,29 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "For create journey" - {
       val commodityCodeRoute = routes.CommodityCodeController.onPageLoadCreate(NormalMode).url
 
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(NormalMode)
+      lazy val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(NormalMode)
 
-      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction)
+      val page: QuestionPage[String] = CommodityCodePage
+
+      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page)
     }
 
     "For update journey" - {
       val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
 
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(NormalMode, testRecordId)
+      lazy val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(NormalMode, testRecordId)
 
-      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction)
+      val page: QuestionPage[String] = CommodityCodeUpdatePage(testRecordId)
+
+      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page)
 
     }
 
-    def runCommodityCodeControllerTests(commodityCodeRoute: String, onSubmitAction: Call): Unit = {
+    def runCommodityCodeControllerTests(
+      commodityCodeRoute: String,
+      onSubmitAction: Call,
+      page: QuestionPage[String]
+    ): Unit = {
 
       "must return OK and the correct view for a GET" in {
 
@@ -85,7 +93,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "654321").success.value
+        val userAnswers = UserAnswers(userAnswersId).set(page, "654321").success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
