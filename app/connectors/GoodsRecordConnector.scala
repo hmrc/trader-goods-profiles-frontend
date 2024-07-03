@@ -49,10 +49,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
 
   private def checkGoodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/check"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/checkRecords"
 
   private def storeLatestGoodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/latest"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/storeLatest"
 
   private def getGoodsRecordCountsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
@@ -60,7 +60,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def storeAllGoodsRecordsUrl(
     eori: String
   ) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/store"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -102,17 +102,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def getRecords(
     eori: String,
-    page: Option[Int] = None,
-    size: Option[Int] = None
+    page: Int,
+    size: Int
   )(implicit
     hc: HeaderCarrier
   ): Future[GetRecordsResponse] = {
 
-    val pageNumber  = 0
-    val pageSize    = 10
     val queryParams = Map(
-      "page" -> page.getOrElse(pageNumber).toString,
-      "size" -> size.getOrElse(pageSize).toString
+      "page" -> page.toString,
+      "size" -> size.toString
     )
 
     httpClient
@@ -155,7 +153,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     eori: String
   )(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .get(checkGoodsRecordsUrl(eori))
+      .head(checkGoodsRecordsUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(_ => true)

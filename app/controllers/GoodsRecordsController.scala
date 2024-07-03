@@ -49,7 +49,8 @@ class GoodsRecordsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
+  private val form     = formProvider()
+  private val pageSize = 10
 
   def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
@@ -57,8 +58,8 @@ class GoodsRecordsController @Inject() (
         case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
         case _ =>
           for {
-//            _                   <- goodsRecordConnector.storeLatestRecords(request.eori)
-            goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, Some(page))
+            _                   <- goodsRecordConnector.storeLatestRecords(request.eori)
+            goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
             countries           <- ottConnector.getCountries
           } yield
             if (goodsRecordResponse.pagination.totalRecords != 0) {
@@ -66,16 +67,16 @@ class GoodsRecordsController @Inject() (
                 case None        => form
                 case Some(value) => form.fill(value)
               }
-
+              val firstRecord  = getFirstRecord(goodsRecordResponse.pagination, pageSize)
               Ok(
                 view(
                   preparedForm,
                   goodsRecordResponse.goodsItemRecords,
                   goodsRecordResponse.pagination.totalRecords,
-                  getFirstRecord(goodsRecordResponse),
-                  getLastRecord(goodsRecordResponse),
+                  getFirstRecord(goodsRecordResponse.pagination, pageSize),
+                  getLastRecord(firstRecord, goodsRecordResponse.goodsItemRecords.size),
                   countries,
-                  getPagination(goodsRecordResponse.pagination),
+                  getPagination(goodsRecordResponse.pagination.currentPage, goodsRecordResponse.pagination.totalPages),
                   page
                 )
               )
@@ -102,20 +103,23 @@ class GoodsRecordsController @Inject() (
             for {
               updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
               _                   <- sessionRepository.set(updatedAnswers)
-              goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, Some(page))
+              goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
               countries           <- ottConnector.getCountries
-            } yield Ok(
-              view(
-                form.fill(value),
-                goodsRecordResponse.goodsItemRecords,
-                goodsRecordResponse.pagination.totalRecords,
-                getFirstRecord(goodsRecordResponse),
-                getLastRecord(goodsRecordResponse),
-                countries,
-                getPagination(goodsRecordResponse.pagination),
-                page
+            } yield {
+              val firstRecord = getFirstRecord(goodsRecordResponse.pagination, pageSize)
+              Ok(
+                view(
+                  form.fill(value),
+                  goodsRecordResponse.goodsItemRecords,
+                  goodsRecordResponse.pagination.totalRecords,
+                  getFirstRecord(goodsRecordResponse.pagination, pageSize),
+                  getLastRecord(firstRecord, pageSize),
+                  countries,
+                  getPagination(goodsRecordResponse.pagination.currentPage, goodsRecordResponse.pagination.totalPages),
+                  page
+                )
               )
-            )
+            }
         )
   }
 }
