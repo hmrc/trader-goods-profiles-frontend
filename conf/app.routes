@@ -162,6 +162,11 @@ POST       /update-record/:recordId/change-record-information/commodity-code    
 GET        /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
+GET        /update-record/:recordId/change-record-warning/country-of-origin                        controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/country-of-origin                        controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/country-of-origin/check                  controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/country-of-origin/check                  controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
 GET        /hasGoodDescriptionChange                        controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = NormalMode)
 POST       /hasGoodDescriptionChange                        controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = NormalMode)
 GET        /changeHasGoodDescriptionChange                  controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode)
