@@ -69,41 +69,6 @@ class CategorisationService @Inject() (
     }
   }
 
-  def requireCategorisationLongerCommodityCode(request: DataRequest[_], recordId: String)(implicit
-                                                                       hc: HeaderCarrier
-  ): Future[UserAnswers] = {
-
-    val recordCategorisations =
-      request.userAnswers.get(LongerCommodityCodeRecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-
-    recordCategorisations.records.get(recordId) match {
-      case Some(_) =>
-        Future.successful(request.userAnswers)
-      case None =>
-        for {
-          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature <- ottConnector.getCategorisationInfo(
-            getGoodsRecordResponse.commodityCode,
-            request.eori,
-            request.affinityGroup,
-            Some(recordId),
-            getGoodsRecordResponse.countryOfOrigin,
-            LocalDate.now() //TODO where does DateOfTrade come from??
-          )
-          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers <-
-            Future.fromTry(
-              request.userAnswers.set(
-                LongerCommodityCodeRecordCategorisationsQuery,
-                recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-              )
-            )
-          _ <- sessionRepository.set(updatedAnswers)
-        } yield updatedAnswers
-    }
-  }
-
-
   def updateCategorisationWithNewCommodityCode(request: DataRequest[_], recordId: String)(implicit
                                                                                           hc: HeaderCarrier
   ): Future[UserAnswers] = {
@@ -112,7 +77,7 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
         for {
-          newCommodityCode <- Future.fromTry(request.userAnswers.get(LongerCommodityQuery(recordId)).toRight(new Exception()).toTry)
+          newCommodityCode <- Future.fromTry(request.userAnswers.get(LongerCommodityQuery(recordId)).toRight(new RuntimeException()).toTry)
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature <- ottConnector.getCategorisationInfo(
             newCommodityCode.commodityCode,
