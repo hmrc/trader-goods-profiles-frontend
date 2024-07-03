@@ -50,7 +50,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers =
         emptyUserAnswers
-          .set(CommodityQuery, Commodity("654321", "Description", Instant.now, None))
+          .set(CommodityQuery, Commodity("654321", List("Description", "Other"), Instant.now, None))
           .success
           .value
 
@@ -67,7 +67,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           NormalMode,
-          Commodity("654321", "Description", Instant.now, None)
+          Commodity("654321", List("Description", "Other"), Instant.now, None)
         )(
           request,
           messages(application)
@@ -91,7 +91,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val commodity   = Commodity("654321", "Description", Instant.now, None)
+      val commodity   = Commodity("654321", List("Description"), Instant.now, None)
       val userAnswers = emptyUserAnswers
         .set(CommodityQuery, commodity)
         .success
@@ -161,7 +161,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val commodity = Commodity("654321", "Description", Instant.now, None)
+      val commodity = Commodity("654321", List("Description"), Instant.now, None)
 
       val userAnswers =
         emptyUserAnswers.set(CommodityQuery, commodity).success.value
