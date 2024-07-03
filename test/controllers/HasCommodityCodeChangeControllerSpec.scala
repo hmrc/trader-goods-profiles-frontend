@@ -17,100 +17,66 @@
 package controllers
 
 import base.SpecBase
-import forms.HasCorrectGoodsFormProvider
-import models.{Commodity, NormalMode}
+import base.TestConstants.{testRecordId, userAnswersId}
+import forms.HasCommodityCodeChangeFormProvider
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HasCorrectGoodsPage
+import pages.HasCommodityCodeChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.CommodityQuery
 import repositories.SessionRepository
-import views.html.HasCorrectGoodsView
+import views.html.HasCommodityCodeChangeView
 
-import java.time.Instant
 import scala.concurrent.Future
 
-class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
+class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  private def onwardRoute = Call("GET", "/foo")
+  def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasCorrectGoodsFormProvider()
-  private val form = formProvider()
+  val formProvider = new HasCommodityCodeChangeFormProvider()
+  val form         = formProvider()
 
-  private lazy val hasCorrectGoodsRoute = routes.HasCorrectGoodsController.onPageLoad(NormalMode).url
+  lazy val hasCommodityCodeChangeRoute =
+    routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
 
-  "HasCorrectGoodsController" - {
+  "HasCommodityCodeChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val userAnswers =
-        emptyUserAnswers
-          .set(CommodityQuery, Commodity("654321", List("Description", "Other"), Instant.now, None))
-          .success
-          .value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, hasCorrectGoodsRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[HasCorrectGoodsView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form,
-          NormalMode,
-          Commodity("654321", List("Description", "Other"), Instant.now, None)
-        )(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must redirect on GET to JourneyRecovery Page if user doesn't have commodity answer" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasCorrectGoodsRoute)
+        val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
 
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        val view = application.injector.instanceOf[HasCommodityCodeChangeView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val commodity   = Commodity("654321", List("Description"), Instant.now, None)
-      val userAnswers = emptyUserAnswers
-        .set(CommodityQuery, commodity)
-        .success
-        .value
-        .set(HasCorrectGoodsPage, true)
-        .success
-        .value
+      val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasCorrectGoodsRoute)
+        val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
 
-        val view = application.injector.instanceOf[HasCorrectGoodsView]
+        val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, commodity)(
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -133,7 +99,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasCorrectGoodsRoute)
+          FakeRequest(POST, hasCommodityCodeChangeRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -143,44 +109,23 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {
+    "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, hasCorrectGoodsRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val commodity = Commodity("654321", List("Description"), Instant.now, None)
-
-      val userAnswers =
-        emptyUserAnswers.set(CommodityQuery, commodity).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, hasCorrectGoodsRoute)
+          FakeRequest(POST, hasCommodityCodeChangeRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[HasCorrectGoodsView]
+        val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, commodity)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -192,7 +137,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasCorrectGoodsRoute)
+        val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
 
         val result = route(application, request).value
 
@@ -207,7 +152,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasCorrectGoodsRoute)
+          FakeRequest(POST, hasCommodityCodeChangeRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import models.Commodity
-
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -24,29 +22,19 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, commodity: Commodity)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("hasCorrectGoods.title", commodity.commodityCode))) {
+@layout(pageTitle = title(form, messages("hasCommodityCodeChange.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("hasCorrectGoods.heading", commodity.commodityCode)</h1>
+    <h1 class="govuk-heading-l">@messages("hasCommodityCodeChange.h1")</h1>
 
+    <p class="govuk-body">@messages("hasCommodityCodeChange.p1")</p>
 
-    <p class="govuk-body">@messages("hasCorrectGoods.p1")</p>
+    <p class="govuk-body">@messages("hasCommodityCodeChange.p2")</p>
 
-    <ul class="govuk-body">
-        @commodity.descriptions.zipWithIndex.map { case (description, index) =>
-            <li>@description.toLowerCase</li>
-        }
-    </ul>
+    <h2 class="govuk-heading-m">@messages("hasCommodityCodeChange.h2")</h2>
 
-
-    <p class="govuk-body">
-        <a href="https://www.trade-tariff.service.gov.uk/search?q=@commodity.commodityCode" target="_blank" class="govuk-link" >@messages("hasCorrectGoods.p2.linkText")</a>.
-    </p>
-
-    <h2 class="govuk-heading-m">@messages("hasCorrectGoods.h2")</h2>
-
-    @formHelper(action = routes.HasCorrectGoodsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.HasCommodityCodeChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -55,7 +43,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "hasCorrectGoods.h2", classes = "govuk-visually-hidden")
+                legend = Legend(content = "hasCommodityCodeChange.h2", classes = "govuk-visually-hidden")
             )
         )
 

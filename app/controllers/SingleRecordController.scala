@@ -45,7 +45,7 @@ class SingleRecordController @Inject() (
           GoodsDescriptionSummary.row(record.goodsDescription),
           CountryOfOriginSummary.row(record.countryOfOrigin),
           CommodityCodeSummary.row(record.commodityCode),
-          StatusSummary.row("Not ready for use")
+          StatusSummary.row(record.declarable)
         )
       )
 

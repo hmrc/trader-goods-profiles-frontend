@@ -237,7 +237,7 @@ class GoodsRecordConnectorSpec
     val goodsRecord = GoodsRecord(
       testEori,
       "1",
-      Commodity("2", "desc", instant, None),
+      Commodity("2", List("desc"), instant, None),
       "3",
       "4"
     )
