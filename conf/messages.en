@@ -420,3 +420,6 @@ singleRecord.h2.categorisation = Categorisation
 singleRecord.category.row = Category
 singleRecord.h2.adviceStatus = Advice status
 singleRecord.adviceStatus.row = Advice received
+singleRecord.goodsProfile.link = Go to goods profile
+singleRecord.removeRecord.link = Remove this record
+singleRecord.status.row = Status

@@ -32,7 +32,7 @@ import play.api.inject.bind
 import java.time.Instant
 import scala.concurrent.Future
 import viewmodels.govuk.summarylist._
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
 import views.html.SingleRecordView
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
@@ -73,7 +73,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           TraderReferenceSummary.row(record.traderRef),
           GoodsDescriptionSummary.row(record.goodsDescription),
           CountryOfOriginSummary.row(record.countryOfOrigin),
-          CommodityCodeSummary.row(record.commodityCode)
+          CommodityCodeSummary.row(record.commodityCode),
+          StatusSummary.row("Not ready for use")
         )
       )
 
@@ -97,7 +98,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SingleRecordView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList, categorisationList, adviceList)(
+        contentAsString(result) mustEqual view(testRecordId, detailsList, categorisationList, adviceList)(
           request,
           messages(application)
         ).toString

@@ -21,7 +21,7 @@ import controllers.actions.IdentifierAction
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
@@ -44,7 +44,8 @@ class SingleRecordController @Inject() (
           TraderReferenceSummary.row(record.traderRef),
           GoodsDescriptionSummary.row(record.goodsDescription),
           CountryOfOriginSummary.row(record.countryOfOrigin),
-          CommodityCodeSummary.row(record.commodityCode)
+          CommodityCodeSummary.row(record.commodityCode),
+          StatusSummary.row("Not ready for use")
         )
       )
 
@@ -60,7 +61,7 @@ class SingleRecordController @Inject() (
         )
       )
 
-      Ok(view(detailsList, categorisationList, adviceList))
+      Ok(view(recordId, detailsList, categorisationList, adviceList))
     }
   }
 
