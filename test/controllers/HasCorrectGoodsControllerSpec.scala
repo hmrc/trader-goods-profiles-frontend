@@ -19,9 +19,8 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.HasCorrectGoodsFormProvider
-import models.{Commodity, NormalMode, UserAnswers}
+import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -328,9 +327,8 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       "for a POST" - {
         "must redirect to the next page when valid data is submitted" in {
 
-          val mockSessionRepository                                = mock[SessionRepository]
-          val captorForEndUserAnswers: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-          when(mockSessionRepository.set(captorForEndUserAnswers.capture())) thenReturn Future.successful(true)
+          val mockSessionRepository = mock[SessionRepository]
+          when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
           val userAnswers = emptyUserAnswers
             .set(RecordCategorisationsQuery, recordCategorisations)
@@ -359,13 +357,6 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
-
-            val endUserAnswers = captorForEndUserAnswers.getValue
-
-// TODO would like to test these things are set if it still happens here.
-//            withClue("should have set longCommodityCodePage") {
-//              endUserAnswers.get(HasCorrectGoodsLongerCommodityCodePage(testRecordId)) mustBe Some(true)
-//            }
 
           }
         }

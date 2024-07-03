@@ -131,9 +131,9 @@ class HasCorrectGoodsController @Inject() (
   )(implicit hc: HeaderCarrier): Future[UserAnswers] =
     if (value) {
       for {
-        recordCategorisations <- updatedAnswers.get(RecordCategorisationsQuery)
+        recordCategorisations      <- updatedAnswers.get(RecordCategorisationsQuery)
         oldCommodityCategorisation <- recordCategorisations.records.get(recordId)
-        updatedAnswers <-
+        updatedAnswers             <-
           updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation).toOption
       } yield updatedAnswers
 

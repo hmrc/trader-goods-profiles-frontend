@@ -72,7 +72,6 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
-
       val commodityCodeOption = request.userAnswers
         .get(RecordCategorisationsQuery)
         .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))

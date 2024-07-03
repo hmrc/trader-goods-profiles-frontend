@@ -80,7 +80,7 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     for {
-      newCommodityCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+      newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       goodsNomenclature      <- ottConnector.getCategorisationInfo(
                                   newCommodityCode.commodityCode,
