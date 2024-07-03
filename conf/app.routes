@@ -1,149 +1,154 @@
 # microservice specific routes
 
-->          /hmrc-frontend                                   hmrcfrontend.Routes
+->          /hmrc-frontend                                                                  hmrcfrontend.Routes
 
-GET         /                                                controllers.IndexController.onPageLoad
+GET         /                                                                               controllers.IndexController.onPageLoad
 
-GET         /assets/*file                                    controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                                                                   controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET         /language/:lang                                                                 controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
-GET         /refresh-session                                 controllers.KeepAliveController.keepAlive
+GET         /refresh-session                                                                controllers.KeepAliveController.keepAlive
 
-GET         /there-is-a-problem                              controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /problem/technical-issue                                                        controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /cya-nirms-niphls                                controllers.CyaCreateProfileController.onPageLoad
-POST        /cya-nirms-niphls                                controllers.CyaCreateProfileController.onSubmit
+GET         /create-profile/check-your-answers                                              controllers.CyaCreateProfileController.onPageLoad
+POST        /create-profile/check-your-answers                                              controllers.CyaCreateProfileController.onSubmit
 
-GET         /account/sign-out-survey                         controllers.auth.AuthController.signOut
-GET         /account/sign-out                                controllers.auth.AuthController.signOutNoSurvey
-GET         /account/sign-out-no-session                     controllers.auth.AuthController.signOutNoSession
-GET         /signed-out                                      controllers.auth.SignedOutController.onPageLoad
+GET         /account/sign-out-survey                                                        controllers.auth.AuthController.signOut
+GET         /account/sign-out                                                               controllers.auth.AuthController.signOutNoSurvey
+GET         /account/sign-out-no-session                                                    controllers.auth.AuthController.signOutNoSession
+GET         /signed-out                                                                     controllers.auth.SignedOutController.onPageLoad
 
-GET         /unauthorised                                    controllers.UnauthorisedController.onPageLoad
+GET         /problem/unauthorised-sign-in                                                   controllers.UnauthorisedController.onPageLoad
 
-GET         /niphl-question                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-question                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-question/check                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-question/check                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/niphl-question                                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
 
-GET         /nirms-question                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-question                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-question/check                            controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-question/check                            controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
 
-GET         /niphl-number                                    controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /niphl-number                                    controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /niphl-number/check                              controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /niphl-number/check                              controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /nirms-number                                    controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /nirms-number                                    controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /nirms-number/check                              controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /nirms-number/check                              controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /profile-setup                                   controllers.ProfileSetupController.onPageLoad()
-POST        /profile-setup                                   controllers.ProfileSetupController.onSubmit()
+GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
+POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()
 
-GET         /ukims-number                                    controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /ukims-number                                    controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /ukims-number/check                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /ukims-number/check                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onPageLoad(recordId: String)
-POST        /update/:recordId/categorisation-start           controllers.CategoryGuidanceController.onSubmit(recordId: String)
+GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
-GET         /create-record/commodity-code                    controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/commodity-code                    controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/commodity-code/check              controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/commodity-code/check              controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/commodity-code                                                   controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code                                                   controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code/check                                             controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code/check                                             controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create-record/country-of-origin                 controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/country-of-origin                 controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/country-of-origin/check           controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/country-of-origin/check           controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/country-of-origin                                                controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/country-of-origin                                                controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/country-of-origin/check                                          controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/country-of-origin/check                                          controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
 
-GET         /homepage                                        controllers.HomePageController.onPageLoad()
+GET         /homepage                                                                       controllers.HomePageController.onPageLoad()
 
-GET         /create-record/create-record-start               controllers.CreateRecordStartController.onPageLoad()
-POST        /create-record/create-record-start               controllers.CreateRecordStartController.onSubmit()
+GET         /create-record/start                                                            controllers.CreateRecordStartController.onPageLoad()
+POST        /create-record/start                                                            controllers.CreateRecordStartController.onSubmit()
 
-GET         /create-record/create-record-success/:recordId   controllers.CreateRecordSuccessController.onPageLoad(recordId: String)
+GET         /create-record/:recordId/success                                                controllers.CreateRecordSuccessController.onPageLoad(recordId: String)
 
-GET         /create-record/goods-description                 controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/goods-description                 controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/goods-description/check           controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/goods-description/check           controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/goods-description                                                controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/goods-description                                                controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create-record/commodity-code-result             controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/commodity-code-result             controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/commodity-code-result/check       controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/commodity-code-result/check       controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/commodity-code-result                                            controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code-result                                            controllers.HasCorrectGoodsController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code-result/check                                      controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code-result/check                                      controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create-record/goods-description-question        controllers.UseTraderReferenceController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/goods-description-question        controllers.UseTraderReferenceController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/goods-description-question/check  controllers.UseTraderReferenceController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/goods-description-question/check  controllers.UseTraderReferenceController.onSubmit(mode: Mode = CheckMode)
+GET         /update/:recordId/longer-commodity-code-result                                  controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
+POST        /update/:recordId/longer-commodity-code-result                                  controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
+GET         /update/:recordId/longer-commodity-code-result/check                            controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
+POST        /update/:recordId/longer-commodity-code-result/check                            controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
 
-GET         /create-record/cya-create-record                 controllers.CyaCreateRecordController.onPageLoad
-POST        /create-record/cya-create-record                 controllers.CyaCreateRecordController.onSubmit
+GET         /create-record/goods-description-question                                       controllers.UseTraderReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/goods-description-question                                       controllers.UseTraderReferenceController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/goods-description-question/check                                 controllers.UseTraderReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/goods-description-question/check                                 controllers.UseTraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create/trader-reference                         controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
-POST        /create/trader-reference                         controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
-GET         /create/trader-reference/check                   controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
-POST        /create/trader-reference/check                   controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/check-your-answers                                               controllers.CyaCreateRecordController.onPageLoad
+POST        /create-record/check-your-answers                                               controllers.CyaCreateRecordController.onSubmit
 
-GET         /update/:recordId/category-assessment/:index       controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
-POST        /update/:recordId/category-assessment/:index       controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
-GET         /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
-POST        /update/:recordId/category-assessment/:index/check controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
+GET         /create-record/trader-reference                                                 controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/trader-reference                                                 controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/trader-reference/check                                           controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/trader-reference/check                                           controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
 
-GET         /ukims-kick-out                                    controllers.UkimsKickOutController.onPageLoad()
+GET         /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
+POST        /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
+GET         /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
+POST        /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
 
-GET         /categorisation-result/:recordId/category-1               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1)
-GET         /categorisation-result/:recordId/category-2               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2)
-GET         /categorisation-result/:recordId/standard                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Standard)
-GET         /categorisation-result/:recordId/category-1-no-exemptions controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptions)
-GET         /categorisation-result/:recordId/standard-no-assessments  controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardNoAssessments)
+GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
 
-GET         /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onPageLoad(recordId:String)
-POST        /update/:recordId/cya-categorisation             controllers.CyaCategorisationController.onSubmit(recordId:String)
+GET         /update-record/:recordId/categorisation/result/category-1                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1)
+GET         /update-record/:recordId/categorisation/result/category-2                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2)
+GET         /update-record/:recordId/categorisation/result/standard                         controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Standard)
+GET         /update-record/:recordId/categorisation/result/category-1-no-exemptions         controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptions)
+GET         /update-record/:recordId/categorisation/result/standard-no-assessments          controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardNoAssessments)
 
-GET         /advice-start                                    controllers.AdviceStartController.onPageLoad()
-POST        /advice-start                                    controllers.AdviceStartController.onSubmit()
+GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
+POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
 
-GET         /advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad
-POST        /advice/check-your-answers                       controllers.CyaRequestAdviceController.onSubmit
+GET         /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onPageLoad(recordId:String)
+POST        /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onSubmit(recordId:String)
 
-GET         /advice/success                                  controllers.AdviceSuccessController.onPageLoad()
+GET         /update-record/:recordId/create-advice/check-your-answers                       controllers.CyaRequestAdviceController.onPageLoad(recordId:String)
+POST        /update-record/:recordId/create-advice/check-your-answers                       controllers.CyaRequestAdviceController.onSubmit(recordId:String)
 
-GET         /advice/email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode)
-POST        /advice/email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode)
-GET         /advice/email/check                              controllers.EmailController.onPageLoad(mode: Mode = CheckMode)
-POST        /advice/email/check                              controllers.EmailController.onSubmit(mode: Mode = CheckMode)
+GET         /update-record/:recordId/create-advice/success                                  controllers.AdviceSuccessController.onPageLoad(recordId:String)
 
-GET         /advice/name                                     controllers.NameController.onPageLoad(mode: Mode = NormalMode)
-POST        /advice/name                                     controllers.NameController.onSubmit(mode: Mode = NormalMode)
-GET         /changeName                                      controllers.NameController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeName                                      controllers.NameController.onSubmit(mode: Mode = CheckMode)
+GET         /update-record/:recordId/create-advice/email                                    controllers.EmailController.onPageLoad(mode: Mode = NormalMode, recordId:String)
+POST        /update-record/:recordId/create-advice/email                                    controllers.EmailController.onSubmit(mode: Mode = NormalMode, recordId:String)
+GET         /update-record/:recordId/create-advice/email/check                              controllers.EmailController.onPageLoad(mode: Mode = CheckMode, recordId:String)
+POST        /update-record/:recordId/create-advice/email/check                              controllers.EmailController.onSubmit(mode: Mode = CheckMode, recordId:String)
 
-GET         /update/:recordId/supplementary-unit              controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update/:recordId/supplementary-unit              controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update/:recordId/supplementary-unit/check        controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/create-advice/name                                     controllers.NameController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/create-advice/name                                     controllers.NameController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/create-advice/name/check                               controllers.NameController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/create-advice/name/check                               controllers.NameController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update/:recordId/supplementary-unit-amount       controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-question             controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-question             controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-question/check       controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-question/check       controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /previous-movement-records                        controllers.PreviousMovementRecordsController.onPageLoad()
-POST       /previous-movement-records                        controllers.PreviousMovementRecordsController.onSubmit()
+GET         /update-record/:recordId/categorisation/supplementary-unit-amount               controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-amount               controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /update/:recordId/longer-commodity-code           controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST       /update/:recordId/longer-commodity-code           controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET        /update/:recordId/longer-commodity-code/check     controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST       /update/:recordId/longer-commodity-code/check     controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET        /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onPageLoad()
+POST       /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onSubmit()
+
+GET        /update-record/:recordId/categorisation/longer-commodity-code                    controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/categorisation/longer-commodity-code                    controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET         /goods-profile                                    controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                    controllers.GoodsRecordsController.onSearch(page: Int)
@@ -151,6 +156,11 @@ GET         /goods-profile/no-record                          controllers.GoodsR
 
 GET         /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String)
 POST        /remove-record/:recordId                          controllers.RemoveGoodsRecordController.onSubmit(recordId: String)
+
+GET        /update-record/:recordId/change-record-information/commodity-code          controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/change-record-information/commodity-code          controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/change-record-information/commodity-code/check    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET        /update-record/:recordId/change-record-warning/country-of-origin                        controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/country-of-origin                        controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)

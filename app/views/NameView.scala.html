@@ -24,13 +24,13 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("name.title"))) {
 
     <h1 class="govuk-heading-l">@messages("name.heading")</h1>
 
-    @formHelper(action = routes.NameController.onSubmit(mode)) {
+    @formHelper(action = routes.NameController.onSubmit(mode, recordId)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

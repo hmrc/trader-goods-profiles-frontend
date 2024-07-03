@@ -16,11 +16,6 @@
 
 package pages
 
-import play.api.libs.json.JsPath
+import models.{CategoryRecord, Scenario}
 
-case class NamePage(recordId: String) extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString \ recordId
-
-  override def toString: String = "name"
-}
+case class CyaCategorisationPage(recordId: String, categoryRecord: CategoryRecord, scenario: Scenario) extends Page

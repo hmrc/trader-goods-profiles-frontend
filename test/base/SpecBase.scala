@@ -74,7 +74,7 @@ trait SpecBase
 
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
 
-  def testCommodity: Commodity = Commodity("1234567890", "test", validityStartDate, None)
+  def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
@@ -123,10 +123,10 @@ trait SpecBase
 
   def mandatoryAdviceUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(NamePage, "123")
+      .set(NamePage(testRecordId), "123")
       .success
       .value
-      .set(EmailPage, "654321")
+      .set(EmailPage(testRecordId), "654321")
       .success
       .value
 
