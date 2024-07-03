@@ -20,7 +20,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{RecordCategorisations, UserAnswers}
-import queries.RecordCategorisationsQuery
+import queries.{LongerCommodityCodeRecordCategorisationsQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -68,4 +68,69 @@ class CategorisationService @Inject() (
         } yield updatedAnswers
     }
   }
+
+  def requireCategorisationLongerCommodityCode(request: DataRequest[_], recordId: String)(implicit
+                                                                       hc: HeaderCarrier
+  ): Future[UserAnswers] = {
+
+    val recordCategorisations =
+      request.userAnswers.get(LongerCommodityCodeRecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+
+    recordCategorisations.records.get(recordId) match {
+      case Some(_) =>
+        Future.successful(request.userAnswers)
+      case None =>
+        for {
+          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+          goodsNomenclature <- ottConnector.getCategorisationInfo(
+            getGoodsRecordResponse.commodityCode,
+            request.eori,
+            request.affinityGroup,
+            Some(recordId),
+            getGoodsRecordResponse.countryOfOrigin,
+            LocalDate.now() //TODO where does DateOfTrade come from??
+          )
+          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          updatedAnswers <-
+            Future.fromTry(
+              request.userAnswers.set(
+                LongerCommodityCodeRecordCategorisationsQuery,
+                recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
+              )
+            )
+          _ <- sessionRepository.set(updatedAnswers)
+        } yield updatedAnswers
+    }
+  }
+
+
+  def updateCategorisationWithNewCommodityCode(request: DataRequest[_], recordId: String)(implicit
+                                                                                          hc: HeaderCarrier
+  ): Future[UserAnswers] = {
+
+    val recordCategorisations =
+      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+
+        for {
+          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+          goodsNomenclature <- ottConnector.getCategorisationInfo(
+            getGoodsRecordResponse.commodityCode,
+            request.eori,
+            request.affinityGroup,
+            Some(recordId),
+            getGoodsRecordResponse.countryOfOrigin,
+            LocalDate.now() //TODO where does DateOfTrade come from??
+          )
+          categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          updatedAnswers <-
+            Future.fromTry(
+              request.userAnswers.set(
+                RecordCategorisationsQuery,
+                recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
+              )
+            )
+          _ <- sessionRepository.set(updatedAnswers)
+        } yield updatedAnswers
+    }
+
 }

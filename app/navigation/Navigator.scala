@@ -21,7 +21,7 @@ import play.api.mvc.Call
 import controllers.routes
 import pages._
 import models._
-import queries.RecordCategorisationsQuery
+import queries.{LongerCommodityCodeRecordCategorisationsQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
 import utils.Constants.firstAssessmentIndex
 
 import scala.util.Try
@@ -78,14 +78,37 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String)(answers: UserAnswers): Call =
-    answers
+  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String)(answers: UserAnswers): Call = {
+     answers
       .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
-      .map {
-        case true => routes.CyaCategorisationController.onPageLoad(recordId)
-        case false => routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+      .flatMap {
+
+            //get longer categorisation details
+            // if longer.assessments != old.assessments
+               // copy across categorisation results
+                // clean old results
+                // go to categorisation start (for now)
+            // else
+               // go to cya
+                // remove longer one?
+        case true =>
+         for {
+            recordQueryLongerCode <- answers.get(RecordCategorisationsQuery)
+            //recordQueryLongerCode <- answers.get(LongerCommodityCodeRecordCategorisationsQuery)
+            commodityShorter <- answers.get(OldCommodityCodeCategorisationQuery(recordId))
+            commodityLonger <- recordQueryLongerCode.records.get(recordId)
+          } yield {
+
+            if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments)){
+              routes.CyaCategorisationController.onPageLoad(recordId)
+            } else {
+              routes.CategoryGuidanceController.onPageLoad(recordId)
+            }
+          }
+
+        case false => Some(routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId))
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
