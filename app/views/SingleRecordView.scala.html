@@ -1,0 +1,46 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+    layout: templates.Layout,
+    govukSummaryList: GovukSummaryList,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton
+)
+
+@(detailsList: SummaryList, categorisationList: SummaryList, adviceStatusList: SummaryList)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("cyaCreateProfile.title"))) {
+
+    <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
+
+    <p class="govuk-body">@messages("singleRecord.p1")</p>
+    <p class="govuk-body">@messages("singleRecord.p2")</p>
+
+    <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
+    @govukSummaryList(detailsList)
+    <h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
+    @govukSummaryList(categorisationList)
+    <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>
+    @govukSummaryList(adviceStatusList)
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">@messages("singleRecord.warning")</span>
+            @messages("singleRecord.warningText")
+        </strong>
+    </div>
+}
