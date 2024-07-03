@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
+import connectors.TraderProfileConnector
 import forms.HasNiphlFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -30,6 +31,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.HasNiphlView
 
 import scala.concurrent.Future
@@ -38,8 +40,9 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasNiphlFormProvider()
-  private val form = formProvider()
+  val formProvider                            = new HasNiphlFormProvider()
+  private val form                            = formProvider()
+  implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private lazy val hasNiphlRoute = routes.HasNiphlController.onPageLoad(NormalMode).url
 
@@ -47,7 +50,16 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockTraderProfileConnector = mock[TraderProfileConnector]
+      implicit val hc: HeaderCarrier = mock[HeaderCarrier]
+
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNiphlRoute)
