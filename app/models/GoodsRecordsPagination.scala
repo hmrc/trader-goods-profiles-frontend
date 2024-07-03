@@ -17,7 +17,6 @@
 package models
 
 import controllers.routes
-import models.router.responses.GetRecordsResponse
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}

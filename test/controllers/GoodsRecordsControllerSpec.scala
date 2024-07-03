@@ -33,7 +33,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
-import views.html.GoodsRecordsView
+import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -45,7 +45,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val currentPage            = 1
   private val totalRecords           = 23
   private val numberOfPages          = 3
-  private val pageSize               = 10
   private val firstRecord            = 1
   private val lastRecord             = 10
   private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(currentPage).url

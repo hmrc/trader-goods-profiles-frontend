@@ -20,7 +20,6 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
-import models.router.responses.GetGoodsRecordResponse
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
