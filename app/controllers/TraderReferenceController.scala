@@ -18,15 +18,19 @@ package controllers
 
 import controllers.actions._
 import forms.TraderReferenceFormProvider
+
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.TraderReferencePage
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import pages.{TraderReferencePage, UpdateTraderReferencePage}
+import play.api.data.FormError
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TraderReferenceView
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class TraderReferenceController @Inject() (
@@ -54,6 +58,15 @@ class TraderReferenceController @Inject() (
     Ok(view(preparedForm, mode))
   }
 
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    val preparedForm = request.userAnswers.get(TraderReferencePage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
+    val onSubmitAction: Call = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+    Ok(view(preparedForm, mode))
+  }
+
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
@@ -61,10 +74,37 @@ class TraderReferenceController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
-            for {
+            (for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferencePage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))).recover {
+              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                val formWithApiErrors =
+                  form.copy(errors = Seq(elems = FormError("value", getMessage("traderReference.error.invalid"))))
+                BadRequest(view(formWithApiErrors, mode))
+            }
         )
   }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      val onSubmitAction: Call = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
+          value =>
+            (for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UpdateTraderReferencePage(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UpdateTraderReferencePage(recordId), mode, updatedAnswers))).recover {
+              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                val formWithApiErrors =
+                  form.copy(errors = Seq(elems = FormError("value", getMessage("traderReference.error.invalid"))))
+                BadRequest(view(formWithApiErrors, mode))
+            }
+        )
+  }
+  private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
+
 }
