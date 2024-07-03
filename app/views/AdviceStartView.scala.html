@@ -23,7 +23,7 @@
         govukWarningText: GovukWarningText
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("adviceStart.title"))) {
 
@@ -45,7 +45,7 @@
     <p class="govuk-body">@messages("adviceStart.p5")</p>
     <p class="govuk-body">@messages("adviceStart.p6")</p>
 
-    @formHelper(action = AdviceStartController.onSubmit) {
+    @formHelper(action = AdviceStartController.onSubmit(recordId)) {
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )

@@ -27,13 +27,13 @@ import viewmodels.implicits._
 
 object NameSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(NamePage).map { answer =>
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(NamePage(recordId)).map { answer =>
       SummaryListRowViewModel(
         key = "name.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NameController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.NameController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("name.change.hidden"))
         )
       )

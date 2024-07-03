@@ -20,6 +20,7 @@ import connectors.GoodsRecordConnector
 import controllers.actions._
 import logging.Logging
 import models.helper.CategorisationUpdate
+import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import navigation.Navigator
 import pages.CategoryGuidancePage
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
