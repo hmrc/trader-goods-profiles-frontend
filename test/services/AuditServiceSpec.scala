@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.{newRecordId, testEori, testRecordId}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
@@ -696,7 +696,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(TraderReferencePage, "trader reference")
       .success
       .value
-      .set(CountryOfOriginPage, "PF")
+      .set(CountryOfOriginPage(newRecordId), "PF")
       .success
       .value
       .set(CommodityCodePage, testCommodity.commodityCode)

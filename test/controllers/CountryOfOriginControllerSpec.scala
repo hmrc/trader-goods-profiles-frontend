@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{newRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CountryOfOriginFormProvider
 import models.{Country, NormalMode, UserAnswers}
@@ -44,7 +44,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CountryOfOriginFormProvider()
   private val form = formProvider(countries)
 
-  private lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoad(NormalMode).url
+  private lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoad(NormalMode, newRecordId).url
 
   "CountryOfOrigin Controller" - {
 
@@ -71,13 +71,16 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CountryOfOriginView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, countries)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, countries, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage(newRecordId), "answer").success.value
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -100,7 +103,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, countries)(
+        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, countries, newRecordId)(
           request,
           messages(application)
         ).toString
@@ -126,7 +129,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CountryOfOriginView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, countries)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, countries, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -196,7 +202,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, countries)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, countries, newRecordId)(
           request,
           messages(application)
         ).toString

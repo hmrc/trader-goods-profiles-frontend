@@ -39,7 +39,7 @@ object GoodsRecord {
       Right(eori),
       answers.getPageValue(TraderReferencePage),
       getCommodity(answers),
-      answers.getPageValue(CountryOfOriginPage),
+      answers.getPageValue(CountryOfOriginPage("new-record")),
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
       GoodsRecord(

@@ -16,7 +16,7 @@
 
 package base
 
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{newRecordId, testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
@@ -84,7 +84,7 @@ trait SpecBase
       .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
-      .set(CountryOfOriginPage, "1")
+      .set(CountryOfOriginPage(newRecordId), "1")
       .success
       .value
       .set(UseTraderReferencePage, false)
@@ -108,7 +108,7 @@ trait SpecBase
       .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
-      .set(CountryOfOriginPage, "1")
+      .set(CountryOfOriginPage(newRecordId), "1")
       .success
       .value
       .set(UseTraderReferencePage, true)

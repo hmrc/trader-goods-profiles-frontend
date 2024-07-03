@@ -73,7 +73,7 @@ class CyaCreateRecordController @Inject() (
         TraderReferenceSummary.row(userAnswers),
         UseTraderReferenceSummary.row(userAnswers),
         GoodsDescriptionSummary.row(userAnswers),
-        CountryOfOriginSummary.row(userAnswers, countries),
+        CountryOfOriginSummary.row(userAnswers, countries, "new-record"),
         CommodityCodeSummary.row(userAnswers)
       ).flatten
     )

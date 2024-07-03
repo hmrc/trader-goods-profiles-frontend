@@ -17,7 +17,7 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.{newRecordId, testEori, testRecordId, userAnswersId}
 import controllers.routes
 import pages._
 import models._
@@ -190,7 +190,7 @@ class NavigatorSpec extends SpecBase {
 
             val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, true).success.value
             navigator.nextPage(UseTraderReferencePage, NormalMode, answers) mustBe routes.CountryOfOriginController
-              .onPageLoad(NormalMode)
+              .onPageLoad(NormalMode, newRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -210,13 +210,14 @@ class NavigatorSpec extends SpecBase {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CountryOfOriginController.onPageLoad(
-            NormalMode
+            NormalMode,
+            newRecordId
           )
         }
 
         "must go from CountryOfOriginPage to CommodityCodePage" in {
           navigator.nextPage(
-            CountryOfOriginPage,
+            CountryOfOriginPage(newRecordId),
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CommodityCodeController.onPageLoad(
@@ -642,7 +643,7 @@ class NavigatorSpec extends SpecBase {
 
         "must go from CountryOfOriginPage to CyaCreateRecord" in {
           navigator.nextPage(
-            CountryOfOriginPage,
+            CountryOfOriginPage(newRecordId),
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateRecordController.onPageLoad

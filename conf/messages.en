@@ -42,6 +42,10 @@ cyaCreateRecord.h2 = Check if the details on this record are correct.
 cyaCreateRecord.warning = Warning
 cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
+cyaUpdateRecord.title = Check your answers
+cyaUpdateRecord.h1 = Check your answers
+cyaUpdateRecord.h2 = Check if the details on this record are correct.
+
 cyaRequestAdvice.title = Check your answers before sending your request for advice
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
 cyaRequestAdvice.subheading = Contact details

@@ -16,7 +16,7 @@
 
 package models.router.requests
 
-import models.CategoryRecord
+import models.UpdateGoodsRecord
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
@@ -27,39 +27,29 @@ case class UpdateRecordRequest(
   eori: String,
   recordId: String,
   actorId: String,
-  category: Option[Int],
-  supplementaryUnit: Option[Double],
-  measurementUnit: Option[String]
+  countryOfOrigin: Option[String]
 )
 
 object UpdateRecordRequest {
 
-  def map(categoryRecord: CategoryRecord): UpdateRecordRequest =
+  def map(goodsRecord: UpdateGoodsRecord): UpdateRecordRequest =
     UpdateRecordRequest(
-      categoryRecord.eori,
-      categoryRecord.recordId,
-      categoryRecord.eori,
-      Some(categoryRecord.category),
-      convertToDouble(categoryRecord.supplementaryUnit),
-      categoryRecord.measurementUnit
+      goodsRecord.eori,
+      goodsRecord.recordId,
+      goodsRecord.eori,
+      Some(goodsRecord.countryOfOrigin)
     )
 
   implicit val reads: Reads[UpdateRecordRequest] =
     ((JsPath \ "eori").read[String] and
       (JsPath \ "recordId").read[String] and
       (JsPath \ "actorId").read[String] and
-      (JsPath \ "category").readNullable[Int] and
-      (JsPath \ "supplementaryUnit").readNullable[Double] and
-      (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
+      (JsPath \ "countryOfOrigin").readNullable[String])(UpdateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[UpdateRecordRequest] =
     ((JsPath \ "eori").write[String] and
       (JsPath \ "recordId").write[String] and
       (JsPath \ "actorId").write[String] and
-      (JsPath \ "category").writeNullable[Int] and
-      (JsPath \ "supplementaryUnit").writeNullable[Double] and
-      (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
+      (JsPath \ "countryOfOrigin").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
 
-  private def convertToDouble(value: Option[String]): Option[Double] =
-    value.map(_.toDouble)
 }

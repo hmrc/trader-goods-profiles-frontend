@@ -18,7 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
+import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination}
 import org.apache.pekko.Done
@@ -318,7 +318,7 @@ class GoodsRecordConnectorSpec
     }
   }
 
-  ".updateGoodsRecord" - {
+  ".updateCategoryForGoodsRecord" - {
 
     val goodsRecord = CategoryRecord(
       eori = testEori,
@@ -329,7 +329,7 @@ class GoodsRecordConnectorSpec
       supplementaryUnit = Some("123.123")
     )
 
-    val updateRecordRequest = UpdateRecordRequest(
+    val updateRecordRequest = UpdateCategoryRecordRequest(
       testEori,
       testRecordId,
       testEori,
@@ -347,7 +347,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
+      connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -359,7 +359,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+      connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
     }
   }
 

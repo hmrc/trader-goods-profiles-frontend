@@ -16,7 +16,7 @@
 
 package models
 
-import base.TestConstants.{testEori, userAnswersId}
+import base.TestConstants.{newRecordId, testEori, userAnswersId}
 import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -44,7 +44,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(CountryOfOriginPage, "1")
+            .set(CountryOfOriginPage(newRecordId), "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
@@ -77,7 +77,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(CountryOfOriginPage, "1")
+            .set(CountryOfOriginPage(newRecordId), "1")
             .success
             .value
             .set(UseTraderReferencePage, true)
@@ -110,7 +110,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
           errors.toChain.toList must contain theSameElementsAs Seq(
             PageMissing(TraderReferencePage),
             PageMissing(CommodityCodePage),
-            PageMissing(CountryOfOriginPage),
+            PageMissing(CountryOfOriginPage(newRecordId)),
             PageMissing(UseTraderReferencePage)
           )
         }
@@ -129,7 +129,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(HasCorrectGoodsPage, true)
             .success
             .value
-            .set(CountryOfOriginPage, "1")
+            .set(CountryOfOriginPage(newRecordId), "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
@@ -159,7 +159,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(HasCorrectGoodsPage, true)
             .success
             .value
-            .set(CountryOfOriginPage, "1")
+            .set(CountryOfOriginPage(newRecordId), "1")
             .success
             .value
             .set(UseTraderReferencePage, true)
@@ -192,7 +192,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(HasCorrectGoodsPage, false)
             .success
             .value
-            .set(CountryOfOriginPage, "1")
+            .set(CountryOfOriginPage(newRecordId), "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
@@ -225,7 +225,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(HasCorrectGoodsPage, true)
             .success
             .value
-            .set(CountryOfOriginPage, "1")
+            .set(CountryOfOriginPage(newRecordId), "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
