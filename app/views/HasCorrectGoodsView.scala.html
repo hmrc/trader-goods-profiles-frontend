@@ -34,9 +34,9 @@
     <p class="govuk-body">@messages("hasCorrectGoods.p1")</p>
 
     <ul class="govuk-body">
-    @commodity.descriptions.zipWithIndex.map { case (description, index) =>
-    <li>@messages(description)</li>
-    }
+        @commodity.descriptions.zipWithIndex.map { case (description, index) =>
+            <li>@messages(description)</li>
+        }
     </ul>
 
 
