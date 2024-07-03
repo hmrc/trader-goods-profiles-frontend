@@ -54,7 +54,7 @@ class Navigator @Inject() () {
     case p: CyaCategorisationPage    =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
-    case p: LongerCommodityCodePage  => _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId) //TODO test
+    case p: LongerCommodityCodePage  => _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId)
     case _                           => _ => routes.IndexController.onPageLoad
 
@@ -82,24 +82,14 @@ class Navigator @Inject() () {
      answers
       .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
       .flatMap {
-
-            //get longer categorisation details
-            // if longer.assessments != old.assessments
-               // copy across categorisation results
-                // clean old results
-                // go to categorisation start (for now)
-            // else
-               // go to cya
-                // remove longer one?
         case true =>
          for {
             recordQueryLongerCode <- answers.get(RecordCategorisationsQuery)
-            //recordQueryLongerCode <- answers.get(LongerCommodityCodeRecordCategorisationsQuery)
             commodityShorter <- answers.get(OldCommodityCodeCategorisationQuery(recordId))
             commodityLonger <- recordQueryLongerCode.records.get(recordId)
           } yield {
-
-            if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments) && commodityShorter.measurementUnit.equals(commodityLonger.measurementUnit)){
+            if (commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments)
+              && commodityShorter.measurementUnit.isEmpty && commodityLonger.measurementUnit.isEmpty){
               routes.CyaCategorisationController.onPageLoad(recordId)
             } else {
               routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)

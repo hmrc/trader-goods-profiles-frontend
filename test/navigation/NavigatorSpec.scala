@@ -23,6 +23,7 @@ import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import queries.{LongerCommodityCodeRecordCategorisationsQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
+import utils.Constants.firstAssessmentIndex
 
 class NavigatorSpec extends SpecBase {
 
@@ -512,16 +513,18 @@ class NavigatorSpec extends SpecBase {
 
         "must go from HasCorrectGoodsPage for longer commodity codes" - {
 
-          "to CyaCategorisation when answer is Yes and category assessments are same for both codes" in {
+          "to CyaCategorisation when answer is Yes and category assessments are same and no supplementary unit for either code" in {
+
+            val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(RecordCategorisationsQuery, recordCategorisations)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit)))
               .success
               .value
-              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfo)
+              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfoNoSuppUnit)
               .success
               .value
 
@@ -532,13 +535,12 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
           }
 
-          "to CategoryGuidance when answer is Yes and category assessments are different for the longer code" in {
+          "to first Assessment when answer is Yes and category assessments are different for the longer code" in {
 
             val assessment1Shorter           = assessment1
             val assessment2Shorter           = assessment2.copy(id = "id432")
             val categorisationInfoShorter    =
               CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
-            val recordCategorisationsShorter = RecordCategorisations(Map(recordId -> categorisationInfoShorter))
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -555,7 +557,61 @@ class NavigatorSpec extends SpecBase {
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               answers
-            ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+            ) mustBe routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentIndex)
+          }
+
+          //TODO this case may change when Navigation Part 3 is done
+          "to first Assessment when answer is Yes and category assessments are same but shorter category has supplementary units" in {
+
+            val assessment1Shorter        = assessment1
+            val assessment2Shorter        = assessment2.copy(id = "id432")
+            val categorisationInfoShorter =
+              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), Some("123"))
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfoShorter)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentIndex)
+          }
+
+          //TODO this case may change when Navigation Part 3 is done
+          "to first Assessment when answer is Yes and category assessments are same but longer category has supplementary units" in {
+
+            val assessment1Shorter        = assessment1
+            val assessment2Shorter        = assessment2.copy(id = "id432")
+            val categorisationInfoShorter =
+              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
+
+            val categorisationInfoLonger = categorisationInfo.copy(measurementUnit = Some("1324"))
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoLonger)))
+              .success
+              .value
+              .set(OldCommodityCodeCategorisationQuery(testRecordId), categorisationInfoShorter)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentIndex)
           }
 
           "to LongerCommodityCodePage when answer is No" in {
@@ -575,6 +631,32 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad()
           }
+
+          "to JourneyRecoveryPage when answer is present but categorisation details are not" in {
+
+            val userAnswers = emptyUserAnswers.set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              NormalMode,
+              userAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+
+          "to JourneyRecoveryPage when answer is present and categorisation details present but old commodity code is not" in {
+
+            val userAnswers = emptyUserAnswers.set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
+              .set(RecordCategorisationsQuery, recordCategorisations).success.value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              NormalMode,
+              userAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+
         }
 
       }
