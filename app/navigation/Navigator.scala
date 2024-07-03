@@ -54,7 +54,8 @@ class Navigator @Inject() () {
     case p: CyaCategorisationPage    =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage       => _ => routes.GoodsRecordsController.onPageLoad(1)
-    case p: LongerCommodityCodePage  => _ => routes.LongerCommodityCodeController.onPageLoad(NormalMode, p.recordId) //TODO test
+    case p: LongerCommodityCodePage  => _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId) //TODO test
+    case p: HasCorrectGoodsLongerCommodityCodePage => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId)
     case _                           => _ => routes.IndexController.onPageLoad
 
   }
@@ -76,6 +77,16 @@ class Navigator @Inject() () {
         case false => routes.CommodityCodeController.onPageLoad(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      .map {
+        case true => routes.CyaCategorisationController.onPageLoad(recordId)
+        case false => routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
     answers

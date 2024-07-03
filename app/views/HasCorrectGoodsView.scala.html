@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, commodity: Commodity)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], commodity: Commodity, action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasCorrectGoods.title", commodity.commodityCode))) {
 
@@ -46,7 +46,7 @@
 
     <h2 class="govuk-heading-m">@messages("hasCorrectGoods.h2")</h2>
 
-    @formHelper(action = routes.HasCorrectGoodsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

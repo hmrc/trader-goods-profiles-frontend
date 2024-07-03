@@ -28,7 +28,7 @@ import pages.{CommodityCodePage, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -91,7 +91,8 @@ class LongerCommodityCodeController @Inject() (
                                                Some(recordId)
                                              )
                   updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-                  _                       <- sessionRepository.set(updatedAnswers)
+                  updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
+                  _                       <- sessionRepository.set(updatedAnswersWithQuery)
                 } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswers))).recover {
                   case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                     val formWithApiErrors =
