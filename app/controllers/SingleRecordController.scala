@@ -51,13 +51,13 @@ class SingleRecordController @Inject() (
 
       val categorisationList = SummaryListViewModel(
         rows = Seq(
-          CategorySummary.row(record.category.toString)
+          CategorySummary.row(record.category.toString, record.recordId)
         )
       )
 
       val adviceList = SummaryListViewModel(
         rows = Seq(
-          AdviceStatusSummary.row(record.adviceStatus)
+          AdviceStatusSummary.row(record.adviceStatus, record.recordId)
         )
       )
 

@@ -80,13 +80,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val categorisationList = SummaryListViewModel(
         rows = Seq(
-          CategorySummary.row(record.category.toString)
+          CategorySummary.row(record.category.toString, testRecordId)
         )
       )
 
       val adviceList = SummaryListViewModel(
         rows = Seq(
-          AdviceStatusSummary.row(record.adviceStatus)
+          AdviceStatusSummary.row(record.adviceStatus, testRecordId)
         )
       )
 

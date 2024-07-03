@@ -27,12 +27,12 @@ import viewmodels.implicits._
 object AdviceStatusSummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "singleRecord.adviceStatus.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoad(CheckMode).url)
+        ActionItemViewModel("singleRecord.askForAdvice", routes.AdviceStartController.onPageLoad(recordId).url)
           .withVisuallyHiddenText(messages("singleRecord.adviceStatus.row"))
       )
     )
