@@ -135,7 +135,8 @@ class CyaUpdateRecordController @Inject() (
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+    //TODO: route to correct location
+    val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
 
     logger.warn(s"Unable to update Goods Record.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
