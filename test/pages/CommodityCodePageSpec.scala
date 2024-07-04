@@ -33,13 +33,13 @@ class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues wit
         .set(CommodityCodePage(newRecordId), "123")
         .success
         .value
-        .set(HasCorrectGoodsPage, true)
+        .set(HasCorrectGoodsPage(newRecordId), true)
         .success
         .value
 
       val result = userAnswers.set(CommodityCodePage(newRecordId), "1234").success.value
 
-      result.isDefined(HasCorrectGoodsPage) mustBe false
+      result.isDefined(HasCorrectGoodsPage(newRecordId)) mustBe false
 
     }
 
@@ -49,13 +49,13 @@ class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues wit
         .set(CommodityCodePage(newRecordId), "123")
         .success
         .value
-        .set(HasCorrectGoodsPage, true)
+        .set(HasCorrectGoodsPage(newRecordId), true)
         .success
         .value
 
       val result = userAnswers.set(CommodityCodePage(newRecordId), "123").success.value
 
-      result.isDefined(HasCorrectGoodsPage) mustBe true
+      result.isDefined(HasCorrectGoodsPage(newRecordId)) mustBe true
 
     }
   }

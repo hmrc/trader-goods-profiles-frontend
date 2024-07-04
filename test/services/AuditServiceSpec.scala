@@ -703,7 +703,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
       .success
       .value
-      .set(HasCorrectGoodsPage, true)
+      .set(HasCorrectGoodsPage(newRecordId), true)
       .success
       .value
       .set(CommodityQuery, testCommodity)

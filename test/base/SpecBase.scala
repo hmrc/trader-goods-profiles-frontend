@@ -91,7 +91,7 @@ trait SpecBase
       .set(UseTraderReferencePage, false)
       .success
       .value
-      .set(HasCorrectGoodsPage, true)
+      .set(HasCorrectGoodsPage(newRecordId), true)
       .success
       .value
       .set(GoodsDescriptionPage(newRecordId), "DESCRIPTION")
@@ -115,7 +115,7 @@ trait SpecBase
       .set(UseTraderReferencePage, true)
       .success
       .value
-      .set(HasCorrectGoodsPage, true)
+      .set(HasCorrectGoodsPage(newRecordId), true)
       .success
       .value
       .set(CommodityQuery, testCommodity)

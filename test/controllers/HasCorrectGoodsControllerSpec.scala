@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.HasCorrectGoodsFormProvider
+import models.GoodsRecord.newRecordId
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
@@ -42,7 +43,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasCorrectGoodsFormProvider()
   private val form = formProvider()
 
-  private lazy val hasCorrectGoodsRoute = routes.HasCorrectGoodsController.onPageLoad(NormalMode).url
+  private lazy val hasCorrectGoodsRoute = routes.HasCorrectGoodsController.onPageLoad(NormalMode, newRecordId).url
 
   "HasCorrectGoodsController" - {
 
@@ -67,7 +68,8 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           NormalMode,
-          Commodity("654321", List("Description", "Other"), Instant.now, None)
+          Commodity("654321", List("Description", "Other"), Instant.now, None),
+          newRecordId
         )(
           request,
           messages(application)
@@ -96,7 +98,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         .set(CommodityQuery, commodity)
         .success
         .value
-        .set(HasCorrectGoodsPage, true)
+        .set(HasCorrectGoodsPage(newRecordId), true)
         .success
         .value
 
@@ -110,7 +112,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, commodity)(
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, commodity, newRecordId)(
           request,
           messages(application)
         ).toString
@@ -180,7 +182,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, commodity)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, commodity, newRecordId)(
           request,
           messages(application)
         ).toString

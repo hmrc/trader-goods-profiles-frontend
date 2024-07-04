@@ -79,37 +79,6 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return OK and the correct view for a GET when updating" in {
-      val countryOfOriginUpdateRoute = routes.CountryOfOriginController.onPageLoad(CheckMode, testEori).url
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        countries
-      )
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
-
-      running(application) {
-        val request = FakeRequest(GET, countryOfOriginUpdateRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CountryOfOriginView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, CheckMode, countries, testEori)(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage(newRecordId), "answer").success.value

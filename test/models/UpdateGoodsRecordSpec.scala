@@ -81,6 +81,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .set(CommodityCodePage(testRecordId), "1")
             .success
             .value
+            .set(HasCorrectGoodsPage(testRecordId), true)
+            .success
+            .value
 
         val result = UpdateGoodsRecord.build(answers, testEori, testRecordId, CommodityCodePageUpdate)
 

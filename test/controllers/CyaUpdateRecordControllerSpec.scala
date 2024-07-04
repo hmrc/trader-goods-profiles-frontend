@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaUpdateRecordView
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage}
 import queries.CountriesQuery
 import repositories.SessionRepository
 
@@ -613,6 +613,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .set(page, answer)
             .success
             .value
+            .set(HasCorrectGoodsPage(testRecordId), true)
+            .success
+            .value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -673,6 +676,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .set(page, answer)
               .success
               .value
+              .set(HasCorrectGoodsPage(testRecordId), true)
+              .success
+              .value
 
             val mockConnector = mock[GoodsRecordConnector]
             when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
@@ -721,6 +727,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
+            .success
+            .value
+            .set(HasCorrectGoodsPage(testRecordId), true)
             .success
             .value
 

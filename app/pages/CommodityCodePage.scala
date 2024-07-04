@@ -36,6 +36,6 @@ case class CommodityCodePage(recordId: String) extends QuestionPage[String] {
       case originalValue if originalValue == newValue =>
         Success(updatedUserAnswers)
       case _                                          =>
-        updatedUserAnswers.remove(HasCorrectGoodsPage)
+        updatedUserAnswers.remove(HasCorrectGoodsPage(recordId))
     }
 }

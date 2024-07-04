@@ -54,7 +54,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(GoodsDescriptionPage(newRecordId), "2")
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(HasCorrectGoodsPage(newRecordId), true)
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -84,7 +84,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(UseTraderReferencePage, true)
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(HasCorrectGoodsPage(newRecordId), true)
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -127,7 +127,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(HasCorrectGoodsPage(newRecordId), true)
             .success
             .value
             .set(CountryOfOriginPage(newRecordId), "1")
@@ -157,7 +157,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(HasCorrectGoodsPage(newRecordId), true)
             .success
             .value
             .set(CountryOfOriginPage(newRecordId), "1")
@@ -190,7 +190,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
             .success
             .value
-            .set(HasCorrectGoodsPage, false)
+            .set(HasCorrectGoodsPage(newRecordId), false)
             .success
             .value
             .set(CountryOfOriginPage(newRecordId), "1")
@@ -209,7 +209,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsPage)
+          errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsPage(newRecordId))
         }
       }
 
@@ -223,7 +223,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CommodityCodePage(newRecordId), "test")
             .success
             .value
-            .set(HasCorrectGoodsPage, true)
+            .set(HasCorrectGoodsPage(newRecordId), true)
             .success
             .value
             .set(CountryOfOriginPage(newRecordId), "1")

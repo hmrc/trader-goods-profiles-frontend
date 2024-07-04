@@ -234,16 +234,16 @@ class NavigatorSpec extends SpecBase {
             CommodityCodePage(newRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+          ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode, newRecordId)
         }
 
         "must go from HasCorrectGoodsPage" - {
 
           "to CyaCreateRecord when answer is Yes" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(newRecordId), true).success.value
             navigator.nextPage(
-              HasCorrectGoodsPage,
+              HasCorrectGoodsPage(newRecordId),
               NormalMode,
               answers
             ) mustBe routes.CyaCreateRecordController.onPageLoad
@@ -251,21 +251,99 @@ class NavigatorSpec extends SpecBase {
 
           "to CommodityCodePage when answer is No" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
-            navigator.nextPage(HasCorrectGoodsPage, NormalMode, answers) mustBe routes.CommodityCodeController
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(newRecordId), false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsPage(newRecordId),
+              NormalMode,
+              answers
+            ) mustBe routes.CommodityCodeController
               .onPageLoad(NormalMode, newRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
 
             navigator.nextPage(
-              HasCorrectGoodsPage,
+              HasCorrectGoodsPage(newRecordId),
               NormalMode,
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
+      }
+
+      "in Update Record Journey" - {
+
+        "must go from CountryOfOriginPage to CyaUpdateRecord" in {
+          navigator.nextPage(
+            CountryOfOriginPage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, CountryOfOriginPageUpdate)
+        }
+
+        "must go from TraderReferencePage to CyaUpdateRecord" in {
+          navigator.nextPage(
+            TraderReferencePage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, TraderReferencePageUpdate)
+        }
+
+        "must go from GoodsDescriptionPage to CyaUpdateRecord" in {
+          navigator.nextPage(
+            GoodsDescriptionPage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, GoodsDescriptionPageUpdate)
+        }
+
+        "must go from CommodityCodePage to HasCorrectGoodsPage" in {
+          navigator.nextPage(
+            CommodityCodePage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode, testRecordId)
+        }
+
+        "must go from HasCorrectGoodsPage" - {
+
+          "to CyaUpdateRecord when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsPage(testRecordId), true)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsPage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, CommodityCodePageUpdate)
+          }
+
+          "to CommodityCodePage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(testRecordId), false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsPage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe routes.CommodityCodeController
+              .onPageLoad(NormalMode, testRecordId)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsPage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
+
       }
 
       "must go from an assessment" - {
@@ -659,7 +737,7 @@ class NavigatorSpec extends SpecBase {
             CommodityCodePage(newRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+          ) mustBe routes.HasCorrectGoodsController.onPageLoad(CheckMode, newRecordId)
         }
 
         "must go from HasCorrectGoodsPage" - {
@@ -668,8 +746,12 @@ class NavigatorSpec extends SpecBase {
 
             "to CommodityCodePage when CommodityCodePage is empty" in {
 
-              val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
-              navigator.nextPage(HasCorrectGoodsPage, CheckMode, answers) mustBe routes.CommodityCodeController
+              val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(newRecordId), true).success.value
+              navigator.nextPage(
+                HasCorrectGoodsPage(newRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CommodityCodeController
                 .onPageLoad(
                   CheckMode,
                   newRecordId
@@ -683,11 +765,11 @@ class NavigatorSpec extends SpecBase {
                   .set(CommodityCodePage(newRecordId), "1234")
                   .success
                   .value
-                  .set(HasCorrectGoodsPage, true)
+                  .set(HasCorrectGoodsPage(newRecordId), true)
                   .success
                   .value
               navigator.nextPage(
-                HasCorrectGoodsPage,
+                HasCorrectGoodsPage(newRecordId),
                 CheckMode,
                 answers
               ) mustBe routes.CyaCreateRecordController.onPageLoad
@@ -696,9 +778,9 @@ class NavigatorSpec extends SpecBase {
 
           "to CommodityCodePage when answer is No" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(newRecordId), false).success.value
             navigator.nextPage(
-              HasCorrectGoodsPage,
+              HasCorrectGoodsPage(newRecordId),
               CheckMode,
               answers
             ) mustBe routes.CommodityCodeController.onPageLoad(CheckMode, newRecordId)
@@ -707,7 +789,7 @@ class NavigatorSpec extends SpecBase {
           "to JourneyRecoveryPage when answer is not present" in {
 
             navigator.nextPage(
-              HasCorrectGoodsPage,
+              HasCorrectGoodsPage(newRecordId),
               CheckMode,
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController
@@ -742,13 +824,71 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, GoodsDescriptionPageUpdate)
         }
 
-        "must go from CommodityCodePage to CyaUpdateRecord" in {
+        "must go from CommodityCodePage to HasCorrectGoodsPage" in {
           navigator.nextPage(
             CommodityCodePage(testRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, CommodityCodePageUpdate)
+          ) mustBe routes.HasCorrectGoodsController.onPageLoad(CheckMode, testRecordId)
         }
+
+        "must go from HasCorrectGoodsPage" - {
+
+          "when answer is Yes" - {
+
+            "to CommodityCodePage when CommodityCodePage is empty" in {
+
+              val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(testRecordId), true).success.value
+              navigator.nextPage(
+                HasCorrectGoodsPage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CommodityCodeController
+                .onPageLoad(
+                  CheckMode,
+                  testRecordId
+                )
+            }
+
+            "to CyaCreateRecord when CommodityCodePage is answered" in {
+
+              val answers =
+                UserAnswers(userAnswersId)
+                  .set(CommodityCodePage(testRecordId), "1234")
+                  .success
+                  .value
+                  .set(HasCorrectGoodsPage(testRecordId), true)
+                  .success
+                  .value
+              navigator.nextPage(
+                HasCorrectGoodsPage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, CommodityCodePageUpdate)
+            }
+          }
+
+          "to CommodityCodePage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage(testRecordId), false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsPage(testRecordId),
+              CheckMode,
+              answers
+            ) mustBe routes.CommodityCodeController.onPageLoad(CheckMode, testRecordId)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsPage(newRecordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
+
       }
 
       "must go from an assessment" - {

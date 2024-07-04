@@ -16,9 +16,10 @@
 
 package models
 
-import cats.data.EitherNec
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple3Parallel
 import models.PageUpdate.getPage
+import pages.{CommodityCodePage, HasCorrectGoodsPage}
 import play.api.libs.json.{Json, OFormat}
 
 final case class UpdateGoodsRecord(
@@ -43,7 +44,10 @@ object UpdateGoodsRecord {
     (
       Right(eori),
       Right(recordId),
-      answers.getPageValue(getPage(pageUpdate, recordId))
+      pageUpdate match {
+        case CommodityCodePageUpdate => getCommodityCode(answers, recordId)
+        case _                       => answers.getPageValue(getPage(pageUpdate, recordId))
+      }
     ).parMapN((eori, recordId, value) =>
       pageUpdate match {
         case CountryOfOriginPageUpdate  =>
@@ -72,4 +76,15 @@ object UpdateGoodsRecord {
           )
       }
     )
+
+  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+    answers.getPageValue(CommodityCodePage(recordId)) match {
+      case Right(code)  =>
+        answers.getPageValue(HasCorrectGoodsPage(recordId)) match {
+          case Right(true)  => Right(code)
+          case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsPage(recordId))))
+          case Left(errors) => Left(errors)
+        }
+      case Left(errors) => Left(errors)
+    }
 }
