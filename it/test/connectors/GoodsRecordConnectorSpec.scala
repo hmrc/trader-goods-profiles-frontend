@@ -377,6 +377,7 @@ class GoodsRecordConnectorSpec
       testEori,
       Some("CN"),
       None,
+      None,
       None
     )
 
