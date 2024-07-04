@@ -19,10 +19,10 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-import models.{Mode, NormalMode}
+import models.Mode
 import models.helper.UpdateRecordJourney
 import navigation.Navigator
-import pages.{LongerCommodityCodePage, SupplementaryUnitPage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -114,7 +114,7 @@ class LongerCommodityCodeController @Inject() (
                       updatedAnswersWithQuery <-
                         Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
                       _ <- sessionRepository.set(updatedAnswersWithQuery)
-                    } yield Redirect(routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, recordId))).recover {
+                    } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery))).recover {
                       case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                         val formWithApiErrors =
                           form

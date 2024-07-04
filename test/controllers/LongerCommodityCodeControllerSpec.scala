@@ -17,16 +17,16 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{recordSize, testRecordId}
+import base.TestConstants.testRecordId
 import connectors.OttConnector
 import forms.LongerCommodityCodeFormProvider
 import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.{ArgumentCaptor, Captor}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CommodityCodePage, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
