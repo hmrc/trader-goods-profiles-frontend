@@ -157,7 +157,9 @@ trait GetRecordsResponseUtil {
     goodsDescription = "Organic bananas",
     countryOfOrigin = "EC",
     createdDateTime = Instant.parse("2024-10-12T16:12:34Z"),
-    updatedDateTime = Instant.parse("2024-10-12T16:12:34Z")
+    updatedDateTime = Instant.parse("2024-10-12T16:12:34Z"),
+    adviceStatus = "Not ready",
+    category = 1
   )
 
   val mockPagination: GoodsRecordsPagination = GoodsRecordsPagination(

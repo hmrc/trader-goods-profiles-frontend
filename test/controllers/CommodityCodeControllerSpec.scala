@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
@@ -25,7 +25,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CommodityCodePage
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, QuestionPage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -46,179 +46,215 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CommodityCodeFormProvider()
   private val form = formProvider()
 
-  private lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode).url
-
   "CommodityCode Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "For create journey" - {
+      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadCreate(NormalMode).url
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      lazy val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(NormalMode)
 
-      running(application) {
-        val request = FakeRequest(GET, commodityCodeRoute)
+      val page: QuestionPage[String] = CommodityCodePage
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CommodityCodeView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
-      }
+      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page)
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "For update journey" - {
+      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
 
-      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "654321").success.value
+      lazy val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(NormalMode, testRecordId)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val page: QuestionPage[String] = CommodityCodeUpdatePage(testRecordId)
 
-      running(application) {
-        val request = FakeRequest(GET, commodityCodeRoute)
+      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page)
 
-        val view = application.injector.instanceOf[CommodityCodeView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("654321"), NormalMode)(request, messages(application)).toString
-      }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    def runCommodityCodeControllerTests(
+      commodityCodeRoute: String,
+      onSubmitAction: Call,
+      page: QuestionPage[String]
+    ): Unit = {
 
-      val mockSessionRepository = mock[SessionRepository]
+      "must return OK and the correct view for a GET" in {
 
-      val mockOttConnector = mock[OttConnector]
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
-        .successful(
-          Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
-        )
+        running(application) {
+          val request = FakeRequest(GET, commodityCodeRoute)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must populate the view correctly on a GET when the question has previously been answered" in {
+
+        val userAnswers = UserAnswers(userAnswersId).set(page, "654321").success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, commodityCodeRoute)
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("654321"), onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to the next page when valid data is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        val mockOttConnector = mock[OttConnector]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+          .successful(
+            Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+          )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, commodityCodeRoute)
+              .withFormUrlEncodedBody(("value", "654321"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(
+            any()
+          )
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, commodityCodeRoute)
+              .withFormUrlEncodedBody(("value", ""))
+
+          val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must return a Bad Request and errors when incorrect data format is submitted" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, commodityCodeRoute)
+              .withFormUrlEncodedBody(("value", "abc"))
+
+          val boundForm = form.bind(Map("value" -> "abc"))
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
+
+        val mockOttConnector = mock[OttConnector]
+
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+          .failed(
+            UpstreamErrorResponse(" ", NOT_FOUND)
+          )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
             bind[OttConnector].toInstance(mockOttConnector)
           )
           .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "654321"))
+        running(application) {
+          val request =
+            FakeRequest(POST, commodityCodeRoute)
+              .withFormUrlEncodedBody(("value", "654321"))
 
-        val result = route(application, request).value
+          val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a real commodity code")))
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+          val view = application.injector.instanceOf[CommodityCodeView]
 
-        verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(any())
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+
+          verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(
+            any()
+          )
+        }
       }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, commodityCodeRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, commodityCodeRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
-        val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[CommodityCodeView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must return a Bad Request and errors when incorrect data format is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "abc"))
-
-        val boundForm = form.bind(Map("value" -> "abc"))
-
-        val view = application.injector.instanceOf[CommodityCodeView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
-
-      val mockOttConnector = mock[OttConnector]
-
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future.failed(
-        UpstreamErrorResponse(" ", NOT_FOUND)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[OttConnector].toInstance(mockOttConnector)
-        )
-        .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "654321"))
-
-        val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a real commodity code")))
-
-        val view = application.injector.instanceOf[CommodityCodeView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-
-        verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(any())
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, commodityCodeRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, commodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
   }
 }

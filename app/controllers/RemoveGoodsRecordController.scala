@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.RemoveGoodsRecordFormProvider
 
 import javax.inject.Inject
-import models.NormalMode
+import models.{Location, NormalMode}
 import navigation.Navigator
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -47,17 +47,17 @@ class RemoveGoodsRecordController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-      Ok(view(form, recordId))
-  }
+  def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      Ok(view(form, recordId, location))
+    }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(recordId: String, location: Location): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
           {
             case true  =>
               goodsRecordConnector
@@ -67,5 +67,5 @@ class RemoveGoodsRecordController @Inject() (
               Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
           }
         )
-  }
+    }
 }
