@@ -19,7 +19,7 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-import models.Mode
+import models.{Mode, NormalMode}
 import models.helper.UpdateRecordJourney
 import navigation.Navigator
 import pages.{LongerCommodityCodePage, SupplementaryUnitPage}
@@ -83,7 +83,6 @@ class LongerCommodityCodeController @Inject() (
         recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
         commodityCode <- recordCategorisations.records.get(recordId).map(_.commodityCode)
       } yield {
-        val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
         commodityCode match {
           case comcode if comcode.length != 10 => comcode
           case comcode if comcode.length == 10 && previouslyAnsweredOpt.isDefined =>
@@ -115,7 +114,7 @@ class LongerCommodityCodeController @Inject() (
                       updatedAnswersWithQuery <-
                         Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
                       _ <- sessionRepository.set(updatedAnswersWithQuery)
-                    } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswers))).recover {
+                    } yield Redirect(routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, recordId))).recover {
                       case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                         val formWithApiErrors =
                           form
