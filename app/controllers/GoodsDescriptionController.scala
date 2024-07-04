@@ -18,12 +18,13 @@ package controllers
 
 import controllers.actions._
 import forms.GoodsDescriptionFormProvider
+
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.GoodsDescriptionPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.GoodsDescriptionView
@@ -53,20 +54,23 @@ class GoodsDescriptionController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
+
+      Ok(view(preparedForm, mode, submitAction))
   }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, submitAction))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsDescriptionPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(GoodsDescriptionPage, mode, updatedAnswers))
         )
-  }
+    }
 }

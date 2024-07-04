@@ -46,139 +46,156 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
   "GoodsDescription Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    ".create journey" - {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      lazy val onSubmitAction: Call = routes.GoodsDescriptionController.onSubmitCreate(NormalMode)
 
-      running(application) {
-        val request = FakeRequest(GET, goodsDescriptionRoute)
+      "must return OK and the correct view for a GET" in {
 
-        val result = route(application, request).value
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionRoute)
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[GoodsDescriptionView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+      "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "answer").success.value
+        val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "answer").success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-      running(application) {
-        val request = FakeRequest(GET, goodsDescriptionRoute)
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionRoute)
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+          val view = application.injector.instanceOf[GoodsDescriptionView]
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to the next page when valid data is submitted" in {
+      "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+        val mockSessionRepository = mock[SessionRepository]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
 
-      val length              = 512
-      val description: String = Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString).sample.value
+        val length              = 512
+        val description: String = Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString).sample.value
 
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsDescriptionRoute)
-            .withFormUrlEncodedBody(("value", description))
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionRoute)
+              .withFormUrlEncodedBody(("value", description))
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
       }
-    }
 
-    "must return a Bad Request and errors when no description is submitted" in {
+      "must return a Bad Request and errors when no description is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsDescriptionRoute)
-            .withFormUrlEncodedBody(("value", ""))
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionRoute)
+              .withFormUrlEncodedBody(("value", ""))
 
-        val boundForm = form.bind(Map("value" -> ""))
+          val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+          val view = application.injector.instanceOf[GoodsDescriptionView]
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must return a Bad Request and errors when user submits a description longer than 512 characters" in {
+      "must return a Bad Request and errors when user submits a description longer than 512 characters" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      val invalidLength              = 513
-      val invalidDescription: String = Gen.listOfN(invalidLength, Gen.alphaNumChar).map(_.mkString).sample.value
+        val invalidLength              = 513
+        val invalidDescription: String = Gen.listOfN(invalidLength, Gen.alphaNumChar).map(_.mkString).sample.value
 
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsDescriptionRoute)
-            .withFormUrlEncodedBody(("value", invalidDescription))
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionRoute)
+              .withFormUrlEncodedBody(("value", invalidDescription))
 
-        val boundForm = form.bind(Map("value" -> invalidDescription))
+          val boundForm = form.bind(Map("value" -> invalidDescription))
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+          val view = application.injector.instanceOf[GoodsDescriptionView]
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None).build()
 
-      running(application) {
-        val request = FakeRequest(GET, goodsDescriptionRoute)
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None).build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsDescriptionRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
   }

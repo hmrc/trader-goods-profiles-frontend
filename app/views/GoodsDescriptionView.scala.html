@@ -26,11 +26,11 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("goodsDescription.title"))) {
 
-    @formHelper(action = routes.GoodsDescriptionController.onSubmitCreate(mode)) {
+    @formHelper(action = action) {
 
         <h1 class="govuk-heading-l">@messages("goodsDescription.h1")</h1>
         <p class="govuk-body">@messages("goodsDescription.p1")</p>
