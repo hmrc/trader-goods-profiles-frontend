@@ -45,7 +45,7 @@ object CommodityCodeSummary {
       key = "commodityCode.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoad(CheckMode).url)
+        ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
           .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
       )
     )
