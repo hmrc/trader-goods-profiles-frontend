@@ -20,7 +20,7 @@ import controllers.routes
 import models._
 import pages._
 import play.api.mvc.Call
-import queries.{OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 import utils.Constants.firstAssessmentIndex
 
 import javax.inject.{Inject, Singleton}
@@ -56,7 +56,8 @@ class Navigator @Inject() () {
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(1)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
-    case p: HasCorrectGoodsLongerCommodityCodePage => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId)
+    case p: HasCorrectGoodsLongerCommodityCodePage =>
+      navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, p.needToRecategorise)
     case _                                         => _ => routes.IndexController.onPageLoad
 
   }
@@ -79,26 +80,20 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String)(answers: UserAnswers): Call =
+  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String, needToRecategorise: Boolean)(
+    answers: UserAnswers
+  ): Call =
     answers
       .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
-      .flatMap {
+      .map {
         case true =>
-          for {
-            recordQueryLongerCode <- answers.get(RecordCategorisationsQuery)
-            commodityShorter      <- answers.get(OldCommodityCodeCategorisationQuery(recordId))
-            commodityLonger       <- recordQueryLongerCode.records.get(recordId)
-          } yield
-            if (
-              commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments)
-              && commodityShorter.measurementUnit.isEmpty && commodityLonger.measurementUnit.isEmpty
-            ) {
-              routes.CyaCategorisationController.onPageLoad(recordId)
-            } else {
-              routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
-            }
+          if (needToRecategorise) {
+            routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
+          } else {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          }
 
-        case false => Some(routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId))
+        case false => routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -176,7 +171,8 @@ class Navigator @Inject() () {
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
-    case p: HasCorrectGoodsLongerCommodityCodePage => navigateFromHasCorrectGoodsLongerCommodityCodeCheck(p.recordId)
+    case p: HasCorrectGoodsLongerCommodityCodePage =>
+      navigateFromHasCorrectGoodsLongerCommodityCodeCheck(p.recordId, p.needToRecategorise)
     case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -236,26 +232,20 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasCorrectGoodsLongerCommodityCodeCheck(recordId: String)(answers: UserAnswers): Call =
+  private def navigateFromHasCorrectGoodsLongerCommodityCodeCheck(recordId: String, needToRecategorise: Boolean)(
+    answers: UserAnswers
+  ): Call =
     answers
       .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
-      .flatMap {
+      .map {
         case true =>
-          for {
-            recordQueryLongerCode <- answers.get(RecordCategorisationsQuery)
-            commodityShorter      <- answers.get(OldCommodityCodeCategorisationQuery(recordId))
-            commodityLonger       <- recordQueryLongerCode.records.get(recordId)
-          } yield
-            if (
-              commodityShorter.categoryAssessments.equals(commodityLonger.categoryAssessments)
-              && commodityShorter.measurementUnit.isEmpty && commodityLonger.measurementUnit.isEmpty
-            ) {
-              routes.CyaCategorisationController.onPageLoad(recordId)
-            } else {
-              routes.AssessmentController.onPageLoad(CheckMode, recordId, firstAssessmentIndex)
-            }
+          if (needToRecategorise) {
+            routes.AssessmentController.onPageLoad(CheckMode, recordId, firstAssessmentIndex)
+          } else {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          }
 
-        case false => Some(routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId))
+        case false => routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

@@ -18,22 +18,22 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
-import models.requests.DataRequest
+import models.ott.CategorisationInfo
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.{HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage}
+import pages.{AssessmentPage, HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage, InconsistentUserAnswersException}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, LongerCommodityQuery, OldCommodityCodeCategorisationQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.Constants.firstAssessmentIndex
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class HasCorrectGoodsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -113,38 +113,80 @@ class HasCorrectGoodsController @Inject() (
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },
           value =>
-            for {
-              updatedAnswers               <-
-                Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
-              updatedCategorisationAnswers <- updateCategorisationDetails(request, updatedAnswers, recordId, value)
-              _                            <- sessionRepository.set(updatedCategorisationAnswers)
-            } yield Redirect(
-              navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedCategorisationAnswers)
-            )
+            if (value) {
+              for {
+                // Save the user's answer
+                updatedAnswers               <-
+                  Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
+
+                // Find out what the assessment details for the old (shorter) code was
+                oldCommodityCategorisation   <-
+                  Future.fromTry(Try(updatedAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
+
+                // Update the categorisation with the new value details for future categorisation attempts
+                updatedCategorisationAnswers <-
+                  categorisationService
+                    .updateCategorisationWithNewCommodityCode(request.copy(userAnswers = updatedAnswers), recordId)
+
+                // And then get the new assessment details
+                newCommodityCategorisation   <-
+                  Future
+                    .fromTry(Try(updatedCategorisationAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
+
+                // We then have both assessments so can decide if to recategorise or not
+                needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
+
+                // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
+                updatedAnswersCleanedUp <-
+                  Future
+                    .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
+
+                _ <- sessionRepository.set(updatedAnswersCleanedUp)
+              } yield Redirect(
+                navigator.nextPage(
+                  HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
+                  mode,
+                  updatedAnswersCleanedUp
+                )
+              )
+            } else {
+              for {
+                updatedAnswers <-
+                  Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(
+                navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers)
+              )
+            }
         )
     }
 
-  private def updateCategorisationDetails(
-    request: DataRequest[_],
-    updatedAnswers: UserAnswers,
+  private def isRecategorisationNeeded(
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
+  ) =
+    !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments) ||
+      oldCommodityCategorisation.measurementUnit.isDefined || newCommodityCategorisation.measurementUnit.isDefined
+
+  private def cleanupOldAssessmentAnswers(
+    userAnswers: UserAnswers,
     recordId: String,
-    value: Boolean
-  )(implicit hc: HeaderCarrier): Future[UserAnswers] =
-    if (value) {
-      for {
-        recordCategorisations      <- Future.fromTry(Try(updatedAnswers.get(RecordCategorisationsQuery).get))
-        oldCommodityCategorisation <- Future.fromTry(Try(recordCategorisations.records(recordId)))
-        updatedAnswersWithOldCode             <-
-          Future.fromTry(updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation))
-        updatedAnswersWithCats <- categorisationService.updateCategorisationWithNewCommodityCode(
-          request.copy(userAnswers = updatedAnswersWithOldCode),
-          recordId
-        )
-      } yield updatedAnswersWithCats
-
-
+    needToRecategorise: Boolean
+  ): Try[UserAnswers] =
+    if (needToRecategorise) {
+      (for {
+        recordQuery        <- userAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- recordQuery.records.get(recordId)
+        count               = categorisationInfo.categoryAssessments.size
+        //Go backwards to avoid recursion issues
+        rangeToRemove       = (firstAssessmentIndex to count + 1).reverse
+      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(userAnswers)) { (acc, currentIndexToRemove) =>
+        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
+      }).getOrElse(
+        Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
+      )
     } else {
-      Future.successful(updatedAnswers)
+      Success(userAnswers)
     }
 
 }
