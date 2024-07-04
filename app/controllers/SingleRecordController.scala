@@ -43,7 +43,7 @@ class SingleRecordController @Inject() (
         rows = Seq(
           TraderReferenceSummary.row(record.traderRef),
           GoodsDescriptionSummary.row(record.goodsDescription),
-          CountryOfOriginSummary.row(record.countryOfOrigin),
+          CountryOfOriginSummary.row(record.countryOfOrigin,recordId),
           CommodityCodeSummary.row(record.commodityCode),
           StatusSummary.row(record.declarable)
         )

@@ -45,6 +45,7 @@ class Navigator @Inject() () {
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoods
     case p: AssessmentPage           => navigateFromAssessment(p)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit(p.recordId)
+    case p: HasCountryOfOriginChangePage => navigateFromHasCountryOfOriginChange(p.recordId)
     case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: AdviceStartPage          => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                 => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
@@ -103,6 +104,15 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromHasCountryOfOriginChange(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasCountryOfOriginChangePage(recordId))
+      .map {
+        case true  => routes.CountryOfOriginController.onPageLoad(NormalMode, recordId)
+        case false => routes.CyaCategorisationController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     val recordId = assessmentPage.recordId
 
@@ -141,6 +151,7 @@ class Navigator @Inject() () {
     case p: EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: AssessmentPage           => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck(p.recordId)
+    case p: HasCountryOfOriginChangePage => navigateFromHasCountryOfOriginChangeCheck(p.recordId)
     case p: SupplementaryUnitPage    => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case _                           => _ => routes.JourneyRecoveryController.onPageLoad()
   }
@@ -240,6 +251,22 @@ class Navigator @Inject() () {
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCountryOfOriginChangeCheck(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasCountryOfOriginChangePage(recordId))
+      .map {
+        case true  =>
+          if (answers.isDefined(HasCountryOfOriginChangePage(recordId))) {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          } else {
+            routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
+          }
+        case false => routes.CyaCategorisationController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
