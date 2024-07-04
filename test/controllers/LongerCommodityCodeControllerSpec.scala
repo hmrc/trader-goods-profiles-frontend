@@ -106,11 +106,17 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
+      val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
+
+      val previouslyUpdatedCommodity = RecordCategorisations(
+        Map(testRecordId -> previouslyUpdatedCategoryInfo)
+      )
+
       val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+        .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage(testRecordId), "answer")
+        .set(LongerCommodityCodePage(testRecordId), "1234")
         .success
         .value
 
@@ -124,7 +130,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, shortCommodity, testRecordId)(
+        contentAsString(result) mustEqual view(form.fill("1234"), NormalMode, shortCommodity, testRecordId)(
           request,
           messages(application)
         ).toString

@@ -47,6 +47,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
       "must return OK and the correct view" - {
 
+        val emptySummaryList = SummaryListViewModel(
+          rows = Seq.empty
+        )
+
         "when all category assessments answered" in {
 
           val userAnswers = userAnswersForCategorisation
@@ -74,11 +78,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               )
             )
 
-            val list2 = SummaryListViewModel(
-              rows = Seq.empty
-            )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, list2)(
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              emptySummaryList
+            )(
               request,
               messages(application)
             ).toString
@@ -118,11 +124,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               )
             )
 
-            val list2 = SummaryListViewModel(
-              rows = Seq.empty
-            )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, list2)(
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              emptySummaryList
+            )(
               request,
               messages(application)
             ).toString
@@ -169,7 +177,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               ).flatten
             )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, expectedSupplementaryUnitList)(
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              expectedSupplementaryUnitList,
+              emptySummaryList
+            )(
               request,
               messages(application)
             ).toString
@@ -213,7 +226,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               ).flatten
             )
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(testRecordId, expectedAssessmentList, expectedSupplementaryUnitList)(
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              expectedSupplementaryUnitList,
+              emptySummaryList
+            )(
               request,
               messages(application)
             ).toString
