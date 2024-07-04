@@ -24,7 +24,7 @@ import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
@@ -134,6 +134,49 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
+      }
+    }
+
+    "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
+
+      val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
+
+      val previouslyUpdatedCommodity = RecordCategorisations(
+        Map(testRecordId -> previouslyUpdatedCategoryInfo)
+      )
+
+      val mockSessionRepository = mock[SessionRepository]
+      val mockOttConnector = mock[OttConnector]
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
+        .success
+        .value
+        .set(LongerCommodityCodePage(testRecordId), "1234")
+        .success
+        .value
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[OttConnector].toInstance(mockOttConnector)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, longerCommodityCodeRoute)
+            .withFormUrlEncodedBody(("value", "1234"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
+
+        verify(mockOttConnector, never()).getCommodityCode(any(), any(), any(), any(), any())(any())
+        verify(mockSessionRepository, never()).set(any())
+
       }
     }
 
