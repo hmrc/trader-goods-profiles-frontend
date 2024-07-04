@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
+import connectors.TraderProfileConnector
 import forms.NirmsNumberFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -43,11 +44,19 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val nirmsNumberRoute = routes.NirmsNumberController.onPageLoad(NormalMode).url
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
   "NirmsNumber Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
@@ -65,7 +74,11 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberPage, "answer").success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
@@ -127,7 +140,11 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
@@ -136,6 +153,27 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Home page for a GET if profile already exists" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, nirmsNumberRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
       }
     }
 

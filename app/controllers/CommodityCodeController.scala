@@ -22,11 +22,11 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.CommodityCodePage
+import pages.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CommodityQuery
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import queries.{CommodityCodeUpdateQuery, CommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -52,21 +52,37 @@ class CommodityCodeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(CommodityCodePage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(CommodityCodePage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-    Ok(view(preparedForm, mode))
+      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
+
+      Ok(view(preparedForm, onSubmitAction))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(CommodityCodeUpdatePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+
+      Ok(view(preparedForm, onSubmitAction))
+    }
+
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
+      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             (for {
               commodity               <-
@@ -78,7 +94,31 @@ class CommodityCodeController @Inject() (
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 val formWithApiErrors =
                   form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))
-                BadRequest(view(formWithApiErrors, mode))
+                BadRequest(view(formWithApiErrors, onSubmitAction))
+            }
+        )
+    }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
+          value =>
+            (for {
+              commodity               <-
+                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
+              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
+              updatedAnswersWithQuery <-
+                Future.fromTry(updatedAnswers.set(CommodityCodeUpdateQuery(recordId), commodity))
+              _                       <- sessionRepository.set(updatedAnswersWithQuery)
+            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
+              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                val formWithApiErrors =
+                  form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))
+                BadRequest(view(formWithApiErrors, onSubmitAction))
             }
         )
     }
