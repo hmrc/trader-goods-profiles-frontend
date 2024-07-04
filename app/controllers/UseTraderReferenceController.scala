@@ -45,8 +45,8 @@ class UseTraderReferenceController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form      = formProvider()
-  private val newRecord = "new-record"
+  private val form        = formProvider()
+  private val newRecordId = "new-record"
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(UseTraderReferencePage) match {
@@ -54,7 +54,7 @@ class UseTraderReferenceController @Inject() (
       case Some(value) => form.fill(value)
     }
 
-    request.userAnswers.get(TraderReferencePage(newRecord)) match {
+    request.userAnswers.get(TraderReferencePage(newRecordId)) match {
       case Some(traderReference) => Ok(view(preparedForm, traderReference, mode))
       case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
     }
@@ -66,7 +66,7 @@ class UseTraderReferenceController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            request.userAnswers.get(TraderReferencePage(newRecord)) match {
+            request.userAnswers.get(TraderReferencePage(newRecordId)) match {
               case Some(traderReference) => Future.successful(BadRequest(view(formWithErrors, traderReference, mode)))
               case None                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },

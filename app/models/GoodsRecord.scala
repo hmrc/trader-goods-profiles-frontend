@@ -32,14 +32,14 @@ final case class GoodsRecord(
 
 object GoodsRecord {
 
-  implicit lazy val format: OFormat[GoodsRecord] = Json.format
-
+  implicit lazy val format: OFormat[GoodsRecord]                                         = Json.format
+  val newRecordId                                                                        = "new-record"
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
-      answers.getPageValue(TraderReferencePage("new-record")),
+      answers.getPageValue(TraderReferencePage(newRecordId)),
       getCommodity(answers),
-      answers.getPageValue(CountryOfOriginPage("new-record")),
+      answers.getPageValue(CountryOfOriginPage(newRecordId)),
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
       GoodsRecord(
@@ -52,9 +52,9 @@ object GoodsRecord {
     )
 
   private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
-    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage("new-record")) match {
+    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage(newRecordId)) match {
       case Right(Some(data)) => Right(data)
-      case Right(None)       => answers.getPageValue(TraderReferencePage("new-record"))
+      case Right(None)       => answers.getPageValue(TraderReferencePage(newRecordId))
       case Left(errors)      => Left(errors)
     }
 
