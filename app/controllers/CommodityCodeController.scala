@@ -26,7 +26,7 @@ import pages.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery}
+import queries.{CommodityQuery, CommodityCodeUpdateQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -111,7 +111,7 @@ class CommodityCodeController @Inject() (
               commodity               <-
                 ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
-              updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityUpdateQuery, commodity))
+              updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityCodeUpdateQuery(recordId), commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
