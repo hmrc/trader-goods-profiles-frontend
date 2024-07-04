@@ -20,6 +20,7 @@ import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.LongerCommodityCodePage
 import play.api.i18n.Messages
+import queries.LongerCommodityQuery
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -27,14 +28,16 @@ import viewmodels.implicits._
 object LongerCommodityCodeSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(LongerCommodityCodePage(recordId)).map { answer =>
-      SummaryListRowViewModel(
-        key = "longerCommodityCode.checkYourAnswersLabel",
-        value = ValueViewModel(answer),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+    answers.get(LongerCommodityCodePage(recordId)).flatMap { answer =>
+      answers.get(LongerCommodityQuery(recordId)).map { fullCommodityCode =>
+        SummaryListRowViewModel(
+          key = "longerCommodityCode.checkYourAnswersLabel",
+          value = ValueViewModel(fullCommodityCode.commodityCode),
+          actions = Seq(
+            ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
+              .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+          )
         )
-      )
+      }
     }
 }
