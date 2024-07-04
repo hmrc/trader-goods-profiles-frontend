@@ -252,19 +252,19 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasCountryOfOriginChangeCheck(recordId: String)(answers: UserAnswers): Call =
-    answers
-      .get(HasCountryOfOriginChangePage(recordId))
-      .map {
-        case true  =>
-          if (answers.isDefined(HasCountryOfOriginChangePage(recordId))) {
-            routes.CyaCategorisationController.onPageLoad(recordId)
-          } else {
-            routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
-          }
-        case false => routes.CyaCategorisationController.onPageLoad(recordId)
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+//  private def navigateFromHasCountryOfOriginChangeCheck(recordId: String)(answers: UserAnswers): Call =
+//    answers
+//      .get(HasCountryOfOriginChangePage(recordId))
+//      .map {
+//        case true  =>
+//          if (answers.isDefined(HasCountryOfOriginChangePage(recordId))) {
+//            routes.CyaCategorisationController.onPageLoad(recordId)
+//          } else {
+//            routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
+//          }
+//        case false => routes.CyaCategorisationController.onPageLoad(recordId)
+//      }
+//      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
 
 
