@@ -109,7 +109,7 @@ class HasCorrectGoodsController @Inject() (
         )
   }
   // TODO - this is still not functional, it is just to create the url. Implement this properly
-  def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] = {
+  def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       form
@@ -128,7 +128,6 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
         )
     }
-  }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
