@@ -29,7 +29,8 @@ case class UpdateRecordRequest(
   actorId: String,
   countryOfOrigin: Option[String],
   goodsDescription: Option[String],
-  traderReference: Option[String]
+  traderReference: Option[String],
+  commodityCode: Option[String]
 )
 
 object UpdateRecordRequest {
@@ -41,7 +42,8 @@ object UpdateRecordRequest {
       goodsRecord.eori,
       goodsRecord.countryOfOrigin,
       goodsRecord.goodsDescription,
-      goodsRecord.traderReference
+      goodsRecord.traderReference,
+      goodsRecord.commodityCode
     )
 
   implicit val reads: Reads[UpdateRecordRequest] =
@@ -50,7 +52,8 @@ object UpdateRecordRequest {
       (JsPath \ "actorId").read[String] and
       (JsPath \ "countryOfOrigin").readNullable[String] and
       (JsPath \ "goodsDescription").readNullable[String] and
-      (JsPath \ "traderReference").readNullable[String])(UpdateRecordRequest.apply _)
+      (JsPath \ "traderReference").readNullable[String] and
+      (JsPath \ "commodityCode").readNullable[String])(UpdateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[UpdateRecordRequest] =
     ((JsPath \ "eori").write[String] and
@@ -58,6 +61,7 @@ object UpdateRecordRequest {
       (JsPath \ "actorId").write[String] and
       (JsPath \ "countryOfOrigin").writeNullable[String] and
       (JsPath \ "goodsDescription").writeNullable[String] and
-      (JsPath \ "traderReference").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
+      (JsPath \ "traderReference").writeNullable[String] and
+      (JsPath \ "commodityCode").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
 
 }

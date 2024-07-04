@@ -19,6 +19,7 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
+import models.GoodsRecord.newRecordId
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
@@ -50,36 +51,36 @@ class CommodityCodeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
+  private val form                                                 = formProvider()
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(CommodityCodePage(newRecordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(CommodityCodePage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
-
-    Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, recordId))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
           value =>
             (for {
               commodity               <-
                 ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
-              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
+              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage(recordId), value))
               updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
-            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
-              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+            } yield Redirect(navigator.nextPage(CommodityCodePage(recordId), mode, updatedAnswersWithQuery)))
+              .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 val formWithApiErrors =
                   form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))
-                BadRequest(view(formWithApiErrors, mode))
-            }
+                BadRequest(view(formWithApiErrors, mode, recordId))
+              }
         )
     }
 

@@ -26,7 +26,8 @@ final case class UpdateGoodsRecord(
   recordId: String,
   countryOfOrigin: Option[String] = None,
   goodsDescription: Option[String] = None,
-  traderReference: Option[String] = None
+  traderReference: Option[String] = None,
+  commodityCode: Option[String] = None
 )
 
 object UpdateGoodsRecord {
@@ -62,6 +63,12 @@ object UpdateGoodsRecord {
             eori,
             recordId,
             traderReference = Some(value)
+          )
+        case CommodityCodePageUpdate    =>
+          UpdateGoodsRecord(
+            eori,
+            recordId,
+            commodityCode = Some(value)
           )
       }
     )

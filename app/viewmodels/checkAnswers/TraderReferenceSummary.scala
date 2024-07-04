@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.GoodsRecord.newRecordId
 import models.{CheckMode, UserAnswers}
 import pages.TraderReferencePage
 import play.api.i18n.Messages
@@ -27,8 +28,7 @@ import viewmodels.implicits._
 
 object TraderReferenceSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] = {
-    val newRecordId = "new-record"
+  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(TraderReferencePage(newRecordId)).map { answer =>
       SummaryListRowViewModel(
         key = "traderReference.checkYourAnswersLabel",
@@ -39,5 +39,4 @@ object TraderReferenceSummary {
         )
       )
     }
-  }
 }

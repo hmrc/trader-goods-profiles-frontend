@@ -53,10 +53,10 @@ POST        /create-profile/ukims-number/check                                  
 GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
-GET         /create-record/commodity-code                                                   controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/commodity-code                                                   controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/commodity-code/check                                             controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/commodity-code/check                                             controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/commodity-code                                                   controllers.CommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String = "new-record")
+POST        /create-record/commodity-code                                                   controllers.CommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String = "new-record")
+GET         /create-record/commodity-code/check                                             controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String = "new-record")
+POST        /create-record/commodity-code/check                                             controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String = "new-record")
 
 GET         /create-record/country-of-origin                                                controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode, recordId: String = "new-record")
 POST        /create-record/country-of-origin                                                controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode, recordId: String = "new-record")
@@ -86,6 +86,9 @@ POST        /create-record/commodity-code-result                                
 GET         /create-record/commodity-code-result/check                                      controllers.HasCorrectGoodsController.onPageLoad(mode: Mode = CheckMode)
 POST        /create-record/commodity-code-result/check                                      controllers.HasCorrectGoodsController.onSubmit(mode: Mode = CheckMode)
 
+GET         /update-record/:recordId/commodity-code                                         controllers.CommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/commodity-code                                         controllers.CommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
 GET         /update/:recordId/longer-commodity-code-result                                  controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
 POST        /update/:recordId/longer-commodity-code-result                                  controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
 GET         /update/:recordId/longer-commodity-code-result/check                            controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
@@ -105,6 +108,8 @@ GET         /update-record/:recordId/check-your-answers/goods-description       
 POST        /update-record/:recordId/check-your-answers/goods-description                   controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = GoodsDescriptionPageUpdate)
 GET         /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onPageLoad(recordId: String, pageUpdate: PageUpdate = TraderReferencePageUpdate)
 POST        /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = TraderReferencePageUpdate)
+GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoad(recordId: String, pageUpdate: PageUpdate = CommodityCodePageUpdate)
+POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = CommodityCodePageUpdate)
 
 GET         /create-record/trader-reference                                                 controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode, recordId: String = "new-record")
 POST        /create-record/trader-reference                                                 controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode, recordId: String = "new-record")

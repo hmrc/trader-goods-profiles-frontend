@@ -17,8 +17,9 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{newRecordId, userAnswersId}
+import base.TestConstants.userAnswersId
 import forms.GoodsDescriptionFormProvider
+import models.GoodsRecord.newRecordId
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any

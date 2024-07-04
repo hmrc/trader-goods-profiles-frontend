@@ -19,6 +19,7 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
+import models.GoodsRecord.newRecordId
 
 import javax.inject.Inject
 import models.Mode
@@ -51,8 +52,7 @@ class LongerCommodityCodeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
-
+  private val form                                                 = formProvider()
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val preparedForm = request.userAnswers.get(LongerCommodityCodePage) match {
@@ -60,7 +60,7 @@ class LongerCommodityCodeController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      request.userAnswers.get(CommodityCodePage) match {
+      request.userAnswers.get(CommodityCodePage(newRecordId)) match {
         case Some(shortCommodity) if shortCommodity.length != 10 =>
           Ok(view(preparedForm, mode, shortCommodity, recordId))
         case _                                                   => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
@@ -69,7 +69,7 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(CommodityCodePage) match {
+      request.userAnswers.get(CommodityCodePage(newRecordId)) match {
         case Some(shortCommodity) if shortCommodity.length != 10 =>
           form
             .bindFromRequest()

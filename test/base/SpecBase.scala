@@ -16,8 +16,9 @@
 
 package base
 
-import base.TestConstants.{newRecordId, testRecordId, userAnswersId}
+import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
+import models.GoodsRecord.newRecordId
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -81,7 +82,7 @@ trait SpecBase
       .set(TraderReferencePage(newRecordId), "123")
       .success
       .value
-      .set(CommodityCodePage, testCommodity.commodityCode)
+      .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
       .success
       .value
       .set(CountryOfOriginPage(newRecordId), "1")
@@ -105,7 +106,7 @@ trait SpecBase
       .set(TraderReferencePage(newRecordId), "123")
       .success
       .value
-      .set(CommodityCodePage, testCommodity.commodityCode)
+      .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
       .success
       .value
       .set(CountryOfOriginPage(newRecordId), "1")

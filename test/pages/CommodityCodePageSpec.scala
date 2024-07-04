@@ -17,6 +17,7 @@
 package pages
 
 import base.TestConstants.userAnswersId
+import models.GoodsRecord.newRecordId
 import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -29,14 +30,14 @@ class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues wit
     "removes HasCorrectGoodsPage when commodity code has changed" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .set(CommodityCodePage, "123")
+        .set(CommodityCodePage(newRecordId), "123")
         .success
         .value
         .set(HasCorrectGoodsPage, true)
         .success
         .value
 
-      val result = userAnswers.set(CommodityCodePage, "1234").success.value
+      val result = userAnswers.set(CommodityCodePage(newRecordId), "1234").success.value
 
       result.isDefined(HasCorrectGoodsPage) mustBe false
 
@@ -45,14 +46,14 @@ class CommodityCodePageSpec extends AnyFreeSpec with Matchers with TryValues wit
     "retains HasCorrectGoodsPage when commodity code has not changed" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .set(CommodityCodePage, "123")
+        .set(CommodityCodePage(newRecordId), "123")
         .success
         .value
         .set(HasCorrectGoodsPage, true)
         .success
         .value
 
-      val result = userAnswers.set(CommodityCodePage, "123").success.value
+      val result = userAnswers.set(CommodityCodePage(newRecordId), "123").success.value
 
       result.isDefined(HasCorrectGoodsPage) mustBe true
 

@@ -16,7 +16,8 @@
 
 package pages
 
-import base.TestConstants.{newRecordId, userAnswersId}
+import base.TestConstants.userAnswersId
+import models.GoodsRecord.newRecordId
 import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers

@@ -17,8 +17,9 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.{newRecordId, testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
+import models.GoodsRecord.newRecordId
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
@@ -222,14 +223,15 @@ class NavigatorSpec extends SpecBase {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CommodityCodeController.onPageLoad(
-            NormalMode
+            NormalMode,
+            newRecordId
           )
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
 
           navigator.nextPage(
-            CommodityCodePage,
+            CommodityCodePage(newRecordId),
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
@@ -251,7 +253,7 @@ class NavigatorSpec extends SpecBase {
 
             val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
             navigator.nextPage(HasCorrectGoodsPage, NormalMode, answers) mustBe routes.CommodityCodeController
-              .onPageLoad(NormalMode)
+              .onPageLoad(NormalMode, newRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -654,7 +656,7 @@ class NavigatorSpec extends SpecBase {
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
 
           navigator.nextPage(
-            CommodityCodePage,
+            CommodityCodePage(newRecordId),
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.HasCorrectGoodsController.onPageLoad(CheckMode)
@@ -669,7 +671,8 @@ class NavigatorSpec extends SpecBase {
               val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
               navigator.nextPage(HasCorrectGoodsPage, CheckMode, answers) mustBe routes.CommodityCodeController
                 .onPageLoad(
-                  CheckMode
+                  CheckMode,
+                  newRecordId
                 )
             }
 
@@ -677,7 +680,7 @@ class NavigatorSpec extends SpecBase {
 
               val answers =
                 UserAnswers(userAnswersId)
-                  .set(CommodityCodePage, "1234")
+                  .set(CommodityCodePage(newRecordId), "1234")
                   .success
                   .value
                   .set(HasCorrectGoodsPage, true)
@@ -698,7 +701,7 @@ class NavigatorSpec extends SpecBase {
               HasCorrectGoodsPage,
               CheckMode,
               answers
-            ) mustBe routes.CommodityCodeController.onPageLoad(CheckMode)
+            ) mustBe routes.CommodityCodeController.onPageLoad(CheckMode, newRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {

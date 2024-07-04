@@ -59,7 +59,7 @@ object GoodsRecord {
     }
 
   private def getCommodity(answers: UserAnswers): EitherNec[ValidationError, Commodity] =
-    answers.getPageValue(CommodityCodePage) match {
+    answers.getPageValue(CommodityCodePage(newRecordId)) match {
       case Right(code)  =>
         answers.getPageValue(HasCorrectGoodsPage) match {
           case Right(true)  => getCommodityQuery(answers, code)
@@ -73,7 +73,7 @@ object GoodsRecord {
     answers.getPageValue(CommodityQuery) match {
       case Right(commodity) if commodity.commodityCode == code => Right(commodity)
       case Left(errors)                                        => Left(errors)
-      case _                                                   => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage)))
+      case _                                                   => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage(newRecordId))))
     }
 
 }

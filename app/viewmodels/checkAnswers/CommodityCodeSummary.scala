@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.GoodsRecord.newRecordId
 import models.{CheckMode, UserAnswers}
 import pages.CommodityCodePage
 import play.api.i18n.Messages
@@ -28,12 +29,12 @@ import viewmodels.implicits._
 object CommodityCodeSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(CommodityCodePage).map { answer =>
+    answers.get(CommodityCodePage(newRecordId)).map { answer =>
       SummaryListRowViewModel(
         key = "commodityCode.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoad(CheckMode, newRecordId).url)
             .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
         )
       )

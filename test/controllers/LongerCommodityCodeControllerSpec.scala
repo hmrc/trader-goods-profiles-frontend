@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.OttConnector
 import forms.LongerCommodityCodeFormProvider
+import models.GoodsRecord.newRecordId
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString}
@@ -53,7 +54,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val userAnswers = emptyUserAnswers.set(CommodityCodePage, shortCommodity).success.value
+      val userAnswers = emptyUserAnswers.set(CommodityCodePage(newRecordId), shortCommodity).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -84,7 +85,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect on GET to JourneyRecovery Page if user's commodity code is 10 digits" in {
-      val userAnswers = emptyUserAnswers.set(CommodityCodePage, "1234567890").success.value
+      val userAnswers = emptyUserAnswers.set(CommodityCodePage(newRecordId), "1234567890").success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -99,7 +100,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(CommodityCodePage(newRecordId), shortCommodity)
         .success
         .value
         .set(LongerCommodityCodePage, "answer")
@@ -128,7 +129,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
       val mockOttConnector      = mock[OttConnector]
       val userAnswers           = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(CommodityCodePage(newRecordId), shortCommodity)
         .success
         .value
         .set(LongerCommodityCodePage, "answer")
@@ -166,7 +167,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid is submitted" in {
       val userAnswers = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(CommodityCodePage(newRecordId), shortCommodity)
         .success
         .value
         .set(LongerCommodityCodePage, "answer")
@@ -196,7 +197,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
       val mockOttConnector = mock[OttConnector]
       val userAnswers      = emptyUserAnswers
-        .set(CommodityCodePage, shortCommodity)
+        .set(CommodityCodePage(newRecordId), shortCommodity)
         .success
         .value
         .set(LongerCommodityCodePage, "answer")

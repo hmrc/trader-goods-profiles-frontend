@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.OttConnector
 import forms.CommodityCodeFormProvider
+import models.GoodsRecord.newRecordId
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
@@ -46,7 +47,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CommodityCodeFormProvider()
   private val form = formProvider()
 
-  private lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode).url
+  private lazy val commodityCodeRoute = routes.CommodityCodeController.onPageLoad(NormalMode, newRecordId).url
 
   "CommodityCode Controller" - {
 
@@ -62,13 +63,13 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CommodityCodeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, newRecordId)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage, "654321").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(CommodityCodePage(newRecordId), "654321").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -80,7 +81,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("654321"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("654321"), NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -135,7 +139,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -155,7 +162,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -185,7 +195,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, newRecordId)(
+          request,
+          messages(application)
+        ).toString
 
         verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(any())
       }

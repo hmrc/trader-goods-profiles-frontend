@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions._
 import forms.UseTraderReferenceFormProvider
+import models.GoodsRecord.newRecordId
 
 import javax.inject.Inject
 import models.Mode
@@ -45,8 +46,7 @@ class UseTraderReferenceController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form        = formProvider()
-  private val newRecordId = "new-record"
+  private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(UseTraderReferencePage) match {

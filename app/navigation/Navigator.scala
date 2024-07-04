@@ -19,6 +19,7 @@ package navigation
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Call
 import controllers.routes
+import models.GoodsRecord.newRecordId
 import pages._
 import models._
 import queries.RecordCategorisationsQuery
@@ -28,7 +29,6 @@ import scala.util.Try
 
 @Singleton
 class Navigator @Inject() () {
-  private val newRecordId                               = "new-record"
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage            => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
     case UkimsNumberPage             => _ => routes.HasNirmsController.onPageLoad(NormalMode)
@@ -40,8 +40,8 @@ class Navigator @Inject() () {
     case p: TraderReferencePage      => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case UseTraderReferencePage      => navigateFromUseTraderReference
     case p: GoodsDescriptionPage     => _ => routes.CountryOfOriginController.onPageLoad(NormalMode, newRecordId)
-    case p: CountryOfOriginPage      => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
-    case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+    case p: CountryOfOriginPage      => _ => routes.CommodityCodeController.onPageLoad(NormalMode, newRecordId)
+    case p: CommodityCodePage        => _ => routes.HasCorrectGoodsController.onPageLoad(NormalMode)
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoods
     case p: AssessmentPage           => navigateFromAssessment(p)
     case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnit(p.recordId)
@@ -72,7 +72,7 @@ class Navigator @Inject() () {
       .get(HasCorrectGoodsPage)
       .map {
         case true  => routes.CyaCreateRecordController.onPageLoad
-        case false => routes.CommodityCodeController.onPageLoad(NormalMode)
+        case false => routes.CommodityCodeController.onPageLoad(NormalMode, newRecordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -135,7 +135,7 @@ class Navigator @Inject() () {
     case UseTraderReferencePage      => navigateFromUseTraderReferenceCheck
     case p: GoodsDescriptionPage     => _ => navigateFromGoodsDescriptionCheck(p.recordId)
     case p: CountryOfOriginPage      => _ => navigateFromCountryOfOriginCheck(p.recordId)
-    case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+    case p: CommodityCodePage        => _ => navigateFromCommodityCodeCheck(p.recordId)
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoodsCheck
     case p: NamePage                 => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: EmailPage                => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
@@ -150,6 +150,13 @@ class Navigator @Inject() () {
       routes.CyaCreateRecordController.onPageLoad
     } else {
       routes.CyaUpdateRecordController.onPageLoad(recordId, CountryOfOriginPageUpdate)
+    }
+
+  private def navigateFromCommodityCodeCheck(recordId: String): Call =
+    if (recordId == newRecordId) {
+      routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+    } else {
+      routes.CyaUpdateRecordController.onPageLoad(recordId, CommodityCodePageUpdate)
     }
 
   private def navigateFromGoodsDescriptionCheck(recordId: String): Call =
@@ -213,12 +220,12 @@ class Navigator @Inject() () {
       .get(HasCorrectGoodsPage)
       .map {
         case true  =>
-          if (answers.isDefined(CommodityCodePage)) {
+          if (answers.isDefined(CommodityCodePage(newRecordId))) {
             routes.CyaCreateRecordController.onPageLoad
           } else {
-            routes.CommodityCodeController.onPageLoad(CheckMode)
+            routes.CommodityCodeController.onPageLoad(CheckMode, newRecordId)
           }
-        case false => routes.CommodityCodeController.onPageLoad(CheckMode)
+        case false => routes.CommodityCodeController.onPageLoad(CheckMode, newRecordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

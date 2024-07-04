@@ -16,6 +16,7 @@
 
 package pages
 
+import models.GoodsRecord.newRecordId
 import models.UserAnswers
 import play.api.libs.json.JsPath
 
@@ -33,7 +34,7 @@ case object UseTraderReferencePage extends QuestionPage[Boolean] {
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
     updatedUserAnswers.get(UseTraderReferencePage) match {
-      case Some(true) => updatedUserAnswers.remove(GoodsDescriptionPage("new-record"))
+      case Some(true) => updatedUserAnswers.remove(GoodsDescriptionPage(newRecordId))
       case _          => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }
 }

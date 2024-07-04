@@ -16,15 +16,12 @@
 
 package models
 
-import base.TestConstants.{newRecordId, testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import queries.CommodityQuery
-
-import java.time.Instant
 
 class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 

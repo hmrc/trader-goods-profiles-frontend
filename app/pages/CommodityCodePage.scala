@@ -21,9 +21,9 @@ import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
-case object CommodityCodePage extends QuestionPage[String] {
+case class CommodityCodePage(recordId: String) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ toString \ recordId
 
   override def toString: String = "commodityCode"
 
@@ -32,7 +32,7 @@ case object CommodityCodePage extends QuestionPage[String] {
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    originalUserAnswers.get(CommodityCodePage) match {
+    originalUserAnswers.get(CommodityCodePage(recordId)) match {
       case originalValue if originalValue == newValue =>
         Success(updatedUserAnswers)
       case _                                          =>

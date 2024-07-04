@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.GoodsRecord.newRecordId
 import models.{CheckMode, Country, UserAnswers}
 import pages.CountryOfOriginPage
 import play.api.i18n.Messages
@@ -29,8 +30,7 @@ object CountryOfOriginSummary {
 
   def row(answers: UserAnswers, countries: Seq[Country])(implicit
     messages: Messages
-  ): Option[SummaryListRow] = {
-    val newRecordId = "new-record"
+  ): Option[SummaryListRow] =
     answers.get(CountryOfOriginPage(newRecordId)).map { answer =>
       val description = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
       SummaryListRowViewModel(
@@ -45,5 +45,4 @@ object CountryOfOriginSummary {
         )
       )
     }
-  }
 }
