@@ -27,14 +27,12 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage, QuestionPage}
-import pages.{AssessmentPage, HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage}
+import pages._
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CommodityCodeUpdateQuery, CommodityQuery}
-import queries.{CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityCodeUpdateQuery, CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import views.html.HasCorrectGoodsView
@@ -203,7 +201,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasCorrectGoodsRoute)
+          val request = FakeRequest(GET, hasCorrectGoodsCreateRoute)
 
           val result = route(application, request).value
 
@@ -218,7 +216,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasCorrectGoodsRoute)
+            FakeRequest(POST, hasCorrectGoodsCreateRoute)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -253,7 +251,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
           running(application) {
-            val request = FakeRequest(GET, hasCorrectGoodsCreateRoute)
+            val request = FakeRequest(GET, hasCorrectGoodsRoute)
 
             val result = route(application, request).value
 
@@ -645,14 +643,16 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
           running(application) {
             val request =
-              FakeRequest(POST, hasCorrectGoodsCreateRoute)
-              .withFormUrlEncodedBody(("value", "true"))
+              FakeRequest(POST, hasCorrectGoodsRoute)
+                .withFormUrlEncodedBody(("value", "true"))
 
-          val result = route(application, request).value
+            val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
         }
+
       }
 
     }
@@ -825,9 +825,9 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         running(application) {
           val request =
             FakeRequest(POST, hasCorrectGoodsUpdateRoute)
-                .withFormUrlEncodedBody(("value", "true"))
+              .withFormUrlEncodedBody(("value", "true"))
 
-            val result = route(application, request).value
+          val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -835,6 +835,5 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       }
 
     }
-
   }
 }

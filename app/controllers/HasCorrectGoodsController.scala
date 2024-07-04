@@ -22,12 +22,10 @@ import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.{AssessmentPage, HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage, InconsistentUserAnswersException}
-import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage}
+import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
-import queries.{CommodityCodeUpdateQuery, CommodityQuery}
+import queries.{CommodityCodeUpdateQuery, CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -93,7 +91,6 @@ class HasCorrectGoodsController @Inject() (
       }
 
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
@@ -121,7 +118,7 @@ class HasCorrectGoodsController @Inject() (
   // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
+      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
 
       form
         .bindFromRequest()
@@ -156,13 +153,13 @@ class HasCorrectGoodsController @Inject() (
           formWithErrors =>
             request.userAnswers.get(CommodityCodeUpdateQuery(recordId)) match {
               case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
-              case None => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+              case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },
           value =>
             for {
               updatedAnswers <-
                 Future.fromTry(request.userAnswers.set(HasCorrectGoodsCommodityCodeUpdatePage(recordId), value))
-              _ <- sessionRepository.set(updatedAnswers)
+              _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId), mode, updatedAnswers))
         )
     }
