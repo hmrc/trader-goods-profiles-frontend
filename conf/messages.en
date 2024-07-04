@@ -403,12 +403,13 @@ goodsRecords.tableHeader.actions = Actions
 
 removeGoodsRecord.title = Removing goods record
 removeGoodsRecord.heading = Removing goods record
-removeGoodsRecord.error.required = Select if you wish to remove the record
+removeGoodsRecord.error.required = Select yes if you want to remove this goods record
 removeGoodsRecord.warning = Warning
 removeGoodsRecord.warningText = If you remove this goods record, you will not be able to use it for movements. Once removed, you will not be able to restore this goods record.
 removeGoodsRecord.question = Are you sure you want to remove this goods record?
 removeGoodsRecord.yes = Yes, remove this goods record
-removeGoodsRecord.no = No, return to goods profile
+removeGoodsRecord.noProfile = No, return to goods profile
+removeGoodsRecord.noRecord = No, return to goods record
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
@@ -427,3 +428,10 @@ hasCommodityCodeChange.checkYourAnswersLabel = hasCommodityCodeChange
 hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 hasCommodityCodeChange.change.hidden = HasCommodityCodeChange
 
+hasGoodDescriptionChange.title = Change record information
+hasGoodDescriptionChange.h1 = Changing the goods description
+hasGoodDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you''ll need to ask for advice again.
+hasGoodDescriptionChange.h2 = Do you want to change the goods description?
+hasGoodDescriptionChange.checkYourAnswersLabel = hasGoodDescriptionChange
+hasGoodDescriptionChange.error.required = Select if you want to change the goods description
+hasGoodDescriptionChange.change.hidden = HasGoodDescriptionChange

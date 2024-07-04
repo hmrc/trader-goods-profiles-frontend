@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import forms.RemoveGoodsRecordFormProvider
+import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -40,7 +41,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new RemoveGoodsRecordFormProvider()
   private val form = formProvider()
 
-  private lazy val removeGoodsRecordRoute = routes.RemoveGoodsRecordController.onPageLoad(testRecordId).url
+  private lazy val removeGoodsRecordRoute =
+    routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
   "RemoveGoodsRecord Controller" - {
 
@@ -56,7 +58,30 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[RemoveGoodsRecordView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, testRecordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, testRecordId, GoodsRecordLocation)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the alternate correct view for a GET with different url" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(GET, routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsProfileLocation).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[RemoveGoodsRecordView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, testRecordId, GoodsProfileLocation)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -158,7 +183,10 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, testRecordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, testRecordId, GoodsRecordLocation)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

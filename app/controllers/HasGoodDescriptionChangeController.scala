@@ -16,56 +16,57 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
 import controllers.actions._
-import forms.RemoveGoodsRecordFormProvider
-
+import forms.HasGoodDescriptionChangeFormProvider
 import javax.inject.Inject
-import models.{Location, NormalMode}
+import models.Mode
 import navigation.Navigator
-import pages.RemoveGoodsRecordPage
+import pages.HasGoodDescriptionChangePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.RemoveGoodsRecordView
+import views.html.HasGoodDescriptionChangeView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemoveGoodsRecordController @Inject() (
+class HasGoodDescriptionChangeController @Inject() (
   override val messagesApi: MessagesApi,
-  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: RemoveGoodsRecordFormProvider,
+  formProvider: HasGoodDescriptionChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: RemoveGoodsRecordView
+  view: HasGoodDescriptionChangeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
+  val form = formProvider()
 
-  def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      Ok(view(form, recordId, location))
-    }
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(HasGoodDescriptionChangePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-  def onSubmit(recordId: String, location: Location): Action[AnyContent] =
+      Ok(view(preparedForm, mode, recordId))
+  }
+
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
-          {
-            case true  =>
-              goodsRecordConnector
-                .removeGoodsRecord(request.eori, recordId)
-                .map(_ => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
-            case false =>
-              Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
-          }
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasGoodDescriptionChangePage(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HasGoodDescriptionChangePage(recordId), mode, updatedAnswers))
         )
     }
 }

@@ -23,7 +23,7 @@
     govukWarningText: GovukWarningText
 )
 
-@(form: Form[_], recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], recordId: String, location: Location)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("removeGoodsRecord.title"))) {
 
@@ -33,8 +33,9 @@
         iconFallbackText = Some(messages("removeGoodsRecord.warning")),
         content = Text(messages("removeGoodsRecord.warningText"))
     ))
+      <h2 class="govuk-heading-m">@messages("removeGoodsRecord.question")</h2>
 
-    @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId, location), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -43,10 +44,10 @@
         @govukRadios(
             RadiosViewModel.apply(
                 field = form("value"),
-                legend = LegendViewModel(messages("removeGoodsRecord.question")).asSecondaryHeading(),
+                legend = Legend(content = "removeGoodsRecord.question", classes = "govuk-visually-hidden"),
                   items = Seq(
                                 RadioItem(content = messages("removeGoodsRecord.yes"), value = Some("true")),
-                                RadioItem(content = messages("removeGoodsRecord.no"), value = Some("false"))
+                                RadioItem(content = if(location == GoodsProfileLocation) { messages("removeGoodsRecord.noProfile") } else {messages("removeGoodsRecord.noRecord")}, value = Some("false"))
                             )
             )
         )
