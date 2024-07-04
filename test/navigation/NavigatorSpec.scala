@@ -741,6 +741,14 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, GoodsDescriptionPageUpdate)
         }
+
+        "must go from CommodityCodePage to CyaUpdateRecord" in {
+          navigator.nextPage(
+            CommodityCodePage(testRecordId),
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaUpdateRecordController.onPageLoad(testRecordId, CommodityCodePageUpdate)
+        }
       }
 
       "must go from an assessment" - {

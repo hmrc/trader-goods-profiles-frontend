@@ -73,6 +73,21 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           UpdateGoodsRecord(testEori, testRecordId, traderReference = Some("1"))
         )
       }
+
+      "and all commodity code data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodePage(testRecordId), "1")
+            .success
+            .value
+
+        val result = UpdateGoodsRecord.build(answers, testEori, testRecordId, CommodityCodePageUpdate)
+
+        result mustEqual Right(
+          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some("1"))
+        )
+      }
     }
 
     "must return errors" - {
@@ -107,6 +122,17 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(TraderReferencePage(testRecordId))
+        }
+      }
+
+      "when commodity code is required and is missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = UpdateGoodsRecord.build(answers, testEori, testRecordId, CommodityCodePageUpdate)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(CommodityCodePage(testRecordId))
         }
       }
     }
