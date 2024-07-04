@@ -423,7 +423,9 @@ class GoodsRecordConnectorSpec
         "Organic bananas",
         "IMMI declarable",
         Instant.parse("2024-11-18T23:20:19Z"),
-        Instant.parse("2024-11-18T23:20:19Z")
+        Instant.parse("2024-11-18T23:20:19Z"),
+        "Not requested",
+        3
       )
     }
 
@@ -470,7 +472,9 @@ class GoodsRecordConnectorSpec
             "Organic bananas",
             "IMMI declarable",
             Instant.parse("2022-11-18T23:20:19Z"),
-            Instant.parse("2022-11-18T23:20:19Z")
+            Instant.parse("2022-11-18T23:20:19Z"),
+            "Not requested",
+            3
           ),
           GetGoodsRecordResponse(
             "2",
@@ -480,7 +484,9 @@ class GoodsRecordConnectorSpec
             "Organic bananas",
             "IMMI declarable",
             Instant.parse("2023-11-18T23:20:19Z"),
-            Instant.parse("2023-11-18T23:20:19Z")
+            Instant.parse("2023-11-18T23:20:19Z"),
+            "Not requested",
+            3
           ),
           GetGoodsRecordResponse(
             "3",
@@ -490,7 +496,9 @@ class GoodsRecordConnectorSpec
             "Organic bananas",
             "IMMI declarable",
             Instant.parse("2024-11-18T23:20:19Z"),
-            Instant.parse("2024-11-18T23:20:19Z")
+            Instant.parse("2024-11-18T23:20:19Z"),
+            "Not requested",
+            3
           )
         ),
         GoodsRecordsPagination(10, 1, 4, None, None)

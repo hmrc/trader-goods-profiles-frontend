@@ -39,4 +39,15 @@ object CommodityCodeSummary {
         )
       )
     }
+
+  //TBD - this will be updated to route to the update trader reference page
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "commodityCode.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoad(CheckMode, newRecordId).url)
+          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+      )
+    )
 }

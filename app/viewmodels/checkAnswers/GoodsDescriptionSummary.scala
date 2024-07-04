@@ -39,4 +39,15 @@ object GoodsDescriptionSummary {
         )
       )
     }
+
+  //TBD - this will be updated to route to the update trader reference page
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "goodsDescription.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode, newRecordId).url)
+          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+      )
+    )
 }

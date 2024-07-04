@@ -221,6 +221,7 @@ trait SpecBase
         bind[DataRequiredAction].to[DataRequiredActionImpl],
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
+        bind[ProfileCheckAction].to[ProfileCheckActionImpl],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
 }
