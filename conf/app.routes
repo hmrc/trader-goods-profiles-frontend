@@ -164,6 +164,8 @@ GET        /remove-record/:recordId/goods-record                                
 POST       /remove-record/:recordId/good-profile                                            controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsProfileLocation)
 POST        /remove-record/:recordId/goods-record                                           controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsRecordLocation)
 
+GET         /goods-record/:recordId                                                         controllers.SingleRecordController.onPageLoad(recordId: String)
+
 GET        /update-record/:recordId/change-record-warning/commodity-code                    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/commodity-code                    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update-record/:recordId/change-record-warning/commodity-code/check              controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
@@ -178,3 +180,4 @@ GET        /update-record/:recordId/change-record-warning/goods-description     
 POST       /update-record/:recordId/change-record-warning/goods-description                 controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+

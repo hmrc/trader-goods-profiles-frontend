@@ -17,36 +17,22 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object GoodsDescriptionSummary {
-
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(GoodsDescriptionPage).map { answer =>
-      SummaryListRowViewModel(
-        key = "goodsDescription.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(answer).toString),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
-        )
-      )
-    }
+object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
-      key = "goodsDescription.checkYourAnswersLabel",
+      key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode).url)
-          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+        ActionItemViewModel("singleRecord.categorise", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+          .withVisuallyHiddenText(messages("singleRecord.category.row"))
       )
     )
 }
