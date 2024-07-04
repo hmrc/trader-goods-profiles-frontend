@@ -33,9 +33,20 @@ object CommodityCodeSummary {
         key = "commodityCode.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
         )
       )
     }
+
+  //TBD - this will be updated to route to the update trader reference page
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "commodityCode.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
+          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+      )
+    )
 }

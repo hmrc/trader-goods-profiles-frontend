@@ -60,7 +60,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "goodsDescription",
     "adviceStatus",
     Instant.now(),
-    Instant.now()
+    Instant.now(),
+    "adviceStatus",
+    1
   )
 
   private val categorisationService =

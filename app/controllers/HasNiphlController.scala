@@ -37,6 +37,7 @@ class HasNiphlController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  checkProfile: ProfileCheckAction,
   formProvider: HasNiphlFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasNiphlView
@@ -46,13 +47,14 @@ class HasNiphlController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(HasNiphlPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(HasNiphlPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-    Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {

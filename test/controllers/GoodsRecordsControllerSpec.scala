@@ -54,7 +54,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         "Organic bananas",
         "Not requested",
         Instant.parse("2022-11-18T23:20:19Z"),
-        Instant.parse("2022-11-18T23:20:19Z")
+        Instant.parse("2022-11-18T23:20:19Z"),
+        "Not ready",
+        1
       ),
       GetGoodsRecordResponse(
         "2",
@@ -64,7 +66,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         "Organic bananas",
         "Not requested",
         Instant.parse("2023-11-18T23:20:19Z"),
-        Instant.parse("2023-11-18T23:20:19Z")
+        Instant.parse("2023-11-18T23:20:19Z"),
+        "Not ready",
+        1
       ),
       GetGoodsRecordResponse(
         "3",
@@ -74,7 +78,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         "Organic bananas",
         "Not requested",
         Instant.parse("2024-11-18T23:20:19Z"),
-        Instant.parse("2024-11-18T23:20:19Z")
+        Instant.parse("2024-11-18T23:20:19Z"),
+        "Not ready",
+        1
       )
     ),
     GoodsRecordsPagination(10, 1, 4, None, None)

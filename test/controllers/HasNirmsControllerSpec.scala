@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
+import connectors.TraderProfileConnector
 import forms.HasNirmsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -43,11 +44,19 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val hasNirmsRoute = routes.HasNirmsController.onPageLoad(NormalMode).url
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
   "HasNirms Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsRoute)
@@ -65,7 +74,11 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = UserAnswers(userAnswersId).set(HasNirmsPage, true).success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsRoute)
@@ -89,7 +102,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -107,7 +121,11 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request =
@@ -127,7 +145,11 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsRoute)
@@ -139,9 +161,34 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to Home page for a GET if profile already exists" in {
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasNirmsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+      }
+    }
+
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request =
