@@ -22,11 +22,12 @@ import models.AssessmentAnswer.NoExemption
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.RecordCategorisationsQuery
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 
 final case class CategoryRecord(
   eori: String,
   recordId: String,
+  comcode: Option[String] = None,
   category: Int,
   categoryAssessmentsWithExemptions: Int,
   supplementaryUnit: Option[String] = None,
@@ -50,12 +51,16 @@ object CategoryRecord {
       CategoryRecord(
         eori = eori,
         recordId = recordId,
+        comcode = getLongerCommodityCode(answers, recordId),
         category = categoryDetails.category,
         categoryAssessmentsWithExemptions = categoryDetails.categoryAssessmentsWithExemptions,
         supplementaryUnit = supplementaryUnit,
         measurementUnit = measurementUnit
       )
     )
+
+  private def getLongerCommodityCode(answers: UserAnswers, recordId: String): Option[String] =
+    answers.get(LongerCommodityQuery(recordId)).map(_.commodityCode)
 
   private val CATEGORY_1 = 1
   private val CATEGORY_2 = 2
