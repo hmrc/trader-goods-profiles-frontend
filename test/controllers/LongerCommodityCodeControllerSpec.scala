@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.OttConnector
 import forms.LongerCommodityCodeFormProvider
-import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
+import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
@@ -51,10 +51,18 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     Map(testRecordId -> categoryQueryShortCommodity)
   )
 
+  val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
+  val previouslyUpdatedCommodity = RecordCategorisations(
+    Map(testRecordId -> previouslyUpdatedCategoryInfo)
+  )
+
   private def onwardRoute = Call("GET", "/foo")
 
   private lazy val longerCommodityCodeRoute =
     routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+
+  private lazy val longerCommodityCheckRoute =
+    routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId).url
 
   "LongerCommodityCode Controller" - {
 
@@ -106,12 +114,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
-
-      val previouslyUpdatedCommodity = RecordCategorisations(
-        Map(testRecordId -> previouslyUpdatedCategoryInfo)
-      )
-
       val userAnswers = emptyUserAnswers
         .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
         .success
@@ -139,12 +141,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
 
-      val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
-
-      val previouslyUpdatedCommodity = RecordCategorisations(
-        Map(testRecordId -> previouslyUpdatedCategoryInfo)
-      )
-
       val mockSessionRepository = mock[SessionRepository]
       val mockOttConnector = mock[OttConnector]
       val userAnswers = emptyUserAnswers
@@ -166,7 +162,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, longerCommodityCodeRoute)
+          FakeRequest(POST, longerCommodityCheckRoute)
             .withFormUrlEncodedBody(("value", "1234"))
 
         val result = route(application, request).value
