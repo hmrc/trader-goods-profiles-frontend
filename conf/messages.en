@@ -411,6 +411,23 @@ removeGoodsRecord.yes = Yes, remove this goods record
 removeGoodsRecord.noProfile = No, return to goods profile
 removeGoodsRecord.noRecord = No, return to goods record
 
+
+singleRecord.h1 = Goods record
+singleRecord.p1 = Check if the details of this record are correct.
+singleRecord.p2 = If you need to categorise this good, we''ll tell you more about how to do this in the next steps.
+singleRecord.h2.goodsDetails = Goods details
+singleRecord.warning = Warning
+singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
+singleRecord.h2.categorisation = Categorisation
+singleRecord.category.row = Category
+singleRecord.h2.adviceStatus = Advice status
+singleRecord.adviceStatus.row = Advice received
+singleRecord.goodsProfile.link = Go to goods profile
+singleRecord.removeRecord.link = Remove this record
+singleRecord.status.row = Status
+singleRecord.categorise = Categorise this good
+singleRecord.askForAdvice = Ask for advice
+
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
 hasCountryOfOriginChange.p1 = You will need to recategorise this goods record if you change the country of origin
@@ -435,3 +452,4 @@ hasGoodDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodDescriptionChange.checkYourAnswersLabel = hasGoodDescriptionChange
 hasGoodDescriptionChange.error.required = Select if you want to change the goods description
 hasGoodDescriptionChange.change.hidden = HasGoodDescriptionChange
+

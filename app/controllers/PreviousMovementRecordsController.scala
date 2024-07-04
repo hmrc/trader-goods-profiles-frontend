@@ -48,7 +48,7 @@ class PreviousMovementRecordsController @Inject() (
       case Some(getGoodsRecordResponse) if getGoodsRecordResponse.goodsItemRecords.nonEmpty =>
         Ok(view())
 
-      case Some(_) =>
+      case _ =>
         Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
     }
   }
