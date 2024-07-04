@@ -94,15 +94,11 @@ class CyaUpdateRecordController @Inject() (
     countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
 
   def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
-    userAnswers.get(CountriesQuery) match {
-      case Some(countries) => Future.successful(countries)
-      case None            =>
-        for {
-          countries               <- ottConnector.getCountries
-          updatedAnswersWithQuery <- Future.fromTry(userAnswers.set(CountriesQuery, countries))
-          _                       <- sessionRepository.set(updatedAnswersWithQuery)
-        } yield countries
-    }
+    for {
+      countries               <- ottConnector.getCountries
+      updatedAnswersWithQuery <- Future.fromTry(userAnswers.set(CountriesQuery, countries))
+      _                       <- sessionRepository.set(updatedAnswersWithQuery)
+    } yield countries
 
   def displayView(recordId: String, pageUpdate: PageUpdate, answer: String)(implicit
     request: Request[_]
@@ -125,8 +121,9 @@ class CyaUpdateRecordController @Inject() (
       UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId, pageUpdate) match {
         case Right(model) =>
           for {
-            _ <- goodsRecordConnector.updateGoodsRecord(model)
-            //TODO: route to correct location
+            _              <- goodsRecordConnector.updateGoodsRecord(model)
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(getPage(pageUpdate, recordId)))
+            _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.HomePageController.onPageLoad())
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }

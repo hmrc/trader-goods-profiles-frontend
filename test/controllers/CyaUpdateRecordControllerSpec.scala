@@ -34,6 +34,7 @@ import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaUpdateRecordView
 import pages.{CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import queries.CountriesQuery
 
 import scala.concurrent.Future
 
@@ -59,7 +60,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           )
         )
 
-        "must return OK and the correct view with valid mandatory data" in {
+        "must return OK and the correct view with valid mandatory data getting countries from connector" in {
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
@@ -75,6 +76,35 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .overrides(
               bind[OttConnector].toInstance(mockOttConnector)
             )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[CyaUpdateRecordView]
+            val list = createChangeList(application)
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(list, testRecordId, pageUpdate)(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "must return OK and the correct view with valid mandatory data getting countries from query" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(page, answer)
+            .success
+            .value
+            .set(CountriesQuery, Seq(Country("CN", "China")))
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
             .build()
 
           running(application) {
