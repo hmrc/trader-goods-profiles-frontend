@@ -537,9 +537,9 @@ class NavigatorSpec extends SpecBase {
 
           "to first Assessment when answer is Yes and category assessments are different for the longer code" in {
 
-            val assessment1Shorter           = assessment1
-            val assessment2Shorter           = assessment2.copy(id = "id432")
-            val categorisationInfoShorter    =
+            val assessment1Shorter        = assessment1
+            val assessment2Shorter        = assessment2.copy(id = "id432")
+            val categorisationInfoShorter =
               CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
 
             val answers = UserAnswers(userAnswersId)
@@ -634,7 +634,8 @@ class NavigatorSpec extends SpecBase {
 
           "to JourneyRecoveryPage when answer is present but categorisation details are not" in {
 
-            val userAnswers = emptyUserAnswers.set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
+            val userAnswers =
+              emptyUserAnswers.set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
@@ -646,8 +647,13 @@ class NavigatorSpec extends SpecBase {
 
           "to JourneyRecoveryPage when answer is present and categorisation details present but old commodity code is not" in {
 
-            val userAnswers = emptyUserAnswers.set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
-              .set(RecordCategorisationsQuery, recordCategorisations).success.value
+            val userAnswers = emptyUserAnswers
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
