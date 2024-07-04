@@ -30,7 +30,7 @@
 
 @layout(pageTitle = title(form, messages("goodsDescription.title"))) {
 
-    @formHelper(action = routes.GoodsDescriptionController.onSubmit(mode)) {
+    @formHelper(action = routes.GoodsDescriptionController.onSubmitCreate(mode)) {
 
         <h1 class="govuk-heading-l">@messages("goodsDescription.h1")</h1>
         <p class="govuk-body">@messages("goodsDescription.p1")</p>

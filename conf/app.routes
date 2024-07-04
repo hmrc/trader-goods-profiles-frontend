@@ -70,10 +70,10 @@ POST        /create-record/start                                                
 
 GET         /create-record/:recordId/success                                                controllers.CreateRecordSuccessController.onPageLoad(recordId: String)
 
-GET         /create-record/goods-description                                                controllers.GoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/goods-description                                                controllers.GoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/goods-description                                                controllers.GoodsDescriptionController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-record/goods-description                                                controllers.GoodsDescriptionController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onSubmitCreate(mode: Mode = CheckMode)
 
 GET         /create-record/commodity-code-result                                            controllers.HasCorrectGoodsController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/commodity-code-result                                            controllers.HasCorrectGoodsController.onSubmitCreate(mode: Mode = NormalMode)

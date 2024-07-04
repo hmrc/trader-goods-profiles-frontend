@@ -181,7 +181,7 @@ class NavigatorSpec extends SpecBase {
 
             val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, false).success.value
             navigator.nextPage(UseTraderReferencePage, NormalMode, answers) mustBe routes.GoodsDescriptionController
-              .onPageLoad(
+              .onPageLoadCreate(
                 NormalMode
               )
           }
@@ -588,7 +588,7 @@ class NavigatorSpec extends SpecBase {
 
               val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, false).success.value
               navigator.nextPage(UseTraderReferencePage, CheckMode, answers) mustBe routes.GoodsDescriptionController
-                .onPageLoad(
+                .onPageLoadCreate(
                   CheckMode
                 )
             }

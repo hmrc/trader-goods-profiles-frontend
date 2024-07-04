@@ -62,7 +62,7 @@ class Navigator @Inject() () {
     answers
       .get(UseTraderReferencePage)
       .map {
-        case false => routes.GoodsDescriptionController.onPageLoad(NormalMode)
+        case false => routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
         case true  => routes.CountryOfOriginController.onPageLoad(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
@@ -181,7 +181,7 @@ class Navigator @Inject() () {
           if (answers.isDefined(GoodsDescriptionPage)) {
             routes.CyaCreateRecordController.onPageLoad
           } else {
-            routes.GoodsDescriptionController.onPageLoad(CheckMode)
+            routes.GoodsDescriptionController.onPageLoadCreate(CheckMode)
           }
         case true  => routes.CyaCreateRecordController.onPageLoad
       }

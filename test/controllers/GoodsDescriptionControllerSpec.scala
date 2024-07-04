@@ -42,7 +42,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new GoodsDescriptionFormProvider()
   private val form = formProvider()
 
-  private lazy val goodsDescriptionRoute = routes.GoodsDescriptionController.onPageLoad(NormalMode).url
+  private lazy val goodsDescriptionRoute = routes.GoodsDescriptionController.onPageLoadCreate(NormalMode).url
 
   "GoodsDescription Controller" - {
 
