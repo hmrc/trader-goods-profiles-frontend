@@ -21,5 +21,5 @@ import play.api.libs.json.JsPath
 
 case class CommodityCodeUpdateQuery(recordId: String) extends Gettable[Commodity] with Settable[Commodity] {
 
-  override def path: JsPath = JsPath \ "commodity" \ recordId
+  override def path: JsPath = JsPath \ "commodityCodeUpdate" \ recordId
 }

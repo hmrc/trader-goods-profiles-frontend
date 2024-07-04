@@ -25,7 +25,7 @@ case class CommodityCodeUpdatePage(recordId: String) extends QuestionPage[String
 
   override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = "commodityCodeUpdatePage"
+  override def toString: String = "commodityCodeUpdate"
 
   override def cleanup(
     newValue: Option[String],
