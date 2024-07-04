@@ -20,10 +20,10 @@ import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.HasCorrectGoodsPage
+import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CommodityQuery
+import queries.{CommodityCodeUpdateQuery, CommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
@@ -47,17 +47,34 @@ class HasCorrectGoodsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent]                                      = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
+      request.userAnswers.get(CommodityQuery) match {
+        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
+        case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
+  }
+
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
+      request.userAnswers.get(CommodityCodeUpdateQuery(recordId)) match {
+        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
+        case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
     }
 
-    request.userAnswers.get(CommodityQuery) match {
-      case Some(commodity) => Ok(view(preparedForm, mode, commodity))
-      case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-    }
-  }
   // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
@@ -66,20 +83,22 @@ class HasCorrectGoodsController @Inject() (
         case Some(value) => form.fill(value)
       }
       //TODO - use the UpdateCommdityQuery (with recordId) here when available
+      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
-        case Some(commodity) => Ok(view(preparedForm, mode, commodity))
+        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent]                                      = (identify andThen getData andThen requireData).async {
+  def onSubmitCreate(mode: Mode): Action[AnyContent]                                = (identify andThen getData andThen requireData).async {
     implicit request =>
+      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             request.userAnswers.get(CommodityQuery) match {
-              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity)))
+              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },
           value =>
@@ -92,13 +111,14 @@ class HasCorrectGoodsController @Inject() (
   // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
+      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             //TODO - use the UpdateCommdityQuery (with recordId) here when available
             request.userAnswers.get(CommodityQuery) match {
-              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, mode, commodity)))
+              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },
           value =>
@@ -106,6 +126,26 @@ class HasCorrectGoodsController @Inject() (
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
+        )
+    }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            request.userAnswers.get(CommodityCodeUpdateQuery(recordId)) match {
+              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
+              case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+            },
+          value =>
+            for {
+              updatedAnswers <-
+                Future.fromTry(request.userAnswers.set(HasCorrectGoodsCommodityCodeUpdatePage(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId), mode, updatedAnswers))
         )
     }
 }

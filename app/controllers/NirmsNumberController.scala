@@ -38,21 +38,23 @@ class NirmsNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: NirmsNumberFormProvider,
+  checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
   view: NirmsNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(NirmsNumberPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(NirmsNumberPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-    Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {

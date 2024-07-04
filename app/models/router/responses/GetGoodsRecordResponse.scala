@@ -28,7 +28,9 @@ final case class GetGoodsRecordResponse(
   goodsDescription: String,
   declarable: String,
   createdDateTime: Instant,
-  updatedDateTime: Instant
+  updatedDateTime: Instant,
+  adviceStatus: String,
+  category: Int
 )
 
 object GetGoodsRecordResponse {
@@ -45,7 +47,9 @@ object GetGoodsRecordResponse {
         (__ \ "goodsDescription").read[String] and
         (__ \ "declarable").read[String] and
         (__ \ "createdDateTime").read[Instant] and
-        (__ \ "updatedDateTime").read[Instant]
+        (__ \ "updatedDateTime").read[Instant] and
+        (__ \ "adviceStatus").read[String] and
+        (__ \ "category").read[Int]
     )(GetGoodsRecordResponse.apply _)
   }
 
@@ -61,7 +65,9 @@ object GetGoodsRecordResponse {
         (__ \ "goodsDescription").write[String] and
         (__ \ "declarable").write[String] and
         (__ \ "createdDateTime").write[Instant] and
-        (__ \ "updatedDateTime").write[Instant]
+        (__ \ "updatedDateTime").write[Instant] and
+        (__ \ "adviceStatus").write[String] and
+        (__ \ "category").write[Int]
     )(unlift(GetGoodsRecordResponse.unapply))
   }
 }

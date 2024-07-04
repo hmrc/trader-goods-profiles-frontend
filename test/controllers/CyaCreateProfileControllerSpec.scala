@@ -24,6 +24,7 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -39,6 +40,10 @@ import views.html.CyaCreateProfileView
 import scala.concurrent.Future
 
 class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
+
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
   "CyaCreateProfileController" - {
 
@@ -58,7 +63,11 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         val userAnswers = mandatoryProfileUserAnswers
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
@@ -77,7 +86,11 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         val userAnswers = fullProfileUserAnswers
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
@@ -94,7 +107,11 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must redirect to Journey Recovery if no answers are found" in {
 
-        val application = applicationBuilder(Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
         val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
         running(application) {
@@ -110,7 +127,11 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must redirect to Journey Recovery if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
@@ -119,6 +140,27 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Home page if profile already exists" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
         }
       }
     }
