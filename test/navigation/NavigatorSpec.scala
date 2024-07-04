@@ -219,7 +219,7 @@ class NavigatorSpec extends SpecBase {
             CountryOfOriginPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CommodityCodeController.onPageLoad(
+          ) mustBe routes.CommodityCodeController.onPageLoadCreate(
             NormalMode
           )
         }
@@ -249,7 +249,7 @@ class NavigatorSpec extends SpecBase {
 
             val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
             navigator.nextPage(HasCorrectGoodsPage, NormalMode, answers) mustBe routes.CommodityCodeController
-              .onPageLoad(NormalMode)
+              .onPageLoadCreate(NormalMode)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -665,7 +665,7 @@ class NavigatorSpec extends SpecBase {
 
               val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
               navigator.nextPage(HasCorrectGoodsPage, CheckMode, answers) mustBe routes.CommodityCodeController
-                .onPageLoad(
+                .onPageLoadCreate(
                   CheckMode
                 )
             }
@@ -695,7 +695,7 @@ class NavigatorSpec extends SpecBase {
               HasCorrectGoodsPage,
               CheckMode,
               answers
-            ) mustBe routes.CommodityCodeController.onPageLoad(CheckMode)
+            ) mustBe routes.CommodityCodeController.onPageLoadCreate(CheckMode)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {

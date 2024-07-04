@@ -40,7 +40,7 @@ class Navigator @Inject() () {
     case TraderReferencePage         => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case UseTraderReferencePage      => navigateFromUseTraderReference
     case GoodsDescriptionPage        => _ => routes.CountryOfOriginController.onPageLoad(NormalMode)
-    case CountryOfOriginPage         => _ => routes.CommodityCodeController.onPageLoad(NormalMode)
+    case CountryOfOriginPage         => _ => routes.CommodityCodeController.onPageLoadCreate(NormalMode)
     case CommodityCodePage           => _ => routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
     case HasCorrectGoodsPage         => navigateFromHasCorrectGoods
     case p: AssessmentPage           => navigateFromAssessment(p)
@@ -72,7 +72,7 @@ class Navigator @Inject() () {
       .get(HasCorrectGoodsPage)
       .map {
         case true  => routes.CyaCreateRecordController.onPageLoad
-        case false => routes.CommodityCodeController.onPageLoad(NormalMode)
+        case false => routes.CommodityCodeController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -195,9 +195,9 @@ class Navigator @Inject() () {
           if (answers.isDefined(CommodityCodePage)) {
             routes.CyaCreateRecordController.onPageLoad
           } else {
-            routes.CommodityCodeController.onPageLoad(CheckMode)
+            routes.CommodityCodeController.onPageLoadCreate(CheckMode)
           }
-        case false => routes.CommodityCodeController.onPageLoad(CheckMode)
+        case false => routes.CommodityCodeController.onPageLoadCreate(CheckMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
