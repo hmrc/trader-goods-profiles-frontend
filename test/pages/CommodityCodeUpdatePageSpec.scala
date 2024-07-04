@@ -25,35 +25,35 @@ import org.scalatest.matchers.must.Matchers
 class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
   "clean up" - {
 
-    "removes HasCorrectGoodsPage when commodity code has changed" in {
+    "removes HasCorrectGoodsCommodityCodeUpdatePage when commodity code has changed" in {
 
       val userAnswers = UserAnswers(userAnswersId)
         .set(CommodityCodeUpdatePage(testRecordId), "123")
         .success
         .value
-        .set(HasCorrectGoodsPage, true)
+        .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
         .success
         .value
 
       val result = userAnswers.set(CommodityCodeUpdatePage(testRecordId), "1234").success.value
 
-      result.isDefined(HasCorrectGoodsPage) mustBe false
+      result.isDefined(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId)) mustBe false
 
     }
 
-    "retains HasCorrectGoodsPage when commodity code has not changed" in {
+    "retains HasCorrectGoodsCommodityCodeUpdatePage when commodity code has not changed" in {
 
       val userAnswers = UserAnswers(userAnswersId)
         .set(CommodityCodeUpdatePage(testRecordId), "123")
         .success
         .value
-        .set(HasCorrectGoodsPage, true)
+        .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
         .success
         .value
 
       val result = userAnswers.set(CommodityCodeUpdatePage(testRecordId), "123").success.value
 
-      result.isDefined(HasCorrectGoodsPage) mustBe true
+      result.isDefined(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId)) mustBe true
 
     }
   }

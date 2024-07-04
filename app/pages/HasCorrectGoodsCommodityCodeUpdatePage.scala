@@ -16,26 +16,11 @@
 
 package pages
 
-import models.UserAnswers
 import play.api.libs.json.JsPath
 
-import scala.util.{Success, Try}
-
-case class CommodityCodeUpdatePage(recordId: String) extends QuestionPage[String] {
+case class HasCorrectGoodsCommodityCodeUpdatePage(recordId: String) extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = "commodityCodeUpdate"
-
-  override def cleanup(
-    newValue: Option[String],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    originalUserAnswers.get(CommodityCodeUpdatePage(recordId)) match {
-      case originalValue if originalValue == newValue =>
-        Success(updatedUserAnswers)
-      case _                                          =>
-        updatedUserAnswers.remove(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
-    }
+  override def toString: String = "hasCorrectGoodsCommodityCodeUpdatePage"
 }

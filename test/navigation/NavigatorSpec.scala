@@ -230,7 +230,7 @@ class NavigatorSpec extends SpecBase {
             CommodityCodePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.HasCorrectGoodsController.onPageLoad(NormalMode)
+          ) mustBe routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
         }
 
         "must go from HasCorrectGoodsPage" - {
@@ -654,7 +654,7 @@ class NavigatorSpec extends SpecBase {
             CommodityCodePage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.HasCorrectGoodsController.onPageLoad(CheckMode)
+          ) mustBe routes.HasCorrectGoodsController.onPageLoadCreate(CheckMode)
         }
 
         "must go from HasCorrectGoodsPage" - {
