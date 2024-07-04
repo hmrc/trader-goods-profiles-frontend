@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -38,7 +39,14 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad().url)
@@ -49,6 +57,27 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view()(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Home page if profile already exists" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
         }
       }
     }
