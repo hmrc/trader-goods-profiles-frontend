@@ -33,6 +33,7 @@ import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class HasCorrectGoodsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -131,16 +132,17 @@ class HasCorrectGoodsController @Inject() (
   )(implicit hc: HeaderCarrier): Future[UserAnswers] =
     if (value) {
       for {
-        recordCategorisations      <- updatedAnswers.get(RecordCategorisationsQuery)
-        oldCommodityCategorisation <- recordCategorisations.records.get(recordId)
-        updatedAnswers             <-
-          updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation).toOption
-      } yield updatedAnswers
+        recordCategorisations      <- Future.fromTry(Try(updatedAnswers.get(RecordCategorisationsQuery).get))
+        oldCommodityCategorisation <- Future.fromTry(Try(recordCategorisations.records(recordId)))
+        updatedAnswersWithOldCode             <-
+          Future.fromTry(updatedAnswers.set(OldCommodityCodeCategorisationQuery(recordId), oldCommodityCategorisation))
+        updatedAnswersWithCats <- categorisationService.updateCategorisationWithNewCommodityCode(
+          request.copy(userAnswers = updatedAnswersWithOldCode),
+          recordId
+        )
+      } yield updatedAnswersWithCats
 
-      categorisationService.updateCategorisationWithNewCommodityCode(
-        request.copy(userAnswers = updatedAnswers),
-        recordId
-      )
+
     } else {
       Future.successful(updatedAnswers)
     }
