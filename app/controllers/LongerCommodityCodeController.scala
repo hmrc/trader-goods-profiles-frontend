@@ -66,28 +66,25 @@ class LongerCommodityCodeController @Inject() (
       val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
 
       (commodityCodeOption, previouslyAnsweredOpt) match {
-        case (Some(commodityCode), Some(previousValue)) =>
+        case (Some(commodityCode), Some(previousValue))               =>
           Ok(view(preparedForm, mode, commodityCode.dropRight(previousValue.length), recordId))
         case (Some(shortCommodity), _) if shortCommodity.length != 10 =>
           Ok(view(preparedForm, mode, shortCommodity, recordId))
-        case _                                                   => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case _                                                        => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
-
       val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
 
       val commodityCodeOption = for {
         recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
-        commodityCode <- recordCategorisations.records.get(recordId).map(_.commodityCode)
-      } yield {
-        commodityCode match {
-          case comcode if comcode.length != 10 => comcode
-          case comcode if comcode.length == 10 && previouslyAnsweredOpt.isDefined =>
-            comcode.dropRight(previouslyAnsweredOpt.get.length)
-        }
+        commodityCode         <- recordCategorisations.records.get(recordId).map(_.commodityCode)
+      } yield commodityCode match {
+        case comcode if comcode.length != 10                                    => comcode
+        case comcode if comcode.length == 10 && previouslyAnsweredOpt.isDefined =>
+          comcode.dropRight(previouslyAnsweredOpt.get.length)
       }
 
       commodityCodeOption match {
@@ -101,25 +98,29 @@ class LongerCommodityCodeController @Inject() (
                 previouslyAnsweredOpt match {
                   case Some(previousValue) if previousValue == value =>
                     Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
-                  case _ =>
+                  case _                                             =>
                     (for {
-                      validCommodityCode <- ottConnector.getCommodityCode(
-                        longCommodityCode,
-                        request.eori,
-                        request.affinityGroup,
-                        UpdateRecordJourney,
-                        Some(recordId)
-                      )
-                      updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
+                      validCommodityCode      <- ottConnector.getCommodityCode(
+                                                   longCommodityCode,
+                                                   request.eori,
+                                                   request.affinityGroup,
+                                                   UpdateRecordJourney,
+                                                   Some(recordId)
+                                                 )
+                      updatedAnswers          <-
+                        Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
                       updatedAnswersWithQuery <-
                         Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
-                      _ <- sessionRepository.set(updatedAnswersWithQuery)
-                    } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery))).recover {
-                      case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-                        val formWithApiErrors =
-                          form
-                            .copy(errors = Seq(elems = FormError("value", getMessage("longerCommodityCode.error.invalid"))))
-                        BadRequest(view(formWithApiErrors, mode, shortCommodity, recordId))
+                      _                       <- sessionRepository.set(updatedAnswersWithQuery)
+                    } yield Redirect(
+                      navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery)
+                    )).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                      val formWithApiErrors =
+                        form
+                          .copy(errors =
+                            Seq(elems = FormError("value", getMessage("longerCommodityCode.error.invalid")))
+                          )
+                      BadRequest(view(formWithApiErrors, mode, shortCommodity, recordId))
                     }
                 }
               }
