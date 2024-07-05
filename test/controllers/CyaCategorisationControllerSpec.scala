@@ -26,14 +26,14 @@ import org.mockito.Mockito.{never, times, verify, when}
 import models.AssessmentAnswer.NoExemption
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
-import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
+import pages.{AssessmentPage, HasSupplementaryUnitPage, LongerCommodityCodePage, SupplementaryUnitPage}
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.RecordCategorisationsQuery
 import services.AuditService
-import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
 
@@ -230,6 +230,95 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               testRecordId,
               expectedAssessmentList,
               expectedSupplementaryUnitList,
+              emptySummaryList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when longer commodity code is given" in {
+
+          val userAnswers = userAnswersForCategorisation
+            .set(LongerCommodityCodePage(testRecordId), "1234")
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .get
+              )
+            )
+
+            val expectedLongerCommodityList = SummaryListViewModel(
+              rows = Seq(
+                LongerCommodityCodeSummary.row(userAnswers, testRecordId)
+              ).flatten
+            )
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              expectedLongerCommodityList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when longer commodity code is not given" in {
+
+          val userAnswers = userAnswersForCategorisation
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .get
+              )
+            )
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
               emptySummaryList
             )(
               request,

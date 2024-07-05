@@ -52,7 +52,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   )
 
   val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
-  val previouslyUpdatedCommodity = RecordCategorisations(
+  val previouslyUpdatedCommodity    = RecordCategorisations(
     Map(testRecordId -> previouslyUpdatedCategoryInfo)
   )
 
@@ -142,8 +142,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      val mockOttConnector = mock[OttConnector]
-      val userAnswers = emptyUserAnswers
+      val mockOttConnector      = mock[OttConnector]
+      val userAnswers           = emptyUserAnswers
         .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
         .success
         .value
