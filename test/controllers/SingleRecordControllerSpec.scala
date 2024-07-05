@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
+import models.NormalMode
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -37,8 +38,8 @@ import views.html.SingleRecordView
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
-  private lazy val singleRecordRoute = routes.SingleRecordController.onPageLoad(testRecordId).url
-  val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
+  private lazy val singleRecordRoute   = routes.SingleRecordController.onPageLoad(testRecordId).url
+  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
   private val record = GetGoodsRecordResponse(
     testRecordId,
@@ -70,10 +71,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(record.traderRef),
-          GoodsDescriptionSummary.row(record.goodsDescription),
-          CountryOfOriginSummary.row(record.countryOfOrigin),
-          CommodityCodeSummary.row(record.commodityCode),
+          TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode),
+          GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode),
+          CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode),
+          CommodityCodeSummary.row(record.commodityCode, testRecordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
       )
