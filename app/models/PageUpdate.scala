@@ -16,7 +16,7 @@
 
 package models
 
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, QuestionPage, TraderReferencePage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, GoodsDescriptionPage, GoodsDescriptionUpdatePage, QuestionPage, TraderReferencePage}
 import play.api.mvc.JavascriptLiteral
 import controllers.routes
 
@@ -32,10 +32,10 @@ object PageUpdate {
   //TBD - replace with update pages
   def getPage(pageUpdate: PageUpdate, recordId: String): QuestionPage[String] =
     pageUpdate match {
-      case CountryOfOriginPageUpdate  => CountryOfOriginPage
-      case GoodsDescriptionPageUpdate => GoodsDescriptionPage
+      case CountryOfOriginPageUpdate  => CountryOfOriginUpdatePage(recordId)
+      case GoodsDescriptionPageUpdate => GoodsDescriptionUpdatePage(recordId)
       case TraderReferencePageUpdate  => TraderReferencePage
-      case CommodityCodePageUpdate    => CommodityCodePage
+      case CommodityCodePageUpdate    => CommodityCodeUpdatePage(recordId)
     }
   def getPageUpdateLabel(pageUpdate: PageUpdate): String                      =
     pageUpdate match {
@@ -55,12 +55,13 @@ object PageUpdate {
   //TBD replace with update pages
   def getPageUpdateChangeLink(pageUpdate: PageUpdate, recordId: String): String =
     pageUpdate match {
-      case CountryOfOriginPageUpdate  => routes.CountryOfOriginController.onPageLoad(CheckMode).url
-      case GoodsDescriptionPageUpdate => routes.GoodsDescriptionController.onPageLoad(CheckMode).url
+      case CountryOfOriginPageUpdate  => routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, recordId).url
+      case GoodsDescriptionPageUpdate => routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, recordId).url
       case TraderReferencePageUpdate  => routes.TraderReferenceController.onPageLoad(CheckMode).url
       case CommodityCodePageUpdate    => routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId).url
     }
-  implicit val jsLiteral: JavascriptLiteral[PageUpdate]                         = {
+
+  implicit val jsLiteral: JavascriptLiteral[PageUpdate] = {
     case CountryOfOriginPageUpdate  => "CountryOfOriginPageUpdate"
     case GoodsDescriptionPageUpdate => "GoodsDescriptionPageUpdate"
     case TraderReferencePageUpdate  => "TraderReferencePageUpdate"
