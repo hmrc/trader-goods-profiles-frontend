@@ -70,7 +70,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(record.traderRef),
+          TraderReferenceSummary.row(record.traderRef, testRecordId),
           GoodsDescriptionSummary.row(record.goodsDescription),
           CountryOfOriginSummary.row(record.countryOfOrigin),
           CommodityCodeSummary.row(record.commodityCode),

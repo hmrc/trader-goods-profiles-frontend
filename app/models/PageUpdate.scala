@@ -57,7 +57,7 @@ object PageUpdate {
     pageUpdate match {
       case CountryOfOriginPageUpdate  => routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, recordId).url
       case GoodsDescriptionPageUpdate => routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, recordId).url
-      case TraderReferencePageUpdate  => routes.TraderReferenceController.onPageLoad(CheckMode).url
+      case TraderReferencePageUpdate  => routes.TraderReferenceController.onPageLoadUpdate(CheckMode, recordId).url
       case CommodityCodePageUpdate    => routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId).url
     }
 
