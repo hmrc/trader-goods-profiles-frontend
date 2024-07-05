@@ -82,20 +82,30 @@ class Navigator @Inject() () {
 
   private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String, needToRecategorise: Boolean)(
     answers: UserAnswers
-  ): Call =
-    answers
-      .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
-      .map {
-        case true =>
-          if (needToRecategorise) {
-            routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
-          } else {
-            routes.CyaCategorisationController.onPageLoad(recordId)
-          }
-
-        case false => routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+  ): Call = {
+    val x = for {
+      //TODO test handles when recordcategorisation not there
+      recordCategorisations <- answers.get(RecordCategorisationsQuery)
+      categorisationInfo <- recordCategorisations.records.get(recordId)
+      assessmentAnswer <- answers
+        .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+    } yield if (assessmentAnswer) {
+      if (needToRecategorise) {
+        routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
+      } else {
+        if (categorisationInfo.measurementUnit.isDefined) {
+          routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+    } else {
+      routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+    }
+
+//TODO cleanup
+    x.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
     answers
@@ -144,6 +154,7 @@ class Navigator @Inject() () {
         }
       case AssessmentAnswer.NoExemption  =>
         if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length == 6) {
+          //TODO go to supp unit
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         } else {
           routes.CyaCategorisationController.onPageLoad(recordId)
@@ -152,6 +163,7 @@ class Navigator @Inject() () {
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  //TODO check mode
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                              => navigateFromHasNirmsCheck

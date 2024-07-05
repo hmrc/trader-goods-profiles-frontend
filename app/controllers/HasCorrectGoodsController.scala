@@ -206,9 +206,12 @@ class HasCorrectGoodsController @Inject() (
   private def isRecategorisationNeeded(
     oldCommodityCategorisation: CategorisationInfo,
     newCommodityCategorisation: CategorisationInfo
-  ) =
-    !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments) ||
-      oldCommodityCategorisation.measurementUnit.isDefined || newCommodityCategorisation.measurementUnit.isDefined
+  ) = {
+    //TODO supp unit bit
+    !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments)
+    //||
+      //oldCommodityCategorisation.measurementUnit.isDefined || newCommodityCategorisation.measurementUnit.isDefined
+  }
 
   private def cleanupOldAssessmentAnswers(
     userAnswers: UserAnswers,

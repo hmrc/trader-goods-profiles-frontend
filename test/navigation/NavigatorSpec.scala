@@ -513,12 +513,15 @@ class NavigatorSpec extends SpecBase {
 
         "must go from HasCorrectGoodsPage for longer commodity codes" - {
 
-          "to CyaCategorisation when answer is Yes and goods do not need recategorising" in {
+          "to CyaCategorisation when answer is Yes and goods do not need recategorising and no supplementary unit" in {
 
             val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit)))
               .success
               .value
 
@@ -529,15 +532,30 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
           }
 
-          "to first Assessment when answer is Yes and need to recategorise" in {
-
-            val assessment1Shorter        = assessment1
-            val assessment2Shorter        = assessment2.copy(id = "id432")
-            val categorisationInfoShorter =
-              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
+          "to HasSupplementaryUnit when answer is Yes and does not need recategorising and there is supplementary unit on new commodity code" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = false),
+              NormalMode,
+              answers
+            ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+          }
+
+          "to first Assessment when answer is Yes and need to recategorise" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
@@ -551,7 +569,14 @@ class NavigatorSpec extends SpecBase {
           "to LongerCommodityCodePage when answer is No" in {
 
             val answers =
-              UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
+              UserAnswers(userAnswersId)
+                .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false)
+                .success
+                .value
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
+
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, answers) mustBe
               routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
           }
@@ -566,6 +591,13 @@ class NavigatorSpec extends SpecBase {
               .onPageLoad()
           }
 
+          "to Journey Recovery when RecordCategorisationsQuery is not present" in {
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(recordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustEqual routes.JourneyRecoveryController.onPageLoad()
+          }
         }
 
       }
@@ -1122,7 +1154,7 @@ class NavigatorSpec extends SpecBase {
 
         "must go from HasCorrectGoodsPage for longer commodity codes" - {
 
-          "to CyaCategorisation when answer is Yes and does not need recategorising" in {
+          "to CyaCategorisation when answer is Yes and does not need recategorising and no supplementary unit" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -1135,6 +1167,8 @@ class NavigatorSpec extends SpecBase {
               answers
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
           }
+
+          //TODO test where old has sup unit and new doesn't??
 
           "to first Assessment when answer is Yes and need to recategorise" in {
 
