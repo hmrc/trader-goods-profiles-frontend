@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testRecordId, userAnswersId}
 import forms.GoodsDescriptionFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -25,7 +25,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar
-import pages.GoodsDescriptionPage
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -42,20 +42,19 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new GoodsDescriptionFormProvider()
   private val form = formProvider()
 
-  private lazy val goodsDescriptionRoute = routes.GoodsDescriptionController.onPageLoadCreate(NormalMode).url
-
   "GoodsDescription Controller" - {
 
     ".create journey" - {
 
-      lazy val onSubmitAction: Call = routes.GoodsDescriptionController.onSubmitCreate(NormalMode)
+      lazy val goodsDescriptionCreateRoute = routes.GoodsDescriptionController.onPageLoadCreate(NormalMode).url
+      lazy val onSubmitAction: Call        = routes.GoodsDescriptionController.onSubmitCreate(NormalMode)
 
       "must return OK and the correct view for a GET" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, goodsDescriptionRoute)
+          val request = FakeRequest(GET, goodsDescriptionCreateRoute)
 
           val result = route(application, request).value
 
@@ -76,7 +75,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, goodsDescriptionRoute)
+          val request = FakeRequest(GET, goodsDescriptionCreateRoute)
 
           val view = application.injector.instanceOf[GoodsDescriptionView]
 
@@ -109,7 +108,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, goodsDescriptionRoute)
+            FakeRequest(POST, goodsDescriptionCreateRoute)
               .withFormUrlEncodedBody(("value", description))
 
           val result = route(application, request).value
@@ -125,7 +124,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, goodsDescriptionRoute)
+            FakeRequest(POST, goodsDescriptionCreateRoute)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -151,7 +150,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, goodsDescriptionRoute)
+            FakeRequest(POST, goodsDescriptionCreateRoute)
               .withFormUrlEncodedBody(("value", invalidDescription))
 
           val boundForm = form.bind(Map("value" -> invalidDescription))
@@ -173,7 +172,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, goodsDescriptionRoute)
+          val request = FakeRequest(GET, goodsDescriptionCreateRoute)
 
           val result = route(application, request).value
 
@@ -188,7 +187,163 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, goodsDescriptionRoute)
+            FakeRequest(POST, goodsDescriptionCreateRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+    }
+
+    ".update journey" - {
+
+      lazy val goodsDescriptionUpdateRoute =
+        routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, testRecordId).url
+      lazy val onSubmitAction: Call        = routes.GoodsDescriptionController.onSubmitUpdate(NormalMode, testRecordId)
+
+      "must return OK and the correct view for a GET" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionUpdateRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[GoodsDescriptionView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must populate the view correctly on a GET when the question has previously been answered" in {
+
+        val userAnswers =
+          UserAnswers(userAnswersId).set(GoodsDescriptionUpdatePage(testRecordId), "answer").success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionUpdateRoute)
+
+          val view = application.injector.instanceOf[GoodsDescriptionView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to the next page when valid data is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        val length              = 512
+        val description: String = Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString).sample.value
+
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionUpdateRoute)
+              .withFormUrlEncodedBody(("value", description))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must return a Bad Request and errors when no description is submitted" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionUpdateRoute)
+              .withFormUrlEncodedBody(("value", ""))
+
+          val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[GoodsDescriptionView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must return a Bad Request and errors when user submits a description longer than 512 characters" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        val invalidLength              = 513
+        val invalidDescription: String = Gen.listOfN(invalidLength, Gen.alphaNumChar).map(_.mkString).sample.value
+
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionUpdateRoute)
+              .withFormUrlEncodedBody(("value", invalidDescription))
+
+          val boundForm = form.bind(Map("value" -> invalidDescription))
+
+          val view = application.injector.instanceOf[GoodsDescriptionView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionUpdateRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, goodsDescriptionUpdateRoute)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value

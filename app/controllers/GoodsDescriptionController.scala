@@ -22,7 +22,7 @@ import forms.GoodsDescriptionFormProvider
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.GoodsDescriptionPage
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -71,6 +71,33 @@ class GoodsDescriptionController @Inject() (
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsDescriptionPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(GoodsDescriptionPage, mode, updatedAnswers))
+        )
+    }
+
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(GoodsDescriptionUpdatePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
+
+      Ok(view(preparedForm, mode, submitAction))
+    }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, submitAction))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsDescriptionUpdatePage(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(GoodsDescriptionUpdatePage(recordId), mode, updatedAnswers))
         )
     }
 }
