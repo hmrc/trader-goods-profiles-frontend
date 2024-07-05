@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import forms.RemoveGoodsRecordFormProvider
+import models.router.responses.GetGoodsRecordResponse
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
@@ -32,6 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.RemoveGoodsRecordView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
@@ -44,11 +46,34 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
+  private val record = GetGoodsRecordResponse(
+    testRecordId,
+    "10410100",
+    "EC",
+    "BAN0010011",
+    "Organic bananas",
+    "Not requested",
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z"),
+    "Not ready",
+    1
+  )
+
   "RemoveGoodsRecord Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockConnector = mock[GoodsRecordConnector]
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockConnector)
+          )
+          .build()
+
+      when(mockConnector.getRecord(any(), any())(any()))
+        .thenReturn(Future.successful(record))
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
@@ -67,7 +92,17 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the alternate correct view for a GET with different url" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockConnector = mock[GoodsRecordConnector]
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockConnector)
+          )
+          .build()
+
+      when(mockConnector.getRecord(any(), any())(any()))
+        .thenReturn(Future.successful(record))
 
       running(application) {
         val request =
