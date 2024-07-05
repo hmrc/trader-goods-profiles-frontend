@@ -38,8 +38,8 @@ import views.html.SingleRecordView
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
-  private lazy val singleRecordRoute = routes.SingleRecordController.onPageLoad(testRecordId).url
-  private val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
+  private lazy val singleRecordRoute   = routes.SingleRecordController.onPageLoad(testRecordId).url
+  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
   private val record = GetGoodsRecordResponse(
     testRecordId,
