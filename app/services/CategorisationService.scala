@@ -42,6 +42,8 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
+    val originalCommodityCodeOpt = recordCategorisations.records.get(recordId).map(_.originalCommodityCode).get
+
     recordCategorisations.records.get(recordId) match {
       case Some(_) =>
         Future.successful(request.userAnswers)
@@ -56,7 +58,12 @@ class CategorisationService @Inject() (
                                       getGoodsRecordResponse.countryOfOrigin,
                                       LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
-          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          originalCommodityCode = if (originalCommodityCodeOpt.isDefined) {
+                                    originalCommodityCodeOpt.get
+                                  } else {
+                                    getGoodsRecordResponse.commodityCode
+                                  }
+          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)).get))
           updatedAnswers         <-
             Future.fromTry(
               request.userAnswers.set(
@@ -79,6 +86,8 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
+    val originalCommodityCode = recordCategorisations.records.get(recordId).map(_.originalCommodityCode).get
+
     for {
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
@@ -90,7 +99,7 @@ class CategorisationService @Inject() (
                                   getGoodsRecordResponse.countryOfOrigin,
                                   LocalDate.now() //TODO where does DateOfTrade come from??
                                 )
-      categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+      categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature, originalCommodityCode).get))
       updatedAnswers         <-
         Future.fromTry(
           request.userAnswers.set(

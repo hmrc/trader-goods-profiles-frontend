@@ -61,13 +61,13 @@ class LongerCommodityCodeController @Inject() (
 
       val commodityCodeOption = request.userAnswers
         .get(RecordCategorisationsQuery)
-        .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
+        .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode)).get
 
       val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
 
       (commodityCodeOption, previouslyAnsweredOpt) match {
         case (Some(commodityCode), Some(previousValue))               =>
-          Ok(view(preparedForm, mode, commodityCode.dropRight(previousValue.length), recordId))
+          Ok(view(preparedForm, mode, commodityCode, recordId))
         case (Some(shortCommodity), _) if shortCommodity.length != 10 =>
           Ok(view(preparedForm, mode, shortCommodity, recordId))
         case _                                                        => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
@@ -78,17 +78,12 @@ class LongerCommodityCodeController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
 
-      val commodityCodeOption = for {
-        recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
-        commodityCode         <- recordCategorisations.records.get(recordId).map(_.commodityCode)
-      } yield commodityCode match {
-        case comcode if comcode.length != 10                                    => comcode
-        case comcode if comcode.length == 10 && previouslyAnsweredOpt.isDefined =>
-          comcode.dropRight(previouslyAnsweredOpt.get.length)
-      }
+      val commodityCodeOption = request.userAnswers
+        .get(RecordCategorisationsQuery)
+        .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode)).get
 
       commodityCodeOption match {
-        case Some(shortCommodity) =>
+        case Some(shortCommodity) if shortCommodity.length != 10 =>
           form
             .bindFromRequest()
             .fold(

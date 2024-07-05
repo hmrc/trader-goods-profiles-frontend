@@ -21,6 +21,7 @@ import models.ott.response.OttResponse
 import play.api.libs.json.{Json, OFormat}
 
 final case class CategorisationInfo(
+  originalCommodityCode: Option[String],
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String]
@@ -28,12 +29,13 @@ final case class CategorisationInfo(
 
 object CategorisationInfo {
 
-  def build(ott: OttResponse): Option[CategorisationInfo] =
+  def build(ott: OttResponse, originalCommodityCode: Option[String]): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
       .map { assessments =>
         CategorisationInfo(
+          originalCommodityCode,
           ott.goodsNomenclature.commodityCode,
           assessments.sorted,
           ott.goodsNomenclature.measurementUnit

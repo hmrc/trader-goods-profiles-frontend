@@ -17,27 +17,28 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.LongerCommodityCodePage
+import models.{CheckMode, RecordCategorisations, UserAnswers}
 import play.api.i18n.Messages
-import queries.LongerCommodityQuery
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
 object LongerCommodityCodeSummary {
 
-  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(LongerCommodityCodePage(recordId)).flatMap { answer =>
-      answers.get(LongerCommodityQuery(recordId)).map { fullCommodityCode =>
-        SummaryListRowViewModel(
-          key = "longerCommodityCode.checkYourAnswersLabel",
-          value = ValueViewModel(fullCommodityCode.commodityCode),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
-              .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
-          )
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
+    val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    val categorisationInfo = recordCategorisations.records.get(recordId)
+    categorisationInfo.map { categorisationInfo =>
+      SummaryListRowViewModel(
+        key = "longerCommodityCode.checkYourAnswersLabel",
+        value = ValueViewModel(categorisationInfo.commodityCode),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
         )
-      }
+      )
     }
+  }
+
 }
