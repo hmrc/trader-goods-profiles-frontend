@@ -21,7 +21,7 @@ import forms.TraderReferenceFormProvider
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.TraderReferencePage
+import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -45,21 +45,36 @@ class TraderReferenceController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(TraderReferencePage) match {
       case None        => form
       case Some(value) => form.fill(value)
     }
 
-    Ok(view(preparedForm, mode))
+    val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
+
+    Ok(view(preparedForm, onSubmitAction))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    val preparedForm = request.userAnswers.get(TraderReferenceUpdatePage(recordId)) match {
+      case None => form
+      case Some(value) => form.fill(value)
+    }
+
+    val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+    Ok(view(preparedForm, onSubmitAction))
+  }
+
+  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
+
+      val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
+
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferencePage, value))
@@ -67,4 +82,21 @@ class TraderReferenceController @Inject() (
             } yield Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))
         )
   }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
+              _ <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+        )
+  }
+
 }

@@ -163,7 +163,7 @@ class NavigatorSpec extends SpecBase {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.TraderReferenceController
-            .onPageLoad(NormalMode)
+            .onPageLoadCreate(NormalMode)
         }
 
         "must go from TraderReferencePage to UseTraderReferencePage" in {

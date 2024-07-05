@@ -33,19 +33,19 @@ object TraderReferenceSummary {
         key = "traderReference.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("traderReference.change.hidden"))
         )
       )
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "traderReference.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoad(CheckMode).url)
+        ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoadUpdate(CheckMode, recordId).url)
           .withVisuallyHiddenText(messages("traderReference.change.hidden"))
       )
     )

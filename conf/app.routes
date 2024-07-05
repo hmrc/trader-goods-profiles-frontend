@@ -109,10 +109,16 @@ POST        /create-record/goods-description-question/check                     
 GET         /create-record/check-your-answers                                               controllers.CyaCreateRecordController.onPageLoad
 POST        /create-record/check-your-answers                                               controllers.CyaCreateRecordController.onSubmit
 
-GET         /create-record/trader-reference                                                 controllers.TraderReferenceController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/trader-reference                                                 controllers.TraderReferenceController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/trader-reference/check                                           controllers.TraderReferenceController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/trader-reference/check                                           controllers.TraderReferenceController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/trader-reference                                                 controllers.TraderReferenceController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-record/trader-reference                                                 controllers.TraderReferenceController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-record/trader-reference/check                                           controllers.TraderReferenceController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-record/trader-reference/check                                           controllers.TraderReferenceController.onSubmitCreate(mode: Mode = CheckMode)
+
+GET         /update-record/:recordId/trader-reference                                       controllers.TraderReferenceController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/trader-reference                                       controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/trader-reference/check                                 controllers.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/trader-reference/check                                 controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
+
 
 GET         /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
 POST        /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)

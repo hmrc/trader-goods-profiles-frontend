@@ -56,8 +56,8 @@ object PageUpdate {
   def getPageUpdateChangeLink(pageUpdate: PageUpdate, recordId: String): String =
     pageUpdate match {
       case CountryOfOriginPageUpdate  => routes.CountryOfOriginController.onPageLoad(CheckMode).url
-      case GoodsDescriptionPageUpdate => routes.GoodsDescriptionController.onPageLoad(CheckMode).url
-      case TraderReferencePageUpdate  => routes.TraderReferenceController.onPageLoad(CheckMode).url
+      case GoodsDescriptionPageUpdate => routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, recordId).url
+      case TraderReferencePageUpdate  => routes.TraderReferenceController.onPageLoadUpdate(CheckMode, recordId).url
       case CommodityCodePageUpdate    => routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId).url
     }
   implicit val jsLiteral: JavascriptLiteral[PageUpdate]                         = {
