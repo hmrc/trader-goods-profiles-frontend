@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, Country, UserAnswers}
+import models.{CheckMode, Country, Mode, UserAnswers}
 import pages.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -46,7 +46,7 @@ object CountryOfOriginSummary {
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoad(CheckMode).url)
+        ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url)
           .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
       )
     )

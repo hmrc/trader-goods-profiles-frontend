@@ -16,10 +16,9 @@
 
 package models
 
-import cats.data.{EitherNec}
+import cats.data.EitherNec
 import cats.implicits.catsSyntaxTuple3Parallel
-import models.PageUpdate.getPage
-import pages.{CommodityCodeUpdatePage}
+import pages._
 import play.api.libs.json.{Json, OFormat}
 
 final case class UpdateGoodsRecord(
