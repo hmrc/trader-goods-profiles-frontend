@@ -34,56 +34,71 @@ object UpdateGoodsRecord {
 
   implicit lazy val format: OFormat[UpdateGoodsRecord] = Json.format
 
-  def build(
+  def buildCountryOfOrigin(
     answers: UserAnswers,
     eori: String,
-    recordId: String,
-    pageUpdate: PageUpdate
+    recordId: String
   ): EitherNec[ValidationError, UpdateGoodsRecord] =
     (
       Right(eori),
       Right(recordId),
-      pageUpdate match {
-        case CommodityCodePageUpdate => answers.getPageValue(CommodityCodeUpdatePage(recordId))
-        case _                       => answers.getPageValue(getPage(pageUpdate, recordId))
-      }
+      answers.getPageValue(CountryOfOriginUpdatePage(recordId))
     ).parMapN((eori, recordId, value) =>
-      pageUpdate match {
-        case CountryOfOriginPageUpdate  =>
-          UpdateGoodsRecord(
-            eori,
-            recordId,
-            countryOfOrigin = Some(value)
-          )
-        case GoodsDescriptionPageUpdate =>
-          UpdateGoodsRecord(
-            eori,
-            recordId,
-            goodsDescription = Some(value)
-          )
-        case TraderReferencePageUpdate  =>
-          UpdateGoodsRecord(
-            eori,
-            recordId,
-            traderReference = Some(value)
-          )
-        case CommodityCodePageUpdate    =>
-          UpdateGoodsRecord(
-            eori,
-            recordId,
-            commodityCode = Some(value)
-          )
-      }
+      UpdateGoodsRecord(
+        eori,
+        recordId,
+        countryOfOrigin = Some(value)
+      )
     )
 
-//  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
-//    answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
-//      case Right(code)  =>
-//        answers.getPageValue(HasCorrectGoodsPage(recordId)) match {
-//          case Right(true)  => Right(code)
-//          case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsPage(recordId))))
-//          case Left(errors) => Left(errors)
-//        }
-//      case Left(errors) => Left(errors)
-//    }
+  def buildGoodsDescription(
+    answers: UserAnswers,
+    eori: String,
+    recordId: String
+  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+    (
+      Right(eori),
+      Right(recordId),
+      answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
+    ).parMapN((eori, recordId, value) =>
+      UpdateGoodsRecord(
+        eori,
+        recordId,
+        goodsDescription = Some(value)
+      )
+    )
+
+  def buildCommodityCode(
+    answers: UserAnswers,
+    eori: String,
+    recordId: String
+  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+    (
+      Right(eori),
+      Right(recordId),
+      answers.getPageValue(CommodityCodeUpdatePage(recordId))
+    ).parMapN((eori, recordId, value) =>
+      UpdateGoodsRecord(
+        eori,
+        recordId,
+        commodityCode = Some(value)
+      )
+    )
+
+  def buildTraderReference(
+    answers: UserAnswers,
+    eori: String,
+    recordId: String
+  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+    (
+      Right(eori),
+      Right(recordId),
+      answers.getPageValue(TraderReferenceUpdatePage(recordId))
+    ).parMapN((eori, recordId, value) =>
+      UpdateGoodsRecord(
+        eori,
+        recordId,
+        traderReference = Some(value)
+      )
+    )
 }

@@ -50,9 +50,9 @@ class CyaUpdateRecordController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(recordId: String, pageUpdate: PageUpdate): Action[AnyContent] =
+  def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId, pageUpdate) match {
+      UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
         case Right(_)     =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
           getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
@@ -191,7 +191,7 @@ class CyaUpdateRecordController @Inject() (
         case Right(model) =>
           for {
             _              <- goodsRecordConnector.updateGoodsRecord(model)
-            updatedAnswers <- Future.fromTry(request.userAnswers.remove(getPage(pageUpdate, recordId)))
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(CommodityCodeUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.HomePageController.onPageLoad())
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))

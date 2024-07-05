@@ -291,7 +291,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateGoodsRecord(any())(any()))
+            when(mockConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -341,7 +341,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateGoodsRecord(any())(any()))
+            when(mockConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -404,7 +404,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
               .url
-            verify(mockConnector, never()).updateGoodsRecord(any())(any())
+            verify(mockConnector, never()).updateCategoryForGoodsRecord(any(), any(), any())(any())
           }
         }
       }

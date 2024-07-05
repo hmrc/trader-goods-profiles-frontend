@@ -42,10 +42,10 @@ class SingleRecordController @Inject() (
     goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(record.traderRef, recordId),
-          GoodsDescriptionSummary.row(record.goodsDescription),
-          CountryOfOriginSummary.row(record.countryOfOrigin),
-          CommodityCodeSummary.row(record.commodityCode),
+          TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
+          GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
+          CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
+          CommodityCodeSummary.row(record.commodityCode, recordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
       )
