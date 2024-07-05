@@ -186,3 +186,11 @@ POST       /update-record/:recordId/change-record-warning/goods-description     
 GET        /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
+GET         /update-record/:recordId/check-your-answers/country-of-origin                   controllers.CyaUpdateRecordController.onPageLoad(recordId: String, pageUpdate: PageUpdate = CountryOfOriginPageUpdate)
+POST        /update-record/:recordId/check-your-answers/country-of-origin                   controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = CountryOfOriginPageUpdate)
+GET         /update-record/:recordId/check-your-answers/goods-description                   controllers.CyaUpdateRecordController.onPageLoad(recordId: String, pageUpdate: PageUpdate = GoodsDescriptionPageUpdate)
+POST        /update-record/:recordId/check-your-answers/goods-description                   controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = GoodsDescriptionPageUpdate)
+GET         /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onPageLoad(recordId: String, pageUpdate: PageUpdate = TraderReferencePageUpdate)
+POST        /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = TraderReferencePageUpdate)
+GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoad(recordId: String, pageUpdate: PageUpdate = CommodityCodePageUpdate)
+POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmit(recordId: String, pageUpdate: PageUpdate = CommodityCodePageUpdate)
