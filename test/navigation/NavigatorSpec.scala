@@ -602,9 +602,6 @@ class NavigatorSpec extends SpecBase {
 
           "to first Assessment when answer is Yes and need to recategorise" in {
 
-            val assessment1Shorter = assessment1
-            val assessment2Shorter = assessment2.copy(id = "id432")
-
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success

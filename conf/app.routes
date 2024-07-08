@@ -85,11 +85,10 @@ POST        /create-record/goods-description                                    
 GET         /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-record/goods-description/check                                          controllers.GoodsDescriptionController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-record/:recordId/goods-description-question                             controllers.GoodsDescriptionController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/goods-description-question                             controllers.GoodsDescriptionController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/goods-description-question/check                       controllers.GoodsDescriptionController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/goods-description-question/check                       controllers.GoodsDescriptionController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
-
+GET         /update-record/:recordId/goods-description                                      controllers.GoodsDescriptionController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/goods-description                                      controllers.GoodsDescriptionController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/goods-description/check                                controllers.GoodsDescriptionController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/goods-description/check                                controllers.GoodsDescriptionController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
 GET         /create-record/commodity-code-result                                            controllers.HasCorrectGoodsController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/commodity-code-result                                            controllers.HasCorrectGoodsController.onSubmitCreate(mode: Mode = NormalMode)
@@ -123,7 +122,6 @@ GET         /update-record/:recordId/trader-reference                           
 POST        /update-record/:recordId/trader-reference                                       controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
 GET         /update-record/:recordId/trader-reference/check                                 controllers.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/trader-reference/check                                 controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
-
 
 GET         /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
 POST        /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)

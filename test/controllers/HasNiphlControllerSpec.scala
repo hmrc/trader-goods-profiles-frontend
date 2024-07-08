@@ -40,9 +40,8 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                            = new HasNiphlFormProvider()
-  private val form                            = formProvider()
-  implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
+  val formProvider = new HasNiphlFormProvider()
+  private val form = formProvider()
 
   private lazy val hasNiphlRoute = routes.HasNiphlController.onPageLoad(NormalMode).url
 
