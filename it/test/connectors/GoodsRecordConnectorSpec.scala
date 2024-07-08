@@ -21,7 +21,6 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination, UpdateGoodsRecord}
-import org.apache.pekko.Done
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -289,10 +288,10 @@ class GoodsRecordConnectorSpec
       wireMockServer.stubFor(
         delete(urlEqualTo(removeGoodsRecordUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(noContent())
+          .willReturn(notFound())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe Done
+      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe false
     }
 
     "must return a failed future when the server returns an error" in {
@@ -314,7 +313,7 @@ class GoodsRecordConnectorSpec
           .willReturn(notFound())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
+      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe false
     }
   }
 
