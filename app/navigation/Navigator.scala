@@ -58,6 +58,10 @@ class Navigator @Inject() () {
     case p: CyaCategorisationPage                  =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(1)
+    case p: LongerCommodityCodePage                =>
+      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
+    case p: HasCorrectGoodsLongerCommodityCodePage =>
+      navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, p.needToRecategorise)
     case _                                         => _ => routes.IndexController.onPageLoad
 
   }
@@ -77,6 +81,23 @@ class Navigator @Inject() () {
       .map {
         case true  => routes.CyaCreateRecordController.onPageLoad
         case false => routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String, needToRecategorise: Boolean)(
+    answers: UserAnswers
+  ): Call =
+    answers
+      .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      .map {
+        case true =>
+          if (needToRecategorise) {
+            routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
+          } else {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          }
+
+        case false => routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -121,6 +142,7 @@ class Navigator @Inject() () {
 
     for {
       recordQuery      <- answers.get(RecordCategorisationsQuery)
+      record           <- recordQuery.records.get(recordId)
       assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
@@ -134,7 +156,11 @@ class Navigator @Inject() () {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        routes.CyaCategorisationController.onPageLoad(recordId)
+        if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length == 6) {
+          routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -161,6 +187,10 @@ class Navigator @Inject() () {
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case p: LongerCommodityCodePage                =>
+      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
+    case p: HasCorrectGoodsLongerCommodityCodePage =>
+      navigateFromHasCorrectGoodsLongerCommodityCodeCheck(p.recordId, p.needToRecategorise)
     case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -220,6 +250,22 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromHasCorrectGoodsLongerCommodityCodeCheck(recordId: String, needToRecategorise: Boolean)(
+    answers: UserAnswers
+  ): Call =
+    answers
+      .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      .map {
+        case true  =>
+          if (needToRecategorise) {
+            routes.AssessmentController.onPageLoad(CheckMode, recordId, firstAssessmentIndex)
+          } else {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          }
+        case false => routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
   private def navigateFromHasCorrectGoodsUpdateCheck(answers: UserAnswers, recordId: String): Call =
     answers
       .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
@@ -239,6 +285,7 @@ class Navigator @Inject() () {
 
     for {
       recordQuery      <- answers.get(RecordCategorisationsQuery)
+      record           <- recordQuery.records.get(recordId)
       assessmentAnswer <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
@@ -256,7 +303,11 @@ class Navigator @Inject() () {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        routes.CyaCategorisationController.onPageLoad(recordId)
+        if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length == 6) {
+          routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
+        } else {
+          routes.CyaCategorisationController.onPageLoad(recordId)
+        }
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
