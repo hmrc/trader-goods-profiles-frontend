@@ -19,22 +19,20 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-import models.GoodsRecord.newRecordId
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.UpdateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CommodityQuery
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.LongerCommodityCodeView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LongerCommodityCodeController @Inject() (
@@ -52,15 +50,20 @@ class LongerCommodityCodeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form                                                 = formProvider()
+  private val form = formProvider()
+
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(LongerCommodityCodePage) match {
+      val preparedForm = request.userAnswers.get(LongerCommodityCodePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      request.userAnswers.get(CommodityCodePage(newRecordId)) match {
+      val commodityCodeOption = request.userAnswers
+        .get(RecordCategorisationsQuery)
+        .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
+
+      commodityCodeOption match {
         case Some(shortCommodity) if shortCommodity.length != 10 =>
           Ok(view(preparedForm, mode, shortCommodity, recordId))
         case _                                                   => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
@@ -69,7 +72,11 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(CommodityCodePage(newRecordId)) match {
+      val commodityCodeOption = request.userAnswers
+        .get(RecordCategorisationsQuery)
+        .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
+
+      commodityCodeOption match {
         case Some(shortCommodity) if shortCommodity.length != 10 =>
           form
             .bindFromRequest()
@@ -85,10 +92,11 @@ class LongerCommodityCodeController @Inject() (
                                                UpdateRecordJourney,
                                                Some(recordId)
                                              )
-                  updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage, value))
-                  updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, validCommodityCode))
+                  updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
+                  updatedAnswersWithQuery <-
+                    Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
                   _                       <- sessionRepository.set(updatedAnswersWithQuery)
-                } yield Redirect(navigator.nextPage(LongerCommodityCodePage, mode, updatedAnswers))).recover {
+                } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswers))).recover {
                   case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                     val formWithApiErrors =
                       form

@@ -17,8 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.GoodsRecord.newRecordId
-import models.{CheckMode, Country, UserAnswers}
+import models.{CheckMode, Country, Mode, UserAnswers}
 import pages.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -28,31 +27,26 @@ import viewmodels.implicits._
 
 object CountryOfOriginSummary {
 
-  def row(answers: UserAnswers, countries: Seq[Country])(implicit
-    messages: Messages
-  ): Option[SummaryListRow] =
-    answers.get(CountryOfOriginPage(newRecordId)).map { answer =>
+  def row(answers: UserAnswers, countries: Seq[Country])(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(CountryOfOriginPage).map { answer =>
       val description = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
       SummaryListRowViewModel(
         key = "countryOfOrigin.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(description).toString),
         actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.CountryOfOriginController.onPageLoad(CheckMode, newRecordId).url
-          )
+          ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
       )
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoad(CheckMode, newRecordId).url)
+        ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url)
           .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
       )
     )

@@ -21,9 +21,8 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.PageUpdate._
-import models.{Country, CountryOfOriginPageUpdate, PageUpdate, UpdateGoodsRecord, UserAnswers, ValidationError}
-import pages.CountryOfOriginPage
+import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers, ValidationError}
+import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
@@ -51,26 +50,78 @@ class CyaUpdateRecordController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(recordId: String, pageUpdate: PageUpdate): Action[AnyContent] =
+  def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId, pageUpdate) match {
+      UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
         case Right(_)     =>
-          pageUpdate match {
-            case CountryOfOriginPageUpdate =>
-              getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
-                displayView(recordId, pageUpdate, answer)
-              }
-            case _                         =>
-              Future.successful(displayView(recordId, pageUpdate, getAnswer(request.userAnswers, recordId, pageUpdate)))
+          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
+          getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
+            val list = SummaryListViewModel(
+              Seq(
+                CountryOfOriginSummary.row(answer, recordId, CheckMode)
+              )
+            )
+            Ok(view(list, recordId, onSubmitAction))
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      }
+    }
+
+  def onPageLoadGoodsDescription(recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, request.eori, recordId) match {
+        case Right(updateGoodsRecord: UpdateGoodsRecord) =>
+          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
+
+          val list = SummaryListViewModel(
+            Seq(
+              //TODO remove .get
+              GoodsDescriptionSummary.row(updateGoodsRecord.goodsDescription.get, recordId, CheckMode)
+            )
+          )
+          Ok(view(list, recordId, onSubmitAction))
+        case Left(errors)                                => logErrorsAndContinue(errors)
+      }
+    }
+
+  def onPageLoadTraderReference(recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {
+        case Right(updateGoodsRecord: UpdateGoodsRecord) =>
+          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
+
+          val list = SummaryListViewModel(
+            Seq(
+              //TODO remove .get
+              TraderReferenceSummary.row(updateGoodsRecord.traderReference.get, recordId, CheckMode)
+            )
+          )
+          Ok(view(list, recordId, onSubmitAction))
+        case Left(errors)                                => logErrorsAndContinue(errors)
+      }
+    }
+
+  def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, request.eori, recordId) match {
+        case Right(updateGoodsRecord: UpdateGoodsRecord) =>
+          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
+
+          val list = SummaryListViewModel(
+            Seq(
+              //TODO remove .get
+              CommodityCodeSummary.row(updateGoodsRecord.commodityCode.get, recordId, CheckMode)
+            )
+          )
+          Ok(view(list, recordId, onSubmitAction))
+        case Left(errors)                                => logErrorsAndContinue(errors)
       }
     }
 
   def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
     request: Request[_]
   ): Future[String] =
-    userAnswers.get(CountryOfOriginPage(recordId)) match {
+    userAnswers.get(CountryOfOriginPage) match {
       case Some(answer) =>
         userAnswers.get(CountriesQuery) match {
           case Some(countries) => Future.successful(findCountryName(countries, answer))
@@ -79,13 +130,6 @@ class CyaUpdateRecordController @Inject() (
               findCountryName(countries, answer)
             }
         }
-    }
-
-  def getAnswer(userAnswers: UserAnswers, recordId: String, pageUpdate: PageUpdate)(implicit
-    request: Request[_]
-  ): String =
-    userAnswers.get(getPage(pageUpdate, recordId)) match {
-      case Some(answer) => answer
     }
 
   def findCountryName(countries: Seq[Country], answer: String)(implicit
@@ -100,29 +144,54 @@ class CyaUpdateRecordController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield countries
 
-  def displayView(recordId: String, pageUpdate: PageUpdate, answer: String)(implicit
-    request: Request[_]
-  ): Result = {
-    val list = SummaryListViewModel(
-      rows = Seq(
-        UpdateRecordSummary.row(
-          answer,
-          getPageUpdateLabel(pageUpdate),
-          getPageUpdateHidden(pageUpdate),
-          getPageUpdateChangeLink(pageUpdate, recordId)
-        )
-      )
-    )
-    Ok(view(list, recordId, pageUpdate))
-  }
-
-  def onSubmit(recordId: String, pageUpdate: PageUpdate): Action[AnyContent] =
+  //TODO - commodity code - cleanup CategorisationRecords?
+  //TODO - reset categorisation?
+  def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.build(request.userAnswers, request.eori, recordId, pageUpdate) match {
+      UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           for {
             _              <- goodsRecordConnector.updateGoodsRecord(model)
-            updatedAnswers <- Future.fromTry(request.userAnswers.remove(getPage(pageUpdate, recordId)))
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(routes.HomePageController.onPageLoad())
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      }
+    }
+
+  def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
+        case Right(model) =>
+          for {
+            _              <- goodsRecordConnector.updateGoodsRecord(model)
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(CountryOfOriginUpdatePage(recordId)))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(routes.HomePageController.onPageLoad())
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      }
+    }
+
+  def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, request.eori, recordId) match {
+        case Right(model) =>
+          for {
+            _              <- goodsRecordConnector.updateGoodsRecord(model)
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(routes.HomePageController.onPageLoad())
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      }
+    }
+
+  def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, request.eori, recordId) match {
+        case Right(model) =>
+          for {
+            _              <- goodsRecordConnector.updateGoodsRecord(model)
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(CommodityCodeUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.HomePageController.onPageLoad())
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
