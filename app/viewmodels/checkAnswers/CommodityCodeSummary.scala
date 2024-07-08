@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import pages.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -40,12 +40,12 @@ object CommodityCodeSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
+        ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url)
           .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
       )
     )

@@ -17,19 +17,20 @@
 package services
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.RecordCategorisations
 import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.RecordCategorisationsQuery
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -45,8 +46,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockOttConnector          = mock[OttConnector]
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
-  private val mockOttResponse = OttResponse(
-    GoodsNomenclatureResponse("some id", "some comcode", Some("some measure unit")),
+  private def mockOttResponse(comCode: String = "some comcode") = OttResponse(
+    GoodsNomenclatureResponse("some id", comCode, Some("some measure unit")),
     Seq[CategoryAssessmentRelationship](),
     Seq[IncludedElement]()
   )
@@ -71,7 +72,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     super.beforeEach()
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
-      .thenReturn(Future.successful(mockOttResponse))
+      .thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
   }
@@ -89,9 +90,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
       val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
-      val expectedRecordCategorisations = RecordCategorisations(records = Map("recordId" -> expectedCategorisationInfo))
+      val expectedRecordCategorisations =
+        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
-      val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
+      val result                        = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call the router to get the goods record") {
@@ -124,15 +126,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
-      withClue("Should call the router to get the goods record") {
+      withClue("Should not call the router to get the goods record") {
         verify(mockGoodsRecordsConnector, never()).getRecord(any(), any())(any())
       }
 
-      withClue("Should call OTT to get categorisation info") {
+      withClue("Should not call OTT to get categorisation info") {
         verify(mockOttConnector, never()).getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())
       }
 
-      withClue("Should call session repository to update user answers") {
+      withClue("Should not call session repository to update user answers") {
         verify(mockSessionRepository, never()).set(any())
       }
     }
@@ -189,4 +191,141 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
   }
+
+  "updateCategorisationWithNewCommodityCode" - {
+
+    "should store category assessments if they are not present, then return successful updated answers" in {
+
+      val newCommodity = testCommodity.copy(commodityCode = "newComCode")
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), newCommodity).success.value
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
+      val expectedRecordCategorisations =
+        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
+
+      val result                        = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
+
+      withClue("Should not need to call the goods record connector") {
+        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
+      }
+
+      withClue("Should call OTT to get categorisation info for new commodity code") {
+        verify(mockOttConnector, times(1)).getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(
+          any()
+        )
+      }
+
+      withClue("Should call session repository to update user answers") {
+        verify(mockSessionRepository, times(1)).set(any())
+      }
+    }
+
+    "should replace existing category assessments if they are already present, then return successful updated answers" in {
+      val initialRecordCategorisations =
+        RecordCategorisations(
+          Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit")))
+        )
+      val newCommodity                 = testCommodity.copy(commodityCode = "newComCode")
+
+      when(mockOttConnector.getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(mockOttResponse("newComCode")))
+
+      val expectedRecordCategorisations =
+        RecordCategorisations(Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"))))
+
+      val userAnswers                   = emptyUserAnswers
+        .set(RecordCategorisationsQuery, initialRecordCategorisations)
+        .success
+        .value
+        .set(LongerCommodityQuery(testRecordId), newCommodity)
+        .success
+        .value
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val result = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
+
+      withClue("Should call OTT to get categorisation info") {
+        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
+          any()
+        )
+      }
+
+      withClue("Should call session repository to update user answers") {
+        verify(mockSessionRepository, times(1)).set(any())
+      }
+    }
+
+    "should return future failed when the call to session repository fails" in {
+      val expectedException = new RuntimeException("Failed communicating with session repository")
+      when(mockSessionRepository.set(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+
+      val userAnswers = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        await(result)
+      }
+
+      actualException mustBe expectedException
+    }
+
+    "should return future failed when the longer commodity query is not set" in {
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      intercept[RuntimeException] {
+        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        await(result)
+      }
+
+    }
+
+    "should return future failed when the call to the router fails" in {
+      val expectedException = new RuntimeException("Failed communicating with the router")
+      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        await(result)
+      }
+
+      actualException mustBe expectedException
+    }
+
+    "should return future failed when the call to OTT fails" in {
+      val expectedException = new RuntimeException("Failed communicating with OTT")
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        await(result)
+      }
+
+      actualException mustBe expectedException
+    }
+
+  }
+
 }

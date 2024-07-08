@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this(
+layout: templates.Layout,
+govukSummaryList: GovukSummaryList,
+formHelper: FormWithCSRF,
+govukButton: GovukButton
+)
 
-import play.api.libs.json.JsPath
+@(list: SummaryList, recordId: String, action: Call)(implicit request: Request[_], messages: Messages)
 
-case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String] {
+@layout(pageTitle = titleNoForm(messages("cyaUpdateRecord.title"))) {
 
-  override def path: JsPath = JsPath \ toString \ recordId
+<h1 class="govuk-heading-l">@messages("cyaUpdateRecord.h1")</h1>
+<p class="govuk-body">@messages("cyaUpdateRecord.h2")</p>
+@govukSummaryList(list)
 
-  override def toString: String = "longerCommodityCode"
+ @formHelper(action = action) {
+  @govukButton(ButtonViewModel(messages("site.save.continue")))
+ }
 }
