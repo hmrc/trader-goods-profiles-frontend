@@ -288,10 +288,10 @@ class GoodsRecordConnectorSpec
       wireMockServer.stubFor(
         delete(urlEqualTo(removeGoodsRecordUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(notFound())
+          .willReturn(noContent())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe false
+      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe true
     }
 
     "must return a failed future when the server returns an error" in {
