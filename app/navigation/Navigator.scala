@@ -83,29 +83,27 @@ class Navigator @Inject() () {
   private def navigateFromHasCorrectGoodsLongerCommodityCode(recordId: String, needToRecategorise: Boolean)(
     answers: UserAnswers
   ): Call = {
-    val x = for {
-      //TODO test handles when recordcategorisation not there
+    for {
       recordCategorisations <- answers.get(RecordCategorisationsQuery)
       categorisationInfo <- recordCategorisations.records.get(recordId)
       assessmentAnswer <- answers
         .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
-    } yield if (assessmentAnswer) {
-      if (needToRecategorise) {
-        routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
-      } else {
-        if (categorisationInfo.measurementUnit.isDefined) {
-          routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+    } yield {
+      if (assessmentAnswer) {
+        if (needToRecategorise) {
+          routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
         } else {
-          routes.CyaCategorisationController.onPageLoad(recordId)
+          if (categorisationInfo.measurementUnit.isDefined) {
+            routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+          } else {
+            routes.CyaCategorisationController.onPageLoad(recordId)
+          }
         }
+      } else {
+        routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
-    } else {
-      routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
     }
-
-//TODO cleanup
-    x.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-  }
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
     answers

@@ -1238,12 +1238,25 @@ class NavigatorSpec extends SpecBase {
           "to LongerCommodityCodePage when answer is No" in {
 
             val answers =
-              UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
+              UserAnswers(userAnswersId)
+                .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
+                .set(RecordCategorisationsQuery, recordCategorisations).success.value
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, answers) mustBe
               routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
+            val answers = UserAnswers(userAnswersId).set(RecordCategorisationsQuery, recordCategorisations).success.value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              CheckMode,
+              answers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+
+          "to JourneyRecoveryPage when record categorisation is not present" in {
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
