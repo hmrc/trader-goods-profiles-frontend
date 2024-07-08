@@ -46,7 +46,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
       Future.successful(userAnswersForCategorisation)
     )
-    when(mockGoodsRecordsConnector.updateGoodsRecord(any(), any(), any())(any()))
+    when(mockGoodsRecordsConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
       .thenReturn(Future.successful(Done))
   }
 
@@ -107,7 +107,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         Future.successful(uaForCategorisationStandardNoAssessments)
       )
 
-      when(mockGoodsRecordsConnector.updateGoodsRecord(any(), any(), any())(any()))
+      when(mockGoodsRecordsConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
         .thenReturn(Future.failed(new RuntimeException("Something went very wrong")))
 
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
@@ -147,7 +147,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
           .url
 
         withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector, times(1)).updateGoodsRecord(
+          verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
             any(),
             any(),
             any()
@@ -178,7 +178,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
           .url
 
         withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector, times(1)).updateGoodsRecord(
+          verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
             any(),
             any(),
             any()
@@ -208,7 +208,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("must NOT make a call to update goodsRecord with category info") {
-        verify(mockGoodsRecordsConnector, never()).updateGoodsRecord(
+        verify(mockGoodsRecordsConnector, never()).updateCategoryForGoodsRecord(
           any(),
           any(),
           any()

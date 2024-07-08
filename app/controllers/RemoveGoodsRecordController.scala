@@ -48,8 +48,12 @@ class RemoveGoodsRecordController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      Ok(view(form, recordId, location))
+    (identify andThen getData andThen requireData).async { implicit request =>
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .map { _ =>
+          Ok(view(form, recordId, location))
+        }
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =

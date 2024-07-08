@@ -23,7 +23,6 @@ import models.helper.CategorisationUpdate
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import navigation.Navigator
 import pages.CategoryGuidancePage
-import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
@@ -64,7 +63,7 @@ class CategoryGuidanceController @Inject() (
                 .build(userAnswers, request.eori, recordId)
                 .map { categoryRecord =>
                   goodsRecordConnector
-                    .updateGoodsRecord(request.eori, recordId, categoryRecord)
+                    .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
                     }

@@ -18,18 +18,24 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
-import models.Mode
+import models.ott.CategorisationInfo
+import models.requests.DataRequest
+import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage}
+import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityCodeUpdateQuery, CommodityQuery}
+import queries.{CommodityCodeUpdateQuery, CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
+import services.CategorisationService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.Constants.firstAssessmentIndex
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 class HasCorrectGoodsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,7 +46,8 @@ class HasCorrectGoodsController @Inject() (
   requireData: DataRequiredAction,
   formProvider: HasCorrectGoodsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasCorrectGoodsView
+  view: HasCorrectGoodsView,
+  categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -78,13 +85,13 @@ class HasCorrectGoodsController @Inject() (
   // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
+      val preparedForm = request.userAnswers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
-      //TODO - use the UpdateCommdityQuery (with recordId) here when available
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
-      request.userAnswers.get(CommodityQuery) match {
+
+      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
+      request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
@@ -111,21 +118,29 @@ class HasCorrectGoodsController @Inject() (
   // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
+      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
+
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             //TODO - use the UpdateCommdityQuery (with recordId) here when available
-            request.userAnswers.get(CommodityQuery) match {
+            request.userAnswers.get(LongerCommodityQuery(recordId)) match {
               case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },
           value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
+            if (value) {
+              processNewCommodityCode(mode, recordId, request, value)
+            } else {
+              for {
+                updatedAnswers <-
+                  Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(
+                navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers)
+              )
+            }
         )
     }
 
@@ -148,4 +163,72 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId), mode, updatedAnswers))
         )
     }
+
+  private def processNewCommodityCode(mode: Mode, recordId: String, request: DataRequest[AnyContent], value: Boolean)(
+    implicit hc: HeaderCarrier
+  ) =
+    for {
+      // Save the user's answer
+      updatedAnswers               <-
+        Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
+
+      // Find out what the assessment details for the old (shorter) code was
+      oldCommodityCategorisation   <-
+        Future.fromTry(Try(updatedAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
+
+      // Update the categorisation with the new value details for future categorisation attempts
+      updatedCategorisationAnswers <-
+        categorisationService
+          .updateCategorisationWithNewCommodityCode(request.copy(userAnswers = updatedAnswers), recordId)
+
+      // And then get the new assessment details
+      newCommodityCategorisation   <-
+        Future
+          .fromTry(Try(updatedCategorisationAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
+
+      // We then have both assessments so can decide if to recategorise or not
+      needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
+
+      // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
+      updatedAnswersCleanedUp <-
+        Future
+          .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
+
+      _ <- sessionRepository.set(updatedAnswersCleanedUp)
+    } yield Redirect(
+      navigator.nextPage(
+        HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
+        mode,
+        updatedAnswersCleanedUp
+      )
+    )
+
+  private def isRecategorisationNeeded(
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
+  ) =
+    !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments) ||
+      oldCommodityCategorisation.measurementUnit.isDefined || newCommodityCategorisation.measurementUnit.isDefined
+
+  private def cleanupOldAssessmentAnswers(
+    userAnswers: UserAnswers,
+    recordId: String,
+    needToRecategorise: Boolean
+  ): Try[UserAnswers] =
+    if (needToRecategorise) {
+      (for {
+        recordQuery        <- userAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- recordQuery.records.get(recordId)
+        count               = categorisationInfo.categoryAssessments.size
+        //Go backwards to avoid recursion issues
+        rangeToRemove       = (firstAssessmentIndex to count + 1).reverse
+      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(userAnswers)) { (acc, currentIndexToRemove) =>
+        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
+      }).getOrElse(
+        Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
+      )
+    } else {
+      Success(userAnswers)
+    }
+
 }

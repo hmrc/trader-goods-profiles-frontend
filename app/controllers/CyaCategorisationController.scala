@@ -106,7 +106,7 @@ class CyaCategorisationController @Inject() (
             model.category
           )
 
-          goodsRecordConnector.updateGoodsRecord(request.eori, recordId, model).map { _ =>
+          goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, model).map { _ =>
             Redirect(
               navigator.nextPage(
                 CyaCategorisationPage(recordId, model, Scenario.getScenario(model)),

@@ -17,8 +17,8 @@
 package connectors
 
 import config.Service
-import models.{CategoryRecord, GoodsRecord}
-import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
+import models.{CategoryRecord, GoodsRecord, UpdateGoodsRecord}
+import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
@@ -73,13 +73,23 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def updateGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
+  def updateGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] =
+    httpClient
+      .patch(singleGoodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(UpdateRecordRequest.map(updateGoodsRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
+
+  def updateCategoryForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
       .patch(singleGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
-      .withBody(Json.toJson(UpdateRecordRequest.map(categoryRecord)))
+      .withBody(Json.toJson(UpdateCategoryRecordRequest.map(categoryRecord)))
       .execute[HttpResponse]
       .map(_ => Done)
 
