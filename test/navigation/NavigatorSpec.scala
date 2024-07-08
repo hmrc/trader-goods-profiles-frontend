@@ -515,15 +515,13 @@ class NavigatorSpec extends SpecBase {
 
           "to CyaCategorisation when answer is Yes and goods do not need recategorising" in {
 
-            val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
 
             navigator.nextPage(
-              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = false),
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               answers
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -531,10 +529,8 @@ class NavigatorSpec extends SpecBase {
 
           "to first Assessment when answer is Yes and need to recategorise" in {
 
-            val assessment1Shorter        = assessment1
-            val assessment2Shorter        = assessment2.copy(id = "id432")
-            val categorisationInfoShorter =
-              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
+            val assessment1Shorter = assessment1
+            val assessment2Shorter = assessment2.copy(id = "id432")
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -1130,7 +1126,7 @@ class NavigatorSpec extends SpecBase {
               .value
 
             navigator.nextPage(
-              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = false),
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               CheckMode,
               answers
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)

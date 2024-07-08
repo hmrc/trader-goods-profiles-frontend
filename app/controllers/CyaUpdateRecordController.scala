@@ -55,7 +55,7 @@ class CyaUpdateRecordController @Inject() (
       UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
         case Right(_)     =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
-          getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
+          getCountryOfOriginAnswer(request.userAnswers).map { answer =>
             val list = SummaryListViewModel(
               Seq(
                 CountryOfOriginSummary.row(answer, recordId, CheckMode)
@@ -118,7 +118,7 @@ class CyaUpdateRecordController @Inject() (
       }
     }
 
-  def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
+  def getCountryOfOriginAnswer(userAnswers: UserAnswers)(implicit
     request: Request[_]
   ): Future[String] =
     userAnswers.get(CountryOfOriginPage) match {
