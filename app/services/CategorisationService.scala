@@ -42,7 +42,7 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
-    val originalCommodityCodeOpt = recordCategorisations.records.get(recordId).map(_.originalCommodityCode).get
+    val originalCommodityCodeOpt = recordCategorisations.records.get(recordId).map(_.originalCommodityCode).getOrElse(None)
 
     recordCategorisations.records.get(recordId) match {
       case Some(_) =>
@@ -58,11 +58,7 @@ class CategorisationService @Inject() (
                                       getGoodsRecordResponse.countryOfOrigin,
                                       LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
-          originalCommodityCode = if (originalCommodityCodeOpt.isDefined) {
-                                    originalCommodityCodeOpt.get
-                                  } else {
-                                    getGoodsRecordResponse.commodityCode
-                                  }
+          originalCommodityCode = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.commodityCode)
           categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)).get))
           updatedAnswers         <-
             Future.fromTry(

@@ -54,44 +54,52 @@ class LongerCommodityCodeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(LongerCommodityCodePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
       val commodityCodeOption = request.userAnswers
         .get(RecordCategorisationsQuery)
-        .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode)).get
+        .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode))
+        .getOrElse(None)
 
-      val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
+      val oldLongerCodeSuffix = commodityCodeOption.map { originalComcode =>
+        val longerComcode = request.userAnswers
+          .get(RecordCategorisationsQuery)
+          .flatMap(x => x.records.get(recordId).map(x => x.commodityCode)).getOrElse("")
 
-      (commodityCodeOption, previouslyAnsweredOpt) match {
-        case (Some(commodityCode), Some(previousValue))               =>
-          Ok(view(preparedForm, mode, commodityCode, recordId))
-        case (Some(shortCommodity), _) if shortCommodity.length != 10 =>
+        longerComcode.drop(originalComcode.length)
+      }.getOrElse("")
+
+      val preparedForm = request.userAnswers.get(LongerCommodityCodePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(oldLongerCodeSuffix)
+      }
+
+      commodityCodeOption match {
+        case Some(shortCommodity) if shortCommodity.length < 10 =>
           Ok(view(preparedForm, mode, shortCommodity, recordId))
-        case _                                                        => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val previouslyAnsweredOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
-
       val commodityCodeOption = request.userAnswers
         .get(RecordCategorisationsQuery)
-        .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode)).get
+        .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode))
+        .getOrElse(None)
+
+      val oldLongerCode = request.userAnswers
+        .get(RecordCategorisationsQuery)
+        .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
 
       commodityCodeOption match {
-        case Some(shortCommodity) if shortCommodity.length != 10 =>
+        case Some(shortCommodity) if shortCommodity.length < 10 =>
           form
             .bindFromRequest()
             .fold(
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortCommodity, recordId))),
               value => {
                 val longCommodityCode = s"$shortCommodity$value"
-                previouslyAnsweredOpt match {
-                  case Some(previousValue) if previousValue == value =>
+                oldLongerCode match {
+                  case Some(oldLongercode) if shortCommodity.concat(value) == oldLongercode =>
                     Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
                   case _                                             =>
                     (for {
