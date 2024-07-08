@@ -289,7 +289,7 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
         }
 
-        "must go from CommodityCodeUpdatePage to HasCorrectGoodsPage" in {
+        "must go from CommodityCodeUpdatePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
           navigator.nextPage(
             CommodityCodeUpdatePage(testRecordId),
             NormalMode,
@@ -958,7 +958,7 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
         }
 
-        "must go from CommodityCodePage to HasCorrectGoodsPage" in {
+        "must go from CommodityCodePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
           navigator.nextPage(
             CommodityCodeUpdatePage(testRecordId),
             CheckMode,
@@ -966,7 +966,7 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.HasCorrectGoodsController.onPageLoadUpdate(CheckMode, testRecordId)
         }
 
-        "must go from HasCorrectGoodsPage" - {
+        "must go from HasCorrectGoodsCommodityCodeUpdatePage" - {
 
           "when answer is Yes" - {
 
@@ -1017,7 +1017,7 @@ class NavigatorSpec extends SpecBase {
           "to JourneyRecoveryPage when answer is not present" in {
 
             navigator.nextPage(
-              HasCorrectGoodsPage,
+              HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               CheckMode,
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController
