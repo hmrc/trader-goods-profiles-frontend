@@ -20,22 +20,31 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
 
+import java.time.Instant
+
 class GoodsNomenclatureResponseSpec extends AnyFreeSpec with Matchers {
 
   ".reads" - {
 
     "must deserialise valid JSON" in {
 
+      val now = Instant.now()
+
       val json = Json.obj(
         "id"         -> "1",
         "attributes" -> Json.obj(
           "goods_nomenclature_item_id" -> "foo",
-          "supplementary_measure_unit" -> "bar"
+          "supplementary_measure_unit" -> "bar",
+          "validity_start_date"        -> Instant.EPOCH.toString,
+          "validity_end_date"          -> now.toString,
+          "description"                -> "fizzbuzz"
         )
       )
 
       val result = json.validate[GoodsNomenclatureResponse]
-      result mustEqual JsSuccess(GoodsNomenclatureResponse("1", "foo", Some("bar")))
+      result mustEqual JsSuccess(
+        GoodsNomenclatureResponse("1", "foo", Some("bar"), Instant.EPOCH, Some(now), "fizzbuzz")
+      )
     }
   }
 }

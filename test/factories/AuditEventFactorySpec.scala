@@ -332,7 +332,7 @@ class AuditEventFactorySpec extends SpecBase {
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
             None,
-            Some(testCommodity)
+            Some(testAuditOttResponse)
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -353,7 +353,7 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails.outcome.failureReason mustBe None
           auditDetails.commodityDescription mustBe Some("test")
           auditDetails.commodityCodeEffectiveTo mustBe Some("null")
-          auditDetails.commodityCodeEffectiveFrom mustBe Some("2007-12-03T10:15:30Z")
+          auditDetails.commodityCodeEffectiveFrom mustBe Some("1970-01-01T00:00:00Z")
 
         }
 
@@ -370,8 +370,13 @@ class AuditEventFactorySpec extends SpecBase {
             Some(UpdateRecordJourney)
           )
 
-          val testCommodityWithExpiryDate =
-            testCommodity.copy(validityEndDate = Some(Instant.parse("2024-07-31T23:59:59.999Z")))
+          val goodsNomenclatureWithExpiryDate =
+            testAuditOttResponse.goodsNomenclature.copy(validityEndDate =
+              Some(Instant.parse("2024-07-31T23:59:59.999Z"))
+            )
+
+          val testAuditOttResponseWithExpiryDate =
+            testAuditOttResponse.copy(goodsNomenclature = goodsNomenclatureWithExpiryDate)
 
           val result = AuditEventFactory().createValidateCommodityCodeEvent(
             auditData,
@@ -379,7 +384,7 @@ class AuditEventFactorySpec extends SpecBase {
             Instant.parse("2024-06-03T15:19:20.399Z"),
             OK,
             None,
-            Some(testCommodityWithExpiryDate)
+            Some(testAuditOttResponseWithExpiryDate)
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -400,7 +405,7 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails.outcome.failureReason mustBe None
           auditDetails.commodityDescription mustBe Some("test")
           auditDetails.commodityCodeEffectiveTo mustBe Some("2024-07-31T23:59:59.999Z")
-          auditDetails.commodityCodeEffectiveFrom mustBe Some("2007-12-03T10:15:30Z")
+          auditDetails.commodityCodeEffectiveFrom mustBe Some("1970-01-01T00:00:00Z")
 
         }
 
@@ -469,7 +474,7 @@ class AuditEventFactorySpec extends SpecBase {
           )
 
           val ottResponse = OttResponse(
-            goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", None),
+            goodsNomenclature = GoodsNomenclatureResponse("id", "commodity code", None, Instant.EPOCH, None, "test"),
             categoryAssessmentRelationships = Seq(
               CategoryAssessmentRelationship("assessmentId1"),
               CategoryAssessmentRelationship("assessmentId2")
