@@ -18,7 +18,6 @@ package base
 
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
-import models.GoodsRecord.newRecordId
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -79,22 +78,22 @@ trait SpecBase
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(TraderReferencePage(newRecordId), "123")
+      .set(TraderReferencePage, "123")
       .success
       .value
-      .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+      .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
-      .set(CountryOfOriginPage(newRecordId), "1")
+      .set(CountryOfOriginPage, "1")
       .success
       .value
       .set(UseTraderReferencePage, false)
       .success
       .value
-      .set(HasCorrectGoodsPage(newRecordId), true)
+      .set(HasCorrectGoodsPage, true)
       .success
       .value
-      .set(GoodsDescriptionPage(newRecordId), "DESCRIPTION")
+      .set(GoodsDescriptionPage, "DESCRIPTION")
       .success
       .value
       .set(CommodityQuery, testCommodity)
@@ -103,19 +102,19 @@ trait SpecBase
 
   def mandatoryRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(TraderReferencePage(newRecordId), "123")
+      .set(TraderReferencePage, "123")
       .success
       .value
-      .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+      .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
-      .set(CountryOfOriginPage(newRecordId), "1")
+      .set(CountryOfOriginPage, "1")
       .success
       .value
       .set(UseTraderReferencePage, true)
       .success
       .value
-      .set(HasCorrectGoodsPage(newRecordId), true)
+      .set(HasCorrectGoodsPage, true)
       .success
       .value
       .set(CommodityQuery, testCommodity)

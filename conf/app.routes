@@ -63,10 +63,10 @@ POST        /update-record/:recordId/commodity-code                             
 GET         /update-record/:recordId/commodity-code/check                                   controllers.CommodityCodeController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/commodity-code/check                                   controllers.CommodityCodeController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
-GET         /create-record/country-of-origin                                                controllers.CountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-record/country-of-origin                                                controllers.CountryOfOriginController.onSubmit(mode: Mode = NormalMode)
-GET         /create-record/country-of-origin/check                                          controllers.CountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-record/country-of-origin/check                                          controllers.CountryOfOriginController.onSubmit(mode: Mode = CheckMode)
+GET         /create-record/country-of-origin                                                controllers.CountryOfOriginController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-record/country-of-origin                                                controllers.CountryOfOriginController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-record/country-of-origin/check                                          controllers.CountryOfOriginController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-record/country-of-origin/check                                          controllers.CountryOfOriginController.onSubmitCreate(mode: Mode = CheckMode)
 
 GET         /update-record/:recordId/country-of-origin                                      controllers.CountryOfOriginController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
 POST        /update-record/:recordId/country-of-origin                                      controllers.CountryOfOriginController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)

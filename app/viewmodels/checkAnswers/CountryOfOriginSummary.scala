@@ -34,7 +34,7 @@ object CountryOfOriginSummary {
         key = "countryOfOrigin.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(description).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
       )

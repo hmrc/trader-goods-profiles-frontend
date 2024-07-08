@@ -17,7 +17,6 @@
 package pages
 
 import base.TestConstants.userAnswersId
-import models.GoodsRecord.newRecordId
 import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -29,22 +28,22 @@ class UseTraderReferencePageSpec extends AnyFreeSpec with Matchers with TryValue
 
     "removes GoodsDescriptionPage when the answer is Yes" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage(newRecordId), "1234").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "1234").success.value
 
       val result = userAnswers.set(UseTraderReferencePage, true).success.value
 
-      result.isDefined(GoodsDescriptionPage(newRecordId)) mustBe false
+      result.isDefined(GoodsDescriptionPage) mustBe false
 
       result.get(UseTraderReferencePage).value mustBe true
     }
 
     "does not removes GoodsDescriptionPage when the answer is No" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage(newRecordId), "1234").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "1234").success.value
 
       val result = userAnswers.set(UseTraderReferencePage, false).success.value
 
-      result.isDefined(GoodsDescriptionPage(newRecordId)) mustBe true
+      result.isDefined(GoodsDescriptionPage) mustBe true
 
       result.get(UseTraderReferencePage).value mustBe false
     }

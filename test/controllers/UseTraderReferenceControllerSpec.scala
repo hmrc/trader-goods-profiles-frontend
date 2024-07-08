@@ -18,13 +18,12 @@ package controllers
 
 import base.SpecBase
 import forms.UseTraderReferenceFormProvider
-import models.GoodsRecord.newRecordId
 import models.NormalMode
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.UseTraderReferencePage
+import pages.{TraderReferencePage, UseTraderReferencePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -48,7 +47,7 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET" in {
 
       val userAnswers = emptyUserAnswers
-        .set(TraderReferencePage(newRecordId), "trader reference")
+        .set(TraderReferencePage, "trader reference")
         .success
         .value
 
@@ -88,7 +87,7 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         .set(UseTraderReferencePage, true)
         .success
         .value
-        .set(TraderReferencePage(newRecordId), "trader reference")
+        .set(TraderReferencePage, "trader reference")
         .success
         .value
 
@@ -152,7 +151,7 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val userAnswers = emptyUserAnswers.set(TraderReferencePage(newRecordId), "trader reference").success.value
+      val userAnswers = emptyUserAnswers.set(TraderReferencePage, "trader reference").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 

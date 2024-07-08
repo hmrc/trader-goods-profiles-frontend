@@ -19,11 +19,12 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.{CheckMode, CommodityCodePageUpdate, Country, CountryOfOriginPageUpdate, GoodsDescriptionPageUpdate, TraderReferencePageUpdate, UpdateGoodsRecord}
+import models.{CheckMode, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, HasCorrectGoodsCommodityCodeUpdatePage, TraderReferenceUpdatePage}
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -46,11 +47,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val summaryValue    = "China"
       val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
       val summaryHidden   = "countryOfOrigin.change.hidden"
-      val summaryUrl      = routes.CountryOfOriginController.onPageLoad(CheckMode, testRecordId).url
-      val pageUpdate      = CountryOfOriginPageUpdate
-      val page            = CountryOfOriginPage(testRecordId)
+      val summaryUrl      = routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val page            = CountryOfOriginUpdatePage(testRecordId)
       val answer          = "CN"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
+      val getUrl          = routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url
+      val call            = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId)
+      val postUrl         = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
 
       "for a GET" - {
 
@@ -79,7 +82,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -87,7 +90,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, testRecordId, pageUpdate)(
+            contentAsString(result) mustEqual view(list, call)(
               request,
               messages(application)
             ).toString
@@ -108,7 +111,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -116,7 +119,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, testRecordId, pageUpdate)(
+            contentAsString(result) mustEqual view(list, call)(
               request,
               messages(application)
             ).toString
@@ -129,7 +132,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -144,7 +147,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -180,7 +183,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
               status(result) mustEqual SEE_OTHER
@@ -203,7 +206,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -232,7 +235,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -244,7 +247,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
 
             val result = route(application, request).value
 
@@ -258,11 +261,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Goods Description Update" - {
       val summaryKey      = "goodsDescription.checkYourAnswersLabel"
       val summaryHidden   = "goodsDescription.change.hidden"
-      val summaryUrl      = routes.GoodsDescriptionController.onPageLoad(CheckMode, testRecordId).url
-      val pageUpdate      = GoodsDescriptionPageUpdate
-      val page            = GoodsDescriptionPage(testRecordId)
+      val summaryUrl      = routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val page            = GoodsDescriptionUpdatePage(testRecordId)
       val answer          = "Test"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, goodsDescription = Some(answer))
+      val getUrl          = routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId).url
+      val call            = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId)
+      val postUrl         = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId).url
 
       "for a GET" - {
 
@@ -282,7 +287,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -290,7 +295,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, testRecordId, pageUpdate)(
+            contentAsString(result) mustEqual view(list, call)(
               request,
               messages(application)
             ).toString
@@ -303,7 +308,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -318,7 +323,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -348,7 +353,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -370,7 +375,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -399,7 +404,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -411,7 +416,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
 
             val result = route(application, request).value
 
@@ -425,11 +430,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Trader Reference Update" - {
       val summaryKey      = "traderReference.checkYourAnswersLabel"
       val summaryHidden   = "traderReference.change.hidden"
-      val summaryUrl      = routes.TraderReferenceController.onPageLoad(CheckMode, testRecordId).url
-      val pageUpdate      = TraderReferencePageUpdate
-      val page            = TraderReferencePage(testRecordId)
+      val summaryUrl      = routes.TraderReferenceController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val page            = TraderReferenceUpdatePage(testRecordId)
       val answer          = "Test"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, traderReference = Some(answer))
+      val getUrl          = routes.CyaUpdateRecordController.onPageLoadTraderReference(testRecordId).url
+      val call            = routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId)
+      val postUrl         = routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId).url
 
       "for a GET" - {
 
@@ -449,7 +456,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -457,7 +464,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, testRecordId, pageUpdate)(
+            contentAsString(result) mustEqual view(list, call)(
               request,
               messages(application)
             ).toString
@@ -470,7 +477,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -485,7 +492,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -515,7 +522,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -537,7 +544,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -566,7 +573,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -578,7 +585,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
 
             val result = route(application, request).value
 
@@ -592,11 +599,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Commodity Code Update" - {
       val summaryKey      = "commodityCode.checkYourAnswersLabel"
       val summaryHidden   = "commodityCode.change.hidden"
-      val summaryUrl      = routes.CommodityCodeController.onPageLoad(CheckMode, testRecordId).url
-      val pageUpdate      = CommodityCodePageUpdate
-      val page            = CommodityCodePage(testRecordId)
+      val summaryUrl      = routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val page            = CommodityCodeUpdatePage(testRecordId)
       val answer          = "Test"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(answer))
+      val getUrl          = routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId).url
+      val call            = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId)
+      val postUrl         = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId).url
 
       "for a GET" - {
 
@@ -612,14 +621,14 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .set(page, answer)
             .success
             .value
-            .set(HasCorrectGoodsPage(testRecordId), true)
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
             .success
             .value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -627,7 +636,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, testRecordId, pageUpdate)(
+            contentAsString(result) mustEqual view(list, call)(
               request,
               messages(application)
             ).toString
@@ -640,7 +649,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -655,7 +664,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaUpdateRecordController.onPageLoad(testRecordId, pageUpdate).url)
+            val request = FakeRequest(GET, getUrl)
 
             val result = route(application, request).value
 
@@ -675,7 +684,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .set(page, answer)
               .success
               .value
-              .set(HasCorrectGoodsPage(testRecordId), true)
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
               .success
               .value
 
@@ -688,7 +697,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -710,7 +719,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+              val request = FakeRequest(POST, postUrl)
 
               val result = route(application, request).value
 
@@ -722,13 +731,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
         }
 
-        "must let the play error handler deal with connector failure" in {
+        "must let the play error handler deal with connector failure " in {
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
             .success
             .value
-            .set(HasCorrectGoodsPage(testRecordId), true)
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
             .success
             .value
 
@@ -742,19 +751,19 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, postUrl)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
           }
         }
 
-        "must redirect to Journey Recovery if no existing data is found" in {
+        "must redirect to Journey Recovery if no existing data is found (Country of Origin example)" in {
 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmit(testRecordId, pageUpdate).url)
+            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url)
 
             val result = route(application, request).value
 

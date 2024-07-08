@@ -19,7 +19,6 @@ package services
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
-import models.GoodsRecord.newRecordId
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
@@ -694,16 +693,16 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(CommodityQuery, testCommodity)
       .success
       .value
-      .set(TraderReferencePage(newRecordId), "trader reference")
+      .set(TraderReferencePage, "trader reference")
       .success
       .value
-      .set(CountryOfOriginPage(newRecordId), "PF")
+      .set(CountryOfOriginPage, "PF")
       .success
       .value
-      .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+      .set(CommodityCodePage, testCommodity.commodityCode)
       .success
       .value
-      .set(HasCorrectGoodsPage(newRecordId), true)
+      .set(HasCorrectGoodsPage, true)
       .success
       .value
       .set(CommodityQuery, testCommodity)
@@ -716,7 +715,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       ua.set(UseTraderReferencePage, false)
         .success
         .value
-        .set(GoodsDescriptionPage(newRecordId), "goods description")
+        .set(GoodsDescriptionPage, "goods description")
         .success
         .value
     }

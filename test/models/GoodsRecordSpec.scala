@@ -17,7 +17,6 @@
 package models
 
 import base.TestConstants.{testEori, userAnswersId}
-import models.GoodsRecord.newRecordId
 import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -39,22 +38,22 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage(newRecordId), "123")
+            .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(CountryOfOriginPage(newRecordId), "1")
+            .set(CountryOfOriginPage, "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
             .success
             .value
-            .set(GoodsDescriptionPage(newRecordId), "2")
+            .set(GoodsDescriptionPage, "2")
             .success
             .value
-            .set(HasCorrectGoodsPage(newRecordId), true)
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -72,19 +71,19 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage(newRecordId), "123")
+            .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(CountryOfOriginPage(newRecordId), "1")
+            .set(CountryOfOriginPage, "1")
             .success
             .value
             .set(UseTraderReferencePage, true)
             .success
             .value
-            .set(HasCorrectGoodsPage(newRecordId), true)
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -109,9 +108,9 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(TraderReferencePage(newRecordId)),
-            PageMissing(CommodityCodePage(newRecordId)),
-            PageMissing(CountryOfOriginPage(newRecordId)),
+            PageMissing(TraderReferencePage),
+            PageMissing(CommodityCodePage),
+            PageMissing(CountryOfOriginPage),
             PageMissing(UseTraderReferencePage)
           )
         }
@@ -121,16 +120,16 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage(newRecordId), "123")
+            .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(HasCorrectGoodsPage(newRecordId), true)
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
-            .set(CountryOfOriginPage(newRecordId), "1")
+            .set(CountryOfOriginPage, "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
@@ -143,7 +142,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(GoodsDescriptionPage(newRecordId))
+          errors.toChain.toList must contain only PageMissing(GoodsDescriptionPage)
         }
       }
 
@@ -151,22 +150,22 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage(newRecordId), "123")
+            .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(HasCorrectGoodsPage(newRecordId), true)
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
-            .set(CountryOfOriginPage(newRecordId), "1")
+            .set(CountryOfOriginPage, "1")
             .success
             .value
             .set(UseTraderReferencePage, true)
             .success
             .value
-            .set(GoodsDescriptionPage(newRecordId), "2")
+            .set(GoodsDescriptionPage, "2")
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -176,7 +175,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(GoodsDescriptionPage(newRecordId))
+          errors.toChain.toList must contain only UnexpectedPage(GoodsDescriptionPage)
         }
       }
 
@@ -184,22 +183,22 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage(newRecordId), "123")
+            .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage(newRecordId), testCommodity.commodityCode)
+            .set(CommodityCodePage, testCommodity.commodityCode)
             .success
             .value
-            .set(HasCorrectGoodsPage(newRecordId), false)
+            .set(HasCorrectGoodsPage, false)
             .success
             .value
-            .set(CountryOfOriginPage(newRecordId), "1")
+            .set(CountryOfOriginPage, "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
             .success
             .value
-            .set(GoodsDescriptionPage(newRecordId), "2")
+            .set(GoodsDescriptionPage, "2")
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -209,7 +208,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsPage(newRecordId))
+          errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsPage)
         }
       }
 
@@ -217,22 +216,22 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage(newRecordId), "123")
+            .set(TraderReferencePage, "123")
             .success
             .value
-            .set(CommodityCodePage(newRecordId), "test")
+            .set(CommodityCodePage, "test")
             .success
             .value
-            .set(HasCorrectGoodsPage(newRecordId), true)
+            .set(HasCorrectGoodsPage, true)
             .success
             .value
-            .set(CountryOfOriginPage(newRecordId), "1")
+            .set(CountryOfOriginPage, "1")
             .success
             .value
             .set(UseTraderReferencePage, false)
             .success
             .value
-            .set(GoodsDescriptionPage(newRecordId), "2")
+            .set(GoodsDescriptionPage, "2")
             .success
             .value
             .set(CommodityQuery, testCommodity)
@@ -242,7 +241,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only MismatchedPage(CommodityCodePage(newRecordId))
+          errors.toChain.toList must contain only MismatchedPage(CommodityCodePage)
         }
       }
     }

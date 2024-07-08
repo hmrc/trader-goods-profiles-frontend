@@ -27,7 +27,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("countryOfOrigin.title"))) {
 
@@ -39,7 +39,7 @@
     </p>
 
 
-    @formHelper(action = routes.CountryOfOriginController.onSubmit(mode)) {
+    @formHelper(action = action) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

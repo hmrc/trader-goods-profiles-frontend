@@ -20,12 +20,12 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.OttConnector
 import forms.CountryOfOriginFormProvider
-import models.GoodsRecord.newRecordId
 import models.{CheckMode, Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.CountryOfOriginPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -44,7 +44,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CountryOfOriginFormProvider()
   private val form = formProvider(countries)
 
-  private lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoad(NormalMode, newRecordId).url
+  private lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadCreate(NormalMode).url
 
   "CountryOfOrigin Controller" - {
 
@@ -70,8 +70,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         val view = application.injector.instanceOf[CountryOfOriginView]
 
+        val call = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, countries, newRecordId)(
+        contentAsString(result) mustEqual view(form, call, countries)(
           request,
           messages(application)
         ).toString
@@ -80,7 +82,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage(newRecordId), "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage, "answer").success.value
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -102,8 +104,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
+        val call = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, countries, newRecordId)(
+        contentAsString(result) mustEqual view(form.fill("answer"), call, countries)(
           request,
           messages(application)
         ).toString
@@ -128,8 +132,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         val view = application.injector.instanceOf[CountryOfOriginView]
 
+        val call = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, countries, newRecordId)(
+        contentAsString(result) mustEqual view(form, call, countries)(
           request,
           messages(application)
         ).toString
@@ -201,8 +207,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
+        val call = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
+
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, countries, newRecordId)(
+        contentAsString(result) mustEqual view(boundForm, call, countries)(
           request,
           messages(application)
         ).toString
