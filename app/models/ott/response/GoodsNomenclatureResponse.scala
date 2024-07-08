@@ -19,10 +19,15 @@ package models.ott.response
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+import java.time.Instant
+
 final case class GoodsNomenclatureResponse(
   id: String,
   commodityCode: String,
-  measurementUnit: Option[String]
+  measurementUnit: Option[String],
+  validityStartDate: Instant,
+  validityEndDate: Option[Instant],
+  description: String
 )
 
 object GoodsNomenclatureResponse {
@@ -30,6 +35,9 @@ object GoodsNomenclatureResponse {
   implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
     (__ \ "id").read[String] and
       (__ \ "attributes" \ "goods_nomenclature_item_id").read[String] and
-      (__ \ "attributes" \ "supplementary_measure_unit").readNullable[String]
+      (__ \ "attributes" \ "supplementary_measure_unit").readNullable[String] and
+      (__ \ "attributes" \ "validity_start_date").read[Instant] and
+      (__ \ "attributes" \ "validity_end_date").readNullable[Instant] and
+      (__ \ "attributes" \ "description").read[String]
   )(GoodsNomenclatureResponse.apply _)
 }

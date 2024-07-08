@@ -71,14 +71,14 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
         response.json
           .validate[T]
           .map { result =>
-            auditService.auditOttCall(
-              auditDetails,
-              requestStartTime,
-              requestEndTime,
-              response.status,
-              None,
-              Some(result)
-            )
+//            auditService.auditOttCall(
+//              auditDetails,
+//              requestStartTime,
+//              requestEndTime,
+//              response.status,
+//              None,
+//              Some(result)
+//            )
             Future.successful(result)
           }
           .recoverTotal { error =>
@@ -126,10 +126,18 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       Some(journey)
     )
 
-    getFromOtt[Commodity](
-      ottCommoditiesUrl(commodityCode),
-      Some(auditDetails)
+    for {
+      ottResponse <- getFromOtt[OttResponse](
+        ottGreenLanesUrl(commodityCode),
+        Some(auditDetails)
+      )
+    } yield Commodity(
+      commodityCode = ottResponse.goodsNomenclature.commodityCode,
+      descriptions = List(ottResponse.goodsNomenclature.description),
+      validityStartDate = ottResponse.goodsNomenclature.validityStartDate,
+      validityEndDate = ottResponse.goodsNomenclature.validityEndDate
     )
+
   }
 
   def getCategorisationInfo(
