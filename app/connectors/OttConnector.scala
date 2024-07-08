@@ -39,8 +39,6 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private val authToken: String                        = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
   private val useProxy: Boolean                        = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
-  private def ottCommoditiesUrl(commodityCode: String) =
-    url"$baseUrl/xi/api/v2/commodities/$commodityCode"
 
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode"
@@ -71,14 +69,14 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
         response.json
           .validate[T]
           .map { result =>
-//            auditService.auditOttCall(
-//              auditDetails,
-//              requestStartTime,
-//              requestEndTime,
-//              response.status,
-//              None,
-//              Some(result)
-//            )
+            auditService.auditOttCall(
+              auditDetails,
+              requestStartTime,
+              requestEndTime,
+              response.status,
+              None,
+              Some(result)
+            )
             Future.successful(result)
           }
           .recoverTotal { error =>
