@@ -33,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaUpdateRecordView
-import pages.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, HasCorrectGoodsPage, TraderReferencePage}
 import queries.CountriesQuery
 import repositories.SessionRepository
 

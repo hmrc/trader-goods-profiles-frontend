@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits._
+import cats.implicits.catsSyntaxTuple5Parallel
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
@@ -32,14 +32,14 @@ final case class GoodsRecord(
 
 object GoodsRecord {
 
-  implicit lazy val format: OFormat[GoodsRecord]                                         = Json.format
-  val newRecordId                                                                        = "new-record"
+  implicit lazy val format: OFormat[GoodsRecord] = Json.format
+
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
-      answers.getPageValue(TraderReferencePage(newRecordId)),
+      answers.getPageValue(TraderReferencePage),
       getCommodity(answers),
-      answers.getPageValue(CountryOfOriginPage(newRecordId)),
+      answers.getPageValue(CountryOfOriginPage),
       getGoodsDescription(answers)
     ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
       GoodsRecord(
@@ -52,18 +52,18 @@ object GoodsRecord {
     )
 
   private def getGoodsDescription(answers: UserAnswers): EitherNec[ValidationError, String] =
-    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage(newRecordId)) match {
+    answers.getOppositeOptionalPageValue(answers, UseTraderReferencePage, GoodsDescriptionPage) match {
       case Right(Some(data)) => Right(data)
-      case Right(None)       => answers.getPageValue(TraderReferencePage(newRecordId))
+      case Right(None)       => answers.getPageValue(TraderReferencePage)
       case Left(errors)      => Left(errors)
     }
 
   private def getCommodity(answers: UserAnswers): EitherNec[ValidationError, Commodity] =
-    answers.getPageValue(CommodityCodePage(newRecordId)) match {
+    answers.getPageValue(CommodityCodePage) match {
       case Right(code)  =>
-        answers.getPageValue(HasCorrectGoodsPage(newRecordId)) match {
+        answers.getPageValue(HasCorrectGoodsPage) match {
           case Right(true)  => getCommodityQuery(answers, code)
-          case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsPage(newRecordId))))
+          case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsPage)))
           case Left(errors) => Left(errors)
         }
       case Left(errors) => Left(errors)
@@ -73,7 +73,7 @@ object GoodsRecord {
     answers.getPageValue(CommodityQuery) match {
       case Right(commodity) if commodity.commodityCode == code => Right(commodity)
       case Left(errors)                                        => Left(errors)
-      case _                                                   => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage(newRecordId))))
+      case _                                                   => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage)))
     }
 
 }

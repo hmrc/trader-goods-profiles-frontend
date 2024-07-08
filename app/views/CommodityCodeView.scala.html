@@ -16,7 +16,6 @@
 
 @import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
-@import models.Mode
 
 @this(
     layout: templates.Layout,
@@ -26,7 +25,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("commodityCode.title"))) {
 
@@ -38,7 +37,7 @@
         <a class="govuk-link" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity">@messages("commodityCode.p3.linkText")</a>.
     </p>
 
-    @formHelper(action = routes.CommodityCodeController.onSubmit(mode, recordId)) {
+    @formHelper(action = action) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

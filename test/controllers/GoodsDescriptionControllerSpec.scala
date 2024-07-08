@@ -25,7 +25,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
+import pages.GoodsDescriptionUpdatePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest

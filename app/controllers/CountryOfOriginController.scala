@@ -24,7 +24,7 @@ import models.requests.DataRequest
 import javax.inject.Inject
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage}
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery

@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions._
 import forms.UseTraderReferenceFormProvider
-import models.GoodsRecord.newRecordId
 
 import javax.inject.Inject
 import models.Mode
@@ -54,7 +53,7 @@ class UseTraderReferenceController @Inject() (
       case Some(value) => form.fill(value)
     }
 
-    request.userAnswers.get(TraderReferencePage(newRecordId)) match {
+    request.userAnswers.get(TraderReferencePage) match {
       case Some(traderReference) => Ok(view(preparedForm, traderReference, mode))
       case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
     }
@@ -66,7 +65,7 @@ class UseTraderReferenceController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            request.userAnswers.get(TraderReferencePage(newRecordId)) match {
+            request.userAnswers.get(TraderReferencePage) match {
               case Some(traderReference) => Future.successful(BadRequest(view(formWithErrors, traderReference, mode)))
               case None                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },
