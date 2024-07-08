@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.GetGoodsRecordsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{GoodsRecordsEmptyView, PreviousMovementRecordsView}
+import views.html.PreviousMovementRecordsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,6 @@ class PreviousMovementRecordsController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
-  emptyView: GoodsRecordsEmptyView,
   getGoodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

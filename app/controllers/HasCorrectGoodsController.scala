@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityCodeUpdateQuery, CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -76,7 +76,7 @@ class HasCorrectGoodsController @Inject() (
       }
 
       val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
-      request.userAnswers.get(CommodityCodeUpdateQuery(recordId)) match {
+      request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
@@ -151,7 +151,7 @@ class HasCorrectGoodsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            request.userAnswers.get(CommodityCodeUpdateQuery(recordId)) match {
+            request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
               case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
             },

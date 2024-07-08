@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits._
+import cats.implicits.catsSyntaxTuple5Parallel
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
