@@ -17,14 +17,16 @@
 package controllers
 
 import cats.data
+import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
 import logging.Logging
+import models.requests.DataRequest
 import models.{TraderProfile, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -39,6 +41,7 @@ class CyaCreateProfileController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
+  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
@@ -62,7 +65,7 @@ class CyaCreateProfileController @Inject() (
             ).flatten
           )
           Ok(view(list))
-        case Left(errors) => logErrorsAndContinue(errors)
+        case Left(errors) => logErrorsAndContinue(errors, request)
       }
   }
 
@@ -70,20 +73,23 @@ class CyaCreateProfileController @Inject() (
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         auditService.auditProfileSetUp(model, request.affinityGroup)
+        dataCleansingService.deleteMongoData(request.userAnswers.id)
         traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
           Redirect(routes.HomePageController.onPageLoad())
         }
 
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
     }
+
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], request: DataRequest[AnyContent]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
     logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
+    dataCleansingService.deleteMongoData(request.userAnswers.id)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

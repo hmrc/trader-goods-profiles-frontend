@@ -18,6 +18,7 @@ package repositories
 
 import config.FrontendAppConfig
 import models.UserAnswers
+import org.mongodb.scala.bson.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
@@ -87,6 +88,18 @@ class SessionRepository @Inject() (
   def clear(id: String): Future[Boolean] =
     collection
       .deleteOne(byId(id))
+      .toFuture()
+      .map(_ => true)
+
+  def clearData(id: String): Future[Boolean] =
+    collection
+      .updateOne(
+        filter = byId(id),
+        update = Updates.combine(
+          Updates.set("data", Document()),
+          Updates.set("lastUpdated", Instant.now(clock))
+        )
+      )
       .toFuture()
       .map(_ => true)
 }
