@@ -89,7 +89,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should store category assessments if they are not present, then return successful updated answers" in {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
+      val expectedCategorisationInfo    =
+        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), Some("comcode"))
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 

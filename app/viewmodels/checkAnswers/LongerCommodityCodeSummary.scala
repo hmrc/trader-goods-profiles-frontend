@@ -28,16 +28,24 @@ object LongerCommodityCodeSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
     val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-    val categorisationInfo = recordCategorisations.records.get(recordId)
-    categorisationInfo.map { categorisationInfo =>
-      SummaryListRowViewModel(
-        key = "longerCommodityCode.checkYourAnswersLabel",
-        value = ValueViewModel(categorisationInfo.commodityCode),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+    val categorisationInfoOpt = recordCategorisations.records.get(recordId)
+    categorisationInfoOpt match {
+      case Some(x) if x.commodityCode != x.originalCommodityCode.getOrElse("") =>
+        Some(
+          SummaryListRowViewModel(
+            key = "longerCommodityCode.checkYourAnswersLabel",
+            value = ValueViewModel(x.commodityCode),
+            actions = Seq(
+              ActionItemViewModel(
+                "site.change",
+                routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url
+              )
+                .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+            )
+          )
         )
-      )
+      case _                                                                   =>
+        None
     }
   }
 

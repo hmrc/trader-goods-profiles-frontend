@@ -62,7 +62,8 @@ class LongerCommodityCodeController @Inject() (
       val oldLongerCodeSuffixOpt = commodityCodeOption.map { originalComcode =>
         val longerComcode = request.userAnswers
           .get(RecordCategorisationsQuery)
-          .flatMap(x => x.records.get(recordId).map(x => x.commodityCode)).getOrElse("")
+          .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
+          .getOrElse("")
         longerComcode.drop(originalComcode.length)
       }
 
@@ -74,7 +75,7 @@ class LongerCommodityCodeController @Inject() (
       commodityCodeOption match {
         case Some(shortCommodity) if shortCommodity.length < 10 =>
           Ok(view(preparedForm, mode, shortCommodity, recordId))
-        case _ => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case _                                                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
@@ -100,7 +101,7 @@ class LongerCommodityCodeController @Inject() (
                 oldLongerCode match {
                   case Some(oldLongercode) if shortCommodity.concat(value) == oldLongercode =>
                     Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
-                  case _                                             =>
+                  case _                                                                    =>
                     (for {
                       validCommodityCode      <- ottConnector.getCommodityCode(
                                                    longCommodityCode,
