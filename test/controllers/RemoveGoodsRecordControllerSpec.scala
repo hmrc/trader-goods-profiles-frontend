@@ -23,7 +23,6 @@ import forms.RemoveGoodsRecordFormProvider
 import models.router.responses.GetGoodsRecordResponse
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,6 +30,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
 import java.time.Instant
@@ -120,12 +120,12 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to the goods records list and delete record when Yes is submitted" in {
+    "must redirect to the goods records list and delete record when Yes is submitted and record is deleted" in {
 
       val mockConnector = mock[GoodsRecordConnector]
 
       when(mockConnector.removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any()))
-        .thenReturn(Future.successful(Done))
+        .thenReturn(Future.successful(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -153,7 +153,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
       val mockConnector = mock[GoodsRecordConnector]
 
       when(mockConnector.removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any()))
-        .thenReturn(Future.failed(new RuntimeException("Connector Failed")))
+        .thenReturn(Future.successful(false))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -168,13 +168,12 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
           FakeRequest(POST, removeGoodsRecordRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
-        intercept[RuntimeException] {
-          await(route(application, request).value)
-        }
+        val result      = route(application, request).value
+        val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(1).url)
 
-        withClue("must try to remove the record") {
-          verify(mockConnector, times(1)).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+        verify(mockConnector, times(1)).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
       }
     }
 
