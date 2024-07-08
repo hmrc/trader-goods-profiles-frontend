@@ -588,15 +588,13 @@ class NavigatorSpec extends SpecBase {
 
           "to CyaCategorisation when answer is Yes and goods do not need recategorising" in {
 
-            val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
 
             navigator.nextPage(
-              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = false),
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               answers
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -604,10 +602,8 @@ class NavigatorSpec extends SpecBase {
 
           "to first Assessment when answer is Yes and need to recategorise" in {
 
-            val assessment1Shorter        = assessment1
-            val assessment2Shorter        = assessment2.copy(id = "id432")
-            val categorisationInfoShorter =
-              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None)
+            val assessment1Shorter = assessment1
+            val assessment2Shorter = assessment2.copy(id = "id432")
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -1063,7 +1059,279 @@ class NavigatorSpec extends SpecBase {
               .onPageLoad(CheckMode, recordId, indexAssessment1 + 1)
           }
 
+          "to the Check Your Answers page" - {
+
+            "when the answer is an exemption and the next assessment has been answered" in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("cert2"))
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1),
+                CheckMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is an exemption and this is the last assessment" in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("cert2"))
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1 + 1),
+                CheckMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is No Exemption for Category 1 " in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1),
+                CheckMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is No Exemption for Category 2 and the commodity code is length 10" in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment2),
+                CheckMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is No Exemption for Category 2 and the commodity code is length 8" in {
+
+              val eightDigitsRecordCat =
+                RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
+
+              val answers              =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, eightDigitsRecordCat)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment2),
+                CheckMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+          }
+
+          "to the enter longer commodity code page when the answer is No Exemption for Category 2 and the commodity code is 6 digits" in {
+
+            val sixDigitsRecordCat =
+              RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "123456")))
+
+            val answers            =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, sixDigitsRecordCat)
+                .success
+                .value
+                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                .success
+                .value
+                .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
+                .success
+                .value
+
+            navigator.nextPage(
+              AssessmentPage(recordId, indexAssessment2),
+              CheckMode,
+              answers
+            ) mustEqual routes.LongerCommodityCodeController
+              .onPageLoad(CheckMode, recordId)
+          }
+
         }
+
+        "in Supplementary Unit Journey" - {
+
+          "must go from HasSupplementaryUnitPage" - {
+
+            "to SupplementaryUnitPage when answer is Yes and answer is undefined" in {
+
+              val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(testRecordId), true).success.value
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.SupplementaryUnitController
+                .onPageLoad(
+                  CheckMode,
+                  testRecordId
+                )
+            }
+
+            "to Check Your Answers when answer is Yes and unit is already defined" in {
+
+              val answers = UserAnswers(userAnswersId)
+                .set(HasSupplementaryUnitPage(testRecordId), true)
+                .success
+                .value
+                .set(SupplementaryUnitPage(testRecordId), "974.0")
+                .success
+                .value
+
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaCategorisationController
+                .onPageLoad(testRecordId)
+            }
+
+            "to Check Your Answers Page when answer is No" in {
+
+              val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(testRecordId), false).success.value
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaCategorisationController
+                .onPageLoad(
+                  testRecordId
+                )
+            }
+
+            "to JourneyRecoveryPage when answer is not present" in {
+
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                CheckMode,
+                emptyUserAnswers
+              ) mustBe routes.JourneyRecoveryController
+                .onPageLoad()
+            }
+          }
+
+          "must go from SupplementaryUnitPage to Check Your Answers Page" in {
+
+            navigator.nextPage(
+              SupplementaryUnitPage(testRecordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.CyaCategorisationController.onPageLoad(
+              testRecordId
+            )
+          }
+
+        }
+
+        "must go from LongerCommodityCodePage to HasCorrectGoods page" in {
+          navigator.nextPage(
+            LongerCommodityCodePage(testRecordId),
+            CheckMode,
+            emptyUserAnswers
+          ) mustEqual routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, testRecordId)
+
+        }
+
+        "must go from HasCorrectGoodsPage for longer commodity codes" - {
+
+          "to CyaCategorisation when answer is Yes and does not need recategorising" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              CheckMode,
+              answers
+            ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
+          }
+
+          "to first Assessment when answer is Yes and need to recategorise" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = true),
+              CheckMode,
+              answers
+            ) mustBe routes.AssessmentController.onPageLoad(CheckMode, testRecordId, firstAssessmentIndex)
+          }
+
+          "to LongerCommodityCodePage when answer is No" in {
+
+            val answers =
+              UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
+            navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, answers) mustBe
+              routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+
+        }
+
       }
 
     }
