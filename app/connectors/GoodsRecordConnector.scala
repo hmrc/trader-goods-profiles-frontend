@@ -69,12 +69,19 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def removeGoodsRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
-  ): Future[Done] =
+  ): Future[Boolean] =
     httpClient
       .delete(deleteGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(_ => Done)
+      .map { response =>
+        response.status match {
+          case OK => true
+        }
+      }
+      .recover { case e: NotFoundException =>
+        false
+      }
 
   def updateGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
     hc: HeaderCarrier
