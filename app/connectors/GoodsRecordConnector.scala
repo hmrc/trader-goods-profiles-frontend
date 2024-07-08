@@ -22,7 +22,7 @@ import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest,
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.OK
+import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -82,7 +82,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK => true
+          case NO_CONTENT => true
         }
       }
       .recover { case e: NotFoundException =>
