@@ -46,12 +46,13 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   private val formProvider                        = new LongerCommodityCodeFormProvider()
   private val form                                = formProvider()
   private val shortCommodity                      = "654321"
-  private val categoryQueryShortCommodity         = categoryQuery.copy(commodityCode = shortCommodity)
+  private val categoryQueryShortCommodity         = categoryQuery.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
+
   private val recordCategorisationsShortCommodity = RecordCategorisations(
     Map(testRecordId -> categoryQueryShortCommodity)
   )
 
-  val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234)
+  val previouslyUpdatedCategoryInfo = categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
   val previouslyUpdatedCommodity    = RecordCategorisations(
     Map(testRecordId -> previouslyUpdatedCategoryInfo)
   )

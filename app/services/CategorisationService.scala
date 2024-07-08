@@ -82,7 +82,7 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
-    val originalCommodityCode = recordCategorisations.records.get(recordId).map(_.originalCommodityCode).get
+    val originalCommodityCode = recordCategorisations.records.get(recordId).map(_.originalCommodityCode).getOrElse(None)
 
     for {
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))

@@ -59,17 +59,16 @@ class LongerCommodityCodeController @Inject() (
         .flatMap(x => x.records.get(recordId).map(x => x.originalCommodityCode))
         .getOrElse(None)
 
-      val oldLongerCodeSuffix = commodityCodeOption.map { originalComcode =>
+      val oldLongerCodeSuffixOpt = commodityCodeOption.map { originalComcode =>
         val longerComcode = request.userAnswers
           .get(RecordCategorisationsQuery)
           .flatMap(x => x.records.get(recordId).map(x => x.commodityCode)).getOrElse("")
-
         longerComcode.drop(originalComcode.length)
-      }.getOrElse("")
+      }
 
-      val preparedForm = request.userAnswers.get(LongerCommodityCodePage(recordId)) match {
+      val preparedForm = oldLongerCodeSuffixOpt match {
         case None        => form
-        case Some(value) => form.fill(oldLongerCodeSuffix)
+        case Some(value) => form.fill(value)
       }
 
       commodityCodeOption match {
