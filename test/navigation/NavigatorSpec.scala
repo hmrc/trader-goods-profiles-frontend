@@ -336,6 +336,219 @@ class NavigatorSpec extends SpecBase {
         }
 
       }
+
+      "in Categorisation Journey" - {
+
+        val recordId              = testRecordId
+        val indexAssessment1      = 0
+        val indexAssessment2      = 1
+        val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo    =
+          CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"))
+        val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
+
+        "must go from an assessment" - {
+
+          "to the next assessment when the answer is an exemption and at least one more assessment exists" in {
+
+            val answers =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
+                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                .success
+                .value
+
+            navigator.nextPage(
+              AssessmentPage(recordId, indexAssessment1),
+              NormalMode,
+              answers
+            ) mustEqual routes.AssessmentController
+              .onPageLoad(NormalMode, recordId, indexAssessment1 + 1)
+          }
+
+          "to the Check Your Answers page" - {
+
+            "when the answer is an exemption and this is the last assessment" in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("cert2"))
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1 + 1),
+                NormalMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is No Exemption for Category 1" in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1),
+                NormalMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is No Exemption for Category 2 and the commodity code is 10 digits" in {
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment2),
+                NormalMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+            "when the answer is No Exemption for Category 2 and the commodity code is 8 digits" in {
+
+              val eightDigitsRecordCat =
+                RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
+
+              val answers              =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, eightDigitsRecordCat)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment2),
+                NormalMode,
+                answers
+              ) mustEqual routes.CyaCategorisationController
+                .onPageLoad(recordId)
+            }
+
+          }
+
+          "to the enter longer commodity code page when the answer is No Exemption for Category 2 and the commodity code is 6 digits" in {
+
+            val sixDigitsRecordCat =
+              RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "123456")))
+
+            val answers            =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, sixDigitsRecordCat)
+                .success
+                .value
+                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                .success
+                .value
+                .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
+                .success
+                .value
+
+            navigator.nextPage(
+              AssessmentPage(recordId, indexAssessment2),
+              NormalMode,
+              answers
+            ) mustEqual routes.LongerCommodityCodeController
+              .onPageLoad(NormalMode, recordId)
+          }
+
+          "to Journey Recovery when RecordCategorisationsQuery is not present" in {
+            navigator.nextPage(
+              AssessmentPage(recordId, indexAssessment1),
+              NormalMode,
+              emptyUserAnswers
+            ) mustEqual routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "in Supplementary Unit Journey" - {
+
+          "must go from HasSupplementaryUnitPage" - {
+
+            "to SupplementaryUnitPage when answer is Yes" in {
+
+              val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(testRecordId), true).success.value
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                NormalMode,
+                answers
+              ) mustBe routes.SupplementaryUnitController
+                .onPageLoad(
+                  NormalMode,
+                  testRecordId
+                )
+            }
+
+            "to Check Your Answers Page when answer is No" in {
+
+              val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(testRecordId), false).success.value
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                NormalMode,
+                answers
+              ) mustBe routes.CyaCategorisationController
+                .onPageLoad(
+                  testRecordId
+                )
+            }
+
+            "to JourneyRecoveryPage when answer is not present" in {
+
+              navigator.nextPage(
+                HasSupplementaryUnitPage(testRecordId),
+                NormalMode,
+                emptyUserAnswers
+              ) mustBe routes.JourneyRecoveryController
+                .onPageLoad()
+            }
+          }
+
+          "must go from SupplementaryUnitPage to Check Your Answers Page" in {
+
+            navigator.nextPage(
+              SupplementaryUnitPage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.CyaCategorisationController.onPageLoad(
+              testRecordId
+            )
+          }
+        }
+
     }
 
     "in Check mode" - {
