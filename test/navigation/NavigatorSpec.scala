@@ -1031,7 +1031,40 @@ class NavigatorSpec extends SpecBase {
 
       }
 
-      "in Categorisation Journey" - {}
+      "in Categorisation Journey" - {
+
+        val recordId              = testRecordId
+        val indexAssessment1      = 0
+        val indexAssessment2      = 1
+        val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo    =
+          CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"))
+        val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
+
+        "must go from an assessment" - {
+
+          "to the next assessment when the answer is an exemption and the next assessment is unanswered" in {
+
+            val answers =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
+                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                .success
+                .value
+
+            navigator.nextPage(
+              AssessmentPage(recordId, indexAssessment1),
+              CheckMode,
+              answers
+            ) mustEqual routes.AssessmentController
+              .onPageLoad(CheckMode, recordId, indexAssessment1 + 1)
+          }
+
+        }
+      }
 
     }
   }
