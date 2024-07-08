@@ -342,7 +342,7 @@ class NavigatorSpec extends SpecBase {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 10 digits and no supplementary unit" in {
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-              val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit))
+              val recordCategorisations        = RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit))
 
               val answers =
                 emptyUserAnswers
@@ -365,11 +365,12 @@ class NavigatorSpec extends SpecBase {
             }
 
             "when the answer is No Exemption for Category 2 and the commodity code is 8 digits and no supplementary unit" in {
-              val categorisationInfoNoSuppUnit = categorisationInfo.copy(commodityCode = "12345678", measurementUnit = None)
-              val eightDigitsRecordCat =
+              val categorisationInfoNoSuppUnit =
+                categorisationInfo.copy(commodityCode = "12345678", measurementUnit = None)
+              val eightDigitsRecordCat         =
                 RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit))
 
-              val answers              =
+              val answers                      =
                 emptyUserAnswers
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
@@ -443,7 +444,7 @@ class NavigatorSpec extends SpecBase {
               val eightDigitsRecordCat =
                 RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
 
-              val answers =
+              val answers              =
                 emptyUserAnswers
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
@@ -1047,7 +1048,7 @@ class NavigatorSpec extends SpecBase {
 
             "when the answer is No Exemption for Category 2 and the commodity code is length 10 and no supplementary unit" in {
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-              val answers =
+              val answers                      =
                 emptyUserAnswers
                   .set(RecordCategorisationsQuery, RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit)))
                   .success
@@ -1070,9 +1071,11 @@ class NavigatorSpec extends SpecBase {
             "when the answer is No Exemption for Category 2 and the commodity code is length 8 and no supplementary unit" in {
 
               val eightDigitsRecordCat =
-                RecordCategorisations(Map(recordId -> categorisationInfo.copy(measurementUnit = None, commodityCode = "12345678")))
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(measurementUnit = None, commodityCode = "12345678"))
+                )
 
-              val answers              =
+              val answers =
                 emptyUserAnswers
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
@@ -1121,7 +1124,7 @@ class NavigatorSpec extends SpecBase {
               val eightDigitsRecordCat =
                 RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
 
-              val answers =
+              val answers              =
                 emptyUserAnswers
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
@@ -1309,14 +1312,19 @@ class NavigatorSpec extends SpecBase {
 
             val answers =
               UserAnswers(userAnswersId)
-                .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false).success.value
-                .set(RecordCategorisationsQuery, recordCategorisations).success.value
+                .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false)
+                .success
+                .value
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), CheckMode, answers) mustBe
               routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
-            val answers = UserAnswers(userAnswersId).set(RecordCategorisationsQuery, recordCategorisations).success.value
+            val answers =
+              UserAnswers(userAnswersId).set(RecordCategorisationsQuery, recordCategorisations).success.value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
