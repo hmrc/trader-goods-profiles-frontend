@@ -28,7 +28,35 @@ final case class GoodsNomenclatureResponse(
   validityStartDate: Instant,
   validityEndDate: Option[Instant],
   description: String
-)
+) {
+  private def truncateCommodityCode(commodityCode: String): String = {
+    val lastFourDigits = commodityCode.takeRight(4)
+    val lastTwoCodes = lastFourDigits.grouped(2).toSeq
+    lastTwoCodes match {
+      case Seq("00", "00") => commodityCode.dropRight(4)
+      case Seq(_, "00") => commodityCode.dropRight(2)
+      case _ => commodityCode
+    }
+  }
+
+  def apply(
+   id: String,
+   commodityCode: String,
+   measurementUnit: Option[String],
+   validityStartDate: Instant,
+   validityEndDate: Option[Instant],
+   description: String
+  ): GoodsNomenclatureResponse = {
+    GoodsNomenclatureResponse(
+      id,
+      truncateCommodityCode(commodityCode),
+      measurementUnit,
+      validityStartDate,
+      validityEndDate,
+      description
+    )
+  }
+}
 
 object GoodsNomenclatureResponse {
 
