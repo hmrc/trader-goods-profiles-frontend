@@ -18,11 +18,11 @@ package connectors
 
 import config.Service
 import models.{CategoryRecord, GoodsRecord, UpdateGoodsRecord}
-import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest, UpdateRecordRequest}
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{NO_CONTENT, OK}
+import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -45,6 +45,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
     url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+
+  private def goodsRecordUrl(eori: String, recordId: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
 
   private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
@@ -93,7 +96,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .patch(singleGoodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
+      .patch(goodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.map(updateGoodsRecord)))
       .execute[HttpResponse]
@@ -103,9 +106,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .patch(singleGoodsRecordUrl(eori, recordId))
+      .patch(goodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
-      .withBody(Json.toJson(UpdateCategoryRecordRequest.map(categoryRecord)))
+      .withBody(Json.toJson(UpdateRecordRequest.mapFromCategory(categoryRecord)))
       .execute[HttpResponse]
       .map(_ => Done)
 

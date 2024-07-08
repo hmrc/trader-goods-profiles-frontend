@@ -1,0 +1,143 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package models
+
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import org.scalatest.Inside.inside
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.{OptionValues, TryValues}
+import pages._
+
+class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+
+  ".build" - {
+
+    "must return an UpdateGoodsRecord when all mandatory questions are answered" - {
+
+      "and all country of origin data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CountryOfOriginUpdatePage(testRecordId), "1")
+            .success
+            .value
+
+        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          UpdateGoodsRecord(testEori, testRecordId, Some("1"))
+        )
+      }
+
+      "and all goods description data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(GoodsDescriptionUpdatePage(testRecordId), "1")
+            .success
+            .value
+
+        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          UpdateGoodsRecord(testEori, testRecordId, goodsDescription = Some("1"))
+        )
+      }
+
+      "and all trader reference data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(TraderReferenceUpdatePage(testRecordId), "1")
+            .success
+            .value
+
+        val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          UpdateGoodsRecord(testEori, testRecordId, traderReference = Some("1"))
+        )
+      }
+
+      "and all commodity code data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodeUpdatePage(testRecordId), "1")
+            .success
+            .value
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+            .success
+            .value
+
+        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+
+        result mustEqual Right(
+          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some("1"))
+        )
+      }
+    }
+
+    "must return errors" - {
+
+      "when country of origin is required and is missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(CountryOfOriginUpdatePage(testRecordId))
+        }
+      }
+
+      "when goods description is required and is missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(GoodsDescriptionUpdatePage(testRecordId))
+        }
+      }
+
+      "when trader reference is required and is missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(TraderReferenceUpdatePage(testRecordId))
+        }
+      }
+
+      "when commodity code is required and is missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(CommodityCodeUpdatePage(testRecordId))
+        }
+      }
+    }
+  }
+}
