@@ -154,9 +154,11 @@ class Navigator @Inject() () {
         }
       case AssessmentAnswer.NoExemption  =>
         if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length == 6) {
-          //TODO go to supp unit
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
-        } else {
+        } else if (record.categoryAssessments(assessmentPage.index).category == 2 && record.commodityCode.length!=6 && record.measurementUnit.isDefined) {
+          routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        }
+        else {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
 
