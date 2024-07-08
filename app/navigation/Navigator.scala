@@ -44,11 +44,7 @@ class Navigator @Inject() () {
     case CountryOfOriginPage                       => _ => routes.CommodityCodeController.onPageLoadCreate(NormalMode)
     case p: CountryOfOriginUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
     case CommodityCodePage                         => _ => routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
-    case p: CommodityCodeUpdatePage                =>
-      _ => {
-        println("going to has goods")
-        routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, p.recordId)
-      }
+    case p: CommodityCodeUpdatePage                => _ => routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, p.recordId)
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
     case p: AssessmentPage                         => navigateFromAssessment(p)
