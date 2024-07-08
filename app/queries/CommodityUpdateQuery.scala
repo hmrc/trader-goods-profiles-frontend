@@ -19,7 +19,7 @@ package queries
 import models.Commodity
 import play.api.libs.json.JsPath
 
-case class CommodityCodeUpdateQuery(recordId: String) extends Gettable[Commodity] with Settable[Commodity] {
+case class CommodityUpdateQuery(recordId: String) extends Gettable[Commodity] with Settable[Commodity] {
 
-  override def path: JsPath = JsPath \ "commodityCodeUpdate" \ recordId
+  override def path: JsPath = JsPath \ "commodityUpdate" \ recordId
 }

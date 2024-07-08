@@ -61,7 +61,7 @@ class CyaUpdateRecordController @Inject() (
                 CountryOfOriginSummary.row(answer, recordId, CheckMode)
               )
             )
-            Ok(view(list, recordId, onSubmitAction))
+            Ok(view(list, onSubmitAction))
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }
@@ -79,7 +79,7 @@ class CyaUpdateRecordController @Inject() (
               GoodsDescriptionSummary.row(updateGoodsRecord.goodsDescription.get, recordId, CheckMode)
             )
           )
-          Ok(view(list, recordId, onSubmitAction))
+          Ok(view(list, onSubmitAction))
         case Left(errors)                                => logErrorsAndContinue(errors)
       }
     }
@@ -96,7 +96,7 @@ class CyaUpdateRecordController @Inject() (
               TraderReferenceSummary.row(updateGoodsRecord.traderReference.get, recordId, CheckMode)
             )
           )
-          Ok(view(list, recordId, onSubmitAction))
+          Ok(view(list, onSubmitAction))
         case Left(errors)                                => logErrorsAndContinue(errors)
       }
     }
@@ -113,7 +113,7 @@ class CyaUpdateRecordController @Inject() (
               CommodityCodeSummary.row(updateGoodsRecord.commodityCode.get, recordId, CheckMode)
             )
           )
-          Ok(view(list, recordId, onSubmitAction))
+          Ok(view(list, onSubmitAction))
         case Left(errors)                                => logErrorsAndContinue(errors)
       }
     }
@@ -121,7 +121,7 @@ class CyaUpdateRecordController @Inject() (
   def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
     request: Request[_]
   ): Future[String] =
-    userAnswers.get(CountryOfOriginPage) match {
+    userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
       case Some(answer) =>
         userAnswers.get(CountriesQuery) match {
           case Some(countries) => Future.successful(findCountryName(countries, answer))

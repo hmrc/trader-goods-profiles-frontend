@@ -18,7 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.router.requests.{CreateRecordRequest, UpdateCategoryRecordRequest, UpdateRecordRequest}
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination, UpdateGoodsRecord}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -53,11 +53,12 @@ class GoodsRecordConnectorSpec
 
   private val xClientIdName: String = "X-Client-ID"
   private val xClientId: String     = "tgp-frontend"
-  private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
+  private def goodsRecordsUrl       = s"/trader-goods-profiles-router/traders/$testEori/records"
+  private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private def goodsRecordUrl        = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
   private def getGoodsRecordsUrl    =
     s"/trader-goods-profiles-data-store/traders/$testEori/records"
 
-  private val testRecordId           = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
   private lazy val getRecordResponse = Json
     .parse(s"""
               |  {
@@ -257,7 +258,7 @@ class GoodsRecordConnectorSpec
       val createGoodsRecordResponse = CreateGoodsRecordResponse(testRecordId)
 
       wireMockServer.stubFor(
-        post(urlEqualTo(goodsRecordUrl))
+        post(urlEqualTo(goodsRecordsUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok().withBody(Json.toJson(createGoodsRecordResponse).toString))
@@ -269,7 +270,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(goodsRecordUrl))
+        post(urlEqualTo(goodsRecordsUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
@@ -325,22 +326,22 @@ class GoodsRecordConnectorSpec
       category = 1,
       categoryAssessmentsWithExemptions = 3,
       measurementUnit = Some("1"),
-      supplementaryUnit = Some("123.123")
+      supplementaryUnit = Some("123")
     )
 
-    val updateRecordRequest = UpdateCategoryRecordRequest(
+    val updateRecordRequest = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
-      Some(1),
-      Some(123.123),
-      Some("1")
+      category = Some(1),
+      supplementaryUnit = Some(123),
+      measurementUnit = Some("1")
     )
 
     "must update a goods record" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
@@ -352,7 +353,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
@@ -383,7 +384,7 @@ class GoodsRecordConnectorSpec
     "must update a goods record" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
@@ -395,7 +396,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
