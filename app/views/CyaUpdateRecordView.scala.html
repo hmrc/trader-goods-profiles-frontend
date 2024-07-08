@@ -21,7 +21,7 @@ formHelper: FormWithCSRF,
 govukButton: GovukButton
 )
 
-@(list: SummaryList, recordId: String, action: Call)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cyaUpdateRecord.title"))) {
 
