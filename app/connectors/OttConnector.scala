@@ -126,7 +126,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
     for {
       ottResponse <- getFromOtt[OttResponse](
-                       ottGreenLanesUrl(commodityCode),
+                       ottGreenLanesUrl(commodityCode.padTo(10, "0").mkString),
                        Some(auditDetails)
                      )
     } yield Commodity(
