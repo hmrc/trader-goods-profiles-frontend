@@ -18,6 +18,7 @@ package base
 
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
+import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -75,6 +76,13 @@ trait SpecBase
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
+
+  def testAuditOttResponse: OttResponse = OttResponse(
+    GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, "test"),
+    Seq(),
+    Seq(),
+    Seq()
+  )
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)

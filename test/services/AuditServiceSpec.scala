@@ -437,7 +437,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             endTime,
             OK,
             Some(responseBody),
-            Some(testCommodity)
+            Some(testAuditOttResponse)
           )
         )
 
@@ -451,7 +451,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
               eqTo(endTime),
               eqTo(OK),
               eqTo(Some(responseBody)),
-              eqTo(Some(testCommodity))
+              eqTo(Some(testAuditOttResponse))
             )(any())
         }
 
@@ -485,7 +485,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             endTime,
             OK,
             Some(responseBody),
-            Some(testCommodity)
+            Some(testAuditOttResponse)
           )
         )
 
@@ -499,7 +499,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
               eqTo(endTime),
               eqTo(OK),
               eqTo(Some(responseBody)),
-              eqTo(Some(testCommodity))
+              eqTo(Some(testAuditOttResponse))
             )(any())
         }
 
@@ -547,7 +547,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val responseBody    = "responseBody"
       val testOttResponse = OttResponse(
-        GoodsNomenclatureResponse("1", testCommodity.commodityCode, None),
+        GoodsNomenclatureResponse("1", testCommodity.commodityCode, None, Instant.EPOCH, None, "test"),
         Seq.empty[CategoryAssessmentRelationship],
         Seq.empty[IncludedElement],
         Seq.empty[Descendant]
