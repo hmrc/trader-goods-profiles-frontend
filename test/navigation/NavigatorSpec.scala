@@ -324,6 +324,32 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.SingleRecordController.onPageLoad(testRecordId)
         }
 
+        "must go from HasCommodityCodeChangePage when user answers Yes go to CommodityCodePage" in {
+
+          val answers = UserAnswers(userAnswersId)
+            .set(HasCommodityCodeChangePage(testRecordId), true)
+            .success
+            .value
+          navigator.nextPage(
+            HasCommodityCodeChangePage(testRecordId),
+            NormalMode,
+            answers
+          ) mustBe routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId)
+        }
+
+        "must go from HasCommodityCodeChangePage user answers No to SingleRecordPage" in {
+
+          val answers = UserAnswers(userAnswersId)
+            .set(HasCommodityCodeChangePage(testRecordId), false)
+            .success
+            .value
+          navigator.nextPage(
+            HasCommodityCodeChangePage(testRecordId),
+            NormalMode,
+            answers
+          ) mustBe routes.SingleRecordController.onPageLoad(testRecordId)
+        }
+
         "must go from HasCorrectGoodsCommodityCodeUpdatePage" - {
 
           "to CyaUpdateRecord when answer is Yes" in {
