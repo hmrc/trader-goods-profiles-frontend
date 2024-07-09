@@ -45,7 +45,7 @@ object GoodsDescriptionSummary {
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId).url)
+        ActionItemViewModel("site.change", routes.HasGoodDescriptionChangeController.onPageLoad(mode, recordId).url)
           .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
     )

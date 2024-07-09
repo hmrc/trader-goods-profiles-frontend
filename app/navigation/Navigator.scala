@@ -197,6 +197,8 @@ class Navigator @Inject() () {
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
+    case p: HasCommodityCodeChangePage             => navigateHasCommodityCodeChangeCheck(p.recordId)
+    case p: HasGoodDescriptionChangePage           => navigateHasGoodDescriptionChangeCheck(p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
@@ -344,6 +346,26 @@ class Navigator @Inject() () {
             routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
           }
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateHasCommodityCodeChangeCheck(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasCommodityCodeChangePage(recordId))
+      .map {
+        case true  =>
+          routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateHasGoodDescriptionChangeCheck(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasGoodDescriptionChangePage(recordId))
+      .map {
+        case true  =>
+          routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, recordId)
+        case false => routes.SingleRecordController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
