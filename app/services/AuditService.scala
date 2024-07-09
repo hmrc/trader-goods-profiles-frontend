@@ -148,7 +148,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
               responseDateTime,
               responseStatus,
               errorMessage,
-              response.map(x => x.asInstanceOf[Commodity])
+              response.map(x => x.asInstanceOf[OttResponse])
             )
 
           case AuditGetCategorisationAssessment =>
@@ -171,7 +171,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     responseDateTime: Instant,
     responseStatus: Int,
     errorMessage: Option[String],
-    commodityDetails: Option[Commodity]
+    commodityDetails: Option[OttResponse]
   )(implicit hc: HeaderCarrier): Future[Done] = {
 
     val event = auditEventFactory.createValidateCommodityCodeEvent(

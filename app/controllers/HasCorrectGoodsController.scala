@@ -207,8 +207,7 @@ class HasCorrectGoodsController @Inject() (
     oldCommodityCategorisation: CategorisationInfo,
     newCommodityCategorisation: CategorisationInfo
   ) =
-    !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments) ||
-      oldCommodityCategorisation.measurementUnit.isDefined || newCommodityCategorisation.measurementUnit.isDefined
+    !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments)
 
   private def cleanupOldAssessmentAnswers(
     userAnswers: UserAnswers,
