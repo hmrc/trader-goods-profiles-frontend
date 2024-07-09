@@ -45,7 +45,23 @@ object GoodsDescriptionSummary {
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.HasGoodDescriptionChangeController.onPageLoad(mode, recordId).url)
+        ActionItemViewModel(
+          "site.change",
+          routes.HasGoodDescriptionChangeController.onPageLoad(mode, recordId).url
+        )
+          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+      )
+    )
+
+  def rowUpdate(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "goodsDescription.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel(
+          "site.change",
+          routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+        )
           .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
     )

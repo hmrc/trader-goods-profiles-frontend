@@ -76,7 +76,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(
               //TODO remove .get
-              GoodsDescriptionSummary.row(updateGoodsRecord.goodsDescription.get, recordId, CheckMode)
+              GoodsDescriptionSummary.rowUpdate(updateGoodsRecord.goodsDescription.get, recordId, CheckMode)
             )
           )
           Ok(view(list, onSubmitAction))

@@ -18,7 +18,7 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions.IdentifierAction
-import models.{CheckMode}
+import models.{CheckMode, NormalMode}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -42,10 +42,10 @@ class SingleRecordController @Inject() (
     goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(record.traderRef, recordId, CheckMode),
-          GoodsDescriptionSummary.row(record.goodsDescription, recordId, CheckMode),
-          CountryOfOriginSummary.row(record.countryOfOrigin, recordId, CheckMode),
-          CommodityCodeSummary.row(record.commodityCode, recordId, CheckMode),
+          TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
+          GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
+          CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
+          CommodityCodeSummary.row(record.commodityCode, recordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
       )
