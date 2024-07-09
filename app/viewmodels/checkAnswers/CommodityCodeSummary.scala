@@ -49,4 +49,17 @@ object CommodityCodeSummary {
           .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
       )
     )
+
+  def rowUpdate(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "commodityCode.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel(
+          "site.change",
+          routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+        )
+          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+      )
+    )
 }

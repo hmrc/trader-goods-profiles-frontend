@@ -599,7 +599,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Commodity Code Update" - {
       val summaryKey      = "commodityCode.checkYourAnswersLabel"
       val summaryHidden   = "commodityCode.change.hidden"
-      val summaryUrl      = routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
+      val summaryUrl      = routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = CommodityCodeUpdatePage(testRecordId)
       val answer          = "Test"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(answer))
