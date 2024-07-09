@@ -19,7 +19,7 @@ package factories
 import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
 import models.ott.response.OttResponse
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{GoodsRecord, TraderProfile}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup

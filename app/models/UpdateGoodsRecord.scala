@@ -16,7 +16,7 @@
 
 package models
 
-import cats.data.EitherNec
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple3Parallel
 import pages._
 import play.api.libs.json.{Json, OFormat}
@@ -42,7 +42,7 @@ object UpdateGoodsRecord {
     (
       Right(eori),
       Right(recordId),
-      answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+      getCountryOfOrigin(answers, recordId)
     ).parMapN((eori, recordId, value) =>
       UpdateGoodsRecord(
         eori,
@@ -59,7 +59,7 @@ object UpdateGoodsRecord {
     (
       Right(eori),
       Right(recordId),
-      answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
+      getGoodsDescription(answers, recordId)
     ).parMapN((eori, recordId, value) =>
       UpdateGoodsRecord(
         eori,
@@ -76,7 +76,7 @@ object UpdateGoodsRecord {
     (
       Right(eori),
       Right(recordId),
-      answers.getPageValue(CommodityCodeUpdatePage(recordId))
+      getCommodityCode(answers, recordId)
     ).parMapN((eori, recordId, value) =>
       UpdateGoodsRecord(
         eori,
@@ -101,4 +101,35 @@ object UpdateGoodsRecord {
         traderReference = Some(value)
       )
     )
+
+  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+    answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
+      case Right(true)  =>
+        answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
+          case Right(code)  =>
+            answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
+              case Right(true)  => Right(code)
+              case Right(false) =>
+                Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
+              case Left(errors) => Left(errors)
+            }
+          case Left(errors) => Left(errors)
+        }
+      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
+      case Left(errors) => Left(errors)
+    }
+
+  private def getGoodsDescription(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+    answers.getPageValue(HasGoodsDescriptionChangePage(recordId)) match {
+      case Right(true)  => answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
+      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasGoodsDescriptionChangePage(recordId))))
+      case Left(errors) => Left(errors)
+    }
+
+  private def getCountryOfOrigin(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+    answers.getPageValue(HasCountryOfOriginChangePage(recordId)) match {
+      case Right(true)  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
+      case Left(errors) => Left(errors)
+    }
 }

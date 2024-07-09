@@ -18,44 +18,44 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import forms.HasGoodDescriptionChangeFormProvider
+import forms.HasGoodsDescriptionChangeFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HasGoodDescriptionChangePage
+import pages.HasGoodsDescriptionChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.HasGoodDescriptionChangeView
+import views.html.HasGoodsDescriptionChangeView
 
 import scala.concurrent.Future
 
-class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar {
+class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasGoodDescriptionChangeFormProvider()
+  val formProvider = new HasGoodsDescriptionChangeFormProvider()
   private val form = formProvider()
 
-  private lazy val hasGoodDescriptionChangeRoute =
-    routes.HasGoodDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
+  private lazy val hasGoodsDescriptionChangeRoute =
+    routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
 
-  "HasGoodDescriptionChange Controller" - {
+  "HasGoodsDescriptionChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasGoodDescriptionChangeRoute)
+        val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[HasGoodDescriptionChangeView]
+        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
@@ -64,14 +64,14 @@ class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar 
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasGoodDescriptionChangePage(testRecordId), true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasGoodDescriptionChangeRoute)
+        val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
 
-        val view = application.injector.instanceOf[HasGoodDescriptionChangeView]
+        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         val result = route(application, request).value
 
@@ -99,7 +99,7 @@ class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, hasGoodDescriptionChangeRoute)
+          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -115,12 +115,12 @@ class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, hasGoodDescriptionChangeRoute)
+          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[HasGoodDescriptionChangeView]
+        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         val result = route(application, request).value
 
@@ -137,7 +137,7 @@ class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar 
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasGoodDescriptionChangeRoute)
+        val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
 
         val result = route(application, request).value
 
@@ -152,7 +152,7 @@ class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, hasGoodDescriptionChangeRoute)
+          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
