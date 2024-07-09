@@ -157,9 +157,11 @@ class Navigator @Inject() () {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        if (record.categoryAssessments(assessmentPage.index).category == 2 &&
+        if (
+          record.categoryAssessments(assessmentPage.index).category == 2 &&
           commodityCodeSansTrailingZeros(record.commodityCode).length == 6 &&
-        record.descendantCount != 0) {
+          record.descendantCount != 0
+        ) {
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         } else {
           routes.CyaCategorisationController.onPageLoad(recordId)
@@ -306,9 +308,11 @@ class Navigator @Inject() () {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        if (record.categoryAssessments(assessmentPage.index).category == 2 &&
+        if (
+          record.categoryAssessments(assessmentPage.index).category == 2 &&
           commodityCodeSansTrailingZeros(record.commodityCode).length == 6 &&
-          record.descendantCount != 0) {
+          record.descendantCount != 0
+        ) {
           routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
         } else {
           routes.CyaCategorisationController.onPageLoad(recordId)
@@ -337,7 +341,6 @@ class Navigator @Inject() () {
       checkRouteMap(page)(userAnswers)
   }
 
-  private def commodityCodeSansTrailingZeros(commodityCode: String): String = {
+  private def commodityCodeSansTrailingZeros(commodityCode: String): String =
     commodityCode.reverse.dropWhile(x => x == '0').reverse
-  }
 }
