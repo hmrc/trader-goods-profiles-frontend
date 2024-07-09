@@ -23,7 +23,8 @@ import play.api.libs.json.{Json, OFormat}
 final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
-  measurementUnit: Option[String]
+  measurementUnit: Option[String],
+  descendantCount: Int
 )
 
 object CategorisationInfo {
@@ -36,7 +37,8 @@ object CategorisationInfo {
         CategorisationInfo(
           ott.goodsNomenclature.commodityCode,
           assessments.sorted,
-          ott.goodsNomenclature.measurementUnit
+          ott.goodsNomenclature.measurementUnit,
+          ott.descendents.size
         )
       }
 

@@ -19,25 +19,24 @@ package models.ott.response
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-import java.time.Instant
-
-final case class GoodsNomenclatureResponse(
+final case class Descendant(
   id: String,
-  commodityCode: String,
-  measurementUnit: Option[String],
-  validityStartDate: Instant,
-  validityEndDate: Option[Instant],
-  description: String
+  descendantType: String
 )
 
-object GoodsNomenclatureResponse {
+object Descendant {
 
-  implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
+  def apply(
+    id: String,
+    descendantType: String
+  ): Descendant =
+    new Descendant(
+      id,
+      descendantType
+    )
+
+  implicit lazy val reads: Reads[Descendant] = (
     (__ \ "id").read[String] and
-      (__ \ "attributes" \ "goods_nomenclature_item_id").read[String] and
-      (__ \ "attributes" \ "supplementary_measure_unit").readNullable[String] and
-      (__ \ "attributes" \ "validity_start_date").read[Instant] and
-      (__ \ "attributes" \ "validity_end_date").readNullable[Instant] and
-      (__ \ "attributes" \ "description").read[String]
-  )(GoodsNomenclatureResponse.apply _)
+      (__ \ "type").read[String]
+  )(Descendant.apply _)
 }
