@@ -186,6 +186,7 @@ class Navigator @Inject() () {
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
+    case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangeCheck(answers, p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
@@ -205,6 +206,21 @@ class Navigator @Inject() () {
             routes.NirmsNumberController.onPageLoad(CheckMode)
           }
         case false => routes.CyaCreateProfileController.onPageLoad
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+
+  private def navigateFromHasCountryOfOriginChangeCheck(answers: UserAnswers, recordId: String): Call =
+    answers
+      .get(HasCountryOfOriginChangePage(recordId))
+      .map {
+        case true  =>
+          if (answers.isDefined(CountryOfOriginUpdatePage(recordId))) {
+            routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId)
+          } else {
+            routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, recordId)
+          }
+        case false => routes.SingleRecordController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
