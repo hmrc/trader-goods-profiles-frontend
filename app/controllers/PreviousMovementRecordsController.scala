@@ -18,6 +18,7 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import models.GoodsRecordsPagination.firstPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,7 +45,7 @@ class PreviousMovementRecordsController @Inject() (
       case _ =>
         goodsRecordConnector.doRecordsExist(request.eori).map {
           case false => Ok(view())
-          case true  => Redirect(routes.GoodsRecordsController.onPageLoad(1))
+          case true  => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
         }
     }
   }

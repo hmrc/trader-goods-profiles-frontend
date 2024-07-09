@@ -19,6 +19,7 @@ package navigation
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
+import models.GoodsRecordsPagination.firstPage
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
@@ -637,7 +638,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
         navigator.nextPage(RemoveGoodsRecordPage, NormalMode, emptyUserAnswers) mustEqual routes.GoodsRecordsController
-          .onPageLoad(1)
+          .onPageLoad(firstPage)
       }
 
     }

@@ -19,6 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.RemoveGoodsRecordFormProvider
+import models.GoodsRecordsPagination.firstPage
 
 import javax.inject.Inject
 import models.{Location, NormalMode}
@@ -72,7 +73,7 @@ class RemoveGoodsRecordController @Inject() (
                   case false =>
                     Redirect(
                       routes.JourneyRecoveryController.onPageLoad(
-                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(1).url))
+                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
                       )
                     )
                 }

@@ -30,12 +30,12 @@ case class GoodsRecordsPagination(
 )
 
 object GoodsRecordsPagination {
-  implicit val format: OFormat[GoodsRecordsPagination] = Json.format[GoodsRecordsPagination]
-  private val defaultRecord                            = 0
-
+  implicit val format: OFormat[GoodsRecordsPagination]                       = Json.format[GoodsRecordsPagination]
+  private val defaultRecord                                                  = 0
+  val firstPage                                                              = 1
   def getFirstRecord(pagination: GoodsRecordsPagination, pageSize: Int): Int =
     if (
-      pagination.totalRecords == 0 || pagination.currentPage > pagination.totalPages || (pagination.currentPage > 1 && pageSize >= pagination.totalRecords)
+      pagination.totalRecords == 0 || pagination.currentPage > pagination.totalPages || (pagination.currentPage > firstPage && pageSize >= pagination.totalRecords)
     ) {
       defaultRecord
     } else {
@@ -52,7 +52,7 @@ object GoodsRecordsPagination {
     }
 
   def getPagination(currentPage: Int, totalPages: Int): Pagination =
-    if (currentPage < 1 || totalPages < 1 || currentPage > totalPages) {
+    if (currentPage < firstPage || totalPages < firstPage || currentPage > totalPages) {
       Pagination(None, None, None)
     } else {
 
@@ -82,7 +82,7 @@ object GoodsRecordsPagination {
             ellipsis = Some(ellipsis)
           )
         }),
-        previous = if (currentPage == 1) {
+        previous = if (currentPage == firstPage) {
           None
         } else {
           Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage - 1).url))

@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.GoodsRecordConnector
+import models.GoodsRecordsPagination.firstPage
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -78,7 +79,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(1).url
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
         verify(mockGetGoodsRecordsConnector, times(1)).doRecordsExist(any())(any())
         verify(mockGetGoodsRecordsConnector, times(1)).getRecordsCount(any())(any())
 
@@ -130,7 +131,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(1).url
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
 
         verify(mockGetGoodsRecordsConnector, times(1)).storeAllRecords(any())(any())
       }

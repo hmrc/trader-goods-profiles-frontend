@@ -16,6 +16,7 @@
 
 package models
 import controllers.routes
+import models.GoodsRecordsPagination.firstPage
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
@@ -387,7 +388,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(1).url,
+            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
@@ -428,7 +429,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(1).url,
+            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
@@ -475,7 +476,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(1).url,
+            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
@@ -528,7 +529,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(1).url,
+            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(

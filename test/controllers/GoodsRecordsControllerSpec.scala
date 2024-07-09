@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
+import models.GoodsRecordsPagination.firstPage
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.apache.pekko.Done
@@ -42,7 +43,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider                   = new GoodsRecordsFormProvider()
   private val form                   = formProvider()
-  private val currentPage            = 1
+  private val currentPage            = firstPage
   private val totalRecords           = 23
   private val numberOfPages          = 3
   private val firstRecord            = 1
