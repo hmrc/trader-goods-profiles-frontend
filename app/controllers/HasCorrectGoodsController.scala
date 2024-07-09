@@ -115,7 +115,6 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
         )
   }
-  // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
@@ -124,7 +123,6 @@ class HasCorrectGoodsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            //TODO - use the UpdateCommdityQuery (with recordId) here when available
             request.userAnswers.get(LongerCommodityQuery(recordId)) match {
               case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
               case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))

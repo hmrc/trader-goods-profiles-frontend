@@ -63,7 +63,20 @@
         ]
       },
       "descendants": {
-        "data": []
+        "data": [
+          {
+            "id": "72785",
+            "type": "goods_nomenclature"
+          },
+          {
+            "id": "94337",
+            "type": "goods_nomenclature"
+          },
+          {
+            "id": "94338",
+            "type": "goods_nomenclature"
+          }
+        ]
       }
     }
   },

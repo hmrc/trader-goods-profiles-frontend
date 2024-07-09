@@ -64,9 +64,9 @@ class LongerCommodityCodeController @Inject() (
         .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
 
       commodityCodeOption match {
-        case Some(shortCommodity) if shortCommodity.length != 10 =>
-          Ok(view(preparedForm, mode, shortCommodity, recordId))
-        case _                                                   => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
+          Ok(view(preparedForm, mode, commodityCodeSansTrailingZeros(shortCommodity), recordId))
+        case _                                                                                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 
@@ -77,13 +77,14 @@ class LongerCommodityCodeController @Inject() (
         .flatMap(x => x.records.get(recordId).map(x => x.commodityCode))
 
       commodityCodeOption match {
-        case Some(shortCommodity) if shortCommodity.length != 10 =>
+        case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
+          val shortCode = commodityCodeSansTrailingZeros(shortCommodity)
           form
             .bindFromRequest()
             .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortCommodity, recordId))),
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId))),
               value => {
-                val longCommodityCode = s"$shortCommodity$value"
+                val longCommodityCode = s"$shortCode$value"
                 (for {
                   validCommodityCode      <- ottConnector.getCommodityCode(
                                                longCommodityCode,
@@ -101,7 +102,7 @@ class LongerCommodityCodeController @Inject() (
                     val formWithApiErrors =
                       form
                         .copy(errors = Seq(elems = FormError("value", getMessage("longerCommodityCode.error.invalid"))))
-                    BadRequest(view(formWithApiErrors, mode, shortCommodity, recordId))
+                    BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
                 }
               }
             )
@@ -109,4 +110,15 @@ class LongerCommodityCodeController @Inject() (
 
     }
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
+
+  private def commodityCodeSansTrailingZeros(commodityCode: String): String = {
+    val codeNoZeros = commodityCode.reverse.dropWhile(x => x == '0').reverse
+
+    if (codeNoZeros.length >= 6) {
+      codeNoZeros
+    } else {
+      codeNoZeros + "0".repeat(6 - codeNoZeros.length)
+    }
+  }
+
 }

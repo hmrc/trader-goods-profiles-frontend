@@ -77,8 +77,9 @@ trait SpecBase
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
 
-  def testAuditOttResponse = OttResponse(
+  def testAuditOttResponse: OttResponse = OttResponse(
     GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, "test"),
+    Seq(),
     Seq(),
     Seq()
   )
@@ -155,13 +156,15 @@ trait SpecBase
   lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
-    Some("Weight, in kilograms")
+    Some("Weight, in kilograms"),
+    0
   )
 
   private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
-    None
+    None,
+    0
   )
 
   lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
@@ -189,7 +192,8 @@ trait SpecBase
   private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(),
-    Some("Weight, in kilograms")
+    Some("Weight, in kilograms"),
+    0
   )
 
   lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
@@ -207,7 +211,8 @@ trait SpecBase
   private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1NoExemptions),
-    Some("Weight, in kilograms")
+    Some("Weight, in kilograms"),
+    0
   )
 
   lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
