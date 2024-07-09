@@ -32,33 +32,6 @@ final case class GoodsNomenclatureResponse(
 
 object GoodsNomenclatureResponse {
 
-  private def truncateCommodityCode(commodityCode: String): String = {
-    val lastFourDigits = commodityCode.takeRight(4)
-    val lastTwoCodes   = lastFourDigits.grouped(2).toSeq
-    lastTwoCodes match {
-      case Seq("00", "00") => commodityCode.dropRight(4)
-      case Seq(_, "00")    => commodityCode.dropRight(2)
-      case _               => commodityCode
-    }
-  }
-
-  def apply(
-    id: String,
-    commodityCode: String,
-    measurementUnit: Option[String],
-    validityStartDate: Instant,
-    validityEndDate: Option[Instant],
-    description: String
-  ): GoodsNomenclatureResponse =
-    new GoodsNomenclatureResponse(
-      id,
-      truncateCommodityCode(commodityCode),
-      measurementUnit,
-      validityStartDate,
-      validityEndDate,
-      description
-    )
-
   implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
     (__ \ "id").read[String] and
       (__ \ "attributes" \ "goods_nomenclature_item_id").read[String] and
@@ -66,14 +39,5 @@ object GoodsNomenclatureResponse {
       (__ \ "attributes" \ "validity_start_date").read[Instant] and
       (__ \ "attributes" \ "validity_end_date").readNullable[Instant] and
       (__ \ "attributes" \ "description").read[String]
-  )((id, commodityCode, measurementUnit, validityStartDate, validityEndDate, description) =>
-    GoodsNomenclatureResponse(
-      id,
-      truncateCommodityCode(commodityCode),
-      measurementUnit,
-      validityStartDate,
-      validityEndDate,
-      description
-    )
-  )
+  )(GoodsNomenclatureResponse.apply _)
 }
