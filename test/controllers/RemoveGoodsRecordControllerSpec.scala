@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import forms.RemoveGoodsRecordFormProvider
+import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetGoodsRecordResponse
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
@@ -169,7 +170,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", "true"))
 
         val result      = route(application, request).value
-        val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(1).url)
+        val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url

@@ -17,10 +17,10 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CountryOfOriginFormProvider
-import models.{CheckMode, Country, NormalMode, UserAnswers}
+import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
