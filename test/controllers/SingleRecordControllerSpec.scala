@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -71,9 +71,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode),
+          TraderReferenceSummary.row(record.traderRef, testRecordId, CheckMode),
           GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode),
-          CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode),
+          CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, CheckMode),
           CommodityCodeSummary.row(record.commodityCode, testRecordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
