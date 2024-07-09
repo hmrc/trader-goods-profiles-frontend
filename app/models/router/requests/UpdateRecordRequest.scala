@@ -32,7 +32,7 @@ case class UpdateRecordRequest(
   traderRef: Option[String] = None,
   comcode: Option[String] = None,
   category: Option[Int] = None,
-  supplementaryUnit: Option[Int] = None,
+  supplementaryUnit: Option[Double] = None,
   measurementUnit: Option[String] = None
 )
 
@@ -55,7 +55,7 @@ object UpdateRecordRequest {
       categoryRecord.recordId,
       categoryRecord.eori,
       category = Some(categoryRecord.category),
-      supplementaryUnit = convertToInt(categoryRecord.supplementaryUnit),
+      supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
     )
 
@@ -68,7 +68,7 @@ object UpdateRecordRequest {
       (JsPath \ "traderRef").readNullable[String] and
       (JsPath \ "comcode").readNullable[String] and
       (JsPath \ "category").readNullable[Int] and
-      (JsPath \ "supplementaryUnit").readNullable[Int] and
+      (JsPath \ "supplementaryUnit").readNullable[Double] and
       (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[UpdateRecordRequest] =
@@ -80,9 +80,9 @@ object UpdateRecordRequest {
       (JsPath \ "traderRef").writeNullable[String] and
       (JsPath \ "comcode").writeNullable[String] and
       (JsPath \ "category").writeNullable[Int] and
-      (JsPath \ "supplementaryUnit").writeNullable[Int] and
+      (JsPath \ "supplementaryUnit").writeNullable[Double] and
       (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
 
-  private def convertToInt(value: Option[String]): Option[Int] =
-    value.map(_.toInt)
+  private def convertToDouble(value: Option[String]): Option[Double] =
+    value.map(_.toDouble)
 }
