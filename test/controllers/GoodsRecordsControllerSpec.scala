@@ -20,10 +20,12 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
+import models.GoodsRecordsPagination.firstPage
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Country, GoodsRecordsPagination, UserAnswers}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.GoodsRecordsPage
 import play.api.inject.bind
@@ -32,97 +34,190 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
-import views.html.GoodsRecordsView
+import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
 import scala.concurrent.Future
 
 class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new GoodsRecordsFormProvider()
-  private val form = formProvider()
+  val formProvider                   = new GoodsRecordsFormProvider()
+  private val form                   = formProvider()
+  private val currentPage            = firstPage
+  private val totalRecords           = 23
+  private val numberOfPages          = 3
+  private val firstRecord            = 1
+  private val lastRecord             = 10
+  private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(currentPage).url
 
-  private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(1).url
+  private val records = Seq(
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "2",
+      "10410100",
+      "EC",
+      "BAN0010012",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2023-11-18T23:20:19Z"),
+      Instant.parse("2023-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "3",
+      "10410100",
+      "EC",
+      "BAN0010013",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2024-11-18T23:20:19Z"),
+      Instant.parse("2024-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    ),
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "EC",
+      "BAN0010011",
+      "Organic bananas",
+      "Not requested",
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z"),
+      "Not ready",
+      1
+    )
+  )
 
   private val response = GetRecordsResponse(
-    Seq(
-      GetGoodsRecordResponse(
-        "1",
-        "10410100",
-        "EC",
-        "BAN0010011",
-        "Organic bananas",
-        "Not requested",
-        Instant.parse("2022-11-18T23:20:19Z"),
-        Instant.parse("2022-11-18T23:20:19Z"),
-        "Not ready",
-        1
-      ),
-      GetGoodsRecordResponse(
-        "2",
-        "10410100",
-        "EC",
-        "BAN0010012",
-        "Organic bananas",
-        "Not requested",
-        Instant.parse("2023-11-18T23:20:19Z"),
-        Instant.parse("2023-11-18T23:20:19Z"),
-        "Not ready",
-        1
-      ),
-      GetGoodsRecordResponse(
-        "3",
-        "10410100",
-        "EC",
-        "BAN0010013",
-        "Organic bananas",
-        "Not requested",
-        Instant.parse("2024-11-18T23:20:19Z"),
-        Instant.parse("2024-11-18T23:20:19Z"),
-        "Not ready",
-        1
-      )
-    ),
-    GoodsRecordsPagination(10, 1, 4, None, None)
+    records,
+    GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
   )
 
   private val pagination = Pagination(
     items = Option(
       Seq(
         PaginationItem(
-          number = Some("1"),
+          number = Some(currentPage.toString),
           current = Some(true),
-          href = routes.GoodsRecordsController.onPageLoad(1).url
+          href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+          ellipsis = Some(false)
         ),
         PaginationItem(
-          number = Some("2"),
+          number = Some((1 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(2).url
+          href = routes.GoodsRecordsController.onPageLoad(1 + currentPage).url,
+          ellipsis = Some(false)
         ),
         PaginationItem(
-          number = Some("3"),
+          number = Some((2 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(3).url
-        ),
-        PaginationItem(
-          number = Some("4"),
-          current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(4).url
+          href = routes.GoodsRecordsController.onPageLoad(2 + currentPage).url,
+          ellipsis = Some(true)
         )
       )
     ),
     previous = None,
-    next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(2).url))
+    next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
 
   "GoodsRecords Controller" - {
 
-    "must return OK and the correct view for a GET with records" in {
+    "must return OK and the correct view for a GET with records and latest records are stored" in {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(1)), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(response)
+      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
+        .successful(totalRecords)
+
+      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
+        .successful(Done)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -147,30 +242,36 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           response.goodsItemRecords,
-          10,
-          1,
-          3,
+          totalRecords,
+          firstRecord,
+          lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          1
+          currentPage
         )(
           request,
           messages(application)
         ).toString
+        verify(mockGoodsRecordConnector, times(1)).storeLatestRecords(any())(any())
       }
     }
 
-    "must return OK and the correct view for a GET without records" in {
+    "must return OK and the correct view for a GET with records and latest records are stored when it is a middle page" in {
 
-      val emptyResponse = GetRecordsResponse(
-        Seq.empty,
-        GoodsRecordsPagination(0, 0, 0, None, None)
-      )
+      val middlePage = 2
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+      val response                 = GetRecordsResponse(
+        records,
+        GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
+      )
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(middlePage), any())(any())) thenReturn Future
+        .successful(response)
+      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
+        .successful(totalRecords)
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(1)), any())(any())) thenReturn Future
-        .successful(emptyResponse)
+      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
+        .successful(Done)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -184,6 +285,73 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
+      val middleGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(middlePage).url
+
+      val pagination = Pagination(
+        items = Option(
+          Seq(
+            PaginationItem(
+              number = Some((middlePage - 1).toString),
+              current = Some(false),
+              href = routes.GoodsRecordsController.onPageLoad(middlePage - 1).url,
+              ellipsis = Some(false)
+            ),
+            PaginationItem(
+              number = Some(middlePage.toString),
+              current = Some(true),
+              href = routes.GoodsRecordsController.onPageLoad(middlePage).url,
+              ellipsis = Some(false)
+            ),
+            PaginationItem(
+              number = Some((1 + middlePage).toString),
+              current = Some(false),
+              href = routes.GoodsRecordsController.onPageLoad(1 + middlePage).url,
+              ellipsis = Some(false)
+            )
+          )
+        ),
+        previous = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(middlePage - 1).url)),
+        next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + middlePage).url))
+      )
+
+      running(application) {
+        val request = FakeRequest(GET, middleGoodsRecordsRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GoodsRecordsView]
+
+        val firstRecord = 11
+        val lastRecord  = 20
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          form,
+          response.goodsItemRecords,
+          totalRecords,
+          firstRecord,
+          lastRecord,
+          Seq(Country("EC", "Ecuador")),
+          pagination,
+          middlePage
+        )(
+          request,
+          messages(application)
+        ).toString
+        verify(mockGoodsRecordConnector, times(1)).storeLatestRecords(any())(any())
+      }
+    }
+
+    "must return OK and the correct view for a GET without records" in {
+
+      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
+        .successful(0)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+        .build()
+
       running(application) {
         val request = FakeRequest(GET, goodsRecordsRoute)
 
@@ -194,14 +362,51 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must return OK and the empty view onPageLoadNoRecords" in {
+      val emptyGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoadNoRecords().url
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .build()
+      val view        = application.injector.instanceOf[GoodsRecordsEmptyView]
+
+      running(application) {
+        val request = FakeRequest(GET, emptyGoodsRecordsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view()(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to JourneyRecovery when page number is less than 1" in {
+      val badPageRoute = routes.GoodsRecordsController.onPageLoad(0).url
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, badPageRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the search has previously been filled in" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, "answer").success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(1)), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(response)
+      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
+        .successful(response.goodsItemRecords.size)
+
+      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
+        .successful(Done)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -226,12 +431,12 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill("answer"),
           response.goodsItemRecords,
-          10,
-          1,
-          3,
+          totalRecords,
+          firstRecord,
+          lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          1
+          currentPage
         )(
           request,
           messages(application)
@@ -247,7 +452,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(1)), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(response)
 
       val mockOttConnector = mock[OttConnector]
@@ -277,12 +482,12 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill("answer"),
           response.goodsItemRecords,
-          10,
-          1,
-          3,
+          totalRecords,
+          firstRecord,
+          lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          1
+          currentPage
         )(
           request,
           messages(application)
@@ -292,27 +497,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(1)), any())(any())) thenReturn Future
-        .successful(response)
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
           .build()
 
       running(application) {
@@ -335,7 +521,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           0,
           Seq.empty,
           Pagination(),
-          1
+          currentPage
         )(
           request,
           messages(application)
@@ -372,98 +558,5 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
-    "must return OK and the correct view for a GET with records on a middle page" in {
-
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-      val middlePageResponse       = response.copy(
-        pagination = GoodsRecordsPagination(10, 2, 4, Some(3), Some(1))
-      )
-
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(2)), any())(any())) thenReturn Future
-        .successful(middlePageResponse)
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.GoodsRecordsController.onPageLoad(2).url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[GoodsRecordsView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form,
-          middlePageResponse.goodsItemRecords,
-          10,
-          3,
-          5,
-          Seq(Country("EC", "Ecuador")),
-          GoodsRecordsPagination.getPagination(middlePageResponse.pagination),
-          2
-        )(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must return OK and the correct view for a GET with records on the last page" in {
-
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-      val lastPageResponse         = response.copy(
-        pagination = GoodsRecordsPagination(10, 4, 4, None, Some(3))
-      )
-
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(Some(4)), any())(any())) thenReturn Future
-        .successful(lastPageResponse)
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.GoodsRecordsController.onPageLoad(4).url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[GoodsRecordsView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form,
-          lastPageResponse.goodsItemRecords,
-          10,
-          7,
-          9,
-          Seq(Country("EC", "Ecuador")),
-          GoodsRecordsPagination.getPagination(lastPageResponse.pagination),
-          4
-        )(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
   }
 }

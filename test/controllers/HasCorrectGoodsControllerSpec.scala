@@ -32,7 +32,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CommodityCodeUpdateQuery, CommodityQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import views.html.HasCorrectGoodsView
@@ -667,7 +667,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
         val userAnswers =
           emptyUserAnswers
-            .set(CommodityCodeUpdateQuery(testRecordId), Commodity("654321", List("Description"), Instant.now, None))
+            .set(CommodityUpdateQuery(testRecordId), Commodity("654321", List("Description"), Instant.now, None))
             .success
             .value
 
@@ -710,7 +710,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
         val commodity   = Commodity("654321", List("Description"), Instant.now, None)
         val userAnswers = emptyUserAnswers
-          .set(CommodityCodeUpdateQuery(testRecordId), commodity)
+          .set(CommodityUpdateQuery(testRecordId), commodity)
           .success
           .value
           .set(page, true)
@@ -781,7 +781,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val commodity = Commodity("654321", List("Description"), Instant.now, None)
 
         val userAnswers =
-          emptyUserAnswers.set(CommodityCodeUpdateQuery(testRecordId), commodity).success.value
+          emptyUserAnswers.set(CommodityUpdateQuery(testRecordId), commodity).success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 

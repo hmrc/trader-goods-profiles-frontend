@@ -16,7 +16,7 @@
 
 package models.router.requests
 
-import models.UpdateGoodsRecord
+import models.{CategoryRecord, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
@@ -27,10 +27,13 @@ case class UpdateRecordRequest(
   eori: String,
   recordId: String,
   actorId: String,
-  countryOfOrigin: Option[String],
-  goodsDescription: Option[String],
-  traderReference: Option[String],
-  commodityCode: Option[String]
+  countryOfOrigin: Option[String] = None,
+  goodsDescription: Option[String] = None,
+  traderRef: Option[String] = None,
+  comcode: Option[String] = None,
+  category: Option[Int] = None,
+  supplementaryUnit: Option[Double] = None,
+  measurementUnit: Option[String] = None
 )
 
 object UpdateRecordRequest {
@@ -46,14 +49,27 @@ object UpdateRecordRequest {
       goodsRecord.commodityCode
     )
 
+  def mapFromCategory(categoryRecord: CategoryRecord): UpdateRecordRequest =
+    UpdateRecordRequest(
+      categoryRecord.eori,
+      categoryRecord.recordId,
+      categoryRecord.eori,
+      category = Some(categoryRecord.category),
+      supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
+      measurementUnit = categoryRecord.measurementUnit
+    )
+
   implicit val reads: Reads[UpdateRecordRequest] =
     ((JsPath \ "eori").read[String] and
       (JsPath \ "recordId").read[String] and
       (JsPath \ "actorId").read[String] and
       (JsPath \ "countryOfOrigin").readNullable[String] and
       (JsPath \ "goodsDescription").readNullable[String] and
-      (JsPath \ "traderReference").readNullable[String] and
-      (JsPath \ "commodityCode").readNullable[String])(UpdateRecordRequest.apply _)
+      (JsPath \ "traderRef").readNullable[String] and
+      (JsPath \ "comcode").readNullable[String] and
+      (JsPath \ "category").readNullable[Int] and
+      (JsPath \ "supplementaryUnit").readNullable[Double] and
+      (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[UpdateRecordRequest] =
     ((JsPath \ "eori").write[String] and
@@ -61,7 +77,12 @@ object UpdateRecordRequest {
       (JsPath \ "actorId").write[String] and
       (JsPath \ "countryOfOrigin").writeNullable[String] and
       (JsPath \ "goodsDescription").writeNullable[String] and
-      (JsPath \ "traderReference").writeNullable[String] and
-      (JsPath \ "commodityCode").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
+      (JsPath \ "traderRef").writeNullable[String] and
+      (JsPath \ "comcode").writeNullable[String] and
+      (JsPath \ "category").writeNullable[Int] and
+      (JsPath \ "supplementaryUnit").writeNullable[Double] and
+      (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
 
+  private def convertToDouble(value: Option[String]): Option[Double] =
+    value.map(_.toDouble)
 }
