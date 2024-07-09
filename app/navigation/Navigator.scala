@@ -220,7 +220,6 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-
   private def navigateFromHasCountryOfOriginChangeCheck(answers: UserAnswers, recordId: String): Call =
     answers
       .get(HasCountryOfOriginChangePage(recordId))
