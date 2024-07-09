@@ -17,53 +17,75 @@
 package controllers
 
 import connectors.GoodsRecordConnector
-import controllers.actions.IdentifierAction
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.NormalMode
+import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
   identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = identify.async { implicit request =>
-    goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-      val detailsList = SummaryListViewModel(
-        rows = Seq(
-          TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
-          GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
-          CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
-          CommodityCodeSummary.row(record.commodityCode, recordId, NormalMode),
-          StatusSummary.row(record.declarable)
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      for {
+        record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
+        updatedAnswersWithTraderReference  <-
+          Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
+        updatedAnswersWithGoodsDescription <-
+          Future.fromTry(
+            updatedAnswersWithTraderReference.set(GoodsDescriptionUpdatePage(recordId), record.goodsDescription)
+          )
+        updatedAnswersWithCountryOfOrigin  <-
+          Future.fromTry(
+            updatedAnswersWithGoodsDescription.set(CountryOfOriginUpdatePage(recordId), record.countryOfOrigin)
+          )
+        updatedAnswersWithAll              <-
+          Future.fromTry(
+            updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.commodityCode)
+          )
+        _                                  <- sessionRepository.set(updatedAnswersWithAll)
+      } yield {
+        val detailsList = SummaryListViewModel(
+          rows = Seq(
+            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
+            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
+            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
+            CommodityCodeSummary.row(record.commodityCode, recordId, NormalMode),
+            StatusSummary.row(record.declarable)
+          )
         )
-      )
 
-      val categorisationList = SummaryListViewModel(
-        rows = Seq(
-          CategorySummary.row(record.category.toString, record.recordId)
+        val categorisationList = SummaryListViewModel(
+          rows = Seq(
+            CategorySummary.row(record.category.toString, record.recordId)
+          )
         )
-      )
 
-      val adviceList = SummaryListViewModel(
-        rows = Seq(
-          AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+        val adviceList = SummaryListViewModel(
+          rows = Seq(
+            AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+          )
         )
-      )
 
-      Ok(view(recordId, detailsList, categorisationList, adviceList))
-    }
+        Ok(view(recordId, detailsList, categorisationList, adviceList))
+      }
   }
-
 }
