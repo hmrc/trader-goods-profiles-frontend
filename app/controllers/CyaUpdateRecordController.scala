@@ -58,7 +58,7 @@ class CyaUpdateRecordController @Inject() (
           getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
             val list = SummaryListViewModel(
               Seq(
-                CountryOfOriginSummary.row(answer, recordId, CheckMode)
+                CountryOfOriginSummary.rowUpdate(answer, recordId, CheckMode)
               )
             )
             Ok(view(list, onSubmitAction))

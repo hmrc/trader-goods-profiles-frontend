@@ -50,4 +50,14 @@ object CountryOfOriginSummary {
           .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
       )
     )
+
+  def rowUpdate(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "countryOfOrigin.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url)
+          .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
+      )
+    )
 }

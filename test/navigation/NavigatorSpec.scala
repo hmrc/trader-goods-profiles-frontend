@@ -274,6 +274,32 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
         }
 
+        "must go from HasCountryOfOriginChangePage to CountryOfOriginPage When user select true" in {
+
+          val answers = UserAnswers(userAnswersId)
+            .set(HasCountryOfOriginChangePage(testRecordId), true)
+            .success
+            .value
+          navigator.nextPage(
+            HasCountryOfOriginChangePage(testRecordId),
+            NormalMode,
+            answers
+          ) mustBe routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId)
+        }
+
+        "must go from HasCountryOfOriginChangePage to CountryOfOriginPage When user select false" in {
+
+          val answers = UserAnswers(userAnswersId)
+            .set(HasCountryOfOriginChangePage(testRecordId), false)
+            .success
+            .value
+          navigator.nextPage(
+            HasCountryOfOriginChangePage(testRecordId),
+            NormalMode,
+            answers
+          ) mustBe routes.SingleRecordController.onPageLoad(testRecordId)
+        }
+
         "must go from TraderReferenceUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(
             TraderReferenceUpdatePage(testRecordId),
