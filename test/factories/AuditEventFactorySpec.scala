@@ -490,7 +490,8 @@ class AuditEventFactorySpec extends SpecBase {
               AdditionalCodeResponse("exemptionId2", "code2", "description2"),
               ThemeResponse("ignoredTheme", 3),
               CertificateResponse("ignoredExemption", "code3", "description3")
-            )
+            ),
+            descendents = Seq.empty[Descendant]
           )
 
           val result = AuditEventFactory().createGetCategorisationAssessmentDetailsEvent(

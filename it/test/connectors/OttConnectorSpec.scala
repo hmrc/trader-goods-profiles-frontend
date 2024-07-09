@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.Commodity
 import models.helper.CreateRecordJourney
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, contains}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -315,6 +315,22 @@ class OttConnectorSpec
                 |            "type": "category_assessment"
                 |          }
                 |        ]
+                |      },
+                |      "descendants": {
+                |        "data": [
+                |          {
+                |            "id": "72785",
+                |            "type": "goods_nomenclature"
+                |          },
+                |          {
+                |            "id": "94337",
+                |            "type": "goods_nomenclature"
+                |          },
+                |          {
+                |            "id": "94338",
+                |            "type": "goods_nomenclature"
+                |          }
+                |        ]
                 |      }
                 |    }
                 |  },
@@ -381,6 +397,7 @@ class OttConnectorSpec
         .futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
+      connectorResponse.descendents.size mustEqual 3
 
       withClue("must have audited the request") {
         verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(

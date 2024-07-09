@@ -333,7 +333,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
           val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
           val categorisationInfo    =
-            CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"))
+            CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"), 0)
           val recordCategorisations = RecordCategorisations(Map(testRecordId -> categorisationInfo))
 
           "and do not need to recategorise because the assessments are the same and there are no supplementary units" in {
@@ -398,7 +398,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             "because the assessments are different" in {
 
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-              val categorisationInfoNew        = CategorisationInfo("12345678", Seq(assessment2), None)
+              val categorisationInfoNew        = CategorisationInfo("12345678", Seq(assessment2), None, 0)
 
               val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
               val mockSessionRepository                 = mock[SessionRepository]
@@ -463,7 +463,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
             "because the original code has a supplementary unit" in {
 
-              val categorisationInfoNew = CategorisationInfo("12345678", Seq(assessment2), None)
+              val categorisationInfoNew = CategorisationInfo("12345678", Seq(assessment2), None, 0)
 
               val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
               val mockSessionRepository                 = mock[SessionRepository]
@@ -526,7 +526,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             "because the new code has a supplementary unit" in {
 
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-              val categorisationInfoNew        = CategorisationInfo("12345678", Seq(assessment2), Some("unit"))
+              val categorisationInfoNew        = CategorisationInfo("12345678", Seq(assessment2), Some("unit"), 0)
 
               val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
               val mockSessionRepository                 = mock[SessionRepository]

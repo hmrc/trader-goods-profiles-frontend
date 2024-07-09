@@ -54,7 +54,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
         "and has not previously been answered" in {
 
           val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"))
+          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
           val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
           val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
@@ -86,7 +86,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
         "and has previously been answered" in {
 
           val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"))
+          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
           val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
           val answers =
@@ -142,7 +142,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
         "when this assessment index cannot be found" in {
 
-          val categorisationInfo    = CategorisationInfo("123", Nil, Some("Weight, in kilograms"))
+          val categorisationInfo    = CategorisationInfo("123", Nil, Some("Weight, in kilograms"), 0)
           val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
           val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
@@ -165,7 +165,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
       "must save the answer and redirect to the next page when a valid value is submitted" in {
 
         val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-        val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
         val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
         val mockRepository = mock[SessionRepository]
@@ -197,7 +197,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
       "must return a Bad Request and errors when invalid data is submitted" in {
 
         val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-        val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"))
+        val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
         val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
         val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value

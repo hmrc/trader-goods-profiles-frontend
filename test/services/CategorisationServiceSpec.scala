@@ -21,7 +21,7 @@ import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.RecordCategorisations
 import models.ott.CategorisationInfo
-import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
+import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -49,7 +49,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private def mockOttResponse(comCode: String = "some comcode") = OttResponse(
     GoodsNomenclatureResponse("some id", comCode, Some("some measure unit")),
     Seq[CategoryAssessmentRelationship](),
-    Seq[IncludedElement]()
+    Seq[IncludedElement](),
+    Seq[Descendant]()
   )
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
@@ -89,7 +90,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should store category assessments if they are not present, then return successful updated answers" in {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0)
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
@@ -113,7 +114,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should not call for category assessments if they are already present, then return successful updated answers" in {
       val expectedRecordCategorisations =
-        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"))))
+        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
 
       val userAnswers                   = emptyUserAnswers
         .set(RecordCategorisationsQuery, expectedRecordCategorisations)
@@ -202,7 +203,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), newCommodity).success.value
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"))
+      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0)
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
@@ -227,7 +228,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should replace existing category assessments if they are already present, then return successful updated answers" in {
       val initialRecordCategorisations =
         RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit")))
+          Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit"), 0))
         )
       val newCommodity                 = testCommodity.copy(commodityCode = "newComCode")
 
@@ -235,9 +236,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.successful(mockOttResponse("newComCode")))
 
       val expectedRecordCategorisations =
-        RecordCategorisations(Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"))))
+        RecordCategorisations(
+          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0))
+        )
 
-      val userAnswers                   = emptyUserAnswers
+      val userAnswers = emptyUserAnswers
         .set(RecordCategorisationsQuery, initialRecordCategorisations)
         .success
         .value
