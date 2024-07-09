@@ -17,10 +17,10 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CountryOfOriginFormProvider
-import models.{Country, NormalMode, UserAnswers}
+import models.{CheckMode, Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -44,192 +44,415 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CountryOfOriginFormProvider()
   private val form = formProvider(countries)
 
-  private lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoad(NormalMode).url
-
   "CountryOfOrigin Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "create journey" - {
 
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        countries
-      )
+      val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadCreate(NormalMode).url
+      val onSubmitAction       = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
+      "must return OK and the correct view for a GET" in {
 
-      running(application) {
-        val request = FakeRequest(GET, countryOfOriginRoute)
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          countries
+        )
 
-        val result = route(application, request).value
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
 
-        val view = application.injector.instanceOf[CountryOfOriginView]
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, countries)(request, messages(application)).toString
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+      "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage, "answer").success.value
+        val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage, "answer").success.value
 
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        countries
-      )
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          countries
+        )
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
 
-      running(application) {
-        val request = FakeRequest(GET, countryOfOriginRoute)
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
 
-        val view = application.injector.instanceOf[CountryOfOriginView]
+          val view = application.injector.instanceOf[CountryOfOriginView]
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, countries)(
-          request,
-          messages(application)
-        ).toString
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("answer"), call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must populate the view correctly on a GET when countries data is already present" in {
+      "must populate the view correctly on a GET when countries data is already present" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+        val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-          )
-          .build()
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+            )
+            .build()
 
-      running(application) {
-        val request = FakeRequest(GET, countryOfOriginRoute)
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CountryOfOriginView]
+          val view = application.injector.instanceOf[CountryOfOriginView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, countries)(request, messages(application)).toString
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to the next page when valid data is submitted" in {
+      "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+        val mockSessionRepository = mock[SessionRepository]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+        val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "CN"))
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "CN"))
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
       }
-    }
 
-    "must error when data is submitted and countries query is empty" in {
+      "must error when data is submitted and countries query is empty" in {
 
-      val userAnswers = UserAnswers(userAnswersId)
+        val userAnswers = UserAnswers(userAnswersId)
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
-          .build()
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
+            .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "CN"))
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "CN"))
 
-        intercept[Exception] {
-          await(route(application, request).value)
+          intercept[Exception] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "TEST"))
+
+          val boundForm = form.bind(Map("value" -> "TEST"))
+
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val result = route(application, request).value
+
+          val call = onSubmitAction
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    "update journey" - {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+      val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
+      val onSubmitAction       = routes.CountryOfOriginController.onSubmitUpdate(NormalMode, testRecordId)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      "must return OK and the correct view for a GET" in {
 
-      running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "TEST"))
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          countries
+        )
 
-        val boundForm = form.bind(Map("value" -> "TEST"))
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
 
-        val view = application.injector.instanceOf[CountryOfOriginView]
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, countries)(
-          request,
-          messages(application)
-        ).toString
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+      "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage, "answer").success.value
 
-      running(application) {
-        val request = FakeRequest(GET, countryOfOriginRoute)
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          countries
+        )
 
-        val result = route(application, request).value
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
+
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val result = route(application, request).value
+
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("answer"), call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+      "must populate the view correctly on a GET when countries data is already present" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-      running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+            )
+            .build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to the next page when valid data is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "CN"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must error when data is submitted and countries query is empty" in {
+
+        val userAnswers = UserAnswers(userAnswersId)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "CN"))
+
+          intercept[Exception] {
+            await(route(application, request).value)
+          }
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "TEST"))
+
+          val boundForm = form.bind(Map("value" -> "TEST"))
+
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val result = route(application, request).value
+
+          val call = onSubmitAction
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, call, countries)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
   }

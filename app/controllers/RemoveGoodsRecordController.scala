@@ -26,6 +26,7 @@ import navigation.Navigator
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RemoveGoodsRecordView
 
@@ -48,8 +49,12 @@ class RemoveGoodsRecordController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      Ok(view(form, recordId, location))
+    (identify andThen getData andThen requireData).async { implicit request =>
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .map { _ =>
+          Ok(view(form, recordId, location))
+        }
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
@@ -62,7 +67,15 @@ class RemoveGoodsRecordController @Inject() (
             case true  =>
               goodsRecordConnector
                 .removeGoodsRecord(request.eori, recordId)
-                .map(_ => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
+                .map {
+                  case true  => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
+                  case false =>
+                    Redirect(
+                      routes.JourneyRecoveryController.onPageLoad(
+                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(1).url))
+                      )
+                    )
+                }
             case false =>
               Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
           }

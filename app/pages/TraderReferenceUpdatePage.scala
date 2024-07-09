@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package queries
+package pages
 
-import models.Commodity
 import play.api.libs.json.JsPath
 
-case class CommodityCodeUpdateQuery(recordId: String) extends Gettable[Commodity] with Settable[Commodity] {
+case class TraderReferenceUpdatePage(recordId: String) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ "commodityCodeUpdate" \ recordId
+  override def path: JsPath = JsPath \ toString \ recordId
+
+  override def toString: String = "traderReference"
 }

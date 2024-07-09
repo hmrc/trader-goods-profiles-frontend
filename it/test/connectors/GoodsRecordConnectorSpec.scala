@@ -20,8 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination}
-import org.apache.pekko.Done
+import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination, UpdateGoodsRecord}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -54,52 +53,53 @@ class GoodsRecordConnectorSpec
 
   private val xClientIdName: String = "X-Client-ID"
   private val xClientId: String     = "tgp-frontend"
-  private def goodsRecordUrl        = s"/trader-goods-profiles-router/traders/$testEori/records"
+  private def goodsRecordsUrl       = s"/trader-goods-profiles-router/traders/$testEori/records"
+  private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private def goodsRecordUrl        = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
   private def getGoodsRecordsUrl    =
     s"/trader-goods-profiles-data-store/traders/$testEori/records"
 
-  private val testRecordId           = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
   private lazy val getRecordResponse = Json
     .parse(s"""
-         |  {
-         |    "eori": "$testEori",
-         |    "actorId": "$testEori",
-         |    "recordId": "$testRecordId",
-         |    "traderRef": "BAN001001",
-         |    "comcode": "10410100",
-         |    "adviceStatus": "Not requested",
-         |    "goodsDescription": "Organic bananas",
-         |    "countryOfOrigin": "EC",
-         |    "category": 3,
-         |    "assessments": [
-         |      {
-         |        "assessmentId": "abc123",
-         |        "primaryCategory": "1",
-         |        "condition": {
-         |          "type": "abc123",
-         |          "conditionId": "Y923",
-         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
-         |          "conditionTraderText": "Excluded product"
-         |        }
-         |      }
-         |    ],
-         |    "supplementaryUnit": 500,
-         |    "measurementUnit": "square meters(m^2)",
-         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
-         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
-         |    "version": 1,
-         |    "active": true,
-         |    "toReview": false,
-         |    "reviewReason": null,
-         |    "declarable": "IMMI declarable",
-         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-         |    "nirmsNumber": "RMS-GB-123456",
-         |    "niphlNumber": "6 S12345",
-         |    "locked": false,
-         |    "createdDateTime": "2024-11-18T23:20:19Z",
-         |    "updatedDateTime": "2024-11-18T23:20:19Z"
-         |  }
-         |""".stripMargin)
+              |  {
+              |    "eori": "$testEori",
+              |    "actorId": "$testEori",
+              |    "recordId": "$testRecordId",
+              |    "traderRef": "BAN001001",
+              |    "comcode": "10410100",
+              |    "adviceStatus": "Not requested",
+              |    "goodsDescription": "Organic bananas",
+              |    "countryOfOrigin": "EC",
+              |    "category": 3,
+              |    "assessments": [
+              |      {
+              |        "assessmentId": "abc123",
+              |        "primaryCategory": "1",
+              |        "condition": {
+              |          "type": "abc123",
+              |          "conditionId": "Y923",
+              |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+              |          "conditionTraderText": "Excluded product"
+              |        }
+              |      }
+              |    ],
+              |    "supplementaryUnit": 500,
+              |    "measurementUnit": "square meters(m^2)",
+              |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+              |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+              |    "version": 1,
+              |    "active": true,
+              |    "toReview": false,
+              |    "reviewReason": null,
+              |    "declarable": "IMMI declarable",
+              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+              |    "nirmsNumber": "RMS-GB-123456",
+              |    "niphlNumber": "6 S12345",
+              |    "locked": false,
+              |    "createdDateTime": "2024-11-18T23:20:19Z",
+              |    "updatedDateTime": "2024-11-18T23:20:19Z"
+              |  }
+              |""".stripMargin)
 
   private lazy val getRecordsResponse = Json
     .parse(s"""
@@ -258,7 +258,7 @@ class GoodsRecordConnectorSpec
       val createGoodsRecordResponse = CreateGoodsRecordResponse(testRecordId)
 
       wireMockServer.stubFor(
-        post(urlEqualTo(goodsRecordUrl))
+        post(urlEqualTo(goodsRecordsUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok().withBody(Json.toJson(createGoodsRecordResponse).toString))
@@ -270,7 +270,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(goodsRecordUrl))
+        post(urlEqualTo(goodsRecordsUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
@@ -292,7 +292,7 @@ class GoodsRecordConnectorSpec
           .willReturn(noContent())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe Done
+      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe true
     }
 
     "must return a failed future when the server returns an error" in {
@@ -314,11 +314,11 @@ class GoodsRecordConnectorSpec
           .willReturn(notFound())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
+      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe false
     }
   }
 
-  ".updateGoodsRecord" - {
+  ".updateCategoryForGoodsRecord" - {
 
     val goodsRecord = CategoryRecord(
       eori = testEori,
@@ -326,40 +326,83 @@ class GoodsRecordConnectorSpec
       category = 1,
       categoryAssessmentsWithExemptions = 3,
       measurementUnit = Some("1"),
-      supplementaryUnit = Some("123.123")
+      supplementaryUnit = Some("123")
     )
 
     val updateRecordRequest = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
-      Some(1),
-      Some(123.123),
-      Some("1")
+      category = Some(1),
+      supplementaryUnit = Some(123),
+      measurementUnit = Some("1")
     )
 
     "must update a goods record" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
       )
 
-      connector.updateGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
+      connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(getUpdateGoodsRecordUrl))
+        patch(urlEqualTo(goodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
 
-      connector.updateGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+      connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+    }
+  }
+
+  ".updateGoodsRecord" - {
+
+    val goodsRecord = UpdateGoodsRecord(
+      eori = testEori,
+      recordId = testRecordId,
+      countryOfOrigin = Some("CN")
+    )
+
+    val updateRecordRequest = UpdateRecordRequest(
+      testEori,
+      testRecordId,
+      testEori,
+      Some("CN"),
+      None,
+      None,
+      None
+    )
+
+    "must update a goods record" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok())
+      )
+
+      connector.updateGoodsRecord(goodsRecord).futureValue
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.updateGoodsRecord(goodsRecord).failed.futureValue
     }
   }
 
