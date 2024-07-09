@@ -180,7 +180,7 @@ class CyaUpdateRecordController @Inject() (
             _              <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.HomePageController.onPageLoad())
+          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }
     }
@@ -193,7 +193,7 @@ class CyaUpdateRecordController @Inject() (
             _              <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(CommodityCodeUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.HomePageController.onPageLoad())
+          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors) => Future.successful(logErrorsAndContinue(errors))
       }
     }

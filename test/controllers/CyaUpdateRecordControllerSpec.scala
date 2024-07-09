@@ -337,7 +337,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers can create a valid update goods record" - {
 
-          "must update the goods record and redirect to the Home Page" in {
+          "must update the goods record and redirect to the Goods Record Page" in {
 
             val userAnswers = emptyUserAnswers
               .set(page, answer)
@@ -358,7 +358,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+              redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
               verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
             }
           }
@@ -678,7 +678,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers can create a valid update goods record" - {
 
-          "must update the goods record and redirect to the Home Page" in {
+          "must update the goods record and redirect to the goods record page" in {
 
             val userAnswers = emptyUserAnswers
               .set(page, answer)
@@ -702,7 +702,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+              redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
               verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
             }
           }
