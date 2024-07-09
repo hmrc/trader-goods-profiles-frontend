@@ -416,6 +416,7 @@ removeGoodsRecord.noProfile = No, return to goods profile
 removeGoodsRecord.noRecord = No, return to goods record
 
 
+singleRecord.title = Goods record
 singleRecord.h1 = Goods record
 singleRecord.p1 = Check if the details of this record are correct.
 singleRecord.p2 = If you need to categorise this good, we''ll tell you more about how to do this in the next steps.

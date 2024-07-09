@@ -74,26 +74,13 @@ class OttConnectorSpec
       "when validity end date is undefined" in {
         val commodity =
           Commodity(
-            "123456",
-            List("Other", "Prepared explosives, other than propellent powders", "Of cotton"),
+            "9306210000",
+            List("test_description"),
             Instant.parse("2012-01-01T00:00:00.000Z"),
             None
           )
 
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
-            .willReturn(
-              ok().withBody(
-                "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Other\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
-                  "\"validity_start_date\": \"2012-01-01T00:00:00.000Z\",\n            \"validity_end_date\": null }\n  }\n, \"included\": [{\n      \"id\": \"38195\",\n      " +
-                  "\"type\": \"heading\",\n      \"attributes\": {\n        \"goods_nomenclature_item_id\": \"3602000000\",\n        \"description\": \"Prepared explosives, other than propellent powders\",\n        " +
-                  "\"formatted_description\": \"Prepared explosives, other than propellent powders\",\n        \"description_plain\": \"Prepared explosives, other than propellent powders\",\n        " +
-                  "\"validity_start_date\": \"1972-01-01T00:00:00.000Z\",\n        \"validity_end_date\": null\n      }\n    }\n,{\n      \"id\": \"43521\",\n      \"type\": \"commodity\",\n      \"attributes\": {\n        " +
-                  "\"producline_suffix\": \"80\",\n        \"description\": \"Of cotton\",\n        \"number_indents\": 2,\n        \"goods_nomenclature_item_id\": \"6211320000\",\n        \"formatted_description\": \"Of cotton\",\n        " +
-                  "\"description_plain\": \"Of cotton\",\n        \"validity_start_date\": \"1972-01-01T00:00:00.000Z\",\n        \"validity_end_date\": null\n      }\n    }\n  ]\n}"
-              )
-            )
-        )
+        stubGreenLanes(excludeEndDate = true)
 
         connector
           .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
@@ -107,21 +94,13 @@ class OttConnectorSpec
 
       "when validity end date is defined" in {
         val commodity = Commodity(
-          "123456",
-          List("Commodity description"),
+          "9306210000",
+          List("test_description"),
           Instant.parse("2012-01-01T00:00:00.000Z"),
           Some(Instant.parse("2032-01-01T00:00:00.000Z"))
         )
 
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
-            .willReturn(
-              ok().withBody(
-                "{\n  \"data\": {\n    \"attributes\": {\n      \"description\": \"Commodity description\",\n      \"goods_nomenclature_item_id\":\"123456\",\n" +
-                  "\"validity_start_date\": \"2012-01-01T00:00:00.000Z\",\n            \"validity_end_date\": \"2032-01-01T00:00:00.000Z\" }\n  }\n}"
-              )
-            )
-        )
+        stubGreenLanes()
 
         connector
           .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
@@ -155,7 +134,7 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(serverError())
       )
 
@@ -173,7 +152,7 @@ class OttConnectorSpec
     "must return a failed future when the server returns any other error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(status(IM_A_TEAPOT))
       )
 
@@ -190,10 +169,10 @@ class OttConnectorSpec
     "must return an exception future when json cannot be parsed at all" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(
             ok().withBody(
-              "{\n \"description\": \"Commodity description, \"\"\n}"
+              "{}"
             )
           )
       )
@@ -212,7 +191,7 @@ class OttConnectorSpec
     "must return an Js exception future when json is parsable but does not match Commodity format" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/ott/commodities/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
           .willReturn(
             ok().withBody(
               "{\n \"description\": \"Commodity description\"\n}"
@@ -295,86 +274,7 @@ class OttConnectorSpec
 
     "must return correct OttResponse object" in {
 
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
-          .willReturn(
-            ok().withBody(
-              """{
-                |  "data": {
-                |    "id": "54267",
-                |    "type": "goods_nomenclature",
-                |    "attributes": {
-                |      "goods_nomenclature_item_id": "9306210000",
-                |      "supplementary_measure_unit": "1000 items (1000 p/st)"
-                |    },
-                |    "relationships": {
-                |      "applicable_category_assessments": {
-                |        "data": [
-                |          {
-                |            "id": "238dbab8cc5026c67757c7e05751f312",
-                |            "type": "category_assessment"
-                |          }
-                |        ]
-                |      }
-                |    }
-                |  },
-                |  "included": [
-                |    {
-                |      "id": "238dbab8cc5026c67757c7e05751f312",
-                |      "type": "category_assessment",
-                |      "relationships": {
-                |        "exemptions": {
-                |          "data": [
-                |            {
-                |              "id": "8392",
-                |              "type": "additional_code"
-                |            }
-                |          ]
-                |        },
-                |        "theme": {
-                |          "data": {
-                |            "id": "1.1",
-                |            "type": "theme"
-                |          }
-                |        },
-                |        "geographical_area": {
-                |          "data": {
-                |            "id": "IQ",
-                |            "type": "geographical_area"
-                |          }
-                |        },
-                |        "excluded_geographical_areas": {
-                |          "data": [
-                |
-                |          ]
-                |        },
-                |        "measure_type": {
-                |          "data": {
-                |            "id": "465",
-                |            "type": "measure_type"
-                |          }
-                |        },
-                |        "regulation": {
-                |          "data": {
-                |            "id": "R0312100",
-                |            "type": "legal_act"
-                |          }
-                |        },
-                |        "measures": {
-                |          "data": [
-                |            {
-                |              "id": "2524368",
-                |              "type": "measure"
-                |            }
-                |          ]
-                |        }
-                |      }
-                |    }
-                |  ]
-                |}""".stripMargin
-            )
-          )
-      )
+      stubGreenLanes()
 
       val connectorResponse = connector
         .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
@@ -472,5 +372,98 @@ class OttConnectorSpec
       }
     }
 
+  }
+
+  private def stubGreenLanes(excludeEndDate: Boolean = false) = {
+
+    val validityEndDateField = if (!excludeEndDate) {
+      ",\"validity_end_date\": \"2032-01-01T00:00:00.000Z\""
+    } else {
+      ""
+    }
+
+    wireMockServer.stubFor(
+      get(urlEqualTo("/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
+        .willReturn(
+          ok().withBody(
+            s"""{
+              |  "data": {
+              |    "id": "54267",
+              |    "type": "goods_nomenclature",
+              |    "attributes": {
+              |      "goods_nomenclature_item_id": "9306210000",
+              |      "supplementary_measure_unit": "1000 items (1000 p/st)",
+              |      "description": "test_description",
+              |      "validity_start_date": "2012-01-01T00:00:00.000Z"
+              |      ${validityEndDateField}
+              |    },
+              |    "relationships": {
+              |      "applicable_category_assessments": {
+              |        "data": [
+              |          {
+              |            "id": "238dbab8cc5026c67757c7e05751f312",
+              |            "type": "category_assessment"
+              |          }
+              |        ]
+              |      }
+              |    }
+              |  },
+              |  "included": [
+              |    {
+              |      "id": "238dbab8cc5026c67757c7e05751f312",
+              |      "type": "category_assessment",
+              |      "relationships": {
+              |        "exemptions": {
+              |          "data": [
+              |            {
+              |              "id": "8392",
+              |              "type": "additional_code"
+              |            }
+              |          ]
+              |        },
+              |        "theme": {
+              |          "data": {
+              |            "id": "1.1",
+              |            "type": "theme"
+              |          }
+              |        },
+              |        "geographical_area": {
+              |          "data": {
+              |            "id": "IQ",
+              |            "type": "geographical_area"
+              |          }
+              |        },
+              |        "excluded_geographical_areas": {
+              |          "data": [
+              |
+              |          ]
+              |        },
+              |        "measure_type": {
+              |          "data": {
+              |            "id": "465",
+              |            "type": "measure_type"
+              |          }
+              |        },
+              |        "regulation": {
+              |          "data": {
+              |            "id": "R0312100",
+              |            "type": "legal_act"
+              |          }
+              |        },
+              |        "measures": {
+              |          "data": [
+              |            {
+              |              "id": "2524368",
+              |              "type": "measure"
+              |            }
+              |          ]
+              |        }
+              |      }
+              |    }
+              |  ]
+              |}""".stripMargin
+          )
+        )
+    )
   }
 }
