@@ -36,9 +36,9 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ec: ExecutionContext
 ) {
 
-  private val baseUrl: String                          = config.get[String]("microservice.services.online-trade-tariff-api.url")
-  private val authToken: String                        = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
-  private val useProxy: Boolean                        = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
+  private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
+  private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
+  private val useProxy: Boolean = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
 
   private def ottGreenLanesUrl(commodityCode: String) =
     url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode"
@@ -126,9 +126,9 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
     for {
       ottResponse <- getFromOtt[OttResponse](
-        ottGreenLanesUrl(commodityCode),
-        Some(auditDetails)
-      )
+                       ottGreenLanesUrl(commodityCode),
+                       Some(auditDetails)
+                     )
     } yield Commodity(
       commodityCode = ottResponse.goodsNomenclature.commodityCode,
       descriptions = List(ottResponse.goodsNomenclature.description),
