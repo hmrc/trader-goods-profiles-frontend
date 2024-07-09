@@ -51,6 +51,8 @@ class PreviousMovementRecordsController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    goodsRecordConnector.storeAllRecords(request.eori).map(_ => Redirect(routes.GoodsRecordsController.onPageLoad(1)))
+    goodsRecordConnector
+      .storeAllRecords(request.eori)
+      .map(_ => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage)))
   }
 }
