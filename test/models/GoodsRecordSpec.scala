@@ -28,7 +28,8 @@ import java.time.Instant
 
 class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
-  private val testCommodity = Commodity("1234567890", List("test"), Instant.now, None)
+  private val testCommodity    = Commodity("1234567890", List("test"), Instant.now, None)
+  private val shorterCommodity = Commodity("1234560000", List("test"), Instant.now, None)
 
   ".build" - {
 
@@ -94,6 +95,36 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         result mustEqual Right(
           GoodsRecord(testEori, "123", testCommodity, "123", "1")
+        )
+      }
+
+      "and using short commodity code" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(TraderReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, "123456")
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(UseTraderReferencePage, true)
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
+            .set(CommodityQuery, shorterCommodity)
+            .success
+            .value
+
+        val result = GoodsRecord.build(answers, testEori)
+
+        result mustEqual Right(
+          GoodsRecord(testEori, "123", shorterCommodity, "123", "1")
         )
       }
     }
