@@ -543,7 +543,7 @@ class GoodsRecordConnectorSpec
       connector.getRecordsCount(testEori).futureValue mustBe 3
     }
 
-    "must retunr 0 if there are no records" in {
+    "must return 0 if there are no records" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(getRecordsCountUrl))

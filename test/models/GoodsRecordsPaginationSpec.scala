@@ -29,56 +29,47 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
   ".getPagination" - {
 
     "when currentPage 0" in {
-      val currentPage = 0
-      val totalPages  = 4
-      val pagination  = Pagination(
+      val currentPage        = 0
+      val totalPages         = 4
+      val expectedPagination = Pagination(
         items = None,
         previous = None,
         next = None
       )
-      val result      = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-      result.items mustEqual pagination.items
-      result.previous mustEqual pagination.previous
-      result.next mustEqual pagination.next
-
+      val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+      result mustEqual expectedPagination
     }
 
     "when currentPage is bigger than totalPages" in {
-      val currentPage = 10
-      val totalPages  = 4
-      val pagination  = Pagination(
+      val currentPage        = 10
+      val totalPages         = 4
+      val expectedPagination = Pagination(
         items = None,
         previous = None,
         next = None
       )
-      val result      = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-      result.items mustEqual pagination.items
-      result.previous mustEqual pagination.previous
-      result.next mustEqual pagination.next
-
+      val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+      result mustEqual expectedPagination
     }
 
     "when totalPages 0" in {
-      val currentPage = 4
-      val totalPages  = 0
-      val pagination  = Pagination(
+      val currentPage        = 4
+      val totalPages         = 0
+      val expectedPagination = Pagination(
         items = None,
         previous = None,
         next = None
       )
-      val result      = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-      result.items mustEqual pagination.items
-      result.previous mustEqual pagination.previous
-      result.next mustEqual pagination.next
-
+      val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+      result mustEqual expectedPagination
     }
 
     "when currentPage 1" - {
       val currentPage = 1
 
       "when totalPages is 1" in {
-        val totalPages = 1
-        val items      = Seq(
+        val totalPages         = 1
+        val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
@@ -86,24 +77,22 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = None,
           next = None
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 2" in {
-        val totalPages = 2
-        val nextPage   = 2
-        val next       = PaginationLink(
+        val totalPages         = 2
+        val nextPage           = 2
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
@@ -117,24 +106,22 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = None,
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 3" in {
-        val totalPages = 3
-        val nextPage   = 2
-        val next       = PaginationLink(
+        val totalPages         = 3
+        val nextPage           = 2
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
@@ -154,24 +141,22 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = None,
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 4" in {
-        val totalPages = 4
-        val nextPage   = 2
-        val next       = PaginationLink(
+        val totalPages         = 4
+        val nextPage           = 2
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
@@ -191,15 +176,13 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = None,
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
     }
@@ -208,12 +191,12 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
       val currentPage = 2
 
       "when totalPages is 2" in {
-        val totalPages = 2
-        val prevPage   = 1
-        val prev       = PaginationLink(
+        val totalPages         = 2
+        val prevPage           = 1
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
@@ -227,28 +210,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = None
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 3" in {
-        val totalPages = 3
-        val nextPage   = 3
-        val next       = PaginationLink(
+        val totalPages         = 3
+        val nextPage           = 3
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 1
-        val prev       = PaginationLink(
+        val prevPage           = 1
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
@@ -268,28 +249,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 4" in {
-        val totalPages = 4
-        val nextPage   = 3
-        val next       = PaginationLink(
+        val totalPages         = 4
+        val nextPage           = 3
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 1
-        val prev       = PaginationLink(
+        val prevPage           = 1
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
@@ -315,28 +294,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 5" in {
-        val totalPages = 5
-        val nextPage   = 3
-        val next       = PaginationLink(
+        val totalPages         = 5
+        val nextPage           = 3
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 1
-        val prev       = PaginationLink(
+        val prevPage           = 1
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
@@ -362,15 +339,13 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
     }
@@ -379,12 +354,12 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
       val currentPage = 3
 
       "when totalPages is 3" in {
-        val totalPages = 3
-        val prevPage   = 2
-        val prev       = PaginationLink(
+        val totalPages         = 3
+        val prevPage           = 2
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
@@ -404,28 +379,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = None
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 4" in {
-        val totalPages = 4
-        val nextPage   = 4
-        val next       = PaginationLink(
+        val totalPages         = 4
+        val nextPage           = 4
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 2
-        val prev       = PaginationLink(
+        val prevPage           = 2
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
@@ -451,28 +424,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 5" in {
-        val totalPages = 5
-        val nextPage   = 4
-        val next       = PaginationLink(
+        val totalPages         = 5
+        val nextPage           = 4
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 2
-        val prev       = PaginationLink(
+        val prevPage           = 2
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
@@ -504,28 +475,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 6" in {
-        val totalPages = 6
-        val nextPage   = 4
-        val next       = PaginationLink(
+        val totalPages         = 6
+        val nextPage           = 4
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 2
-        val prev       = PaginationLink(
+        val prevPage           = 2
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
@@ -557,15 +526,13 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
     }
@@ -574,12 +541,12 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
       val currentPage = 4
 
       "when totalPages is 4" in {
-        val totalPages = 4
-        val prevPage   = 3
-        val prev       = PaginationLink(
+        val totalPages         = 4
+        val prevPage           = 3
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
@@ -599,28 +566,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = None
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 5" in {
-        val totalPages = 5
-        val nextPage   = 5
-        val next       = PaginationLink(
+        val totalPages         = 5
+        val nextPage           = 5
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 3
-        val prev       = PaginationLink(
+        val prevPage           = 3
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
@@ -646,28 +611,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(false)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 6" in {
-        val totalPages = 6
-        val nextPage   = 5
-        val next       = PaginationLink(
+        val totalPages         = 6
+        val nextPage           = 5
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 3
-        val prev       = PaginationLink(
+        val prevPage           = 3
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
@@ -699,28 +662,26 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
       "when totalPages is 7" in {
-        val totalPages = 7
-        val nextPage   = 5
-        val next       = PaginationLink(
+        val totalPages         = 7
+        val nextPage           = 5
+        val next               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
-        val prevPage   = 3
-        val prev       = PaginationLink(
+        val prevPage           = 3
+        val prev               = PaginationLink(
           routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
-        val items      = Seq(
+        val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
@@ -752,31 +713,30 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
             ellipsis = Some(true)
           )
         )
-        val pagination = Pagination(
+        val expectedPagination = Pagination(
           items = Some(items),
           previous = Some(prev),
           next = Some(next)
         )
-        val result     = GoodsRecordsPagination.getPagination(currentPage, totalPages)
-        result.items mustEqual pagination.items
-        result.previous mustEqual pagination.previous
-        result.next mustEqual pagination.next
+        val result             = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+        result mustEqual expectedPagination
       }
 
     }
 
   }
-  ".getFirstRecord" - {
+
+  ".getLastRecordIndex" - {
     "when firstRecord is 0 lastRecord is 0" in {
       val firstRecord = 0
       val len         = 100
-      val result      = GoodsRecordsPagination.getLastRecord(firstRecord, len)
+      val result      = GoodsRecordsPagination.getLastRecordIndex(firstRecord, len)
       result mustEqual 0
     }
     "when firstRecord and len is 1 lastRecord is 1" in {
       val firstRecord = 1
       val len         = 1
-      val result      = GoodsRecordsPagination.getLastRecord(firstRecord, len)
+      val result      = GoodsRecordsPagination.getLastRecordIndex(firstRecord, len)
       result mustEqual 1
     }
     "when firstRecord is bigger than 1(101)" - {
@@ -784,18 +744,18 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
 
       "when len is 1 lastRecord is 101" in {
         val len    = 1
-        val result = GoodsRecordsPagination.getLastRecord(firstRecord, len)
+        val result = GoodsRecordsPagination.getLastRecordIndex(firstRecord, len)
         result mustEqual 101
       }
       "when len is bigger than 1(2) lastRecord is 102" in {
         val len    = 2
-        val result = GoodsRecordsPagination.getLastRecord(firstRecord, len)
+        val result = GoodsRecordsPagination.getLastRecordIndex(firstRecord, len)
         result mustEqual 102
       }
     }
   }
 
-  ".getFirstRecord" - {
+  ".getFirstRecordIndex" - {
     "when totalPages is 1" - {
       val totalPages = 1
 
@@ -805,21 +765,21 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 1 first record is 1" in {
           val totalRecords = 1
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 1
         }
 
         "when totalRecords are 0 first record is 0" in {
           val totalRecords = 0
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 0
         }
 
         "when totalRecords are 5 first record is 1" in {
           val totalRecords = 5
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 1
         }
       }
@@ -830,21 +790,21 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 1 first record is 0" in {
           val totalRecords = 1
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 0
         }
 
         "when totalRecords are 0 first record is 0" in {
           val totalRecords = 0
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 0
         }
 
         "when totalRecords are 5 first record is 0" in {
           val totalRecords = 5
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 0
         }
       }
@@ -860,7 +820,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 5 first record is 1" in {
           val totalRecords = 5
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 1
         }
       }
@@ -871,21 +831,21 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are less than the pageSize and the currentPage is larger than 1 first record is 0" in {
           val totalRecords = 5
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 0
         }
 
         "when totalRecords are equal to the pageSize and the currentPage is larger than 1 first record is 0" in {
           val totalRecords = 10
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 0
         }
 
         "when totalRecords are 11 first record is 11" in {
           val totalRecords = 11
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 11
         }
       }
@@ -901,7 +861,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 999 first record is 1" in {
           val totalRecords = 999
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 1
         }
       }
@@ -912,7 +872,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 999 first record is 11" in {
           val totalRecords = 999
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 11
         }
       }
@@ -922,7 +882,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 999 first record is 961" in {
           val totalRecords = 999
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 961
         }
       }
@@ -933,7 +893,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         "when totalRecords are 999 first record is 991" in {
           val totalRecords = 999
           val pagination   = GoodsRecordsPagination(totalRecords, currentPage, totalPages, None, None)
-          val result       = GoodsRecordsPagination.getFirstRecord(pagination, pageSize)
+          val result       = GoodsRecordsPagination.getFirstRecordIndex(pagination, pageSize)
           result mustEqual 991
         }
       }

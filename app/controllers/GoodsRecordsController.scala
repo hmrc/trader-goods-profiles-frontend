@@ -68,14 +68,14 @@ class GoodsRecordsController @Inject() (
                   case None        => form
                   case Some(value) => form.fill(value)
                 }
-                val firstRecord  = getFirstRecord(goodsRecordResponse.pagination, pageSize)
+                val firstRecord  = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
                 Ok(
                   view(
                     preparedForm,
                     goodsRecordResponse.goodsItemRecords,
                     goodsRecordResponse.pagination.totalRecords,
-                    getFirstRecord(goodsRecordResponse.pagination, pageSize),
-                    getLastRecord(firstRecord, goodsRecordResponse.goodsItemRecords.size),
+                    getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                    getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
                     countries,
                     getPagination(
                       goodsRecordResponse.pagination.currentPage,
@@ -111,14 +111,14 @@ class GoodsRecordsController @Inject() (
               goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
               countries           <- ottConnector.getCountries
             } yield {
-              val firstRecord = getFirstRecord(goodsRecordResponse.pagination, pageSize)
+              val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
               Ok(
                 view(
                   form.fill(value),
                   goodsRecordResponse.goodsItemRecords,
                   goodsRecordResponse.pagination.totalRecords,
-                  getFirstRecord(goodsRecordResponse.pagination, pageSize),
-                  getLastRecord(firstRecord, pageSize),
+                  getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                  getLastRecordIndex(firstRecord, pageSize),
                   countries,
                   getPagination(goodsRecordResponse.pagination.currentPage, goodsRecordResponse.pagination.totalPages),
                   page

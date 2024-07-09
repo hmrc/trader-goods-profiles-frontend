@@ -30,10 +30,10 @@ case class GoodsRecordsPagination(
 )
 
 object GoodsRecordsPagination {
-  implicit val format: OFormat[GoodsRecordsPagination]                       = Json.format[GoodsRecordsPagination]
-  private val defaultRecord                                                  = 0
-  val firstPage                                                              = 1
-  def getFirstRecord(pagination: GoodsRecordsPagination, pageSize: Int): Int =
+  implicit val format: OFormat[GoodsRecordsPagination]                            = Json.format[GoodsRecordsPagination]
+  private val defaultRecord                                                       = 0
+  val firstPage                                                                   = 1
+  def getFirstRecordIndex(pagination: GoodsRecordsPagination, pageSize: Int): Int =
     if (
       pagination.totalRecords == 0 || pagination.currentPage > pagination.totalPages || (pagination.currentPage > firstPage && pageSize >= pagination.totalRecords)
     ) {
@@ -44,11 +44,11 @@ object GoodsRecordsPagination {
       ) + 1
     }
 
-  def getLastRecord(firstRecord: Int, len: Int): Int =
-    if (firstRecord == 0) {
+  def getLastRecordIndex(firstRecordIndex: Int, numOfRecords: Int): Int =
+    if (firstRecordIndex == 0) {
       defaultRecord
     } else {
-      len + firstRecord - 1
+      numOfRecords + firstRecordIndex - 1
     }
 
   def getPagination(currentPage: Int, totalPages: Int): Pagination =
