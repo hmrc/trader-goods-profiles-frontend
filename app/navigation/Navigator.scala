@@ -166,7 +166,7 @@ class Navigator @Inject() () {
       case AssessmentAnswer.NoExemption  =>
         record.categoryAssessments(assessmentPage.index).category match {
           case 2
-              if commodityCodeSansTrailingZeros(record.commodityCode).length == 6 &&
+              if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
                 record.descendantCount != 0 =>
             routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
           case 2 if record.measurementUnit.isDefined =>
