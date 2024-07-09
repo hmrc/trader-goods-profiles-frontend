@@ -31,7 +31,6 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import views.html.HasNiphlView
 
 import scala.concurrent.Future

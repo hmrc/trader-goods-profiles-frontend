@@ -36,12 +36,12 @@ import scala.concurrent.Future
 
 class HasGoodDescriptionChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasGoodDescriptionChangeFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
-  lazy val hasGoodDescriptionChangeRoute =
+  private lazy val hasGoodDescriptionChangeRoute =
     routes.HasGoodDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
 
   "HasGoodDescriptionChange Controller" - {
