@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
-import models.{CheckMode, NormalMode}
+import models.NormalMode
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

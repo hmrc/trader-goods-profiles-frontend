@@ -18,7 +18,7 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions.IdentifierAction
-import models.{CheckMode, NormalMode}
+import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
