@@ -25,7 +25,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CountryOfOriginPage
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -290,7 +290,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginPage, "answer").success.value
+        val userAnswers =
+          UserAnswers(userAnswersId).set(CountryOfOriginUpdatePage(testRecordId), "answer").success.value
 
         val mockOttConnector = mock[OttConnector]
         when(mockOttConnector.getCountries(any())) thenReturn Future.successful(

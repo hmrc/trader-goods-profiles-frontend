@@ -24,6 +24,7 @@ import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import queries.RecordCategorisationsQuery
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
 class NavigatorSpec extends SpecBase {
@@ -265,6 +266,88 @@ class NavigatorSpec extends SpecBase {
       }
 
       "in Update Record Journey" - {
+
+        "if not answered" - {
+          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
+
+          "must go from HasCountryOfOriginChangePage to JourneyRecoveryController" in {
+            navigator.nextPage(
+              HasCountryOfOriginChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+          }
+
+          "must go from HasGoodsDescriptionChangePage to JourneyRecoveryController" in {
+            navigator.nextPage(
+              HasGoodsDescriptionChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+          }
+
+          "must go from HasCommodityCodeChangePage to JourneyRecoveryController" in {
+            navigator.nextPage(
+              HasCommodityCodeChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+          }
+        }
+
+        "if answer is Yes" - {
+
+          "must go from HasCountryOfOriginChangePage to CountryOfOriginUpdatePage" in {
+            navigator.nextPage(
+              HasCountryOfOriginChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+            ) mustBe routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId)
+          }
+
+          "must go from HasGoodsDescriptionChangePage to GoodsDescriptionUpdatePage" in {
+            navigator.nextPage(
+              HasGoodsDescriptionChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
+            ) mustBe routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, testRecordId)
+          }
+
+          "must go from HasCommodityCodeChangePage to CommodityCodeUpdatePage" in {
+            navigator.nextPage(
+              HasCommodityCodeChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
+            ) mustBe routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId)
+          }
+        }
+
+        "if answer is No" - {
+
+          "must go from HasCountryOfOriginChangePage to SingleRecordController" in {
+            navigator.nextPage(
+              HasCountryOfOriginChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), false).success.value
+            ) mustBe routes.SingleRecordController.onPageLoad(testRecordId)
+          }
+
+          "must go from HasGoodsDescriptionChangePage to SingleRecordController" in {
+            navigator.nextPage(
+              HasGoodsDescriptionChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), false).success.value
+            ) mustBe routes.SingleRecordController.onPageLoad(testRecordId)
+          }
+
+          "must go from HasCommodityCodeChangePage to SingleRecordController" in {
+            navigator.nextPage(
+              HasCommodityCodeChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), false).success.value
+            ) mustBe routes.SingleRecordController.onPageLoad(testRecordId)
+          }
+        }
 
         "must go from CountryOfOriginUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(
@@ -780,7 +863,7 @@ class NavigatorSpec extends SpecBase {
               .value
 
             navigator.nextPage(
-              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = false),
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               answers
             ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
@@ -1696,7 +1779,7 @@ class NavigatorSpec extends SpecBase {
               .success
               .value
             navigator.nextPage(
-              HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = false),
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               CheckMode,
               answers
             ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)

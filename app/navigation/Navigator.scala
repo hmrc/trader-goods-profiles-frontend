@@ -23,6 +23,7 @@ import models.GoodsRecordsPagination.firstPage
 import pages._
 import models._
 import queries.RecordCategorisationsQuery
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
 import scala.util.Try
@@ -63,8 +64,43 @@ class Navigator @Inject() () {
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, p.needToRecategorise)
+    case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
+    case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
+    case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
+  }
 
+  private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasCommodityCodeChangePage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasCountryOfOriginChangePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasCountryOfOriginChangePage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasGoodsDescriptionChangePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasGoodsDescriptionChangePage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromUseTraderReference(answers: UserAnswers): Call =
