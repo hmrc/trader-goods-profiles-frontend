@@ -38,16 +38,151 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
   private lazy val profileRoute          = routes.ProfileController.onPageLoad().url
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-  private val profileResponse = TraderProfile(
-    "actorId",
-    "UKIMS number",
-    Some("NIRMS number"),
-    Some("NIPHL number")
-  )
-
   "Profile Controller" - {
 
     "must return OK and the correct view for a GET" in {
+
+      val profileResponse = TraderProfile(
+        actorId = "actorId",
+        ukimsNumber = "Ukims number",
+        nirmsNumber = Some("NIRMS number"),
+        niphlNumber = Some("NIPHL number")
+      )
+
+      val application = applicationBuilder()
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+        .successful(profileResponse)
+
+      implicit val message: Messages = messages(application)
+
+      val detailsList = SummaryListViewModel(
+        rows = Seq(
+          Some(UkimsNumberSummary.row(profileResponse.ukimsNumber, NormalMode)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
+          Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined, NormalMode)),
+          NiphlNumberSummary.row(profileResponse.niphlNumber, NormalMode)
+        ).flatten
+      )
+
+      running(application) {
+        val request = FakeRequest(GET, profileRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ProfileView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(detailsList)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET without NIRMS number" in {
+
+      val profileResponse = TraderProfile(
+        actorId = "actorId",
+        ukimsNumber = "Ukims Number",
+        nirmsNumber = None,
+        niphlNumber = Some("Niphl Number")
+      )
+
+      val application = applicationBuilder()
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+        .successful(profileResponse)
+
+      implicit val message: Messages = messages(application)
+
+      val detailsList = SummaryListViewModel(
+        rows = Seq(
+          Some(UkimsNumberSummary.row(profileResponse.ukimsNumber, NormalMode)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
+          Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined, NormalMode)),
+          NiphlNumberSummary.row(profileResponse.niphlNumber, NormalMode)
+        ).flatten
+      )
+
+      running(application) {
+        val request = FakeRequest(GET, profileRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ProfileView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(detailsList)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET without NIPHL number" in {
+
+      val profileResponse = TraderProfile(
+        actorId = "actorId",
+        ukimsNumber = "Ukims Number",
+        nirmsNumber = Some("Nirms Number"),
+        niphlNumber = None
+      )
+
+      val application = applicationBuilder()
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+        .successful(profileResponse)
+
+      implicit val message: Messages = messages(application)
+
+      val detailsList = SummaryListViewModel(
+        rows = Seq(
+          Some(UkimsNumberSummary.row(profileResponse.ukimsNumber, NormalMode)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
+          Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined, NormalMode)),
+          NiphlNumberSummary.row(profileResponse.niphlNumber, NormalMode)
+        ).flatten
+      )
+
+      running(application) {
+        val request = FakeRequest(GET, profileRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ProfileView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(detailsList)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET without NIRMS and NIPHL number" in {
+
+      val profileResponse = TraderProfile(
+        actorId = "actorId",
+        ukimsNumber = "Ukims Number",
+        nirmsNumber = None,
+        niphlNumber = None
+      )
 
       val application = applicationBuilder()
         .overrides(
