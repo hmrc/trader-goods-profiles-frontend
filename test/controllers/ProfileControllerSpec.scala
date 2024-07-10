@@ -62,10 +62,10 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          Option(UkimsNumberSummary.row(profileResponse.ukimsNumber, NormalMode)),
-          Option(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
+          Some(UkimsNumberSummary.row(profileResponse.ukimsNumber, NormalMode)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
           NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
-          Option(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined, NormalMode)),
+          Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined, NormalMode)),
           NiphlNumberSummary.row(profileResponse.niphlNumber, NormalMode)
         ).flatten
       )

@@ -39,7 +39,7 @@ object UkimsNumberSummary {
       )
     }
 
-  //TBD - this will be updated to route to the update ukims number page
+  //TODO - this will be updated to route to the update ukims number page
   def row(value: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "ukimsNumber.checkYourAnswersLabel",

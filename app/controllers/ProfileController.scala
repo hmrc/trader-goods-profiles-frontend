@@ -43,10 +43,10 @@ class ProfileController @Inject() (
     traderProfileConnector.getTraderProfile(request.eori).map { profile =>
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          Option(UkimsNumberSummary.row(profile.ukimsNumber, NormalMode)),
-          Option(HasNirmsSummary.row(profile.nirmsNumber.isDefined, NormalMode)),
+          Some(UkimsNumberSummary.row(profile.ukimsNumber, NormalMode)),
+          Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined, NormalMode)),
           NirmsNumberSummary.row(profile.nirmsNumber, NormalMode),
-          Option(HasNiphlSummary.row(profile.niphlNumber.isDefined, NormalMode)),
+          Some(HasNiphlSummary.row(profile.niphlNumber.isDefined, NormalMode)),
           NiphlNumberSummary.row(profile.niphlNumber, NormalMode)
         ).flatten
       )

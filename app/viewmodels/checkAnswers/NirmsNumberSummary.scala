@@ -39,7 +39,7 @@ object NirmsNumberSummary {
       )
     }
 
-  //TBD - this will be updated to route to the update nirms number page
+  //TODO - this will be updated to route to the update nirms number page
   def row(value: Option[String], mode: Mode)(implicit messages: Messages): Option[SummaryListRow] =
     value.map { nirmsNumber =>
       SummaryListRowViewModel(

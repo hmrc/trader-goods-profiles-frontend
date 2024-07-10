@@ -41,7 +41,7 @@ object HasNirmsSummary {
       )
     }
 
-  //TBD - this will be updated to route to the update has nirms page
+  //TODO - this will be updated to route to the update has nirms page
   def row(value: Boolean, mode: Mode)(implicit messages: Messages): SummaryListRow = {
     val textValue = if (value) "site.yes" else "site.no"
     SummaryListRowViewModel(
