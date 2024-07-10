@@ -21,13 +21,14 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.requests.DataRequest
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario, ValidationError}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.RecordCategorisationsQuery
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
@@ -43,6 +44,7 @@ class CyaCategorisationController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
+  dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
   navigator: Navigator
@@ -89,7 +91,7 @@ class CyaCategorisationController @Inject() (
           Ok(view(recordId, categorisationList, supplementaryUnitList))
 
         case Left(errors) =>
-          logErrorsAndContinue(errors, recordId)
+          logErrorsAndContinue(errors, recordId, request)
 
       }
   }
@@ -105,6 +107,7 @@ class CyaCategorisationController @Inject() (
             model.categoryAssessmentsWithExemptions,
             model.category
           )
+          dataCleansingService.deleteMongoData(request.userAnswers.id)
 
           goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, model).map { _ =>
             Redirect(
@@ -115,16 +118,21 @@ class CyaCategorisationController @Inject() (
               )
             )
           }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
+  def logErrorsAndContinue(
+    errors: data.NonEmptyChain[ValidationError],
+    recordId: String,
+    request: DataRequest[AnyContent]
+  ): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
     logger.warn(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
+    dataCleansingService.deleteMongoData(request.userAnswers.id)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

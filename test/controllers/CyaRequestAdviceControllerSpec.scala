@@ -21,13 +21,14 @@ import base.TestConstants.testRecordId
 import connectors.AccreditationConnector
 import models.UserAnswers
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
 import play.api.Application
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
@@ -108,9 +109,13 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         val mockConnector = mock[AccreditationConnector]
         when(mockConnector.submitRequestAccreditation(any())(any())).thenReturn(Future.successful(Done))
 
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+            .overrides(bind[SessionRepository].toInstance(sessionRepository))
             .build()
 
         running(application) {
@@ -120,6 +125,10 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad(testRecordId).url
+
+          withClue("must cleanse the user answers data") {
+            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+          }
         }
       }
 
@@ -130,9 +139,13 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           val mockConnector = mock[AccreditationConnector]
           val continueUrl   = RedirectUrl(routes.AdviceStartController.onPageLoad(testRecordId).url)
 
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -143,6 +156,10 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
             verify(mockConnector, never()).submitRequestAccreditation(any())(any())
+
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id))
+            }
           }
         }
       }
@@ -155,9 +172,13 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         when(mockConnector.submitRequestAccreditation(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AccreditationConnector].toInstance(mockConnector))
+            .overrides(bind[SessionRepository].toInstance(sessionRepository))
             .build()
 
         running(application) {
@@ -165,6 +186,9 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
           intercept[RuntimeException] {
             await(route(application, request).value)
+          }
+          withClue("must cleanse the user answers data") {
+            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
           }
         }
       }

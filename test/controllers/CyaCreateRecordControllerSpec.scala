@@ -30,6 +30,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.CountriesQuery
+import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -175,14 +176,17 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockConnector.submitGoodsRecord(any())(any()))
             .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
 
-          val mockAuditService = mock[AuditService]
+          val mockAuditService  = mock[AuditService]
           when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -206,6 +210,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               verify(mockAuditService, times(1))
                 .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
             }
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+            }
           }
         }
       }
@@ -218,10 +225,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockAuditService = mock[AuditService]
           val continueUrl      = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
 
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -235,6 +246,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             withClue("must not try and submit an audit") {
               verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
+            }
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id))
             }
           }
 
@@ -252,10 +266,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val mockAuditService = mock[AuditService]
         when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AuditService].toInstance(mockAuditService))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+            .overrides(bind[SessionRepository].toInstance(sessionRepository))
             .build()
 
         running(application) {
@@ -267,6 +285,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService, times(1))
               .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+          }
+          withClue("must cleanse the user answers data") {
+            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
           }
 
         }
