@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-package forms
+package models.ott.response
 
-import javax.inject.Inject
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-import forms.mappings.Mappings
-import play.api.data.Form
+final case class Descendant(
+  id: String,
+  descendantType: String
+)
 
-class HasGoodDescriptionChangeFormProvider @Inject() extends Mappings {
+object Descendant {
 
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("hasGoodDescriptionChange.error.required")
+  def apply(
+    id: String,
+    descendantType: String
+  ): Descendant =
+    new Descendant(
+      id,
+      descendantType
     )
+
+  implicit lazy val reads: Reads[Descendant] = (
+    (__ \ "id").read[String] and
+      (__ \ "type").read[String]
+  )(Descendant.apply _)
 }

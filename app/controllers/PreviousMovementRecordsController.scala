@@ -18,50 +18,41 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
-import pages.PreviousMovementRecordsPage
+import models.GoodsRecordsPagination.firstPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.GetGoodsRecordsQuery
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{GoodsRecordsEmptyView, PreviousMovementRecordsView}
+import views.html.PreviousMovementRecordsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
-  emptyView: GoodsRecordsEmptyView,
-  getGoodsRecordConnector: GoodsRecordConnector
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    getGoodsRecordConnector.doRecordsExist(request.eori).map {
-      case Some(getGoodsRecordResponse) if getGoodsRecordResponse.goodsItemRecords.nonEmpty =>
-        Ok(view())
-
+    goodsRecordConnector.getRecordsCount(request.eori).flatMap {
+      case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
       case _ =>
-        Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
+        goodsRecordConnector.doRecordsExist(request.eori).map {
+          case false => Ok(view())
+          case true  => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
+        }
     }
   }
 
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    for {
-      getGoodsRecordResponse  <- getGoodsRecordConnector.getAllRecords(request.eori)
-      updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(GetGoodsRecordsQuery, getGoodsRecordResponse))
-      updatedAnswersWithFlag  <-
-        Future.fromTry(updatedAnswersWithQuery.set(PreviousMovementRecordsPage, "hasLoadedRecords"))
-      _                       <- sessionRepository.set(updatedAnswersWithFlag)
-
-    } yield Redirect(routes.GoodsRecordsController.onPageLoad(1))
-
+    goodsRecordConnector
+      .storeAllRecords(request.eori)
+      .map(_ => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage)))
   }
 }

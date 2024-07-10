@@ -17,7 +17,6 @@
 package models
 
 import controllers.routes
-import models.router.responses.GetRecordsResponse
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
@@ -31,48 +30,68 @@ case class GoodsRecordsPagination(
 )
 
 object GoodsRecordsPagination {
-  implicit val format: OFormat[GoodsRecordsPagination] = Json.format[GoodsRecordsPagination]
+  implicit val format: OFormat[GoodsRecordsPagination]                            = Json.format[GoodsRecordsPagination]
+  private val defaultRecord                                                       = 0
+  val firstPage                                                                   = 1
+  def getFirstRecordIndex(pagination: GoodsRecordsPagination, pageSize: Int): Int =
+    if (
+      pagination.totalRecords == 0 || pagination.currentPage > pagination.totalPages || (pagination.currentPage > firstPage && pageSize >= pagination.totalRecords)
+    ) {
+      defaultRecord
+    } else {
+      (
+        (pagination.currentPage - 1) * pageSize
+      ) + 1
+    }
 
-  private def getPageSize(totalRecords: Int, recordsSize: Int, totalPages: Int): Int =
-    (totalRecords - recordsSize) / (totalPages - 1)
+  def getLastRecordIndex(firstRecordIndex: Int, numOfRecords: Int): Int =
+    if (firstRecordIndex == 0) {
+      defaultRecord
+    } else {
+      numOfRecords + firstRecordIndex - 1
+    }
 
-  def getFirstRecord(goodsRecordResponse: GetRecordsResponse): Int =
-    getFirstRecordPos(
-      goodsRecordResponse.pagination.totalRecords,
-      goodsRecordResponse.goodsItemRecords.size,
-      goodsRecordResponse.pagination.totalPages,
-      goodsRecordResponse.pagination.currentPage
-    ) + 1
+  def getPagination(currentPage: Int, totalPages: Int): Pagination =
+    if (currentPage < firstPage || totalPages < firstPage || currentPage > totalPages) {
+      Pagination(None, None, None)
+    } else {
 
-  private def getFirstRecordPos(totalRecords: Int, recordsSize: Int, totalPages: Int, currentPage: Int): Int =
-    (currentPage - 1) * getPageSize(totalRecords, recordsSize, totalPages)
-
-  def getLastRecord(goodsRecordResponse: GetRecordsResponse): Int =
-    goodsRecordResponse.goodsItemRecords.size + getFirstRecordPos(
-      goodsRecordResponse.pagination.totalRecords,
-      goodsRecordResponse.goodsItemRecords.size,
-      goodsRecordResponse.pagination.totalPages,
-      goodsRecordResponse.pagination.currentPage
-    )
-
-  def getPagination(pagination: GoodsRecordsPagination): Pagination =
-    Pagination(
-      items = Some((0 until pagination.totalPages).map { index =>
-        PaginationItem(
-          number = Some((index + 1).toString()),
-          current = Some(pagination.currentPage == (index + 1)),
-          href = routes.GoodsRecordsController.onPageLoad(index + 1).url
-        )
-      }),
-      previous = if (pagination.currentPage == 1) {
-        None
+      val start = if (currentPage <= 2) {
+        1
       } else {
-        Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(pagination.currentPage - 1).url))
-      },
-      next = if (pagination.currentPage == pagination.totalPages) {
-        None
-      } else {
-        Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(pagination.currentPage + 1).url))
+        currentPage - 2
       }
-    )
+
+      val end = if (currentPage >= totalPages - 2) {
+        totalPages + 1
+      } else {
+        currentPage + 3
+      }
+
+      Pagination(
+        items = Some((start until end).map { page =>
+          val ellipsis = if (page < currentPage - 1 || page > currentPage + 1) {
+            true
+          } else {
+            false
+          }
+          PaginationItem(
+            number = Some(page.toString),
+            current = Some(currentPage == page),
+            href = routes.GoodsRecordsController.onPageLoad(page).url,
+            ellipsis = Some(ellipsis)
+          )
+        }),
+        previous = if (currentPage == firstPage) {
+          None
+        } else {
+          Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage - 1).url))
+        },
+        next = if (currentPage == totalPages) {
+          None
+        } else {
+          Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage + 1).url))
+        }
+      )
+    }
 }

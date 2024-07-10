@@ -16,30 +16,24 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.HasGoodDescriptionChangePage
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object HasGoodDescriptionChangeSummary {
+object UpdateRecordSummary {
 
-  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasGoodDescriptionChangePage(recordId)).map { answer =>
-      val value = if (answer) "site.yes" else "site.no"
-
-      SummaryListRowViewModel(
-        key = "hasGoodDescriptionChange.checkYourAnswersLabel",
-        value = ValueViewModel(value),
-        actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.HasGoodDescriptionChangeController.onPageLoad(CheckMode, recordId).url
-          )
-            .withVisuallyHiddenText(messages("hasGoodDescriptionChange.change.hidden"))
+  def row(value: String, key: String, hidden: String, url: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = key,
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel(
+          "site.change",
+          url
         )
+          .withVisuallyHiddenText(messages(hidden))
       )
-    }
+    )
 }

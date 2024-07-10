@@ -19,6 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.RemoveGoodsRecordFormProvider
+import models.GoodsRecordsPagination.firstPage
 
 import javax.inject.Inject
 import models.{Location, NormalMode}
@@ -26,6 +27,7 @@ import navigation.Navigator
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RemoveGoodsRecordView
 
@@ -66,7 +68,15 @@ class RemoveGoodsRecordController @Inject() (
             case true  =>
               goodsRecordConnector
                 .removeGoodsRecord(request.eori, recordId)
-                .map(_ => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
+                .map {
+                  case true  => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
+                  case false =>
+                    Redirect(
+                      routes.JourneyRecoveryController.onPageLoad(
+                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
+                      )
+                    )
+                }
             case false =>
               Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
           }

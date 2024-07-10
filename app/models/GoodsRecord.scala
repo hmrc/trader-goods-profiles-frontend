@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits._
+import cats.implicits.catsSyntaxTuple5Parallel
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
@@ -71,9 +71,9 @@ object GoodsRecord {
 
   private def getCommodityQuery(answers: UserAnswers, code: String): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(CommodityQuery) match {
-      case Right(commodity) if commodity.commodityCode == code => Right(commodity)
-      case Left(errors)                                        => Left(errors)
-      case _                                                   => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage)))
+      case Right(commodity) if commodity.commodityCode.startsWith(code) => Right(commodity)
+      case Left(errors)                                                 => Left(errors)
+      case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodePage)))
     }
 
 }

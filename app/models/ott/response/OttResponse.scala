@@ -22,7 +22,8 @@ import play.api.libs.json._
 final case class OttResponse(
   goodsNomenclature: GoodsNomenclatureResponse,
   categoryAssessmentRelationships: Seq[CategoryAssessmentRelationship],
-  includedElements: Seq[IncludedElement]
+  includedElements: Seq[IncludedElement],
+  descendents: Seq[Descendant]
 ) {
 
   lazy val themes: Seq[ThemeResponse] = includedElements.flatMap {
@@ -52,6 +53,7 @@ object OttResponse {
     (__ \ "data").read[GoodsNomenclatureResponse] and
       (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data")
         .read[Seq[CategoryAssessmentRelationship]] and
-      (__ \ "included").read[Seq[IncludedElement]]
+      (__ \ "included").read[Seq[IncludedElement]] and
+      (__ \ "data" \ "relationships" \ "descendants" \ "data").read[Seq[Descendant]]
   )(OttResponse.apply _)
 }

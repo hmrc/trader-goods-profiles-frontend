@@ -18,6 +18,7 @@ package base
 
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
+import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -75,6 +76,13 @@ trait SpecBase
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
+
+  def testAuditOttResponse: OttResponse = OttResponse(
+    GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, "test"),
+    Seq(),
+    Seq(),
+    Seq()
+  )
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
@@ -149,13 +157,15 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
-    Some("1234567890")
+    Some("1234567890"),
+    0
   )
 
   private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
-    None
+    None,
+    0
   )
 
   lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
@@ -183,7 +193,8 @@ trait SpecBase
   private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(),
-    Some("Weight, in kilograms")
+    Some("Weight, in kilograms"),
+    0
   )
 
   lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
@@ -201,7 +212,8 @@ trait SpecBase
   private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1NoExemptions),
-    Some("Weight, in kilograms")
+    Some("Weight, in kilograms"),
+    0
   )
 
   lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(

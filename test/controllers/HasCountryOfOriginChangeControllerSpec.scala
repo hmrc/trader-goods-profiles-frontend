@@ -36,12 +36,12 @@ import scala.concurrent.Future
 
 class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasCountryOfOriginChangeFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
-  lazy val hasCountryOfOriginChangeRoute =
+  private lazy val hasCountryOfOriginChangeRoute =
     routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
 
   "HasCountryOfOriginChange Controller" - {

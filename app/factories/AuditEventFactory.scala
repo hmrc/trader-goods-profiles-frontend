@@ -19,7 +19,7 @@ package factories
 import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
 import models.ott.response.OttResponse
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{GoodsRecord, TraderProfile}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -159,7 +159,7 @@ case class AuditEventFactory() {
     responseDateTime: Instant,
     responseStatus: Int,
     errorMessage: Option[String],
-    commodityDetails: Option[Commodity]
+    commodityDetails: Option[OttResponse]
   )(implicit hc: HeaderCarrier): ExtendedDataEvent = {
 
     val auditDetails = ValidateCommodityCodeEvent(
@@ -176,10 +176,10 @@ case class AuditEventFactory() {
         responseStatus.toString,
         errorMessage
       ),
-      commodityDetails.flatMap(_.descriptions.headOption),
+      commodityDetails.map(_.goodsNomenclature.description),
       // If commodityDetails are defined and no endDate then we got sent a null for this so pass it on.
-      commodityDetails.map(_.validityEndDate.map(_.toString).getOrElse("null")),
-      commodityDetails.map(_.validityStartDate.toString)
+      commodityDetails.map(_.goodsNomenclature.validityEndDate.map(_.toString).getOrElse("null")),
+      commodityDetails.map(_.goodsNomenclature.validityStartDate.toString)
     )
 
     ExtendedDataEvent(

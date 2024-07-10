@@ -35,15 +35,15 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
     val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
     val categorisationInfo                  =
-      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"))
+      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"), 0)
     val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
     val emptyRecordCategorisations          = RecordCategorisations(records = Map())
     val noCategory1RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"))))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"), 0)))
     val noCategory1Or2RecordCategorisations =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"))))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"), 0)))
     val noCategory2RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"))))
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"), 0)))
 
     "must return a CategoryRecord when all mandatory questions are answered" - {
 

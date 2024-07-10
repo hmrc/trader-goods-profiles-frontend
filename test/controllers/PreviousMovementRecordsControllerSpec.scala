@@ -18,13 +18,14 @@ package controllers
 
 import base.SpecBase
 import connectors.GoodsRecordConnector
+import models.GoodsRecordsPagination.firstPage
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
 import utils.GetRecordsResponseUtil
 import views.html.PreviousMovementRecordsView
 
@@ -34,12 +35,11 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
   "PreviousMovementRecords Controller" - {
 
-    "must return OK and the correct view for a GET" in {
-
+    "must return OK and the correct view for a GET when this the users first time on this page and they do have records but they have not been stored" in {
+      val totalRecords                 = 10
       val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
-        mockGetRecordsResponseOption
-      )
+      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(false)
+      when(mockGetGoodsRecordsconnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -57,15 +57,40 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
         verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
+        verify(mockGetGoodsRecordsconnector, times(1)).getRecordsCount(any())(any())
       }
     }
 
-    "must skip page when records are empty" in {
+    "must redirect to goods list page for a GET when this the users records have been stored" in {
+      val totalRecords                 = 10
+      val mockGetGoodsRecordsConnector = mock[GoodsRecordConnector]
+      when(mockGetGoodsRecordsConnector.doRecordsExist(any())(any())) thenReturn Future.successful(true)
+      when(mockGetGoodsRecordsConnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
 
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
+        verify(mockGetGoodsRecordsConnector, times(1)).doRecordsExist(any())(any())
+        verify(mockGetGoodsRecordsConnector, times(1)).getRecordsCount(any())(any())
+
+      }
+    }
+
+    "must redirect to no records page for a GET when this the users first time on this page and they do not have any records" in {
+
+      val totalRecords                 = 0
       val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(
-        mockGetRecordsEmpty
-      )
+      when(mockGetGoodsRecordsconnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -80,27 +105,22 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
-        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
+        verify(mockGetGoodsRecordsconnector, times(1)).getRecordsCount(any())(any())
       }
     }
 
-    "must redirect to the next page on load record" in {
+    "must redirect to the next page on load record and store all records" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+      val mockGetGoodsRecordsConnector = mock[GoodsRecordConnector]
 
-      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      when(mockGetGoodsRecordsconnector.getAllRecords(any())(any())) thenReturn Future.successful(
-        mockGetRecordsResponse
+      when(mockGetGoodsRecordsConnector.storeAllRecords(any())(any())) thenReturn Future.successful(
+        Done
       )
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+            bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector)
           )
           .build()
 
@@ -111,9 +131,9 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(1).url
+        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
 
-        verify(mockGetGoodsRecordsconnector, times(1)).getAllRecords(any())(any())
+        verify(mockGetGoodsRecordsConnector, times(1)).storeAllRecords(any())(any())
       }
     }
   }

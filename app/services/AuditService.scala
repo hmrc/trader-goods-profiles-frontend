@@ -22,7 +22,7 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CreateRecordJourney, UpdateRecordJourney, UpdateSection}
 import models.ott.response.OttResponse
-import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
+import models.{GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
@@ -148,7 +148,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
               responseDateTime,
               responseStatus,
               errorMessage,
-              response.map(x => x.asInstanceOf[Commodity])
+              response.map(x => x.asInstanceOf[OttResponse])
             )
 
           case AuditGetCategorisationAssessment =>
@@ -171,7 +171,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     responseDateTime: Instant,
     responseStatus: Int,
     errorMessage: Option[String],
-    commodityDetails: Option[Commodity]
+    commodityDetails: Option[OttResponse]
   )(implicit hc: HeaderCarrier): Future[Done] = {
 
     val event = auditEventFactory.createValidateCommodityCodeEvent(

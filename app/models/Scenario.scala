@@ -56,6 +56,7 @@ object Scenario {
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
+    case NoRedirectScenario    => "NoRedirectScenario"
     case Category1NoExemptions => "Category1NoExemptions"
     case StandardNoAssessments => "StandardNoAssessments"
     case Standard              => "Standard"

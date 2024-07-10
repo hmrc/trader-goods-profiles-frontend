@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, Mode, NormalMode, UserAnswers}
 import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -33,20 +33,25 @@ object GoodsDescriptionSummary {
         key = "goodsDescription.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       )
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+    val changeLink = mode match {
+      case NormalMode => routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
+      case CheckMode  => routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+    }
     SummaryListRowViewModel(
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoad(CheckMode).url)
+        ActionItemViewModel("site.change", changeLink)
           .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
     )
+  }
 }
