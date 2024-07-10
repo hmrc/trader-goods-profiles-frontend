@@ -35,14 +35,14 @@ object Commodity {
 
     def extractDescriptions(json: JsValue): List[String] = {
       val description        = (json \ "data" \ "attributes" \ "description").asOpt[String].toList
-      val included           = (json \ "data" \ "included").asOpt[JsArray].getOrElse(JsArray())
+      val included           = (json \ "included").asOpt[JsArray].getOrElse(JsArray())
       val headingDescription = included.value.collect {
-        case obj if (obj \ "type").asOpt[String].contains("goods_nomenclature") =>
+        case obj if (obj \ "type").asOpt[String].contains("heading") =>
           (obj \ "attributes" \ "description").asOpt[String]
       }.flatten
 
       val subheadingDescription = included.value.collect {
-        case obj if (obj \ "type").asOpt[String].contains("goods_nomenclature") =>
+        case obj if (obj \ "type").asOpt[String].contains("commodity") =>
           (obj \ "attributes" \ "description").asOpt[String]
       }.flatten
 
@@ -68,14 +68,14 @@ object Commodity {
       val included = {
         val heading = descriptions.lift(1).map { desc =>
           Json.obj(
-            "type"       -> "goods_nomenclature",
+            "type"       -> "heading",
             "attributes" -> Json.obj("description" -> desc)
           )
         }
 
         val subheading = descriptions.lift(2).map { desc =>
           Json.obj(
-            "type"       -> "goods_nomenclature",
+            "type"       -> "commodity",
             "attributes" -> Json.obj("description" -> desc)
           )
         }
