@@ -451,3 +451,28 @@ hasGoodsDescriptionChange.p1 = Changing the goods description on this goods reco
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
 
+
+hasNirmsChange.title = hasNirmsChange
+hasNirmsChange.h1 = Removing NIRMS details
+hasNirmsChange.p1 = If you remove your NIRMS details, the categorisation of goods you move under the Simplified Process for Internal Market Movements (SPIMM) could change.
+hasNirmsChange.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
+hasNirmsChange.h2 = Are you sure you want to remove your NIRMS details?
+hasNirmsChange.checkYourAnswersLabel = hasNirmsChange
+hasNirmsChange.error.required = Confirm if you want to remove your NIRMS
+hasNirmsChange.yes = Yes, remove my NIRMS details
+hasNirmsChange.no = No, remove my NIRMS details
+hasNirmsChange.warning = Warning
+hasNirmsChange.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
+
+hasNiphlsChange.title = hasNiphlsChange
+hasNiphlsChange.h1 = Removing NIPHL details
+hasNiphlsChange.p1 = If you remove your NIPHL details, the categorisation of goods you move under the Simplified Process for Internal Market Movements (SPIMM) could change.
+hasNiphlsChange.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
+hasNiphlsChange.h2 = Are you sure you want to remove your NIPHL details?
+hasNiphlsChange.checkYourAnswersLabel = hasNiphlsChange
+hasNiphlsChange.error.required = Confirm if you want to remove your NIPHL
+hasNiphlsChange.change.hidden = HasNiphlsChange
+hasNiphlsChange.yes = Yes, remove my NIPHL details
+hasNiphlsChange.no = No, remove my NIPHL details
+hasNiphlsChange.warning = Warning
+hasNiphlsChange.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
