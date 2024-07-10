@@ -33,7 +33,7 @@ object UkimsNumberSummary {
         key = "ukimsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
       )

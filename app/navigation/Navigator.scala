@@ -31,7 +31,7 @@ import scala.util.Try
 @Singleton
 class Navigator @Inject() () {
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ProfileSetupPage                          => _ => routes.UkimsNumberController.onPageLoad(NormalMode)
+    case ProfileSetupPage                          => _ => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoad(NormalMode)
     case HasNirmsPage                              => navigateFromHasNirms
     case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoad(NormalMode)

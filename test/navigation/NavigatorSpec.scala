@@ -73,7 +73,7 @@ class NavigatorSpec extends SpecBase {
         "must go from ProfileSetupPage to UkimsNumberPage" in {
 
           navigator.nextPage(ProfileSetupPage, NormalMode, emptyUserAnswers) mustBe routes.UkimsNumberController
-            .onPageLoad(NormalMode)
+            .onPageLoadCreate(NormalMode)
         }
 
         "must go from UkimsNumberPage to HasNirmsPage" in {
@@ -870,11 +870,6 @@ class NavigatorSpec extends SpecBase {
           }
 
           "to first Assessment when answer is Yes and need to recategorise" in {
-
-            val assessment1Shorter        = assessment1
-            val assessment2Shorter        = assessment2.copy(id = "id432")
-            val categorisationInfoShorter =
-              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None, 0)
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)

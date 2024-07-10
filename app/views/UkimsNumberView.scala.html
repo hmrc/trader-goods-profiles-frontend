@@ -35,7 +35,7 @@
     <p class="govuk-body">@messages("ukimsNumber.p1")</p>
     <p class="govuk-body">@messages("ukimsNumber.p2")</p>
 
-    @formHelper(action = routes.UkimsNumberController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.UkimsNumberController.onSubmitCreate(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
