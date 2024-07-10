@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
-import models.ott.response.{CategoryAssessmentRelationship, GoodsNomenclatureResponse, IncludedElement, OttResponse}
+import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.{GoodsRecord, TraderProfile}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -549,7 +549,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       val testOttResponse = OttResponse(
         GoodsNomenclatureResponse("1", testCommodity.commodityCode, None, Instant.EPOCH, None, "test"),
         Seq.empty[CategoryAssessmentRelationship],
-        Seq.empty[IncludedElement]
+        Seq.empty[IncludedElement],
+        Seq.empty[Descendant]
       )
 
       "return Done when built up an audit event and submitted it" in {

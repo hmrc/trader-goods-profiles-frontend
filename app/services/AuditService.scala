@@ -22,7 +22,7 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CreateRecordJourney, UpdateRecordJourney, UpdateSection}
 import models.ott.response.OttResponse
-import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
+import models.{GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
