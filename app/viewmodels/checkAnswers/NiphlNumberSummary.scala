@@ -33,7 +33,7 @@ object NiphlNumberSummary {
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )

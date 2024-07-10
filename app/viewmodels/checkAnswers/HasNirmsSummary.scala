@@ -34,7 +34,7 @@ object HasNirmsSummary {
         key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )

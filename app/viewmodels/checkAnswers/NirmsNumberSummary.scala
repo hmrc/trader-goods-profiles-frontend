@@ -33,7 +33,7 @@ object NirmsNumberSummary {
         key = "nirmsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
       )

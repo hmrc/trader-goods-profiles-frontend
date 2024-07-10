@@ -25,7 +25,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.NirmsNumberPage
+import pages.{NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -42,154 +42,302 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new NirmsNumberFormProvider()
   private val form = formProvider()
 
-  private lazy val nirmsNumberRoute = routes.NirmsNumberController.onPageLoad(NormalMode).url
-
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
   "NirmsNumber Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    ".create" - {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
+      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadCreate(NormalMode).url
 
-      running(application) {
-        val request = FakeRequest(GET, nirmsNumberRoute)
+      "must return OK and the correct view for a GET" in {
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[NirmsNumberView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberPage, "answer").success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, nirmsNumberRoute)
-
-        val view = application.injector.instanceOf[NirmsNumberView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", "RMS-GB-123456"))
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitCreate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must populate the view correctly on a GET when the question has previously been answered" in {
+
+        val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberPage, "answer").success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
+
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill("answer"),
+            routes.NirmsNumberController.onSubmitCreate(NormalMode)
+          )(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to the next page when valid data is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", "RMS-GB-123456"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", ""))
+
+          val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitCreate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Home page for a GET if profile already exists" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    ".update" - {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate.url
 
-      running(application) {
-        val request =
-          FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
+      "must return OK and the correct view for a GET" in {
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
-        val view = application.injector.instanceOf[NirmsNumberView]
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+      "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val application = applicationBuilder(userAnswers = None)
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
+        val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberUpdatePage, "answer").success.value
 
-      running(application) {
-        val request = FakeRequest(GET, nirmsNumberRoute)
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill("answer"),
+            routes.NirmsNumberController.onSubmitUpdate
+          )(request, messages(application)).toString
+        }
       }
-    }
 
-    "must redirect to Home page for a GET if profile already exists" in {
+      "must redirect to the next page when valid data is submitted" in {
 
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        val mockSessionRepository = mock[SessionRepository]
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-      val application = applicationBuilder(userAnswers = None)
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      running(application) {
-        val request = FakeRequest(GET, nirmsNumberRoute)
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", "RMS-GB-123456"))
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+      "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", ""))
 
-        val result = route(application, request).value
+          val boundForm = form.bind(Map("value" -> ""))
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
   }

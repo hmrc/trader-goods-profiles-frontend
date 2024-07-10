@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.UkimsNumberFormProvider
 
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -55,7 +55,7 @@ class UkimsNumberController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, routes.UkimsNumberController.onSubmitCreate(mode)))
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -63,7 +63,8 @@ class UkimsNumberController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitCreate(mode)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberPage, value))
@@ -72,27 +73,27 @@ class UkimsNumberController @Inject() (
         )
   }
 
-  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
+  def onPageLoadUpdate: Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(UkimsNumberUpdatePage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, routes.UkimsNumberController.onSubmitUpdate))
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
-        )
+  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitUpdate))),
+        value =>
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, updatedAnswers))
+      )
   }
 }

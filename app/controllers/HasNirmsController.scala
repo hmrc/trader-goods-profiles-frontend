@@ -18,10 +18,11 @@ package controllers
 
 import controllers.actions._
 import forms.HasNirmsFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
-import pages.HasNirmsPage
+import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -47,27 +48,53 @@ class HasNirmsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasNirmsPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
-  }
+      Ok(view(preparedForm, routes.HasNirmsController.onSubmitCreate(mode)))
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitCreate(mode)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasNirmsPage, mode, updatedAnswers))
+        )
+    }
+
+  def onPageLoadUpdate: Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(HasNirmsUpdatePage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm, routes.HasNirmsController.onSubmitUpdate))
+    }
+
+  def onSubmitUpdate: Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitUpdate))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, NormalMode, updatedAnswers))
         )
     }
 }

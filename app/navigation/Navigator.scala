@@ -32,9 +32,9 @@ import scala.util.Try
 class Navigator @Inject() () {
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage                          => _ => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
-    case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoad(NormalMode)
+    case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
     case HasNirmsPage                              => navigateFromHasNirms
-    case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoad(NormalMode)
+    case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
     case HasNiphlPage                              => navigateFromHasNiphl
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
@@ -158,8 +158,8 @@ class Navigator @Inject() () {
     answers
       .get(HasNirmsPage)
       .map {
-        case true  => routes.NirmsNumberController.onPageLoad(NormalMode)
-        case false => routes.HasNiphlController.onPageLoad(NormalMode)
+        case true  => routes.NirmsNumberController.onPageLoadCreate(NormalMode)
+        case false => routes.HasNiphlController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -167,7 +167,7 @@ class Navigator @Inject() () {
     answers
       .get(HasNiphlPage)
       .map {
-        case true  => routes.NiphlNumberController.onPageLoad(NormalMode)
+        case true  => routes.NiphlNumberController.onPageLoadCreate(NormalMode)
         case false => routes.CyaCreateProfileController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
@@ -251,7 +251,7 @@ class Navigator @Inject() () {
           if (answers.isDefined(NirmsNumberPage)) {
             routes.CyaCreateProfileController.onPageLoad
           } else {
-            routes.NirmsNumberController.onPageLoad(CheckMode)
+            routes.NirmsNumberController.onPageLoadCreate(CheckMode)
           }
         case false => routes.CyaCreateProfileController.onPageLoad
       }
@@ -265,7 +265,7 @@ class Navigator @Inject() () {
           if (answers.isDefined(NiphlNumberPage)) {
             routes.CyaCreateProfileController.onPageLoad
           } else {
-            routes.NiphlNumberController.onPageLoad(CheckMode)
+            routes.NiphlNumberController.onPageLoadCreate(CheckMode)
           }
         case false => routes.CyaCreateProfileController.onPageLoad
       }

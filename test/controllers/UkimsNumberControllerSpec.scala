@@ -68,7 +68,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[UkimsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, routes.UkimsNumberController.onSubmitCreate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -90,7 +93,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(
+          contentAsString(result) mustEqual view(
+            form.fill("answer"),
+            routes.UkimsNumberController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -139,7 +145,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, routes.UkimsNumberController.onSubmitCreate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -201,7 +210,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadUpdate().url
+      val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadUpdate.url
 
       "must return OK and the correct view for a GET" in {
 
@@ -219,7 +228,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[UkimsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, routes.UkimsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -241,7 +253,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(
+          contentAsString(result) mustEqual view(form.fill("answer"), routes.UkimsNumberController.onSubmitUpdate)(
             request,
             messages(application)
           ).toString
@@ -290,7 +302,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, routes.UkimsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 

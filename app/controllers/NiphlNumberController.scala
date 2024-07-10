@@ -18,10 +18,11 @@ package controllers
 
 import controllers.actions._
 import forms.NiphlNumberFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
-import pages.NiphlNumberPage
+import pages.{NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -47,27 +48,52 @@ class NiphlNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] =
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(NiphlNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, routes.NiphlNumberController.onSubmitCreate(mode)))
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.NiphlNumberController.onSubmitCreate(mode)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NiphlNumberPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(NiphlNumberPage, mode, updatedAnswers))
         )
+  }
+
+  def onPageLoadUpdate: Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(NiphlNumberUpdatePage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm, routes.NiphlNumberController.onSubmitUpdate))
+    }
+
+  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(BadRequest(view(formWithErrors, routes.NiphlNumberController.onSubmitUpdate))),
+        value =>
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(NiphlNumberUpdatePage, value))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, NormalMode, updatedAnswers))
+      )
   }
 }
