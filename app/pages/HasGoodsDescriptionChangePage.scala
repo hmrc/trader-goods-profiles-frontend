@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import javax.inject.Inject
+import play.api.libs.json.JsPath
 
-import forms.mappings.Mappings
-import play.api.data.Form
+case class HasGoodsDescriptionChangePage(recordId: String) extends QuestionPage[Boolean] {
 
-class HasGoodDescriptionChangeFormProvider @Inject() extends Mappings {
+  override def path: JsPath = JsPath \ toString \ recordId
 
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("hasGoodDescriptionChange.error.required")
-    )
+  override def toString: String = "hasGoodsDescriptionChange"
 }
