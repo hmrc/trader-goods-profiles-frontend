@@ -17,13 +17,14 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.UkimsNumberFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, UpdateTraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.inject.bind
@@ -260,29 +261,38 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to the next page when valid data is submitted" in {
+      "must redirect to the next page when valid data is submitted and update profile" in {
 
         val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
+        val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.updateTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
+
+        val answer = "XIUKIM47699357400020231115081800"
 
         running(application) {
           val request =
             FakeRequest(POST, ukimsNumberRoute)
-              .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
+              .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+          verify(mockTraderProfileConnector, times(1))
+            .updateTraderProfile(eqTo(UpdateTraderProfile(testEori, ukimsNumber = Some(answer))), eqTo(testEori))(any())
         }
       }
 
