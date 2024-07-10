@@ -14,13 +14,29 @@
  * limitations under the License.
  */
 
-package pages
+package models.ott.response
 
-import play.api.libs.json.JsPath
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-case class HasGoodDescriptionChangePage(recordId: String) extends QuestionPage[Boolean] {
+final case class Descendant(
+  id: String,
+  descendantType: String
+)
 
-  override def path: JsPath = JsPath \ toString \ recordId
+object Descendant {
 
-  override def toString: String = "hasGoodDescriptionChange"
+  def apply(
+    id: String,
+    descendantType: String
+  ): Descendant =
+    new Descendant(
+      id,
+      descendantType
+    )
+
+  implicit lazy val reads: Reads[Descendant] = (
+    (__ \ "id").read[String] and
+      (__ \ "type").read[String]
+  )(Descendant.apply _)
 }

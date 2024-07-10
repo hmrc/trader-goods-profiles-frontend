@@ -36,7 +36,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         includedElements = Seq(
           CategoryAssessmentResponse("assessmentId", "themeId", Nil),
           ThemeResponse("themeId", 2)
-        )
+        ),
+        descendents = Seq.empty[Descendant]
       )
 
       val expectedResult = CategorisationInfo(
@@ -44,7 +45,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         categoryAssessments = Seq(
           CategoryAssessment("assessmentId", 2, Nil)
         ),
-        Some("some measure unit")
+        Some("some measure unit"),
+        0
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -76,7 +78,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           AdditionalCodeResponse("exemptionId2", "code2", "description2"),
           ThemeResponse("ignoredTheme", 3),
           CertificateResponse("ignoredExemption", "code3", "description3")
-        )
+        ),
+        descendents = Seq.empty[Descendant]
       )
 
       val expectedResult = CategorisationInfo(
@@ -92,7 +95,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
             )
           )
         ),
-        Some("some measure unit")
+        Some("some measure unit"),
+        0
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -143,7 +147,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           AdditionalCodeResponse("exemptionId2", "code2", "description2"),
           ThemeResponse("ignoredTheme", 3),
           CertificateResponse("ignoredExemption", "code3", "description3")
-        )
+        ),
+        descendents = Seq(Descendant("1", "type1"), Descendant("2", "type2"))
       )
 
       val expectedResult = CategorisationInfo(
@@ -176,7 +181,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
             )
           )
         ),
-        Some("some measure unit")
+        Some("some measure unit"),
+        2
       )
 
       val result = CategorisationInfo.build(ottResponse)
@@ -191,7 +197,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
         includedElements = Seq(
           ThemeResponse("otherThemeId", 2)
-        )
+        ),
+        descendents = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
@@ -206,7 +213,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         includedElements = Seq(
           CategoryAssessmentResponse("assessmentId", "themeId", Nil),
           ThemeResponse("otherThemeId", 2)
-        )
+        ),
+        descendents = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
@@ -231,7 +239,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ),
           ThemeResponse("themeId1", 1),
           AdditionalCodeResponse("exemptionId2", "code2", "description2")
-        )
+        ),
+        descendents = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
@@ -256,7 +265,8 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ),
           ThemeResponse("themeId1", 1),
           CertificateResponse("exemptionId1", "code1", "description1")
-        )
+        ),
+        descendents = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined

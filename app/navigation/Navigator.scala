@@ -23,6 +23,7 @@ import models.GoodsRecordsPagination.firstPage
 import pages._
 import models._
 import queries.RecordCategorisationsQuery
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
 import scala.util.Try
@@ -63,8 +64,43 @@ class Navigator @Inject() () {
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, p.needToRecategorise)
+    case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
+    case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
+    case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
+  }
 
+  private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasCommodityCodeChangePage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasCountryOfOriginChangePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasCountryOfOriginChangePage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasGoodsDescriptionChangePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasGoodsDescriptionChangePage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromUseTraderReference(answers: UserAnswers): Call =
@@ -165,7 +201,9 @@ class Navigator @Inject() () {
         }
       case AssessmentAnswer.NoExemption  =>
         record.categoryAssessments(assessmentPage.index).category match {
-          case 2 if record.commodityCode.length == 6 =>
+          case 2
+              if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
+                record.descendantCount != 0 =>
             routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
           case 2 if record.measurementUnit.isDefined =>
             routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
@@ -323,7 +361,9 @@ class Navigator @Inject() () {
         }
       case AssessmentAnswer.NoExemption  =>
         record.categoryAssessments(assessmentPage.index).category match {
-          case 2 if record.commodityCode.length == 6 =>
+          case 2
+              if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
+                record.descendantCount != 0 =>
             routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
           case 2 if record.measurementUnit.isDefined =>
             routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
@@ -353,4 +393,7 @@ class Navigator @Inject() () {
     case CheckMode  =>
       checkRouteMap(page)(userAnswers)
   }
+
+  private def commodityCodeSansTrailingZeros(commodityCode: String): String =
+    commodityCode.reverse.dropWhile(x => x == '0').reverse
 }

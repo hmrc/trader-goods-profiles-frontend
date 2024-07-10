@@ -36,6 +36,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .set(CountryOfOriginUpdatePage(testRecordId), "1")
             .success
             .value
+            .set(HasCountryOfOriginChangePage(testRecordId), true)
+            .success
+            .value
 
         val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
 
@@ -49,6 +52,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         val answers =
           UserAnswers(userAnswersId)
             .set(GoodsDescriptionUpdatePage(testRecordId), "1")
+            .success
+            .value
+            .set(HasGoodsDescriptionChangePage(testRecordId), true)
             .success
             .value
 
@@ -84,6 +90,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
             .success
             .value
+            .set(HasCommodityCodeChangePage(testRecordId), true)
+            .success
+            .value
 
         val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
 
@@ -98,6 +107,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       "when country of origin is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
 
@@ -106,14 +118,45 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         }
       }
 
+      "when country of origin warning page is false" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCountryOfOriginChangePage(testRecordId), false)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedPage(HasCountryOfOriginChangePage(testRecordId))
+        }
+      }
+
       "when goods description is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)
+          .set(HasGoodsDescriptionChangePage(testRecordId), true)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionUpdatePage(testRecordId))
+        }
+      }
+
+      "when goods description warning page is false" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasGoodsDescriptionChangePage(testRecordId), false)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedPage(HasGoodsDescriptionChangePage(testRecordId))
         }
       }
 
@@ -131,11 +174,65 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       "when commodity code is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(CommodityCodeUpdatePage(testRecordId))
+        }
+      }
+
+      "when has correct goods is missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityCodeUpdatePage(testRecordId), "test")
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
+        }
+      }
+
+      "when has correct goods is false" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityCodeUpdatePage(testRecordId), "test")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), false)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
+        }
+      }
+
+      "when commodity code warning page is false" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), false)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedPage(HasCommodityCodeChangePage(testRecordId))
         }
       }
     }

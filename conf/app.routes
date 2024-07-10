@@ -196,10 +196,10 @@ POST       /update-record/:recordId/change-record-warning/country-of-origin     
 GET        /update-record/:recordId/change-record-warning/country-of-origin/check           controllers.HasCountryOfOriginChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/country-of-origin/check           controllers.HasCountryOfOriginChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /update-record/:recordId/change-record-warning/goods-description                 controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST       /update-record/:recordId/change-record-warning/goods-description                 controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET        /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodDescriptionChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST       /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodDescriptionChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/goods-description                 controllers.HasGoodsDescriptionChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/goods-description                 controllers.HasGoodsDescriptionChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodsDescriptionChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST       /update-record/:recordId/change-record-warning/goods-description/check           controllers.HasGoodsDescriptionChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET         /update-record/:recordId/check-your-answers/country-of-origin                   controllers.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId: String)
 POST        /update-record/:recordId/check-your-answers/country-of-origin                   controllers.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId: String)
