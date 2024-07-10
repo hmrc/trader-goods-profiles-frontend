@@ -547,7 +547,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val responseBody    = "responseBody"
       val testOttResponse = OttResponse(
-        GoodsNomenclatureResponse("1", testCommodity.commodityCode, None, Instant.EPOCH, None, "test"),
+        GoodsNomenclatureResponse("1", testCommodity.commodityCode, None, Instant.EPOCH, None, List("test", "test1")),
         Seq.empty[CategoryAssessmentRelationship],
         Seq.empty[IncludedElement],
         Seq.empty[Descendant]
