@@ -24,7 +24,7 @@ final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String],
-  descendantCount: Int
+  descendantCount: Int,
   originalCommodityCode: Option[String] = None
 )
 
@@ -39,7 +39,7 @@ object CategorisationInfo {
           ott.goodsNomenclature.commodityCode,
           assessments.sorted,
           ott.goodsNomenclature.measurementUnit,
-          ott.descendents.size
+          ott.descendents.size,
           originalCommodityCode
         )
       }
