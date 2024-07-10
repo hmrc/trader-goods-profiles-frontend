@@ -14,9 +14,12 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukWarningText
+
 @this(
     layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+    govukSummaryList: GovukSummaryList,
+    govukWarningText: GovukWarningText
 )
 
 @(detailsList: SummaryList)(implicit request: Request[_], messages: Messages)
@@ -25,16 +28,15 @@
 
     <h1 class="govuk-heading-l">@messages("profile.h1")</h1>
 
+    <p class="govuk-body">@messages("profile.p1")</p>
+
     <h2 class="govuk-heading-m">@messages("profile.h2")</h2>
     @govukSummaryList(detailsList)
 
-    <div class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-            <span class="govuk-visually-hidden">@messages("profile.warning")</span>
-            @messages("profile.warningText")
-        </strong>
-    </div>
+    @govukWarningText(WarningText(
+        iconFallbackText = Some(messages("profile.warning")),
+        content = Text(messages("profile.warningText"))
+    ))
 
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("profile.p1.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("profile.p2.linkText")</a></p>
 }
