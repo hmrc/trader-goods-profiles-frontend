@@ -53,28 +53,28 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
+      val categorisationAnswers = for {
+        recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
+        categorisationAnswers <- recordCategorisations.records.get(recordId)
+      } yield categorisationAnswers
+
+      val categorisationRows = categorisationAnswers match {
+        case Some(categorisationInfo) =>
+          categorisationInfo.categoryAssessments
+            .flatMap(assessment =>
+              AssessmentsSummary.row(
+                recordId,
+                request.userAnswers,
+                assessment,
+                categorisationInfo.categoryAssessments.indexOf(assessment),
+                categorisationInfo.categoryAssessments.size
+              )
+            )
+        case None                     => Seq.empty
+      }
+
       CategorisationAnswers.build(request.userAnswers, recordId) match {
         case Right(_) =>
-          val categorisationAnswers = for {
-            recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
-            categorisationAnswers <- recordCategorisations.records.get(recordId)
-          } yield categorisationAnswers
-
-          val categorisationRows = categorisationAnswers match {
-            case Some(categorisationInfo) =>
-              categorisationInfo.categoryAssessments
-                .flatMap(assessment =>
-                  AssessmentsSummary.row(
-                    recordId,
-                    request.userAnswers,
-                    assessment,
-                    categorisationInfo.categoryAssessments.indexOf(assessment),
-                    categorisationInfo.categoryAssessments.size
-                  )
-                )
-            case None                     => Seq.empty
-          }
-
           val categorisationList = SummaryListViewModel(
             rows = categorisationRows
           )

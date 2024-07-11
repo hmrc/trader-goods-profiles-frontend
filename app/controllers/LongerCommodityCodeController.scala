@@ -65,10 +65,10 @@ class LongerCommodityCodeController @Inject() (
         latestCode   <- latestComcodeOpt
       } yield latestCode.drop(originalCode.length)
 
-      val preparedForm = categorisationInfoOpt match {
-        case Some(categorisationInfo) if categorisationInfo.latestDoesNotMatchOriginal =>
-          answerToFillFormWith.map(form.fill).getOrElse(form)
-        case _                                                                         =>
+      val preparedForm = (categorisationInfoOpt, answerToFillFormWith) match {
+        case (Some(categorisationInfo), Some(answerToFillFormWith)) if categorisationInfo.latestDoesNotMatchOriginal =>
+          form.fill(answerToFillFormWith)
+        case _                                                                                                       =>
           form
       }
 
@@ -108,6 +108,7 @@ class LongerCommodityCodeController @Inject() (
                 }
               }
             )
+        case _                                                                                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
     }
 

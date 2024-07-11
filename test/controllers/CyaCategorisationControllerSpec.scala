@@ -45,11 +45,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
     "for a GET" - {
 
-      "must return OK and the correct view" - {
+      val emptySummaryList = SummaryListViewModel(
+        rows = Seq.empty
+      )
 
-        val emptySummaryList = SummaryListViewModel(
-          rows = Seq.empty
-        )
+      "must return OK and the correct view" - {
 
         "when all category assessments answered" in {
 
@@ -329,6 +329,27 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
       }
 
       "must redirect to Journey Recovery" - {
+
+        "when no category assessments answered" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(RecordCategorisationsQuery, recordCategorisations)
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+
+            val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          }
+        }
 
         "when no answers are found" in {
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
