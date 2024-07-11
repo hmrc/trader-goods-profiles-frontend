@@ -113,8 +113,14 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           CategoryAssessmentRelationship("assessmentId2")
         ),
         includedElements = Seq(
-          CategoryAssessmentResponse("assessmentId1", "themeId1", Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate),
-            ExemptionResponse("WFE013", ExemptionType.OtherExemption))),
+          CategoryAssessmentResponse(
+            "assessmentId1",
+            "themeId1",
+            Seq(
+              ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+              ExemptionResponse("WFE012", ExemptionType.OtherExemption)
+            )
+          ),
           ThemeResponse("themeId1", 1),
           CategoryAssessmentResponse(
             "assessmentId2",
@@ -124,7 +130,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ThemeResponse("themeId2", 2),
           CertificateResponse("exemptionId1", "code1", "description1"),
           AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-          OtherExemptionResponse("WFE013", "WFE013", "NIPHLs")
+          OtherExemptionResponse("WFE012", "WFE012", "NIPHLs")
         ),
         descendants = Seq.empty[Descendant]
       )
@@ -132,10 +138,14 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
       val expectedResult = CategorisationInfo(
         commodityCode = "commodity code",
         categoryAssessments = Seq(
-          CategoryAssessment("assessmentId1", 1, Seq(
-            Certificate("exemptionId1", "code1", "description1"),
-            OtherExemption("WFE013", "WFE013", "NIPHLs")
-          )),
+          CategoryAssessment(
+            "assessmentId1",
+            1,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              OtherExemption("WFE012", "WFE012", "NIPHLs")
+            )
+          ),
           CategoryAssessment(
             "assessmentId2",
             2,
@@ -149,7 +159,6 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
       val result = CategorisationInfo.build(ottResponse)
       result.value mustEqual expectedResult
     }
-
 
     "must order its assessments in order of category (lowest first) then number of exemptions (lowest first)" in {
 

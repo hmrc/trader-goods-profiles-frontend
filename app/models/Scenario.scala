@@ -16,14 +16,18 @@
 
 package models
 
-import models.ott.CategorisationInfo
+import models.ott.{CategorisationInfo, ExemptionType, OtherExemption}
 import play.api.mvc.JavascriptLiteral
 
 sealed trait Scenario
 
+//TODO should redirect scenarios be diff trait??
 case object NoRedirectScenario extends Scenario
 case object Category1NoExemptions extends Scenario
 case object StandardNoAssessments extends Scenario
+case object NiphlsRedirect extends Scenario
+
+//TODO redirect scenarios end here
 case object Standard extends Scenario
 case object Category1 extends Scenario
 case object Category2 extends Scenario
@@ -34,17 +38,24 @@ object Scenario {
     val hasCategoryAssessments: Boolean =
       categorisationInfo.categoryAssessments.nonEmpty
 
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.category == 1)
+
     val hasCategory1Assessments: Boolean =
-      categorisationInfo.categoryAssessments.exists(_.category == 1)
+      category1Assessments.nonEmpty
 
     val hasCategory1Exemptions: Boolean =
-      categorisationInfo.categoryAssessments
-        .exists(assessment => assessment.category == 1 && assessment.exemptions.nonEmpty)
+      category1Assessments
+        .exists(assessment => assessment.exemptions.nonEmpty)
 
-    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions) match {
-      case (true, true, false)   => Category1NoExemptions
-      case (false, false, false) => StandardNoAssessments
-      case (_, _, _)             => NoRedirectScenario
+    val hasOnlyNiphlsExemptionInCategory1: Boolean =
+      category1Assessments.count(assessment => assessment.exemptions.exists(exemption =>
+        exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")).equals(category1Assessments.size)
+
+    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions, hasOnlyNiphlsExemptionInCategory1) match {
+      case (true, true, true, true) => NiphlsRedirect
+      case (true, true, false, _)   => Category1NoExemptions
+      case (false, _, _, _) => StandardNoAssessments
+      case _            => NoRedirectScenario
     }
   }
 

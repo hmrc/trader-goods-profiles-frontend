@@ -89,28 +89,28 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
     "must deserialise valid JSON with exemptions including NIPHLs" in {
 
       val json = Json.obj(
-        "id" -> "abc",
-        "type" -> "category_assessment",
+        "id"            -> "abc",
+        "type"          -> "category_assessment",
         "relationships" -> Json.obj(
           "exemptions" -> Json.obj(
             "data" -> Json.arr(
               Json.obj(
-                "id" -> "cert",
+                "id"   -> "cert",
                 "type" -> "certificate"
               ),
               Json.obj(
-                "id" -> "code",
+                "id"   -> "code",
                 "type" -> "additional_code"
               ),
               Json.obj(
-                "id" -> "WFE013",
+                "id"   -> "WFE013",
                 "type" -> "exemption"
               )
             )
           ),
-          "theme" -> Json.obj(
+          "theme"      -> Json.obj(
             "data" -> Json.obj(
-              "id" -> "1",
+              "id"   -> "1",
               "type" -> "theme"
             )
           )

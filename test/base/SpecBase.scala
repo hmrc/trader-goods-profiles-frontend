@@ -19,7 +19,7 @@ package base
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
-import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
+import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate, OtherExemption}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -223,6 +223,16 @@ trait SpecBase
     .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
     .success
     .value
+
+  lazy val categorisationInfoNiphlsNoOtherAssessments: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(
+      CategoryAssessment("id1", 1, Seq(OtherExemption("WFE012", "WFE012", "NIPHLs"))),
+      CategoryAssessment("id2", 2, Seq.empty)
+    ),
+    None,
+    0
+  )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

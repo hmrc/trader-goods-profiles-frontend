@@ -17,10 +17,10 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationUpdate
-import models.{Category1NoExemptions, NormalMode, StandardNoAssessments}
+import models.{Category1NoExemptions, NormalMode, RecordCategorisations, StandardNoAssessments}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -29,6 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -125,69 +126,106 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to CategorisationResult when scenario is StandardNoAssessments" in {
+    "must redirect to CategorisationResult" - {
+      "when scenario is StandardNoAssessments" in {
 
-      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-        Future.successful(uaForCategorisationStandardNoAssessments)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+        when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+          Future.successful(uaForCategorisationStandardNoAssessments)
         )
-        .build()
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.CategorisationResultController
-          .onPageLoad(testRecordId, StandardNoAssessments)
-          .url
+        val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
+          .overrides(
+            bind[CategorisationService].toInstance(categorisationService),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+          )
+          .build()
 
-        withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
-            any(),
-            any(),
-            any()
-          )(any())
+        running(application) {
+          val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+          val result = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.CategorisationResultController
+            .onPageLoad(testRecordId, StandardNoAssessments)
+            .url
+
+          withClue("must make a call to update goodsRecord with category info") {
+            verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+              any(),
+              any(),
+              any()
+            )(any())
+          }
         }
       }
-    }
 
-    "must redirect to CategorisationResult when scenario is Category1NoExemptions" in {
+      "when scenario is Category1NoExemptions" in {
 
-      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-        Future.successful(uaForCategorisationCategory1NoExemptions)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+        when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+          Future.successful(uaForCategorisationCategory1NoExemptions)
         )
-        .build()
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.CategorisationResultController
-          .onPageLoad(testRecordId, Category1NoExemptions)
-          .url
+        val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
+          .overrides(
+            bind[CategorisationService].toInstance(categorisationService),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+          )
+          .build()
 
-        withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
-            any(),
-            any(),
-            any()
-          )(any())
+        running(application) {
+          val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+          val result = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.CategorisationResultController
+            .onPageLoad(testRecordId, Category1NoExemptions)
+            .url
+
+          withClue("must make a call to update goodsRecord with category info") {
+            verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+              any(),
+              any(),
+              any()
+            )(any())
+          }
         }
       }
-    }
 
-    "must OK with correct view and not redirect on a GET when scenario is NOT Category1NoExemptions or StandardNoAssessments" in {
+//      "when scenario is NiphlsRedirect" in {
+//
+//        val userAnswers = emptyUserAnswers.set(
+//          RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsNoOtherAssessments))
+//        ).success.value
+//
+//        when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+//          Future.successful(userAnswers)
+//        )
+//
+//        val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
+//          .overrides(
+//            bind[CategorisationService].toInstance(categorisationService),
+//            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+//          )
+//          .build()
+//
+//        running(application) {
+//          val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+//          val result = route(application, request).value
+//          status(result) mustEqual SEE_OTHER
+//          redirectLocation(result).get mustEqual routes.CategorisationResultController
+//            .onPageLoad(testRecordId, Category1NoExemptions)
+//            .url
+//
+//          withClue("must make a call to update goodsRecord with category info") {
+//            verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+//              any(),
+//              any(),
+//              any()
+//            )(any())
+//          }
+//        }
+//      }
+
+    }
+    "must OK with correct view and not redirect on a GET when scenario is NoRedirectScenario" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(

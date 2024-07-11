@@ -20,7 +20,7 @@ import connectors.GoodsRecordConnector
 import controllers.actions._
 import logging.Logging
 import models.helper.CategorisationUpdate
-import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
+import models.{Category1NoExemptions, CategoryRecord, NiphlsRedirect, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -69,6 +69,11 @@ class CategoryGuidanceController @Inject() (
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+
+          //  case Some(NiphlsRedirect) =>
+              //TODO connector call
+              //Redirect()
+
             case Some(NoRedirectScenario)                            =>
               Future.successful(Ok(view(recordId)))
           }
