@@ -47,6 +47,8 @@ class CategorisationService @Inject() (
         Future.successful(request.userAnswers)
       case None    =>
         for {
+          //TODO
+          _ <- goodsRecordsConnector.storeLatestRecords(request.eori)
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature      <- ottConnector.getCategorisationInfo(
                                       getGoodsRecordResponse.commodityCode,
