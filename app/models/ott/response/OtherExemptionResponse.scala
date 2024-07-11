@@ -16,21 +16,22 @@
 
 package models.ott.response
 
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-trait IncludedElement
+final case class OtherExemptionResponse(
+  id: String,
+  code: String,
+  description: String
+) extends IncludedElement
 
-object IncludedElement {
+object OtherExemptionResponse {
 
-  implicit lazy val reads: Reads[IncludedElement] =
-    (__ \ "type")
-      .read[String]
-      .flatMap[IncludedElement] {
-        case "category_assessment" => CategoryAssessmentResponse.reads.widen
-        case "theme"               => ThemeResponse.reads.widen
-        case "certificate"         => CertificateResponse.reads.widen
-        case "additional_code"     => AdditionalCodeResponse.reads.widen
-        case "exemption"           => OtherExemptionResponse.reads.widen
-        case _                     => Ignorable.reads.widen
-      }
+  implicit lazy val reads: Reads[OtherExemptionResponse] =
+    (
+      (__ \ "id").read[String] and
+        (__ \ "attributes" \ "code").read[String] and
+        (__ \ "attributes" \ "description").read[String]
+      )(OtherExemptionResponse.apply _)
+
 }

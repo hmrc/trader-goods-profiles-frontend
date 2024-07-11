@@ -37,7 +37,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           CategoryAssessmentResponse("assessmentId", "themeId", Nil),
           ThemeResponse("themeId", 2)
         ),
-        descendents = Seq.empty[Descendant]
+        descendants = Seq.empty[Descendant]
       )
 
       val expectedResult = CategorisationInfo(
@@ -79,7 +79,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ThemeResponse("ignoredTheme", 3),
           CertificateResponse("ignoredExemption", "code3", "description3")
         ),
-        descendents = Seq.empty[Descendant]
+        descendants = Seq.empty[Descendant]
       )
 
       val expectedResult = CategorisationInfo(
@@ -102,6 +102,54 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
       val result = CategorisationInfo.build(ottResponse)
       result.value mustEqual expectedResult
     }
+
+    "must return a model from an OTT response (NIPHLs exemption)" in {
+
+      val ottResponse = OttResponse(
+        goodsNomenclature =
+          GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit"), Instant.EPOCH, None, "test"),
+        categoryAssessmentRelationships = Seq(
+          CategoryAssessmentRelationship("assessmentId1"),
+          CategoryAssessmentRelationship("assessmentId2")
+        ),
+        includedElements = Seq(
+          CategoryAssessmentResponse("assessmentId1", "themeId1", Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+            ExemptionResponse("WFE013", ExemptionType.OtherExemption))),
+          ThemeResponse("themeId1", 1),
+          CategoryAssessmentResponse(
+            "assessmentId2",
+            "themeId2",
+            Seq.empty
+          ),
+          ThemeResponse("themeId2", 2),
+          CertificateResponse("exemptionId1", "code1", "description1"),
+          AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+          OtherExemptionResponse("WFE013", "WFE013", "NIPHLs")
+        ),
+        descendants = Seq.empty[Descendant]
+      )
+
+      val expectedResult = CategorisationInfo(
+        commodityCode = "commodity code",
+        categoryAssessments = Seq(
+          CategoryAssessment("assessmentId1", 1, Seq(
+            Certificate("exemptionId1", "code1", "description1"),
+            OtherExemption("WFE013", "WFE013", "NIPHLs")
+          )),
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq.empty
+          )
+        ),
+        Some("some measure unit"),
+        0
+      )
+
+      val result = CategorisationInfo.build(ottResponse)
+      result.value mustEqual expectedResult
+    }
+
 
     "must order its assessments in order of category (lowest first) then number of exemptions (lowest first)" in {
 
@@ -148,7 +196,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ThemeResponse("ignoredTheme", 3),
           CertificateResponse("ignoredExemption", "code3", "description3")
         ),
-        descendents = Seq(Descendant("1", "type1"), Descendant("2", "type2"))
+        descendants = Seq(Descendant("1", "type1"), Descendant("2", "type2"))
       )
 
       val expectedResult = CategorisationInfo(
@@ -198,7 +246,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
         includedElements = Seq(
           ThemeResponse("otherThemeId", 2)
         ),
-        descendents = Seq.empty[Descendant]
+        descendants = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
@@ -214,7 +262,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           CategoryAssessmentResponse("assessmentId", "themeId", Nil),
           ThemeResponse("otherThemeId", 2)
         ),
-        descendents = Seq.empty[Descendant]
+        descendants = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
@@ -240,7 +288,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ThemeResponse("themeId1", 1),
           AdditionalCodeResponse("exemptionId2", "code2", "description2")
         ),
-        descendents = Seq.empty[Descendant]
+        descendants = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
@@ -266,7 +314,7 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
           ThemeResponse("themeId1", 1),
           CertificateResponse("exemptionId1", "code1", "description1")
         ),
-        descendents = Seq.empty[Descendant]
+        descendants = Seq.empty[Descendant]
       )
 
       CategorisationInfo.build(ottResponse) must not be defined

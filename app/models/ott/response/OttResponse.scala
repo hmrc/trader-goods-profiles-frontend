@@ -23,7 +23,7 @@ final case class OttResponse(
   goodsNomenclature: GoodsNomenclatureResponse,
   categoryAssessmentRelationships: Seq[CategoryAssessmentRelationship],
   includedElements: Seq[IncludedElement],
-  descendents: Seq[Descendant]
+  descendants: Seq[Descendant]
 ) {
 
   lazy val themes: Seq[ThemeResponse] = includedElements.flatMap {
@@ -44,6 +44,11 @@ final case class OttResponse(
   lazy val additionalCodes: Seq[AdditionalCodeResponse] = includedElements.flatMap {
     case a: AdditionalCodeResponse => Some(a)
     case _                         => None
+  }
+
+  lazy val otherExemptions: Seq[OtherExemptionResponse] = includedElements.flatMap{
+    case e: OtherExemptionResponse => Some(e)
+    case _ => None
   }
 }
 

@@ -85,5 +85,51 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
         )
       )
     }
+
+    "must deserialise valid JSON with exemptions including NIPHLs" in {
+
+      val json = Json.obj(
+        "id" -> "abc",
+        "type" -> "category_assessment",
+        "relationships" -> Json.obj(
+          "exemptions" -> Json.obj(
+            "data" -> Json.arr(
+              Json.obj(
+                "id" -> "cert",
+                "type" -> "certificate"
+              ),
+              Json.obj(
+                "id" -> "code",
+                "type" -> "additional_code"
+              ),
+              Json.obj(
+                "id" -> "WFE013",
+                "type" -> "exemption"
+              )
+            )
+          ),
+          "theme" -> Json.obj(
+            "data" -> Json.obj(
+              "id" -> "1",
+              "type" -> "theme"
+            )
+          )
+        )
+      )
+
+      val result = json.validate[CategoryAssessmentResponse]
+      result mustEqual JsSuccess(
+        CategoryAssessmentResponse(
+          id = "abc",
+          themeId = "1",
+          exemptions = Seq(
+            ExemptionResponse("cert", ExemptionType.Certificate),
+            ExemptionResponse("code", ExemptionType.AdditionalCode),
+            ExemptionResponse("WFE013", ExemptionType.OtherExemption)
+          )
+        )
+      )
+    }
+
   }
 }

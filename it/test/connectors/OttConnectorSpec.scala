@@ -281,7 +281,9 @@ class OttConnectorSpec
         .futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
-      connectorResponse.descendents.size mustEqual 3
+      connectorResponse.otherExemptions.size mustEqual 1
+      connectorResponse.otherExemptions.head.code mustEqual "WFE013"
+      connectorResponse.descendants.size mustEqual 3
 
       withClue("must have audited the request") {
         verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
@@ -435,6 +437,10 @@ class OttConnectorSpec
               |            {
               |              "id": "8392",
               |              "type": "additional_code"
+              |            },
+              |            {
+              |              "id": "WFE013",
+              |              "type": "exemption"
               |            }
               |          ]
               |        },
@@ -476,6 +482,15 @@ class OttConnectorSpec
               |          ]
               |        }
               |      }
+              |    },
+              |    {
+              |      "id": "WFE013",
+              |      "type": "exemption",
+              |      "attributes": {
+              |         "code": "WFE013",
+              |         "description": "NIRMS Exemption",
+              |         "formatted_description": "NIRMS Exemption"
+              |         }
               |    }
               |  ]
               |}""".stripMargin

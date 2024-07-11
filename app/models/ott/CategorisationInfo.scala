@@ -38,7 +38,7 @@ object CategorisationInfo {
           ott.goodsNomenclature.commodityCode,
           assessments.sorted,
           ott.goodsNomenclature.measurementUnit,
-          ott.descendents.size
+          ott.descendants.size
         )
       }
 
