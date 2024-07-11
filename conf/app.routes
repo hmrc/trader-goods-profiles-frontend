@@ -211,3 +211,5 @@ GET         /update-record/:recordId/check-your-answers/commodity-code          
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
 GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
+
+GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()
