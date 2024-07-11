@@ -157,8 +157,8 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
-    Some("1234567890"),
-    0
+    0,
+    Some("1234567890")
   )
 
   private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
