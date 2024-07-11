@@ -56,17 +56,16 @@ class HasNiphlsChangeController @Inject() (
     Ok(view(preparedForm, NormalMode))
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, NormalMode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlsChangePage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasNiphlsChangePage, NormalMode, updatedAnswers))
-        )
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, NormalMode))),
+        value =>
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlsChangePage, value))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(HasNiphlsChangePage, NormalMode, updatedAnswers))
+      )
   }
 }
