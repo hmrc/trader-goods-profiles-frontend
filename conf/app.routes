@@ -209,3 +209,11 @@ GET         /update-record/:recordId/check-your-answers/trader-reference        
 POST        /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onSubmitTraderReference(recordId: String)
 GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
+
+GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
+
+GET        /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onPageLoad()
+POST       /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onSubmit()
+
+GET        /update-profile/removing-niphls-number                                           controllers.HasNiphlsChangeController.onPageLoad()
+POST       /update-profile/removing-niphls-number                                           controllers.HasNiphlsChangeController.onSubmit()

@@ -330,11 +330,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       "for a POST" - {
         "must redirect to the next page when valid data is submitted" - {
 
-          val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
-          val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-          val categorisationInfo    =
+          val assessment1        = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+          val assessment2        = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+          val categorisationInfo =
             CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"), 0)
-          val recordCategorisations = RecordCategorisations(Map(testRecordId -> categorisationInfo))
 
           "and do not need to recategorise because the assessments are the same and there are no supplementary units" in {
 

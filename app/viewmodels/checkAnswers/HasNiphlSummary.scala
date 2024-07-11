@@ -17,9 +17,10 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import pages.HasNiphlPage
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -39,4 +40,17 @@ object HasNiphlSummary {
         )
       )
     }
+
+  //TODO - this will be updated to route to the update has niphl page
+  def row(value: Boolean, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+    val textValue = if (value) "site.yes" else "site.no"
+    SummaryListRowViewModel(
+      key = "hasNiphl.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(textValue).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoad(mode).url)
+          .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
+      )
+    )
+  }
 }

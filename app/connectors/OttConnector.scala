@@ -131,7 +131,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
                      )
     } yield Commodity(
       commodityCode = ottResponse.goodsNomenclature.commodityCode,
-      descriptions = List(ottResponse.goodsNomenclature.description),
+      descriptions = ottResponse.goodsNomenclature.descriptions,
       validityStartDate = ottResponse.goodsNomenclature.validityStartDate,
       validityEndDate = ottResponse.goodsNomenclature.validityEndDate
     )

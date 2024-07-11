@@ -55,7 +55,7 @@ final case class OttResponse(
 object OttResponse {
 
   implicit lazy val reads: Reads[OttResponse] = (
-    (__ \ "data").read[GoodsNomenclatureResponse] and
+    __.read[GoodsNomenclatureResponse] and
       (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data")
         .read[Seq[CategoryAssessmentRelationship]] and
       (__ \ "included").read[Seq[IncludedElement]] and

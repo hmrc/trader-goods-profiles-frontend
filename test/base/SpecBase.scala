@@ -78,7 +78,7 @@ trait SpecBase
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
 
   def testAuditOttResponse: OttResponse = OttResponse(
-    GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, "test"),
+    GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
     Seq(),
     Seq(),
     Seq()
