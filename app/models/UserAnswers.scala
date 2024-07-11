@@ -87,6 +87,13 @@ final case class UserAnswers(
     }
   }
 
+  def setIfEmpty[A](page: QuestionPage[A], value: A)(implicit writes: Writes[A], reads: Reads[A]): Try[UserAnswers] =
+    if (get(page).isEmpty) {
+      set(page, value)
+    } else {
+      Success(this)
+    }
+
   def remove[A](page: Settable[A]): Try[UserAnswers] = {
 
     val updatedData = data.removeObject(page.path) match {

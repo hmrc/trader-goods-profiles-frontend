@@ -17,7 +17,7 @@
 package connectors
 
 import config.Service
-import models.{TraderProfile, UpdateTraderProfile}
+import models.TraderProfile
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.OK
@@ -38,17 +38,8 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
 
   def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .post(traderProfileUrl(eori))
-      .withBody(Json.toJson(traderProfile))
-      .execute[HttpResponse]
-      .map(_ => Done)
-
-  def updateTraderProfile(updateTraderProfile: UpdateTraderProfile, eori: String)(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
-    httpClient
       .put(traderProfileUrl(eori))
-      .withBody(Json.toJson(updateTraderProfile))
+      .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
       .map(_ => Done)
 

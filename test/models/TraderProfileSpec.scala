@@ -164,4 +164,144 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
     }
   }
+
+  ".buildUpdate" - {
+
+    "must return a TraderProfile when all mandatory questions are answered" - {
+
+      "and all optional data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(UkimsNumberUpdatePage, "1")
+            .success
+            .value
+            .set(HasNirmsUpdatePage, true)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "2")
+            .success
+            .value
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "3")
+            .success
+            .value
+
+        val result = TraderProfile.buildUpdate(answers, testEori)
+
+        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3")))
+      }
+
+      "and all optional data is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(UkimsNumberUpdatePage, "1")
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildUpdate(answers, testEori)
+
+        result mustEqual Right(TraderProfile(testEori, "1", None, None))
+      }
+    }
+
+    "must return errors" - {
+
+      "when all mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.buildUpdate(answers, testEori)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(UkimsNumberUpdatePage),
+            PageMissing(HasNirmsUpdatePage),
+            PageMissing(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when the user said they have a Nirms number but it is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(UkimsNumberUpdatePage, "1")
+            .success
+            .value
+            .set(HasNirmsUpdatePage, true)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildUpdate(answers, testEori)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+        }
+      }
+
+      "when the user said they have a Niphl number but it is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(UkimsNumberUpdatePage, "1")
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+
+        val result = TraderProfile.buildUpdate(answers, testEori)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NiphlNumberUpdatePage)
+        }
+      }
+
+      "when the user said they don't have optional data but it is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(UkimsNumberUpdatePage, "1")
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "2")
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "3")
+            .success
+            .value
+
+        val result = TraderProfile.buildUpdate(answers, testEori)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(NirmsNumberUpdatePage),
+            UnexpectedPage(NiphlNumberUpdatePage)
+          )
+        }
+      }
+    }
+  }
 }

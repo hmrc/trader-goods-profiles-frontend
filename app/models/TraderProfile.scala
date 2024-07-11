@@ -19,7 +19,7 @@ package models
 import cats.data.EitherNec
 import cats.implicits._
 import pages._
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
 
 final case class TraderProfile(
   actorId: String,
@@ -38,5 +38,13 @@ object TraderProfile {
       answers.getPageValue(UkimsNumberPage),
       answers.getOptionalPageValue(answers, HasNirmsPage, NirmsNumberPage),
       answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
+    ).parMapN(TraderProfile.apply)
+
+  def buildUpdate(answers: UserAnswers, eori: String): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      answers.getPageValue(UkimsNumberUpdatePage),
+      answers.getOptionalPageValue(answers, HasNiphlUpdatePage, NiphlNumberUpdatePage),
+      answers.getOptionalPageValue(answers, HasNirmsUpdatePage, NirmsNumberUpdatePage)
     ).parMapN(TraderProfile.apply)
 }

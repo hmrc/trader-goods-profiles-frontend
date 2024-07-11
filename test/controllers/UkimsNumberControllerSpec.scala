@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.UkimsNumberFormProvider
-import models.{NormalMode, UpdateTraderProfile, UserAnswers}
+import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -32,6 +32,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.UkimsNumberView
 
 import scala.concurrent.Future
@@ -269,7 +270,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-        when(mockTraderProfileConnector.updateTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -292,7 +293,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
           verify(mockTraderProfileConnector, times(1))
-            .updateTraderProfile(eqTo(UpdateTraderProfile(testEori, ukimsNumber = Some(answer))), eqTo(testEori))(any())
+            .submitTraderProfile(eqTo(TraderProfile(testEori, answer, None, None)), eqTo(testEori))(any())
         }
       }
 
@@ -352,6 +353,25 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
+
+      "must redirect to Journey Recovery for a POST if TraderProfile can't be built" in {
+
+        val application = applicationBuilder(Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, ukimsNumberRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+        }
+      }
+
     }
 
   }

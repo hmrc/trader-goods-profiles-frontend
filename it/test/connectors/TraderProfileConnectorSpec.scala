@@ -18,7 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{TraderProfile, UpdateTraderProfile}
+import models.TraderProfile
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -52,7 +52,7 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(ok())
       )
@@ -65,41 +65,12 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        post(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(serverError())
       )
 
       connector.submitTraderProfile(traderProfile, testEori).failed.futureValue
-    }
-  }
-
-  ".updateTraderProfile" - {
-
-    "must update a trader profile" in {
-
-      val updateTraderProfile = UpdateTraderProfile(testEori, Some("1"), Some("2"), None)
-
-      wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
-          .withRequestBody(equalTo(Json.toJson(updateTraderProfile).toString))
-          .willReturn(noContent())
-      )
-
-      connector.updateTraderProfile(updateTraderProfile, testEori).futureValue
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      val updateTraderProfile = UpdateTraderProfile(testEori, Some("1"), Some("2"), None)
-
-      wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
-          .withRequestBody(equalTo(Json.toJson(updateTraderProfile).toString))
-          .willReturn(serverError())
-      )
-
-      connector.updateTraderProfile(updateTraderProfile, testEori).failed.futureValue
     }
   }
 

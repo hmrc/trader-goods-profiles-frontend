@@ -160,14 +160,13 @@ class NavigatorSpec extends SpecBase {
 
       "in Update Profile Journey" - {
 
-        //TODO
         "must go from UkimsNumberUpdatePage to ProfilePage" in {
 
           navigator.nextPage(
             UkimsNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.HomePageController.onPageLoad
+          ) mustBe routes.ProfileController.onPageLoad
         }
 
         "must go from HasNirmsUpdatePage" - {
@@ -190,8 +189,7 @@ class NavigatorSpec extends SpecBase {
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
-            //TODO
-            val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
             navigator.nextPage(
               HasNirmsUpdatePage,
@@ -202,10 +200,9 @@ class NavigatorSpec extends SpecBase {
           }
         }
 
-        //TODO
         "must go from NirmsNumberUpdatePage to ProfilePage" in {
 
-          navigator.nextPage(NirmsNumberUpdatePage, NormalMode, emptyUserAnswers) mustBe routes.HomePageController
+          navigator.nextPage(NirmsNumberUpdatePage, NormalMode, emptyUserAnswers) mustBe routes.ProfileController
             .onPageLoad()
         }
 
@@ -229,8 +226,7 @@ class NavigatorSpec extends SpecBase {
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
-            //TODO
-            val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
             navigator.nextPage(
               HasNiphlUpdatePage,
@@ -241,14 +237,13 @@ class NavigatorSpec extends SpecBase {
           }
         }
 
-        //TODO
         "must go from NiphlNumberUpdatePage to ProfilePage" in {
 
           navigator.nextPage(
             NiphlNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.HomePageController.onPageLoad
+          ) mustBe routes.ProfileController.onPageLoad
         }
       }
 

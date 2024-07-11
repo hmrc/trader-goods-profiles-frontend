@@ -22,7 +22,7 @@ import controllers.actions._
 import forms.NiphlNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, UpdateTraderProfile, ValidationError}
+import models.{Mode, NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
 import pages.{NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.Lang.logger
@@ -99,9 +99,9 @@ class NiphlNumberController @Inject() (
           request.userAnswers.set(NiphlNumberUpdatePage, value) match {
             case Success(answers) =>
               sessionRepository.set(answers).flatMap { _ =>
-                UpdateTraderProfile.buildNiphlNumber(answers, request.eori) match {
+                TraderProfile.buildUpdate(answers, request.eori) match {
                   case Right(model) =>
-                    traderProfileConnector.updateTraderProfile(model, request.eori).map { _ =>
+                    traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
                       Redirect(navigator.nextPage(NiphlNumberUpdatePage, NormalMode, answers))
                     }
                   case Left(errors) => Future.successful(logErrorsAndContinue(errors))
@@ -114,8 +114,7 @@ class NiphlNumberController @Inject() (
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    // TODO: got to profile page
-    val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
+    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
     logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))

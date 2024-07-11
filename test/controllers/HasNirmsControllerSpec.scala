@@ -173,7 +173,6 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Home page for a GET if profile already exists" in {
-        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
