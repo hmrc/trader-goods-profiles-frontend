@@ -19,7 +19,8 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukWarningText: GovukWarningText
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -31,13 +32,11 @@
             <p class="govuk-body">@messages("hasNiphlsChange.p1")</p>
             <p class="govuk-body">@messages("hasNiphlsChange.p2")</p>
 
-        <div class="govuk-warning-text">
-                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                        <span class="govuk-visually-hidden">@messages("hasNiphlsChange.warning")</span>
-                            @messages("hasNiphlsChange.warningText")
-                    </strong>
-        </div>
+         @govukWarningText(WarningText(
+            iconFallbackText = Some(messages("hasNiphlsChange.warning")),
+            content = Text(messages("hasNiphlsChange.warningText"))
+             ))
+
     <h2 class="govuk-heading-m">@messages("hasNiphlsChange.h2")</h2>
 
     @formHelper(action = routes.HasNiphlsChangeController.onSubmit(), Symbol("autoComplete") -> "off") {
