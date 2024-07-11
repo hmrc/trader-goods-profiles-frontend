@@ -16,20 +16,25 @@
 
 package controllers
 
+import cats.data
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.NirmsNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.{Mode, NormalMode, UpdateTraderProfile, ValidationError}
 import navigation.Navigator
 import pages.{NirmsNumberPage, NirmsNumberUpdatePage}
+import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class NirmsNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -39,6 +44,7 @@ class NirmsNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: NirmsNumberFormProvider,
+  traderProfileConnector: TraderProfileConnector,
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
   view: NirmsNumberView
@@ -90,10 +96,28 @@ class NirmsNumberController @Inject() (
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, routes.NirmsNumberController.onSubmitUpdate))),
         value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(NirmsNumberUpdatePage, value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, updatedAnswers))
+          request.userAnswers.set(NirmsNumberUpdatePage, value) match {
+            case Success(answers) =>
+              sessionRepository.set(answers).flatMap { _ =>
+                UpdateTraderProfile.buildNirmsNumber(answers, request.eori) match {
+                  case Right(model) =>
+                    traderProfileConnector.updateTraderProfile(model, request.eori).map { _ =>
+                      Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
+                    }
+                  case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                }
+              }
+          }
       )
+  }
+
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+    // TODO: got to profile page
+    val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
+
+    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

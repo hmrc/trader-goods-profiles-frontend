@@ -37,6 +37,14 @@ class Navigator @Inject() () {
     case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
     case HasNiphlPage                              => navigateFromHasNiphl
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
+    //TODO ProfilePage
+    case UkimsNumberUpdatePage                     => _ => routes.HomePageController.onPageLoad()
+    case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
+    //TODO ProfilePage
+    case NirmsNumberUpdatePage                     => _ => routes.HomePageController.onPageLoad()
+    case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
+    //TODO ProfilePage
+    case NiphlNumberUpdatePage                     => _ => routes.HomePageController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
@@ -163,6 +171,19 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromHasNirmsUpdate(answers: UserAnswers): Call = {
+    // TODO ProfilePage
+    val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
+    answers
+      .get(HasNirmsUpdatePage)
+      .map {
+        case true  => routes.NirmsNumberController.onPageLoadUpdate
+        //TODO RemoveNirmsPage
+        case false => routes.HomePageController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
   private def navigateFromHasNiphl(answers: UserAnswers): Call =
     answers
       .get(HasNiphlPage)
@@ -171,6 +192,19 @@ class Navigator @Inject() () {
         case false => routes.CyaCreateProfileController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasNiphlUpdate(answers: UserAnswers): Call = {
+    // TODO ProfilePage
+    val continueUrl = RedirectUrl(routes.HomePageController.onPageLoad().url)
+    answers
+      .get(HasNiphlUpdatePage)
+      .map {
+        case true  => routes.NiphlNumberController.onPageLoadUpdate
+        //TODO RemoveNiphlPage
+        case false => routes.HomePageController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
 
   private def navigateFromHasSupplementaryUnit(recordId: String)(answers: UserAnswers): Call =
     answers
