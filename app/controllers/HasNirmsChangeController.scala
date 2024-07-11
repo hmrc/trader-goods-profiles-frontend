@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.HasNirmsChangeFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.NormalMode
 import navigation.Navigator
 import pages.HasNirmsChangePage
 import play.api.i18n.{I18nSupport, MessagesApi}
