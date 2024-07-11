@@ -798,16 +798,29 @@ class NavigatorSpec extends SpecBase {
 
         }
 
-        "must go from CategoryGuidancePage to Category Assessment page" in {
-          val recordId = testRecordId
-          val index    = 0
-          navigator.nextPage(
-            CategoryGuidancePage(recordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
-        }
+        "must go from CategoryGuidancePage" - {
 
+          "to Category Assessment page when click continue" in {
+            val recordId = testRecordId
+            val index    = 0
+            navigator.nextPage(
+              CategoryGuidancePage(recordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
+          }
+
+          "to Category Result when result scenario supplied" in {
+            val recordId = testRecordId
+            val index    = 0
+            navigator.nextPage(
+              CategoryGuidancePage(recordId, Some(Category1)),
+              NormalMode,
+              emptyUserAnswers
+            ) mustEqual routes.CategorisationResultController.onPageLoad(recordId, Category1)
+          }
+
+        }
         "must go from CyaCategorisationPage to CategorisationResult page" in {
           val categoryRecord = CategoryRecord(
             eori = testEori,

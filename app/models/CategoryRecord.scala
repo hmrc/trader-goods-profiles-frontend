@@ -57,12 +57,22 @@ object CategoryRecord {
       )
     )
 
+  def buildForNiphlsOnlyCategory(eori: String, recordId: String): CategoryRecord = {
+    CategoryRecord(
+      eori,
+      recordId,
+      1,
+      1
+    )
+  }
+
   private val CATEGORY_1 = 1
   private val CATEGORY_2 = 2
   private val STANDARD   = 3
 
   private case class GetCategoryReturn(category: Int, categoryAssessmentsWithExemptions: Int)
 
+  //TODO move to CatService??
   private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, GetCategoryReturn] =
     answers
       .get(RecordCategorisationsQuery)

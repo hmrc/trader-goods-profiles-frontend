@@ -863,6 +863,15 @@
         "validity_end_date": null,
         "parent_sid": 54264
       }
+    },
+    {
+      "id": "WFE012",
+      "type": "exemption",
+      "attributes": {
+        "code": "WFE012",
+        "description": "NIPHLS Exemption",
+        "formatted_description": "NIPHLS Exemption"
+      }
     }
   ]
 }

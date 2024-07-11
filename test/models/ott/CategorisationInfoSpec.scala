@@ -118,8 +118,14 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
     "must return a model from an OTT response (NIPHLs exemption)" in {
 
       val ottResponse = OttResponse(
-        goodsNomenclature =
-          GoodsNomenclatureResponse("id", "commodity code", Some("some measure unit"), Instant.EPOCH, None, "test"),
+        goodsNomenclature = GoodsNomenclatureResponse(
+          "id",
+          "commodity code",
+          Some("some measure unit"),
+          Instant.EPOCH,
+          None,
+          List("test")
+        ),
         categoryAssessmentRelationships = Seq(
           CategoryAssessmentRelationship("assessmentId1"),
           CategoryAssessmentRelationship("assessmentId2")

@@ -65,14 +65,18 @@ class CategoryGuidanceController @Inject() (
                   goodsRecordConnector
                     .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
-                      Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
+                      Redirect(navigator.nextPage(CategoryGuidancePage(recordId, scenario),NormalMode, userAnswers))
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
 
-          //  case Some(NiphlsRedirect) =>
-              //TODO connector call
-              //Redirect()
+            case Some(NiphlsRedirect) =>
+              val categoryRecord = CategoryRecord.buildForNiphlsOnlyCategory(request.eori, recordId)
+
+              goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+                .map{ _ =>
+                  Redirect(navigator.nextPage(CategoryGuidancePage(recordId, scenario), NormalMode, userAnswers))
+                }
 
             case Some(NoRedirectScenario)                            =>
               Future.successful(Ok(view(recordId)))

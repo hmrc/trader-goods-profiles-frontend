@@ -16,4 +16,7 @@
 
 package pages
 
-case class CategoryGuidancePage(recordId: String) extends Page
+import models.Scenario
+
+//TODO do we actually care what Scenario is?
+case class CategoryGuidancePage(recordId: String, scenario: Option[Scenario] = None) extends Page

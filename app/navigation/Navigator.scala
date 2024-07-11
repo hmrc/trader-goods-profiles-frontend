@@ -55,8 +55,7 @@ class Navigator @Inject() () {
     case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: CategoryGuidancePage                   =>
-      _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentIndex)
+    case p: CategoryGuidancePage                   => _ => navigateFromCategoryGuidance(p)
     case p: CyaCategorisationPage                  =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
@@ -212,6 +211,13 @@ class Navigator @Inject() () {
         }
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromCategoryGuidance(page: CategoryGuidancePage) = {
+    page.scenario match {
+      case Some(scenario) => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
+      case _ => routes.AssessmentController.onPageLoad(NormalMode, page.recordId, firstAssessmentIndex)
+    }
+  }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad

@@ -32,5 +32,9 @@ class OttResponseSpec extends AnyFreeSpec with Matchers {
 
     val result = json.validate[OttResponse]
     result mustBe a[JsSuccess[_]]
+
+    withClue("must have parsed the other exceptions") {
+      result.get.otherExemptions.nonEmpty mustBe true
+    }
   }
 }

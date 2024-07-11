@@ -20,13 +20,17 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationUpdate
-import models.{Category1NoExemptions, NormalMode, RecordCategorisations, StandardNoAssessments}
+import models.{Category1NoExemptions, NiphlsRedirect, NormalMode, RecordCategorisations, StandardNoAssessments}
+import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.inject._
+import pages.CategoryGuidancePage
+import play.api.inject.{bind, _}
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.RecordCategorisationsQuery
@@ -42,6 +46,9 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
   private val categorisationService     = mock[CategorisationService]
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
+  private val mockNavigator = mock[Navigator]
+  private val onwardRoute   = Call("", "")
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
@@ -49,12 +56,15 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     )
     when(mockGoodsRecordsConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
       .thenReturn(Future.successful(Done))
+
+    when(mockNavigator.nextPage(any, any, any)).thenReturn(onwardRoute)
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
     reset(categorisationService)
     reset(mockGoodsRecordsConnector)
+    reset(mockNavigator)
   }
 
   "CategoryGuidance Controller" - {
@@ -136,17 +146,21 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
           .overrides(
             bind[CategorisationService].toInstance(categorisationService),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+            bind[Navigator].toInstance(mockNavigator)
           )
           .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-          val result = route(application, request).value
+          val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.CategorisationResultController
-            .onPageLoad(testRecordId, StandardNoAssessments)
-            .url
+          redirectLocation(result).get mustEqual onwardRoute.url
+
+          withClue("must pass the correct scenario to the navigator") {
+            verify(mockNavigator)
+              .nextPage(eqTo(CategoryGuidancePage(testRecordId, Some(StandardNoAssessments))), eqTo(NormalMode), any)
+          }
 
           withClue("must make a call to update goodsRecord with category info") {
             verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
@@ -167,17 +181,21 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
           .overrides(
             bind[CategorisationService].toInstance(categorisationService),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+            bind[Navigator].toInstance(mockNavigator)
           )
           .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-          val result = route(application, request).value
+          val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.CategorisationResultController
-            .onPageLoad(testRecordId, Category1NoExemptions)
-            .url
+          redirectLocation(result).get mustEqual onwardRoute.url
+
+          withClue("must pass the correct scenario to the navigator") {
+            verify(mockNavigator)
+              .nextPage(eqTo(CategoryGuidancePage(testRecordId, Some(Category1NoExemptions))), eqTo(NormalMode), any)
+          }
 
           withClue("must make a call to update goodsRecord with category info") {
             verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
@@ -189,7 +207,50 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-//      "when scenario is NiphlsRedirect" in {
+      "when scenario is NiphlRedirect" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(
+            RecordCategorisationsQuery,
+            RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsNoOtherAssessments))
+          )
+          .success
+          .value
+
+        when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+          Future.successful(userAnswers)
+        )
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[CategorisationService].toInstance(categorisationService),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+            bind[Navigator].toInstance(mockNavigator)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+          val result  = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual onwardRoute.url
+
+          withClue("must pass the correct scenario to the navigator") {
+            verify(mockNavigator)
+              .nextPage(eqTo(CategoryGuidancePage(testRecordId, Some(NiphlsRedirect))), eqTo(NormalMode), any)
+          }
+
+          withClue("must make a call to update goodsRecord with category info") {
+            verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+              any(),
+              any(),
+              any()
+            )(any())
+          }
+        }
+      }
+
+      //      "when scenario is NiphlsRedirect" in {
 //
 //        val userAnswers = emptyUserAnswers.set(
 //          RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsNoOtherAssessments))

@@ -129,6 +129,7 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
           )
         )
       )
+
     }
 
   }
