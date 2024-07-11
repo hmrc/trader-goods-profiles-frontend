@@ -18,8 +18,9 @@ package controllers
 
 import controllers.actions._
 import forms.HasNiphlsChangeFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.HasNiphlsChangePage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -46,26 +47,26 @@ class HasNiphlsChangeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val preparedForm = request.userAnswers.get(HasNiphlsChangePage) match {
       case None        => form
       case Some(value) => form.fill(value)
     }
 
-    Ok(view(preparedForm, mode))
+    Ok(view(preparedForm, NormalMode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, NormalMode))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlsChangePage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasNiphlsChangePage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(HasNiphlsChangePage, NormalMode, updatedAnswers))
         )
   }
 }

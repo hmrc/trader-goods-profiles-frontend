@@ -41,7 +41,7 @@ class HasNiphlsChangeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasNiphlsChangeFormProvider()
   val form         = formProvider()
 
-  lazy val hasNiphlsChangeRoute = routes.HasNiphlsChangeController.onPageLoad(NormalMode).url
+  lazy val hasNiphlsChangeRoute = routes.HasNiphlsChangeController.onPageLoad().url
 
   "HasNiphlsChange Controller" - {
 

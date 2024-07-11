@@ -40,7 +40,7 @@
         </div>
     <h2 class="govuk-heading-m">@messages("hasNiphlsChange.h2")</h2>
 
-    @formHelper(action = routes.HasNiphlsChangeController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.HasNiphlsChangeController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

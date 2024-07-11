@@ -210,12 +210,8 @@ POST        /update-record/:recordId/check-your-answers/trader-reference        
 GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
-GET        /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onPageLoad(mode: Mode = NormalMode)
-POST       /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasNirmsChange                                                            controllers.HasNirmsChangeController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasNirmsChange                                                            controllers.HasNirmsChangeController.onSubmit(mode: Mode = CheckMode)
+GET        /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onPageLoad()
+POST       /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onSubmit()
 
-GET        /update-profile/removing-niphls-number                        controllers.HasNiphlsChangeController.onPageLoad(mode: Mode = NormalMode)
-POST       /update-profile/removing-niphls-number                        controllers.HasNiphlsChangeController.onSubmit(mode: Mode = NormalMode)
-GET        /changeHasNiphlsChange                                        controllers.HasNiphlsChangeController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeHasNiphlsChange                                        controllers.HasNiphlsChangeController.onSubmit(mode: Mode = CheckMode)
+GET        /update-profile/removing-niphls-number                                           controllers.HasNiphlsChangeController.onPageLoad()
+POST       /update-profile/removing-niphls-number                                           controllers.HasNiphlsChangeController.onSubmit()

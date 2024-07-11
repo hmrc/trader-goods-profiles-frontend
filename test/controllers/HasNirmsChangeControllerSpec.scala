@@ -41,7 +41,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasNirmsChangeFormProvider()
   val form         = formProvider()
 
-  lazy val hasNirmsChangeRoute = routes.HasNirmsChangeController.onPageLoad(NormalMode).url
+  lazy val hasNirmsChangeRoute = routes.HasNirmsChangeController.onPageLoad().url
 
   "HasNirmsChange Controller" - {
 
