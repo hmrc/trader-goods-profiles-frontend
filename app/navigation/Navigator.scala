@@ -61,7 +61,7 @@ class Navigator @Inject() () {
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case p: LongerCommodityCodePage                =>
-      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
+      _ => navigateFromLongerCommodityCode(p.recordId, p.shouldRedirectToCya)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, p.needToRecategorise)
     case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
@@ -144,6 +144,13 @@ class Navigator @Inject() () {
         routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromLongerCommodityCode(recordId: String, shouldRedirectToCya: Boolean): Call =
+    if (shouldRedirectToCya) {
+      routes.CyaCategorisationController.onPageLoad(recordId)
+    } else {
+      routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, recordId)
+    }
 
   private def navigateFromHasCorrectGoodsUpdate(answers: UserAnswers, recordId: String): Call =
     answers
@@ -237,7 +244,7 @@ class Navigator @Inject() () {
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
-      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
+      _ => navigateFromLongerCommodityCode(p.recordId, p.shouldRedirectToCya)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       navigateFromHasCorrectGoodsLongerCommodityCodeCheck(p.recordId, p.needToRecategorise)
     case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()

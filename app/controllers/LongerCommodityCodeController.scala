@@ -102,7 +102,12 @@ class LongerCommodityCodeController @Inject() (
                 )
 
                 if (shouldRedirectToCya) {
-                  Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
+                  Future.successful(
+                    Redirect(
+                      navigator
+                        .nextPage(LongerCommodityCodePage(recordId, shouldRedirectToCya), mode, request.userAnswers)
+                    )
+                  )
                 } else {
                   saveAnswerAndProceedWithJourney(mode, recordId, value, longCommodityCode, shortCode)
                 }

@@ -121,7 +121,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage(testRecordId), "1234")
+        .set(LongerCommodityCodePage(testRecordId, true), "1234")
         .success
         .value
 
@@ -157,7 +157,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[OttConnector].toInstance(mockOttConnector)
           )
