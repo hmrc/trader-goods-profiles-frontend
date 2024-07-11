@@ -145,11 +145,15 @@ class Navigator @Inject() () {
       }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromLongerCommodityCode(recordId: String, shouldRedirectToCya: Boolean): Call =
+  private def navigateFromLongerCommodityCode(
+    recordId: String,
+    shouldRedirectToCya: Boolean,
+    mode: Mode = NormalMode
+  ): Call =
     if (shouldRedirectToCya) {
       routes.CyaCategorisationController.onPageLoad(recordId)
     } else {
-      routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, recordId)
+      routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode, recordId)
     }
 
   private def navigateFromHasCorrectGoodsUpdate(answers: UserAnswers, recordId: String): Call =
@@ -244,7 +248,7 @@ class Navigator @Inject() () {
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
-      _ => navigateFromLongerCommodityCode(p.recordId, p.shouldRedirectToCya)
+      _ => navigateFromLongerCommodityCode(p.recordId, p.shouldRedirectToCya, CheckMode)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       navigateFromHasCorrectGoodsLongerCommodityCodeCheck(p.recordId, p.needToRecategorise)
     case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
