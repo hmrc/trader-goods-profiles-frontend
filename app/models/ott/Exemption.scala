@@ -132,7 +132,7 @@ object OtherExemption {
           (__ \ "id").read[String] and
             (__ \ "code").read[String] and
             (__ \ "description").read[String]
-          )(OtherExemption(_, _, _))
+        )(OtherExemption(_, _, _))
       )
 
   implicit lazy val writes: OWrites[OtherExemption] =
@@ -141,7 +141,7 @@ object OtherExemption {
         (__ \ "id").write[String] and
         (__ \ "code").write[String] and
         (__ \ "description").write[String]
-      )(x => (x.exemptionType, x.id, x.code, x.description))
+    )(x => (x.exemptionType, x.id, x.code, x.description))
 }
 
 object Exemption {
