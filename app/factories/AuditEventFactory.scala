@@ -176,7 +176,7 @@ case class AuditEventFactory() {
         responseStatus.toString,
         errorMessage
       ),
-      commodityDetails.map(_.goodsNomenclature.description),
+      commodityDetails.flatMap(_.goodsNomenclature.descriptions.headOption),
       // If commodityDetails are defined and no endDate then we got sent a null for this so pass it on.
       commodityDetails.map(_.goodsNomenclature.validityEndDate.map(_.toString).getOrElse("null")),
       commodityDetails.map(_.goodsNomenclature.validityStartDate.toString)

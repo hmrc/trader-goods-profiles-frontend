@@ -210,6 +210,8 @@ POST        /update-record/:recordId/check-your-answers/trader-reference        
 GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
+GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
+
 GET        /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onPageLoad()
 POST       /update-profile/removing-nirms-number                                            controllers.HasNirmsChangeController.onSubmit()
 
