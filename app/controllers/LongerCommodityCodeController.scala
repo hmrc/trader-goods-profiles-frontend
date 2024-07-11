@@ -21,6 +21,7 @@ import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
 import models.Mode
 import models.helper.UpdateRecordJourney
+import models.requests.DataRequest
 import navigation.Navigator
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
@@ -52,46 +53,39 @@ class LongerCommodityCodeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val categorisationInfoOpt = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val categorisationInfoOpt = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
 
-    val originalComcodeOpt = categorisationInfoOpt.map(_.originalCommodityCode).getOrElse(None)
-    val latestComcodeOpt = categorisationInfoOpt.map(_.commodityCode)
+      val originalComcodeOpt = categorisationInfoOpt.map(_.originalCommodityCode)
+      val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
 
-    val latestDoesNotMatchOriginal = (latestComcodeOpt, originalComcodeOpt) match {
-      case (Some(latest), Some(original)) if latest != original.padTo(10, "0").mkString => true
-      case _ => false
-    }
+      val answerToFillFormWith = for {
+        originalCode <- originalComcodeOpt
+        latestCode   <- latestComcodeOpt
+      } yield latestCode.drop(originalCode.length)
 
-    val answerToFillFormWith = originalComcodeOpt.map { originalCode =>
-      latestComcodeOpt.getOrElse("").drop(originalCode.length)
-    }
+      val preparedForm = categorisationInfoOpt match {
+        case Some(categorisationInfo) if categorisationInfo.latestDoesNotMatchOriginal =>
+          answerToFillFormWith.map(form.fill).getOrElse(form)
+        case _                                                                         =>
+          form
+      }
 
-    val preparedForm = if (latestDoesNotMatchOriginal) {
-      answerToFillFormWith.map(form.fill).getOrElse(form)
-    } else {
-      form
-    }
-
-    originalComcodeOpt match {
-      case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
-        Ok(view(preparedForm, mode, commodityCodeSansTrailingZeros(shortCommodity), recordId))
-      case _ =>
-        Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-    }
+      originalComcodeOpt match {
+        case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
+          Ok(view(preparedForm, mode, commodityCodeSansTrailingZeros(shortCommodity), recordId))
+        case _                                                                                  =>
+          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
   }
 
-  def onSubmit(mode: Mode, recordId: String): Action[AnyContent]           =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationInfoOpt = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
 
-      val originalComcodeOpt = categorisationInfoOpt.map(_.originalCommodityCode).getOrElse(None)
-      val latestComcodeOpt = categorisationInfoOpt.map(_.commodityCode)
-
-      val latestDoesNotMatchOriginal = (latestComcodeOpt, originalComcodeOpt) match {
-        case (Some(oldLongerCode), Some(originalCode)) if oldLongerCode != originalCode.padTo(10, "0").mkString => true
-        case _ => false
-      }
+      val originalComcodeOpt = categorisationInfoOpt.map(_.originalCommodityCode)
+      val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
 
       originalComcodeOpt match {
         case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
@@ -101,39 +95,47 @@ class LongerCommodityCodeController @Inject() (
             .fold(
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId))),
               value => {
-                val longCommodityCode = s"$shortCode$value"
-                latestComcodeOpt match {
-                  case Some(latestComcode) if shortCode.concat(value) == latestComcode && latestDoesNotMatchOriginal =>
-                    Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
-                  case _                                                                    =>
-                    (for {
-                      validCommodityCode      <- ottConnector.getCommodityCode(
-                                                   longCommodityCode,
-                                                   request.eori,
-                                                   request.affinityGroup,
-                                                   UpdateRecordJourney,
-                                                   Some(recordId)
-                                                 )
-                      updatedAnswers          <-
-                        Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-                      updatedAnswersWithQuery <-
-                        Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
-                      _                       <- sessionRepository.set(updatedAnswersWithQuery)
-                    } yield Redirect(
-                      navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery)
-                    )).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-                      val formWithApiErrors =
-                        form
-                          .copy(errors =
-                            Seq(elems = FormError("value", getMessage("longerCommodityCode.error.invalid")))
-                          )
-                      BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
-                    }
+                val longCommodityCode   = s"$shortCode$value"
+                val shouldRedirectToCya = latestComcodeOpt.exists(latest =>
+                  shortCode.concat(value) == latest &&
+                    categorisationInfoOpt.exists(_.latestDoesNotMatchOriginal)
+                )
+
+                if (shouldRedirectToCya) {
+                  Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
+                } else {
+                  saveAnswerAndProceedWithJourney(mode, recordId, value, longCommodityCode, shortCode)
                 }
               }
             )
       }
     }
+
+  private def saveAnswerAndProceedWithJourney(
+    mode: Mode,
+    recordId: String,
+    value: String,
+    longCommodityCode: String,
+    shortCode: String
+  )(implicit request: DataRequest[AnyContent]) =
+    (for {
+      validCommodityCode      <- ottConnector.getCommodityCode(
+                                   longCommodityCode,
+                                   request.eori,
+                                   request.affinityGroup,
+                                   UpdateRecordJourney,
+                                   Some(recordId)
+                                 )
+      updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
+      updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
+      _                       <- sessionRepository.set(updatedAnswersWithQuery)
+    } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery))).recover {
+      case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+        val formWithApiErrors =
+          form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
+        BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
+    }
+
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 
   private def commodityCodeSansTrailingZeros(commodityCode: String): String = {

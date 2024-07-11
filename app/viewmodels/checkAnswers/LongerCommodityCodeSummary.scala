@@ -30,7 +30,7 @@ object LongerCommodityCodeSummary {
     val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
     val categorisationInfoOpt = recordCategorisations.records.get(recordId)
     categorisationInfoOpt match {
-      case Some(x) if x.commodityCode != x.originalCommodityCode.getOrElse("") =>
+      case Some(x) if x.commodityCode != x.originalCommodityCode =>
         Some(
           SummaryListRowViewModel(
             key = "longerCommodityCode.checkYourAnswersLabel",
@@ -44,7 +44,7 @@ object LongerCommodityCodeSummary {
             )
           )
         )
-      case _                                                                   =>
+      case _                                                     =>
         None
     }
   }
