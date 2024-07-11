@@ -452,9 +452,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            //TODO update with new expected - Why was this TODO in main?
-//            when(mockConnector.updateGoodsRecord(any(), any(), any())(any()))
-//              .thenReturn(Future.successful(Done))
+            when(mockConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
             when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
