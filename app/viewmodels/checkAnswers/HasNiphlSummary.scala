@@ -20,6 +20,7 @@ import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.HasNiphlPage
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -39,4 +40,16 @@ object HasNiphlSummary {
         )
       )
     }
+
+  def row(value: Boolean)(implicit messages: Messages): SummaryListRow = {
+    val textValue = if (value) "site.yes" else "site.no"
+    SummaryListRowViewModel(
+      key = "hasNiphl.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(textValue).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoadUpdate.url)
+          .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
+      )
+    )
+  }
 }

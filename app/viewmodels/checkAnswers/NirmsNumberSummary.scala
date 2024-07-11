@@ -38,4 +38,16 @@ object NirmsNumberSummary {
         )
       )
     }
+
+  def row(value: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    value.map { nirmsNumber =>
+      SummaryListRowViewModel(
+        key = "nirmsNumber.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(nirmsNumber).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate.url)
+            .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
+        )
+      )
+    }
 }
