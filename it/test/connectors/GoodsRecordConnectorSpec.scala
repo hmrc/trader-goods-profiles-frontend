@@ -406,12 +406,12 @@ class GoodsRecordConnectorSpec
 
   ".getRecord" - {
 
-    val routerGoodsRecordUrl = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
+    val dataStoreGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
 
     "must get a goods record" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(routerGoodsRecordUrl))
+        get(urlEqualTo(dataStoreGoodsRecordUrl))
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
@@ -432,7 +432,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(routerGoodsRecordUrl))
+        get(urlEqualTo(dataStoreGoodsRecordUrl))
           .willReturn(serverError())
       )
 
@@ -442,7 +442,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the json does not match the format" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(routerGoodsRecordUrl))
+        get(urlEqualTo(dataStoreGoodsRecordUrl))
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
