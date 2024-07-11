@@ -209,3 +209,5 @@ GET         /update-record/:recordId/check-your-answers/trader-reference        
 POST        /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onSubmitTraderReference(recordId: String)
 GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
+
+GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()

@@ -31,19 +31,48 @@ class GoodsNomenclatureResponseSpec extends AnyFreeSpec with Matchers {
       val now = Instant.now()
 
       val json = Json.obj(
-        "id"         -> "1",
-        "attributes" -> Json.obj(
-          "goods_nomenclature_item_id" -> "foo",
-          "supplementary_measure_unit" -> "bar",
-          "validity_start_date"        -> Instant.EPOCH.toString,
-          "validity_end_date"          -> now.toString,
-          "description"                -> "fizzbuzz"
+        "data"     -> Json.obj(
+          "id"         -> "1",
+          "attributes" -> Json.obj(
+            "goods_nomenclature_item_id" -> "foo",
+            "supplementary_measure_unit" -> "bar",
+            "validity_start_date"        -> Instant.EPOCH.toString,
+            "validity_end_date"          -> now.toString,
+            "description"                -> "Other"
+          )
+        ),
+        "included" -> Json.arr(
+          Json.obj(
+            "id"         -> "38193",
+            "type"       -> "goods_nomenclature",
+            "attributes" -> Json.obj(
+              "description" -> "EXPLOSIVES; PYROTECHNIC PRODUCTS; MATCHES; PYROPHORIC ALLOYS; CERTAIN COMBUSTIBLE PREPARATIONS"
+            )
+          ),
+          Json.obj(
+            "id"         -> "38195",
+            "type"       -> "goods_nomenclature",
+            "attributes" -> Json.obj(
+              "description" -> "Prepared explosives, other than propellent powders"
+            )
+          )
         )
       )
 
       val result = json.validate[GoodsNomenclatureResponse]
       result mustEqual JsSuccess(
-        GoodsNomenclatureResponse("1", "foo", Some("bar"), Instant.EPOCH, Some(now), "fizzbuzz")
+        GoodsNomenclatureResponse(
+          "1",
+          "foo",
+          Some("bar"),
+          Instant.EPOCH,
+          Some(now),
+          List(
+            "EXPLOSIVES; PYROTECHNIC PRODUCTS; MATCHES; PYROPHORIC ALLOYS; CERTAIN COMBUSTIBLE PREPARATIONS",
+            "Prepared explosives, other than propellent powders",
+            "Other"
+          )
+        )
       )
     }
   }

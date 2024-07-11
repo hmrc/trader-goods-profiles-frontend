@@ -218,8 +218,9 @@ createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvemen
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
-goodsDescription.p1 = A goods description is your description of the goods. This does not need to be unique to your Trader Goods Profile or any existing goods records.
-goodsDescription.p2 = The goods description also does not have to match tariff information.
+goodsDescription.p1 = A goods description is a plain language description of the goods. This does not have to match the trade tariff description. Authorities should be able to identify your goods from the description.
+goodsDescription.p2 = You can not use general terms like ''consolidated'' or ''general cargo''. General terms will not allow Border Force to perform customs controls.
+goodsDescription.p3 = If your goods will not be a full package, container or trailer you should confirm this on the goods description. You can use terms like ''part case'', ''part container'' or ''part trailer'' at the end of the goods description.
 goodsDescription.inputHeading = What is the goods description?
 goodsDescription.hint = This can be up to 512 characters long.
 goodsDescription.checkYourAnswersLabel = Goods description
@@ -374,7 +375,7 @@ longerCommodityCode.change.hidden = LongerCommodityCode
 
 previousMovementRecords.title = Previous movement records
 previousMovementRecords.h1 = Previous movement records
-previousMovementRecords.p1 = TGP has your previous movement information saved as individual records. HMRC have removed any duplicate records.
+previousMovementRecords.p1 = Trader Goods Profile (TGP) has your previous movement information saved as individual records. HMRC have removed any duplicate records.
 previousMovementRecords.p2 = TGP has created goods descriptions from information we already have. You can change the goods description to anything to help you identify the record.
 previousMovementRecords.p3 = We’ve added your previous movements from the last 12 months to your goods records. You may want to check that the information is correct before you use them on a movement.
 previousMovementRecords.p4 = Your records will be loading onto your TGP and may take some time to load. We’ll send you to another page when loading is completed.
@@ -451,3 +452,10 @@ hasGoodsDescriptionChange.p1 = Changing the goods description on this goods reco
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
 
+profile.title = Profile details
+profile.h1 = Profile details
+profile.h2 = UKIMS, NIRMS and NIPHL
+profile.p1 = Check the details on your profile are correct. You can change your UKIMS number or add, change and remove NIRMS and NIPHL information.
+profile.p2.linkText = Go to homepage
+profile.warning = Warning
+profile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
