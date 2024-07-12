@@ -16,15 +16,14 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import logging.Logging
-import models.{AssessmentAnswer, CategoryRecord, Mode, Scenario, UserAnswers}
+import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.CategorisationService
@@ -49,20 +48,21 @@ class AssessmentController @Inject() (
   view: AssessmentView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport with Logging {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        recordQuery = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
-        categorisationInfo <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
+        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
+        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
       } yield {
-        val exemptions = categorisationInfo.categoryAssessments(index).exemptions
-        val form = formProvider(exemptions.map(_.id))
+        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
+        val form         = formProvider(exemptions.map(_.id))
         val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
           case Some(value) => form.fill(value)
-          case None => form
+          case None        => form
         }
         val radioOptions = AssessmentAnswer.radioOptions(exemptions)
 
@@ -74,7 +74,11 @@ class AssessmentController @Inject() (
         )
 
         if (exemptions.isEmpty) {
-          Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId).url))
+          Future.successful(
+            Redirect(
+              navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+            )
+          )
         } else {
           Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
         }
@@ -84,7 +88,6 @@ class AssessmentController @Inject() (
         Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
-
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

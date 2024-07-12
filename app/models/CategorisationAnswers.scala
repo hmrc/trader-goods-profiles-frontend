@@ -67,9 +67,8 @@ object CategorisationAnswers {
       justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
-  private def countAssessmentsThatRequireAnswers(categorisationInfo: CategorisationInfo): Int = {
+  private def countAssessmentsThatRequireAnswers(categorisationInfo: CategorisationInfo): Int =
     categorisationInfo.categoryAssessments.takeWhile(a => !(a.category == 2 && a.exemptions.isEmpty)).size
-  }
 
   private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) =
     recordCategorisations.records
