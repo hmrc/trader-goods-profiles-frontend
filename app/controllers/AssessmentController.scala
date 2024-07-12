@@ -45,7 +45,6 @@ class AssessmentController @Inject() (
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
   categorisationService: CategorisationService,
-  goodsRecordConnector: GoodsRecordConnector,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
@@ -75,7 +74,7 @@ class AssessmentController @Inject() (
         )
 
         if (exemptions.isEmpty) {
-          handleNoExemptions(userAnswersWithCategorisations, recordId, request.eori)
+          Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId).url))
         } else {
           Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
         }
@@ -85,18 +84,6 @@ class AssessmentController @Inject() (
         Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
-
-  private def handleNoExemptions(userAnswers: UserAnswers, recordId: String, eori: String)(implicit request: Request[_]): Future[Result] = {
-    CategoryRecord
-      .build(userAnswers, eori, recordId)
-      .map { categoryRecord =>
-        goodsRecordConnector
-          .updateCategoryForGoodsRecord(eori, recordId, categoryRecord)
-          .map { _ =>
-            Redirect(routes.CyaCategorisationController.onPageLoad(recordId).url)
-          }
-      }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
-  }
 
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =

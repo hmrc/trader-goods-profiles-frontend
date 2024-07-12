@@ -44,7 +44,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
+    url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
 
   private def goodsRecordUrl(eori: String, recordId: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
