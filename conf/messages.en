@@ -482,3 +482,8 @@ hasNiphlsChange.yes = Yes, remove my NIPHL details
 hasNiphlsChange.no = No, do not remove my NIPHL details
 hasNiphlsChange.warning = Warning
 hasNiphlsChange.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
+
+sucessBanner.title = Success
+sucessBanner.heading = You have changed the trader reference and goods description
+sucessBanner.p1 = Contact example@department.gov.uk if you think there’s a problem.
+sucessBanner.email = example@department.gov.uk

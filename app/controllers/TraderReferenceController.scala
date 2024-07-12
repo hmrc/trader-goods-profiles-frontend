@@ -97,6 +97,7 @@ class TraderReferenceController @Inject() (
               updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+              .addingToSession("changesMade" -> "true")
         )
     }
 

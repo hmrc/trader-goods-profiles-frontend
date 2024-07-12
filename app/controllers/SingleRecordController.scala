@@ -79,13 +79,14 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val adviceList = SummaryListViewModel(
+        val adviceList  = SummaryListViewModel(
           rows = Seq(
             AdviceStatusSummary.row(record.adviceStatus, record.recordId)
           )
         )
+        val changesMade = request.session.get("changesMade").contains("true")
 
-        Ok(view(recordId, detailsList, categorisationList, adviceList))
+        Ok(view(recordId, detailsList, categorisationList, adviceList, changesMade))
       }
   }
 }

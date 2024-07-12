@@ -154,7 +154,7 @@ class CyaUpdateRecordController @Inject() (
             _              <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId)).addingToSession("changesMade" -> "true")
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
       }
     }
