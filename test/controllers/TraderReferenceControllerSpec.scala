@@ -17,12 +17,14 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import forms.TraderReferenceFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.inject.bind
@@ -30,6 +32,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.TraderReferenceView
 
 import scala.concurrent.Future
@@ -168,8 +172,16 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       lazy val onSubmitAction       = routes.TraderReferenceController.onSubmitUpdate(NormalMode, testRecordId)
 
       "must return OK and the correct view for a GET" in {
+        val mockAuditService = mock[AuditService]
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, traderReferenceRoute)
@@ -180,6 +192,16 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService, times(1))
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(GoodsDetailsUpdate),
+                eqTo(testRecordId)
+              )(any())
+          }
         }
       }
 

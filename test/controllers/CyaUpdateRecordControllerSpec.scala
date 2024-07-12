@@ -625,7 +625,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val summaryUrl      = routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = CommodityCodeUpdatePage(testRecordId)
       val answer          = "Test"
-      val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(answer))
+      val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(testCommodity))
       val getUrl          = routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId).url
       val call            = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId)
       val postUrl         = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId).url
@@ -642,7 +642,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must return OK and the correct view with valid mandatory data" in {
 
           val userAnswers = emptyUserAnswers
-            .set(page, answer)
+            .set(page, testCommodity.commodityCode)
             .success
             .value
             .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
@@ -764,7 +764,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must let the play error handler deal with connector failure " in {
 
           val userAnswers = emptyUserAnswers
-            .set(page, answer)
+            .set(page, testCommodity.commodityCode)
             .success
             .value
             .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
