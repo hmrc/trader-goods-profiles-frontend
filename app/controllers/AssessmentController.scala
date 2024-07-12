@@ -16,13 +16,15 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.{AssessmentAnswer, Mode}
+import logging.Logging
+import models.{AssessmentAnswer, CategoryRecord, Mode, Scenario, UserAnswers}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.CategorisationService
@@ -43,41 +45,59 @@ class AssessmentController @Inject() (
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
   categorisationService: CategorisationService,
+  goodsRecordConnector: GoodsRecordConnector,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport with Logging {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
-        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
+        recordQuery = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
+        categorisationInfo <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
       } yield {
-        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
-        val form         = formProvider(exemptions.map(_.id))
+        val exemptions = categorisationInfo.categoryAssessments(index).exemptions
+        val form = formProvider(exemptions.map(_.id))
         val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
           case Some(value) => form.fill(value)
-          case None        => form
+          case None => form
         }
-
         val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-        val viewModel    = AssessmentViewModel(
+
+        val viewModel = AssessmentViewModel(
           commodityCode = categorisationInfo.commodityCode,
           numberOfThisAssessment = index + 1,
           numberOfAssessments = categorisationInfo.categoryAssessments.size,
           radioOptions = radioOptions
         )
 
-        Ok(view(preparedForm, mode, recordId, index, viewModel))
+        if (exemptions.isEmpty) {
+          handleNoExemptions(userAnswersWithCategorisations, recordId, request.eori)
+        } else {
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+        }
       }
 
-      categorisationResult.recover { case _ =>
+      categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
+
+  private def handleNoExemptions(userAnswers: UserAnswers, recordId: String, eori: String)(implicit request: Request[_]): Future[Result] = {
+    CategoryRecord
+      .build(userAnswers, eori, recordId)
+      .map { categoryRecord =>
+        goodsRecordConnector
+          .updateCategoryForGoodsRecord(eori, recordId, categoryRecord)
+          .map { _ =>
+            Redirect(routes.CyaCategorisationController.onPageLoad(recordId).url)
+          }
+      }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+  }
+
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

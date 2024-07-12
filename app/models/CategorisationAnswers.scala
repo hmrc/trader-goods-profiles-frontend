@@ -63,9 +63,13 @@ object CategorisationAnswers {
       categorisationInfo    <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
       answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
-      _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
+      _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, countAssessmentsThatRequireAnswers(categorisationInfo))
       justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
+
+  private def countAssessmentsThatRequireAnswers(categorisationInfo: CategorisationInfo): Int = {
+    categorisationInfo.categoryAssessments.takeWhile(a => !(a.category == 2 && a.exemptions.isEmpty)).size
+  }
 
   private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) =
     recordCategorisations.records
