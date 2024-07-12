@@ -34,8 +34,9 @@ object ExemptionType extends Enumerable.Implicits {
 
   case object Certificate extends WithName("certificate") with ExemptionType
   case object AdditionalCode extends WithName("additionalCode") with ExemptionType
+  case object OtherExemption extends WithName("exemption") with ExemptionType
 
-  private val values = Seq(Certificate, AdditionalCode)
+  private val values = Seq(Certificate, AdditionalCode, OtherExemption)
 
   implicit val enumerable: Enumerable[ExemptionType] =
     Enumerable(values.map(v => v.toString -> v): _*)
@@ -109,13 +110,48 @@ object AdditionalCode {
     )(x => (x.exemptionType, x.id, x.code, x.description))
 }
 
+final case class OtherExemption(id: String, code: String, description: String) extends Exemption {
+
+  override val exemptionType: ExemptionType = ExemptionType.OtherExemption
+}
+
+object OtherExemption {
+
+  implicit lazy val reads: Reads[OtherExemption] =
+    (__ \ "exemptionType")
+      .read[ExemptionType]
+      .flatMap[ExemptionType] { et =>
+        if (et == ExemptionType.OtherExemption) {
+          Reads(_ => JsSuccess(et))
+        } else {
+          Reads(_ => JsError("exemptionType mustEqual `exemption"))
+        }
+      }
+      .andKeep(
+        (
+          (__ \ "id").read[String] and
+            (__ \ "code").read[String] and
+            (__ \ "description").read[String]
+        )(OtherExemption(_, _, _))
+      )
+
+  implicit lazy val writes: OWrites[OtherExemption] =
+    (
+      (__ \ "exemptionType").write[ExemptionType] and
+        (__ \ "id").write[String] and
+        (__ \ "code").write[String] and
+        (__ \ "description").write[String]
+    )(x => (x.exemptionType, x.id, x.code, x.description))
+}
+
 object Exemption {
 
   implicit lazy val reads: Reads[Exemption] =
-    Certificate.reads.widen or AdditionalCode.reads.widen
+    Certificate.reads.widen or (AdditionalCode.reads.widen or OtherExemption.reads.widen)
 
   implicit lazy val writes: OWrites[Exemption] = OWrites {
     case c: Certificate    => Json.toJsObject(c)(Certificate.writes)
     case a: AdditionalCode => Json.toJsObject(a)(AdditionalCode.writes)
+    case e: OtherExemption => Json.toJsObject(e)(OtherExemption.writes)
   }
 }
