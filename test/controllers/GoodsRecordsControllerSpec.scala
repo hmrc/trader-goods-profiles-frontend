@@ -51,126 +51,43 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(currentPage).url
 
   private val records = Seq(
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "2",
-      "10410100",
-      "EC",
-      "BAN0010012",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2023-11-18T23:20:19Z"),
-      Instant.parse("2023-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2023-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "3",
-      "10410100",
-      "EC",
-      "BAN0010013",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2024-11-18T23:20:19Z"),
-      Instant.parse("2024-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2024-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
+    goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
+      Instant.parse("2022-11-18T23:20:19Z")
     ),
-    GetGoodsRecordResponse(
-      "1",
-      "10410100",
-      "EC",
-      "BAN0010011",
-      "Organic bananas",
-      "Not requested",
-      Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z"),
-      "Not ready",
-      1
-    )
+    goodsRecordResponse(Instant.parse("2022-11-18T23:20:19Z"), Instant.parse("2022-11-18T23:20:19Z"))
   )
 
   private val response = GetRecordsResponse(
