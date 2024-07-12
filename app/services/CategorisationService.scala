@@ -49,7 +49,7 @@ class CategorisationService @Inject() (
         for {
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature      <- ottConnector.getCategorisationInfo(
-                                      getGoodsRecordResponse.commodityCode,
+                                      getGoodsRecordResponse.comcode,
                                       request.eori,
                                       request.affinityGroup,
                                       Some(recordId),

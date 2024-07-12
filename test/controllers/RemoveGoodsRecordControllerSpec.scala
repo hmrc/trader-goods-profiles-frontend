@@ -47,17 +47,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
-  private val record = GetGoodsRecordResponse(
-    testRecordId,
-    "10410100",
-    "EC",
-    "BAN0010011",
-    "Organic bananas",
-    "Not requested",
+  private val record = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z"),
-    "Not ready",
-    1
+    Instant.parse("2022-11-18T23:20:19Z")
   )
 
   "RemoveGoodsRecord Controller" - {
