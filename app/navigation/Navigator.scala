@@ -214,7 +214,7 @@ class Navigator @Inject() () {
 
   private def navigateFromCategoryGuidance(page: CategoryGuidancePage) = {
     page.scenario match {
-      case Some(scenario) if scenario == NiphlsRedirect => routes.CategorisationResultController.onPageLoad(page.recordId, Category1)
+      //case Some(scenario) if scenario == NiphlsRedirect => routes.CategorisationResultController.onPageLoad(page.recordId, Category1)
       case Some(scenario) => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
       case _ => routes.AssessmentController.onPageLoad(NormalMode, page.recordId, firstAssessmentIndex)
     }

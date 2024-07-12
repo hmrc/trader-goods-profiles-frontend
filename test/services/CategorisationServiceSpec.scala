@@ -24,6 +24,7 @@ import models.ott.CategorisationInfo
 import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -76,6 +77,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       .thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
+    //TODO
+    when(mockGoodsRecordsConnector.storeLatestRecords(any())(any())).thenReturn(Future.successful(Done))
   }
 
   override def afterEach(): Unit = {
@@ -159,6 +162,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should return future failed when the call to the router fails" in {
       reset(mockGoodsRecordsConnector)
+      //TODO
+      when(mockGoodsRecordsConnector.storeLatestRecords(any())(any())).thenReturn(Future.successful(Done))
+
       val expectedException = new RuntimeException("Failed communicating with the router")
       when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
         .thenReturn(Future.failed(expectedException))
@@ -207,7 +213,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
-      val result                        = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
+      val result                        =
+        await(categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should not need to call the goods record connector") {
@@ -251,7 +258,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
-      val result = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
+      val result =
+        await(categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call OTT to get categorisation info") {
@@ -276,7 +284,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val actualException = intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        val result = categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId)
         await(result)
       }
 
@@ -289,7 +297,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 
       intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        val result = categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId)
         await(result)
       }
 
@@ -305,7 +313,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val actualException = intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        val result = categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId)
         await(result)
       }
 
@@ -322,7 +330,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val actualException = intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
+        val result = categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId)
         await(result)
       }
 

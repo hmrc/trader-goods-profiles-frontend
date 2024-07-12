@@ -19,7 +19,7 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
 import models.AssessmentAnswer.NoExemption
-import models.ott.{CategorisationInfo, CategoryAssessment}
+import models.ott.{CategorisationInfo, CategoryAssessment, ExemptionType}
 import org.apache.pekko.Done
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
@@ -63,7 +63,7 @@ object CategorisationAnswers {
       categorisationInfo    <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
       answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
-      _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size)
+      _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, categorisationInfo.categoryAssessments.size, categorisationInfo)
       justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
@@ -118,13 +118,20 @@ object CategorisationAnswers {
 
   private def ensureHaveAnsweredTheRightAmount(
     answeredAssessments: Seq[CategorisationDetails],
-    assessmentCount: Int
+    assessmentCount: Int,
+    categorisationInfo: CategorisationInfo //Either clean up params or pass in niphls
   ): Either[NonEmptyChain[ValidationError], Done] = {
 
     val lastAnswerIsExemption = answeredAssessments.last.answer.equals(NoExemption)
     val amountAnswered        = answeredAssessments.size
 
-    if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
+    val isNiphlsCommodity =
+      categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 1 && assessment.exemptions.exists(exemption => exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")) && categorisationInfo.categoryAssessments.count(ass => ass.category == 2) == 1 && categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 2 && assessment.exemptions.isEmpty)
+
+    if (isNiphlsCommodity && amountAnswered == assessmentCount - 1 ) {
+ // -1 because the last niphls is empty
+      Right(Done)
+    }else if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
       Right(Done)
     } else {
       Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))

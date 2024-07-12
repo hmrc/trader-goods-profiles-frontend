@@ -809,13 +809,13 @@ class NavigatorSpec extends SpecBase {
             ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
           }
 
-          "to Category Result for Category 1 when Niphls Redirect scenario supplied" in {
-            navigator.nextPage(
-              CategoryGuidancePage(testRecordId, Some(NiphlsRedirect)),
-              NormalMode,
-              emptyUserAnswers
-            ) mustEqual routes.CategorisationResultController.onPageLoad(testRecordId, Category1)
-          }
+//          "to Category Result for Category 1 when Niphls Redirect scenario supplied" in {
+//            navigator.nextPage(
+//              CategoryGuidancePage(testRecordId, Some(NiphlsRedirect)),
+//              NormalMode,
+//              emptyUserAnswers
+//            ) mustEqual routes.CategorisationResultController.onPageLoad(testRecordId, Category1)
+//          }
 
           "to Category Result for the supplied scenario when any other scenario supplied" in {
             navigator.nextPage(

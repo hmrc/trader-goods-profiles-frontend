@@ -234,6 +234,24 @@ trait SpecBase
     0
   )
 
+  lazy val categorisationInfoNiphlsWithOtherAssessments: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(
+      CategoryAssessment(
+        "id1",
+        1,
+        Seq(
+          OtherExemption("WFE012", "WFE012", "NIPHLs"),
+          AdditionalCode("1234", "Y1234", "Y1234 - nothing that is purple")
+        )
+      ),
+      CategoryAssessment("id2", 2, Seq.empty),
+      CategoryAssessment("id3", 1, Seq(Certificate("321", "Y321", "Goods are certified cool")))
+    ),
+    None,
+    0
+  )
+
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

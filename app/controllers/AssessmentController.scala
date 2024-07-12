@@ -18,7 +18,9 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.{AssessmentAnswer, Mode}
+import models.AssessmentAnswer.Exemption
+import models.ott.ExemptionType
+import models.{AssessmentAnswer, Mode, Standard}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -55,23 +57,43 @@ class AssessmentController @Inject() (
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
         categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
+        isNiphls = categorisationInfo.categoryAssessments(index).exemptions.exists(ex => ex.exemptionType == ExemptionType.OtherExemption && ex.id == "WFE012")
+        //TODO check has niphls
+        updatedAnswers <- if (isNiphls) Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption("WFE012"))) else Future.successful(userAnswersWithCategorisations)
+        _ <- sessionRepository.set(updatedAnswers)
       } yield {
-        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
-        val form         = formProvider(exemptions.map(_.id))
-        val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
-          case Some(value) => form.fill(value)
-          case None        => form
-        }
+        val exemptions = categorisationInfo.categoryAssessments(index).exemptions
 
-        val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-        val viewModel    = AssessmentViewModel(
-          commodityCode = categorisationInfo.commodityCode,
-          numberOfThisAssessment = index + 1,
-          numberOfAssessments = categorisationInfo.categoryAssessments.size,
-          radioOptions = radioOptions
-        )
+       if (isNiphls) {
+          // We Niphl'ing
+            Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
+          } else {
 
-        Ok(view(preparedForm, mode, recordId, index, viewModel))
+         if (categorisationInfo.categoryAssessments(index).category == 2 && categorisationInfo.categoryAssessments(index).exemptions.isEmpty &&
+           categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 1 && assessment.exemptions.exists(exemption => exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")) && categorisationInfo.categoryAssessments.count(ass => ass.category == 2) == 1 && categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 2 && assessment.exemptions.isEmpty)
+         ) {
+           //TODO propa
+Redirect(routes.CyaCategorisationController.onPageLoad(recordId))
+         } else {
+
+
+           val form = formProvider(exemptions.map(_.id))
+           val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
+             case Some(value) => form.fill(value)
+             case None => form
+           }
+
+           val radioOptions = AssessmentAnswer.radioOptions(exemptions)
+           val viewModel = AssessmentViewModel(
+             commodityCode = categorisationInfo.commodityCode,
+             numberOfThisAssessment = index + 1,
+             numberOfAssessments = categorisationInfo.categoryAssessments.size,
+             radioOptions = radioOptions
+           )
+
+           Ok(view(preparedForm, mode, recordId, index, viewModel))
+         }
+       }
       }
 
       categorisationResult.recover { case _ =>

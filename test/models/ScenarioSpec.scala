@@ -51,9 +51,15 @@ class ScenarioSpec extends SpecBase {
         Scenario.getRedirectScenarios(categorisationInfo) mustEqual StandardNoAssessments
       }
 
-      "NIPHLs redirect when goods are NIPHLs exempt with no other assessments" in {
+      "NIPHLs only when goods are NIPHLs exempt with no other assessments" in {
 
-        Scenario.getRedirectScenarios(categorisationInfoNiphlsNoOtherAssessments) mustEqual NiphlsRedirect
+        Scenario.getRedirectScenarios(categorisationInfoNiphlsNoOtherAssessments) mustEqual NiphlsOnly
+
+      }
+
+      "NIPHLs and others when goods are NIPHLs exempt with other assessments" in {
+
+        Scenario.getRedirectScenarios(categorisationInfoNiphlsWithOtherAssessments) mustEqual NiphlsAndOthers
 
       }
 

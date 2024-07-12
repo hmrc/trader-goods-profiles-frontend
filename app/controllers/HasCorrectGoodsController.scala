@@ -177,7 +177,7 @@ class HasCorrectGoodsController @Inject() (
       // Update the categorisation with the new value details for future categorisation attempts
       updatedCategorisationAnswers <-
         categorisationService
-          .updateCategorisationWithNewCommodityCode(request.copy(userAnswers = updatedAnswers), recordId)
+          .updateCategorisationWithLongerCommodityCode(request.copy(userAnswers = updatedAnswers), recordId)
 
       // And then get the new assessment details
       newCommodityCategorisation   <-

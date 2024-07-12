@@ -357,7 +357,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               .value
 
             val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
+            when(mockCategorisationService.updateCategorisationWithLongerCommodityCode(any(), any())(any()))
               .thenReturn(Future.successful(userAnswers))
 
             val application =
@@ -425,7 +425,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 .value
 
               val mockCategorisationService = mock[CategorisationService]
-              when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
+              when(mockCategorisationService.updateCategorisationWithLongerCommodityCode(any(), any())(any()))
                 .thenReturn(Future.successful(updatedUserAnswers))
 
               val application =

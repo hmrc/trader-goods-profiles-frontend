@@ -25,6 +25,7 @@ final case class CategorisationInfo(
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String],
   descendantCount: Int
+  //TODO isNiphls in here??
 )
 
 object CategorisationInfo {

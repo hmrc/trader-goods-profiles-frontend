@@ -25,7 +25,8 @@ sealed trait Scenario
 case object NoRedirectScenario extends Scenario
 case object Category1NoExemptions extends Scenario
 case object StandardNoAssessments extends Scenario
-case object NiphlsRedirect extends Scenario
+case object NiphlsOnly extends Scenario
+case object NiphlsAndOthers extends Scenario
 
 //TODO redirect scenarios end here
 case object Standard extends Scenario
@@ -39,6 +40,7 @@ object Scenario {
       categorisationInfo.categoryAssessments.nonEmpty
 
     val category1Assessments = categorisationInfo.categoryAssessments.filter(_.category == 1)
+    val category2Assessments = categorisationInfo.categoryAssessments.filter(_.category == 2)
 
     val hasCategory1Assessments: Boolean =
       category1Assessments.nonEmpty
@@ -47,14 +49,19 @@ object Scenario {
       category1Assessments
         .exists(assessment => assessment.exemptions.nonEmpty)
 
+    val niphlsAssessment =
+      category1Assessments.exists(assessment => assessment.exemptions.exists(exemption => exemption.exemptionType ==ExemptionType.OtherExemption && exemption.code == "WFE012")) && category2Assessments.size == 1 && category2Assessments.exists(assessment => assessment.exemptions.isEmpty)
+
+    //TODO duplicate logic
     val hasOnlyNiphlsExemptionInCategory1: Boolean =
       category1Assessments.count(assessment => assessment.exemptions.exists(exemption =>
         exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")).equals(category1Assessments.size)
 
-    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions, hasOnlyNiphlsExemptionInCategory1) match {
-      case (true, true, true, true) => NiphlsRedirect
-      case (true, true, false, _)   => Category1NoExemptions
-      case (false, _, _, _) => StandardNoAssessments
+    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions, niphlsAssessment, hasOnlyNiphlsExemptionInCategory1) match {
+      case (true, true, true, true, true) => NiphlsOnly
+      case (true, true, true, true, false) => NiphlsAndOthers
+      case (true, true, false, _, _)   => Category1NoExemptions
+      case (false, _, _, _, _) => StandardNoAssessments
       case _            => NoRedirectScenario
     }
   }
