@@ -85,8 +85,9 @@ class SingleRecordController @Inject() (
           )
         )
         val changesMade = request.session.get("changesMade").contains("true")
+        val changedPage = request.session.get("changedPage").getOrElse("")
 
-        Ok(view(recordId, detailsList, categorisationList, adviceList, changesMade))
+        Ok(view(recordId, detailsList, categorisationList, adviceList, changesMade, changedPage))
       }
   }
 }

@@ -92,12 +92,15 @@ class TraderReferenceController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
-          value =>
+          value => {
+            val oldValue = request.userAnswers.get(TraderReferenceUpdatePage(recordId)).getOrElse("")
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
-              .addingToSession("changesMade" -> "true")
+              .addingToSession("changesMade" -> (oldValue != value).toString)
+              .addingToSession("changedPage" -> "trader reference")
+          }
         )
     }
 
