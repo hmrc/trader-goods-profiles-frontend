@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
+import logging.Logging
 import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
@@ -47,7 +48,8 @@ class AssessmentController @Inject() (
   view: AssessmentView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
@@ -62,19 +64,27 @@ class AssessmentController @Inject() (
           case Some(value) => form.fill(value)
           case None        => form
         }
-
         val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-        val viewModel    = AssessmentViewModel(
+
+        val viewModel = AssessmentViewModel(
           commodityCode = categorisationInfo.commodityCode,
           numberOfThisAssessment = index + 1,
           numberOfAssessments = categorisationInfo.categoryAssessments.size,
           radioOptions = radioOptions
         )
 
-        Ok(view(preparedForm, mode, recordId, index, viewModel))
+        if (exemptions.isEmpty) {
+          Future.successful(
+            Redirect(
+              navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+            )
+          )
+        } else {
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+        }
       }
 
-      categorisationResult.recover { case _ =>
+      categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
