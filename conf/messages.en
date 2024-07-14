@@ -472,6 +472,7 @@ hasNirmsChange.yes = Yes, remove my NIRMS details
 hasNirmsChange.no = No, do not remove my NIRMS details
 hasNirmsChange.warning = Warning
 hasNirmsChange.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
+hasNirmsChange.p3.linkText = Go to homepage
 
 hasNiphlsChange.title = hasNiphlsChange
 hasNiphlsChange.h1 = Removing NIPHL details
@@ -479,7 +480,7 @@ hasNiphlsChange.p1 = If you remove your NIPHL details, the categorisation of goo
 hasNiphlsChange.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
 hasNiphlsChange.h2 = Are you sure you want to remove your NIPHL details?
 hasNiphlsChange.error.required = Confirm if you want to remove your NIPHL
-
+hasNiphlsChange.p3.linkText = Go to homepage
 hasNiphlsChange.yes = Yes, remove my NIPHL details
 hasNiphlsChange.no = No, do not remove my NIPHL details
 hasNiphlsChange.warning = Warning
