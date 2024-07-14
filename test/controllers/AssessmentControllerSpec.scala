@@ -49,6 +49,34 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
     "for a GET" - {
 
+      "must redirect" - {
+
+        "to CyaCategorisation if there's a category 2 assessment without possible exemptions" in {
+
+          val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
+          val categorisationInfo         =
+            CategorisationInfo("123", Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), 0)
+          val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+
+          val answers =
+            emptyUserAnswers
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+
+          val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, assessmentRoute)
+
+            val result = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+          }
+        }
+
+      }
+
       "must render the view when an assessment can be found for this id" - {
 
         "and has not previously been answered" in {

@@ -20,7 +20,7 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}") {
+@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false) {
 
     <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
     <p class="govuk-body">@messages("homepage.p1")</p>

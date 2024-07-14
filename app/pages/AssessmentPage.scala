@@ -22,7 +22,8 @@ import queries.RecordCategorisationsQuery
 
 import scala.util.{Failure, Success, Try}
 
-case class AssessmentPage(recordId: String, index: Int) extends QuestionPage[AssessmentAnswer] {
+case class AssessmentPage(recordId: String, index: Int, shouldRedirectToCya: Boolean = false)
+    extends QuestionPage[AssessmentAnswer] {
 
   override def path: JsPath = JsPath \ "assessments" \ recordId \ index
 
@@ -31,7 +32,7 @@ case class AssessmentPage(recordId: String, index: Int) extends QuestionPage[Ass
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if (value.contains(AssessmentAnswer.NoExemption)) {
+    if (value.contains(AssessmentAnswer.NoExemption) && !shouldRedirectToCya) {
       (for {
         recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
         categorisationInfo <- recordQuery.records.get(recordId)

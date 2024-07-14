@@ -151,16 +151,30 @@ trait GetRecordsResponseUtil {
   )
 
   val mockGoodsItemRecords: GetGoodsRecordResponse = GetGoodsRecordResponse(
-    recordId = "c89e1d92-129e-47c3-aa37-3569f21133aa",
-    traderRef = "BAN001001",
-    commodityCode = "11063010",
-    declarable = "Not requested",
-    goodsDescription = "Organic bananas",
-    countryOfOrigin = "EC",
-    createdDateTime = Instant.parse("2024-10-12T16:12:34Z"),
-    updatedDateTime = Instant.parse("2024-10-12T16:12:34Z"),
-    adviceStatus = "Not ready",
-    category = 1
+    "c89e1d92-129e-47c3-aa37-3569f21133aa",
+    "eori",
+    "actorId",
+    "BAN001001",
+    "11063010",
+    "Not ready",
+    "Organic bananas",
+    "EC",
+    1,
+    None,
+    None,
+    None,
+    Instant.now(),
+    None,
+    1,
+    true,
+    true,
+    None,
+    "Not requested",
+    None,
+    None,
+    None,
+    Instant.parse("2024-10-12T16:12:34Z"),
+    Instant.parse("2024-10-12T16:12:34Z")
   )
 
   val mockPagination: GoodsRecordsPagination = GoodsRecordsPagination(

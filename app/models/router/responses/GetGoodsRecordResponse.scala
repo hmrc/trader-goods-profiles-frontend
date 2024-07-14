@@ -16,58 +16,94 @@
 
 package models.router.responses
 
-import play.api.libs.json.{OWrites, Reads, __}
+import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 
 import java.time.Instant
 
-final case class GetGoodsRecordResponse(
+case class GetGoodsRecordResponse(
   recordId: String,
-  commodityCode: String,
-  countryOfOrigin: String,
+  eori: String,
+  actorId: String,
   traderRef: String,
-  goodsDescription: String,
-  declarable: String,
-  createdDateTime: Instant,
-  updatedDateTime: Instant,
+  comcode: String,
   adviceStatus: String,
-  category: Int
+  goodsDescription: String,
+  countryOfOrigin: String,
+  category: Int,
+  assessments: Option[Seq[Assessment]] = None,
+  supplementaryUnit: Option[Double] = None,
+  measurementUnit: Option[String],
+  comcodeEffectiveFromDate: Instant,
+  comcodeEffectiveToDate: Option[Instant] = None,
+  version: Int,
+  active: Boolean,
+  toReview: Boolean,
+  reviewReason: Option[String] = None,
+  declarable: String,
+  ukimsNumber: Option[String] = None,
+  nirmsNumber: Option[String] = None,
+  niphlNumber: Option[String] = None,
+  createdDateTime: Instant,
+  updatedDateTime: Instant
 )
 
 object GetGoodsRecordResponse {
+  implicit val reads: Reads[GetGoodsRecordResponse] = (json: JsValue) =>
+    JsSuccess(
+      GetGoodsRecordResponse(
+        (json \ "recordId").as[String],
+        (json \ "eori").as[String],
+        (json \ "actorId").as[String],
+        (json \ "traderRef").as[String],
+        (json \ "comcode").as[String],
+        (json \ "adviceStatus")
+          .as[String],
+        (json \ "goodsDescription").as[String],
+        (json \ "countryOfOrigin").as[String],
+        (json \ "category").as[Int],
+        (json \ "assessments").asOpt[Seq[Assessment]],
+        (json \ "supplementaryUnit").asOpt[Double],
+        (json \ "measurementUnit").asOpt[String],
+        (json \ "comcodeEffectiveFromDate").as[Instant],
+        (json \ "comcodeEffectiveToDate").asOpt[Instant],
+        (json \ "version").as[Int],
+        (json \ "active").as[Boolean],
+        (json \ "toReview").as[Boolean],
+        (json \ "reviewReason").asOpt[String],
+        (json \ "declarable").as[String],
+        (json \ "ukimsNumber").asOpt[String],
+        (json \ "nirmsNumber").asOpt[String],
+        (json \ "niphlNumber").asOpt[String],
+        (json \ "createdDateTime").as[Instant],
+        (json \ "updatedDateTime").as[Instant]
+      )
+    )
 
-  implicit val reads: Reads[GetGoodsRecordResponse] = {
-
-    import play.api.libs.functional.syntax._
-
-    (
-      (__ \ "recordId").read[String] and
-        (__ \ "comcode").read[String] and
-        (__ \ "countryOfOrigin").read[String] and
-        (__ \ "traderRef").read[String] and
-        (__ \ "goodsDescription").read[String] and
-        (__ \ "declarable").read[String] and
-        (__ \ "createdDateTime").read[Instant] and
-        (__ \ "updatedDateTime").read[Instant] and
-        (__ \ "adviceStatus").read[String] and
-        (__ \ "category").read[Int]
-    )(GetGoodsRecordResponse.apply _)
-  }
-
-  implicit val writes: OWrites[GetGoodsRecordResponse] = {
-
-    import play.api.libs.functional.syntax._
-
-    (
-      (__ \ "recordId").write[String] and
-        (__ \ "comcode").write[String] and
-        (__ \ "countryOfOrigin").write[String] and
-        (__ \ "traderRef").write[String] and
-        (__ \ "goodsDescription").write[String] and
-        (__ \ "declarable").write[String] and
-        (__ \ "createdDateTime").write[Instant] and
-        (__ \ "updatedDateTime").write[Instant] and
-        (__ \ "adviceStatus").write[String] and
-        (__ \ "category").write[Int]
-    )(unlift(GetGoodsRecordResponse.unapply))
-  }
+  implicit val writes: Writes[GetGoodsRecordResponse] = (record: GetGoodsRecordResponse) =>
+    Json.obj(
+      "recordId"                 -> record.recordId,
+      "eori"                     -> record.eori,
+      "actorId"                  -> record.actorId,
+      "traderRef"                -> record.traderRef,
+      "comcode"                  -> record.comcode,
+      "adviceStatus"             -> record.adviceStatus,
+      "goodsDescription"         -> record.goodsDescription,
+      "countryOfOrigin"          -> record.countryOfOrigin,
+      "category"                 -> record.category,
+      "assessments"              -> record.assessments,
+      "supplementaryUnit"        -> record.supplementaryUnit,
+      "measurementUnit"          -> record.measurementUnit,
+      "comcodeEffectiveFromDate" -> record.comcodeEffectiveFromDate,
+      "comcodeEffectiveToDate"   -> record.comcodeEffectiveToDate,
+      "version"                  -> record.version,
+      "active"                   -> record.active,
+      "toReview"                 -> record.toReview,
+      "reviewReason"             -> record.reviewReason,
+      "declarable"               -> record.declarable,
+      "ukimsNumber"              -> record.ukimsNumber,
+      "nirmsNumber"              -> record.nirmsNumber,
+      "niphlNumber"              -> record.niphlNumber,
+      "createdDateTime"          -> record.createdDateTime,
+      "updatedDateTime"          -> record.updatedDateTime
+    )
 }
