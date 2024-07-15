@@ -54,9 +54,9 @@ object AssessmentsSummary {
           key = KeyViewModel(AssessmentCyaKey(listItems).content),
           value = ValueViewModel(
             if(answer.toString == "true") {
-              "Yes"
+              messages("site.yes")
             } else {
-              "No"
+              messages("site.no")
             }
           ),
           actions = Seq(
