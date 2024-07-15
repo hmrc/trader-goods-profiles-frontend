@@ -20,7 +20,8 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import forms.AssessmentFormProvider
 import models.AssessmentAnswer.Exemption
 import models.ott.ExemptionType
-import models.{AssessmentAnswer, Mode, Standard}
+import models.{AssessmentAnswer, Mode}
+import logging.Logging
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -49,7 +50,8 @@ class AssessmentController @Inject() (
   view: AssessmentView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
@@ -91,12 +93,18 @@ Redirect(routes.CyaCategorisationController.onPageLoad(recordId))
              radioOptions = radioOptions
            )
 
-           Ok(view(preparedForm, mode, recordId, index, viewModel))
-         }
-       }
+        if (exemptions.isEmpty) {
+          Future.successful(
+            Redirect(
+              navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+            )
+          )
+        } else {
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+        }
       }
 
-      categorisationResult.recover { case _ =>
+      categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
