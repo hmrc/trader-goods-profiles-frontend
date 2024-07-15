@@ -94,6 +94,16 @@ final case class UserAnswers(
       Success(this)
     }
 
+  def setIfAllowed[A](page: QuestionPage[A], booleanPage: QuestionPage[Boolean], value: A)(implicit
+    writes: Writes[A],
+    reads: Reads[A]
+  ): Try[UserAnswers] =
+    get(booleanPage) match {
+      case Some(true)  => setIfEmpty(page, value)
+      case Some(false) => Success(this)
+      case _           => Failure(new Exception("Boolean page not set"))
+    }
+
   def remove[A](page: Settable[A]): Try[UserAnswers] = {
 
     val updatedData = data.removeObject(page.path) match {

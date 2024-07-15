@@ -24,7 +24,7 @@ import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.inject.bind
@@ -32,7 +32,6 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.UkimsNumberView
 
 import scala.concurrent.Future
@@ -46,6 +45,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
+
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
   "UkimsNumberController" - {
@@ -58,6 +59,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
@@ -83,6 +85,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
@@ -106,8 +109,6 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to the next page when valid data is submitted" in {
-
-        val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -172,7 +173,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to Home page for a GET if profile already exists" in {
+      "must redirect to Homepage for a GET if profile already exists" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
@@ -214,11 +215,22 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadUpdate.url
 
-      "must return OK and the correct view for a GET" in {
+      "must return OK and the correct view for a GET with all trader profile complete" in {
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -230,58 +242,38 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[UkimsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.UkimsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form.fill("1"), routes.UkimsNumberController.onSubmitUpdate)(
             request,
             messages(application)
           ).toString
         }
       }
 
-      "must populate the view correctly on a GET when the question has previously been answered" in {
+      "must redirect to Profile for a POST and submit data if value is different from original" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(UkimsNumberUpdatePage, "answer").success.value
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
-          .build()
+        val answer = "XIUKIM47699357400020231115081800"
 
-        running(application) {
-          val request = FakeRequest(GET, ukimsNumberRoute)
-
-          val view = application.injector.instanceOf[UkimsNumberView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("answer"), routes.UkimsNumberController.onSubmitUpdate)(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must redirect to the next page when valid data is submitted and update profile" in {
-
-        val mockSessionRepository = mock[SessionRepository]
+        val userAnswers = emptyUserAnswers
+          .set(UkimsNumberUpdatePage, answer)
+          .success
+          .value
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        val mockTraderProfileConnector = mock[TraderProfileConnector]
-
         when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
 
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
-
-        val answer = "XIUKIM47699357400020231115081800"
 
         running(application) {
           val request =
@@ -293,7 +285,48 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
           verify(mockTraderProfileConnector, times(1))
-            .submitTraderProfile(eqTo(TraderProfile(testEori, answer, None, None)), eqTo(testEori))(any())
+            .submitTraderProfile(eqTo(TraderProfile(testEori, answer, Some("2"), Some("3"))), eqTo(testEori))(any())
+        }
+      }
+
+      "must redirect to Profile for a POST and not submit data if value is the same as original" in {
+
+        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"))
+
+        val answer = "XIUKIM47699357400020231115081800"
+
+        val userAnswers = emptyUserAnswers
+          .set(UkimsNumberUpdatePage, answer)
+          .success
+          .value
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, ukimsNumberRoute)
+              .withFormUrlEncodedBody(("value", answer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+          verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
         }
       }
 
@@ -323,9 +356,6 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
           .build()
 
         running(application) {
@@ -353,26 +383,6 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
-
-      "must redirect to Journey Recovery for a POST if TraderProfile can't be built" in {
-
-        val application = applicationBuilder(Some(emptyUserAnswers)).build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, ukimsNumberRoute)
-              .withFormUrlEncodedBody(("value", "answer"))
-
-          val result = route(application, request).value
-
-          val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-        }
-      }
-
     }
-
   }
 }

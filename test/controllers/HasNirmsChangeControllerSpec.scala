@@ -18,30 +18,33 @@ package controllers
 
 import base.SpecBase
 import forms.HasNirmsChangeFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import models.TraderProfile
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HasNirmsChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.HasNirmsChangeView
-import base.TestConstants.userAnswersId
+import base.TestConstants.testEori
+import connectors.TraderProfileConnector
+import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 
 import scala.concurrent.Future
 
 class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasNirmsChangeFormProvider()
-  val form         = formProvider()
+  val formProvider                       = new HasNirmsChangeFormProvider()
+  private val form                       = formProvider()
+  private val mockSessionRepository      = mock[SessionRepository]
+  private val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-  lazy val hasNirmsChangeRoute = routes.HasNirmsChangeController.onPageLoad().url
+  private lazy val hasNirmsChangeRoute = routes.HasNirmsChangeController.onPageLoad().url
 
   "HasNirmsChange Controller" - {
 
@@ -57,38 +60,53 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HasNirmsChangeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form)(request, messages(application)).toString
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(HasNirmsChangePage, true).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, hasNirmsChangeRoute)
-
-        val view = application.injector.instanceOf[HasNirmsChangeView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[SessionRepository]
+    "must redirect to the next page when No submitted and not submit" in {
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val mockTraderProfileConnector = mock[TraderProfileConnector]
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, hasNirmsChangeRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+        verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
+      }
+    }
+
+    "must redirect to the next page when Yes submitted and submit" in {
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -102,6 +120,8 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+        verify(mockTraderProfileConnector, times(1))
+          .submitTraderProfile(eqTo(TraderProfile(testEori, "1", None, Some("3"))), eqTo(testEori))(any())
       }
     }
 
@@ -121,7 +141,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm)(request, messages(application)).toString
       }
     }
 

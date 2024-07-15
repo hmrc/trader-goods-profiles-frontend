@@ -19,7 +19,7 @@ package models
 import cats.data.EitherNec
 import cats.implicits._
 import pages._
-import play.api.libs.json.{Json, OFormat, OWrites, Reads, __}
+import play.api.libs.json.{Json, OFormat, Reads}
 
 final case class TraderProfile(
   actorId: String,
@@ -40,11 +40,50 @@ object TraderProfile {
       answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
 
-  def buildUpdate(answers: UserAnswers, eori: String): EitherNec[ValidationError, TraderProfile] =
+  def buildUkims(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
     (
       Right(eori),
       answers.getPageValue(UkimsNumberUpdatePage),
-      answers.getOptionalPageValue(answers, HasNiphlUpdatePage, NiphlNumberUpdatePage),
-      answers.getOptionalPageValue(answers, HasNirmsUpdatePage, NirmsNumberUpdatePage)
+      Right(traderProfile.nirmsNumber),
+      Right(traderProfile.niphlNumber)
     ).parMapN(TraderProfile.apply)
+
+  def buildNirms(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      Right(traderProfile.ukimsNumber),
+      getOptionallyRemovedPage(answers, HasNirmsUpdatePage, HasNirmsChangePage, NirmsNumberUpdatePage),
+      Right(traderProfile.niphlNumber)
+    ).parMapN(TraderProfile.apply)
+
+  def buildNiphl(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      Right(traderProfile.ukimsNumber),
+      Right(traderProfile.nirmsNumber),
+      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, HasNiphlChangePage, NiphlNumberUpdatePage)
+    ).parMapN(TraderProfile.apply)
+
+  def getOptionallyRemovedPage[A](
+    answers: UserAnswers,
+    questionPage: QuestionPage[Boolean],
+    removePage: QuestionPage[Boolean],
+    optionalPage: QuestionPage[A]
+  )(implicit rds: Reads[A]): EitherNec[ValidationError, Option[A]] =
+    answers.getPageValue(removePage) match {
+      case Right(true) => Right(None)
+      case _           => answers.getOptionalPageValue(answers, questionPage, optionalPage)
+    }
 }

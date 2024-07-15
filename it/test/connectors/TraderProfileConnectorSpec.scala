@@ -52,7 +52,7 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+        post(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(ok())
       )
@@ -65,7 +65,7 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
       wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+        post(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(serverError())
       )

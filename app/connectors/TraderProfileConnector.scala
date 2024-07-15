@@ -32,13 +32,13 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   ec: ExecutionContext
 ) {
 
-  private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
-  private def traderProfileUrl(eori: String) =
+  private val dataStoreBaseUrl: Service                                                                         = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private def traderProfileUrl(eori: String)                                                                    =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/profile"
-
+//TODO change to PUT
   def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .put(traderProfileUrl(eori))
+      .post(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
       .map(_ => Done)

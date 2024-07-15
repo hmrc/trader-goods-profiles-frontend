@@ -24,10 +24,10 @@ import forms.UkimsNumberFormProvider
 import javax.inject.Inject
 import models.{Mode, NormalMode, TraderProfile, UserAnswers, ValidationError}
 import navigation.Navigator
-import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, UkimsNumberPage, UkimsNumberUpdatePage}
+import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -52,7 +52,8 @@ class UkimsNumberController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
+  private val form        = formProvider()
+  private val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
@@ -81,82 +82,13 @@ class UkimsNumberController @Inject() (
 
   def onPageLoadUpdate: Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-        if (traderProfile.niphlNumber.isEmpty) {
-          if (traderProfile.nirmsNumber.isEmpty) {
-            setMandatory(request.userAnswers, traderProfile).map(answers => displayView(answers))
-          } else {
-            setMandatoryAndNirms(request.userAnswers, traderProfile).map(answers => displayView(answers))
-          }
-        } else if (traderProfile.nirmsNumber.isEmpty) {
-          setMandatoryAndNiphl(request.userAnswers, traderProfile).map(answers => displayView(answers))
-        } else {
-          setAll(request.userAnswers, traderProfile).map(answers => displayView(answers))
-        }
-      }
+      for {
+        traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+        updatedAnswers <-
+          Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
+        _              <- sessionRepository.set(updatedAnswers)
+      } yield Ok(view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate))
     }
-
-  def setAll(userAnswers: UserAnswers, traderProfile: TraderProfile): Future[UserAnswers] =
-    for {
-      updatedAnswersWithUkims    <-
-        Future.fromTry(userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-      updatedAnswersWithHasNirms <-
-        Future.fromTry(updatedAnswersWithUkims.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
-      updatedAnswersWithNirms    <-
-        Future.fromTry(updatedAnswersWithHasNirms.set(NirmsNumberUpdatePage, traderProfile.nirmsNumber.getOrElse("")))
-      updatedAnswersWithHasNiphl <-
-        Future.fromTry(updatedAnswersWithNirms.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
-      updatedAnswers             <-
-        Future.fromTry(updatedAnswersWithHasNiphl.set(NiphlNumberUpdatePage, traderProfile.niphlNumber.getOrElse("")))
-      _                          <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def setMandatory(userAnswers: UserAnswers, traderProfile: TraderProfile): Future[UserAnswers] =
-    for {
-      updatedAnswersWithUkims    <-
-        Future.fromTry(userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-      updatedAnswersWithHasNirms <-
-        Future.fromTry(updatedAnswersWithUkims.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
-      updatedAnswers             <-
-        Future.fromTry(updatedAnswersWithHasNirms.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
-      _                          <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def setMandatoryAndNirms(userAnswers: UserAnswers, traderProfile: TraderProfile): Future[UserAnswers] =
-    for {
-      updatedAnswersWithUkims    <-
-        Future.fromTry(userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-      updatedAnswersWithHasNirms <-
-        Future.fromTry(updatedAnswersWithUkims.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
-      updatedAnswersWithNirms    <-
-        Future.fromTry(updatedAnswersWithHasNirms.set(NirmsNumberUpdatePage, traderProfile.nirmsNumber.getOrElse("")))
-      updatedAnswers             <-
-        Future.fromTry(updatedAnswersWithNirms.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
-      _                          <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def setMandatoryAndNiphl(userAnswers: UserAnswers, traderProfile: TraderProfile): Future[UserAnswers] =
-    for {
-      updatedAnswersWithUkims    <-
-        Future.fromTry(userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-      updatedAnswersWithHasNirms <-
-        Future.fromTry(updatedAnswersWithUkims.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
-      updatedAnswersWithHasNiphl <-
-        Future.fromTry(updatedAnswersWithHasNirms.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
-      updatedAnswers             <-
-        Future.fromTry(updatedAnswersWithHasNiphl.set(NiphlNumberUpdatePage, traderProfile.niphlNumber.getOrElse("")))
-      _                          <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def displayView(userAnswers: UserAnswers)(implicit request: Request[_]): Result = {
-    val preparedForm = userAnswers.get(UkimsNumberUpdatePage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
-
-    Ok(view(preparedForm, routes.UkimsNumberController.onSubmitUpdate))
-
-  }
 
   def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     form
@@ -168,36 +100,37 @@ class UkimsNumberController @Inject() (
           request.userAnswers.set(UkimsNumberUpdatePage, value) match {
             case Success(answers) =>
               sessionRepository.set(answers).flatMap { _ =>
-                TraderProfile.buildUpdate(answers, request.eori) match {
-                  case Right(model) =>
-                    for {
-                      _                             <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                      updatedAnswersRemovedUkims    <-
-                        Future.fromTry(answers.remove(UkimsNumberUpdatePage))
-                      updatedAnswersRemovedHasNirms <-
-                        Future.fromTry(updatedAnswersRemovedUkims.remove(HasNirmsUpdatePage))
-                      updatedAnswersRemovedNirms    <-
-                        Future.fromTry(updatedAnswersRemovedHasNirms.remove(NirmsNumberUpdatePage))
-                      updatedAnswersRemovedHasNiphl <-
-                        Future.fromTry(updatedAnswersRemovedNirms.remove(HasNiphlUpdatePage))
-                      updatedAnswers                <-
-                        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(NiphlNumberUpdatePage))
-                      _                             <- sessionRepository.set(updatedAnswers)
-                    } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
-                  case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+                  if (traderProfile.ukimsNumber == value) {
+                    cleanseUkimsData(answers)
+                      .map(_ => Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers)))
+                  } else {
+                    TraderProfile.buildUkims(answers, request.eori, traderProfile) match {
+                      case Right(model) =>
+                        for {
+                          _              <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                          updatedAnswers <- cleanseUkimsData(answers)
+                        } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, updatedAnswers))
+                      case Left(errors) => logErrorsAndContinue(errors, answers)
+                    }
+                  }
                 }
               }
           }
       )
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+  def cleanseUkimsData(answers: UserAnswers): Future[UserAnswers] =
+    for {
+      updatedAnswers <-
+        Future.fromTry(answers.remove(UkimsNumberUpdatePage))
+      _              <- sessionRepository.set(updatedAnswers)
+    } yield updatedAnswers
+
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], answers: UserAnswers): Future[Result] = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
-
     logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    cleanseUkimsData(answers).map(_ => Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
   }
-
 }

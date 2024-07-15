@@ -181,11 +181,11 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.NirmsNumberController.onPageLoadUpdate
           }
 
-          //TODO
-          "to RemoveNirmsPage when answer is No" in {
+          "to HasNirmsChangePage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
-            navigator.nextPage(HasNirmsUpdatePage, NormalMode, answers) mustBe routes.HomePageController.onPageLoad()
+            navigator.nextPage(HasNirmsUpdatePage, NormalMode, answers) mustBe routes.HasNirmsChangeController
+              .onPageLoad()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -193,6 +193,40 @@ class NavigatorSpec extends SpecBase {
 
             navigator.nextPage(
               HasNirmsUpdatePage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+        }
+
+        "must go from HasNirmsChangePage" - {
+
+          "to ProfilePage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNirmsChangePage, true).success.value
+            navigator.nextPage(
+              HasNirmsChangePage,
+              NormalMode,
+              answers
+            ) mustBe routes.ProfileController.onPageLoad
+          }
+
+          "to HasNirmsUpdatePage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNirmsChangePage, false).success.value
+            navigator.nextPage(
+              HasNirmsChangePage,
+              NormalMode,
+              answers
+            ) mustBe routes.HasNirmsController.onPageLoadUpdate
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNirmsChangePage,
               NormalMode,
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController
@@ -218,11 +252,11 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.NiphlNumberController.onPageLoadUpdate
           }
 
-          //TODO
-          "to RemoveNiphlPage when answer is No" in {
+          "to HasNiphlChangePage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, false).success.value
-            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.HomePageController.onPageLoad()
+            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.HasNiphlChangeController
+              .onPageLoad()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -230,6 +264,40 @@ class NavigatorSpec extends SpecBase {
 
             navigator.nextPage(
               HasNiphlUpdatePage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+        }
+
+        "must go from HasNiphlChangePage" - {
+
+          "to ProfilePage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNiphlChangePage, true).success.value
+            navigator.nextPage(
+              HasNiphlChangePage,
+              NormalMode,
+              answers
+            ) mustBe routes.ProfileController.onPageLoad
+          }
+
+          "to HasNiphlUpdatePage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNiphlChangePage, false).success.value
+            navigator.nextPage(
+              HasNiphlChangePage,
+              NormalMode,
+              answers
+            ) mustBe routes.HasNiphlController.onPageLoadUpdate
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNiphlChangePage,
               NormalMode,
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController

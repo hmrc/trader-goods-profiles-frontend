@@ -40,8 +40,10 @@ class Navigator @Inject() () {
     case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
+    case HasNirmsChangePage                        => navigateFromHasNirmsChange
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
+    case HasNiphlChangePage                        => navigateFromHasNiphlChange
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
@@ -174,8 +176,18 @@ class Navigator @Inject() () {
       .get(HasNirmsUpdatePage)
       .map {
         case true  => routes.NirmsNumberController.onPageLoadUpdate
-        //TODO RemoveNirmsPage
-        case false => routes.HomePageController.onPageLoad()
+        case false => routes.HasNirmsChangeController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasNirmsChange(answers: UserAnswers): Call = {
+    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+    answers
+      .get(HasNirmsChangePage)
+      .map {
+        case true  => routes.ProfileController.onPageLoad()
+        case false => routes.HasNirmsController.onPageLoadUpdate
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
@@ -195,8 +207,18 @@ class Navigator @Inject() () {
       .get(HasNiphlUpdatePage)
       .map {
         case true  => routes.NiphlNumberController.onPageLoadUpdate
-        //TODO RemoveNiphlPage
-        case false => routes.HomePageController.onPageLoad()
+        case false => routes.HasNiphlChangeController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasNiphlChange(answers: UserAnswers): Call = {
+    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+    answers
+      .get(HasNiphlChangePage)
+      .map {
+        case true  => routes.ProfileController.onPageLoad()
+        case false => routes.HasNiphlController.onPageLoadUpdate
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

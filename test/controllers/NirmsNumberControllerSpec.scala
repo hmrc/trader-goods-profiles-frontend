@@ -24,7 +24,7 @@ import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.inject.bind
@@ -45,6 +45,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -103,8 +105,6 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to the next page when valid data is submitted" in {
-
-        val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -169,7 +169,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to Home page for a GET if profile already exists" in {
+      "must redirect to Homepage for a GET if profile already exists" in {
 
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
@@ -210,11 +210,56 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate.url
 
-      "must return OK and the correct view for a GET" in {
+      "must return OK and the correct view for a GET when HasNirms is not false when there is a nirms number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("2"), routes.NirmsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must return OK and the correct view for a GET when HasNirms is not false when there isn't a nirms number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -233,49 +278,51 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must populate the view correctly on a GET when the question has previously been answered" in {
+      "must redirect to Journey Recovery for a GET when HasNirms is false" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberUpdatePage, "answer").success.value
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
-          .build()
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
+            .build()
 
         running(application) {
           val request = FakeRequest(GET, nirmsNumberRoute)
 
-          val view = application.injector.instanceOf[NirmsNumberView]
-
           val result = route(application, request).value
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            form.fill("answer"),
-            routes.NirmsNumberController.onSubmitUpdate
-          )(request, messages(application)).toString
+          val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
         }
       }
 
-      "must redirect to the next page when valid data is submitted and update profile" in {
+      "must redirect to Profile for a POST and submit data if value is different from original" in {
+        val answer = "RMS-GB-123456"
 
-        val mockSessionRepository = mock[SessionRepository]
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        val userAnswers = emptyUserAnswers
+          .set(HasNirmsUpdatePage, true)
+          .success
+          .value
+          .set(NirmsNumberUpdatePage, answer)
+          .success
+          .value
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
 
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
+          applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
-
-        val answer = "RMS-GB-123456"
 
         running(application) {
           val request =
@@ -287,7 +334,48 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
           verify(mockTraderProfileConnector, times(1))
-            .submitTraderProfile(eqTo(TraderProfile(testEori, "hello", None, Some(answer))), eqTo(testEori))(any())
+            .submitTraderProfile(eqTo(TraderProfile(testEori, "1", Some(answer), Some("3"))), eqTo(testEori))(any())
+        }
+      }
+
+      "must redirect to Profile for a POST and not submit data if value is the same as original" in {
+        val answer = "RMS-GB-123456"
+
+        val traderProfile = TraderProfile(testEori, "1", Some(answer), Some("3"))
+
+        val userAnswers = emptyUserAnswers
+          .set(HasNirmsUpdatePage, true)
+          .success
+          .value
+          .set(NirmsNumberUpdatePage, answer)
+          .success
+          .value
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, nirmsNumberRoute)
+              .withFormUrlEncodedBody(("value", answer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+          verify(mockTraderProfileConnector, never())
+            .submitTraderProfile(any(), any())(any())
         }
       }
 
@@ -317,9 +405,6 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
           .build()
 
         running(application) {
@@ -349,25 +434,36 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a POST if TraderProfile can't be built" in {
+        val answer = "RMS-GB-123456"
 
-        val mockSessionRepository = mock[SessionRepository]
+        val userAnswers = emptyUserAnswers
+          .set(HasNirmsUpdatePage, false)
+          .success
+          .value
+          .set(NirmsNumberUpdatePage, answer)
+          .success
+          .value
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        val application = applicationBuilder(Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
         running(application) {
           val request =
             FakeRequest(POST, nirmsNumberRoute)
-              .withFormUrlEncodedBody(("value", "answer"))
+              .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
 
-          val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+          val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url

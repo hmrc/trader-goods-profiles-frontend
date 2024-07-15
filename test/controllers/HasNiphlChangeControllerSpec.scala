@@ -17,91 +17,111 @@
 package controllers
 
 import base.SpecBase
-import forms.HasNiphlsChangeFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import forms.HasNiphlChangeFormProvider
+import models.TraderProfile
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HasNiphlsChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.HasNiphlsChangeView
-import base.TestConstants.userAnswersId
+import views.html.HasNiphlChangeView
+import base.TestConstants.testEori
+import connectors.TraderProfileConnector
+import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 
 import scala.concurrent.Future
 
-class HasNiphlsChangeControllerSpec extends SpecBase with MockitoSugar {
+class HasNiphlChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasNiphlsChangeFormProvider()
-  val form         = formProvider()
+  val formProvider                       = new HasNiphlChangeFormProvider()
+  private val form                       = formProvider()
+  private val mockSessionRepository      = mock[SessionRepository]
+  private val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-  lazy val hasNiphlsChangeRoute = routes.HasNiphlsChangeController.onPageLoad().url
+  private lazy val hasNiphlChangeRoute = routes.HasNiphlChangeController.onPageLoad().url
 
-  "HasNiphlsChange Controller" - {
+  "HasNiphlChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasNiphlsChangeRoute)
+        val request = FakeRequest(GET, hasNiphlChangeRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[HasNiphlsChangeView]
+        val view = application.injector.instanceOf[HasNiphlChangeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form)(request, messages(application)).toString
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(HasNiphlsChangePage, true).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, hasNiphlsChangeRoute)
-
-        val view = application.injector.instanceOf[HasNiphlsChangeView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[SessionRepository]
+    "must redirect to the next page when No submitted and not submit" in {
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val mockTraderProfileConnector = mock[TraderProfileConnector]
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNiphlsChangeRoute)
+          FakeRequest(POST, hasNiphlChangeRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+        verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
+      }
+    }
+
+    "must redirect to the next page when Yes submitted and submit" in {
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, hasNiphlChangeRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+        verify(mockTraderProfileConnector, times(1))
+          .submitTraderProfile(eqTo(TraderProfile(testEori, "1", Some("2"), None)), eqTo(testEori))(any())
       }
     }
 
@@ -111,17 +131,17 @@ class HasNiphlsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNiphlsChangeRoute)
+          FakeRequest(POST, hasNiphlChangeRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[HasNiphlsChangeView]
+        val view = application.injector.instanceOf[HasNiphlChangeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm)(request, messages(application)).toString
       }
     }
 
@@ -130,7 +150,7 @@ class HasNiphlsChangeControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasNiphlsChangeRoute)
+        val request = FakeRequest(GET, hasNiphlChangeRoute)
 
         val result = route(application, request).value
 
@@ -145,7 +165,7 @@ class HasNiphlsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNiphlsChangeRoute)
+          FakeRequest(POST, hasNiphlChangeRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

@@ -165,68 +165,84 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
   }
 
-  ".buildUpdate" - {
+  ".buildUkims" - {
 
-    "must return a TraderProfile when all mandatory questions are answered" - {
+    val traderProfile = TraderProfile(testEori, "1", None, None)
+
+    "must return a TraderProfile when all ukims data is answered" in {
+
+      val answers =
+        UserAnswers(userAnswersId)
+          .set(UkimsNumberUpdatePage, "test")
+          .success
+          .value
+
+      val result = TraderProfile.buildUkims(answers, testEori, traderProfile)
+
+      result mustEqual Right(TraderProfile(testEori, "test", None, None))
+    }
+
+    "must return errors when mandatory answers are missing" in {
+
+      val answers = UserAnswers(userAnswersId)
+
+      val result = TraderProfile.buildUkims(answers, testEori, traderProfile)
+
+      inside(result) { case Left(errors) =>
+        errors.toChain.toList must contain theSameElementsAs Seq(
+          PageMissing(UkimsNumberUpdatePage)
+        )
+      }
+    }
+  }
+
+  ".buildNirms" - {
+
+    val traderProfile = TraderProfile(testEori, "1", None, None)
+
+    "must return a TraderProfile when all nirms data is answered" - {
 
       "and all optional data is present" in {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(UkimsNumberUpdatePage, "1")
-            .success
-            .value
             .set(HasNirmsUpdatePage, true)
             .success
             .value
             .set(NirmsNumberUpdatePage, "2")
             .success
             .value
-            .set(HasNiphlUpdatePage, true)
-            .success
-            .value
-            .set(NiphlNumberUpdatePage, "3")
-            .success
-            .value
 
-        val result = TraderProfile.buildUpdate(answers, testEori)
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
 
-        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3")))
+        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), None))
       }
 
       "and all optional data is missing" in {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(UkimsNumberUpdatePage, "1")
-            .success
-            .value
             .set(HasNirmsUpdatePage, false)
             .success
             .value
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
 
-        val result = TraderProfile.buildUpdate(answers, testEori)
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
 
-        result mustEqual Right(TraderProfile(testEori, "1", None, None))
+        result mustEqual Right(traderProfile)
       }
     }
 
     "must return errors" - {
 
-      "when all mandatory answers are missing" in {
+      "when mandatory answers are missing" in {
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = TraderProfile.buildUpdate(answers, testEori)
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(UkimsNumberUpdatePage),
-            PageMissing(HasNirmsUpdatePage),
-            PageMissing(HasNiphlUpdatePage)
+            PageMissing(HasNirmsUpdatePage)
           )
         }
       }
@@ -235,20 +251,87 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(UkimsNumberUpdatePage, "1")
-            .success
-            .value
             .set(HasNirmsUpdatePage, true)
             .success
             .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+        }
+      }
+
+      "when the user said they don't have optional data but it is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "2")
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(NirmsNumberUpdatePage)
+          )
+        }
+      }
+    }
+  }
+
+  ".buildNiphl" - {
+
+    val traderProfile = TraderProfile(testEori, "1", None, None)
+
+    "must return a TraderProfile when all niphl data is answered" - {
+
+      "and all optional data is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "3")
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        result mustEqual Right(TraderProfile(testEori, "1", None, Some("3")))
+      }
+
+      "and all optional data is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, false)
             .success
             .value
 
-        val result = TraderProfile.buildUpdate(answers, testEori)
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        result mustEqual Right(traderProfile)
+      }
+    }
+
+    "must return errors" - {
+
+      "when mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNiphlUpdatePage)
+          )
         }
       }
 
@@ -256,17 +339,11 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(UkimsNumberUpdatePage, "1")
-            .success
-            .value
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
             .set(HasNiphlUpdatePage, true)
             .success
             .value
 
-        val result = TraderProfile.buildUpdate(answers, testEori)
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(NiphlNumberUpdatePage)
@@ -277,15 +354,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(UkimsNumberUpdatePage, "1")
-            .success
-            .value
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "2")
-            .success
-            .value
             .set(HasNiphlUpdatePage, false)
             .success
             .value
@@ -293,15 +361,15 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.buildUpdate(answers, testEori)
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(NirmsNumberUpdatePage),
             UnexpectedPage(NiphlNumberUpdatePage)
           )
         }
       }
     }
   }
+
 }

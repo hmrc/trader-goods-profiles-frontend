@@ -16,13 +16,14 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.HasNirmsFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.{Mode, NormalMode, UserAnswers}
 import navigation.Navigator
-import pages.{HasNirmsPage, HasNirmsUpdatePage}
+import pages.{HasNirmsChangePage, HasNirmsPage, HasNirmsUpdatePage, NirmsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -39,6 +40,7 @@ class HasNirmsController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
+  traderProfileConnector: TraderProfileConnector,
   formProvider: HasNirmsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasNirmsView
@@ -74,27 +76,46 @@ class HasNirmsController @Inject() (
     }
 
   def onPageLoadUpdate: Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasNirmsUpdatePage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, routes.HasNirmsController.onSubmitUpdate))
-    }
-
-  def onSubmitUpdate: Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitUpdate))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, NormalMode, updatedAnswers))
-        )
+      request.userAnswers.get(HasNirmsUpdatePage) match {
+        case None        =>
+          for {
+            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            updatedAnswers <-
+              Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Ok(view(form.fill(traderProfile.nirmsNumber.isDefined), routes.HasNirmsController.onSubmitUpdate))
+        case Some(value) => Future.successful(Ok(view(form.fill(value), routes.HasNirmsController.onSubmitUpdate)))
+      }
     }
+
+  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitUpdate))),
+        value =>
+          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            if (traderProfile.nirmsNumber.isDefined == value) {
+              cleanseNirmsData(request.userAnswers).map(_ => Redirect(routes.ProfileController.onPageLoad()))
+            } else {
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, NormalMode, updatedAnswers))
+            }
+          }
+      )
+  }
+
+  def cleanseNirmsData(answers: UserAnswers): Future[UserAnswers] =
+    for {
+      updatedAnswersRemovedHasNirms       <-
+        Future.fromTry(answers.remove(HasNirmsUpdatePage))
+      updatedAnswersRemovedHasNirmsChange <-
+        Future.fromTry(updatedAnswersRemovedHasNirms.remove(HasNirmsChangePage))
+      updatedAnswers                      <-
+        Future.fromTry(updatedAnswersRemovedHasNirmsChange.remove(NirmsNumberUpdatePage))
+      _                                   <- sessionRepository.set(updatedAnswers)
+    } yield updatedAnswers
 }
