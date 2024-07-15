@@ -24,7 +24,7 @@ import models.requests.DataRequest
 import javax.inject.Inject
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
@@ -142,11 +142,16 @@ class CountryOfOriginController @Inject() (
                     view(formWithErrors, routes.CountryOfOriginController.onSubmitUpdate(mode, recordId), countries)
                   )
                 ),
-              value =>
+              value => {
+                val oldValue = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).getOrElse("")
+
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
+                  .addingToSession("changesMade" -> (oldValue != value).toString)
+                  .addingToSession("changedPage" -> "country of origin")
+              }
             )
         case None            => throw new Exception("Countries should have been populated on page load.")
       }

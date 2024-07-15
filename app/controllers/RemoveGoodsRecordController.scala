@@ -55,6 +55,7 @@ class RemoveGoodsRecordController @Inject() (
         .getRecord(request.eori, recordId)
         .map { _ =>
           Ok(view(form, recordId, location))
+            .removingFromSession("changesMade", "changedPage")
         }
     }
 

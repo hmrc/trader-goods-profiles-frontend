@@ -40,7 +40,7 @@ class AdviceStartController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(recordId))
+      Ok(view(recordId)).removingFromSession("changesMade", "changedPage")
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {

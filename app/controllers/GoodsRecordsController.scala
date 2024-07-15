@@ -83,9 +83,10 @@ class GoodsRecordsController @Inject() (
                     ),
                     page
                   )
-                )
+                ).removingFromSession("changesMade", "changedPages")
               } else {
                 Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
+                  .removingFromSession("changesMade", "changedPages")
               }
         }
       }
@@ -123,7 +124,7 @@ class GoodsRecordsController @Inject() (
                   getPagination(goodsRecordResponse.pagination.currentPage, goodsRecordResponse.pagination.totalPages),
                   page
                 )
-              )
+              ).removingFromSession("changesMade", "changedPage")
             }
         )
   }

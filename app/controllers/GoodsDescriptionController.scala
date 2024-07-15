@@ -18,10 +18,11 @@ package controllers
 
 import controllers.actions._
 import forms.GoodsDescriptionFormProvider
+
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -92,11 +93,15 @@ class GoodsDescriptionController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, submitAction))),
-          value =>
+          value => {
+            val oldValue = request.userAnswers.get(GoodsDescriptionUpdatePage(recordId)).getOrElse("")
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsDescriptionUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(GoodsDescriptionUpdatePage(recordId), mode, updatedAnswers))
+              .addingToSession("changesMade" -> (oldValue != value).toString)
+              .addingToSession("changedPage" -> "goods description")
+          }
         )
     }
 }

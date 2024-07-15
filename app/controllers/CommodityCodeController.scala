@@ -22,7 +22,7 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -107,14 +107,20 @@ class CommodityCodeController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
-            (for {
-              commodity               <-
-                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
-              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
-              updatedAnswersWithQuery <-
-                Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))
-              _                       <- sessionRepository.set(updatedAnswersWithQuery)
-            } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery)))
+            {
+              val oldValue = request.userAnswers.get(CommodityCodeUpdatePage(recordId)).getOrElse("")
+              for {
+                commodity               <-
+                  ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
+                updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
+                updatedAnswersWithQuery <-
+                  Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))
+                _                       <- sessionRepository.set(updatedAnswersWithQuery)
+              } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
+                .addingToSession("changesMade" -> (oldValue != value).toString)
+                .addingToSession("changedPage" -> "commodity code")
+
+            }
               .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 val formWithApiErrors =
                   form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))

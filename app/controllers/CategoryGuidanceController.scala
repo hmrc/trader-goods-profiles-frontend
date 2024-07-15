@@ -66,11 +66,12 @@ class CategoryGuidanceController @Inject() (
                     .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
+                        .removingFromSession("changesMade", "changedPage")
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
             case Some(NoRedirectScenario)                            =>
-              Future.successful(Ok(view(recordId)))
+              Future.successful(Ok(view(recordId)).removingFromSession("changesMade", "changedPage"))
           }
         }
         .recover { e =>

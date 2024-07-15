@@ -484,6 +484,6 @@ hasNiphlsChange.warning = Warning
 hasNiphlsChange.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
 
 sucessBanner.title = Success
-sucessBanner.heading = You have changed the trader reference and goods description
+sucessBanner.heading = You have changed the {0}
 sucessBanner.p1 = Contact example@department.gov.uk if you think there’s a problem.
 sucessBanner.email = example@department.gov.uk

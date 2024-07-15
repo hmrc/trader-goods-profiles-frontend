@@ -23,9 +23,9 @@
 )
 
 @(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String)(implicit request: Request[_], messages: Messages)
-    @bannerContentForUpdate() = {
+    @bannerContentForUpdate(page: String) = {
         <h3 class="govuk-notification-banner__heading">
-        @messages("sucessBanner.heading")
+            @messages("sucessBanner.heading", page)
         </h3>
         <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> if you think there’s a problem.</p>
     }
@@ -35,16 +35,14 @@
 
 
     @if(changesMade) {
-      @if(changedPage.equalsIgnoreCase("traderReference")){
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("sucessBanner.title")),
-            content = HtmlContent(bannerContentForUpdate()),
+            content = HtmlContent(bannerContentForUpdate(changedPage)),
             bannerType = Some("success"),
             role=Some("alert"))
         )
-    }}
-    <p>Changes made: @changesMade</p>
-    <p>Changed page: @changedPage</p>
+    }
+
 
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
 
