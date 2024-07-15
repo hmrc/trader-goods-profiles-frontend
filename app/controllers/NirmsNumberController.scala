@@ -142,6 +142,7 @@ class NirmsNumberController @Inject() (
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
+    val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
     logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

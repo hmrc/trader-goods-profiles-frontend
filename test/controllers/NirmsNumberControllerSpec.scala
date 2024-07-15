@@ -463,7 +463,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+          val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url

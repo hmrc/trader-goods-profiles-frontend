@@ -51,8 +51,7 @@ class HasNiphlChangeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form        = formProvider()
-  private val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+  private val form = formProvider()
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     Ok(view(form))
@@ -88,6 +87,7 @@ class HasNiphlChangeController @Inject() (
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
+    val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
     logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
