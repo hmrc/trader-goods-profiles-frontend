@@ -129,6 +129,37 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
+    "should store category assessments if they are already present for a different commodity code, then return successful updated answers" in {
+      val initialRecordCategorisations =
+        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode234", Seq(), Some("some measure unit"), 0)))
+
+      val expectedRecordCategorisations =
+        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
+
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, initialRecordCategorisations)
+        .success
+        .value
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
+
+      withClue("Should call the router to get the goods record") {
+        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
+      }
+
+      withClue("Should call OTT to get categorisation  newinfo") {
+        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())
+      }
+
+      withClue("Should call session repository to update user answers") {
+        verify(mockSessionRepository, times(1)).set(any())
+      }
+    }
+
     "should not call for category assessments if they are already present, then return successful updated answers" in {
       val expectedRecordCategorisations =
         RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))

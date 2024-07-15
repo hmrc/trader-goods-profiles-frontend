@@ -68,14 +68,14 @@ class AssessmentController @Inject() (
 
        if (isNiphls) {
           // We Niphl'ing
-            Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
+            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
           } else {
 
          if (categorisationInfo.categoryAssessments(index).category == 2 && categorisationInfo.categoryAssessments(index).exemptions.isEmpty &&
            categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 1 && assessment.exemptions.exists(exemption => exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")) && categorisationInfo.categoryAssessments.count(ass => ass.category == 2) == 1 && categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 2 && assessment.exemptions.isEmpty)
          ) {
            //TODO propa
-Redirect(routes.CyaCategorisationController.onPageLoad(recordId))
+           Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
          } else {
 
 
@@ -93,16 +93,17 @@ Redirect(routes.CyaCategorisationController.onPageLoad(recordId))
              radioOptions = radioOptions
            )
 
-        if (exemptions.isEmpty) {
-          Future.successful(
-            Redirect(
-              navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
-            )
-          )
-        } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
-        }
-      }
+           if (exemptions.isEmpty) {
+             Future.successful(
+               Redirect(
+                 navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+               )
+             )
+           } else {
+             Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+           }
+         }
+       }
 
       categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())
