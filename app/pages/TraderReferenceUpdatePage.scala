@@ -22,5 +22,5 @@ case class TraderReferenceUpdatePage(recordId: String) extends QuestionPage[Stri
 
   override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = "traderReference"
+  override def toString: String = "traderReferenceUpdate"
 }

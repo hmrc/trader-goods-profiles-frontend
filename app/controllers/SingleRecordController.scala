@@ -59,7 +59,7 @@ class SingleRecordController @Inject() (
           )
         updatedAnswersWithAll              <-
           Future.fromTry(
-            updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.commodityCode)
+            updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
         _                                  <- sessionRepository.set(updatedAnswersWithAll)
       } yield {
@@ -68,7 +68,7 @@ class SingleRecordController @Inject() (
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
             GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
             CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
-            CommodityCodeSummary.row(record.commodityCode, recordId, NormalMode),
+            CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
             StatusSummary.row(record.declarable)
           )
         )

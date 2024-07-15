@@ -22,5 +22,5 @@ case class CountryOfOriginUpdatePage(recordId: String) extends QuestionPage[Stri
 
   override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = "countryOfOrigin"
+  override def toString: String = "countryOfOriginUpdate"
 }
