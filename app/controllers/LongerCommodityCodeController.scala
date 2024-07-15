@@ -21,6 +21,7 @@ import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
 import models.Mode
 import models.helper.UpdateRecordJourney
+import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import navigation.Navigator
 import pages.LongerCommodityCodePage
@@ -55,9 +56,9 @@ class LongerCommodityCodeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val categorisationInfoOpt = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
+      val categorisationInfoOpt: Option[CategorisationInfo] = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
 
-      val originalComcodeOpt = categorisationInfoOpt.map(_.originalCommodityCode)
+      val originalComcodeOpt = categorisationInfoOpt.flatMap(_.originalCommodityCode)
       val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
 
       val answerToFillFormWith = for {
@@ -84,7 +85,7 @@ class LongerCommodityCodeController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationInfoOpt = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
 
-      val originalComcodeOpt = categorisationInfoOpt.map(_.originalCommodityCode)
+      val originalComcodeOpt = categorisationInfoOpt.flatMap(_.originalCommodityCode)
       val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
 
       originalComcodeOpt match {

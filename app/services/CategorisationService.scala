@@ -43,7 +43,7 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     val originalCommodityCodeOpt =
-      recordCategorisations.records.get(recordId).map(_.originalCommodityCode)
+      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
 
     recordCategorisations.records.get(recordId) match {
       case Some(_) =>
@@ -60,7 +60,7 @@ class CategorisationService @Inject() (
                                       LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
           originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.commodityCode)
-          categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, originalCommodityCode) match {
+          categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
                                       case Some(categorisationInfo) => Future.successful(categorisationInfo)
                                       case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
                                     }
@@ -87,7 +87,7 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     val originalCommodityCodeOpt =
-      recordCategorisations.records.get(recordId).map(_.originalCommodityCode)
+      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
 
     for {
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
@@ -101,7 +101,7 @@ class CategorisationService @Inject() (
                                   LocalDate.now() //TODO where does DateOfTrade come from??
                                 )
       originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.commodityCode)
-      categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, originalCommodityCode) match {
+      categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
                                   case Some(categorisationInfo) => Future.successful(categorisationInfo)
                                   case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
                                 }

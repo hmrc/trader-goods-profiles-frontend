@@ -25,16 +25,21 @@ final case class CategorisationInfo(
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String],
   descendantCount: Int,
-  originalCommodityCode: String = ""
+  originalCommodityCode: Option[String] = None
 ) {
   private val padlength = 10
 
-  def latestDoesNotMatchOriginal: Boolean = commodityCode != originalCommodityCode.padTo[Char](padlength, '0').mkString
+  def latestDoesNotMatchOriginal: Boolean = originalCommodityCode match {
+    case Some(originalComcode) =>
+      commodityCode != originalComcode.padTo[Char](padlength, '0').mkString
+    case None =>
+      false
+  }
 }
 
 object CategorisationInfo {
 
-  def build(ott: OttResponse, originalCommodityCode: String = ""): Option[CategorisationInfo] =
+  def build(ott: OttResponse, originalCommodityCode: Option[String] = None): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence

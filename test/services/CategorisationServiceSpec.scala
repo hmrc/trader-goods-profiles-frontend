@@ -91,7 +91,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
       val expectedCategorisationInfo    =
-        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, "comcode")
+        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
@@ -205,7 +205,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val expectedCategorisationInfo    =
-        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, "comcode")
+        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
