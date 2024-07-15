@@ -24,12 +24,12 @@ import javax.inject.Inject
 
 class AssessmentFormProvider @Inject() extends Mappings {
 
-  def apply(exemptionIds: Seq[String]): Form[AssessmentAnswer] =
+  def apply(exemptionIds: Seq[String], exemptionCount: Int = 1): Form[AssessmentAnswer] =
     Form(
       "value" ->
-        text("assessment.error.required")
+        text(if (exemptionCount == 1) { "assessment.error.required.onlyOne" } else { "assessment.error.required" })
           .verifying(
-            "assessment.error.required",
+            if (exemptionCount == 1) { "assessment.error.required.onlyOne" } else { "assessment.error.required" },
             value => value == "true" || value == AssessmentAnswer.NoExemption.toString
           )
           .transform[AssessmentAnswer](x => AssessmentAnswer.fromString(x), _.toString)

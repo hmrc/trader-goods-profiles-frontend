@@ -37,12 +37,21 @@
 
         <h1 class="govuk-heading-l">@messages("assessment.heading", index + 1)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
+
+        <div class="govuk-inset-text">
+            @messages("assessment.insetText")
+        </div>
+
         <p class="govuk-body">
             <a href="https://www.trade-tariff.service.gov.uk/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
 
         <h2 class='govuk-heading-m'>
-            @messages("assessment.question")
+            @if(listItems.size == 1) {
+                @messages("assessment.question.onlyOne")
+            } else {
+                @messages("assessment.question")
+            }
         </h2>
 
         <ul class="govuk-list govuk-list--bullet">

@@ -94,7 +94,7 @@ class AssessmentController @Inject() (
         } yield {
 
           val exemptions = categorisationInfo.categoryAssessments(index).exemptions
-          val form       = formProvider(exemptions.map(_.id))
+          val form       = formProvider(exemptions.map(_.id), exemptions.size)
 
           form
             .bindFromRequest()
