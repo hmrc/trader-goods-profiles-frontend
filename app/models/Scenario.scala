@@ -34,16 +34,16 @@ object Scenario {
     val hasCategoryAssessments: Boolean =
       categorisationInfo.categoryAssessments.nonEmpty
 
-    val hasCategory1Assessments: Boolean =
-      categorisationInfo.categoryAssessments.exists(_.category == 1)
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.category == 1)
 
-    val hasCategory1Exemptions: Boolean =
-      categorisationInfo.categoryAssessments
-        .exists(assessment => assessment.category == 1 && assessment.exemptions.nonEmpty)
+    val hasCategory1Assessments: Boolean = category1Assessments.nonEmpty
 
-    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions) match {
+    val hasEveryCategory1AssessmentGotExemptions: Boolean =
+      category1Assessments.count(assessment => assessment.exemptions.nonEmpty) == category1Assessments.size
+
+    (hasCategoryAssessments, hasCategory1Assessments, hasEveryCategory1AssessmentGotExemptions) match {
       case (true, true, false)   => Category1NoExemptions
-      case (false, false, false) => StandardNoAssessments
+      case (false, _, _) => StandardNoAssessments
       case (_, _, _)             => NoRedirectScenario
     }
   }
