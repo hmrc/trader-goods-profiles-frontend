@@ -27,7 +27,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-
+import viewmodels.AssessmentCyaKey
 object AssessmentsSummary {
 
   def row(
@@ -46,9 +46,12 @@ object AssessmentsSummary {
         Some(x.mkString("", " ", ""))
       }
 
+      val listItems = assessment.exemptions
+          .map(x => x.code)
+
       descriptiveText.map { description =>
         SummaryListRowViewModel(
-          key = KeyViewModel(HtmlContent(Html(descriptiveText))),
+          key = KeyViewModel(AssessmentCyaKey(listItems).content),
           value = ValueViewModel(
             if(answer.toString == "true") {
               "Yes"
