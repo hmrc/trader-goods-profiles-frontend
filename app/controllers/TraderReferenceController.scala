@@ -18,15 +18,19 @@ package controllers
 
 import controllers.actions._
 import forms.TraderReferenceFormProvider
+
 import javax.inject.Inject
 import models.Mode
+import models.helper.{CategorisationUpdate, GoodsDetailsUpdate}
 import navigation.Navigator
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TraderReferenceView
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class TraderReferenceController @Inject() (
@@ -36,6 +40,7 @@ class TraderReferenceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  auditService: AuditService,
   formProvider: TraderReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: TraderReferenceView
@@ -63,6 +68,14 @@ class TraderReferenceController @Inject() (
         case None        => form
         case Some(value) => form.fill(value)
       }
+
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          GoodsDetailsUpdate,
+          recordId
+        )
 
       val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
       Ok(view(preparedForm, onSubmitAction))

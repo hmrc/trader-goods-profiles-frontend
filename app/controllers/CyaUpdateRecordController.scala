@@ -27,6 +27,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -41,6 +42,7 @@ class CyaUpdateRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
+  auditService: AuditService,
   view: CyaUpdateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
@@ -110,7 +112,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(
               //TODO remove .get
-              CommodityCodeSummary.row(updateGoodsRecord.commodityCode.get, recordId, CheckMode)
+              CommodityCodeSummary.row(updateGoodsRecord.commodityCode.map(_.commodityCode).get, recordId, CheckMode)
             )
           )
           Ok(view(list, onSubmitAction))
@@ -150,6 +152,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _              <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
@@ -163,6 +166,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswersWithChange <-
@@ -178,6 +182,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswersWithChange <-
@@ -193,6 +198,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildCommodityCode(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
