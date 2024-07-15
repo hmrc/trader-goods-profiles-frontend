@@ -22,7 +22,7 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginUpdatePage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
