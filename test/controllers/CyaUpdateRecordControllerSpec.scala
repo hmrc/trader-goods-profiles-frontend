@@ -38,6 +38,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaUpdateRecordView
+import services.CategorisationService
 
 import scala.concurrent.Future
 
@@ -874,9 +875,16 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .thenReturn(Future.successful(Done))
             when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
 
+            val mockCategorisationService = mock[CategorisationService]
+            when(mockCategorisationService.updateCategorisationWithUpdatedCommodityCode(any, any)(any))
+              .thenReturn(Future.successful(userAnswers))
+
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[CategorisationService].toInstance(mockCategorisationService)
+                )
                 .overrides(bind[AuditService].toInstance(mockAuditService))
                 .build()
 
