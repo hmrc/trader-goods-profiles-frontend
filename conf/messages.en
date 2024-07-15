@@ -462,7 +462,7 @@ profile.p2.linkText = Go to homepage
 profile.warning = Warning
 profile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
-hasNirmsChange.title = Removing number
+hasNirmsChange.title = Removing NIRMS details
 hasNirmsChange.h1 = Removing NIRMS details
 hasNirmsChange.p1 = If you remove your NIRMS details, the categorisation of goods you move under the Simplified Process for Internal Market Movements (SPIMM) could change.
 hasNirmsChange.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
@@ -474,7 +474,7 @@ hasNirmsChange.warning = Warning
 hasNirmsChange.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
 hasNirmsChange.p3.linkText = Go to homepage
 
-hasNiphlsChange.title = Removing number
+hasNiphlsChange.title = Removing NIPHL details
 hasNiphlsChange.h1 = Removing NIPHL details
 hasNiphlsChange.p1 = If you remove your NIPHL details, the categorisation of goods you move under the Simplified Process for Internal Market Movements (SPIMM) could change.
 hasNiphlsChange.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
