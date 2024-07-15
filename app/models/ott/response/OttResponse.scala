@@ -45,12 +45,17 @@ final case class OttResponse(
     case a: AdditionalCodeResponse => Some(a)
     case _                         => None
   }
+
+  lazy val otherExemptions: Seq[OtherExemptionResponse] = includedElements.flatMap {
+    case e: OtherExemptionResponse => Some(e)
+    case _                         => None
+  }
 }
 
 object OttResponse {
 
   implicit lazy val reads: Reads[OttResponse] = (
-    (__ \ "data").read[GoodsNomenclatureResponse] and
+    __.read[GoodsNomenclatureResponse] and
       (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data")
         .read[Seq[CategoryAssessmentRelationship]] and
       (__ \ "included").read[Seq[IncludedElement]] and

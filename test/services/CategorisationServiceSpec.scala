@@ -47,7 +47,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   private def mockOttResponse(comCode: String = "some comcode") = OttResponse(
-    GoodsNomenclatureResponse("some id", comCode, Some("some measure unit"), Instant.EPOCH, None, "test"),
+    GoodsNomenclatureResponse("some id", comCode, Some("some measure unit"), Instant.EPOCH, None, List("test")),
     Seq[CategoryAssessmentRelationship](),
     Seq[IncludedElement](),
     Seq[Descendant]()
@@ -55,15 +55,29 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
-    "comcode",
-    "countryOfOrigin",
+    "eori",
+    "actorId",
     "traderRef",
+    "comcode",
+    "adviceStatus",
     "goodsDescription",
-    "adviceStatus",
+    "countryOfOrigin",
+    1,
+    None,
+    None,
+    None,
     Instant.now(),
+    None,
+    1,
+    true,
+    true,
+    None,
+    "declarable",
+    None,
+    None,
+    None,
     Instant.now(),
-    "adviceStatus",
-    1
+    Instant.now()
   )
 
   private val categorisationService =

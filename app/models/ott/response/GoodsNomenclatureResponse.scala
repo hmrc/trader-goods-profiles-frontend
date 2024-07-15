@@ -27,17 +27,37 @@ final case class GoodsNomenclatureResponse(
   measurementUnit: Option[String],
   validityStartDate: Instant,
   validityEndDate: Option[Instant],
-  description: String
+  descriptions: List[String]
 )
 
 object GoodsNomenclatureResponse {
 
+  def extractDescriptions(json: JsValue): List[String] = {
+
+    val includedDescriptions = (json \ "included")
+      .asOpt[JsArray]
+      .getOrElse(JsArray())
+      .value
+      .collect {
+        case obj if (obj \ "type").asOpt[String].contains("goods_nomenclature") =>
+          (obj \ "attributes" \ "description").asOpt[String]
+      }
+      .flatten
+      .toList
+    val mainDescription      = (json \ "data" \ "attributes" \ "description").asOpt[String].toList
+    if (includedDescriptions.length >= 2) {
+      includedDescriptions.takeRight(2) ++ mainDescription
+    } else {
+      includedDescriptions ++ mainDescription
+    }
+  }
+
   implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
-    (__ \ "id").read[String] and
-      (__ \ "attributes" \ "goods_nomenclature_item_id").read[String] and
-      (__ \ "attributes" \ "supplementary_measure_unit").readNullable[String] and
-      (__ \ "attributes" \ "validity_start_date").read[Instant] and
-      (__ \ "attributes" \ "validity_end_date").readNullable[Instant] and
-      (__ \ "attributes" \ "description").read[String]
+    (__ \ "data" \ "id").read[String] and
+      (__ \ "data" \ "attributes" \ "goods_nomenclature_item_id").read[String] and
+      (__ \ "data" \ "attributes" \ "supplementary_measure_unit").readNullable[String] and
+      (__ \ "data" \ "attributes" \ "validity_start_date").read[Instant] and
+      (__ \ "data" \ "attributes" \ "validity_end_date").readNullable[Instant] and
+      __.read[JsValue].map(extractDescriptions)
   )(GoodsNomenclatureResponse.apply _)
 }

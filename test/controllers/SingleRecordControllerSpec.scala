@@ -17,18 +17,20 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.NormalMode
-import models.router.responses.GetGoodsRecordResponse
+import models.{NormalMode, UserAnswers}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
 import play.api.inject.bind
+import repositories.SessionRepository
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -40,32 +42,43 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val singleRecordRoute   = routes.SingleRecordController.onPageLoad(testRecordId).url
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+  private val mockSessionRepository    = mock[SessionRepository]
 
-  private val record = GetGoodsRecordResponse(
-    testRecordId,
-    "10410100",
-    "EC",
-    "BAN0010011",
-    "Organic bananas",
-    "Not requested",
+  private val record = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z"),
-    "Not ready",
-    1
-  )
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId)
 
   "SingleRecord Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET and set up userAnswers" in {
 
-      val application = applicationBuilder()
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(TraderReferenceUpdatePage(testRecordId), record.traderRef)
+        .success
+        .value
+        .set(GoodsDescriptionUpdatePage(testRecordId), record.goodsDescription)
+        .success
+        .value
+        .set(CountryOfOriginUpdatePage(testRecordId), record.countryOfOrigin)
+        .success
+        .value
+        .set(CommodityCodeUpdatePage(testRecordId), record.comcode)
+        .success
+        .value
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
 
       when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
         .successful(record)
+
+      when(mockSessionRepository.set(any())) thenReturn Future
+        .successful(true)
 
       implicit val message: Messages = messages(application)
 
@@ -74,7 +87,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode),
           GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode),
           CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode),
-          CommodityCodeSummary.row(record.commodityCode, testRecordId, NormalMode),
+          CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
       )
@@ -103,12 +116,16 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(uaCaptor.capture)
+
+        uaCaptor.getValue.data mustEqual userAnswers.data
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )

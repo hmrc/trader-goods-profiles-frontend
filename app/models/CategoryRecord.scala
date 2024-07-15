@@ -97,7 +97,12 @@ object CategoryRecord {
         case _                                   => CATEGORY_2
       }
     } else {
-      STANDARD
+      val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 1)
+      if (category1AssessmentsCount != 0 && category2AssessmentsCount == 0) {
+        CATEGORY_2
+      } else {
+        STANDARD
+      }
     }
   }
 

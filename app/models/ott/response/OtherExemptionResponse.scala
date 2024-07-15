@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package pages
+package models.ott.response
 
-import play.api.libs.json.JsPath
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-case class CountryOfOriginUpdatePage(recordId: String) extends QuestionPage[String] {
+final case class OtherExemptionResponse(
+  id: String,
+  code: String,
+  description: String
+) extends IncludedElement
 
-  override def path: JsPath = JsPath \ toString \ recordId
+object OtherExemptionResponse {
 
-  override def toString: String = "countryOfOriginUpdate"
+  implicit lazy val reads: Reads[OtherExemptionResponse] =
+    (
+      (__ \ "id").read[String] and
+        (__ \ "attributes" \ "code").read[String] and
+        (__ \ "attributes" \ "description").read[String]
+    )(OtherExemptionResponse.apply _)
+
 }

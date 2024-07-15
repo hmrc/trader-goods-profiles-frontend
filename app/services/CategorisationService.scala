@@ -52,14 +52,14 @@ class CategorisationService @Inject() (
         for {
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature      <- ottConnector.getCategorisationInfo(
-                                      getGoodsRecordResponse.commodityCode,
+                                      getGoodsRecordResponse.comcode,
                                       request.eori,
                                       request.affinityGroup,
                                       Some(recordId),
                                       getGoodsRecordResponse.countryOfOrigin,
                                       LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
-          originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.commodityCode)
+          originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
           categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
                                       case Some(categorisationInfo) => Future.successful(categorisationInfo)
                                       case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
@@ -100,7 +100,7 @@ class CategorisationService @Inject() (
                                   getGoodsRecordResponse.countryOfOrigin,
                                   LocalDate.now() //TODO where does DateOfTrade come from??
                                 )
-      originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.commodityCode)
+      originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
       categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
                                   case Some(categorisationInfo) => Future.successful(categorisationInfo)
                                   case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))

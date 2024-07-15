@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import javax.inject.Inject
 
-case class CountryOfOriginUpdatePage(recordId: String) extends QuestionPage[String] {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  override def path: JsPath = JsPath \ toString \ recordId
+class HasNiphlsChangeFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "countryOfOriginUpdate"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("hasNiphlsChange.error.required")
+    )
 }
