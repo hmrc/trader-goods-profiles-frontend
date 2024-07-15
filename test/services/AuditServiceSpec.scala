@@ -22,7 +22,7 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
-import models.{GoodsRecord, TraderProfile}
+import models.{GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -31,7 +31,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.CommodityQuery
+import queries.{CommodityQuery, CommodityUpdateQuery}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -296,6 +296,118 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
+  }
+
+  "auditFinishUpdateGoodsRecord" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateRecord(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val userAnswers               = generateUserAnswersForFinishUpdateGoodsTest(true)
+      val expectedUpdateGoodsRecord =
+        UpdateGoodsRecord(
+          testEori,
+          testRecordId,
+          None,
+          None,
+          Some("trader reference"),
+          Some(testCommodity)
+        )
+
+      val result =
+        await(
+          auditService.auditFinishUpdateGoodsRecord(testRecordId, AffinityGroup.Individual, expectedUpdateGoodsRecord)
+        )
+
+      result mustBe Done
+
+      withClue("Should have supplied the correct parameters to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createSubmitGoodsRecordEventForUpdateRecord(
+            eqTo(AffinityGroup.Individual),
+            eqTo(UpdateRecordJourney),
+            eqTo(expectedUpdateGoodsRecord),
+            eqTo(testRecordId)
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateRecord(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val userAnswers               = generateUserAnswersForFinishUpdateGoodsTest(false)
+      val expectedUpdateGoodsRecord =
+        UpdateGoodsRecord(
+          testEori,
+          testRecordId,
+          None,
+          None,
+          Some("trader reference"),
+          Some(testCommodity)
+        )
+
+      val result =
+        await(
+          auditService.auditFinishUpdateGoodsRecord(testRecordId, AffinityGroup.Individual, expectedUpdateGoodsRecord)
+        )
+
+      result mustBe Done
+
+      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createSubmitGoodsRecordEventForUpdateRecord(
+            eqTo(AffinityGroup.Individual),
+            eqTo(UpdateRecordJourney),
+            eqTo(expectedUpdateGoodsRecord),
+            eqTo(testRecordId)
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "must let the play error handler deal with an future failure" in {
+
+      val updateGoodsRecord =
+        UpdateGoodsRecord(
+          testEori,
+          testRecordId,
+          Some("GB"),
+          None,
+          None,
+          None
+        )
+
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        await(
+          auditService.auditFinishUpdateGoodsRecord(
+            testRecordId,
+            AffinityGroup.Individual,
+            updateGoodsRecord
+          )
+        )
+      }
+    }
   }
 
   "auditStartUpdateGoodsRecord" - {
@@ -689,6 +801,33 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
+  private def generateUserAnswersForFinishUpdateGoodsTest(useTraderRef: Boolean) = {
+    val ua = emptyUserAnswers
+      .set(TraderReferencePage, "trader reference")
+      .success
+      .value
+      .set(CountryOfOriginPage, "PF")
+      .success
+      .value
+      .set(CommodityCodeUpdatePage(testRecordId), testCommodity.commodityCode)
+      .success
+      .value
+      .set(CommodityUpdateQuery(testRecordId), testCommodity)
+      .success
+      .value
+
+    if (useTraderRef) {
+      ua.set(UseTraderReferencePage, true).success.value
+    } else {
+      ua.set(UseTraderReferencePage, false)
+        .success
+        .value
+        .set(GoodsDescriptionPage, "goods description")
+        .success
+        .value
+    }
+  }
+
   private def generateUserAnswersForFinishCreateGoodsTest(useTraderRef: Boolean) = {
     val ua = emptyUserAnswers
       .set(CommodityQuery, testCommodity)
@@ -704,9 +843,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .success
       .value
       .set(HasCorrectGoodsPage, true)
-      .success
-      .value
-      .set(CommodityQuery, testCommodity)
       .success
       .value
 
