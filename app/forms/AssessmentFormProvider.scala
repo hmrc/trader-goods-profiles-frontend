@@ -30,7 +30,7 @@ class AssessmentFormProvider @Inject() extends Mappings {
         text("assessment.error.required")
           .verifying(
             "assessment.error.required",
-            value => exemptionIds.contains(value) || value == AssessmentAnswer.NoExemption.toString
+            value => value == "true" || value == AssessmentAnswer.NoExemption.toString
           )
           .transform[AssessmentAnswer](x => AssessmentAnswer.fromString(x), _.toString)
     )
