@@ -846,6 +846,14 @@ class NavigatorSpec extends SpecBase {
 
         }
 
+        "must go from LongerCommodityCodePage to CyaCategorisation page" in {
+          navigator.nextPage(
+            LongerCommodityCodePage(testRecordId, shouldRedirectToCya = true),
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId)
+        }
+
         "must go from HasCorrectGoodsPage for longer commodity codes" - {
 
           "to CyaCategorisation when answer is Yes and goods do not need recategorising and no supplementary unit" in {

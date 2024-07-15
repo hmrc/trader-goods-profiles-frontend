@@ -42,6 +42,9 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
+    val originalCommodityCodeOpt =
+      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
+
     recordCategorisations.records.get(recordId) match {
       case Some(_) =>
         Future.successful(request.userAnswers)
@@ -56,7 +59,11 @@ class CategorisationService @Inject() (
                                       getGoodsRecordResponse.countryOfOrigin,
                                       LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
-          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
+          categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
+                                      case Some(categorisationInfo) => Future.successful(categorisationInfo)
+                                      case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                    }
           updatedAnswers         <-
             Future.fromTry(
               request.userAnswers.set(
@@ -79,6 +86,9 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
+    val originalCommodityCodeOpt =
+      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
+
     for {
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
@@ -90,7 +100,11 @@ class CategorisationService @Inject() (
                                   getGoodsRecordResponse.countryOfOrigin,
                                   LocalDate.now() //TODO where does DateOfTrade come from??
                                 )
-      categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+      originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
+      categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
+                                  case Some(categorisationInfo) => Future.successful(categorisationInfo)
+                                  case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                }
       updatedAnswers         <-
         Future.fromTry(
           request.userAnswers.set(

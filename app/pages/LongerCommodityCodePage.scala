@@ -18,7 +18,8 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String] {
+case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolean = false)
+    extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString \ recordId
 
