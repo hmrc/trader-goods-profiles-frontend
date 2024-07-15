@@ -27,6 +27,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
+import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -41,10 +42,12 @@ class CyaUpdateRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
+  auditService: AuditService,
   view: CyaUpdateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -110,7 +113,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(
               //TODO remove .get
-              CommodityCodeSummary.row(updateGoodsRecord.commodityCode.get, recordId, CheckMode)
+              CommodityCodeSummary.row(updateGoodsRecord.commodityCode.map(_.commodityCode).get, recordId, CheckMode)
             )
           )
           Ok(view(list, onSubmitAction))
@@ -144,12 +147,11 @@ class CyaUpdateRecordController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield countries
 
-  //TODO - commodity code - cleanup CategorisationRecords?
-  //TODO - reset categorisation?
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _              <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
@@ -163,6 +165,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswersWithChange <-
@@ -178,6 +181,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswersWithChange <-
@@ -193,11 +197,13 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildCommodityCode(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(model)
             updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
             _                        <- sessionRepository.set(updatedAnswers)
+            _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
       }

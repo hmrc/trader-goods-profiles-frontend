@@ -22,7 +22,7 @@ import controllers.actions._
 import forms.UkimsNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile, UserAnswers, ValidationError}
+import models.{Mode, NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.Lang.logger
@@ -102,16 +102,14 @@ class UkimsNumberController @Inject() (
               sessionRepository.set(answers).flatMap { _ =>
                 traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
                   if (traderProfile.ukimsNumber == value) {
-                    cleanseUkimsData(answers)
-                      .map(_ => Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers)))
+                    Future.successful(Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers)))
                   } else {
                     TraderProfile.buildUkims(answers, request.eori, traderProfile) match {
                       case Right(model) =>
                         for {
-                          _              <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          updatedAnswers <- cleanseUkimsData(answers)
-                        } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, updatedAnswers))
-                      case Left(errors) => logErrorsAndContinue(errors, answers)
+                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                        } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
+                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
                     }
                   }
                 }
@@ -120,17 +118,10 @@ class UkimsNumberController @Inject() (
       )
   }
 
-  def cleanseUkimsData(answers: UserAnswers): Future[UserAnswers] =
-    for {
-      updatedAnswers <-
-        Future.fromTry(answers.remove(UkimsNumberUpdatePage))
-      _              <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], answers: UserAnswers): Future[Result] = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
-    cleanseUkimsData(answers).map(_ => Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

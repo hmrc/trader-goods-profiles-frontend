@@ -26,6 +26,7 @@ import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import uk.gov.hmrc.http.NotFoundException
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -37,6 +38,9 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val profileRoute          = routes.ProfileController.onPageLoad().url
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
+  private val mockSessionRepository      = mock[SessionRepository]
+  when(mockSessionRepository.set(any())) thenReturn Future
+    .successful(true)
 
   "Profile Controller" - {
 
@@ -49,7 +53,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         niphlNumber = Some("NIPHL number")
       )
 
-      val application = applicationBuilder()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
@@ -94,7 +98,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         niphlNumber = Some("Niphl Number")
       )
 
-      val application = applicationBuilder()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
@@ -139,7 +143,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         niphlNumber = None
       )
 
-      val application = applicationBuilder()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
@@ -184,7 +188,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         niphlNumber = None
       )
 
-      val application = applicationBuilder()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
@@ -222,7 +226,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )

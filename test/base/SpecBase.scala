@@ -20,6 +20,7 @@ import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
+import models.router.responses.GetGoodsRecordResponse
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -157,7 +158,8 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
-    0
+    0,
+    Some("1234567890")
   )
 
   private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
@@ -223,6 +225,34 @@ trait SpecBase
     .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
     .success
     .value
+
+  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      None,
+      None,
+      Instant.now(),
+      None,
+      1,
+      true,
+      true,
+      None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

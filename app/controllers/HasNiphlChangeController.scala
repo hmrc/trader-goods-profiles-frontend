@@ -22,9 +22,9 @@ import controllers.actions._
 import forms.HasNiphlChangeFormProvider
 
 import javax.inject.Inject
-import models.{NormalMode, TraderProfile, UserAnswers, ValidationError}
+import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
-import pages.{HasNiphlChangePage, HasNiphlUpdatePage, NiphlNumberUpdatePage}
+import pages.HasNiphlChangePage
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -72,10 +72,9 @@ class HasNiphlChangeController @Inject() (
                     TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
                       case Right(model) =>
                         for {
-                          _              <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          updatedAnswers <- cleanseNiphlData(answers)
-                        } yield Redirect(navigator.nextPage(HasNiphlChangePage, NormalMode, updatedAnswers))
-                      case Left(errors) => logErrorsAndContinue(errors, answers)
+                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                        } yield Redirect(navigator.nextPage(HasNiphlChangePage, NormalMode, answers))
+                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
                     }
                   }
                 } else {
@@ -86,21 +85,10 @@ class HasNiphlChangeController @Inject() (
       )
   }
 
-  def cleanseNiphlData(answers: UserAnswers): Future[UserAnswers] =
-    for {
-      updatedAnswersRemovedHasNiphl       <-
-        Future.fromTry(answers.remove(HasNiphlUpdatePage))
-      updatedAnswersRemovedHasNiphlChange <-
-        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(HasNiphlChangePage))
-      updatedAnswers                      <-
-        Future.fromTry(updatedAnswersRemovedHasNiphlChange.remove(NiphlNumberUpdatePage))
-      _                                   <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], answers: UserAnswers): Future[Result] = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
 
-    cleanseNiphlData(answers).map(_ => Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
+    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

@@ -594,6 +594,21 @@ class NavigatorSpec extends SpecBase {
 
         "must go from an assessment" - {
 
+          "to CyaCategorisation if the page is marked to redirect there" in {
+
+            val answers =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
+
+            navigator.nextPage(
+              AssessmentPage(recordId, indexAssessment1, shouldRedirectToCya = true),
+              NormalMode,
+              answers
+            ) mustEqual routes.CyaCategorisationController.onPageLoad(recordId)
+          }
+
           "to the next assessment when the answer is an exemption and at least one more assessment exists" in {
 
             val answers =
@@ -988,6 +1003,14 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustEqual routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, testRecordId)
 
+        }
+
+        "must go from LongerCommodityCodePage to CyaCategorisation page" in {
+          navigator.nextPage(
+            LongerCommodityCodePage(testRecordId, shouldRedirectToCya = true),
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "must go from HasCorrectGoodsPage for longer commodity codes" - {

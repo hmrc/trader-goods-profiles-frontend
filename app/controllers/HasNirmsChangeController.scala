@@ -22,9 +22,9 @@ import controllers.actions._
 import forms.HasNirmsChangeFormProvider
 
 import javax.inject.Inject
-import models.{NormalMode, TraderProfile, UserAnswers, ValidationError}
+import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
-import pages.{HasNirmsChangePage, HasNirmsUpdatePage, NirmsNumberUpdatePage}
+import pages.HasNirmsChangePage
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -72,10 +72,9 @@ class HasNirmsChangeController @Inject() (
                     TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
                       case Right(model) =>
                         for {
-                          _              <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          updatedAnswers <- cleanseNirmsData(answers)
-                        } yield Redirect(navigator.nextPage(HasNirmsChangePage, NormalMode, updatedAnswers))
-                      case Left(errors) => logErrorsAndContinue(errors, answers)
+                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                        } yield Redirect(navigator.nextPage(HasNirmsChangePage, NormalMode, answers))
+                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
                     }
                   }
                 } else {
@@ -86,21 +85,10 @@ class HasNirmsChangeController @Inject() (
       )
   }
 
-  def cleanseNirmsData(answers: UserAnswers): Future[UserAnswers] =
-    for {
-      updatedAnswersRemovedHasNirms       <-
-        Future.fromTry(answers.remove(HasNirmsUpdatePage))
-      updatedAnswersRemovedHasNirmsChange <-
-        Future.fromTry(updatedAnswersRemovedHasNirms.remove(HasNirmsChangePage))
-      updatedAnswers                      <-
-        Future.fromTry(updatedAnswersRemovedHasNirmsChange.remove(NirmsNumberUpdatePage))
-      _                                   <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], answers: UserAnswers): Future[Result] = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
 
-    cleanseNirmsData(answers).map(_ => Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
+    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

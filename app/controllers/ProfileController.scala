@@ -17,40 +17,67 @@
 package controllers
 
 import connectors.TraderProfileConnector
-import controllers.actions.IdentifierAction
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import models.UserAnswers
+import pages.{HasNiphlChangePage, HasNiphlUpdatePage, HasNirmsChangePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.ProfileView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ProfileController @Inject() (
   override val messagesApi: MessagesApi,
   traderProfileConnector: TraderProfileConnector,
+  sessionRepository: SessionRepository,
   identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: ProfileView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = identify.async { implicit request =>
-    traderProfileConnector.getTraderProfile(request.eori).map { profile =>
-      val detailsList = SummaryListViewModel(
-        rows = Seq(
-          Some(UkimsNumberSummary.row(profile.ukimsNumber)),
-          Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined)),
-          NirmsNumberSummary.row(profile.nirmsNumber),
-          Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
-          NiphlNumberSummary.row(profile.niphlNumber)
-        ).flatten
-      )
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    cleanseProfileData(request.userAnswers).flatMap { _ =>
+      traderProfileConnector.getTraderProfile(request.eori).map { profile =>
+        val detailsList = SummaryListViewModel(
+          rows = Seq(
+            Some(UkimsNumberSummary.row(profile.ukimsNumber)),
+            Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined)),
+            NirmsNumberSummary.row(profile.nirmsNumber),
+            Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
+            NiphlNumberSummary.row(profile.niphlNumber)
+          ).flatten
+        )
 
-      Ok(view(detailsList))
+        Ok(view(detailsList))
+      }
     }
   }
+
+  def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
+    for {
+      updatedAnswersRemovedUkims          <-
+        Future.fromTry(answers.remove(UkimsNumberUpdatePage))
+      updatedAnswersRemovedHasNirms       <-
+        Future.fromTry(updatedAnswersRemovedUkims.remove(HasNirmsUpdatePage))
+      updatedAnswersRemovedHasNirmsChange <-
+        Future.fromTry(updatedAnswersRemovedHasNirms.remove(HasNirmsChangePage))
+      updatedAnswersRemovedNirmsNumber    <-
+        Future.fromTry(updatedAnswersRemovedHasNirmsChange.remove(NirmsNumberUpdatePage))
+      updatedAnswersRemovedHasNiphl       <-
+        Future.fromTry(updatedAnswersRemovedNirmsNumber.remove(HasNiphlUpdatePage))
+      updatedAnswersRemovedHasNiphlChange <-
+        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(HasNiphlChangePage))
+      updatedAnswers                      <-
+        Future.fromTry(updatedAnswersRemovedHasNiphlChange.remove(NiphlNumberUpdatePage))
+      _                                   <- sessionRepository.set(updatedAnswers)
+    } yield updatedAnswers
 }

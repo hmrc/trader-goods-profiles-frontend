@@ -232,3 +232,5 @@ POST       /update-profile/removing-nirms-number                                
 
 GET        /update-profile/removing-niphl-number                                           controllers.HasNiphlChangeController.onPageLoad()
 POST       /update-profile/removing-niphl-number                                           controllers.HasNiphlChangeController.onSubmit()
+
+GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()

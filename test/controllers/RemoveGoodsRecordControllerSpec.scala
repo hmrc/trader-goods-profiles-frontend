@@ -21,7 +21,6 @@ import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import forms.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.router.responses.GetGoodsRecordResponse
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -47,17 +46,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
-  private val record = GetGoodsRecordResponse(
-    testRecordId,
-    "10410100",
-    "EC",
-    "BAN0010011",
-    "Organic bananas",
-    "Not requested",
+  private val record = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z"),
-    "Not ready",
-    1
+    Instant.parse("2022-11-18T23:20:19Z")
   )
 
   "RemoveGoodsRecord Controller" - {

@@ -22,9 +22,9 @@ import controllers.actions._
 import forms.NiphlNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile, UserAnswers, ValidationError}
+import models.{Mode, NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
-import pages.{HasNiphlChangePage, HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
+import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -84,9 +84,7 @@ class NiphlNumberController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(HasNiphlUpdatePage) match {
         case Some(false) =>
-          cleanseNiphlData(request.userAnswers).map(_ =>
-            Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-          )
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
         case _           =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
             traderProfile.niphlNumber match {
@@ -122,7 +120,7 @@ class NiphlNumberController @Inject() (
         value =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
             if (traderProfile.niphlNumber.getOrElse("") == value) {
-              cleanseNiphlData(request.userAnswers).map(_ => Redirect(routes.ProfileController.onPageLoad()))
+              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
             } else {
               request.userAnswers.set(NiphlNumberUpdatePage, value) match {
                 case Success(answers) =>
@@ -130,10 +128,9 @@ class NiphlNumberController @Inject() (
                     TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
                       case Right(model) =>
                         for {
-                          _              <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          updatedAnswers <- cleanseNiphlData(answers)
-                        } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, NormalMode, updatedAnswers))
-                      case Left(errors) => logErrorsAndContinue(errors, answers)
+                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                        } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, NormalMode, answers))
+                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
                     }
                   }
               }
@@ -142,21 +139,10 @@ class NiphlNumberController @Inject() (
       )
   }
 
-  def cleanseNiphlData(answers: UserAnswers): Future[UserAnswers] =
-    for {
-      updatedAnswersRemovedHasNiphl       <-
-        Future.fromTry(answers.remove(HasNiphlUpdatePage))
-      updatedAnswersRemovedHasNiphlChange <-
-        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(HasNiphlChangePage))
-      updatedAnswers                      <-
-        Future.fromTry(updatedAnswersRemovedHasNiphlChange.remove(NiphlNumberUpdatePage))
-      _                                   <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], answers: UserAnswers): Future[Result] = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
 
-    cleanseNiphlData(answers).map(_ => Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
+    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

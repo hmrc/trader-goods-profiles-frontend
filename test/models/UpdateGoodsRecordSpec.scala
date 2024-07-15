@@ -22,6 +22,9 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
+import queries.CommodityUpdateQuery
+
+import java.time.Instant
 
 class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -81,10 +84,23 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       }
 
       "and all commodity code data is present" in {
+        val effectiveFrom = Instant.now
+        val effectiveTo   = effectiveFrom.plusSeconds(99)
+        val commodity     =
+          Commodity(
+            "030821",
+            List(
+              "Sea urchins",
+              "Live, fresh or chilled",
+              "Aquatic invertebrates other than crustaceans and molluscs "
+            ),
+            effectiveFrom,
+            Some(effectiveTo)
+          )
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CommodityCodeUpdatePage(testRecordId), "1")
+            .set(CommodityCodeUpdatePage(testRecordId), "030821")
             .success
             .value
             .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
@@ -93,11 +109,14 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .set(HasCommodityCodeChangePage(testRecordId), true)
             .success
             .value
+            .set(CommodityUpdateQuery(testRecordId), commodity)
+            .success
+            .value
 
         val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
 
         result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some("1"))
+          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(commodity))
         )
       }
     }
