@@ -56,7 +56,8 @@ class LongerCommodityCodeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val categorisationInfoOpt: Option[CategorisationInfo] = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
+      val categorisationInfoOpt: Option[CategorisationInfo] =
+        request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
 
       val originalComcodeOpt = categorisationInfoOpt.flatMap(_.originalCommodityCode)
       val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)

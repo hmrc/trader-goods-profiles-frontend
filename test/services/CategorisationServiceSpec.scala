@@ -239,7 +239,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val expectedRecordCategorisations =
         RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0))
+          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("comcode")))
         )
 
       val userAnswers = emptyUserAnswers

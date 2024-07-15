@@ -32,7 +32,7 @@ final case class CategorisationInfo(
   def latestDoesNotMatchOriginal: Boolean = originalCommodityCode match {
     case Some(originalComcode) =>
       commodityCode != originalComcode.padTo[Char](padlength, '0').mkString
-    case None =>
+    case None                  =>
       false
   }
 }
