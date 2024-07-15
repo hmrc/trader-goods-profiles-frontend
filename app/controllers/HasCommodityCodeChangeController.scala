@@ -67,13 +67,15 @@ class HasCommodityCodeChangeController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
           value => {
-            auditService
-              .auditStartUpdateGoodsRecord(
-                request.eori,
-                request.affinityGroup,
-                GoodsDetailsUpdate,
-                recordId
-              )
+            if (value) {
+              auditService
+                .auditStartUpdateGoodsRecord(
+                  request.eori,
+                  request.affinityGroup,
+                  GoodsDetailsUpdate,
+                  recordId
+                )
+            }
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
