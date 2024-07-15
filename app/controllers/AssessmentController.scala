@@ -22,7 +22,7 @@ import logging.Logging
 import models.{AssessmentAnswer, Mode}
 import navigation.Navigator
 import pages.AssessmentPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
@@ -46,7 +46,7 @@ class AssessmentController @Inject() (
   categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, messages: Messages)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
@@ -64,14 +64,10 @@ class AssessmentController @Inject() (
           case Some(value) => form.fill(value)
           case None        => form
         }
-        val radioOptions = AssessmentAnswer.radioOptions(exemptions)
 
-        val viewModel = AssessmentViewModel(
-          commodityCode = categorisationInfo.commodityCode,
-          numberOfThisAssessment = index + 1,
-          numberOfAssessments = categorisationInfo.categoryAssessments.size,
-          radioOptions = radioOptions
-        )
+        val listItems = exemptions.map { exemption =>
+          messages("assessment.exemption", exemption.code, exemption.description)
+        }
 
         if (exemptions.isEmpty) {
           Future.successful(
@@ -80,7 +76,7 @@ class AssessmentController @Inject() (
             )
           )
         } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems)))
         }
       }
 
