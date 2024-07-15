@@ -52,6 +52,11 @@ object CategoryAssessment {
         ottResponse.additionalCodes
           .find(_.id == id)
           .map(x => AdditionalCode(x.id, x.code, x.description))
+
+      case ExemptionType.OtherExemption =>
+        ottResponse.otherExemptions
+        .find(_.id == id)
+        .map(x => OtherExemption(x.id, x.code, x.description))
     }
 
   implicit lazy val format: OFormat[CategoryAssessment] = Json.format
