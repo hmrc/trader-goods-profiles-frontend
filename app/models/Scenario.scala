@@ -42,9 +42,9 @@ object Scenario {
       category1Assessments.count(assessment => assessment.exemptions.nonEmpty) == category1Assessments.size
 
     (hasCategoryAssessments, hasCategory1Assessments, hasEveryCategory1AssessmentGotExemptions) match {
-      case (true, true, false)   => Category1NoExemptions
-      case (false, _, _) => StandardNoAssessments
-      case (_, _, _)             => NoRedirectScenario
+      case (true, true, false) => Category1NoExemptions
+      case (false, _, _)       => StandardNoAssessments
+      case (_, _, _)           => NoRedirectScenario
     }
   }
 
