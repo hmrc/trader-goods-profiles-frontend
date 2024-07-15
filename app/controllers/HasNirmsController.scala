@@ -97,7 +97,7 @@ class HasNirmsController @Inject() (
         value =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
             if (traderProfile.nirmsNumber.isDefined == value) {
-              cleanseNirmsData(request.userAnswers).map(_ => Redirect(routes.ProfileController.onPageLoad()))
+              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
             } else {
               for {
                 updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
@@ -107,15 +107,4 @@ class HasNirmsController @Inject() (
           }
       )
   }
-
-  def cleanseNirmsData(answers: UserAnswers): Future[UserAnswers] =
-    for {
-      updatedAnswersRemovedHasNirms       <-
-        Future.fromTry(answers.remove(HasNirmsUpdatePage))
-      updatedAnswersRemovedHasNirmsChange <-
-        Future.fromTry(updatedAnswersRemovedHasNirms.remove(HasNirmsChangePage))
-      updatedAnswers                      <-
-        Future.fromTry(updatedAnswersRemovedHasNirmsChange.remove(NirmsNumberUpdatePage))
-      _                                   <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
 }

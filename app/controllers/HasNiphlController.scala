@@ -23,7 +23,7 @@ import forms.HasNiphlFormProvider
 import javax.inject.Inject
 import models.{Mode, NormalMode, UserAnswers}
 import navigation.Navigator
-import pages.{HasNiphlChangePage, HasNiphlPage, HasNiphlUpdatePage, NiphlNumberUpdatePage}
+import pages.{HasNiphlPage, HasNiphlUpdatePage, NiphlNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -97,7 +97,7 @@ class HasNiphlController @Inject() (
         value =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
             if (traderProfile.niphlNumber.isDefined == value) {
-              cleanseNiphlData(request.userAnswers).map(_ => Redirect(routes.ProfileController.onPageLoad()))
+              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
             } else {
               for {
                 updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
@@ -107,15 +107,4 @@ class HasNiphlController @Inject() (
           }
       )
   }
-
-  def cleanseNiphlData(answers: UserAnswers): Future[UserAnswers] =
-    for {
-      updatedAnswersRemovedHasNiphl       <-
-        Future.fromTry(answers.remove(HasNiphlUpdatePage))
-      updatedAnswersRemovedHasNiphlChange <-
-        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(HasNiphlChangePage))
-      updatedAnswers                      <-
-        Future.fromTry(updatedAnswersRemovedHasNiphlChange.remove(NiphlNumberUpdatePage))
-      _                                   <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
 }

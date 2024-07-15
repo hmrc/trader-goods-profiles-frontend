@@ -40,10 +40,10 @@ class Navigator @Inject() () {
     case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case HasNirmsChangePage                        => navigateFromHasNirmsChange
+    case HasNirmsChangePage                        => _ => routes.ProfileController.onPageLoad()
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case HasNiphlChangePage                        => navigateFromHasNiphlChange
+    case HasNiphlChangePage                        => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
@@ -192,17 +192,6 @@ class Navigator @Inject() () {
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
-  private def navigateFromHasNirmsChange(answers: UserAnswers): Call = {
-    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
-    answers
-      .get(HasNirmsChangePage)
-      .map {
-        case true  => routes.ProfileController.onPageLoad()
-        case false => routes.HasNirmsController.onPageLoadUpdate
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
-
   private def navigateFromHasNiphl(answers: UserAnswers): Call =
     answers
       .get(HasNiphlPage)
@@ -219,17 +208,6 @@ class Navigator @Inject() () {
       .map {
         case true  => routes.NiphlNumberController.onPageLoadUpdate
         case false => routes.HasNiphlChangeController.onPageLoad()
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
-
-  private def navigateFromHasNiphlChange(answers: UserAnswers): Call = {
-    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
-    answers
-      .get(HasNiphlChangePage)
-      .map {
-        case true  => routes.ProfileController.onPageLoad()
-        case false => routes.HasNiphlController.onPageLoadUpdate
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
