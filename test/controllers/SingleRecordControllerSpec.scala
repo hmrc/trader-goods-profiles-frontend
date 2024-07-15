@@ -109,10 +109,18 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SingleRecordView]
-
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get("changesMade").contains("true")
+        val changedPage                           = request.session.get("changedPage").getOrElse("")
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(testRecordId, detailsList, categorisationList, adviceList)(
+        contentAsString(result) mustEqual view(
+          testRecordId,
+          detailsList,
+          categorisationList,
+          adviceList,
+          changesMade,
+          changedPage
+        )(
           request,
           messages(application)
         ).toString

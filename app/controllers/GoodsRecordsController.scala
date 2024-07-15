@@ -83,10 +83,10 @@ class GoodsRecordsController @Inject() (
                     ),
                     page
                   )
-                ).removingFromSession("changesMade", "changedPages")
+                ).removingFromSession("changesMade", "changedPage")
               } else {
                 Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
-                  .removingFromSession("changesMade", "changedPages")
+                  .removingFromSession("changesMade", "changedPage")
               }
         }
       }
