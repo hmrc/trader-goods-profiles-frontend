@@ -46,7 +46,7 @@ class AssessmentController @Inject() (
   categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
-)(implicit ec: ExecutionContext, messages: Messages)
+)(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
@@ -66,7 +66,7 @@ class AssessmentController @Inject() (
         }
 
         val listItems = exemptions.map { exemption =>
-          messages("assessment.exemption", exemption.code, exemption.description)
+          exemption.code + " - " + exemption.description
         }
 
         if (exemptions.isEmpty) {
@@ -76,7 +76,7 @@ class AssessmentController @Inject() (
             )
           )
         } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems)))
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode)))
         }
       }
 
@@ -100,15 +100,11 @@ class AssessmentController @Inject() (
             .bindFromRequest()
             .fold(
               formWithErrors => {
-                val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-                val viewModel    = AssessmentViewModel(
-                  commodityCode = categorisationInfo.commodityCode,
-                  numberOfThisAssessment = index + 1,
-                  numberOfAssessments = categorisationInfo.categoryAssessments.size,
-                  radioOptions = radioOptions
-                )
+                val listItems = exemptions.map { exemption =>
+                  exemption.code + " - " + exemption.description
+                }
 
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, viewModel)))
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode)))
               },
               value =>
                 for {

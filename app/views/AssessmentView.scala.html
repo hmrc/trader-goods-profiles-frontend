@@ -25,7 +25,7 @@
         govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String, index: Int, listItems: Seq[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, index: Int, listItems: Seq[String], commodityCode: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
@@ -35,8 +35,8 @@
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
-        <h1 class="govuk-heading-l">@messages("assessment.heading", viewModel.numberOfThisAssessment)</h1>
-        <p class="govuk-body">@messages("assessment.guidance", viewModel.commodityCode)</p>
+        <h1 class="govuk-heading-l">@messages("assessment.heading", index + 1)</h1>
+        <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
         <p class="govuk-body">
             <a href="https://www.trade-tariff.service.gov.uk/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
