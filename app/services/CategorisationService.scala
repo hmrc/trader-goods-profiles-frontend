@@ -76,7 +76,7 @@ class CategorisationService @Inject() (
       )
       originalCommodityCodeOpt =
         recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
-      originalCommodityCode             = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
+      originalCommodityCode             = originalCommodityCodeOpt.getOrElse(commodityCode)
       categorisationInfo <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
         case Some(categorisationInfo) => Future.successful(categorisationInfo)
         case _ => Future.failed(new RuntimeException("Could not build categorisation info"))

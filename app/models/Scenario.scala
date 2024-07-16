@@ -16,7 +16,7 @@
 
 package models
 
-import models.ott.{CategorisationInfo, ExemptionType, OtherExemption}
+import models.ott.{CategorisationInfo, ExemptionType}
 import play.api.mvc.JavascriptLiteral
 
 sealed trait Scenario

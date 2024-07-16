@@ -63,6 +63,7 @@ object CategoryRecord {
     CategoryRecord(
       eori,
       recordId,
+      None, //TODO ???
       1,
       1
     )
