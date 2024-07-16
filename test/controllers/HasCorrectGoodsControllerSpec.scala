@@ -24,7 +24,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
@@ -39,6 +39,7 @@ import views.html.HasCorrectGoodsView
 
 import java.time.Instant
 import scala.concurrent.Future
+import scala.util.Success
 
 class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
@@ -389,6 +390,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 finalUserAnswers.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
               }
 
+              withClue("must not have reset the user answers") {
+                verify(mockCategorisationService, times(0)).cleanupOldAssessmentAnswers(any(), any())
+              }
+
             }
           }
 
@@ -426,6 +431,8 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               val mockCategorisationService = mock[CategorisationService]
               when(mockCategorisationService.updateCategorisationWithLongerCommodityCode(any(), any())(any()))
                 .thenReturn(Future.successful(updatedUserAnswers))
+              when(mockCategorisationService.cleanupOldAssessmentAnswers(any(), any()))
+                .thenReturn(Success(updatedUserAnswers))
 
               val application =
                 applicationBuilder(userAnswers = Some(initialUserAnswers))
@@ -449,6 +456,10 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 withClue("must have told the navigator to recategorise the goods") {
                   val pageSentToNavigator = pageCaptor.getValue
                   pageSentToNavigator.needToRecategorise mustBe true
+                }
+
+                withClue("must not reset the user answers") {
+                  verify(mockCategorisationService, times(1)).cleanupOldAssessmentAnswers(any(), any())
                 }
 
               }

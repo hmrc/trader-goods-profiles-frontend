@@ -88,10 +88,8 @@ class CategorisationService @Inject() (
             recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
           )
         )
-      updatedAnswersCleanUpAssessments <-
-        Future.fromTry(cleanupOldAssessmentAnswers(updatedAnswers, recordId))
-      _                                <- sessionRepository.set(updatedAnswersCleanUpAssessments)
-    } yield updatedAnswersCleanUpAssessments
+      _                      <- sessionRepository.set(updatedAnswers)
+    } yield updatedAnswers
   }
 
   def updateCategorisationWithLongerCommodityCode(
