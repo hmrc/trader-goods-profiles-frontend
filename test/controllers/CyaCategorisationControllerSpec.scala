@@ -63,13 +63,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .row(testRecordId, userAnswers, category1, 0)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .row(testRecordId, userAnswers, category2, 1)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .row(testRecordId, userAnswers, category3, 2)
                   .get
               )
             )
@@ -110,10 +110,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .row(testRecordId, userAnswers, category1, 0)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .row(testRecordId, userAnswers, category2, 1)
                   .get
               )
             )
@@ -151,13 +151,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .row(testRecordId, userAnswers, category1, 0)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .row(testRecordId, userAnswers, category2, 1)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .row(testRecordId, userAnswers, category3, 2)
                   .get
               )
             )
@@ -196,13 +196,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, 3)
+                  .row(testRecordId, userAnswers, category1, 0)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, 3)
+                  .row(testRecordId, userAnswers, category2, 1)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, 3)
+                  .row(testRecordId, userAnswers, category3, 2)
                   .get
               )
             )

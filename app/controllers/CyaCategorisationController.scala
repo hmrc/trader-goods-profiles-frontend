@@ -68,8 +68,7 @@ class CyaCategorisationController @Inject() (
                     recordId,
                     request.userAnswers,
                     assessment,
-                    categorisationInfo.categoryAssessments.indexOf(assessment),
-                    categorisationInfo.categoryAssessments.size
+                    categorisationInfo.categoryAssessments.indexOf(assessment)
                   )
                 )
             case None                     => Seq.empty

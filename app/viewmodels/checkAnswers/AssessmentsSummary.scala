@@ -17,13 +17,10 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.AssessmentAnswer.NoExemption
 import models.ott.CategoryAssessment
 import models.{CheckMode, UserAnswers}
 import pages.AssessmentPage
 import play.api.i18n.Messages
-import play.twirl.api.Html
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -34,39 +31,27 @@ object AssessmentsSummary {
     recordId: String,
     answers: UserAnswers,
     assessment: CategoryAssessment,
-    indexOfThisAssessment: Int,
-    numberOfAssessments: Int
+    indexOfThisAssessment: Int
   )(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(AssessmentPage(recordId, indexOfThisAssessment)).flatMap { answer =>
-      val descriptiveText = if (answer == NoExemption) {
-        Some("assessment.exemption.none.checkYourAnswersLabel")
-      } else {
-        val x = assessment.exemptions
-          .map(x => x.code)
-        Some(x.mkString("", " ", ""))
-      }
-
+    answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
       val listItems = assessment.exemptions
         .map(x => x.code)
 
-      descriptiveText.map { description =>
-        SummaryListRowViewModel(
-          key = KeyViewModel(AssessmentCyaKey(listItems).content),
-          value = ValueViewModel(
-            if (answer.toString == "true") {
-              messages("site.yes")
-            } else {
-              messages("site.no")
-            }
-          ),
-          actions = Seq(
-            ActionItemViewModel(
-              "site.change",
-              routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
-            )
-              .withVisuallyHiddenText(messages("assessment.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = KeyViewModel(AssessmentCyaKey(listItems).content),
+        value = ValueViewModel(
+          if (answer.toString == "true") {
+            messages("site.yes")
+          } else {
+            messages("site.no")
+          }
+        ),
+        actions = Seq(
+          ActionItemViewModel(
+            "site.change",
+            routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+          ).withVisuallyHiddenText(messages("assessment.change.hidden"))
         )
-      }
+      )
     }
 }
