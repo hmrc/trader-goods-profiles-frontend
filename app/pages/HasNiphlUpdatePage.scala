@@ -16,12 +16,25 @@
 
 package pages
 
+import models.UserAnswers
 import play.api.libs.json.JsPath
 
-case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolean = false)
-    extends QuestionPage[String] {
+import scala.util.Try
 
-  override def path: JsPath = JsPath \ toString \ recordId
+case object HasNiphlUpdatePage extends QuestionPage[Boolean] {
 
-  override def toString: String = "longerCommodityCode"
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "hasNiphlUpdate"
+
+  override def cleanup(
+    value: Option[Boolean],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
+    updatedUserAnswers.get(HasNiphlUpdatePage) match {
+      case Some(false) => updatedUserAnswers.remove(NiphlNumberUpdatePage)
+      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+    }
+
 }

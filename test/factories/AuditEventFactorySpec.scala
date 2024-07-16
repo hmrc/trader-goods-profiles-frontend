@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
 import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
 import models.ott.response._
-import models.{Commodity, GoodsRecord, TraderProfile}
+import models.{Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -275,14 +275,16 @@ class AuditEventFactorySpec extends SpecBase {
 
           val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateRecord(
             AffinityGroup.Organisation,
-            CreateRecordJourney,
-            GoodsRecord(
+            UpdateRecordJourney,
+            UpdateGoodsRecord(
               testEori,
-              "trader reference",
-              commodity,
-              "goods description",
-              "AG"
-            )
+              testRecordId,
+              Some("GB"),
+              Some("goods description"),
+              Some("trader reference"),
+              Some(commodity)
+            ),
+            testRecordId
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -290,23 +292,22 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
-          auditDetails("journey") mustBe "CreateRecord"
+          auditDetails.size mustBe 12
+          auditDetails("journey") mustBe "UpdateRecord"
           auditDetails("updateSection") mustBe "goodsDetails"
           auditDetails("eori") mustBe testEori
+          auditDetails("recordId") mustBe testRecordId
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails("traderReference") mustBe "trader reference"
           auditDetails("goodsDescription") mustBe "goods description"
-          auditDetails("countryOfOrigin") mustBe "AG"
+          auditDetails("countryOfOrigin") mustBe "GB"
           auditDetails("commodityCode") mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
           auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
           auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
 
         }
-
       }
-
     }
 
     "create validate commodity code event" - {

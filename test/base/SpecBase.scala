@@ -158,7 +158,8 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
-    0
+    0,
+    Some("1234567890")
   )
 
   private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
@@ -225,32 +226,33 @@ trait SpecBase
     .success
     .value
 
-  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant) = GetGoodsRecordResponse(
-    "1",
-    "10410100",
-    "10410100",
-    "BAN0010011",
-    "1234567",
-    "Not requested",
-    "Organic bananas",
-    "UK",
-    1,
-    None,
-    None,
-    None,
-    Instant.now(),
-    None,
-    1,
-    true,
-    true,
-    None,
-    "Not ready",
-    None,
-    None,
-    None,
-    createdDateTime,
-    updatedDateTime
-  )
+  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      None,
+      None,
+      Instant.now(),
+      None,
+      1,
+      true,
+      true,
+      None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

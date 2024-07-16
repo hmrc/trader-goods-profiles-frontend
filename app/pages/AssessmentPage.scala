@@ -22,8 +22,12 @@ import queries.RecordCategorisationsQuery
 
 import scala.util.{Failure, Success, Try}
 
-case class AssessmentPage(recordId: String, index: Int, shouldRedirectToCya: Boolean = false)
-    extends QuestionPage[AssessmentAnswer] {
+case class AssessmentPage(
+  recordId: String,
+  index: Int,
+  shouldRedirectToCya: Boolean = false,
+  cleanupAll: Boolean = false
+) extends QuestionPage[AssessmentAnswer] {
 
   override def path: JsPath = JsPath \ "assessments" \ recordId \ index
 
@@ -32,13 +36,13 @@ case class AssessmentPage(recordId: String, index: Int, shouldRedirectToCya: Boo
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if (value.contains(AssessmentAnswer.NoExemption) && !shouldRedirectToCya) {
+    if ((value.contains(AssessmentAnswer.NoExemption) && !shouldRedirectToCya) || cleanupAll) {
       (for {
         recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
         categorisationInfo <- recordQuery.records.get(recordId)
         count               = categorisationInfo.categoryAssessments.size
         //Go backwards to avoid recursion issues
-        rangeToRemove       = ((index + 1) to count).reverse
+        rangeToRemove       = if (cleanupAll) (index to count).reverse else ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
         acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
       }).getOrElse(

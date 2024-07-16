@@ -30,7 +30,7 @@ import queries.RecordCategorisationsQuery
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, SupplementaryUnitSummary}
+import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
 
@@ -53,27 +53,27 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
+      val categorisationAnswers = for {
+        recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
+        categorisationAnswers <- recordCategorisations.records.get(recordId)
+      } yield categorisationAnswers
+
+      val categorisationRows = categorisationAnswers match {
+        case Some(categorisationInfo) =>
+          categorisationInfo.categoryAssessments
+            .flatMap(assessment =>
+              AssessmentsSummary.row(
+                recordId,
+                request.userAnswers,
+                assessment,
+                categorisationInfo.categoryAssessments.indexOf(assessment)
+              )
+            )
+        case None                     => Seq.empty
+      }
+
       CategorisationAnswers.build(request.userAnswers, recordId) match {
         case Right(_) =>
-          val categorisationAnswers = for {
-            recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
-            categorisationAnswers <- recordCategorisations.records.get(recordId)
-          } yield categorisationAnswers
-
-          val categorisationRows = categorisationAnswers match {
-            case Some(categorisationInfo) =>
-              categorisationInfo.categoryAssessments
-                .flatMap(assessment =>
-                  AssessmentsSummary.row(
-                    recordId,
-                    request.userAnswers,
-                    assessment,
-                    categorisationInfo.categoryAssessments.indexOf(assessment)
-                  )
-                )
-            case None                     => Seq.empty
-          }
-
           val categorisationList = SummaryListViewModel(
             rows = categorisationRows
           )
@@ -85,7 +85,13 @@ class CyaCategorisationController @Inject() (
             ).flatten
           )
 
-          Ok(view(recordId, categorisationList, supplementaryUnitList))
+          val longerCommodityCodeList = SummaryListViewModel(
+            rows = Seq(
+              LongerCommodityCodeSummary.row(request.userAnswers, recordId)
+            ).flatten
+          )
+
+          Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
 
         case Left(errors) =>
           logErrorsAndContinue(errors, recordId)

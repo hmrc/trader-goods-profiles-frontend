@@ -18,10 +18,9 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolean = false)
-    extends QuestionPage[String] {
+case object NiphlNumberUpdatePage extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString \ recordId
+  override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "longerCommodityCode"
+  override def toString: String = "niphlNumberUpdate"
 }
