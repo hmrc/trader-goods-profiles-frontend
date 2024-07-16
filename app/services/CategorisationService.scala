@@ -44,90 +44,37 @@ class CategorisationService @Inject() (
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
     recordCategorisations.records.get(recordId) match {
-      case Some(_) =>
-        //TODO this should really check if it is the right one!!!
-        Future.successful(request.userAnswers)
-      case None    =>
-        for {
-          //TODO
-          _ <- goodsRecordsConnector.storeLatestRecords(request.eori)
+      case Some(catInfo) =>
+
+        (for {
           getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature      <- ottConnector.getCategorisationInfo(
-                                      getGoodsRecordResponse.comcode,
-                                      request.eori,
-                                      request.affinityGroup,
-                                      Some(recordId),
-                                      getGoodsRecordResponse.countryOfOrigin,
-                                      LocalDate.now() //TODO where does DateOfTrade come from??
-                                    )
-          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-          updatedAnswers         <-
-            Future.fromTry(
-              request.userAnswers.set(
-                RecordCategorisationsQuery,
-                recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-              )
-            )
-          _                      <- sessionRepository.set(updatedAnswers)
-        } yield updatedAnswers
+        } yield {
+          if (catInfo.commodityCode == getGoodsRecordResponse.comcode) {
+            Future.successful(request.userAnswers)
+          } else {
+            updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
+          }
+        }).flatten
+      case None    =>
+
+        (for {
+          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+        } yield {
+            updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
+        }).flatten
     }
   }
 
-  def updateCategorisationWithLongerCommodityCode(
-    request: DataRequest[_],
-    recordId: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[UserAnswers] = {
-
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-
+  private def updateCategorisationDetails(request: DataRequest[_], recordId: String, recordCategorisations: RecordCategorisations,
+                                          commodityCode: String, countryOfOrigin: String)
+                                         (implicit hc:HeaderCarrier) = {
     for {
-      newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
-      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-      goodsNomenclature      <- ottConnector.getCategorisationInfo(
-                                  newCommodityCode.commodityCode,
-                                  request.eori,
-                                  request.affinityGroup,
-                                  Some(recordId),
-                                  getGoodsRecordResponse.countryOfOrigin,
-                                  LocalDate.now() //TODO where does DateOfTrade come from??
-                                )
-      categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-      updatedAnswers         <-
-        Future.fromTry(
-          request.userAnswers.set(
-            RecordCategorisationsQuery,
-            recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-          )
-        )
-      _                      <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-  }
-
-  //TODO test
-  //TODO in theory could move this and refactor it all but not sure
-  // If we have to make Longer Commodity Code go via the Category Guidance page then change it
-  def updateCategorisationWithUpdatedCommodityCode(
-    request: DataRequest[_],
-    recordId: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[UserAnswers] = {
-
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-
-    for {
-      newCommodityCode <- Future.fromTry(Try(request.userAnswers.get(CommodityUpdateQuery(recordId)).get))
-      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       goodsNomenclature <- ottConnector.getCategorisationInfo(
-        newCommodityCode.commodityCode,
+        commodityCode,
         request.eori,
         request.affinityGroup,
         Some(recordId),
-        getGoodsRecordResponse.countryOfOrigin,
+        countryOfOrigin,
         LocalDate.now() //TODO where does DateOfTrade come from??
       )
       categorisationInfo <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
@@ -140,6 +87,22 @@ class CategorisationService @Inject() (
         )
       _ <- sessionRepository.set(updatedAnswers)
     } yield updatedAnswers
+  }
+
+  def updateCategorisationWithLongerCommodityCode(
+    request: DataRequest[_],
+    recordId: String
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[UserAnswers] = {
+
+    val recordCategorisations =
+      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+
+    (for {
+      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+      newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+    } yield updateCategorisationDetails(request, recordId, recordCategorisations, newCommodityCode.commodityCode, getGoodsRecordResponse.countryOfOrigin)).flatten
   }
 
 }

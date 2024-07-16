@@ -66,44 +66,45 @@ class AssessmentController @Inject() (
       } yield {
         val exemptions = categorisationInfo.categoryAssessments(index).exemptions
 
-       if (isNiphls) {
+        if (isNiphls) {
           // We Niphl'ing
-            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
+          Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
+        } else {
+
+          if (categorisationInfo.categoryAssessments(index).category == 2 && categorisationInfo.categoryAssessments(index).exemptions.isEmpty &&
+            categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 1 && assessment.exemptions.exists(exemption => exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")) && categorisationInfo.categoryAssessments.count(ass => ass.category == 2) == 1 && categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 2 && assessment.exemptions.isEmpty)
+          ) {
+            //TODO propa
+            Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
           } else {
 
-         if (categorisationInfo.categoryAssessments(index).category == 2 && categorisationInfo.categoryAssessments(index).exemptions.isEmpty &&
-           categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 1 && assessment.exemptions.exists(exemption => exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")) && categorisationInfo.categoryAssessments.count(ass => ass.category == 2) == 1 && categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 2 && assessment.exemptions.isEmpty)
-         ) {
-           //TODO propa
-           Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
-         } else {
 
+            val form = formProvider(exemptions.map(_.id))
+            val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
+              case Some(value) => form.fill(value)
+              case None => form
+            }
 
-           val form = formProvider(exemptions.map(_.id))
-           val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
-             case Some(value) => form.fill(value)
-             case None => form
-           }
+            val radioOptions = AssessmentAnswer.radioOptions(exemptions)
+            val viewModel = AssessmentViewModel(
+              commodityCode = categorisationInfo.commodityCode,
+              numberOfThisAssessment = index + 1,
+              numberOfAssessments = categorisationInfo.categoryAssessments.size,
+              radioOptions = radioOptions
+            )
 
-           val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-           val viewModel = AssessmentViewModel(
-             commodityCode = categorisationInfo.commodityCode,
-             numberOfThisAssessment = index + 1,
-             numberOfAssessments = categorisationInfo.categoryAssessments.size,
-             radioOptions = radioOptions
-           )
-
-           if (exemptions.isEmpty) {
-             Future.successful(
-               Redirect(
-                 navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
-               )
-             )
-           } else {
-             Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
-           }
-         }
-       }
+            if (exemptions.isEmpty) {
+              Future.successful(
+                Redirect(
+                  navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+                )
+              )
+            } else {
+              Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+            }
+          }
+        }
+      }
 
       categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())

@@ -130,19 +130,22 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "should store category assessments if they are already present for a different commodity code, then return successful updated answers" in {
-      val initialRecordCategorisations =
+      val initialRecordCategorisations  =
         RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode234", Seq(), Some("some measure unit"), 0)))
 
       val expectedRecordCategorisations =
         RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
 
-      val userAnswers = emptyUserAnswers
+      val userAnswers                   = emptyUserAnswers
         .set(RecordCategorisationsQuery, initialRecordCategorisations)
         .success
         .value
 
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(mockOttResponse("comcode")))
 
       val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
@@ -176,7 +179,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should not call the router to get the goods record") {
-        verify(mockGoodsRecordsConnector, never()).getRecord(any(), any())(any())
+        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
       }
 
       withClue("Should not call OTT to get categorisation info") {

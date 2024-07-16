@@ -200,7 +200,7 @@ class CyaUpdateRecordController @Inject() (
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
             _                        <- sessionRepository.set(updatedAnswers)
             //TODO placeholder
-            _ <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
+            //_ <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
       }
