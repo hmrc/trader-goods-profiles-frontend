@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.{TraderReferencePage, TraderReferenceUpdatePage}
+import pages.{GoodsDescriptionUpdatePage, TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -128,6 +128,8 @@ class TraderReferenceController @Inject() (
             } yield
               if (traderRef.pagination.totalRecords == 0) {
                 Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+                  .addingToSession("changesMade" -> (oldValue != value).toString)
+                  .addingToSession("changedPage" -> "trader reference")
               } else {
                 val formWithApiErrors =
                   form.copy(errors =
@@ -135,6 +137,7 @@ class TraderReferenceController @Inject() (
                   )
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
+          }
         )
     }
 

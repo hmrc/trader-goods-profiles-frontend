@@ -340,13 +340,21 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            emptyResponse
+          )
+
         val userAnswers =
           UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "oldValue").success.value
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -372,13 +380,21 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            emptyResponse
+          )
+
         val userAnswers =
           UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "oldValue").success.value
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
