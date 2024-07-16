@@ -21,7 +21,7 @@ formHelper: FormWithCSRF,
 govukButton: GovukButton
 )
 
-@(recordId: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList)(implicit request: Request[_], messages: Messages)
+@(recordId: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList, longerCommodityCodeList: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cyaCategorisation.title"))) {
 
@@ -33,6 +33,11 @@ govukButton: GovukButton
     @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
         <h2 class="govuk-heading-m">@messages("cyaCategorisation.supplementaryUnitHeader")</h2>
         @govukSummaryList(supplementaryUnitList)
+    }
+
+    @if(longerCommodityCodeList != SummaryListViewModel(rows = Seq.empty)) {
+        <h2 class="govuk-heading-m">@messages("cyaCategorisation.longerCommodityCode")</h2>
+        @govukSummaryList(longerCommodityCodeList)
     }
 
     @formHelper(action = routes.CyaCategorisationController.onSubmit(recordId)) {

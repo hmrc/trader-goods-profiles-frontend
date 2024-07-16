@@ -20,7 +20,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{RecordCategorisations, UserAnswers}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -42,6 +42,9 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
+    val originalCommodityCodeOpt =
+      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
+
     recordCategorisations.records.get(recordId) match {
       case Some(_) =>
         Future.successful(request.userAnswers)
@@ -56,7 +59,11 @@ class CategorisationService @Inject() (
                                       getGoodsRecordResponse.countryOfOrigin,
                                       LocalDate.now() //TODO where does DateOfTrade come from??
                                     )
-          categorisationInfo     <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
+          originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
+          categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
+                                      case Some(categorisationInfo) => Future.successful(categorisationInfo)
+                                      case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                    }
           updatedAnswers         <-
             Future.fromTry(
               request.userAnswers.set(
@@ -79,8 +86,49 @@ class CategorisationService @Inject() (
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 
+    val originalCommodityCodeOpt =
+      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
+
     for {
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+      goodsNomenclature      <- ottConnector.getCategorisationInfo(
+                                  newCommodityCode.commodityCode,
+                                  request.eori,
+                                  request.affinityGroup,
+                                  Some(recordId),
+                                  getGoodsRecordResponse.countryOfOrigin,
+                                  LocalDate.now() //TODO where does DateOfTrade come from??
+                                )
+      originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
+      categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
+                                  case Some(categorisationInfo) => Future.successful(categorisationInfo)
+                                  case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                }
+      updatedAnswers         <-
+        Future.fromTry(
+          request.userAnswers.set(
+            RecordCategorisationsQuery,
+            recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
+          )
+        )
+      _                      <- sessionRepository.set(updatedAnswers)
+    } yield updatedAnswers
+  }
+
+  //TODO this will be refactored out in TGP-1600 but solves the immediate problem
+  def updateCategorisationWithUpdatedCommodityCode(
+    request: DataRequest[_],
+    recordId: String
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[UserAnswers] = {
+
+    val recordCategorisations =
+      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+
+    for {
+      newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(CommodityUpdateQuery(recordId)).get))
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       goodsNomenclature      <- ottConnector.getCategorisationInfo(
                                   newCommodityCode.commodityCode,

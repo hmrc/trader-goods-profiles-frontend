@@ -19,6 +19,7 @@ package models
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.AssessmentAnswer.{Exemption, NoExemption}
+import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import queries.RecordCategorisationsQuery
@@ -90,6 +91,33 @@ class CategorisationAnswersSpec extends SpecBase {
 
         result mustEqual Right(
           CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), Some("42.0"))
+        )
+      }
+
+      "all category 1 are answered and category 2 have no exemptions" in {
+
+        val categoryQuery = CategorisationInfo(
+          "1234567890",
+          Seq(category1, category2, category3.copy(exemptions = Seq.empty)),
+          Some("Weight, in kilograms"),
+          0
+        )
+
+        val answers = emptyUserAnswers
+          .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categoryQuery)))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+          .success
+          .value
+
+        val result = CategorisationAnswers.build(answers, testRecordId)
+
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123")), None)
         )
       }
 

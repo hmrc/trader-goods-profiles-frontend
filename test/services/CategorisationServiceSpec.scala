@@ -104,7 +104,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should store category assessments if they are not present, then return successful updated answers" in {
       val mockDataRequest               = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0)
+      val expectedCategorisationInfo    =
+        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
@@ -217,7 +218,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), newCommodity).success.value
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
-      val expectedCategorisationInfo    = CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0)
+      val expectedCategorisationInfo    =
+        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
@@ -251,7 +253,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val expectedRecordCategorisations =
         RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0))
+          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("comcode")))
         )
 
       val userAnswers = emptyUserAnswers

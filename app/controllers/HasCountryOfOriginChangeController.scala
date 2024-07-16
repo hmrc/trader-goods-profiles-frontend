@@ -18,13 +18,16 @@ package controllers
 
 import controllers.actions._
 import forms.HasCountryOfOriginChangeFormProvider
+
 import javax.inject.Inject
 import models.Mode
+import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasCountryOfOriginChangePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCountryOfOriginChangeView
 
@@ -37,6 +40,7 @@ class HasCountryOfOriginChangeController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  auditService: AuditService,
   formProvider: HasCountryOfOriginChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasCountryOfOriginChangeView
@@ -62,11 +66,22 @@ class HasCountryOfOriginChangeController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
-          value =>
+          value => {
+            if (value) {
+              auditService
+                .auditStartUpdateGoodsRecord(
+                  request.eori,
+                  request.affinityGroup,
+                  GoodsDetailsUpdate,
+                  recordId
+                )
+            }
+
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers))
+          }
         )
     }
 }

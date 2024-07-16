@@ -67,6 +67,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             1,
             0,
             Some("1.0"),
@@ -89,6 +90,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             1,
             0,
             None,
@@ -114,6 +116,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             1,
             0,
             None,
@@ -142,6 +145,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             1,
             1,
             None,
@@ -173,6 +177,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             2,
             2,
             None,
@@ -207,6 +212,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             2,
             3,
             None,
@@ -241,6 +247,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             3,
             4,
             None,
@@ -265,6 +272,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             3,
             1,
             None,
@@ -289,6 +297,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             2,
             1,
             None,
@@ -310,6 +319,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           CategoryRecord(
             testEori,
             testRecordId,
+            None,
             3,
             0,
             None,
