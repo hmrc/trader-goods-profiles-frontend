@@ -23,11 +23,12 @@
 )
 
 @(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String)(implicit request: Request[_], messages: Messages)
+
     @bannerContentForUpdate(page: String) = {
         <h3 class="govuk-notification-banner__heading">
             @messages("sucessBanner.heading", page)
         </h3>
-        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> if you think there’s a problem.</p>
+        <p class="govuk-body">@messages("sucessBanner.p1") <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> @messages("sucessBanner.p2")</p>
     }
 
 @layout(pageTitle = titleNoForm(messages("singleRecord.title"))) {

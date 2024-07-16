@@ -513,5 +513,6 @@ helpAndSupport.p15.linkText = Sign up for the Trader Support Service
 
 sucessBanner.title = Success
 sucessBanner.heading = You have changed the {0}
-sucessBanner.p1 = Contact example@department.gov.uk if you think there’s a problem.
+sucessBanner.p1 = Contact
 sucessBanner.email = example@department.gov.uk
+sucessBanner.p2 = if you think there’s a problem.

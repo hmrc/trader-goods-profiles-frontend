@@ -25,9 +25,9 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
@@ -271,6 +271,71 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must set changesMade to true if goods description is updated" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val userAnswers =
+          UserAnswers(userAnswersId).set(GoodsDescriptionUpdatePage(testRecordId), "oldValue").success.value
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[GoodsDescriptionController]
+          val request    =
+            FakeRequest(POST, goodsDescriptionUpdateRoute)
+              .withFormUrlEncodedBody(("value", "newValue"))
+
+          val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          session(result).get("changesMade") must be(Some("true"))
+          session(result).get("changedPage") must be(Some("goods description"))
+        }
+      }
+
+      "must set changesMade to false if goods description is not updated" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val userAnswers =
+          UserAnswers(userAnswersId).set(GoodsDescriptionUpdatePage(testRecordId), "OldValue").success.value
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[GoodsDescriptionController]
+          val request    =
+            FakeRequest(POST, goodsDescriptionUpdateRoute)
+              .withFormUrlEncodedBody(("value", "OldValue"))
+
+          val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          session(result).get("changesMade") must be(Some("false"))
         }
       }
 
