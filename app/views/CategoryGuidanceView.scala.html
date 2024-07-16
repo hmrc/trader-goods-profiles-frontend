@@ -29,6 +29,11 @@
     <p class="govuk-body">@messages("categoryGuidance.p2")</p>
     <h2 class="govuk-heading-m">@messages("categoryGuidance.subheading")</h2>
     <p class="govuk-body">@messages("categoryGuidance.p3")</p>
+    <ul class="govuk-body">
+        <li>@messages("categoryGuidance.p3.1")</li>
+        <li>@messages("categoryGuidance.p3.2")</li>
+        <li>@messages("categoryGuidance.p3.3")</li>
+    </ul>
     <p class="govuk-body">@messages("categoryGuidance.p4")</p>
 
     @formHelper(action = CategoryGuidanceController.onSubmit(recordId)) {
