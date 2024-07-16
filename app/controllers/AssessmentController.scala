@@ -104,7 +104,9 @@ class AssessmentController @Inject() (
                   exemption.code + " - " + exemption.description
                 }
 
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode)))
+                Future.successful(
+                  BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+                )
               },
               value =>
                 for {

@@ -30,8 +30,8 @@ object AssessmentAnswer {
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
     case JsString("false") => JsSuccess(NoExemption)
-    case JsString(s)      => JsSuccess(Exemption(s))
-    case _                => JsError("unable to read assessment answer")
+    case JsString(s)       => JsSuccess(Exemption(s))
+    case _                 => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {

@@ -47,13 +47,13 @@ object AssessmentsSummary {
       }
 
       val listItems = assessment.exemptions
-          .map(x => x.code)
+        .map(x => x.code)
 
       descriptiveText.map { description =>
         SummaryListRowViewModel(
           key = KeyViewModel(AssessmentCyaKey(listItems).content),
           value = ValueViewModel(
-            if(answer.toString == "true") {
+            if (answer.toString == "true") {
               messages("site.yes")
             } else {
               messages("site.no")

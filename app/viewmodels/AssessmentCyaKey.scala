@@ -26,8 +26,9 @@ case class AssessmentCyaKey(listItems: Seq[String])(implicit messages: Messages)
       s"<li>$item</li>"
     }.mkString
 
-    HtmlContent(Html(
-      s"""
+    HtmlContent(
+      Html(
+        s"""
         <p class='govuk-body'>
           ${messages("assessment.question")}
         </p>
@@ -35,6 +36,7 @@ case class AssessmentCyaKey(listItems: Seq[String])(implicit messages: Messages)
           $listContent
         </ul>
       """
-    ))
+      )
+    )
   }
 }
