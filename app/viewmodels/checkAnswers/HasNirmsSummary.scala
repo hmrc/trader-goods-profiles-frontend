@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, Mode, UserAnswers}
+import models.{CheckMode, UserAnswers}
 import pages.HasNirmsPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -35,20 +35,19 @@ object HasNirmsSummary {
         key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )
     }
 
-  //TODO - this will be updated to route to the update has nirms page
-  def row(value: Boolean, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+  def row(value: Boolean)(implicit messages: Messages): SummaryListRow = {
     val textValue = if (value) "site.yes" else "site.no"
     SummaryListRowViewModel(
       key = "hasNirms.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(textValue).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoad(mode).url)
+        ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadUpdate.url)
           .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
       )
     )

@@ -16,19 +16,25 @@
 
 package controllers
 
+import cats.data
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.NirmsNumberFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
-import pages.NirmsNumberPage
+import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
+import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class NirmsNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -38,6 +44,7 @@ class NirmsNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: NirmsNumberFormProvider,
+  traderProfileConnector: TraderProfileConnector,
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
   view: NirmsNumberView
@@ -45,29 +52,98 @@ class NirmsNumberController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form = formProvider()
+  private val form        = formProvider()
+  private val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(NirmsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
-  }
+      Ok(view(preparedForm, routes.NirmsNumberController.onSubmitCreate(mode)))
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.NirmsNumberController.onSubmitCreate(mode)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NirmsNumberPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(NirmsNumberPage, mode, updatedAnswers))
         )
+  }
+
+  def onPageLoadUpdate: Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      request.userAnswers.get(HasNirmsUpdatePage) match {
+        case Some(false) =>
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
+        case _           =>
+          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            traderProfile.nirmsNumber match {
+              case None       =>
+                for {
+                  updatedAnswers <-
+                    Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, true))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Ok(
+                  view(form, routes.NirmsNumberController.onSubmitUpdate)
+                )
+              case Some(data) =>
+                for {
+                  updatedAnswersWithHasNirms <-
+                    Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, true))
+                  updatedAnswers             <-
+                    Future.fromTry(updatedAnswersWithHasNirms.set(NirmsNumberPage, data))
+                  _                          <- sessionRepository.set(updatedAnswers)
+                } yield Ok(
+                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
+                )
+            }
+          }
+      }
+    }
+
+  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(BadRequest(view(formWithErrors, routes.NirmsNumberController.onSubmitUpdate))),
+        value =>
+          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            if (traderProfile.nirmsNumber.getOrElse("") == value) {
+              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
+            } else {
+              request.userAnswers.set(NirmsNumberUpdatePage, value) match {
+                case Success(answers) =>
+                  sessionRepository.set(answers).flatMap { _ =>
+                    TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
+                      case Right(model) =>
+                        for {
+                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                        } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
+                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                    }
+                  }
+              }
+            }
+          }
+      )
+  }
+
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+    val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
+    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

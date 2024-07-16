@@ -21,7 +21,6 @@ import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import forms.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.router.responses.GetGoodsRecordResponse
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

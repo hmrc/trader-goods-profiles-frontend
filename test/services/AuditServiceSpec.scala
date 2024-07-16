@@ -31,7 +31,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.{CommodityQuery, CommodityUpdateQuery}
+import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -308,7 +308,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateRecord(any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val userAnswers               = generateUserAnswersForFinishUpdateGoodsTest(true)
       val expectedUpdateGoodsRecord =
         UpdateGoodsRecord(
           testEori,
@@ -350,7 +349,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateRecord(any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val userAnswers               = generateUserAnswersForFinishUpdateGoodsTest(false)
       val expectedUpdateGoodsRecord =
         UpdateGoodsRecord(
           testEori,
@@ -799,33 +797,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
-  }
-
-  private def generateUserAnswersForFinishUpdateGoodsTest(useTraderRef: Boolean) = {
-    val ua = emptyUserAnswers
-      .set(TraderReferencePage, "trader reference")
-      .success
-      .value
-      .set(CountryOfOriginPage, "PF")
-      .success
-      .value
-      .set(CommodityCodeUpdatePage(testRecordId), testCommodity.commodityCode)
-      .success
-      .value
-      .set(CommodityUpdateQuery(testRecordId), testCommodity)
-      .success
-      .value
-
-    if (useTraderRef) {
-      ua.set(UseTraderReferencePage, true).success.value
-    } else {
-      ua.set(UseTraderReferencePage, false)
-        .success
-        .value
-        .set(GoodsDescriptionPage, "goods description")
-        .success
-        .value
-    }
   }
 
   private def generateUserAnswersForFinishCreateGoodsTest(useTraderRef: Boolean) = {

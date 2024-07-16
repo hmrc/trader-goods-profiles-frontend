@@ -14,32 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import play.api.libs.json.JsPath
 
-class HasNirmsChangeFormProviderSpec extends BooleanFieldBehaviours {
+case object UkimsNumberUpdatePage extends QuestionPage[String] {
 
-  val requiredKey = "hasNirmsChange.error.required"
-  val invalidKey  = "error.boolean"
+  override def path: JsPath = JsPath \ toString
 
-  val form = new HasNirmsChangeFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
-    )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
+  override def toString: String = "ukimsNumberUpdate"
 }

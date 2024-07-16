@@ -17,20 +17,22 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.NiphlNumberFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.NiphlNumberPage
+import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.NiphlNumberView
 
 import scala.concurrent.Future
@@ -42,178 +44,430 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new NiphlNumberFormProvider()
   private val form = formProvider()
 
-  private lazy val niphlNumberRoute = routes.NiphlNumberController.onPageLoad(NormalMode).url
-
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
   "NiphlNumber Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    ".create" - {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
+      val niphlNumberRoute = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
 
-      running(application) {
-        val request = FakeRequest(GET, niphlNumberRoute)
+      "must return OK and the correct view for a GET" in {
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[NiphlNumberView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(NiphlNumberPage, "SN12345").success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, niphlNumberRoute)
-
-        val view = application.injector.instanceOf[NiphlNumberView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("SN12345"), NormalMode)(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitCreate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must populate the view correctly on a GET when the question has previously been answered" in {
+
+        val userAnswers = UserAnswers(userAnswersId).set(NiphlNumberPage, "answer").success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill("answer"),
+            routes.NiphlNumberController.onSubmitCreate(NormalMode)
+          )(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to the next page when valid data is submitted" in {
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", "SN12345"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", ""))
+
+          val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitCreate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Homepage for a GET if profile already exists" in {
+
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+    }
+
+    ".update" - {
+
+      val niphlNumberRoute = routes.NiphlNumberController.onPageLoadUpdate.url
+
+      "must return OK and the correct view for a GET when HasNiphl is not false when there is a niphl number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRoute)
-            .withFormUrlEncodedBody(("value", "SN12345"))
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("3"), routes.NiphlNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must return a Bad Request and errors when no data is submitted" in {
+      "must return OK and the correct view for a GET when HasNiphl is not false when there isn't a niphl number" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
-      running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
-        val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[NiphlNumberView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must return a Bad Request and errors when incorrect data format is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRoute)
-            .withFormUrlEncodedBody(("value", "abc"))
-
-        val boundForm = form.bind(Map("value" -> "abc"))
-
-        val view = application.injector.instanceOf[NiphlNumberView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
         )
-        .build()
 
-      running(application) {
-        val request = FakeRequest(GET, niphlNumberRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Home page for a GET if profile already exists" in {
-
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
-      val application = applicationBuilder(userAnswers = None)
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
         )
-        .build()
 
-      running(application) {
-        val request = FakeRequest(GET, niphlNumberRoute)
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+      "must redirect to Journey Recovery for a GET when HasNiphl is false" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
+            .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+        }
+      }
+
+      "must redirect to Profile for a POST and submit data if value is different from original" in {
+        val answer = "SN12345"
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        val userAnswers = emptyUserAnswers
+          .set(HasNiphlUpdatePage, true)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, answer)
+          .success
+          .value
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", answer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+          verify(mockTraderProfileConnector, times(1))
+            .submitTraderProfile(eqTo(TraderProfile(testEori, "1", Some("2"), Some(answer))), eqTo(testEori))(any())
+        }
+      }
+
+      "must redirect to Profile for a POST and not submit data if value is the same as original" in {
+        val answer = "SN12345"
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some(answer))
+
+        val userAnswers = emptyUserAnswers
+          .set(HasNiphlUpdatePage, true)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, answer)
+          .success
+          .value
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", answer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+          verify(mockTraderProfileConnector, never())
+            .submitTraderProfile(any(), any())(any())
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", ""))
+
+          val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None)
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if TraderProfile can't be built" in {
+        val answer = "SN12345"
+
+        val userAnswers = emptyUserAnswers
+          .set(HasNiphlUpdatePage, false)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, answer)
+          .success
+          .value
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRoute)
+              .withFormUrlEncodedBody(("value", answer))
+
+          val result = route(application, request).value
+
+          val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+        }
       }
     }
   }

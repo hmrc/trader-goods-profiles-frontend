@@ -53,9 +53,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     Map(testRecordId -> categoryQueryShortCommodity)
   )
 
-  val previouslyUpdatedCategoryInfo =
+  private val previouslyUpdatedCategoryInfo =
     categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
-  val previouslyUpdatedCommodity    = RecordCategorisations(
+  private val previouslyUpdatedCommodity    = RecordCategorisations(
     Map(testRecordId -> previouslyUpdatedCategoryInfo)
   )
 

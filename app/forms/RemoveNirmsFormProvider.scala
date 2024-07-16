@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import javax.inject.Inject
 
-case object HasNiphlsChangePage extends QuestionPage[Boolean] {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  override def path: JsPath = JsPath \ toString
+class RemoveNirmsFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "hasNiphlsChange"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("removeNirms.error.required")
+    )
 }
