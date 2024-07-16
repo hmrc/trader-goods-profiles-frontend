@@ -69,10 +69,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
   private def getGoodsRecordCountsUrl(eori: String, searchString: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/searchCount?searchString=$searchString"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/searchCount?searchString=$searchString"
 
   private def goodsRecordsUrl(eori: String, searchString: String, queryParams: Map[String, String]) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/search?searchString=$searchString&$queryParams"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/search?searchString=$searchString&$queryParams"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
