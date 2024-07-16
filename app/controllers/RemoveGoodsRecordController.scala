@@ -29,6 +29,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.RemoveGoodsRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -55,7 +56,7 @@ class RemoveGoodsRecordController @Inject() (
         .getRecord(request.eori, recordId)
         .map { _ =>
           Ok(view(form, recordId, location))
-            .removingFromSession("changesMade", "changedPage")
+            .removingFromSession(dataUpdated, pageUpdated)
         }
     }
 

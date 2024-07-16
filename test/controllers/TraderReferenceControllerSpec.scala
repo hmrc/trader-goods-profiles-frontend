@@ -38,6 +38,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.TraderReferenceView
 
 import java.time.Instant
@@ -369,8 +370,8 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          session(result).get("changesMade") must be(Some("true"))
-          session(result).get("changedPage") must be(Some("trader reference"))
+          session(result).get(dataUpdated) must be(Some("true"))
+          session(result).get(pageUpdated) must be(Some("trader reference"))
         }
       }
 
@@ -409,7 +410,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          session(result).get("changesMade") must be(Some("false"))
+          session(result).get(dataUpdated) must be(Some("false"))
         }
       }
 

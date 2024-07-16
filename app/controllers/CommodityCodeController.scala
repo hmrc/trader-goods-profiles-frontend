@@ -30,6 +30,7 @@ import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData._
 import views.html.CommodityCodeView
 
 import javax.inject.Inject
@@ -108,7 +109,8 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             {
-              val oldValue = request.userAnswers.get(CommodityCodeUpdatePage(recordId)).getOrElse("")
+              val oldValueOpt    = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
+              val isValueChanged = oldValueOpt.exists(_ != value)
               for {
                 commodity               <-
                   ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
@@ -117,8 +119,8 @@ class CommodityCodeController @Inject() (
                   Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))
                 _                       <- sessionRepository.set(updatedAnswersWithQuery)
               } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
-                .addingToSession("changesMade" -> (oldValue != value).toString)
-                .addingToSession("changedPage" -> "commodity code")
+                .addingToSession(dataUpdated -> isValueChanged.toString)
+                .addingToSession(pageUpdated -> commodityCode)
 
             }
               .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>

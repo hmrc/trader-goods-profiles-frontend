@@ -24,7 +24,9 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
+import utils.SessionData.{dataUpdated, pageUpdated}
+import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary,
+  GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
@@ -84,8 +86,8 @@ class SingleRecordController @Inject() (
             AdviceStatusSummary.row(record.adviceStatus, record.recordId)
           )
         )
-        val changesMade = request.session.get("changesMade").contains("true")
-        val changedPage = request.session.get("changedPage").getOrElse("")
+        val changesMade = request.session.get(dataUpdated).contains("true")
+        val changedPage = request.session.get(pageUpdated).getOrElse("")
 
         Ok(view(recordId, detailsList, categorisationList, adviceList, changesMade, changedPage))
       }

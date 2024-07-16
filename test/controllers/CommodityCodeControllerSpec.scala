@@ -34,6 +34,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CommodityCodeView
 
 import java.time.Instant
@@ -293,8 +294,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        session(result).get("changesMade") must be(Some("true"))
-        session(result).get("changedPage") must be(Some("commodity code"))
+        session(result).get(dataUpdated) must be(Some("true"))
+        session(result).get(pageUpdated) must be(Some("commodity code"))
 
       }
     }
@@ -336,7 +337,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        session(result).get("changesMade") must be(Some("false"))
+        session(result).get(dataUpdated) must be(Some("false"))
 
       }
     }
