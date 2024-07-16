@@ -119,7 +119,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val mockOttConnector = mock[OttConnector]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
           .successful(
             Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
           )
@@ -143,9 +143,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(
-            any()
-          )
+          verify(mockOttConnector, times(1))
+            .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
+              any()
+            )
         }
       }
 
@@ -193,7 +194,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         val mockOttConnector = mock[OttConnector]
 
-        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
           .failed(
             UpstreamErrorResponse(" ", NOT_FOUND)
           )
@@ -218,9 +219,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
 
-          verify(mockOttConnector, times(1)).getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any())(
-            any()
-          )
+          verify(mockOttConnector, times(1))
+            .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
+              any()
+            )
         }
       }
 

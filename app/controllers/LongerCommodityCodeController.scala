@@ -24,7 +24,7 @@ import models.helper.UpdateRecordJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.LongerCommodityCodePage
+import pages.{CountryOfOriginPage, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -132,6 +132,7 @@ class LongerCommodityCodeController @Inject() (
                                    request.eori,
                                    request.affinityGroup,
                                    UpdateRecordJourney,
+                                   request.userAnswers.get(CountryOfOriginPage),
                                    Some(recordId)
                                  )
       updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))

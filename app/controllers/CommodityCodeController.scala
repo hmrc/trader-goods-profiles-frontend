@@ -22,7 +22,7 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -86,7 +86,14 @@ class CommodityCodeController @Inject() (
           value =>
             (for {
               commodity               <-
-                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
+                ottConnector.getCommodityCode(
+                  value,
+                  request.eori,
+                  request.affinityGroup,
+                  CreateRecordJourney,
+                  request.userAnswers.get(CountryOfOriginPage),
+                  None
+                )
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
@@ -109,7 +116,14 @@ class CommodityCodeController @Inject() (
           value =>
             (for {
               commodity               <-
-                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
+                ottConnector.getCommodityCode(
+                  value,
+                  request.eori,
+                  request.affinityGroup,
+                  CreateRecordJourney,
+                  request.userAnswers.get(CountryOfOriginPage),
+                  None
+                )
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
               updatedAnswersWithQuery <-
                 Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))

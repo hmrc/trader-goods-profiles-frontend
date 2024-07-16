@@ -172,7 +172,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
 
-        verify(mockOttConnector, never()).getCommodityCode(any(), any(), any(), any(), any())(any())
+        verify(mockOttConnector, never()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
         verify(mockSessionRepository, never()).set(any())
 
       }
@@ -194,7 +194,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
 
       val testCommodity = Commodity("654321", List("Description"), Instant.now, None)
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
         .successful(
           testCommodity
         )
@@ -218,7 +218,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
 
         withClue("ensure user answers has set the new commodity query") {
           val finalUserAnswers = uaCaptor.getValue
@@ -268,9 +268,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .success
         .value
 
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future.failed(
-        UpstreamErrorResponse(" ", NOT_FOUND)
-      )
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+        .failed(
+          UpstreamErrorResponse(" ", NOT_FOUND)
+        )
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
@@ -295,7 +296,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
       }
 
     }
