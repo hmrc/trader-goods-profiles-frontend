@@ -18,15 +18,19 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import connectors.GoodsRecordConnector
 import forms.TraderReferenceFormProvider
+import models.GoodsRecordsPagination.firstPage
 import models.helper.GoodsDetailsUpdate
-import models.{NormalMode, UserAnswers}
+import models.router.responses.GetRecordsResponse
+import models.{GoodsRecordsPagination, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
+import play.api.data.FormError
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -36,14 +40,33 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.TraderReferenceView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new TraderReferenceFormProvider()
-  private val form = formProvider()
+  val formProvider          = new TraderReferenceFormProvider()
+  private val form          = formProvider()
+  private val currentPage   = firstPage
+  private val totalRecords  = 23
+  private val numberOfPages = 3
+  private val records       = Seq(
+    goodsRecordResponse(
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z")
+    )
+  )
+  private val emptyResponse = GetRecordsResponse(
+    Seq.empty,
+    GoodsRecordsPagination(0, 0, 0, None, None)
+  )
+
+  private val response = GetRecordsResponse(
+    records,
+    GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
+  )
 
   "TraderReference Controller" - {
 
@@ -95,11 +118,19 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            emptyResponse
+          )
+
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -125,6 +156,48 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[TraderReferenceView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must return a Bad Request and errors when an existing data is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            response
+          )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, traderReferenceRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val boundForm = form.copy(errors =
+            Seq(elems =
+              FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+            )
+          )
 
           val view = application.injector.instanceOf[TraderReferenceView]
 
@@ -233,11 +306,19 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            emptyResponse
+          )
+
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -263,6 +344,48 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
+
+          val view = application.injector.instanceOf[TraderReferenceView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must return a Bad Request and errors when an existing data is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            response
+          )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, traderReferenceRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val boundForm = form.copy(errors =
+            Seq(elems =
+              FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+            )
+          )
 
           val view = application.injector.instanceOf[TraderReferenceView]
 

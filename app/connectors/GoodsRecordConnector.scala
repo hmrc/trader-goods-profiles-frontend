@@ -65,6 +65,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/store"
 
+  private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
+
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
@@ -180,4 +183,24 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .recover { case _: NotFoundException =>
         false
       }
+
+  def filterRecordsByField(
+    eori: String,
+    searchTerm: String,
+    field: String
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[GetRecordsResponse] = {
+
+    val queryParams = Map(
+      "searchTerm" -> searchTerm,
+      "field"      -> field
+    )
+
+    httpClient
+      .get(filterRecordsUrl(eori, queryParams))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
+  }
 }
