@@ -150,7 +150,10 @@ categoryGuidance.heading = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain conditions.
 categoryGuidance.p2 = We’ll ask you questions about conditions that you hold and then tell you what category your goods are. If the commodity code has too many conditions for us to list, we might ask you for an 8 or 10 digit commodity code.
 categoryGuidance.subheading = Exclusions
-categoryGuidance.p3 = Certain types of goods are excluded and may not be suitable for movement using SPIMM. These goods are referred to as Category 1 goods. Other goods may be controlled and require additional commodity code details to use the SPIMM. These goods are referred to as Category 2 goods. Any goods not classed as Category 1 or Category 2 goods are referred to as Standard goods and can benefit from SPIMM.
+categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
+categoryGuidance.p3.1 = Category 1 – goods that are excluded and not suitable for movement using SPIMM
+categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional commodity details to use SPIMM
+categoryGuidance.p3.3 = Standard – goods that are not classed under Category 1 or Category 2 and benefit from SPIMM
 categoryGuidance.p4 = You’ll need to know the certificate number or name of any conditions you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new condition, you’ll be able to change this later. If any measures apply to your trade, you’ll receive a categorisation result.
 
 commodityCode.title = Commodity code
@@ -256,10 +259,12 @@ traderReference.title = Trader reference
 traderReference.h1 = Trader reference
 traderReference.p1 = A trader reference is a custom name you can give a goods record to help you identify the record. You can also use the trader reference to add the record information to a declaration.
 traderReference.p2 = The trader reference needs to be unique to your Trader Goods Profile.
+traderReference.p3 = You may want to use the stock keeping unit (SKU).
 traderReference.inputHeading = What is the trader reference?
-traderReference.hint = This can be up to 512 characters.
+traderReference.hint = You can enter up to 512 characters.
 traderReference.error.required = Enter the trader reference
 traderReference.error.length = Trader reference must be 512 characters or less
+traderReference.error.traderRefNotUnique = This trader reference is already in your TGP. Enter a unique trader reference.
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
