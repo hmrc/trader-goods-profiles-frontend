@@ -16,10 +16,11 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getPagination, getSearchPagination}
 import models.NormalMode
-import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
+import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, GoodsRecordsPage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -34,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordSearchResultController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
+  ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   identify: IdentifierAction,
   val controllerComponents: MessagesControllerComponents,
@@ -43,8 +45,47 @@ class GoodsRecordSearchResultController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = identify { implicit request =>
-    Ok(view())
+  private val pageSize = 10
+
+  def onPageLoad(page: Int): Action[AnyContent] = identify.async { implicit request =>
+    //    val preparedForm = request.userAnswers.get(GoodsRecordsPage) match {
+    //      case None        => form
+    //      case Some(value) => form.fill(value)
+    //    }
+
+    if (page < 1) {
+      Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+    } else {
+      goodsRecordConnector.getRecordsCount(request.eori).flatMap {
+        case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
+        case _ =>
+          for {
+            searchResponse <- goodsRecordConnector.getRecords(request.eori, "000", page, pageSize)
+            countries      <- ottConnector.getCountries
+          } yield
+            if (searchResponse.pagination.totalRecords != 0) {
+              val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
+              Ok(
+                view(
+                  searchResponse.goodsItemRecords,
+                  searchResponse.pagination.totalRecords,
+                  getFirstRecordIndex(searchResponse.pagination, pageSize),
+                  getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
+                  countries,
+                  getSearchPagination(
+                    searchResponse.pagination.currentPage,
+                    searchResponse.pagination.totalPages
+                  ),
+                  page,
+                  "search text"
+                )
+              )
+//              Ok(view())
+            } else {
+              Redirect(routes.GoodsRecordSearchResultController.onPageLoadNoRecords())
+            }
+      }
+    }
   }
 
   def onPageLoadNoRecords(): Action[AnyContent] = identify { implicit request =>

@@ -14,15 +14,89 @@
  * limitations under the License.
  *@
 
-@this(layout: templates.Layout)
+@import models.router.responses.GetGoodsRecordResponse
 
-@()(implicit request: Request[_], messages: Messages)
+@this(
+    layout: templates.Layout,
+    govukTable: GovukTable,
+    tableRowActionList: components.TableRowActionList,
+    govukPagination: GovukPagination
+  )
 
-@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResult.title"))) {
+@(goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int, searchString: String)(implicit request: Request[_], messages: Messages)
 
-    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1")</h1>
+@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResult.title", totalRecords)), isFullWidth = true) {
 
-    <p class="govuk-body">@messages("goodsRecordSearchResult.p1")</p>
+<div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1", totalRecords)</h1>
 
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("goodsRecordSearchResult.p2.linkText")</a></p>
+    <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString)</p>
+</div>
+
+<div class="govuk-grid-column-full">
+    @govukTable(
+        Table(
+            head = Some(Seq(
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.traderReference"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.status"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.actions"))
+                )
+            )),
+            rows = goodsRecordsItems.map{
+                goodsRecord =>  Seq(
+                    TableRow(
+                        content = Text(goodsRecord.traderRef)
+                    ),
+                    TableRow(
+                        content = Text(goodsRecord.goodsDescription)
+                    ),
+                    TableRow(
+                        content = Text(
+                            countries.find(_.id == goodsRecord.countryOfOrigin)
+                                .map(_.description)
+                                .getOrElse(goodsRecord.countryOfOrigin)
+                            )
+                    ),
+                    TableRow(
+                        content = Text(goodsRecord.comcode)
+                    ),
+                    TableRow(
+                        content = Text(goodsRecord.declarable)
+                    ),
+                    TableRow(
+                        content = HtmlContent(
+                            tableRowActionList(
+                                text1 = messages("site.change"),
+                                text2 = messages("site.remove"),
+                                visuallyHiddenContent1 = messages("goodsRecords.hidden.change"),
+                                visuallyHiddenContent2 = messages("goodsRecords.hidden.remove"),
+                                href1 = routes.SingleRecordController.onPageLoad(goodsRecord.recordId).url,
+                                href2 = routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
+                            )
+                        )
+                    )
+                )
+            }
+        )
+    )
+
+    @govukPagination(pagination)
+
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("goodsRecordSearchResult.p2.linkText")</a></p>
+
+</div>
 }

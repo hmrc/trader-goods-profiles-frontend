@@ -68,6 +68,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
+  private def getGoodsRecordCountsUrl(eori: String, searchString: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/searchCount?searchString=$searchString"
+
+  private def goodsRecordsUrl(eori: String, searchString: String, queryParams: Map[String, String]) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/search?searchString=$searchString&$queryParams"
+
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[CreateGoodsRecordResponse] =
@@ -199,6 +205,39 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
     httpClient
       .get(filterRecordsUrl(eori, queryParams))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
+  }
+
+  def getRecordsCount(
+    eori: String,
+    searchString: String
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Int] =
+    httpClient
+      .get(getGoodsRecordCountsUrl(eori, searchString))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[Int])
+
+  def getRecords(
+    eori: String,
+    searchString: String,
+    page: Int,
+    size: Int
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[GetRecordsResponse] = {
+
+    val queryParams = Map(
+      "page" -> page.toString,
+      "size" -> size.toString
+    )
+
+    httpClient
+      .get(goodsRecordsUrl(eori, searchString, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetRecordsResponse])
