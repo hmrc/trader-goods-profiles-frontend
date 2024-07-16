@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
+import models.{AssessmentAnswer, Category1, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -437,15 +437,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               val result = route(application, request).value
 
-              val expectedPayload = CategoryRecord(
-                eori = testEori,
-                recordId = testRecordId,
-                category = 1,
-                categoryAssessmentsWithExemptions = 0,
-                measurementUnit = Some("Weight, in kilograms"),
-                comcode = None
-              )
-
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1)
@@ -491,15 +482,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               val result = route(application, request).value
 
-              val expectedPayload = CategoryRecord(
-                eori = testEori,
-                recordId = testRecordId,
-                category = 1,
-                categoryAssessmentsWithExemptions = 0,
-                measurementUnit = Some("Weight, in kilograms"),
-                comcode = Some(testCommodity.commodityCode)
-              )
-
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1)
@@ -542,21 +524,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               val result = route(application, request).value
 
-              val expectedPayload = CategoryRecord(
-                eori = testEori,
-                recordId = testRecordId,
-                category = 1,
-                categoryAssessmentsWithExemptions = 0,
-                measurementUnit = Some("Weight, in kilograms")
-              )
-
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1)
                 .url
 
               withClue("connector was called even though audit failed") {
-// TODO what is expected here now??
+//TODO what is expected here now??
                 //                verify(mockConnector, times(1))
 //                  .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
               }

@@ -18,9 +18,9 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case object HasNirmsChangePage extends QuestionPage[Boolean] {
+case object NirmsNumberUpdatePage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "hasNirmsChange"
+  override def toString: String = "nirmsNumberUpdate"
 }

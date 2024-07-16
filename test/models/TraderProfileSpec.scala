@@ -164,4 +164,216 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
     }
   }
+
+  ".buildNirms" - {
+
+    val traderProfile = TraderProfile(testEori, "1", None, None)
+
+    "must return a TraderProfile when all nirms data is answered" - {
+
+      "and nirms is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, true)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "2")
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), None))
+      }
+
+      "and nirms is not present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        result mustEqual Right(traderProfile)
+      }
+    }
+
+    "must return errors" - {
+
+      "when mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNirmsUpdatePage)
+          )
+        }
+      }
+
+      "when the user said they have a Nirms number but it is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, true)
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+        }
+      }
+
+      "when the user said they don't have optional data but they haven't confirmed it" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(RemoveNirmsPage)
+          )
+        }
+      }
+
+      "when the user has confirmed deleting something they don't want to delete" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNirmsPage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(RemoveNirmsPage)
+          )
+        }
+      }
+    }
+  }
+
+  ".buildNiphl" - {
+
+    val traderProfile = TraderProfile(testEori, "1", None, None)
+
+    "must return a TraderProfile when all niphl data is answered" - {
+
+      "and niphl is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "2")
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        result mustEqual Right(TraderProfile(testEori, "1", None, Some("2")))
+      }
+
+      "and niphl is not present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNiphlPage, true)
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        result mustEqual Right(traderProfile)
+      }
+    }
+
+    "must return errors" - {
+
+      "when mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when the user said they have a Niphl number but it is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NiphlNumberUpdatePage)
+        }
+      }
+
+      "when the user said they don't have optional data but they haven't confirmed it" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(RemoveNiphlPage)
+          )
+        }
+      }
+
+      "when the user has confirmed deleting something they don't want to delete" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNiphlPage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(RemoveNiphlPage)
+          )
+        }
+      }
+    }
+  }
 }

@@ -19,7 +19,7 @@ package models
 import cats.data.EitherNec
 import cats.implicits._
 import pages._
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, Reads}
 
 final case class TraderProfile(
   actorId: String,
@@ -39,4 +39,45 @@ object TraderProfile {
       answers.getOptionalPageValue(answers, HasNirmsPage, NirmsNumberPage),
       answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
+
+  def buildNirms(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      Right(traderProfile.ukimsNumber),
+      getOptionallyRemovedPage(answers, HasNirmsUpdatePage, RemoveNirmsPage, NirmsNumberUpdatePage),
+      Right(traderProfile.niphlNumber)
+    ).parMapN(TraderProfile.apply)
+
+  def buildNiphl(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      Right(traderProfile.ukimsNumber),
+      Right(traderProfile.nirmsNumber),
+      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
+    ).parMapN(TraderProfile.apply)
+
+  def getOptionallyRemovedPage[A](
+    answers: UserAnswers,
+    questionPage: QuestionPage[Boolean],
+    removePage: QuestionPage[Boolean],
+    optionalPage: QuestionPage[A]
+  )(implicit rds: Reads[A]): EitherNec[ValidationError, Option[A]] =
+    answers.getPageValue(questionPage) match {
+      case Right(true)  => answers.getPageValue(optionalPage).map(Some(_))
+      case Right(false) =>
+        answers.getPageValue(removePage) match {
+          case Right(true)  => Right(None)
+          case Right(false) => answers.unexpectedValueDefined(answers, removePage)
+          case Left(errors) => Left(errors)
+        }
+      case Left(errors) => Left(errors)
+    }
 }
