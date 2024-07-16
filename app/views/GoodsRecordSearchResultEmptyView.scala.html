@@ -16,13 +16,13 @@
 
 @this(layout: templates.Layout)
 
-@()(implicit request: Request[_], messages: Messages)
+@(searchText: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResult.title"))) {
+@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResultEmptyView.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1")</h1>
+    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResultEmptyView.h1")</h1>
 
-    <p class="govuk-body">@messages("goodsRecordSearchResult.p1")</p>
+    <p class="govuk-body">@messages("goodsRecordSearchResultEmptyView.p1", searchText)</p>
 
-    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("goodsRecordSearchResult.p2.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("goodsRecordSearchResultEmptyView.p2.linkText")</a></p>
 }

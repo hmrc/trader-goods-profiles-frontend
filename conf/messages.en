@@ -521,5 +521,5 @@ goodsRecordSearchResult.p2.linkText = Go back to goods records
 
 goodsRecordSearchResultEmptyView.title = There are no matching results
 goodsRecordSearchResultEmptyView.h1 = There are no matching results
-goodsRecordSearchResultEmptyView.p1 = You searched for the term ''''
-goodsRecordSearchResultView.p2.linkText = Go back to goods records
+goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''
+goodsRecordSearchResultEmptyView.p2.linkText = Go back to goods records
