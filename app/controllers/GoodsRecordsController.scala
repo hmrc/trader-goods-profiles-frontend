@@ -64,14 +64,10 @@ class GoodsRecordsController @Inject() (
               countries           <- ottConnector.getCountries
             } yield
               if (goodsRecordResponse.pagination.totalRecords != 0) {
-                val preparedForm = request.userAnswers.get(GoodsRecordsPage) match {
-                  case None        => form
-                  case Some(value) => form.fill(value)
-                }
-                val firstRecord  = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
                 Ok(
                   view(
-                    preparedForm,
+                    form,
                     goodsRecordResponse.goodsItemRecords,
                     goodsRecordResponse.pagination.totalRecords,
                     getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
@@ -101,30 +97,32 @@ class GoodsRecordsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(formWithErrors, Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
-            ),
-          value =>
             for {
-              updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
-              _                   <- sessionRepository.set(updatedAnswers)
               goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
               countries           <- ottConnector.getCountries
             } yield {
               val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-              Ok(
+              BadRequest(
                 view(
-                  form.fill(value),
+                  formWithErrors,
                   goodsRecordResponse.goodsItemRecords,
                   goodsRecordResponse.pagination.totalRecords,
                   getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
                   getLastRecordIndex(firstRecord, pageSize),
                   countries,
-                  getPagination(goodsRecordResponse.pagination.currentPage, goodsRecordResponse.pagination.totalPages),
+                  getPagination(
+                    goodsRecordResponse.pagination.currentPage,
+                    goodsRecordResponse.pagination.totalPages
+                  ),
                   page
                 )
               )
-            }
+            },
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(routes.GoodsRecordSearchResultController.onPageLoad(1))
         )
   }
 }
