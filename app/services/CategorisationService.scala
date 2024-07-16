@@ -94,32 +94,30 @@ class CategorisationService @Inject() (
       recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
 
     for {
-      newCommodityCode                 <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
-      getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-      goodsNomenclature                <- ottConnector.getCategorisationInfo(
-                                            newCommodityCode.commodityCode,
-                                            request.eori,
-                                            request.affinityGroup,
-                                            Some(recordId),
-                                            getGoodsRecordResponse.countryOfOrigin,
-                                            LocalDate.now() //TODO where does DateOfTrade come from??
-                                          )
-      originalCommodityCode             = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
-      categorisationInfo               <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
-                                            case Some(categorisationInfo) => Future.successful(categorisationInfo)
-                                            case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
-                                          }
-      updatedAnswers                   <-
+      newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+      goodsNomenclature      <- ottConnector.getCategorisationInfo(
+                                  newCommodityCode.commodityCode,
+                                  request.eori,
+                                  request.affinityGroup,
+                                  Some(recordId),
+                                  getGoodsRecordResponse.countryOfOrigin,
+                                  LocalDate.now() //TODO where does DateOfTrade come from??
+                                )
+      originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
+      categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
+                                  case Some(categorisationInfo) => Future.successful(categorisationInfo)
+                                  case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                }
+      updatedAnswers         <-
         Future.fromTry(
           request.userAnswers.set(
             RecordCategorisationsQuery,
             recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
           )
         )
-      updatedAnswersCleanUpAssessments <-
-        Future.fromTry(cleanupOldAssessmentAnswers(updatedAnswers, recordId))
-      _                                <- sessionRepository.set(updatedAnswersCleanUpAssessments)
-    } yield updatedAnswersCleanUpAssessments
+      _                      <- sessionRepository.set(updatedAnswers)
+    } yield updatedAnswers
   }
 
   //TODO this will be refactored out in TGP-1600 but solves the immediate problem
