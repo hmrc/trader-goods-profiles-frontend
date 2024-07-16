@@ -82,8 +82,14 @@ object TraderProfile {
     removePage: QuestionPage[Boolean],
     optionalPage: QuestionPage[A]
   )(implicit rds: Reads[A]): EitherNec[ValidationError, Option[A]] =
-    answers.getPageValue(removePage) match {
-      case Right(true) => Right(None)
-      case _           => answers.getOptionalPageValue(answers, questionPage, optionalPage)
+    answers.getPageValue(questionPage) match {
+      case Right(true)  => answers.getPageValue(optionalPage).map(Some(_))
+      case Right(false) =>
+        answers.getPageValue(removePage) match {
+          case Right(true)  => Right(None)
+          case Right(false) => answers.unexpectedValueDefined(answers, removePage)
+          case Left(errors) => Left(errors)
+        }
+      case Left(errors) => Left(errors)
     }
 }

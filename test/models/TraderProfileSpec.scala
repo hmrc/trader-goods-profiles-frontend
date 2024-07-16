@@ -202,7 +202,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
     "must return a TraderProfile when all nirms data is answered" - {
 
-      "and all optional data is present" in {
+      "and nirms is present" in {
 
         val answers =
           UserAnswers(userAnswersId)
@@ -218,11 +218,14 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         result mustEqual Right(TraderProfile(testEori, "1", Some("2"), None))
       }
 
-      "and all optional data is missing" in {
+      "and nirms is not present" in {
 
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(HasNirmsChangePage, true)
             .success
             .value
 
@@ -262,14 +265,10 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when the user said they don't have optional data but it is present" in {
-
+      "when the user said they don't have optional data but they haven't confirmed it" in {
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "2")
             .success
             .value
 
@@ -277,7 +276,26 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(NirmsNumberUpdatePage)
+            PageMissing(HasNirmsChangePage)
+          )
+        }
+      }
+
+      "when the user has confirmed deleting something they don't want to delete" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(HasNirmsChangePage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(HasNirmsChangePage)
           )
         }
       }
@@ -290,27 +308,30 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
     "must return a TraderProfile when all niphl data is answered" - {
 
-      "and all optional data is present" in {
+      "and niphl is present" in {
 
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, true)
             .success
             .value
-            .set(NiphlNumberUpdatePage, "3")
+            .set(NiphlNumberUpdatePage, "2")
             .success
             .value
 
         val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
 
-        result mustEqual Right(TraderProfile(testEori, "1", None, Some("3")))
+        result mustEqual Right(TraderProfile(testEori, "1", None, Some("2")))
       }
 
-      "and all optional data is missing" in {
+      "and niphl is not present" in {
 
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(HasNiphlChangePage, true)
             .success
             .value
 
@@ -350,14 +371,10 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when the user said they don't have optional data but it is present" in {
-
+      "when the user said they don't have optional data but they haven't confirmed it" in {
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(NiphlNumberUpdatePage, "3")
             .success
             .value
 
@@ -365,11 +382,29 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(NiphlNumberUpdatePage)
+            PageMissing(HasNiphlChangePage)
+          )
+        }
+      }
+
+      "when the user has confirmed deleting something they don't want to delete" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(HasNiphlChangePage, false)
+            .success
+            .value
+
+        val result = TraderProfile.buildNiphl(answers, testEori, traderProfile)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(HasNiphlChangePage)
           )
         }
       }
     }
   }
-
 }

@@ -32,6 +32,8 @@ import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
+import pages.HasNiphlUpdatePage
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import scala.concurrent.Future
 
@@ -103,7 +105,7 @@ class HasNiphlChangeControllerSpec extends SpecBase with MockitoSugar {
       when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
@@ -172,6 +174,37 @@ class HasNiphlChangeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if Trader Profile cannot be built" in {
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, hasNiphlChangeRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
       }
     }
   }

@@ -32,6 +32,8 @@ import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
+import pages.HasNirmsUpdatePage
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import scala.concurrent.Future
 
@@ -50,7 +52,8 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsChangeRoute)
@@ -103,7 +106,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
       when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
@@ -172,6 +175,37 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if Trader Profile cannot be built" in {
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, hasNirmsChangeRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
       }
     }
   }
