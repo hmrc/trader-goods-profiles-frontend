@@ -38,32 +38,28 @@ class CategorisationService @Inject() (
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
-  ): Future[UserAnswers] = {
+  ): Future[UserAnswers] =
 
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    (for {
+      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+      recordCategorisations =
+        request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    } yield {
 
-    recordCategorisations.records.get(recordId) match {
-      case Some(catInfo) =>
+      recordCategorisations.records.get(recordId) match {
+        case Some(catInfo) =>
 
-        (for {
-          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-        } yield {
           if (catInfo.commodityCode == getGoodsRecordResponse.comcode) {
             Future.successful(request.userAnswers)
           } else {
             updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
           }
-        }).flatten
-      case None    =>
 
-        (for {
-          getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-        } yield {
-            updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
-        }).flatten
-    }
-  }
+        case None =>
+          updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
+      }
+    }).flatten
+
 
   private def updateCategorisationDetails(request: DataRequest[_], recordId: String, recordCategorisations: RecordCategorisations,
                                           commodityCode: String, countryOfOrigin: String)
@@ -94,15 +90,13 @@ class CategorisationService @Inject() (
     recordId: String
   )(implicit
     hc: HeaderCarrier
-  ): Future[UserAnswers] = {
-
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+  ): Future[UserAnswers] =
 
     (for {
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+      recordCategorisations =
+        request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
     } yield updateCategorisationDetails(request, recordId, recordCategorisations, newCommodityCode.commodityCode, getGoodsRecordResponse.countryOfOrigin)).flatten
-  }
 
 }
