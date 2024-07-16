@@ -16,12 +16,14 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.HasNirmsFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
-import pages.HasNirmsPage
+import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -38,6 +40,7 @@ class HasNirmsController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
+  traderProfileConnector: TraderProfileConnector,
   formProvider: HasNirmsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasNirmsView
@@ -47,22 +50,23 @@ class HasNirmsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasNirmsPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
-  }
+      Ok(view(preparedForm, routes.HasNirmsController.onSubmitCreate(mode)))
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitCreate(mode)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsPage, value))
@@ -70,4 +74,37 @@ class HasNirmsController @Inject() (
             } yield Redirect(navigator.nextPage(HasNirmsPage, mode, updatedAnswers))
         )
     }
+
+  def onPageLoadUpdate: Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      request.userAnswers.get(HasNirmsUpdatePage) match {
+        case None        =>
+          for {
+            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            updatedAnswers <-
+              Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Ok(view(form.fill(traderProfile.nirmsNumber.isDefined), routes.HasNirmsController.onSubmitUpdate))
+        case Some(value) => Future.successful(Ok(view(form.fill(value), routes.HasNirmsController.onSubmitUpdate)))
+      }
+    }
+
+  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitUpdate))),
+        value =>
+          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            if (traderProfile.nirmsNumber.isDefined == value) {
+              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
+            } else {
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, NormalMode, updatedAnswers))
+            }
+          }
+      )
+  }
 }
