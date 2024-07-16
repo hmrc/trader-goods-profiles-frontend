@@ -19,12 +19,10 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.TraderReferenceFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.{GoodsDescriptionUpdatePage, TraderReferencePage, TraderReferenceUpdatePage}
+import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,6 +31,7 @@ import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TraderReferenceView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TraderReferenceController @Inject() (
