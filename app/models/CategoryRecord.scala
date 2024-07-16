@@ -59,15 +59,30 @@ object CategoryRecord {
       )
     )
 
-  def buildForNiphlsOnlyCategory(eori: String, recordId: String): CategoryRecord = {
+  def buildForNiphlsOnlyCategory(eori: String, recordId: String, category: Int): CategoryRecord = {
     CategoryRecord(
       eori,
       recordId,
       None, //TODO ???
-      1,
+      category,
       1
     )
   }
+
+  def buildForNiphls(eori: String, recordId: String, traderProfile: TraderProfile): CategoryRecord = {
+    val category = if (traderProfile.niphlNumber.isDefined) {
+        Category2
+      } else {
+        Category1
+      }
+
+    val categoryAsNumber = if (category == Category1) 1 else 2 //TODO
+
+    val categoryRecord = CategoryRecord(eori, recordId, None, categoryAsNumber, 1)
+
+    categoryRecord
+
+    }
 
   private def getLongerCommodityCode(answers: UserAnswers, recordId: String): Option[String] =
     answers.get(LongerCommodityQuery(recordId)).map(_.commodityCode)
