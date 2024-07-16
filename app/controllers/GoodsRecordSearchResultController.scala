@@ -26,7 +26,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
-import views.html.{GoodsRecordSearchResultView, SingleRecordView}
+import views.html.{GoodsRecordSearchResultEmptyView, GoodsRecordSearchResultView, SingleRecordView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,12 +37,17 @@ class GoodsRecordSearchResultController @Inject() (
   sessionRepository: SessionRepository,
   identify: IdentifierAction,
   val controllerComponents: MessagesControllerComponents,
-  view: GoodsRecordSearchResultView
+  view: GoodsRecordSearchResultView,
+  emptyView: GoodsRecordSearchResultEmptyView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = identify { implicit request =>
     Ok(view())
+  }
+
+  def onPageLoadNoRecords(): Action[AnyContent] = identify { implicit request =>
+    Ok(emptyView())
   }
 }
