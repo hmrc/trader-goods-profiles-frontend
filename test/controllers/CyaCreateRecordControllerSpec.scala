@@ -175,7 +175,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.submitGoodsRecord(any())(any()))
-            .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
+            .thenReturn(Future.successful("test"))
 
           val mockAuditService  = mock[AuditService]
           when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))

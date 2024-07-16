@@ -70,13 +70,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
-  ): Future[CreateGoodsRecordResponse] =
+  ): Future[String] =
     httpClient
       .post(createGoodsRecordUrl(goodsRecord.eori))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
-      .map(response => response.json.as[CreateGoodsRecordResponse])
+      .map(response => response.json.as[String])
 
   def removeGoodsRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier

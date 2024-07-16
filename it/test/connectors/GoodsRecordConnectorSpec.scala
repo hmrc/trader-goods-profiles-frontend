@@ -259,10 +259,10 @@ class GoodsRecordConnectorSpec
         post(urlEqualTo(routerGoodsRecordsUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody(Json.toJson(createGoodsRecordResponse).toString))
+          .willReturn(ok().withBody(Json.toJson(testRecordId).toString))
       )
 
-      connector.submitGoodsRecord(goodsRecord).futureValue mustBe createGoodsRecordResponse
+      connector.submitGoodsRecord(goodsRecord).futureValue mustBe testRecordId
     }
 
     "must return a failed future when the server returns an error" in {
@@ -631,7 +631,8 @@ class GoodsRecordConnectorSpec
 
   ".filterRecordsByField" - {
 
-    val filterRecordsUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=TOM001001&field=traderRef"
+    val filterRecordsUrl =
+      s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=TOM001001&field=traderRef"
 
     "must get a page of goods records" in {
 
@@ -641,7 +642,9 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe getRecordsResponse.validate[GetRecordsResponse].get
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe getRecordsResponse
+        .validate[GetRecordsResponse]
+        .get
     }
 
     "must return a failed future when the server returns an error" in {
