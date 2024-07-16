@@ -40,18 +40,6 @@ object TraderProfile {
       answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
 
-  def buildUkims(
-    answers: UserAnswers,
-    eori: String,
-    traderProfile: TraderProfile
-  ): EitherNec[ValidationError, TraderProfile] =
-    (
-      Right(eori),
-      answers.getPageValue(UkimsNumberUpdatePage),
-      Right(traderProfile.nirmsNumber),
-      Right(traderProfile.niphlNumber)
-    ).parMapN(TraderProfile.apply)
-
   def buildNirms(
     answers: UserAnswers,
     eori: String,

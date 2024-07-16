@@ -16,20 +16,17 @@
 
 package controllers
 
-import cats.data
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.UkimsNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile, ValidationError}
+import models.{Mode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
-import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
@@ -52,8 +49,7 @@ class UkimsNumberController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form        = formProvider()
-  private val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+  private val form = formProvider()
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
@@ -104,24 +100,15 @@ class UkimsNumberController @Inject() (
                   if (traderProfile.ukimsNumber == value) {
                     Future.successful(Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers)))
                   } else {
-                    TraderProfile.buildUkims(answers, request.eori, traderProfile) match {
-                      case Right(model) =>
-                        for {
-                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
-                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                    val newTraderProfile =
+                      TraderProfile(request.eori, value, traderProfile.nirmsNumber, traderProfile.niphlNumber)
+                    traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori).map { _ =>
+                      Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
                     }
                   }
                 }
               }
           }
       )
-  }
-
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }
