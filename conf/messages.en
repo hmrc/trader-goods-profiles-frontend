@@ -513,3 +513,13 @@ helpAndSupport.p13.linkText = Guidance for using a Northern Ireland plant health
 helpAndSupport.p14.linkText = Find additional support and contacts to help you
 helpAndSupport.p15 = You can use the Trader Support Service to create IMMI forms with information from your TGP.
 helpAndSupport.p15.linkText = Sign up for the Trader Support Service
+
+goodsRecordSearchResult.title = There are <x> search results
+goodsRecordSearchResult.h1 = There are <x> search results
+goodsRecordSearchResult.p1 = You searched for the term ''china''
+goodsRecordSearchResult.p2.linkText = Go back to goods records
+
+goodsRecordsEmptyView.title = There are no matching results
+goodsRecordsEmptyView.h1 = There are no matching results
+goodsRecordsEmptyView.p1 = You searched for the term ''''
+goodsRecordsEmptyView.p2.linkText = Go back to goods records
