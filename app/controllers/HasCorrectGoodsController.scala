@@ -18,9 +18,9 @@ package controllers
 
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
+import models.Mode
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -30,12 +30,11 @@ import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Constants.firstAssessmentIndex
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 class HasCorrectGoodsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -187,17 +186,12 @@ class HasCorrectGoodsController @Inject() (
       // We then have both assessments so can decide if to recategorise or not
       needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
 
-      // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
-      updatedAnswersCleanedUp <-
-        Future
-          .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
-
-      _ <- sessionRepository.set(updatedAnswersCleanedUp)
+      _ <- sessionRepository.set(updatedCategorisationAnswers)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
         mode,
-        updatedAnswersCleanedUp
+        updatedCategorisationAnswers
       )
     )
 
@@ -206,26 +200,5 @@ class HasCorrectGoodsController @Inject() (
     newCommodityCategorisation: CategorisationInfo
   ) =
     !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments)
-
-  private def cleanupOldAssessmentAnswers(
-    userAnswers: UserAnswers,
-    recordId: String,
-    needToRecategorise: Boolean
-  ): Try[UserAnswers] =
-    if (needToRecategorise) {
-      (for {
-        recordQuery        <- userAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- recordQuery.records.get(recordId)
-        count               = categorisationInfo.categoryAssessments.size
-        //Go backwards to avoid recursion issues
-        rangeToRemove       = (firstAssessmentIndex to count + 1).reverse
-      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(userAnswers)) { (acc, currentIndexToRemove) =>
-        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
-      }).getOrElse(
-        Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
-      )
-    } else {
-      Success(userAnswers)
-    }
 
 }

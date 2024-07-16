@@ -58,7 +58,7 @@ class AssessmentController @Inject() (
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
-        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records.get(recordId).get))
+        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
         isNiphls = categorisationInfo.categoryAssessments(index).exemptions.exists(ex => ex.exemptionType == ExemptionType.OtherExemption && ex.id == "WFE012")
         //TODO check has niphls
         updatedAnswers <- if (isNiphls) Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption("WFE012"))) else Future.successful(userAnswersWithCategorisations)

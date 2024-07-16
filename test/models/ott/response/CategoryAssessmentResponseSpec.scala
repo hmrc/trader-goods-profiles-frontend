@@ -61,6 +61,10 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
               Json.obj(
                 "id"   -> "code",
                 "type" -> "additional_code"
+              ),
+              Json.obj(
+                "id"   -> "exempt",
+                "type" -> "exemption"
               )
             )
           ),
@@ -80,7 +84,8 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
           themeId = "1",
           exemptions = Seq(
             ExemptionResponse("cert", ExemptionType.Certificate),
-            ExemptionResponse("code", ExemptionType.AdditionalCode)
+            ExemptionResponse("code", ExemptionType.AdditionalCode),
+            ExemptionResponse("exempt", ExemptionType.OtherExemption)
           )
         )
       )

@@ -45,9 +45,8 @@ object Scenario {
     val hasCategory1Assessments: Boolean =
       category1Assessments.nonEmpty
 
-    val hasCategory1Exemptions: Boolean =
-      category1Assessments
-        .exists(assessment => assessment.exemptions.nonEmpty)
+    val hasEveryCategory1AssessmentGotExemptions: Boolean =
+      category1Assessments.count(assessment => assessment.exemptions.nonEmpty) == category1Assessments.size
 
     val niphlsAssessment =
       category1Assessments.exists(assessment => assessment.exemptions.exists(exemption => exemption.exemptionType ==ExemptionType.OtherExemption && exemption.code == "WFE012")) && category2Assessments.size == 1 && category2Assessments.exists(assessment => assessment.exemptions.isEmpty)
@@ -57,7 +56,7 @@ object Scenario {
       category1Assessments.count(assessment => assessment.exemptions.exists(exemption =>
         exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")).equals(category1Assessments.size)
 
-    (hasCategoryAssessments, hasCategory1Assessments, hasCategory1Exemptions, niphlsAssessment, hasOnlyNiphlsExemptionInCategory1) match {
+    (hasCategoryAssessments, hasCategory1Assessments, hasEveryCategory1AssessmentGotExemptions, niphlsAssessment, hasOnlyNiphlsExemptionInCategory1) match {
       case (true, true, true, true, true) => NiphlsOnly
       case (true, true, true, true, false) => NiphlsAndOthers
       case (true, true, false, _, _)   => Category1NoExemptions

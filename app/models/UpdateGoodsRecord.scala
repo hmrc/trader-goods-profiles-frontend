@@ -20,6 +20,7 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple3Parallel
 import pages._
 import play.api.libs.json.{Json, OFormat}
+import queries.CommodityUpdateQuery
 
 final case class UpdateGoodsRecord(
   eori: String,
@@ -27,7 +28,7 @@ final case class UpdateGoodsRecord(
   countryOfOrigin: Option[String] = None,
   goodsDescription: Option[String] = None,
   traderReference: Option[String] = None,
-  commodityCode: Option[String] = None
+  commodityCode: Option[Commodity] = None
 )
 
 object UpdateGoodsRecord {
@@ -102,13 +103,13 @@ object UpdateGoodsRecord {
       )
     )
 
-  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
       case Right(true)  =>
         answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
           case Right(code)  =>
             answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
-              case Right(true)  => Right(code)
+              case Right(true)  => getCommodityUpdateQuery(answers, code, recordId)
               case Right(false) =>
                 Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
               case Left(errors) => Left(errors)
@@ -117,6 +118,18 @@ object UpdateGoodsRecord {
         }
       case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
       case Left(errors) => Left(errors)
+    }
+
+  private def getCommodityUpdateQuery(
+    answers: UserAnswers,
+    code: String,
+    recordId: String
+  ): EitherNec[ValidationError, Commodity] =
+    answers.getPageValue(CommodityUpdateQuery(recordId)) match {
+      case Right(commodity) if commodity.commodityCode.startsWith(code) =>
+        Right(commodity)
+      case Left(errors)                                                 => Left(errors)
+      case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodeUpdatePage(recordId))))
     }
 
   private def getGoodsDescription(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =

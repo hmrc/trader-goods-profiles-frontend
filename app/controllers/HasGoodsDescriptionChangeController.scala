@@ -18,13 +18,16 @@ package controllers
 
 import controllers.actions._
 import forms.HasGoodsDescriptionChangeFormProvider
+
 import javax.inject.Inject
 import models.Mode
+import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasGoodsDescriptionChangePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasGoodsDescriptionChangeView
 
@@ -37,6 +40,7 @@ class HasGoodsDescriptionChangeController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  auditService: AuditService,
   formProvider: HasGoodsDescriptionChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasGoodsDescriptionChangeView
@@ -62,11 +66,21 @@ class HasGoodsDescriptionChangeController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
-          value =>
+          value => {
+            if (value) {
+              auditService
+                .auditStartUpdateGoodsRecord(
+                  request.eori,
+                  request.affinityGroup,
+                  GoodsDetailsUpdate,
+                  recordId
+                )
+            }
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasGoodsDescriptionChangePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasGoodsDescriptionChangePage(recordId), mode, updatedAnswers))
+          }
         )
     }
 }

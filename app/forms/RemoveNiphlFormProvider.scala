@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import javax.inject.Inject
 
-case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolean = false)
-    extends QuestionPage[String] {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  override def path: JsPath = JsPath \ toString \ recordId
+class RemoveNiphlFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "longerCommodityCode"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("removeNiphl.error.required")
+    )
 }

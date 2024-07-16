@@ -18,13 +18,16 @@ package controllers
 
 import controllers.actions._
 import forms.HasCommodityCodeChangeFormProvider
+
 import javax.inject.Inject
 import models.Mode
+import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasCommodityCodeChangePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCommodityCodeChangeView
 
@@ -38,13 +41,14 @@ class HasCommodityCodeChangeController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: HasCommodityCodeChangeFormProvider,
+  auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: HasCommodityCodeChangeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  private val form = formProvider()
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -62,11 +66,21 @@ class HasCommodityCodeChangeController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
-          value =>
+          value => {
+            if (value) {
+              auditService
+                .auditStartUpdateGoodsRecord(
+                  request.eori,
+                  request.affinityGroup,
+                  GoodsDetailsUpdate,
+                  recordId
+                )
+            }
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
+          }
         )
     }
 }

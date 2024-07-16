@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasNiphl.title"))) {
 
@@ -34,7 +34,7 @@
         <a class="govuk-link" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland">@messages("hasNiphl.p2.linkText")</a>.
     </p>
 
-    @formHelper(action = routes.HasNiphlController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
