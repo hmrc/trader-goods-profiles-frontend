@@ -24,3 +24,6 @@ case object CreateRecordJourney extends Journey {
 case object UpdateRecordJourney extends Journey {
   override def toString: String = "UpdateRecord"
 }
+case object RequestAdviceJourney extends Journey {
+  override def toString: String = "RequestAdvice"
+}
