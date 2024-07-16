@@ -56,35 +56,31 @@ class GoodsRecordSearchResultController @Inject() (
           if (page < 1) {
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
-            goodsRecordConnector.getRecordsCount(request.eori).flatMap {
-              case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
-              case _ =>
-                for {
-                  searchResponse <- goodsRecordConnector.getRecords(request.eori, searchText, page, pageSize)
-                  countries      <- ottConnector.getCountries
-                } yield
-                  if (searchResponse.pagination.totalRecords != 0) {
-                    val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
-                    Ok(
-                      view(
-                        searchResponse.goodsItemRecords,
-                        searchResponse.pagination.totalRecords,
-                        getFirstRecordIndex(searchResponse.pagination, pageSize),
-                        getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
-                        countries,
-                        getSearchPagination(
-                          searchResponse.pagination.currentPage,
-                          searchResponse.pagination.totalPages
-                        ),
-                        page,
-                        searchText,
-                        searchResponse.pagination.totalPages
-                      )
-                    )
-                  } else {
-                    Redirect(routes.GoodsRecordSearchResultController.onPageLoadNoRecords())
-                  }
-            }
+            for {
+              searchResponse <- goodsRecordConnector.getRecords(request.eori, searchText, page, pageSize)
+              countries      <- ottConnector.getCountries
+            } yield
+              if (searchResponse.pagination.totalRecords != 0) {
+                val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
+                Ok(
+                  view(
+                    searchResponse.goodsItemRecords,
+                    searchResponse.pagination.totalRecords,
+                    getFirstRecordIndex(searchResponse.pagination, pageSize),
+                    getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
+                    countries,
+                    getSearchPagination(
+                      searchResponse.pagination.currentPage,
+                      searchResponse.pagination.totalPages
+                    ),
+                    page,
+                    searchText,
+                    searchResponse.pagination.totalPages
+                  )
+                )
+              } else {
+                Redirect(routes.GoodsRecordSearchResultController.onPageLoadNoRecords())
+              }
           }
         case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }

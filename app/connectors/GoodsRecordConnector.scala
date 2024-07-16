@@ -68,9 +68,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
-  private def getGoodsRecordCountsUrl(eori: String, searchString: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/searchCount?searchString=$searchString"
-
   private def goodsRecordsUrl(eori: String, searchString: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/search?searchString=$searchString&$queryParams"
 
@@ -209,18 +206,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.json.as[GetRecordsResponse])
   }
-
-  def getRecordsCount(
-    eori: String,
-    searchString: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Int] =
-    httpClient
-      .get(getGoodsRecordCountsUrl(eori, searchString))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(response => response.json.as[Int])
 
   def getRecords(
     eori: String,
