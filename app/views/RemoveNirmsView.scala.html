@@ -25,19 +25,19 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("hasNirmsChange.title"))) {
+@layout(pageTitle = title(form, messages("removeNirms.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("hasNirmsChange.h1")</h1>
-          <p class="govuk-body">@messages("hasNirmsChange.p1")</p>
-          <p class="govuk-body">@messages("hasNirmsChange.p2")</p>
+    <h1 class="govuk-heading-l">@messages("removeNirms.h1")</h1>
+          <p class="govuk-body">@messages("removeNirms.p1")</p>
+          <p class="govuk-body">@messages("removeNirms.p2")</p>
 
      @govukWarningText(WarningText(
-            iconFallbackText = Some(messages("hasNirmsChange.warning")),
-            content = Text(messages("hasNirmsChange.warningText"))
+            iconFallbackText = Some(messages("removeNirms.warning")),
+            content = Text(messages("removeNirms.warningText"))
                 ))
-    <h2 class="govuk-heading-m">@messages("hasNirmsChange.h2")</h2>
+    <h2 class="govuk-heading-m">@messages("removeNirms.h2")</h2>
 
-    @formHelper(action = routes.HasNirmsChangeController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.RemoveNirmsController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -47,10 +47,10 @@
         @govukRadios(
             RadiosViewModel.apply(
                 field = form("value"),
-                legend = Legend(content = "hasNirmsChange.h2", classes = "govuk-visually-hidden"),
+                legend = Legend(content = "removeNirms.h2", classes = "govuk-visually-hidden"),
             items = Seq(
-                RadioItem(content = messages("hasNirmsChange.yes"), value = Some("true")),
-                RadioItem(content = messages("hasNirmsChange.no"), value = Some("false"))
+                RadioItem(content = messages("removeNirms.yes"), value = Some("true")),
+                RadioItem(content = messages("removeNirms.no"), value = Some("false"))
                         )
                                 )
                     )
@@ -61,7 +61,7 @@
     }
 
 
-<p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("hasNirmsChange.p3.linkText")</a></p>
+<p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("removeNirms.p3.linkText")</a></p>
 
 }
 

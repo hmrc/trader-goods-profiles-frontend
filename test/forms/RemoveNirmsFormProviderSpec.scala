@@ -19,12 +19,12 @@ package forms
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class HasNirmsChangeFormProviderSpec extends BooleanFieldBehaviours {
+class RemoveNirmsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "hasNirmsChange.error.required"
+  val requiredKey = "removeNirms.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new HasNirmsChangeFormProvider()()
+  val form = new RemoveNirmsFormProvider()()
 
   ".value" - {
 

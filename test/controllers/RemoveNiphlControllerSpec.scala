@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import forms.HasNirmsChangeFormProvider
+import forms.RemoveNiphlFormProvider
 import models.TraderProfile
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -27,40 +27,39 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.HasNirmsChangeView
+import views.html.RemoveNiphlView
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
-import pages.HasNirmsUpdatePage
+import pages.HasNiphlUpdatePage
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import scala.concurrent.Future
 
-class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
+class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                       = new HasNirmsChangeFormProvider()
+  val formProvider                       = new RemoveNiphlFormProvider()
   private val form                       = formProvider()
   private val mockSessionRepository      = mock[SessionRepository]
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-  private lazy val hasNirmsChangeRoute = routes.HasNirmsChangeController.onPageLoad().url
+  private lazy val removeNiphlRoute = routes.RemoveNiphlController.onPageLoad().url
 
-  "HasNirmsChange Controller" - {
+  "RemoveNiphl Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasNirmsChangeRoute)
+        val request = FakeRequest(GET, removeNiphlRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[HasNirmsChangeView]
+        val view = application.injector.instanceOf[RemoveNiphlView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form)(request, messages(application)).toString
@@ -84,7 +83,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNirmsChangeRoute)
+          FakeRequest(POST, removeNiphlRoute)
             .withFormUrlEncodedBody(("value", "false"))
 
         val result = route(application, request).value
@@ -106,7 +105,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
       when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
@@ -116,7 +115,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNirmsChangeRoute)
+          FakeRequest(POST, removeNiphlRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -124,7 +123,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
         verify(mockTraderProfileConnector, times(1))
-          .submitTraderProfile(eqTo(TraderProfile(testEori, "1", None, Some("3"))), eqTo(testEori))(any())
+          .submitTraderProfile(eqTo(TraderProfile(testEori, "1", Some("2"), None)), eqTo(testEori))(any())
       }
     }
 
@@ -134,12 +133,12 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNirmsChangeRoute)
+          FakeRequest(POST, removeNiphlRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[HasNirmsChangeView]
+        val view = application.injector.instanceOf[RemoveNiphlView]
 
         val result = route(application, request).value
 
@@ -153,7 +152,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, hasNirmsChangeRoute)
+        val request = FakeRequest(GET, removeNiphlRoute)
 
         val result = route(application, request).value
 
@@ -168,7 +167,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNirmsChangeRoute)
+          FakeRequest(POST, removeNiphlRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -189,6 +188,7 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
@@ -196,15 +196,14 @@ class HasNirmsChangeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, hasNirmsChangeRoute)
+          FakeRequest(POST, removeNiphlRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
-        val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
+        val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
 
         status(result) mustEqual SEE_OTHER
-
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
       }
     }

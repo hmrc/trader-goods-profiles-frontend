@@ -19,34 +19,34 @@ package controllers
 import cats.data
 import connectors.TraderProfileConnector
 import controllers.actions._
-import forms.HasNiphlChangeFormProvider
+import forms.RemoveNirmsFormProvider
 
 import javax.inject.Inject
 import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
-import pages.HasNiphlChangePage
+import pages.RemoveNirmsPage
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.HasNiphlChangeView
+import views.html.RemoveNirmsView
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 
-class HasNiphlChangeController @Inject() (
+class RemoveNirmsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: HasNiphlChangeFormProvider,
-  traderProfileConnector: TraderProfileConnector,
+  formProvider: RemoveNirmsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasNiphlChangeView
+  traderProfileConnector: TraderProfileConnector,
+  view: RemoveNirmsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -63,21 +63,21 @@ class HasNiphlChangeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         value =>
-          request.userAnswers.set(HasNiphlChangePage, value) match {
+          request.userAnswers.set(RemoveNirmsPage, value) match {
             case Success(answers) =>
               sessionRepository.set(answers).flatMap { _ =>
                 if (value) {
                   traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                    TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
+                    TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
                       case Right(model) =>
                         for {
                           _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(HasNiphlChangePage, NormalMode, answers))
+                        } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
                       case Left(errors) => Future.successful(logErrorsAndContinue(errors))
                     }
                   }
                 } else {
-                  Future.successful(Redirect(navigator.nextPage(HasNiphlChangePage, NormalMode, answers)))
+                  Future.successful(Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers)))
                 }
               }
           }
@@ -87,7 +87,7 @@ class HasNiphlChangeController @Inject() (
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
+    val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
     logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

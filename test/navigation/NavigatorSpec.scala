@@ -181,10 +181,10 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.NirmsNumberController.onPageLoadUpdate
           }
 
-          "to HasNirmsChangePage when answer is No" in {
+          "to RemoveNirmsPage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
-            navigator.nextPage(HasNirmsUpdatePage, NormalMode, answers) mustBe routes.HasNirmsChangeController
+            navigator.nextPage(HasNirmsUpdatePage, NormalMode, answers) mustBe routes.RemoveNirmsController
               .onPageLoad()
           }
 
@@ -200,10 +200,10 @@ class NavigatorSpec extends SpecBase {
           }
         }
 
-        "must go from HasNirmsChangePage to ProfilePage" in {
+        "must go from RemoveNirmsPage to ProfilePage" in {
 
           navigator.nextPage(
-            HasNirmsChangePage,
+            RemoveNirmsPage,
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.ProfileController.onPageLoad
@@ -227,10 +227,10 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.NiphlNumberController.onPageLoadUpdate
           }
 
-          "to HasNiphlChangePage when answer is No" in {
+          "to RemoveNiphlPage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, false).success.value
-            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.HasNiphlChangeController
+            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.RemoveNiphlController
               .onPageLoad()
           }
 
@@ -246,10 +246,10 @@ class NavigatorSpec extends SpecBase {
           }
         }
 
-        "must go from HasNiphlChangePage to ProfilePage" in {
+        "must go from RemoveNiphlPage to ProfilePage" in {
 
           navigator.nextPage(
-            HasNiphlChangePage,
+            RemoveNiphlPage,
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.ProfileController.onPageLoad

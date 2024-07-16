@@ -48,7 +48,7 @@ object TraderProfile {
     (
       Right(eori),
       Right(traderProfile.ukimsNumber),
-      getOptionallyRemovedPage(answers, HasNirmsUpdatePage, HasNirmsChangePage, NirmsNumberUpdatePage),
+      getOptionallyRemovedPage(answers, HasNirmsUpdatePage, RemoveNirmsPage, NirmsNumberUpdatePage),
       Right(traderProfile.niphlNumber)
     ).parMapN(TraderProfile.apply)
 
@@ -61,7 +61,7 @@ object TraderProfile {
       Right(eori),
       Right(traderProfile.ukimsNumber),
       Right(traderProfile.nirmsNumber),
-      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, HasNiphlChangePage, NiphlNumberUpdatePage)
+      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
     ).parMapN(TraderProfile.apply)
 
   def getOptionallyRemovedPage[A](

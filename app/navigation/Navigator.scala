@@ -40,10 +40,10 @@ class Navigator @Inject() () {
     case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case HasNirmsChangePage                        => _ => routes.ProfileController.onPageLoad()
+    case RemoveNirmsPage                           => _ => routes.ProfileController.onPageLoad()
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case HasNiphlChangePage                        => _ => routes.ProfileController.onPageLoad()
+    case RemoveNiphlPage                           => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
@@ -187,7 +187,7 @@ class Navigator @Inject() () {
       .get(HasNirmsUpdatePage)
       .map {
         case true  => routes.NirmsNumberController.onPageLoadUpdate
-        case false => routes.HasNirmsChangeController.onPageLoad()
+        case false => routes.RemoveNirmsController.onPageLoad()
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
@@ -207,7 +207,7 @@ class Navigator @Inject() () {
       .get(HasNiphlUpdatePage)
       .map {
         case true  => routes.NiphlNumberController.onPageLoadUpdate
-        case false => routes.HasNiphlChangeController.onPageLoad()
+        case false => routes.RemoveNiphlController.onPageLoad()
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

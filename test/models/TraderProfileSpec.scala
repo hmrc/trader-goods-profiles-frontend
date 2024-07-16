@@ -194,7 +194,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsUpdatePage, false)
             .success
             .value
-            .set(HasNirmsChangePage, true)
+            .set(RemoveNirmsPage, true)
             .success
             .value
 
@@ -245,7 +245,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(HasNirmsChangePage)
+            PageMissing(RemoveNirmsPage)
           )
         }
       }
@@ -256,7 +256,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNirmsUpdatePage, false)
             .success
             .value
-            .set(HasNirmsChangePage, false)
+            .set(RemoveNirmsPage, false)
             .success
             .value
 
@@ -264,7 +264,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(HasNirmsChangePage)
+            UnexpectedPage(RemoveNirmsPage)
           )
         }
       }
@@ -300,7 +300,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlUpdatePage, false)
             .success
             .value
-            .set(HasNiphlChangePage, true)
+            .set(RemoveNiphlPage, true)
             .success
             .value
 
@@ -351,7 +351,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(HasNiphlChangePage)
+            PageMissing(RemoveNiphlPage)
           )
         }
       }
@@ -362,7 +362,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(HasNiphlUpdatePage, false)
             .success
             .value
-            .set(HasNiphlChangePage, false)
+            .set(RemoveNiphlPage, false)
             .success
             .value
 
@@ -370,7 +370,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(HasNiphlChangePage)
+            UnexpectedPage(RemoveNiphlPage)
           )
         }
       }

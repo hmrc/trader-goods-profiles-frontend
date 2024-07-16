@@ -19,7 +19,7 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.UserAnswers
-import pages.{HasNiphlChangePage, HasNiphlUpdatePage, HasNirmsChangePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, UkimsNumberUpdatePage}
+import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -64,20 +64,20 @@ class ProfileController @Inject() (
 
   def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
     for {
-      updatedAnswersRemovedUkims          <-
+      updatedAnswersRemovedUkims       <-
         Future.fromTry(answers.remove(UkimsNumberUpdatePage))
-      updatedAnswersRemovedHasNirms       <-
+      updatedAnswersRemovedHasNirms    <-
         Future.fromTry(updatedAnswersRemovedUkims.remove(HasNirmsUpdatePage))
-      updatedAnswersRemovedHasNirmsChange <-
-        Future.fromTry(updatedAnswersRemovedHasNirms.remove(HasNirmsChangePage))
-      updatedAnswersRemovedNirmsNumber    <-
-        Future.fromTry(updatedAnswersRemovedHasNirmsChange.remove(NirmsNumberUpdatePage))
-      updatedAnswersRemovedHasNiphl       <-
+      updatedAnswersRemovedRemoveNirms <-
+        Future.fromTry(updatedAnswersRemovedHasNirms.remove(RemoveNirmsPage))
+      updatedAnswersRemovedNirmsNumber <-
+        Future.fromTry(updatedAnswersRemovedRemoveNirms.remove(NirmsNumberUpdatePage))
+      updatedAnswersRemovedHasNiphl    <-
         Future.fromTry(updatedAnswersRemovedNirmsNumber.remove(HasNiphlUpdatePage))
-      updatedAnswersRemovedHasNiphlChange <-
-        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(HasNiphlChangePage))
-      updatedAnswers                      <-
-        Future.fromTry(updatedAnswersRemovedHasNiphlChange.remove(NiphlNumberUpdatePage))
-      _                                   <- sessionRepository.set(updatedAnswers)
+      updatedAnswersRemovedRemoveNiphl <-
+        Future.fromTry(updatedAnswersRemovedHasNiphl.remove(RemoveNiphlPage))
+      updatedAnswers                   <-
+        Future.fromTry(updatedAnswersRemovedRemoveNiphl.remove(NiphlNumberUpdatePage))
+      _                                <- sessionRepository.set(updatedAnswers)
     } yield updatedAnswers
 }
