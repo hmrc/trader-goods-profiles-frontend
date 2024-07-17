@@ -35,7 +35,6 @@ object LongerCommodityCodeSummary {
 
     categorisationInfoOpt match {
       case Some(info) if Some(info.commodityCode) != originalComcodeOpt =>
-        print(info)
         Some(
           SummaryListRowViewModel(
             key = "longerCommodityCode.checkYourAnswersLabel",
