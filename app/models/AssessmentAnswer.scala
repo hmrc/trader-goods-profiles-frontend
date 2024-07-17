@@ -26,7 +26,7 @@ sealed trait AssessmentAnswer
 object AssessmentAnswer {
 
   case object NoExemption extends WithName("false") with AssessmentAnswer
-  final case class Exemption(id: String) extends AssessmentAnswer { override val toString: String = id }
+  final case class Exemption(value: String) extends AssessmentAnswer { override val toString: String = value }
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
     case JsString("false") => JsSuccess(NoExemption)
