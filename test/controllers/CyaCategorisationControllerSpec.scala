@@ -19,11 +19,12 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, Category1, UserAnswers}
+import models.{AssessmentAnswer, Category1, RecordCategorisations, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import models.AssessmentAnswer.NoExemption
+import models.ott.CategorisationInfo
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import pages.{AssessmentPage, HasSupplementaryUnitPage, LongerCommodityCodePage, SupplementaryUnitPage}
@@ -33,6 +34,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 import services.AuditService
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
@@ -186,6 +188,32 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               request,
               messages(application)
             ).toString
+          }
+        }
+
+        "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
+
+          val userAnswers = userAnswersForCategorisation
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1234.0")
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val row = SupplementaryUnitSummary.row(userAnswers, testRecordId).value
+
+            val supplementaryValue = row.value.content match {
+              case Text(innerContent) => innerContent
+
+            }
+
+            supplementaryValue must be("1234.0 Weight, in kilograms")
+
           }
         }
 
