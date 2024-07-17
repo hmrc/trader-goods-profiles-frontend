@@ -20,19 +20,19 @@ import connectors.OttConnector
 import controllers.actions._
 import forms.CountryOfOriginFormProvider
 import models.requests.DataRequest
-
-import javax.inject.Inject
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
 import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData._
 import views.html.CountryOfOriginView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CountryOfOriginController @Inject() (
@@ -142,11 +142,17 @@ class CountryOfOriginController @Inject() (
                     view(formWithErrors, routes.CountryOfOriginController.onSubmitUpdate(mode, recordId), countries)
                   )
                 ),
-              value =>
+              value => {
+                val oldValueOpt    = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
+                val isValueChanged = oldValueOpt.exists(_ != value)
+
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
+                  .addingToSession(dataUpdated -> isValueChanged.toString)
+                  .addingToSession(pageUpdated -> countryOfOrigin)
+              }
             )
         case None            => throw new Exception("Countries should have been populated on page load.")
       }

@@ -25,13 +25,14 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage}
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.CountriesQuery
 import repositories.SessionRepository
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CountryOfOriginView
 
 import scala.concurrent.Future
@@ -39,7 +40,7 @@ import scala.concurrent.Future
 class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
-  private val countries   = Seq(Country("CN", "China"))
+  private val countries   = Seq(Country("CN", "China"), Country("US", "United States"))
 
   val formProvider = new CountryOfOriginFormProvider()
   private val form = formProvider(countries)
@@ -376,6 +377,71 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must set changesMade to true if country of origin is updated" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val userAnswers        = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+        val updatedUserAnswers = userAnswers.set(CountryOfOriginUpdatePage(testRecordId), "CN").success.value
+
+        val application =
+          applicationBuilder(userAnswers = Some(updatedUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[CountryOfOriginController]
+          val request    =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "US"))
+
+          val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          session(result).get(dataUpdated) must be(Some("true"))
+          session(result).get(pageUpdated) must be(Some("country of origin"))
+        }
+      }
+
+      "must set changesMade to false if country of origin is not updated" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val userAnswers        = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
+        val updatedUserAnswers = userAnswers.set(CountryOfOriginUpdatePage(testRecordId), "CN").success.value
+
+        val application =
+          applicationBuilder(userAnswers = Some(updatedUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[CountryOfOriginController]
+          val request    =
+            FakeRequest(POST, countryOfOriginRoute)
+              .withFormUrlEncodedBody(("value", "CN"))
+
+          val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          session(result).get(dataUpdated) must be(Some("false"))
         }
       }
 

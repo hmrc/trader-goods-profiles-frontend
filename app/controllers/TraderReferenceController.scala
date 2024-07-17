@@ -19,8 +19,6 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.TraderReferenceFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
@@ -31,8 +29,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData._
 import views.html.TraderReferenceView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TraderReferenceController @Inject() (
@@ -119,7 +119,9 @@ class TraderReferenceController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
-          value =>
+          value => {
+            val oldValueOpt    = request.userAnswers.get(TraderReferenceUpdatePage(recordId))
+            val isValueChanged = oldValueOpt.exists(_ != value)
             for {
               traderRef      <- goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef")
               updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
@@ -127,6 +129,8 @@ class TraderReferenceController @Inject() (
             } yield
               if (traderRef.pagination.totalRecords == 0) {
                 Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+                  .addingToSession(dataUpdated -> isValueChanged.toString)
+                  .addingToSession(pageUpdated -> traderReference)
               } else {
                 val formWithApiErrors =
                   form.copy(errors =
@@ -134,6 +138,7 @@ class TraderReferenceController @Inject() (
                   )
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
+          }
         )
     }
 
