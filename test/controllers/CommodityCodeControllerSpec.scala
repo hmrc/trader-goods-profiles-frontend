@@ -25,7 +25,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, GoodsDescriptionUpdatePage, QuestionPage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, QuestionPage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -125,8 +125,17 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
           )
 
+        val userAnswers =
+          UserAnswers(userAnswersId)
+            .set(CountryOfOriginPage, "CX")
+            .success
+            .value
+            .set(CountryOfOriginUpdatePage(testRecordId), "CX")
+            .success
+            .value
+
         val application =
-          applicationBuilder(userAnswers = Some(fullRecordUserAnswers))
+          applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
@@ -153,7 +162,19 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(fullRecordUserAnswers)).build()
+        val userAnswers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodeUpdatePage(testRecordId), "654321")
+            .success
+            .value
+            .set(CountryOfOriginPage, "CX")
+            .success
+            .value
+            .set(CountryOfOriginUpdatePage(testRecordId), "CX")
+            .success
+            .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request =
@@ -173,7 +194,19 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when incorrect data format is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(fullRecordUserAnswers)).build()
+        val userAnswers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodeUpdatePage(testRecordId), "654321")
+            .success
+            .value
+            .set(CountryOfOriginPage, "CX")
+            .success
+            .value
+            .set(CountryOfOriginUpdatePage(testRecordId), "CX")
+            .success
+            .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request =
@@ -200,7 +233,19 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             UpstreamErrorResponse(" ", NOT_FOUND)
           )
 
-        val application = applicationBuilder(userAnswers = Some(fullRecordUserAnswers))
+        val userAnswers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodeUpdatePage(testRecordId), "654321")
+            .success
+            .value
+            .set(CountryOfOriginPage, "CX")
+            .success
+            .value
+            .set(CountryOfOriginUpdatePage(testRecordId), "CX")
+            .success
+            .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[OttConnector].toInstance(mockOttConnector)
           )
@@ -278,7 +323,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .set(CommodityCodeUpdatePage(testRecordId), "654321")
           .success
           .value
-          .set(CountryOfOriginPage, "1")
+          .set(CountryOfOriginPage, "CX")
+          .success
+          .value
+          .set(CountryOfOriginUpdatePage(testRecordId), "CX")
           .success
           .value
 
@@ -327,7 +375,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .set(CommodityCodeUpdatePage(testRecordId), "654321")
           .success
           .value
-          .set(CountryOfOriginPage, "1")
+          .set(CountryOfOriginUpdatePage(testRecordId), "CX")
           .success
           .value
 
