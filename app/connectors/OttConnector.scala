@@ -40,8 +40,8 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
   private val useProxy: Boolean = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
 
-  private def ottGreenLanesUrl(commodityCode: String) =
-    url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode"
+  private def ottGreenLanesUrl(commodityCode: String, queryParams: Map[String, String]) =
+    url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode?$queryParams"
 
   private def ottCountriesUrl =
     url"$baseUrl/xi/api/v2/geographical_areas/countries"
@@ -110,6 +110,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     eori: String,
     affinityGroup: AffinityGroup,
     journey: Journey,
+    countryOfOrigin: String,
     recordId: Option[String]
   )(implicit hc: HeaderCarrier): Future[Commodity] = {
 
@@ -124,9 +125,12 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       Some(journey)
     )
 
+    val queryParams: Map[String, String] =
+      Map("filter[geographical_area_id]" -> countryOfOrigin)
+
     for {
       ottResponse <- getFromOtt[OttResponse](
-                       ottGreenLanesUrl(commodityCode),
+                       ottGreenLanesUrl(commodityCode, queryParams),
                        Some(auditDetails)
                      )
     } yield Commodity(
@@ -157,8 +161,12 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
       None
     )
 
+    val queryParams = Map(
+      "filter[geographical_area_id]" -> countryOfOrigin
+    )
+
     getFromOtt[OttResponse](
-      ottGreenLanesUrl(commodityCode),
+      ottGreenLanesUrl(commodityCode, queryParams),
       Some(auditDetails)
     )
   }
