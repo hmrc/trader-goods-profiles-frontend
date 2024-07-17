@@ -29,12 +29,17 @@ object LongerCommodityCodeSummary {
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
     val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
     val categorisationInfoOpt = recordCategorisations.records.get(recordId)
+    val padLength             = 10
+    val originalComcodeOpt    =
+      categorisationInfoOpt.flatMap(_.originalCommodityCode.map(_.padTo(padLength, "0").mkString))
+
     categorisationInfoOpt match {
-      case Some(x) if !x.originalCommodityCode.contains(x.commodityCode) =>
+      case Some(info) if Some(info.commodityCode) != originalComcodeOpt =>
+        print(info)
         Some(
           SummaryListRowViewModel(
             key = "longerCommodityCode.checkYourAnswersLabel",
-            value = ValueViewModel(x.commodityCode),
+            value = ValueViewModel(info.commodityCode),
             actions = Seq(
               ActionItemViewModel(
                 "site.change",
@@ -44,7 +49,7 @@ object LongerCommodityCodeSummary {
             )
           )
         )
-      case _                                                             =>
+      case _                                                            =>
         None
     }
   }
