@@ -32,9 +32,10 @@ object LongerCommodityCodeSummary {
     val padLength             = 10
     val originalComcodeOpt    =
       categorisationInfoOpt.flatMap(_.originalCommodityCode.map(_.padTo(padLength, "0").mkString))
+    val currentComcodeOpt     = categorisationInfoOpt.map(_.commodityCode.padTo(padLength, "0").mkString)
 
     categorisationInfoOpt match {
-      case Some(info) if Some(info.commodityCode) != originalComcodeOpt =>
+      case Some(info) if currentComcodeOpt != originalComcodeOpt =>
         Some(
           SummaryListRowViewModel(
             key = "longerCommodityCode.checkYourAnswersLabel",
@@ -48,7 +49,7 @@ object LongerCommodityCodeSummary {
             )
           )
         )
-      case _                                                            =>
+      case _                                                     =>
         None
     }
   }

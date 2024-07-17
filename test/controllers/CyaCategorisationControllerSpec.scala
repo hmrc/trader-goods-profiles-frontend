@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, Category1, UserAnswers}
+import models.{AssessmentAnswer, Category1, RecordCategorisations, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -40,6 +40,18 @@ import views.html.CyaCategorisationView
 import scala.concurrent.Future
 
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
+
+  private val shortCommodity                = "654321"
+  private val unchangedCategoryInfo         =
+    categoryQuery.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
+  private val unchangedCommodity            = RecordCategorisations(
+    Map(testRecordId -> unchangedCategoryInfo)
+  )
+  private val previouslyUpdatedCategoryInfo =
+    categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+  private val previouslyUpdatedCommodity    = RecordCategorisations(
+    Map(testRecordId -> previouslyUpdatedCategoryInfo)
+  )
 
   "CyaCategorisationController" - {
 
@@ -241,6 +253,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when longer commodity code is given" in {
 
           val userAnswers = userAnswersForCategorisation
+            .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
+            .success
+            .value
             .set(LongerCommodityCodePage(testRecordId), "1234")
             .success
             .value
@@ -274,6 +289,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               ).flatten
             )
 
+            expectedLongerCommodityList.rows.size mustEqual 1
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
@@ -288,8 +305,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         }
 
         "when longer commodity code is not given" in {
-
           val userAnswers = userAnswersForCategorisation
+            .set(RecordCategorisationsQuery, unchangedCommodity)
+            .success
+            .value
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
           implicit val localMessages: Messages = messages(application)
