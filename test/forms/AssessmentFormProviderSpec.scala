@@ -18,14 +18,12 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import models.AssessmentAnswer
-import org.scalacheck.Arbitrary.arbitrary
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.FormError
 
 class AssessmentFormProviderSpec extends StringFieldBehaviours with ScalaCheckPropertyChecks {
 
-  private val exemptionIds = Seq("abc", "def")
-  private val form         = new AssessmentFormProvider()(exemptionIds)
+  private val form = new AssessmentFormProvider()(1)
 
   ".value" - {
 

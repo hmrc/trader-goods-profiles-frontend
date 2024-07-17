@@ -34,7 +34,6 @@ object AssessmentsSummary {
     indexOfThisAssessment: Int
   )(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
-
       val listItems = assessment.exemptions.map(_.code)
 
       SummaryListRowViewModel(

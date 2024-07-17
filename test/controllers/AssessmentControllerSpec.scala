@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
-import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import scala.concurrent.Future
@@ -94,7 +93,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
             val result = route(application, request).value
 
             val view      = application.injector.instanceOf[AssessmentView]
-            val form      = formProvider(Seq(assessmentId))
+            val form      = formProvider(1)
             val listItems = assessment.exemptions.map { exemption =>
               exemption.code + " - " + exemption.description
             }
@@ -130,7 +129,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
             val result = route(application, request).value
 
             val view      = application.injector.instanceOf[AssessmentView]
-            val form      = formProvider(Seq(assessmentId)).fill(AssessmentAnswer.NoExemption)
+            val form      = formProvider(1).fill(AssessmentAnswer.NoExemption)
             val listItems = assessment.exemptions.map { exemption =>
               exemption.code + " - " + exemption.description
             }
@@ -230,7 +229,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           val view      = application.injector.instanceOf[AssessmentView]
-          val form      = formProvider(Seq(assessmentId)).fill(AssessmentAnswer.NoExemption)
+          val form      = formProvider(1).fill(AssessmentAnswer.NoExemption)
           val boundForm = form.bind(Map("value" -> ""))
           val listItems = assessment.exemptions.map { exemption =>
             exemption.code + " - " + exemption.description
