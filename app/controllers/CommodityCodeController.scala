@@ -22,7 +22,7 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -79,7 +79,8 @@ class CommodityCodeController @Inject() (
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
+      val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitCreate(mode)
+      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
       form
         .bindFromRequest()
         .fold(
@@ -87,7 +88,14 @@ class CommodityCodeController @Inject() (
           value =>
             (for {
               commodity               <-
-                ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
+                ottConnector.getCommodityCode(
+                  value,
+                  request.eori,
+                  request.affinityGroup,
+                  CreateRecordJourney,
+                  countryOfOrigin,
+                  None
+                )
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
@@ -102,7 +110,8 @@ class CommodityCodeController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
       form
         .bindFromRequest()
         .fold(
@@ -113,7 +122,14 @@ class CommodityCodeController @Inject() (
               val isValueChanged = oldValueOpt.exists(_ != value)
               for {
                 commodity               <-
-                  ottConnector.getCommodityCode(value, request.eori, request.affinityGroup, CreateRecordJourney, None)
+                  ottConnector.getCommodityCode(
+                    value,
+                    request.eori,
+                    request.affinityGroup,
+                    CreateRecordJourney,
+                    countryOfOrigin,
+                    None
+                  )
                 updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
                 updatedAnswersWithQuery <-
                   Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))

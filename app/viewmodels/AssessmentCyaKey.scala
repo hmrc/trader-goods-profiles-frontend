@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-package models.helper
+package viewmodels
 
-sealed trait Journey
+import play.api.i18n.Messages
+import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
-case object CreateRecordJourney extends Journey {
-  override def toString: String = "CreateRecord"
-}
-case object UpdateRecordJourney extends Journey {
-  override def toString: String = "UpdateRecord"
-}
-case object RequestAdviceJourney extends Journey {
-  override def toString: String = "RequestAdvice"
+case class AssessmentCyaKey(listItems: Seq[String])(implicit messages: Messages) {
+  def content: HtmlContent = {
+    val listContent = listItems.map { item =>
+      s"<li>$item</li>"
+    }.mkString
+
+    HtmlContent(
+      Html(
+        s"""
+        <p class='govuk-body'>
+          ${messages("assessment.question")}
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+          $listContent
+        </ul>
+      """
+      )
+    )
+  }
 }

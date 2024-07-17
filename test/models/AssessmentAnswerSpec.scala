@@ -38,7 +38,7 @@ class AssessmentAnswerSpec extends SpecBase {
 
       val json = Json.toJson[AssessmentAnswer](AssessmentAnswer.NoExemption)
 
-      json mustEqual JsString("none")
+      json mustEqual JsString("false")
       json.validate[AssessmentAnswer] mustEqual JsSuccess(AssessmentAnswer.NoExemption)
     }
 

@@ -24,7 +24,7 @@ import models.helper.UpdateRecordJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.LongerCommodityCodePage
+import pages.{CountryOfOriginPage, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -125,13 +125,15 @@ class LongerCommodityCodeController @Inject() (
     value: String,
     longCommodityCode: String,
     shortCode: String
-  )(implicit request: DataRequest[AnyContent]) =
+  )(implicit request: DataRequest[AnyContent]) = {
+    val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
     (for {
       validCommodityCode      <- ottConnector.getCommodityCode(
                                    longCommodityCode,
                                    request.eori,
                                    request.affinityGroup,
                                    UpdateRecordJourney,
+                                   countryOfOrigin,
                                    Some(recordId)
                                  )
       updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
@@ -143,6 +145,7 @@ class LongerCommodityCodeController @Inject() (
           form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
         BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
     }
+  }
 
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 

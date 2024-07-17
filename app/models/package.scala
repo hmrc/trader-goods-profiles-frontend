@@ -27,6 +27,12 @@ package object models {
       jsObject.remove(path).flatMap(_.validate[JsObject])
   }
 
+  implicit class RichString(string: String) {
+
+    def removeDoubleSpaces(): String =
+      string.trim.replaceAll("\n", "")
+  }
+
   implicit class RichJsValue(jsValue: JsValue) {
 
     def set(path: JsPath, value: JsValue): JsResult[JsValue] =
