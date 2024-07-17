@@ -17,17 +17,16 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, userAnswersId}
+import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{Country, GoodsRecordsPagination, UserAnswers}
+import models.router.responses.GetRecordsResponse
+import models.{Country, GoodsRecordsPagination}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.GoodsRecordsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
