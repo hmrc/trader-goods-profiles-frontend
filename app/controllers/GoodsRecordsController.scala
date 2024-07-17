@@ -60,7 +60,6 @@ class GoodsRecordsController @Inject() (
           case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
           case _ =>
             for {
-              _                   <- goodsRecordConnector.storeLatestRecords(request.eori)
               goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
               countries           <- ottConnector.getCountries
             } yield

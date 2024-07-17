@@ -54,9 +54,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def checkGoodsRecordsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/checkRecords"
 
-  private def storeLatestGoodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/storeLatest"
-
   private def getGoodsRecordCountsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
 
@@ -76,7 +73,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
-      .map(response => response.json.as[String])
+      .map(response => response.body)
 
   def removeGoodsRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
@@ -159,15 +156,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   )(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .head(storeAllGoodsRecordsUrl(eori))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(_ => Done)
-
-  def storeLatestRecords(
-    eori: String
-  )(implicit hc: HeaderCarrier): Future[Done] =
-    httpClient
-      .head(storeLatestGoodsRecordsUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(_ => Done)
