@@ -123,7 +123,7 @@ class GoodsRecordsController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(routes.GoodsRecordSearchResultController.onPageLoad(1))
+            } yield Redirect(routes.GoodsRecordsSearchResultController.onPageLoad(1))
         )
   }
 }

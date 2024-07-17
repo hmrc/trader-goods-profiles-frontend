@@ -122,19 +122,19 @@ object GoodsRecordsPagination {
           PaginationItem(
             number = Some(page.toString),
             current = Some(currentPage == page),
-            href = routes.GoodsRecordSearchResultController.onPageLoad(page).url,
+            href = routes.GoodsRecordsSearchResultController.onPageLoad(page).url,
             ellipsis = Some(ellipsis)
           )
         }),
         previous = if (currentPage == firstPage) {
           None
         } else {
-          Some(PaginationLink(routes.GoodsRecordSearchResultController.onPageLoad(currentPage - 1).url))
+          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
         },
         next = if (currentPage == totalPages) {
           None
         } else {
-          Some(PaginationLink(routes.GoodsRecordSearchResultController.onPageLoad(currentPage + 1).url))
+          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
         }
       )
     }

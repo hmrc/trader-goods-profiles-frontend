@@ -332,7 +332,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordSearchResultController.onPageLoad(1).url
+        redirectLocation(result).value mustEqual routes.GoodsRecordsSearchResultController.onPageLoad(1).url
       }
     }
 

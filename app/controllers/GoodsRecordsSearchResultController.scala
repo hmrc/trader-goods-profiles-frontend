@@ -23,12 +23,12 @@ import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{GoodsRecordSearchResultEmptyView, GoodsRecordSearchResultView}
+import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsRecordSearchResultController @Inject() (
+class GoodsRecordsSearchResultController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
@@ -36,8 +36,8 @@ class GoodsRecordSearchResultController @Inject() (
   requireData: DataRequiredAction,
   identify: IdentifierAction,
   val controllerComponents: MessagesControllerComponents,
-  view: GoodsRecordSearchResultView,
-  emptyView: GoodsRecordSearchResultEmptyView
+  view: GoodsRecordsSearchResultView,
+  emptyView: GoodsRecordsSearchResultEmptyView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -74,7 +74,7 @@ class GoodsRecordSearchResultController @Inject() (
                   )
                 )
               } else {
-                Redirect(routes.GoodsRecordSearchResultController.onPageLoadNoRecords())
+                Redirect(routes.GoodsRecordsSearchResultController.onPageLoadNoRecords())
               }
           }
         case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
