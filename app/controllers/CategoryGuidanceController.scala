@@ -21,12 +21,12 @@ import controllers.actions._
 import logging.Logging
 import models.helper.CategorisationUpdate
 import models.requests.DataRequest
-import models.{Category1, Category1NoExemptions, Category2, CategoryRecord, NiphlsAndOthers, NiphlsOnly, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments, UserAnswers}
+import models.{Category1, Category1NoExemptions, CategoryRecord, Mode, NiphlsAndOthers, NiphlsOnly, NoRedirectScenario, Scenario, StandardNoAssessments, UserAnswers}
 import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecordCategorisationsQuery
+import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -54,7 +54,7 @@ class CategoryGuidanceController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       categorisationService
         .requireCategorisation(request, recordId)
@@ -62,6 +62,8 @@ class CategoryGuidanceController @Inject() (
           val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
           val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
           val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
+          val recategorising = userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
+
           scenario match {
             case Some(Category1NoExemptions | StandardNoAssessments) =>
               CategoryRecord
@@ -70,18 +72,21 @@ class CategoryGuidanceController @Inject() (
                   goodsRecordConnector
                     .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
-                      Redirect(navigator.nextPage(CategoryGuidancePage(recordId, scenario), NormalMode, userAnswers))
+                      Redirect(navigator.nextPage(CategoryGuidancePage(recordId, scenario), mode, userAnswers))
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
 
             case Some(NiphlsOnly) =>
 
-              whenNiphlsOnly(recordId, request, userAnswers)
+              whenNiphlsOnly(mode, recordId, request, userAnswers)
 
             case Some(NiphlsAndOthers) =>
 
-              whenNiphlsAndOthers(recordId, request, userAnswers)
+              whenNiphlsAndOthers(mode, recordId, request, userAnswers)
+
+            case Some(NoRedirectScenario) if recategorising =>
+              Future.successful(Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(NoRedirectScenario)),mode, userAnswers)))
 
             case Some(NoRedirectScenario) =>
               Future.successful(Ok(view(recordId)))
@@ -93,25 +98,25 @@ class CategoryGuidanceController @Inject() (
         }
   }
 
-  private def whenNiphlsOnly(recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
+  private def whenNiphlsOnly(mode: Mode, recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
   (implicit hc: HeaderCarrier) = {
     for {
       traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
       categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, traderProfile)
       _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
     } yield {
-      Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Scenario.getScenario(categoryRecord))), NormalMode, userAnswers))
+      Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Scenario.getScenario(categoryRecord))),mode,  userAnswers))
     }
   }
 
-  private def whenNiphlsAndOthers(recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
+  private def whenNiphlsAndOthers(mode: Mode, recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
                                  (implicit hc: HeaderCarrier) = {
     val traderProfile = traderProfileConnector.getTraderProfile(request.eori)
 
     traderProfile.map {
       profile =>
         if (profile.niphlNumber.isDefined) {
-          Future.successful(Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, userAnswers)))
+          Future.successful(Redirect(navigator.nextPage(CategoryGuidancePage(recordId), mode, userAnswers)))
         } else {
           // User doesn't have NIPHLs so no point asking them anything
           val categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, profile)
@@ -119,13 +124,13 @@ class CategoryGuidanceController @Inject() (
           for {
             _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
           } yield {
-            Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Category1)), NormalMode, userAnswers))
+            Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Category1)), mode, userAnswers))
           }
         }
     }
   }.flatten
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       auditService
         .auditStartUpdateGoodsRecord(
@@ -135,6 +140,6 @@ class CategoryGuidanceController @Inject() (
           recordId
         )
 
-      Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
+      Redirect(navigator.nextPage(CategoryGuidancePage(recordId), mode, request.userAnswers))
   }
 }

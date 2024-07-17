@@ -65,8 +65,10 @@ POST        /create-profile/ukims-number/check                                  
 GET         /update-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadUpdate
 POST        /update-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitUpdate
 
-GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
-POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)
+GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/start/check                                   controllers.CategoryGuidanceController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/start/check                                   controllers.CategoryGuidanceController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET         /create-record/commodity-code                                                   controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/commodity-code                                                   controllers.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)

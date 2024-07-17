@@ -16,13 +16,14 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import logging.Logging
 import models.AssessmentAnswer.Exemption
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{AssessmentAnswer, Mode, UserAnswers, ott}
+import models.{AssessmentAnswer, Category1, Mode, UserAnswers, ott}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -50,7 +51,8 @@ class AssessmentController @Inject() (
   formProvider: AssessmentFormProvider,
   categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
-  view: AssessmentView
+  view: AssessmentView,
+  traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -59,32 +61,42 @@ class AssessmentController @Inject() (
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
-        userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
+       // TODO ?? userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
+        traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        recordQuery                     = request.userAnswers.get(RecordCategorisationsQuery)
         categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
+        userHasNiphls = traderProfile.niphlNumber.isDefined
         isNiphlsAnAnswer                = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
         updatedAnswers                 <-
-          updateAnswerIfNiphls(recordId, index, userAnswersWithCategorisations, isNiphlsAnAnswer)
+          updateAnswerIfNiphls(recordId, index, request.userAnswers, isNiphlsAnAnswer, userHasNiphls)
         _                              <- sessionRepository.set(updatedAnswers)
       } yield {
         val exemptions = categorisationInfo.categoryAssessments(index).exemptions
         val isNiphlsCategory2Assessment = categorisationInfo.categoryAssessments(index).isEmptyCat2Assessment &&
-          categorisationInfo.isNiphls
+          categorisationInfo.isNiphls && userHasNiphls
 
-        (isNiphlsAnAnswer, isNiphlsCategory2Assessment, exemptions.isEmpty) match {
-          case (true, _, _) =>
+        (userHasNiphls, isNiphlsAnAnswer, isNiphlsCategory2Assessment, exemptions.isEmpty) match {
+          case (true, true, _, _) =>
             Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
-          case (false, true, _) =>
+          case (true, false, true, _) =>
             Future.successful(
               Redirect(
                 navigator.nextPage(
                   AssessmentPage(recordId, index, shouldRedirectToCya = true),
                   mode,
-                  userAnswersWithCategorisations
+                  updatedAnswers
                 )
               )
             )
-          case (false, false, true) =>
+          case (false, true, _, _) =>
+            // Should have not been allowed to get this far. Should not have loaded this page
+            Future.successful(
+              //TODO ???
+              Redirect(
+                routes.JourneyRecoveryController.onPageLoad()
+              )
+            )
+          case (false, _, _, true) =>
             Future.successful(
               Redirect(
                 navigator
@@ -94,7 +106,7 @@ class AssessmentController @Inject() (
           case _ =>
 
             displayPage(mode, recordId, index,
-              userAnswersWithCategorisations, categorisationInfo, exemptions)
+              updatedAnswers, categorisationInfo, exemptions)
         }
 
       }
@@ -135,9 +147,10 @@ class AssessmentController @Inject() (
     recordId: String,
     index: Int,
     userAnswersWithCategorisations: UserAnswers,
-    isNiphlsAnAnswer: Boolean
+    isNiphlsAnAnswer: Boolean,
+    userHasNiphls: Boolean
   ) =
-    if (isNiphlsAnAnswer)
+    if (isNiphlsAnAnswer && userHasNiphls)
       Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption(niphlsAssessment)))
     else Future.successful(userAnswersWithCategorisations)
 

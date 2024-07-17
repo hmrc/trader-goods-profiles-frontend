@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -191,12 +191,13 @@ class HasCorrectGoodsController @Inject() (
         Future
           .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
 
-      _ <- sessionRepository.set(updatedAnswersCleanedUp)
+      updatedAnswersAreRecategorising <- Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
+      _ <- sessionRepository.set(updatedAnswersAreRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
         mode,
-        updatedCategorisationAnswers
+        updatedAnswersAreRecategorising
       )
     )
 

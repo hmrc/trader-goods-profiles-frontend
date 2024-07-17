@@ -22,6 +22,8 @@ import play.api.mvc.JavascriptLiteral
 sealed trait Scenario
 
 case object NoRedirectScenario extends Scenario
+case object NoRedirectScenarioRecategorising extends Scenario
+
 case object Category1NoExemptions extends Scenario
 case object StandardNoAssessments extends Scenario
 case object NiphlsOnly extends Scenario

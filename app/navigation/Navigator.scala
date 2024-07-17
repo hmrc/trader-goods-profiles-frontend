@@ -62,7 +62,7 @@ class Navigator @Inject() () {
     case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: CategoryGuidancePage                   => _ => navigateFromCategoryGuidance(p)
+    case p: CategoryGuidancePage                   => _ => navigateFromCategoryGuidance(NormalMode, p)
     case p: CyaCategorisationPage                  =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
@@ -138,7 +138,8 @@ class Navigator @Inject() () {
     } yield
       if (assessmentAnswer) {
         if (needToRecategorise) {
-          routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
+          routes.CategoryGuidanceController.onPageLoad(NormalMode, recordId)
+          //routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
         } else {
           if (categorisationInfo.measurementUnit.isDefined) {
             routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
@@ -256,11 +257,10 @@ class Navigator @Inject() () {
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromCategoryGuidance(page: CategoryGuidancePage) = {
+  private def navigateFromCategoryGuidance(mode: Mode, page: CategoryGuidancePage) = {
     page.scenario match {
-      //case Some(scenario) if scenario == NiphlsRedirect => routes.CategorisationResultController.onPageLoad(page.recordId, Category1)
-      case Some(scenario) => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
-      case _ => routes.AssessmentController.onPageLoad(NormalMode, page.recordId, firstAssessmentIndex)
+      case Some(scenario) if scenario != NoRedirectScenario => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
+      case _ => routes.AssessmentController.onPageLoad(mode, page.recordId, firstAssessmentIndex)
     }
   }
 

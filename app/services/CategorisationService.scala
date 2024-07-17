@@ -21,7 +21,7 @@ import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{RecordCategorisations, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.firstAssessmentIndex
@@ -45,12 +45,13 @@ class CategorisationService @Inject() (
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       recordCategorisations =
         request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+      recategorising = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
     } yield {
 
       recordCategorisations.records.get(recordId) match {
         case Some(catInfo) =>
 
-          if (catInfo.commodityCode == getGoodsRecordResponse.comcode) {
+          if (catInfo.commodityCode == getGoodsRecordResponse.comcode || recategorising) {
             Future.successful(request.userAnswers)
           } else {
             updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
