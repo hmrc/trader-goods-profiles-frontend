@@ -32,17 +32,20 @@ object SupplementaryUnitSummary {
     val categorisationInfoOpt = recordCategorisations.records.get(recordId)
     categorisationInfoOpt match {
       case Some(categorisationInfo) =>
-        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+        val measurementUnit = categorisationInfo.measurementUnit
         answers.get(SupplementaryUnitPage(recordId)).map { answer =>
+          val value = if (measurementUnit.nonEmpty) s"$answer ${measurementUnit.get.trim}" else answer
           SummaryListRowViewModel(
             key = "supplementaryUnit.checkYourAnswersLabel",
-            value = ValueViewModel(answer + " " + measurementUnit),
+            value = ValueViewModel(value),
             actions = Seq(
               ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
                 .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
             )
           )
         }
+      case _                        =>
+        None
     }
   }
 }

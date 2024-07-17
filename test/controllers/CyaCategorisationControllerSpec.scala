@@ -406,6 +406,42 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           }
         }
 
+        "if recordcategorisationsquery is empty/none" in {
+
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+
+          lazy val userAnswersForCategorisationEmptyQuery: UserAnswers = emptyUserAnswers
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+            .success
+            .value
+
+          val userAnswers = userAnswersForCategorisationEmptyQuery
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1234.0")
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+          }
+        }
+
         "when validation errors" in {
 
           val userAnswers = emptyUserAnswers
