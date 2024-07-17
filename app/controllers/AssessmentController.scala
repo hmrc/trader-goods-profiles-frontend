@@ -19,16 +19,15 @@ package controllers
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import logging.Logging
-import models.{AssessmentAnswer, Mode}
+import models.Mode
 import navigation.Navigator
 import pages.AssessmentPage
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import javax.inject.Inject
@@ -57,18 +56,15 @@ class AssessmentController @Inject() (
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
         categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
-      } yield {
-        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
-        val form         = formProvider(exemptions.map(_.id))
-        val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
+        listItems = categorisationInfo.categoryAssessments(index).getExemptionListItems
+        commodityCode = categorisationInfo.commodityCode
+        exemptions   = categorisationInfo.categoryAssessments(index).exemptions
+        form         = formProvider(exemptions.map(_.id))
+        preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
           case Some(value) => form.fill(value)
-          case None        => form
+          case None => form
         }
-
-        val listItems = exemptions.map { exemption =>
-          exemption.code + " - " + exemption.description
-        }
-
+      } yield {
         if (exemptions.isEmpty) {
           Future.successful(
             Redirect(
@@ -76,7 +72,7 @@ class AssessmentController @Inject() (
             )
           )
         } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode)))
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
         }
       }
 
@@ -91,23 +87,15 @@ class AssessmentController @Inject() (
         for {
           recordQuery        <- request.userAnswers.get(RecordCategorisationsQuery)
           categorisationInfo <- recordQuery.records.get(recordId)
+          listItems = categorisationInfo.categoryAssessments(index).getExemptionListItems
+          commodityCode = categorisationInfo.commodityCode
+          exemptions = categorisationInfo.categoryAssessments(index).exemptions
+          form       = formProvider(exemptions.map(_.id), exemptions.size)
         } yield {
-
-          val exemptions = categorisationInfo.categoryAssessments(index).exemptions
-          val form       = formProvider(exemptions.map(_.id), exemptions.size)
-
           form
             .bindFromRequest()
             .fold(
-              formWithErrors => {
-                val listItems = exemptions.map { exemption =>
-                  exemption.code + " - " + exemption.description
-                }
-
-                Future.successful(
-                  BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode))
-                )
-              },
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, commodityCode))),
               value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
