@@ -17,24 +17,32 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, RecordCategorisations, UserAnswers}
 import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
 object SupplementaryUnitSummary {
 
-  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(SupplementaryUnitPage(recordId)).map { answer =>
-      SummaryListRowViewModel(
-        key = "supplementaryUnit.checkYourAnswersLabel",
-        value = ValueViewModel(answer),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
-        )
-      )
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
+    val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    val categorisationInfoOpt = recordCategorisations.records.get(recordId)
+    categorisationInfoOpt match {
+      case Some(categorisationInfo) =>
+        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+        answers.get(SupplementaryUnitPage(recordId)).map { answer =>
+          SummaryListRowViewModel(
+            key = "supplementaryUnit.checkYourAnswersLabel",
+            value = ValueViewModel(answer + " " + measurementUnit),
+            actions = Seq(
+              ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+                .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
+            )
+          )
+        }
     }
+  }
 }
