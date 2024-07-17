@@ -22,7 +22,7 @@ import forms.CommodityCodeFormProvider
 import models.Mode
 import models.helper.CreateRecordJourney
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -111,7 +111,7 @@ class CommodityCodeController @Inject() (
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
-      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
+      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
       form
         .bindFromRequest()
         .fold(
