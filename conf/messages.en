@@ -389,7 +389,7 @@ previousMovementRecords.p5 = You have to categorise your goods to see if you can
 previousMovementRecords.p6 = We are loading your records
 previousMovementRecords.loadrecord = Load records
 
-goodsRecords.error.required = Enter search term
+goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
 goodsRecords.heading = Goods profile
