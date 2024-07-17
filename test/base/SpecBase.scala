@@ -62,6 +62,9 @@ trait SpecBase
     .set(NiphlNumberPage, "3")
     .success
     .value
+    .set(CountryOfOriginPage, "CX")
+    .success
+    .value
 
   def mandatoryProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
     .set(UkimsNumberPage, "1")

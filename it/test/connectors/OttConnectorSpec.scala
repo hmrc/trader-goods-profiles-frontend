@@ -83,7 +83,7 @@ class OttConnectorSpec
         stubGreenLanes(excludeEndDate = true)
 
         connector
-          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
@@ -103,7 +103,7 @@ class OttConnectorSpec
         stubGreenLanes()
 
         connector
-          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
@@ -121,7 +121,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
@@ -134,12 +134,12 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
+        get(urlMatching("/xi/api/v2/green_lanes/goods_nomenclatures/123456(\\?.*)?"))
           .willReturn(serverError())
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
@@ -157,7 +157,7 @@ class OttConnectorSpec
       )
 
       connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
 
@@ -178,7 +178,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true
@@ -200,7 +200,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true

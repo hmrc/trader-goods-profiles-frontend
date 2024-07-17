@@ -125,7 +125,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           )
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          applicationBuilder(userAnswers = Some(fullProfileUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
@@ -152,7 +152,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(fullProfileUserAnswers)).build()
 
         running(application) {
           val request =
@@ -172,7 +172,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when incorrect data format is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(fullProfileUserAnswers)).build()
 
         running(application) {
           val request =
@@ -199,7 +199,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             UpstreamErrorResponse(" ", NOT_FOUND)
           )
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application = applicationBuilder(userAnswers = Some(fullProfileUserAnswers))
           .overrides(
             bind[OttConnector].toInstance(mockOttConnector)
           )

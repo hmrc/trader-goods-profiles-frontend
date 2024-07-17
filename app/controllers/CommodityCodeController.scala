@@ -78,7 +78,8 @@ class CommodityCodeController @Inject() (
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
+      val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitCreate(mode)
+      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
       form
         .bindFromRequest()
         .fold(
@@ -91,7 +92,7 @@ class CommodityCodeController @Inject() (
                   request.eori,
                   request.affinityGroup,
                   CreateRecordJourney,
-                  request.userAnswers.get(CountryOfOriginPage),
+                  countryOfOrigin,
                   None
                 )
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
@@ -108,7 +109,8 @@ class CommodityCodeController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
       form
         .bindFromRequest()
         .fold(
@@ -121,7 +123,7 @@ class CommodityCodeController @Inject() (
                   request.eori,
                   request.affinityGroup,
                   CreateRecordJourney,
-                  request.userAnswers.get(CountryOfOriginPage),
+                  countryOfOrigin,
                   None
                 )
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
