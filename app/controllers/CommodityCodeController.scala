@@ -30,6 +30,7 @@ import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData._
 import views.html.CommodityCodeView
 
 import javax.inject.Inject
@@ -116,21 +117,28 @@ class CommodityCodeController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
-            (for {
-              commodity               <-
-                ottConnector.getCommodityCode(
-                  value,
-                  request.eori,
-                  request.affinityGroup,
-                  CreateRecordJourney,
-                  countryOfOrigin,
-                  None
-                )
-              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
-              updatedAnswersWithQuery <-
-                Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))
-              _                       <- sessionRepository.set(updatedAnswersWithQuery)
-            } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery)))
+            {
+              val oldValueOpt    = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
+              val isValueChanged = oldValueOpt.exists(_ != value)
+              for {
+                commodity               <-
+                  ottConnector.getCommodityCode(
+                    value,
+                    request.eori,
+                    request.affinityGroup,
+                    CreateRecordJourney,
+                    countryOfOrigin,
+                    None
+                  )
+                updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
+                updatedAnswersWithQuery <-
+                  Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))
+                _                       <- sessionRepository.set(updatedAnswersWithQuery)
+              } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
+                .addingToSession(dataUpdated -> isValueChanged.toString)
+                .addingToSession(pageUpdated -> commodityCode)
+
+            }
               .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 val formWithApiErrors =
                   form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))

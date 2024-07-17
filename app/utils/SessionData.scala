@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package models.helper
+package utils
 
-sealed trait Journey
+case object SessionData {
+  val dataUpdated: String      = "changesMade"
+  val pageUpdated: String      = "changedPage"
+  val traderReference: String  = "trader reference"
+  val goodsDescription: String = "goods description"
+  val countryOfOrigin: String  = "country of origin"
+  val commodityCode: String    = "commodity code"
 
-case object CreateRecordJourney extends Journey {
-  override def toString: String = "CreateRecord"
-}
-case object UpdateRecordJourney extends Journey {
-  override def toString: String = "UpdateRecord"
-}
-case object RequestAdviceJourney extends Journey {
-  override def toString: String = "RequestAdvice"
 }

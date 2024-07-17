@@ -62,9 +62,6 @@ trait SpecBase
     .set(NiphlNumberPage, "3")
     .success
     .value
-    .set(CountryOfOriginPage, "CX")
-    .success
-    .value
 
   def mandatoryProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
     .set(UkimsNumberPage, "1")
@@ -135,10 +132,10 @@ trait SpecBase
 
   def mandatoryAdviceUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(NamePage(testRecordId), "123")
+      .set(NamePage(testRecordId), "Firstname Lastname")
       .success
       .value
-      .set(EmailPage(testRecordId), "654321")
+      .set(EmailPage(testRecordId), "test@test.com")
       .success
       .value
 

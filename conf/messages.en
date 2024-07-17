@@ -516,3 +516,9 @@ helpAndSupport.p13.linkText = Guidance for using a Northern Ireland plant health
 helpAndSupport.p14.linkText = Find additional support and contacts to help you
 helpAndSupport.p15 = You can use the Trader Support Service to create IMMI forms with information from your TGP.
 helpAndSupport.p15.linkText = Sign up for the Trader Support Service
+
+sucessBanner.title = Success
+sucessBanner.heading = You have changed the {0}
+sucessBanner.p1 = Contact
+sucessBanner.email = example@department.gov.uk
+sucessBanner.p2 = if you think there’s a problem.

@@ -25,15 +25,16 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, QuestionPage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, GoodsDescriptionUpdatePage, QuestionPage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CommodityCodeView
 
 import java.time.Instant
@@ -125,7 +126,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           )
 
         val application =
-          applicationBuilder(userAnswers = Some(fullProfileUserAnswers))
+          applicationBuilder(userAnswers = Some(fullRecordUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
@@ -152,7 +153,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(fullProfileUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(fullRecordUserAnswers)).build()
 
         running(application) {
           val request =
@@ -172,7 +173,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when incorrect data format is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(fullProfileUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(fullRecordUserAnswers)).build()
 
         running(application) {
           val request =
@@ -199,7 +200,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             UpstreamErrorResponse(" ", NOT_FOUND)
           )
 
-        val application = applicationBuilder(userAnswers = Some(fullProfileUserAnswers))
+        val application = applicationBuilder(userAnswers = Some(fullRecordUserAnswers))
           .overrides(
             bind[OttConnector].toInstance(mockOttConnector)
           )
@@ -256,6 +257,103 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
+    }
+
+    "must set changesMade to true if commodity code is updated" in {
+
+      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      val mockOttConnector = mock[OttConnector]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+        .successful(
+          Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+        )
+
+      val userAnswers =
+        UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "654321")
+          .success
+          .value
+          .set(CountryOfOriginPage, "1")
+          .success
+          .value
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[OttConnector].toInstance(mockOttConnector)
+          )
+          .build()
+
+      running(application) {
+        val controller = application.injector.instanceOf[CommodityCodeController]
+        val request    =
+          FakeRequest(POST, commodityCodeRoute)
+            .withFormUrlEncodedBody(("value", "654322"))
+
+        val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        session(result).get(dataUpdated) must be(Some("true"))
+        session(result).get(pageUpdated) must be(Some("commodity code"))
+
+      }
+    }
+
+    "must set changesMade to false if commodity code is not updated" in {
+
+      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      val mockOttConnector = mock[OttConnector]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+        .successful(
+          Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+        )
+
+      val userAnswers =
+        UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "654321")
+          .success
+          .value
+          .set(CountryOfOriginPage, "1")
+          .success
+          .value
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[OttConnector].toInstance(mockOttConnector)
+          )
+          .build()
+
+      running(application) {
+        val controller = application.injector.instanceOf[CommodityCodeController]
+        val request    =
+          FakeRequest(POST, commodityCodeRoute)
+            .withFormUrlEncodedBody(("value", "654321"))
+
+        val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        session(result).get(dataUpdated) must be(Some("false"))
+
+      }
     }
 
   }
