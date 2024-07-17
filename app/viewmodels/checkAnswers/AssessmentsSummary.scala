@@ -34,8 +34,8 @@ object AssessmentsSummary {
     indexOfThisAssessment: Int
   )(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
-      val listItems = assessment.exemptions
-        .map(x => x.code)
+
+      val listItems = assessment.exemptions.map(_.code)
 
       SummaryListRowViewModel(
         key = KeyViewModel(AssessmentCyaKey(listItems).content),
