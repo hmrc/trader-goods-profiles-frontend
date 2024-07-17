@@ -311,61 +311,32 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must populate the view correctly on a GET when the search has previously been filled in" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, "answer").success.value
-
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(response)
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(response.goodsItemRecords.size)
-
-      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
-        .successful(Done)
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, goodsRecordsRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[GoodsRecordsView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form.fill("answer"),
-          response.goodsItemRecords,
-          totalRecords,
-          firstRecord,
-          lastRecord,
-          Seq(Country("EC", "Ecuador")),
-          pagination,
-          currentPage
-        )(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must refresh page when valid data is submitted via onSearch" in {
+    "must redirect to result page when valid data is submitted via onSearch" in {
 
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, goodsRecordsRoute)
+            .withFormUrlEncodedBody(("value", "answer"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordSearchResultController.onPageLoad(1).url
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted" in {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
@@ -380,42 +351,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector)
           )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsRecordsRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[GoodsRecordsView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form.fill("answer"),
-          response.goodsItemRecords,
-          totalRecords,
-          firstRecord,
-          lastRecord,
-          Seq(Country("EC", "Ecuador")),
-          pagination,
-          currentPage
-        )(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
 
       running(application) {
@@ -432,12 +370,12 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
           boundForm,
-          Seq.empty,
-          0,
-          0,
-          0,
-          Seq.empty,
-          Pagination(),
+          response.goodsItemRecords,
+          totalRecords,
+          firstRecord,
+          lastRecord,
+          Seq(Country("EC", "Ecuador")),
+          pagination,
           currentPage
         )(
           request,

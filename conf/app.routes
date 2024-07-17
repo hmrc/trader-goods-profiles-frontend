@@ -180,7 +180,7 @@ POST        /goods-profile                                                      
 GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
 
 GET         /goods-profile/search-results                                                   controllers.GoodsRecordSearchResultController.onPageLoad(page: Int)
-GET         /goods-profile/search-results/no-record                                         controllers.GoodsRecordSearchResultController.onPageLoadNoRecords()
+GET         /goods-profile/search-no-results                                                controllers.GoodsRecordSearchResultController.onPageLoadNoRecords()
 
 GET         /remove-record/:recordId/goods-profile                                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
 GET        /remove-record/:recordId/goods-record                                            controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
