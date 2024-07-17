@@ -27,7 +27,6 @@ import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 final case class CategoryRecord(
   eori: String,
   recordId: String,
-  comcode: Option[String] = None,
   category: Int,
   categoryAssessmentsWithExemptions: Int,
   supplementaryUnit: Option[String] = None,
@@ -51,23 +50,12 @@ object CategoryRecord {
       CategoryRecord(
         eori = eori,
         recordId = recordId,
-        comcode = getLongerCommodityCode(answers, recordId),
         category = categoryDetails.category,
         categoryAssessmentsWithExemptions = categoryDetails.categoryAssessmentsWithExemptions,
         supplementaryUnit = supplementaryUnit,
         measurementUnit = measurementUnit
       )
     )
-
-  def buildForNiphlsOnlyCategory(eori: String, recordId: String, category: Int): CategoryRecord = {
-    CategoryRecord(
-      eori,
-      recordId,
-      None, //TODO ???
-      category,
-      1
-    )
-  }
 
   def buildForNiphls(eori: String, recordId: String, traderProfile: TraderProfile): CategoryRecord = {
     val category = if (traderProfile.niphlNumber.isDefined) {
@@ -76,16 +64,13 @@ object CategoryRecord {
         Category1
       }
 
-    val categoryAsNumber = if (category == Category1) 1 else 2 //TODO
+    val categoryAsNumber = if (category == Category1) CATEGORY_1 else CATEGORY_2
 
-    val categoryRecord = CategoryRecord(eori, recordId, None, categoryAsNumber, 1)
+    val categoryRecord = CategoryRecord(eori, recordId, categoryAsNumber, 1)
 
     categoryRecord
 
     }
-
-  private def getLongerCommodityCode(answers: UserAnswers, recordId: String): Option[String] =
-    answers.get(LongerCommodityQuery(recordId)).map(_.commodityCode)
 
   private val CATEGORY_1 = 1
   private val CATEGORY_2 = 2

@@ -31,6 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
+import services.CategorisationService
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
@@ -64,7 +65,12 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
               .success
               .value
 
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
+          val mockCategorisationService = mock[CategorisationService]
+          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
+            .thenReturn(Future.successful(answers))
+          val application               = applicationBuilder(userAnswers = Some(answers))
+            .overrides(bind[CategorisationService].to(mockCategorisationService))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, assessmentRoute)
@@ -86,7 +92,12 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
           val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
+          val mockCategorisationService = mock[CategorisationService]
+          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
+            .thenReturn(Future.successful(answers))
+          val application               = applicationBuilder(userAnswers = Some(answers))
+            .overrides(bind[CategorisationService].to(mockCategorisationService))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, assessmentRoute)
@@ -126,7 +137,12 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
               .success
               .value
 
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
+          val mockCategorisationService = mock[CategorisationService]
+          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
+            .thenReturn(Future.successful(answers))
+          val application               = applicationBuilder(userAnswers = Some(answers))
+            .overrides(bind[CategorisationService].to(mockCategorisationService))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, assessmentRoute)

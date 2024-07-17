@@ -21,14 +21,12 @@ import play.api.mvc.JavascriptLiteral
 
 sealed trait Scenario
 
-//TODO should redirect scenarios be diff trait??
 case object NoRedirectScenario extends Scenario
 case object Category1NoExemptions extends Scenario
 case object StandardNoAssessments extends Scenario
 case object NiphlsOnly extends Scenario
 case object NiphlsAndOthers extends Scenario
 
-//TODO redirect scenarios end here
 case object Standard extends Scenario
 case object Category1 extends Scenario
 case object Category2 extends Scenario

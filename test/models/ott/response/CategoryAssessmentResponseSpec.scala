@@ -16,6 +16,7 @@
 
 package models.ott.response
 
+import models.ott.{CategoryAssessment, Certificate, OtherExemption}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
@@ -138,4 +139,5 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
     }
 
   }
+
 }

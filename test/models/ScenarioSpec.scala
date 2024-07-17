@@ -27,81 +27,6 @@ class ScenarioSpec extends SpecBase {
 
     "must return correct RedirectScenario" - {
 
-      "Category1NoExemptions when category 1 assessments and they have no exemptions" in {
-        val categorisationInfo = CategorisationInfo(
-          "1234567890",
-          Seq(
-            CategoryAssessment("id1", 1, Seq.empty),
-            CategoryAssessment("id2", 2, Seq.empty)
-          ),
-          None,
-          0
-        )
-
-        Scenario.getRedirectScenarios(categorisationInfo) mustEqual Category1NoExemptions
-      }
-
-      "StandardNoAssessments when no assessments" in {
-        val categorisationInfo = CategorisationInfo(
-          "1234567890",
-          Seq.empty,
-          None,
-          0
-        )
-
-        Scenario.getRedirectScenarios(categorisationInfo) mustEqual StandardNoAssessments
-      }
-
-      "NIPHLs only when goods are NIPHLs exempt with no other assessments" in {
-
-        Scenario.getRedirectScenarios(categorisationInfoNiphlsNoOtherAssessments) mustEqual NiphlsOnly
-
-      }
-
-      "NIPHLs and others when goods are NIPHLs exempt with other assessments" in {
-
-        Scenario.getRedirectScenarios(categorisationInfoNiphlsWithOtherAssessments) mustEqual NiphlsAndOthers
-
-      }
-
-    }
-
-    "must return NoRedirectScenario" - {
-
-      "NoRedirectScenario when there are Category 1 assessments with exemptions" in {
-        val categorisationInfo = CategorisationInfo(
-          "1234567890",
-          Seq(
-            CategoryAssessment("id1", 1, Seq(Certificate("123", "cert1", "certificate"))),
-            CategoryAssessment("id2", 2, Seq.empty)
-          ),
-          None,
-          0
-        )
-
-        Scenario.getRedirectScenarios(categorisationInfo) mustEqual NoRedirectScenario
-      }
-
-      "NoRedirectScenario when there are no Category 1 assessments but are Category 2" in {
-        val categorisationInfo = CategorisationInfo(
-          "1234567890",
-          Seq(
-            CategoryAssessment("id1", 2, Seq(Certificate("123", "cert1", "certificate")))
-          ),
-          None,
-          0
-        )
-
-        Scenario.getRedirectScenarios(categorisationInfo) mustEqual NoRedirectScenario
-      }
-    }
-
-  }
-
-  ".getRedirectScenarios" - {
-
-    "must return correct RedirectScenario" - {
-
       "Category1NoExemptions" - {
 
         "when category 1 assessments and they have no exemptions" in {
@@ -142,6 +67,18 @@ class ScenarioSpec extends SpecBase {
         )
 
         Scenario.getRedirectScenarios(categorisationInfo) mustEqual StandardNoAssessments
+
+      }
+
+      "NIPHLs only when goods are NIPHLs exempt with no other assessments" in {
+
+        Scenario.getRedirectScenarios(categorisationInfoNiphlsNoOtherAssessments) mustEqual NiphlsOnly
+
+      }
+
+      "NIPHLs and others when goods are NIPHLs exempt with other assessments" in {
+
+        Scenario.getRedirectScenarios(categorisationInfoNiphlsWithOtherAssessments) mustEqual NiphlsAndOthers
 
       }
 

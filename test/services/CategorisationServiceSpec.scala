@@ -92,8 +92,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       .thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
-    //TODO
-    when(mockGoodsRecordsConnector.storeLatestRecords(any())(any())).thenReturn(Future.successful(Done))
   }
 
   override def afterEach(): Unit = {
@@ -136,9 +134,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode234", Seq(), Some("some measure unit"), 0)))
 
       val expectedRecordCategorisations =
-        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
+        RecordCategorisations(
+          Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0, Some("comcode")))
+        )
 
-      val userAnswers                   = emptyUserAnswers
+      val userAnswers = emptyUserAnswers
         .set(RecordCategorisationsQuery, initialRecordCategorisations)
         .success
         .value
@@ -212,8 +212,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should return future failed when the call to the router fails" in {
       reset(mockGoodsRecordsConnector)
-      //TODO
-      when(mockGoodsRecordsConnector.storeLatestRecords(any())(any())).thenReturn(Future.successful(Done))
 
       val expectedException = new RuntimeException("Failed communicating with the router")
       when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
@@ -260,11 +258,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
       val expectedCategorisationInfo    =
-        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
+        CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("newComCode"))
       val expectedRecordCategorisations =
         RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 
-      val result                        =
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(mockOttResponse("newComCode")))
+
+      val result =
         await(categorisationService.updateCategorisationWithLongerCommodityCode(mockDataRequest, testRecordId))
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
@@ -286,7 +287,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should replace existing category assessments if they are already present, then return successful updated answers" in {
       val initialRecordCategorisations =
         RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit"), 0))
+          Map(
+            testRecordId -> CategorisationInfo(
+              "initialComCode",
+              Seq(),
+              Some("some measure unit"),
+              0,
+              Some("aThirdComCode")
+            )
+          )
         )
       val newCommodity                 = testCommodity.copy(commodityCode = "newComCode")
 
@@ -295,7 +304,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val expectedRecordCategorisations =
         RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("comcode")))
+          Map(
+            testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("aThirdComCode"))
+          )
         )
 
       val userAnswers = emptyUserAnswers

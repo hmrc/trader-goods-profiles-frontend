@@ -18,7 +18,9 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.ott.response.{ExemptionType, OttResponse}
+import models.ott.{ExemptionType => localExemptionType}
 import play.api.libs.json.{Json, OFormat}
+import utils.Constants.niphlsAssessment
 
 final case class CategoryAssessment(
   id: String,
@@ -30,6 +32,11 @@ final case class CategoryAssessment(
 
   override def compare(that: CategoryAssessment): Int =
     (this.category, this.exemptions.size) compare (that.category, that.exemptions.size)
+
+  def isNiphlsAnswer: Boolean =
+    category == 1 && exemptions.exists(ex => ex.exemptionType == localExemptionType.OtherExemption && ex.id == niphlsAssessment)
+
+  def isEmptyCat2Assessment: Boolean = category == 2 && exemptions.isEmpty
 }
 
 object CategoryAssessment {

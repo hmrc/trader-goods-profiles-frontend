@@ -26,7 +26,6 @@ final case class CategorisationInfo(
   measurementUnit: Option[String],
   descendantCount: Int,
   originalCommodityCode: Option[String] = None
-  //TODO isNiphls in here??
 
 ) {
   private val padlength = 10
@@ -37,6 +36,12 @@ final case class CategorisationInfo(
     case None                  =>
       false
   }
+
+  def isNiphls: Boolean = categoryAssessments.exists(_.isNiphlsAnswer) &&
+    categoryAssessments.count(_.category == 2) == 1 &&
+    categoryAssessments.exists(_.isEmptyCat2Assessment)
+
+
 }
 
 object CategorisationInfo {

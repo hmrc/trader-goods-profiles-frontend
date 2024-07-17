@@ -96,7 +96,7 @@ class CategoryGuidanceController @Inject() (
   private def whenNiphlsOnly(recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
   (implicit hc: HeaderCarrier) = {
     for {
-      traderProfile <- traderProfileConnector.getTraderProfile(request.eori) //TODO test failure
+      traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
       categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, traderProfile)
       _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
     } yield {

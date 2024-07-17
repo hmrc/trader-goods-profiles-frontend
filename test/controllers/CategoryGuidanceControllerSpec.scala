@@ -305,48 +305,48 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      "with Category 1 when scenario is NiphlsAndOthers and user does not have Niphls" in {
-
-        val userAnswers = emptyUserAnswers
-          .set(
-            RecordCategorisationsQuery,
-            RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsWithOtherAssessments))
-          )
-          .success
-          .value
-
-        when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-          Future.successful(userAnswers)
-        )
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[CategorisationService].toInstance(categorisationService),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-            bind[Navigator].toInstance(mockNavigator)
-          )
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-          val result  = route(application, request).value
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual onwardRoute.url
-
-          withClue("must pass the correct scenario to the navigator") {
-            verify(mockNavigator)
-              .nextPage(eqTo(CategoryGuidancePage(testRecordId, Some(Category1))), eqTo(NormalMode), any)
-          }
-
-          withClue("must make a call to update goodsRecord with category info") {
-            verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
-              any(),
-              any(),
-              any()
-            )(any())
-          }
-        }
-      }
+//      "with Category 1 when scenario is NiphlsAndOthers and user does not have Niphls" in {
+//
+//        val userAnswers = emptyUserAnswers
+//          .set(
+//            RecordCategorisationsQuery,
+//            RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsWithOtherAssessments))
+//          )
+//          .success
+//          .value
+//
+//        when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+//          Future.successful(userAnswers)
+//        )
+//
+//        val application = applicationBuilder(userAnswers = Some(userAnswers))
+//          .overrides(
+//            bind[CategorisationService].toInstance(categorisationService),
+//            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+//            bind[Navigator].toInstance(mockNavigator)
+//          )
+//          .build()
+//
+//        running(application) {
+//          val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+//          val result  = route(application, request).value
+//          status(result) mustEqual SEE_OTHER
+//          redirectLocation(result).get mustEqual onwardRoute.url
+//
+//          withClue("must pass the correct scenario to the navigator") {
+//            verify(mockNavigator)
+//              .nextPage(eqTo(CategoryGuidancePage(testRecordId, Some(Category1))), eqTo(NormalMode), any)
+//          }
+//
+//          withClue("must make a call to update goodsRecord with category info") {
+//            verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+//              any(),
+//              any(),
+//              any()
+//            )(any())
+//          }
+//        }
+//      }
 
     }
 

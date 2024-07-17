@@ -18,18 +18,21 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.AssessmentAnswer.Exemption
-import models.ott.ExemptionType
-import models.{AssessmentAnswer, Mode}
 import logging.Logging
+import models.AssessmentAnswer.Exemption
+import models.ott.CategorisationInfo
+import models.requests.DataRequest
+import models.{AssessmentAnswer, Mode, UserAnswers, ott}
 import navigation.Navigator
 import pages.AssessmentPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.CategorisationService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.Constants.niphlsAssessment
 import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
@@ -59,57 +62,84 @@ class AssessmentController @Inject() (
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
         categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
-        isNiphls = categorisationInfo.categoryAssessments(index).exemptions.exists(ex => ex.exemptionType == ExemptionType.OtherExemption && ex.id == "WFE012")
-        //TODO check has niphls
-        updatedAnswers <- if (isNiphls) Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption("WFE012"))) else Future.successful(userAnswersWithCategorisations)
-        _ <- sessionRepository.set(updatedAnswers)
+        isNiphlsAnAnswer                = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
+        updatedAnswers                 <-
+          updateAnswerIfNiphls(recordId, index, userAnswersWithCategorisations, isNiphlsAnAnswer)
+        _                              <- sessionRepository.set(updatedAnswers)
       } yield {
         val exemptions = categorisationInfo.categoryAssessments(index).exemptions
+        val isNiphlsCategory2Assessment = categorisationInfo.categoryAssessments(index).isEmptyCat2Assessment &&
+          categorisationInfo.isNiphls
 
-        if (isNiphls) {
-          // We Niphl'ing
-          Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
-        } else {
-
-          if (categorisationInfo.categoryAssessments(index).category == 2 && categorisationInfo.categoryAssessments(index).exemptions.isEmpty &&
-            categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 1 && assessment.exemptions.exists(exemption => exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012")) && categorisationInfo.categoryAssessments.count(ass => ass.category == 2) == 1 && categorisationInfo.categoryAssessments.exists(assessment => assessment.category == 2 && assessment.exemptions.isEmpty)
-          ) {
-            //TODO propa
-            Future.successful(Redirect(routes.CyaCategorisationController.onPageLoad(recordId)))
-          } else {
-
-
-            val form = formProvider(exemptions.map(_.id))
-            val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
-              case Some(value) => form.fill(value)
-              case None => form
-            }
-
-            val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-            val viewModel = AssessmentViewModel(
-              commodityCode = categorisationInfo.commodityCode,
-              numberOfThisAssessment = index + 1,
-              numberOfAssessments = categorisationInfo.categoryAssessments.size,
-              radioOptions = radioOptions
-            )
-
-            if (exemptions.isEmpty) {
-              Future.successful(
-                Redirect(
-                  navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+        (isNiphlsAnAnswer, isNiphlsCategory2Assessment, exemptions.isEmpty) match {
+          case (true, _, _) =>
+            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
+          case (false, true, _) =>
+            Future.successful(
+              Redirect(
+                navigator.nextPage(
+                  AssessmentPage(recordId, index, shouldRedirectToCya = true),
+                  mode,
+                  userAnswersWithCategorisations
                 )
               )
-            } else {
-              Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
-            }
-          }
+            )
+          case (false, false, true) =>
+            Future.successful(
+              Redirect(
+                navigator
+                  .nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+              )
+            )
+          case _ =>
+
+            displayPage(mode, recordId, index,
+              userAnswersWithCategorisations, categorisationInfo, exemptions)
         }
+
       }
 
       categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
     }
+
+  private def displayPage(
+    mode: Mode,
+    recordId: String,
+    index: Int,
+    userAnswersWithCategorisations: UserAnswers,
+    categorisationInfo: CategorisationInfo,
+    exemptions: Seq[ott.Exemption]
+  )(implicit messages: Messages,
+    request: DataRequest[_]
+  ) = {
+    val form         = formProvider(exemptions.map(_.id))
+    val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
+      case Some(value) => form.fill(value)
+      case None        => form
+    }
+
+    val radioOptions = AssessmentAnswer.radioOptions(exemptions)(messages)
+    val viewModel    = AssessmentViewModel(
+      commodityCode = categorisationInfo.commodityCode,
+      numberOfThisAssessment = index + 1,
+      numberOfAssessments = categorisationInfo.categoryAssessments.size,
+      radioOptions = radioOptions
+    )
+
+    Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)(request, messages)))
+  }
+
+  private def updateAnswerIfNiphls(
+    recordId: String,
+    index: Int,
+    userAnswersWithCategorisations: UserAnswers,
+    isNiphlsAnAnswer: Boolean
+  ) =
+    if (isNiphlsAnAnswer)
+      Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption(niphlsAssessment)))
+    else Future.successful(userAnswersWithCategorisations)
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

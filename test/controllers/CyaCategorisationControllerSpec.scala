@@ -441,9 +441,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               redirectLocation(result).value mustEqual routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1)
                 .url
-              //TODO update with new expected - Why was this TODO in main?
-//              verify(mockConnector, times(1))
-//                .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+              verify(mockConnector, times(1))
+                .updateCategoryForGoodsRecord(eqTo(testEori), eqTo(testRecordId), any())(any())
 
               withClue("audit event has been fired") {
                 verify(mockAuditService, times(1))
