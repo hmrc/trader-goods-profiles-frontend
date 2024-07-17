@@ -18,7 +18,7 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
-import models.AssessmentAnswer.NoExemption
+import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.apache.pekko.Done
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
@@ -89,7 +89,7 @@ object CategorisationAnswers {
           userAnswers.get(AssessmentPage(recordId, assessment._2))
         )
       )
-      .filter(x => x.answer.isDefined)
+      .filter(x => x.answer.isDefined && x.answer.get != NotAnsweredYet) //TODO update unit tests
       .map(x => CategorisationDetails(x.index, x.assessment, x.answer.get))
 
     if (answers.isEmpty) {

@@ -189,7 +189,7 @@ class HasCorrectGoodsController @Inject() (
       // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
       updatedAnswersCleanedUp <-
         Future
-          .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
+          .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise, oldCommodityCategorisation, newCommodityCategorisation))
 
       _ <- sessionRepository.set(updatedAnswersCleanedUp)
     } yield Redirect(
@@ -209,10 +209,12 @@ class HasCorrectGoodsController @Inject() (
   private def cleanupOldAssessmentAnswers(
     userAnswers: UserAnswers,
     recordId: String,
-    needToRecategorise: Boolean
+    needToRecategorise: Boolean,
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
   ): Try[UserAnswers] =
     if (needToRecategorise) {
-      categorisationService.cleanupOldAssessmentAnswers(userAnswers, recordId)
+      Success(categorisationService.cleanupOldAssessmentAnswersNewFunction(userAnswers, recordId, oldCommodityCategorisation, newCommodityCategorisation))
     } else {
       Success(userAnswers)
     }

@@ -17,9 +17,10 @@
 package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
+import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
 import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
@@ -171,4 +172,40 @@ class CategorisationService @Inject() (
     }).getOrElse(
       Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
     )
+
+  def cleanupOldAssessmentAnswersNewFunction(
+                                   userAnswers: UserAnswers,
+                                   recordId: String,
+                                   oldCommodityCategorisation : CategorisationInfo,
+                                   newCommodityCategorisation : CategorisationInfo
+                                 ): UserAnswers = {
+    if(oldCommodityCategorisation == newCommodityCategorisation) {
+      userAnswers
+    }
+    else {
+      //cleanupOldAssessmentAnswers(userAnswers, recordId).get //todo remove .get
+      //want to loop through oldCommodityCategorisation,
+      // if an assessment from old is the same as an assessment from new
+      // then add that assessment to the list
+      val listOfAnswersToKeep = oldCommodityCategorisation.categoryAssessments.zipWithIndex.foldLeft(Seq.empty[(Int, Option[AssessmentAnswer])]){ (currentList, assessment) =>
+        val matches = newCommodityCategorisation.categoryAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
+        matches.foldLeft(currentList) {
+          (current, matchingAssessment) => current :+ (newCommodityCategorisation.categoryAssessments.indexOf(matchingAssessment), userAnswers.get(AssessmentPage(recordId, assessment._2)) )
+        }
+      }
+      val cleanedUserAnswers = cleanupOldAssessmentAnswers(userAnswers, recordId).get
+      //Avoid it getting upset if answers have moved too far
+      val uaWithPlaceholders = newCommodityCategorisation.categoryAssessments.zipWithIndex.foldLeft(cleanedUserAnswers){ (currentAnswers, newAssessment) =>
+        currentAnswers.set(AssessmentPage(recordId, newAssessment._2),  NotAnsweredYet).get //TODO
+      }
+      listOfAnswersToKeep.foldLeft(uaWithPlaceholders){(currentAnswers, answerToKeep) =>
+        if(answerToKeep._2.isDefined) {
+          currentAnswers.set(AssessmentPage(recordId, answerToKeep._1), answerToKeep._2.get).get //todo turn to Try
+        } else {
+          currentAnswers
+        }
+      }
+    }
+  }
+
 }
