@@ -24,6 +24,7 @@ import logging.Logging
 import models.{AdviceRequest, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
@@ -37,6 +38,7 @@ class CyaRequestAdviceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
   accreditationConnector: AccreditationConnector
@@ -73,6 +75,7 @@ class CyaRequestAdviceController @Inject() (
     implicit request =>
       AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
+          auditService.auditRequestAdvice(request.affinityGroup, model)
           accreditationConnector
             .submitRequestAccreditation(model)
             .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url))

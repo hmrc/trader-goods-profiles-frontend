@@ -132,10 +132,10 @@ trait SpecBase
 
   def mandatoryAdviceUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(NamePage(testRecordId), "123")
+      .set(NamePage(testRecordId), "Firstname Lastname")
       .success
       .value
-      .set(EmailPage(testRecordId), "654321")
+      .set(EmailPage(testRecordId), "test@test.com")
       .success
       .value
 
