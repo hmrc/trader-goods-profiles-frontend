@@ -18,16 +18,12 @@ package controllers
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getPagination, getSearchPagination}
-import models.NormalMode
-import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, GoodsRecordsPage, TraderReferenceUpdatePage}
+import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
+import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers._
-import viewmodels.govuk.summarylist._
-import views.html.{GoodsRecordSearchResultEmptyView, GoodsRecordSearchResultView, SingleRecordView}
+import views.html.{GoodsRecordSearchResultEmptyView, GoodsRecordSearchResultView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +32,6 @@ class GoodsRecordSearchResultController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  sessionRepository: SessionRepository,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   identify: IdentifierAction,
