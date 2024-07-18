@@ -103,9 +103,11 @@ class TraderReferenceController @Inject() (
                 Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))
               } else {
                 val formWithApiErrors =
-                  form.copy(errors =
-                    Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                  )
+                  form
+                    .fill(value)
+                    .copy(
+                      errors = Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
+                    )
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
         )
@@ -133,9 +135,11 @@ class TraderReferenceController @Inject() (
                   .addingToSession(pageUpdated -> traderReference)
               } else {
                 val formWithApiErrors =
-                  form.copy(errors =
-                    Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                  )
+                  form
+                    .fill(value)
+                    .copy(
+                      errors = Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
+                    )
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
           }
