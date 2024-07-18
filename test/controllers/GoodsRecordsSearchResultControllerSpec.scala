@@ -122,7 +122,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
     next = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url))
   )
 
-  "GoodsRecords Controller" - {
+  "GoodsRecordsSearch Controller" - {
 
     "must return OK and the correct view for a GET with search results records" in {
 
@@ -131,7 +131,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(
-        mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(searchText), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
       ) thenReturn Future
         .successful(response)
 
@@ -184,7 +184,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
       )
       when(
-        mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(searchText), eqTo(middlePage), any())(any())
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(middlePage), any())(any())
       ) thenReturn Future
         .successful(response)
 
@@ -268,7 +268,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
       when(
-        mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(searchText), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
       ) thenReturn Future
         .successful(emptyResultResponse)
 

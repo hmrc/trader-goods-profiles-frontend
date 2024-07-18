@@ -52,7 +52,8 @@ class GoodsRecordsSearchResultController @Inject() (
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
             for {
-              searchResponse <- goodsRecordConnector.getRecords(request.eori, searchText, page, pageSize)
+              searchResponse <-
+                goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize)
               countries      <- ottConnector.getCountries
             } yield
               if (searchResponse.pagination.totalRecords != 0) {

@@ -68,8 +68,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
-  private def goodsRecordsUrl(eori: String, searchString: String, queryParams: Map[String, String]) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/search?searchString=$searchString&$queryParams"
+  private def searchRecordsUrl(
+    eori: String,
+    searchTerm: String,
+    exactMatch: Boolean,
+    queryParams: Map[String, String]
+  ) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -207,9 +212,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .map(response => response.json.as[GetRecordsResponse])
   }
 
-  def getRecords(
+  def searchRecords(
     eori: String,
-    searchString: String,
+    searchTerm: String,
+    exactMatch: Boolean,
     page: Int,
     size: Int
   )(implicit
@@ -222,7 +228,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     )
 
     httpClient
-      .get(goodsRecordsUrl(eori, searchString, queryParams))
+      .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetRecordsResponse])

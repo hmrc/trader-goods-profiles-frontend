@@ -673,8 +673,9 @@ class GoodsRecordConnectorSpec
   ".getSearch" - {
 
     val searchString               = "banana"
+    val exactMatch                 = false
     val pagedGoodsRecordsSearchUrl =
-      s"/trader-goods-profiles-data-store/traders/$testEori/records/search?searchString=$searchString&page=1&size=3"
+      s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 
     "must get a page of goods records" in {
 
@@ -684,7 +685,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.getRecords(testEori, searchString, 1, 3).futureValue mustBe getRecordsResponse
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe getRecordsResponse
         .validate[GetRecordsResponse]
         .get
     }
@@ -697,7 +698,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.getRecords(testEori, searchString, 1, 3).failed.futureValue
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
     }
 
     "must return a failed future when the json does not match the format" in {
@@ -708,7 +709,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
-      connector.getRecords(testEori, searchString, 1, 3).failed.futureValue
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
     }
   }
 }
