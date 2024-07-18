@@ -26,6 +26,7 @@ import models.requests.DataRequest
 import models.{AssessmentAnswer, Category1, Mode, UserAnswers, ott}
 import navigation.Navigator
 import pages.AssessmentPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
@@ -114,7 +115,7 @@ class AssessmentController @Inject() (
           case _ =>
 
             displayPage(mode, recordId, index,
-              updatedAnswers, categorisationInfo, exemptions)
+              updatedAnswers, categorisationInfo, exemptions, listItems, commodityCode, preparedForm)
         }
 
       }
@@ -132,24 +133,12 @@ class AssessmentController @Inject() (
     categorisationInfo: CategorisationInfo,
     exemptions: Seq[ott.Exemption],
       listItems: Seq[String],
-    commodityCode: String
+    commodityCode: String,
+    preparedForm: Form[AssessmentAnswer]
   )(implicit messages: Messages,
     request: DataRequest[_]
   ) = {
-    val form         = formProvider(exemptions.map(_.id))
-    val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
-      case Some(value) => form.fill(value)
-      case None        => form
-    }
-
-    val radioOptions = AssessmentAnswer.radioOptions(exemptions)(messages)
-    val viewModel    = AssessmentViewModel(
-      commodityCode = categorisationInfo.commodityCode,
-      numberOfThisAssessment = index + 1,
-      numberOfAssessments = categorisationInfo.categoryAssessments.size,
-      radioOptions = radioOptions
-    )
-
+    //TODO cleanup after merging Ewan's stuff
     Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)(request, messages)))
   }
 
@@ -161,7 +150,7 @@ class AssessmentController @Inject() (
     userHasNiphls: Boolean
   ) =
     if (isNiphlsAnAnswer && userHasNiphls)
-      Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption(niphlsAssessment)))
+      Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption("true")))
     else Future.successful(userAnswersWithCategorisations)
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
