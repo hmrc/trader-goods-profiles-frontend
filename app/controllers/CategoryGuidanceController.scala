@@ -55,15 +55,15 @@ class CategoryGuidanceController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
       categorisationService
         .requireCategorisation(request, recordId)
         .flatMap { userAnswers =>
           val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
           val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
           val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
-          val recategorising = userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
+          val recategorising        = userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
 
           scenario match {
             case Some(Category1NoExemptions | StandardNoAssessments) =>
@@ -80,15 +80,17 @@ class CategoryGuidanceController @Inject() (
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
 
             case Some(NiphlsOnly) =>
-
               whenNiphlsOnly(mode, recordId, request, userAnswers)
 
             case Some(NiphlsAndOthers) =>
-
               whenNiphlsAndOthers(mode, recordId, userAnswers)
 
             case Some(NoRedirectScenario) if recategorising =>
-              Future.successful(Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(NoRedirectScenario)),mode, userAnswers)))
+              Future.successful(
+                Redirect(
+                  navigator.nextPage(CategoryGuidancePage(recordId, Some(NoRedirectScenario)), mode, userAnswers)
+                )
+              )
 
             case Some(NoRedirectScenario) =>
               Future.successful(Ok(view(mode, recordId)).removingFromSession(dataUpdated, pageUpdated))
@@ -98,37 +100,36 @@ class CategoryGuidanceController @Inject() (
           logger.error(e.getMessage)
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
-  }
+    }
 
-  private def whenNiphlsOnly(mode: Mode, recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
-  (implicit hc: HeaderCarrier) = {
+  private def whenNiphlsOnly(mode: Mode, recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)(
+    implicit hc: HeaderCarrier
+  ) =
     for {
       traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
       categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, traderProfile)
-      _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
-    } yield {
-      Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Scenario.getScenario(categoryRecord))),mode,  userAnswers))
-    }
-  }
+      _             <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+    } yield Redirect(
+      navigator.nextPage(CategoryGuidancePage(recordId, Some(Scenario.getScenario(categoryRecord))), mode, userAnswers)
+    )
 
-  private def whenNiphlsAndOthers(mode: Mode, recordId: String, userAnswers: UserAnswers)
-                                 (implicit hc: HeaderCarrier, request: DataRequest[_]) = {
+  private def whenNiphlsAndOthers(mode: Mode, recordId: String, userAnswers: UserAnswers)(implicit
+    hc: HeaderCarrier,
+    request: DataRequest[_]
+  ) = {
     val traderProfile = traderProfileConnector.getTraderProfile(request.eori)
 
-    traderProfile.map {
-      profile =>
-        if (profile.niphlNumber.isDefined) {
-          Future.successful(Ok(view(mode, recordId)))
-        } else {
-          // User doesn't have NIPHLs so no point asking them anything
-          val categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, profile)
+    traderProfile.map { profile =>
+      if (profile.niphlNumber.isDefined) {
+        Future.successful(Ok(view(mode, recordId)))
+      } else {
+        // User doesn't have NIPHLs so no point asking them anything
+        val categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, profile)
 
-          for {
-            _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
-          } yield {
-            Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Category1)), mode, userAnswers))
-          }
-        }
+        for {
+          _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+        } yield Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Category1)), mode, userAnswers))
+      }
     }
   }.flatten
 

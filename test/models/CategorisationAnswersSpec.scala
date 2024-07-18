@@ -121,6 +121,28 @@ class CategorisationAnswersSpec extends SpecBase {
         )
       }
 
+      "all category 1 Niphls questions are answered" in {
+
+        val categoryQuery = categorisationInfoNiphlsWithOtherAssessments
+
+        val answers = emptyUserAnswers
+          .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categoryQuery)))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
+          .success
+          .value
+
+        val result = CategorisationAnswers.build(answers, testRecordId)
+
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("true"), Exemption("true")), None)
+        )
+      }
+
     }
 
     "must return errors" - {

@@ -257,12 +257,12 @@ class Navigator @Inject() () {
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromCategoryGuidance(page: CategoryGuidancePage) = {
+  private def navigateFromCategoryGuidance(page: CategoryGuidancePage) =
     page.scenario match {
-      case Some(scenario) if scenario != NoRedirectScenario => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
-      case _ => routes.AssessmentController.onPageLoad(NormalMode, page.recordId, firstAssessmentIndex)
+      case Some(scenario) if scenario != NoRedirectScenario =>
+        routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
+      case _                                                => routes.AssessmentController.onPageLoad(NormalMode, page.recordId, firstAssessmentIndex)
     }
-  }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
@@ -391,39 +391,39 @@ class Navigator @Inject() () {
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     if (!assessmentPage.shouldRedirectToCya) {
-    val recordId = assessmentPage.recordId
+      val recordId = assessmentPage.recordId
 
-    for {
-      recordQuery      <- answers.get(RecordCategorisationsQuery)
-      record           <- recordQuery.records.get(recordId)
-      assessmentAnswer <- answers.get(assessmentPage)
-    } yield assessmentAnswer match {
-      case AssessmentAnswer.Exemption(_) =>
-        val assessmentCount = Try {
-          recordQuery.records(recordId).categoryAssessments.size
-        }.getOrElse(0)
+      for {
+        recordQuery      <- answers.get(RecordCategorisationsQuery)
+        record           <- recordQuery.records.get(recordId)
+        assessmentAnswer <- answers.get(assessmentPage)
+      } yield assessmentAnswer match {
+        case AssessmentAnswer.Exemption(_) =>
+          val assessmentCount = Try {
+            recordQuery.records(recordId).categoryAssessments.size
+          }.getOrElse(0)
 
-        if (assessmentPage.index + 1 < assessmentCount) {
-          if (answers.isDefined(AssessmentPage(recordId, assessmentPage.index + 1))) {
-            routes.CyaCategorisationController.onPageLoad(recordId)
+          if (assessmentPage.index + 1 < assessmentCount) {
+            if (answers.isDefined(AssessmentPage(recordId, assessmentPage.index + 1))) {
+              routes.CyaCategorisationController.onPageLoad(recordId)
+            } else {
+              routes.AssessmentController.onPageLoad(CheckMode, recordId, assessmentPage.index + 1)
+            }
           } else {
-            routes.AssessmentController.onPageLoad(CheckMode, recordId, assessmentPage.index + 1)
-          }
-        } else {
-          routes.CyaCategorisationController.onPageLoad(recordId)
-        }
-      case AssessmentAnswer.NoExemption  =>
-        record.categoryAssessments(assessmentPage.index).category match {
-          case 2
-              if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
-                record.descendantCount != 0 =>
-            routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
-          case 2 if record.measurementUnit.isDefined =>
-            routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-          case _                                     =>
             routes.CyaCategorisationController.onPageLoad(recordId)
-        }
-    }
+          }
+        case AssessmentAnswer.NoExemption  =>
+          record.categoryAssessments(assessmentPage.index).category match {
+            case 2
+                if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
+                  record.descendantCount != 0 =>
+              routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
+            case 2 if record.measurementUnit.isDefined =>
+              routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
+            case _                                     =>
+              routes.CyaCategorisationController.onPageLoad(recordId)
+          }
+      }
     } else {
       Some(routes.CyaCategorisationController.onPageLoad(assessmentPage.recordId))
     }
@@ -443,12 +443,12 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromCategoryGuidanceCheck(page: CategoryGuidancePage) = {
+  private def navigateFromCategoryGuidanceCheck(page: CategoryGuidancePage) =
     page.scenario match {
-      case Some(scenario) if scenario != NoRedirectScenario => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
-      case _ => routes.AssessmentController.onPageLoad(CheckMode, page.recordId, firstAssessmentIndex)
+      case Some(scenario) if scenario != NoRedirectScenario =>
+        routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
+      case _                                                => routes.AssessmentController.onPageLoad(CheckMode, page.recordId, firstAssessmentIndex)
     }
-  }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>

@@ -191,8 +191,9 @@ class HasCorrectGoodsController @Inject() (
         Future
           .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
 
-      updatedAnswersAreRecategorising <- Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
-      _ <- sessionRepository.set(updatedAnswersAreRecategorising)
+      updatedAnswersAreRecategorising <-
+        Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
+      _                               <- sessionRepository.set(updatedAnswersAreRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),

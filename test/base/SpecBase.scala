@@ -243,8 +243,8 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
-      true,
+      active = true,
+      toReview = true,
       None,
       "Not ready",
       None,
@@ -267,6 +267,7 @@ trait SpecBase
   lazy val categorisationInfoNiphlsWithOtherAssessments: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(
+      CategoryAssessment("id3", 1, Seq(Certificate("321", "Y321", "Goods are certified cool"))),
       CategoryAssessment(
         "id1",
         1,
@@ -275,8 +276,7 @@ trait SpecBase
           AdditionalCode("1234", "Y1234", "Y1234 - nothing that is purple")
         )
       ),
-      CategoryAssessment("id2", 2, Seq.empty),
-      CategoryAssessment("id3", 1, Seq(Certificate("321", "Y321", "Goods are certified cool")))
+      CategoryAssessment("id2", 2, Seq.empty)
     ),
     None,
     0

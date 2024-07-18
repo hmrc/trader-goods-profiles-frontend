@@ -40,7 +40,7 @@ object ExemptionType {
   implicit lazy val reads: Reads[ExemptionType] = Reads {
     case JsString("certificate")     => JsSuccess(Certificate)
     case JsString("additional_code") => JsSuccess(AdditionalCode)
-    case JsString("exemption") => JsSuccess(OtherExemption)
+    case JsString("exemption")       => JsSuccess(OtherExemption)
     case _                           => JsError("unable to parse exemption type")
   }
 }

@@ -40,58 +40,67 @@ class CategorisationService @Inject() (
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[UserAnswers] =
-
     (for {
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-      recordCategorisations =
+      recordCategorisations   =
         request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-      recategorising = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
-    } yield {
+      recategorising          = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
+    } yield recordCategorisations.records.get(recordId) match {
+      case Some(catInfo) =>
+        if (catInfo.commodityCode == getGoodsRecordResponse.comcode || recategorising) {
+          Future.successful(request.userAnswers)
+        } else {
+          updateCategorisationDetails(
+            request,
+            recordId,
+            recordCategorisations,
+            getGoodsRecordResponse.comcode,
+            getGoodsRecordResponse.countryOfOrigin
+          )
+        }
 
-      recordCategorisations.records.get(recordId) match {
-        case Some(catInfo) =>
-
-          if (catInfo.commodityCode == getGoodsRecordResponse.comcode || recategorising) {
-            Future.successful(request.userAnswers)
-          } else {
-            updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
-          }
-
-        case None =>
-          updateCategorisationDetails(request, recordId, recordCategorisations, getGoodsRecordResponse.comcode, getGoodsRecordResponse.countryOfOrigin)
-      }
+      case None =>
+        updateCategorisationDetails(
+          request,
+          recordId,
+          recordCategorisations,
+          getGoodsRecordResponse.comcode,
+          getGoodsRecordResponse.countryOfOrigin
+        )
     }).flatten
 
-
-  private def updateCategorisationDetails(request: DataRequest[_], recordId: String, recordCategorisations: RecordCategorisations,
-                                          commodityCode: String, countryOfOrigin: String)
-                                         (implicit hc:HeaderCarrier) = {
+  private def updateCategorisationDetails(
+    request: DataRequest[_],
+    recordId: String,
+    recordCategorisations: RecordCategorisations,
+    commodityCode: String,
+    countryOfOrigin: String
+  )(implicit hc: HeaderCarrier) =
     for {
-      goodsNomenclature <- ottConnector.getCategorisationInfo(
-        commodityCode,
-        request.eori,
-        request.affinityGroup,
-        Some(recordId),
-        countryOfOrigin,
-        LocalDate.now() //TODO where does DateOfTrade come from??
-      )
+      goodsNomenclature       <- ottConnector.getCategorisationInfo(
+                                   commodityCode,
+                                   request.eori,
+                                   request.affinityGroup,
+                                   Some(recordId),
+                                   countryOfOrigin,
+                                   LocalDate.now() //TODO where does DateOfTrade come from??
+                                 )
       originalCommodityCodeOpt =
         recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
-      originalCommodityCode             = originalCommodityCodeOpt.getOrElse(commodityCode)
-      categorisationInfo <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
-        case Some(categorisationInfo) => Future.successful(categorisationInfo)
-        case _ => Future.failed(new RuntimeException("Could not build categorisation info"))
-      }
-      updatedAnswers <-
+      originalCommodityCode    = originalCommodityCodeOpt.getOrElse(commodityCode)
+      categorisationInfo      <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
+                                   case Some(categorisationInfo) => Future.successful(categorisationInfo)
+                                   case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                 }
+      updatedAnswers          <-
         Future.fromTry(
           request.userAnswers.set(
             RecordCategorisationsQuery,
             recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
           )
         )
-      _                      <- sessionRepository.set(updatedAnswers)
+      _                       <- sessionRepository.set(updatedAnswers)
     } yield updatedAnswers
-  }
 
   def updateCategorisationWithLongerCommodityCode(
     request: DataRequest[_],
@@ -99,13 +108,18 @@ class CategorisationService @Inject() (
   )(implicit
     hc: HeaderCarrier
   ): Future[UserAnswers] =
-
     (for {
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
-      recordCategorisations =
+      recordCategorisations   =
         request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-    } yield updateCategorisationDetails(request, recordId, recordCategorisations, newCommodityCode.commodityCode, getGoodsRecordResponse.countryOfOrigin)).flatten
+    } yield updateCategorisationDetails(
+      request,
+      recordId,
+      recordCategorisations,
+      newCommodityCode.commodityCode,
+      getGoodsRecordResponse.countryOfOrigin
+    )).flatten
 
   def cleanupOldAssessmentAnswers(
     userAnswers: UserAnswers,

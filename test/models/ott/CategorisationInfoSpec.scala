@@ -16,6 +16,7 @@
 
 package models.ott
 
+import base.SpecBase
 import models.ott.response._
 import org.scalatest.OptionValues
 import org.scalatest.freespec.AnyFreeSpec
@@ -23,7 +24,7 @@ import org.scalatest.matchers.must.Matchers
 
 import java.time.Instant
 
-class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues {
+class CategorisationInfoSpec extends SpecBase {
 
   ".build" - {
 
@@ -376,5 +377,18 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
 
       CategorisationInfo.build(ottResponse) must not be defined
     }
+  }
+
+  ".isNiphls" - {
+
+    "return true if niphls assessment" in {
+      categorisationInfoNiphlsNoOtherAssessments.isNiphls mustBe true
+      categorisationInfoNiphlsWithOtherAssessments.isNiphls mustBe true
+    }
+
+    "return false if not a niphls assessment" in {
+      categoryQuery.isNiphls mustBe false
+    }
+
   }
 }

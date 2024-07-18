@@ -38,7 +38,9 @@ final case class CategoryAssessment(
   }
 
   def isNiphlsAnswer: Boolean =
-    category == 1 && exemptions.exists(ex => ex.exemptionType == localExemptionType.OtherExemption && ex.id == niphlsAssessment)
+    category == 1 && exemptions.exists(ex =>
+      ex.exemptionType == localExemptionType.OtherExemption && ex.id == niphlsAssessment
+    )
 
   def isEmptyCat2Assessment: Boolean = category == 2 && exemptions.isEmpty
 }

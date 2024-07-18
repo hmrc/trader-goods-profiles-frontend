@@ -147,7 +147,6 @@ class CyaUpdateRecordController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield countries
 
-
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {

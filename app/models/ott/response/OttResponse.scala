@@ -46,9 +46,9 @@ final case class OttResponse(
     case _                         => None
   }
 
-  lazy val otherExemptions: Seq[OtherExemptionResponse] = includedElements.flatMap{
+  lazy val otherExemptions: Seq[OtherExemptionResponse] = includedElements.flatMap {
     case e: OtherExemptionResponse => Some(e)
-    case _ => None
+    case _                         => None
   }
 }
 

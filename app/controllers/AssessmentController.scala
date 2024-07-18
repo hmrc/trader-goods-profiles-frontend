@@ -23,7 +23,7 @@ import logging.Logging
 import models.AssessmentAnswer.Exemption
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{AssessmentAnswer, Category1, Mode, UserAnswers, ott}
+import models.{AssessmentAnswer, Mode, UserAnswers, ott}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.data.Form
@@ -32,10 +32,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.CategorisationService
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Constants.niphlsAssessment
-import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import javax.inject.Inject
@@ -63,29 +60,29 @@ class AssessmentController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         // TODO ?? userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
-        recordQuery = request.userAnswers.get(RecordCategorisationsQuery)
+        traderProfile      <- traderProfileConnector.getTraderProfile(request.eori)
+        recordQuery         = request.userAnswers.get(RecordCategorisationsQuery)
         categorisationInfo <- Future.fromTry(Try(recordQuery.get.records(recordId)))
-        listItems = categorisationInfo.categoryAssessments(index).getExemptionListItems
-        commodityCode = categorisationInfo.commodityCode
-        exemptions = categorisationInfo.categoryAssessments(index).exemptions
-        form = formProvider(exemptions.size)
-        userHasNiphls = traderProfile.niphlNumber.isDefined
-        isNiphlsAnAnswer = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
-        updatedAnswers <-
+        listItems           = categorisationInfo.categoryAssessments(index).getExemptionListItems
+        commodityCode       = categorisationInfo.commodityCode
+        exemptions          = categorisationInfo.categoryAssessments(index).exemptions
+        form                = formProvider(exemptions.size)
+        userHasNiphls       = traderProfile.niphlNumber.isDefined
+        isNiphlsAnAnswer    = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
+        updatedAnswers     <-
           updateAnswerIfNiphls(recordId, index, request.userAnswers, isNiphlsAnAnswer, userHasNiphls)
-        _ <- sessionRepository.set(updatedAnswers)
-        preparedForm = updatedAnswers.get(AssessmentPage(recordId, index)) match {
-          case Some(value) => form.fill(value)
-          case None => form
-        }
+        _                  <- sessionRepository.set(updatedAnswers)
+        preparedForm        = updatedAnswers.get(AssessmentPage(recordId, index)) match {
+                                case Some(value) => form.fill(value)
+                                case None        => form
+                              }
       } yield {
-        val exemptions = categorisationInfo.categoryAssessments(index).exemptions
+        val exemptions                  = categorisationInfo.categoryAssessments(index).exemptions
         val isNiphlsCategory2Assessment = categorisationInfo.categoryAssessments(index).isEmptyCat2Assessment &&
           categorisationInfo.isNiphls && userHasNiphls
 
         (userHasNiphls, isNiphlsAnAnswer, isNiphlsCategory2Assessment, exemptions.isEmpty) match {
-          case (true, true, _, _) =>
+          case (true, true, _, _)     =>
             Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
           case (true, false, true, _) =>
             Future.successful(
@@ -97,7 +94,7 @@ class AssessmentController @Inject() (
                 )
               )
             )
-          case (false, true, _, _) =>
+          case (false, true, _, _)    =>
             // Should have not been allowed to get this far. Should not have loaded this page
             Future.successful(
               //TODO ???
@@ -105,17 +102,25 @@ class AssessmentController @Inject() (
                 routes.JourneyRecoveryController.onPageLoad()
               )
             )
-          case (false, _, _, true) =>
+          case (false, _, _, true)    =>
             Future.successful(
               Redirect(
                 navigator
                   .nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
               )
             )
-          case _ =>
-
-            displayPage(mode, recordId, index,
-              updatedAnswers, categorisationInfo, exemptions, listItems, commodityCode, preparedForm)
+          case _                      =>
+            displayPage(
+              mode,
+              recordId,
+              index,
+              updatedAnswers,
+              categorisationInfo,
+              exemptions,
+              listItems,
+              commodityCode,
+              preparedForm
+            )
         }
 
       }
@@ -132,15 +137,12 @@ class AssessmentController @Inject() (
     userAnswersWithCategorisations: UserAnswers,
     categorisationInfo: CategorisationInfo,
     exemptions: Seq[ott.Exemption],
-      listItems: Seq[String],
+    listItems: Seq[String],
     commodityCode: String,
     preparedForm: Form[AssessmentAnswer]
-  )(implicit messages: Messages,
-    request: DataRequest[_]
-  ) = {
+  )(implicit messages: Messages, request: DataRequest[_]) =
     //TODO cleanup after merging Ewan's stuff
     Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)(request, messages)))
-  }
 
   private def updateAnswerIfNiphls(
     recordId: String,

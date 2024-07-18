@@ -32,7 +32,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.AssessmentPage
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -71,8 +71,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     Instant.now(),
     None,
     1,
-    true,
-    true,
+    active = true,
+    toReview = true,
     None,
     "declarable",
     None,
@@ -191,6 +191,53 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       withClue("Should not call session repository to update user answers") {
         verify(mockSessionRepository, never()).set(any())
       }
+    }
+
+    "should not call for category assessments if we are recategorising" in {
+      val expectedRecordCategorisations =
+        RecordCategorisations(Map(testRecordId -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
+
+      val userAnswers                   = emptyUserAnswers
+        .set(RecordCategorisationsQuery, expectedRecordCategorisations)
+        .success
+        .value
+        .set(RecategorisingQuery(testRecordId), true)
+        .success
+        .value
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+
+      val result = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
+
+      withClue("Should not call the router to get the goods record") {
+        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
+      }
+
+      withClue("Should not call OTT to get categorisation info") {
+        verify(mockOttConnector, never()).getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())
+      }
+
+      withClue("Should not call session repository to update user answers") {
+        verify(mockSessionRepository, never()).set(any())
+      }
+    }
+
+    "should return future failed when the goods record connector fails" in {
+      val expectedException = new RuntimeException("Failed communicating with session repository")
+      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.requireCategorisation(mockDataRequest, "recordId")
+        await(result)
+      }
+
+      actualException mustBe expectedException
     }
 
     "should return future failed when the call to session repository fails" in {

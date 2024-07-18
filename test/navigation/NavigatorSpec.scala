@@ -933,14 +933,6 @@ class NavigatorSpec extends SpecBase {
             ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
           }
 
-//          "to Category Result for Category 1 when Niphls Redirect scenario supplied" in {
-//            navigator.nextPage(
-//              CategoryGuidancePage(testRecordId, Some(NiphlsRedirect)),
-//              NormalMode,
-//              emptyUserAnswers
-//            ) mustEqual routes.CategorisationResultController.onPageLoad(testRecordId, Category1)
-//          }
-
           "to Category Result for the supplied scenario when any other scenario supplied" in {
             navigator.nextPage(
               CategoryGuidancePage(testRecordId, Some(Category1)),
@@ -1020,7 +1012,7 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
           }
 
-          "to first Assessment when answer is Yes and need to recategorise" in {
+          "to categorisation start when answer is Yes and need to recategorise" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -1034,7 +1026,7 @@ class NavigatorSpec extends SpecBase {
               HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = true),
               NormalMode,
               answers
-            ) mustBe routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentIndex)
+            ) mustBe routes.CategoryGuidanceController.onPageLoad(NormalMode, testRecordId)
           }
 
           "to LongerCommodityCodePage when answer is No" in {
@@ -1078,6 +1070,7 @@ class NavigatorSpec extends SpecBase {
       }
 
     }
+
     "in Check mode" - {
 
       "must go from a page that doesn't exist in the edit route map to Index" in {
@@ -1471,6 +1464,21 @@ class NavigatorSpec extends SpecBase {
         val categorisationInfo    =
           CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"), 0)
         val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
+
+        "to CyaCategorisation if the page is marked to redirect there" in {
+
+          val answers =
+            emptyUserAnswers
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+
+          navigator.nextPage(
+            AssessmentPage(recordId, indexAssessment1, shouldRedirectToCya = true),
+            CheckMode,
+            answers
+          ) mustEqual routes.CyaCategorisationController.onPageLoad(recordId)
+        }
 
         "must go from an assessment" - {
 
@@ -1898,7 +1906,7 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
           }
 
-          "to first Assessment when answer is Yes and need to recategorise" in {
+          "to categorisation start when answer is Yes and need to recategorise" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -1912,7 +1920,7 @@ class NavigatorSpec extends SpecBase {
               HasCorrectGoodsLongerCommodityCodePage(testRecordId, needToRecategorise = true),
               CheckMode,
               answers
-            ) mustBe routes.AssessmentController.onPageLoad(CheckMode, testRecordId, firstAssessmentIndex)
+            ) mustBe routes.CategoryGuidanceController.onPageLoad(CheckMode, testRecordId)
           }
 
           "to HasSupplementaryUnit when answer is Yes and does not need recategorising and there is supplementary unit on new commodity code" in {
@@ -1965,6 +1973,27 @@ class NavigatorSpec extends SpecBase {
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad()
+          }
+
+        }
+
+        "must go from CategoryGuidancePage" - {
+
+          "to Category Assessment page when click continue" in {
+            val recordId = testRecordId
+            navigator.nextPage(
+              CategoryGuidancePage(recordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustEqual routes.AssessmentController.onPageLoad(CheckMode, recordId, firstAssessmentIndex)
+          }
+
+          "to Category Result for the supplied scenario when any other scenario supplied" in {
+            navigator.nextPage(
+              CategoryGuidancePage(testRecordId, Some(Category1)),
+              CheckMode,
+              emptyUserAnswers
+            ) mustEqual routes.CategorisationResultController.onPageLoad(testRecordId, Category1)
           }
 
         }

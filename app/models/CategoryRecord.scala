@@ -59,10 +59,10 @@ object CategoryRecord {
 
   def buildForNiphls(eori: String, recordId: String, traderProfile: TraderProfile): CategoryRecord = {
     val category = if (traderProfile.niphlNumber.isDefined) {
-        Category2
-      } else {
-        Category1
-      }
+      Category2
+    } else {
+      Category1
+    }
 
     val categoryAsNumber = if (category == Category1) CATEGORY_1 else CATEGORY_2
 
@@ -70,7 +70,7 @@ object CategoryRecord {
 
     categoryRecord
 
-    }
+  }
 
   private val CATEGORY_1 = 1
   private val CATEGORY_2 = 2

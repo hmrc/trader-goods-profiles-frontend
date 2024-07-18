@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import models.{AssessmentAnswer, Category1, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Category1, NormalMode, RecordCategorisations, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -365,14 +365,14 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
 
-            val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+            val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(NormalMode, testRecordId).url)
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
           }
         }
 
         "when no answers are found" in {
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(NormalMode, testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -410,7 +410,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(NormalMode, testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -563,7 +563,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[GoodsRecordConnector]
-          val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+          val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(NormalMode, testRecordId).url)
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))

@@ -32,6 +32,6 @@ object OtherExemptionResponse {
       (__ \ "id").read[String] and
         (__ \ "attributes" \ "code").read[String] and
         (__ \ "attributes" \ "description").read[String]
-      )(OtherExemptionResponse.apply _)
+    )(OtherExemptionResponse.apply _)
 
 }

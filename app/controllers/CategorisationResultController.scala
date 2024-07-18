@@ -37,16 +37,16 @@ class CategorisationResultController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategorisationResultView,
   sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-
       if (request.userAnswers.get(RecategorisingQuery(recordId)).isDefined) {
         for {
           updatedAnswers <- Future.fromTry(request.userAnswers.remove(RecategorisingQuery(recordId)))
-            _ <- sessionRepository.set(updatedAnswers)
+          _              <- sessionRepository.set(updatedAnswers)
         } yield updatedAnswers
       }
 

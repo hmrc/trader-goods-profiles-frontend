@@ -32,7 +32,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import views.html.HasCorrectGoodsView
@@ -385,13 +385,17 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 pageSentToNavigator.needToRecategorise mustBe false
               }
 
+              withClue("must not have reset the user answers") {
+                verify(mockCategorisationService, times(0)).cleanupOldAssessmentAnswers(any(), any())
+              }
+
+              val finalUserAnswers = uaCaptor.getValue
               withClue("must have kept the old assessment answers") {
-                val finalUserAnswers = uaCaptor.getValue
                 finalUserAnswers.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
               }
 
-              withClue("must not have reset the user answers") {
-                verify(mockCategorisationService, times(0)).cleanupOldAssessmentAnswers(any(), any())
+              withClue("must not be in recategorisation mode") {
+                finalUserAnswers.get(RecategorisingQuery(testRecordId)) mustBe Some(false)
               }
 
             }
@@ -404,8 +408,9 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
               val categorisationInfoNew        = CategorisationInfo("12345678", Seq(assessment2), None, 0)
 
-              val mockSessionRepository = mock[SessionRepository]
-              when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+              val finalUserAnswerArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+              val mockSessionRepository                                 = mock[SessionRepository]
+              when(mockSessionRepository.set(finalUserAnswerArgCaptor.capture())) thenReturn Future.successful(true)
 
               val pageCaptor: ArgumentCaptor[HasCorrectGoodsLongerCommodityCodePage] =
                 ArgumentCaptor.forClass(classOf[HasCorrectGoodsLongerCommodityCodePage])
@@ -460,6 +465,12 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
                 withClue("must not reset the user answers") {
                   verify(mockCategorisationService, times(1)).cleanupOldAssessmentAnswers(any(), any())
+                }
+
+                withClue("must have flagged we are in recategorisation mode") {
+                  val finalUserAnswers = finalUserAnswerArgCaptor.getValue
+
+                  finalUserAnswers.get(RecategorisingQuery(testRecordId)) mustBe Some(true)
                 }
 
               }
