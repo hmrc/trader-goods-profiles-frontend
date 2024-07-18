@@ -95,6 +95,11 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
   )
 
+  private val badResponse = GetRecordsResponse(
+    records,
+    GoodsRecordsPagination(totalRecords, currentPage, 0, None, None)
+  )
+
   private val pagination = Pagination(
     items = Option(
       Seq(
@@ -435,7 +440,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "must redirect to Journey Recovery for a GET if no userAnswers existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 

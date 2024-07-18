@@ -19,7 +19,7 @@ package connectors
 import config.Service
 import models.{CategoryRecord, GoodsRecord, UpdateGoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
-import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
+import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.NO_CONTENT
