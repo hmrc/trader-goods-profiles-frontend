@@ -25,6 +25,7 @@ import models.requests.DataRequest
 import models.{AdviceRequest, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.AuditService
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,6 +41,7 @@ class CyaRequestAdviceController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   dataCleansingService: DataCleansingService,
+  auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
   accreditationConnector: AccreditationConnector
@@ -82,6 +84,7 @@ class CyaRequestAdviceController @Inject() (
       AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id)
+          auditService.auditRequestAdvice(request.affinityGroup, model)
           accreditationConnector
             .submitRequestAccreditation(model)
             .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url))

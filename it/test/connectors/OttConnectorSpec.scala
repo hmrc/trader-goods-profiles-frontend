@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.Commodity
 import models.helper.CreateRecordJourney
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, contains}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -83,7 +83,7 @@ class OttConnectorSpec
         stubGreenLanes(excludeEndDate = true)
 
         connector
-          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
@@ -103,7 +103,7 @@ class OttConnectorSpec
         stubGreenLanes()
 
         connector
-          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+          .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
@@ -121,7 +121,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
@@ -134,12 +134,12 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
+        get(urlMatching("/xi/api/v2/green_lanes/goods_nomenclatures/123456(\\?.*)?"))
           .willReturn(serverError())
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
@@ -157,7 +157,7 @@ class OttConnectorSpec
       )
 
       connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
 
@@ -178,7 +178,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true
@@ -200,7 +200,7 @@ class OttConnectorSpec
       )
 
       val connectorFailure = connector
-        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, None)
+        .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
         .failed
         .futureValue
       connectorFailure.isInstanceOf[Exception] mustBe true
@@ -281,6 +281,8 @@ class OttConnectorSpec
         .futureValue
       connectorResponse.categoryAssessments.size mustEqual 1
       connectorResponse.categoryAssessments.head.id mustEqual "238dbab8cc5026c67757c7e05751f312"
+      connectorResponse.otherExemptions.size mustEqual 1
+      connectorResponse.otherExemptions.head.code mustEqual "WFE013"
       connectorResponse.descendents.size mustEqual 3
 
       withClue("must have audited the request") {
@@ -313,7 +315,7 @@ class OttConnectorSpec
     "must return a server error future when ott returns a 5xx status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456?filter%5Bgeographical_area_id%5D=CX"))
           .willReturn(serverError())
       )
 
@@ -384,7 +386,7 @@ class OttConnectorSpec
     }
 
     wireMockServer.stubFor(
-      get(urlEqualTo("/xi/api/v2/green_lanes/goods_nomenclatures/123456"))
+      get(urlMatching("/xi/api/v2/green_lanes/goods_nomenclatures/123456(\\?.*)?"))
         .willReturn(
           ok().withBody(
             s"""{
@@ -396,7 +398,7 @@ class OttConnectorSpec
               |      "supplementary_measure_unit": "1000 items (1000 p/st)",
               |      "description": "test_description",
               |      "validity_start_date": "2012-01-01T00:00:00.000Z"
-              |      ${validityEndDateField}
+              |      $validityEndDateField
               |    },
               |    "relationships": {
               |      "applicable_category_assessments": {
@@ -435,6 +437,10 @@ class OttConnectorSpec
               |            {
               |              "id": "8392",
               |              "type": "additional_code"
+              |            },
+              |            {
+              |              "id": "WFE013",
+              |              "type": "exemption"
               |            }
               |          ]
               |        },
@@ -476,6 +482,15 @@ class OttConnectorSpec
               |          ]
               |        }
               |      }
+              |    },
+              |    {
+              |      "id": "WFE013",
+              |      "type": "exemption",
+              |      "attributes": {
+              |         "code": "WFE013",
+              |         "description": "NIRMS Exemption",
+              |         "formatted_description": "NIRMS Exemption"
+              |         }
               |    }
               |  ]
               |}""".stripMargin

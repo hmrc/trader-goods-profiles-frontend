@@ -33,9 +33,19 @@ object UkimsNumberSummary {
         key = "ukimsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
       )
     }
+
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = "ukimsNumber.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadUpdate.url)
+          .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
+      )
+    )
 }

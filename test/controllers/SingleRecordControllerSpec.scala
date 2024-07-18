@@ -17,13 +17,12 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.{NormalMode, UserAnswers}
-import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.Messages
@@ -32,6 +31,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
 import play.api.inject.bind
 import repositories.SessionRepository
+import utils.SessionData.{dataUpdated, pageUpdated}
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -45,18 +45,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
   private val mockSessionRepository    = mock[SessionRepository]
 
-  private val record = GetGoodsRecordResponse(
-    testRecordId,
-    "10410100",
-    "EC",
-    "BAN0010011",
-    "Organic bananas",
-    "Not requested",
+  private val record = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z"),
-    "Not ready",
-    1
-  )
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId)
 
   "SingleRecord Controller" - {
 
@@ -72,7 +64,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         .set(CountryOfOriginUpdatePage(testRecordId), record.countryOfOrigin)
         .success
         .value
-        .set(CommodityCodeUpdatePage(testRecordId), record.commodityCode)
+        .set(CommodityCodeUpdatePage(testRecordId), record.comcode)
         .success
         .value
 
@@ -96,7 +88,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode),
           GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode),
           CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode),
-          CommodityCodeSummary.row(record.commodityCode, testRecordId, NormalMode),
+          CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
       )
@@ -118,10 +110,18 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SingleRecordView]
-
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(testRecordId, detailsList, categorisationList, adviceList)(
+        contentAsString(result) mustEqual view(
+          testRecordId,
+          detailsList,
+          categorisationList,
+          adviceList,
+          changesMade,
+          changedPage
+        )(
           request,
           messages(application)
         ).toString

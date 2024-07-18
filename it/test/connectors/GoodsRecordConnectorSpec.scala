@@ -230,7 +230,7 @@ class GoodsRecordConnectorSpec
 
   ".submitGoodsRecord" - {
 
-    val routerGoodsRecordsUrl = s"/trader-goods-profiles-router/traders/$testEori/records"
+    val routerGoodsRecordsUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records"
 
     val goodsRecord = GoodsRecord(
       testEori,
@@ -406,33 +406,24 @@ class GoodsRecordConnectorSpec
 
   ".getRecord" - {
 
-    val routerGoodsRecordUrl = s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId"
+    val dataStoreGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
 
     "must get a goods record" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(routerGoodsRecordUrl))
+        get(urlEqualTo(dataStoreGoodsRecordUrl))
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
-      connector.getRecord(testEori, testRecordId).futureValue mustBe GetGoodsRecordResponse(
-        testRecordId,
-        "10410100",
-        "EC",
-        "BAN001001",
-        "Organic bananas",
-        "IMMI declarable",
-        Instant.parse("2024-11-18T23:20:19Z"),
-        Instant.parse("2024-11-18T23:20:19Z"),
-        "Not requested",
-        3
-      )
+      connector.getRecord(testEori, testRecordId).futureValue mustBe getRecordResponse
+        .validate[GetGoodsRecordResponse]
+        .get
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(routerGoodsRecordUrl))
+        get(urlEqualTo(dataStoreGoodsRecordUrl))
           .willReturn(serverError())
       )
 
@@ -442,7 +433,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the json does not match the format" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(routerGoodsRecordUrl))
+        get(urlEqualTo(dataStoreGoodsRecordUrl))
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
@@ -462,47 +453,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.getRecords(testEori, 1, 3).futureValue mustBe GetRecordsResponse(
-        Seq(
-          GetGoodsRecordResponse(
-            "1",
-            "10410100",
-            "EC",
-            "BAN0010011",
-            "Organic bananas",
-            "IMMI declarable",
-            Instant.parse("2022-11-18T23:20:19Z"),
-            Instant.parse("2022-11-18T23:20:19Z"),
-            "Not requested",
-            3
-          ),
-          GetGoodsRecordResponse(
-            "2",
-            "10410100",
-            "EC",
-            "BAN0010012",
-            "Organic bananas",
-            "IMMI declarable",
-            Instant.parse("2023-11-18T23:20:19Z"),
-            Instant.parse("2023-11-18T23:20:19Z"),
-            "Not requested",
-            3
-          ),
-          GetGoodsRecordResponse(
-            "3",
-            "10410100",
-            "EC",
-            "BAN0010013",
-            "Organic bananas",
-            "IMMI declarable",
-            Instant.parse("2024-11-18T23:20:19Z"),
-            Instant.parse("2024-11-18T23:20:19Z"),
-            "Not requested",
-            3
-          )
-        ),
-        GoodsRecordsPagination(10, 1, 4, None, None)
-      )
+      connector.getRecords(testEori, 1, 3).futureValue mustBe getRecordsResponse.validate[GetRecordsResponse].get
     }
 
     "must return a failed future when the server returns an error" in {
@@ -675,6 +626,44 @@ class GoodsRecordConnectorSpec
             .willReturn(serverError())
         )
       connector.doRecordsExist(testEori).failed.futureValue
+    }
+  }
+
+  ".filterRecordsByField" - {
+
+    val filterRecordsUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=TOM001001&field=traderRef"
+
+    "must get a page of goods records" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(filterRecordsUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(getRecordsResponse.toString))
+      )
+
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe getRecordsResponse.validate[GetRecordsResponse].get
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(filterRecordsUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").failed.futureValue
+    }
+
+    "must return a failed future when the json does not match the format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(filterRecordsUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+      )
+
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").failed.futureValue
     }
   }
 }

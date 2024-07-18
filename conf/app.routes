@@ -22,33 +22,48 @@ GET         /signed-out                                                         
 
 GET         /problem/unauthorised-sign-in                                                   controllers.UnauthorisedController.onPageLoad
 
-GET         /create-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-profile/niphl-question                                                  controllers.HasNiphlController.onSubmit(mode: Mode = NormalMode)
-GET         /create-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmit(mode: Mode = NormalMode)
-GET         /create-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmit(mode: Mode = CheckMode)
+GET         /update-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadUpdate
+POST        /update-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitUpdate
 
-GET         /create-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /create-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /update-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadUpdate
+POST        /update-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitUpdate
+
+GET         /create-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitCreate(mode: Mode = CheckMode)
+
+GET         /update-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadUpdate
+POST        /update-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitUpdate
+
+GET         /create-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitCreate(mode: Mode = CheckMode)
+
+GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate
+POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate
 
 GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
 POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()
 
-GET         /create-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /create-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmit(mode: Mode = CheckMode)
+GET         /create-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmitCreate(mode: Mode = CheckMode)
+
+GET         /update-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadUpdate
+POST        /update-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitUpdate
 
 GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)
@@ -209,3 +224,13 @@ GET         /update-record/:recordId/check-your-answers/trader-reference        
 POST        /update-record/:recordId/check-your-answers/trader-reference                    controllers.CyaUpdateRecordController.onSubmitTraderReference(recordId: String)
 GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
+
+GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
+
+GET        /update-profile/removing-nirms-number                                            controllers.RemoveNirmsController.onPageLoad()
+POST       /update-profile/removing-nirms-number                                            controllers.RemoveNirmsController.onSubmit()
+
+GET        /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onPageLoad()
+POST       /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
+
+GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()

@@ -145,8 +145,6 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must redirect to Home page if profile already exists" in {
 
-        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         val application = applicationBuilder(userAnswers = None)
           .overrides(

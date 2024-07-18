@@ -17,11 +17,93 @@
 package models
 
 import base.TestConstants.{testEori, testRecordId}
+import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 
 class ScenarioSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+
+  ".getRedirectScenarios" - {
+
+    "must return correct RedirectScenario" - {
+
+      "Category1NoExemptions" - {
+
+        "when category 1 assessments and they have no exemptions" in {
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Seq(
+              CategoryAssessment("id1", 1, Seq.empty),
+              CategoryAssessment("id2", 2, Seq.empty)
+            ),
+            None,
+            0
+          )
+
+          Scenario.getRedirectScenarios(categorisationInfo) mustEqual Category1NoExemptions
+        }
+
+        "when some category 1 assessments have exemptions and others do not" in {
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Seq(
+              CategoryAssessment("id1", 1, Seq(Certificate("cert", "code", "desc"))),
+              CategoryAssessment("id2", 1, Seq.empty)
+            ),
+            None,
+            0
+          )
+
+          Scenario.getRedirectScenarios(categorisationInfo) mustEqual Category1NoExemptions
+        }
+      }
+
+      "StandardNoAssessments when no assessments" in {
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq.empty,
+          None,
+          0
+        )
+
+        Scenario.getRedirectScenarios(categorisationInfo) mustEqual StandardNoAssessments
+
+      }
+
+    }
+
+    "must return NoRedirectScenario" - {
+
+      "NoRedirectScenario when there are Category 1 assessments with exemptions" in {
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            CategoryAssessment("id1", 1, Seq(Certificate("123", "cert1", "certificate"))),
+            CategoryAssessment("id2", 2, Seq.empty)
+          ),
+          None,
+          0
+        )
+
+        Scenario.getRedirectScenarios(categorisationInfo) mustEqual NoRedirectScenario
+      }
+
+      "NoRedirectScenario when there are no Category 1 assessments but are Category 2" in {
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            CategoryAssessment("id1", 2, Seq(Certificate("123", "cert1", "certificate")))
+          ),
+          None,
+          0
+        )
+
+        Scenario.getRedirectScenarios(categorisationInfo) mustEqual NoRedirectScenario
+      }
+    }
+
+  }
 
   ".getScenario" - {
 

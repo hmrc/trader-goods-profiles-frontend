@@ -19,7 +19,7 @@ package factories
 import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
 import models.ott.response.OttResponse
-import models.{GoodsRecord, TraderProfile}
+import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -126,23 +126,50 @@ case class AuditEventFactory() {
   def createSubmitGoodsRecordEventForUpdateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
-    goodsRecord: GoodsRecord
+    goodsRecord: UpdateGoodsRecord,
+    recordId: String
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori"                       -> goodsRecord.eori,
-      "affinityGroup"              -> affinityGroup.toString,
-      "journey"                    -> journey.toString,
-      "updateSection"              -> GoodsDetailsUpdate.toString,
-      "traderReference"            -> goodsRecord.traderRef,
-      "goodsDescription"           -> goodsRecord.goodsDescription,
-      "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
-      "commodityCode"              -> goodsRecord.commodity.commodityCode,
-      "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
-      "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
-    )
+      "journey"       -> journey.toString,
+      "updateSection" -> GoodsDetailsUpdate.toString,
+      "recordId"      -> recordId,
+      "eori"          -> goodsRecord.eori,
+      "affinityGroup" -> affinityGroup.toString
+    ) ++
+      writeOptional("commodityCode", goodsRecord.commodityCode.map(_.commodityCode)) ++
+      writeOptional("commodityDescription", goodsRecord.commodityCode.flatMap(_.descriptions.headOption)) ++
+      writeOptional("commodityCodeEffectiveFrom", goodsRecord.commodityCode.map(_.validityStartDate.toString)) ++
+      writeOptional(
+        "commodityCodeEffectiveTo",
+        goodsRecord.commodityCode.map(_.validityEndDate.map(_.toString).getOrElse("null"))
+      ) ++
+      writeOptional("goodsDescription", goodsRecord.goodsDescription) ++
+      writeOptional("traderReference", goodsRecord.traderReference) ++
+      writeOptional("countryOfOrigin", goodsRecord.countryOfOrigin)
 
     createSubmitGoodsRecordEvent(auditDetails)
+  }
+
+  def createRequestAdviceEvent(
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    adviceRequest: AdviceRequest
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "journey"        -> journey.toString,
+      "eori"           -> adviceRequest.eori,
+      "affinityGroup"  -> affinityGroup.toString,
+      "recordId"       -> adviceRequest.recordId,
+      "requestorName"  -> adviceRequest.requestorName,
+      "requestorEmail" -> adviceRequest.requestorEmail
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "AdviceRequestUpdate",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
   }
 
   private def createSubmitGoodsRecordEvent(auditDetails: Map[String, String])(implicit hc: HeaderCarrier) =

@@ -33,7 +33,19 @@ object NiphlNumberSummary {
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadCreate(CheckMode).url)
+            .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
+        )
+      )
+    }
+
+  def row(value: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    value.map { niphlNumber =>
+      SummaryListRowViewModel(
+        key = "niphlNumber.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(niphlNumber).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadUpdate.url)
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )

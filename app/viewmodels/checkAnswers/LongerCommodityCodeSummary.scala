@@ -17,24 +17,41 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.LongerCommodityCodePage
+import models.{CheckMode, RecordCategorisations, UserAnswers}
 import play.api.i18n.Messages
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
 object LongerCommodityCodeSummary {
 
-  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(LongerCommodityCodePage(recordId)).map { answer =>
-      SummaryListRowViewModel(
-        key = "longerCommodityCode.checkYourAnswersLabel",
-        value = ValueViewModel(answer),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
+    val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    val categorisationInfoOpt = recordCategorisations.records.get(recordId)
+    val padLength             = 10
+    val originalComcodeOpt    =
+      categorisationInfoOpt.flatMap(_.originalCommodityCode.map(_.padTo(padLength, "0").mkString))
+    val currentComcodeOpt     = categorisationInfoOpt.map(_.commodityCode.padTo(padLength, "0").mkString)
+
+    categorisationInfoOpt match {
+      case Some(info) if currentComcodeOpt != originalComcodeOpt =>
+        Some(
+          SummaryListRowViewModel(
+            key = "longerCommodityCode.checkYourAnswersLabel",
+            value = ValueViewModel(info.commodityCode),
+            actions = Seq(
+              ActionItemViewModel(
+                "site.change",
+                routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url
+              )
+                .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+            )
+          )
         )
-      )
+      case _                                                     =>
+        None
     }
+  }
+
 }

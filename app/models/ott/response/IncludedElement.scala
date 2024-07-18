@@ -30,6 +30,7 @@ object IncludedElement {
         case "theme"               => ThemeResponse.reads.widen
         case "certificate"         => CertificateResponse.reads.widen
         case "additional_code"     => AdditionalCodeResponse.reads.widen
+        case "exemption"           => OtherExemptionResponse.reads.widen
         case _                     => Ignorable.reads.widen
       }
 }

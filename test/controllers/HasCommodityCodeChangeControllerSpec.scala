@@ -17,12 +17,14 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import forms.HasCommodityCodeChangeFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.HasCommodityCodeChangePage
 import play.api.inject.bind
@@ -30,18 +32,20 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.HasCommodityCodeChangeView
 
 import scala.concurrent.Future
 
 class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasCommodityCodeChangeFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
-  lazy val hasCommodityCodeChangeRoute =
+  private lazy val hasCommodityCodeChangeRoute =
     routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
 
   "HasCommodityCodeChange Controller" - {
@@ -86,14 +90,18 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
+      val mockAuditService      = mock[AuditService]
 
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -106,6 +114,16 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        withClue("must call the audit service with the correct details") {
+          verify(mockAuditService, times(1))
+            .auditStartUpdateGoodsRecord(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(GoodsDetailsUpdate),
+              eqTo(testRecordId)
+            )(any())
+        }
       }
     }
 

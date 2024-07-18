@@ -16,12 +16,14 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.UkimsNumberFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.UkimsNumberPage
+import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -29,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class UkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -39,6 +42,7 @@ class UkimsNumberController @Inject() (
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
   formProvider: UkimsNumberFormProvider,
+  traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
   view: UkimsNumberView
 )(implicit ec: ExecutionContext)
@@ -47,27 +51,64 @@ class UkimsNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
-  }
+      Ok(view(preparedForm, routes.UkimsNumberController.onSubmitCreate(mode)))
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitCreate(mode)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(UkimsNumberPage, mode, updatedAnswers))
         )
+  }
+
+  def onPageLoadUpdate: Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      for {
+        traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+        updatedAnswers <-
+          Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
+        _              <- sessionRepository.set(updatedAnswers)
+      } yield Ok(view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate))
+    }
+
+  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitUpdate))),
+        value =>
+          request.userAnswers.set(UkimsNumberUpdatePage, value) match {
+            case Success(answers) =>
+              sessionRepository.set(answers).flatMap { _ =>
+                traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+                  if (traderProfile.ukimsNumber == value) {
+                    Future.successful(Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers)))
+                  } else {
+                    val newTraderProfile =
+                      TraderProfile(request.eori, value, traderProfile.nirmsNumber, traderProfile.niphlNumber)
+                    traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori).map { _ =>
+                      Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
+                    }
+                  }
+                }
+              }
+          }
+      )
   }
 }

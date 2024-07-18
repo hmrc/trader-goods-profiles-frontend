@@ -24,12 +24,22 @@ final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String],
-  descendantCount: Int
-)
+  descendantCount: Int,
+  originalCommodityCode: Option[String] = None
+) {
+  private val padlength = 10
+
+  def latestDoesNotMatchOriginal: Boolean = originalCommodityCode match {
+    case Some(originalComcode) =>
+      commodityCode != originalComcode.padTo[Char](padlength, '0').mkString
+    case None                  =>
+      false
+  }
+}
 
 object CategorisationInfo {
 
-  def build(ott: OttResponse): Option[CategorisationInfo] =
+  def build(ott: OttResponse, originalCommodityCode: Option[String] = None): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
@@ -38,7 +48,8 @@ object CategorisationInfo {
           ott.goodsNomenclature.commodityCode,
           assessments.sorted,
           ott.goodsNomenclature.measurementUnit,
-          ott.descendents.size
+          ott.descendents.size,
+          originalCommodityCode
         )
       }
 

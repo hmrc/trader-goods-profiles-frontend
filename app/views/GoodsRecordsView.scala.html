@@ -42,7 +42,7 @@
 
     <p class="govuk-body">@messages("goodsRecords.p2")</p>
 
-    <ul class="govuk-body">
+    <ul class="govuk-list govuk-list--bullet">
       <li>'@messages("goodsRecords.li1")'</li>
       <li>'@messages("goodsRecords.li2")'</li>
     </ul>
@@ -110,7 +110,7 @@
                                 )
                         ),
                         TableRow(
-                            content = Text(goodsRecord.commodityCode)
+                            content = Text(goodsRecord.comcode)
                         ),
                         TableRow(
                             content = Text(goodsRecord.declarable)

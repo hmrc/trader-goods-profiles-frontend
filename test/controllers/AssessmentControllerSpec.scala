@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
-import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import scala.concurrent.Future
@@ -49,6 +48,34 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
     "for a GET" - {
 
+      "must redirect" - {
+
+        "to CyaCategorisation if there's a category 2 assessment without possible exemptions" in {
+
+          val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
+          val categorisationInfo         =
+            CategorisationInfo("123", Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), 0)
+          val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+
+          val answers =
+            emptyUserAnswers
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+
+          val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, assessmentRoute)
+
+            val result = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+          }
+        }
+
+      }
+
       "must render the view when an assessment can be found for this id" - {
 
         "and has not previously been answered" in {
@@ -65,18 +92,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
 
-            val view         = application.injector.instanceOf[AssessmentView]
-            val form         = formProvider(Seq(assessmentId))
-            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)(messages(application))
-            val viewModel    = AssessmentViewModel(
-              commodityCode = categorisationInfo.commodityCode,
-              numberOfThisAssessment = 1,
-              numberOfAssessments = categorisationInfo.categoryAssessments.size,
-              radioOptions = radioOptions
-            )
+            val view      = application.injector.instanceOf[AssessmentView]
+            val form      = formProvider(1)
+            val listItems = assessment.exemptions.map { exemption =>
+              exemption.code + " - " + exemption.description
+            }
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, viewModel)(
+            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
               request,
               messages(application)
             ).toString
@@ -105,18 +128,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
 
-            val view         = application.injector.instanceOf[AssessmentView]
-            val form         = formProvider(Seq(assessmentId)).fill(AssessmentAnswer.NoExemption)
-            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)(messages(application))
-            val viewModel    = AssessmentViewModel(
-              commodityCode = categorisationInfo.commodityCode,
-              numberOfThisAssessment = 1,
-              numberOfAssessments = categorisationInfo.categoryAssessments.size,
-              radioOptions = radioOptions
-            )
+            val view      = application.injector.instanceOf[AssessmentView]
+            val form      = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val listItems = assessment.exemptions.map { exemption =>
+              exemption.code + " - " + exemption.description
+            }
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, viewModel)(
+            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
               request,
               messages(application)
             ).toString
@@ -182,7 +201,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "none"))
+          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
 
           val result = route(application, request).value
 
@@ -205,23 +224,19 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(answers)).build()
 
         running(application) {
-          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "invalid value"))
+          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", ""))
 
           val result = route(application, request).value
 
-          val view         = application.injector.instanceOf[AssessmentView]
-          val form         = formProvider(Seq(assessmentId)).fill(AssessmentAnswer.NoExemption)
-          val boundForm    = form.bind(Map("value" -> "invalid value"))
-          val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)(messages(application))
-          val viewModel    = AssessmentViewModel(
-            commodityCode = categorisationInfo.commodityCode,
-            numberOfThisAssessment = 1,
-            numberOfAssessments = categorisationInfo.categoryAssessments.size,
-            radioOptions = radioOptions
-          )
+          val view      = application.injector.instanceOf[AssessmentView]
+          val form      = formProvider(1).fill(AssessmentAnswer.NoExemption)
+          val boundForm = form.bind(Map("value" -> ""))
+          val listItems = assessment.exemptions.map { exemption =>
+            exemption.code + " - " + exemption.description
+          }
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, index, viewModel)(
+          contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, index, listItems, "123")(
             request,
             messages(application)
           ).toString

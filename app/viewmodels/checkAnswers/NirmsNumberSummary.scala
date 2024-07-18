@@ -33,7 +33,19 @@ object NirmsNumberSummary {
         key = "nirmsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadCreate(CheckMode).url)
+            .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
+        )
+      )
+    }
+
+  def row(value: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    value.map { nirmsNumber =>
+      SummaryListRowViewModel(
+        key = "nirmsNumber.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(nirmsNumber).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate.url)
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
       )

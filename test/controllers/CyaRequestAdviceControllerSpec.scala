@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.AccreditationConnector
-import models.UserAnswers
+import models.{AdviceRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -28,6 +28,8 @@ import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -40,6 +42,7 @@ import scala.concurrent.Future
 class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   "CyaRequestAdviceController" - {
+    val expectedPayload = AdviceRequest("eori", "Firstname Lastname", "eori", testRecordId, "test@test.com")
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
@@ -52,9 +55,12 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must return OK and the correct view with valid mandatory data" in {
 
-        val userAnswers = mandatoryAdviceUserAnswers
+        val userAnswers      = mandatoryAdviceUserAnswers
+        val mockAuditService = mock[AuditService]
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[AuditService].toInstance(mockAuditService))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, routes.CyaRequestAdviceController.onPageLoad(testRecordId).url)
@@ -66,6 +72,10 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list, testRecordId)(request, messages(application)).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditRequestAdvice(any(), any())(any())
+          }
         }
       }
 
@@ -109,13 +119,21 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         val mockConnector = mock[AccreditationConnector]
         when(mockConnector.submitRequestAccreditation(any())(any())).thenReturn(Future.successful(Done))
 
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditRequestAdvice(any(), any())(any))
+          .thenReturn(Future.successful(Done))
+
         val sessionRepository = mock[SessionRepository]
         when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[AccreditationConnector].toInstance(mockConnector))
-            .overrides(bind[SessionRepository].toInstance(sessionRepository))
+            .overrides(
+              bind[AccreditationConnector].toInstance(mockConnector),
+              bind[AuditService].toInstance(mockAuditService),
+               bind[SessionRepository].toInstance(sessionRepository)
+
+            )
             .build()
 
         running(application) {
@@ -125,6 +143,16 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad(testRecordId).url
+
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService, times(1))
+              .auditRequestAdvice(
+                eqTo(AffinityGroup.Individual),
+                eqTo(expectedPayload)
+              )(
+                any()
+              )
+          }
 
           withClue("must cleanse the user answers data") {
             verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
@@ -172,13 +200,20 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
         when(mockConnector.submitRequestAccreditation(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditRequestAdvice(any(), any())(any))
+          .thenReturn(Future.successful(Done))
+
         val sessionRepository = mock[SessionRepository]
         when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[AccreditationConnector].toInstance(mockConnector))
-            .overrides(bind[SessionRepository].toInstance(sessionRepository))
+            .overrides(
+              bind[AccreditationConnector].toInstance(mockConnector),
+              bind[AuditService].toInstance(mockAuditService),
+              bind[SessionRepository].toInstance(sessionRepository)
+            )
             .build()
 
         running(application) {
@@ -189,6 +224,16 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           }
           withClue("must cleanse the user answers data") {
             verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+          }
+
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService, times(1))
+              .auditRequestAdvice(
+                eqTo(AffinityGroup.Individual),
+                eqTo(expectedPayload)
+              )(
+                any()
+              )
           }
         }
       }

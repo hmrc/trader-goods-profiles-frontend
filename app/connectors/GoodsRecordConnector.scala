@@ -33,18 +33,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val tgpRouterBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
 
   private def createGoodsRecordUrl(eori: String) =
-    url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
 
   private def deleteGoodsRecordUrl(eori: String, recordId: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
 
   private def singleGoodsRecordUrl(eori: String, recordId: String) =
-    url"$tgpRouterBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
 
   private def goodsRecordUrl(eori: String, recordId: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
@@ -65,6 +64,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     eori: String
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/store"
+
+  private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -181,4 +183,24 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .recover { case _: NotFoundException =>
         false
       }
+
+  def filterRecordsByField(
+    eori: String,
+    searchTerm: String,
+    field: String
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[GetRecordsResponse] = {
+
+    val queryParams = Map(
+      "searchTerm" -> searchTerm,
+      "field"      -> field
+    )
+
+    httpClient
+      .get(filterRecordsUrl(eori, queryParams))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
+  }
 }

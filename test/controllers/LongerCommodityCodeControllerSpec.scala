@@ -20,13 +20,13 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.OttConnector
 import forms.LongerCommodityCodeFormProvider
-import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
+import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.LongerCommodityCodePage
+import pages.{CountryOfOriginPage, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -43,18 +43,29 @@ import scala.concurrent.Future
 
 class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
-  private val formProvider                        = new LongerCommodityCodeFormProvider()
-  private val form                                = formProvider()
-  private val shortCommodity                      = "654321"
-  private val categoryQueryShortCommodity         = categoryQuery.copy(commodityCode = shortCommodity)
+  private val formProvider                = new LongerCommodityCodeFormProvider()
+  private val form                        = formProvider()
+  private val shortCommodity              = "654321"
+  private val categoryQueryShortCommodity =
+    categoryQuery.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
+
   private val recordCategorisationsShortCommodity = RecordCategorisations(
     Map(testRecordId -> categoryQueryShortCommodity)
+  )
+
+  private val previouslyUpdatedCategoryInfo =
+    categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+  private val previouslyUpdatedCommodity    = RecordCategorisations(
+    Map(testRecordId -> previouslyUpdatedCategoryInfo)
   )
 
   private def onwardRoute = Call("GET", "/foo")
 
   private lazy val longerCommodityCodeRoute =
     routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+
+  private lazy val longerCommodityCheckRoute =
+    routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId).url
 
   "LongerCommodityCode Controller" - {
 
@@ -107,10 +118,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+        .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
         .success
         .value
-        .set(LongerCommodityCodePage(testRecordId), "answer")
+        .set(LongerCommodityCodePage(testRecordId, true), "1234")
         .success
         .value
 
@@ -124,10 +135,46 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, shortCommodity, testRecordId)(
+        contentAsString(result) mustEqual view(form.fill("1234"), NormalMode, shortCommodity, testRecordId)(
           request,
           messages(application)
         ).toString
+      }
+    }
+
+    "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      val mockOttConnector      = mock[OttConnector]
+      val userAnswers           = emptyUserAnswers
+        .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
+        .success
+        .value
+        .set(LongerCommodityCodePage(testRecordId), "1234")
+        .success
+        .value
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[OttConnector].toInstance(mockOttConnector)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, longerCommodityCheckRoute)
+            .withFormUrlEncodedBody(("value", "1234"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
+
+        verify(mockOttConnector, never()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+        verify(mockSessionRepository, never()).set(any())
+
       }
     }
 
@@ -142,12 +189,15 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
+        .set(CountryOfOriginPage, "CX")
+        .success
+        .value
 
       val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
 
       val testCommodity = Commodity("654321", List("Description"), Instant.now, None)
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
         .successful(
           testCommodity
         )
@@ -171,7 +221,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
 
         withClue("ensure user answers has set the new commodity query") {
           val finalUserAnswers = uaCaptor.getValue
@@ -220,10 +270,14 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
+        .set(CountryOfOriginPage, "CX")
+        .success
+        .value
 
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any())(any())) thenReturn Future.failed(
-        UpstreamErrorResponse(" ", NOT_FOUND)
-      )
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+        .failed(
+          UpstreamErrorResponse(" ", NOT_FOUND)
+        )
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
@@ -248,7 +302,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
 
-        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any())(any())
+        verify(mockOttConnector, times(1)).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
       }
 
     }
