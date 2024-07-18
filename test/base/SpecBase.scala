@@ -16,12 +16,12 @@
 
 package base
 
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate, OtherExemption}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Commodity, RecordCategorisations, TraderProfile, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -281,6 +281,9 @@ trait SpecBase
     None,
     0
   )
+
+  val traderNoNiphlsNoNirms: TraderProfile = TraderProfile(testEori, "ukims1", None, None)
+  val traderNiphls: TraderProfile          = TraderProfile(testEori, "ukims2", None, Some("niphls123"))
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

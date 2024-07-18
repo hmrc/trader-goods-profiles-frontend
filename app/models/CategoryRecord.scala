@@ -22,7 +22,7 @@ import models.AssessmentAnswer.NoExemption
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.RecordCategorisationsQuery
 
 final case class CategoryRecord(
   eori: String,
@@ -66,9 +66,7 @@ object CategoryRecord {
 
     val categoryAsNumber = if (category == Category1) CATEGORY_1 else CATEGORY_2
 
-    val categoryRecord = CategoryRecord(eori, recordId, categoryAsNumber, 1)
-
-    categoryRecord
+    CategoryRecord(eori, recordId, categoryAsNumber, 1)
 
   }
 
@@ -78,7 +76,6 @@ object CategoryRecord {
 
   private case class GetCategoryReturn(category: Int, categoryAssessmentsWithExemptions: Int)
 
-  //TODO move to CatService??
   private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, GetCategoryReturn] =
     answers
       .get(RecordCategorisationsQuery)

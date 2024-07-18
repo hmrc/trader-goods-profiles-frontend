@@ -19,7 +19,7 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
 import models.AssessmentAnswer.NoExemption
-import models.ott.{CategorisationInfo, CategoryAssessment, ExemptionType}
+import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.apache.pekko.Done
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
@@ -65,7 +65,6 @@ object CategorisationAnswers {
       _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
       _                     <- ensureHaveAnsweredTheRightAmount(
                                  answeredAssessments,
-                                 countAssessmentsThatRequireAnswers(categorisationInfo),
                                  categorisationInfo
                                )
       justTheAnswers         = answeredAssessments.map(_.answer)
@@ -125,26 +124,15 @@ object CategorisationAnswers {
 
   private def ensureHaveAnsweredTheRightAmount(
     answeredAssessments: Seq[CategorisationDetails],
-    assessmentCount: Int,
-    categorisationInfo: CategorisationInfo //Either clean up params or pass in niphls
+    categorisationInfo: CategorisationInfo
   ): Either[NonEmptyChain[ValidationError], Done] = {
+    val assessmentCount = countAssessmentsThatRequireAnswers(categorisationInfo)
 
     val lastAnswerIsExemption = answeredAssessments.last.answer.equals(NoExemption)
     val amountAnswered        = answeredAssessments.size
 
-    val isNiphlsCommodity =
-      categorisationInfo.categoryAssessments.exists(assessment =>
-        assessment.category == 1 && assessment.exemptions.exists(exemption =>
-          exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012"
-        )
-      ) && categorisationInfo.categoryAssessments.count(ass =>
-        ass.category == 2
-      ) == 1 && categorisationInfo.categoryAssessments.exists(assessment =>
-        assessment.category == 2 && assessment.exemptions.isEmpty
-      )
-
-    if (isNiphlsCommodity && amountAnswered == assessmentCount - 1) {
-      // -1 because the last niphls is empty
+    if (categorisationInfo.isNiphls && amountAnswered == assessmentCount - 1) {
+      // -1 because the last niphls assessment is empty cat 2 assessment
       Right(Done)
     } else if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
       Right(Done)

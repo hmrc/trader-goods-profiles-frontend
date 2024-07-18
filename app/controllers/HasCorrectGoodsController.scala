@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
+import queries._
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -81,7 +81,6 @@ class HasCorrectGoodsController @Inject() (
       }
     }
 
-  // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {

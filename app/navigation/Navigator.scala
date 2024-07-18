@@ -16,16 +16,16 @@
 
 package navigation
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.Call
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import pages._
 import models._
+import pages._
+import play.api.mvc.Call
 import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
+import javax.inject.{Inject, Singleton}
 import scala.util.Try
 
 @Singleton
@@ -139,7 +139,6 @@ class Navigator @Inject() () {
       if (assessmentAnswer) {
         if (needToRecategorise) {
           routes.CategoryGuidanceController.onPageLoad(NormalMode, recordId)
-          //routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
         } else {
           if (categorisationInfo.measurementUnit.isDefined) {
             routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)

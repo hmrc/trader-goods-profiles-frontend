@@ -23,15 +23,13 @@ import logging.Logging
 import models.AssessmentAnswer.Exemption
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{AssessmentAnswer, Mode, UserAnswers, ott}
+import models.{Mode, UserAnswers, ott}
 import navigation.Navigator
 import pages.AssessmentPage
-import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
-import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.AssessmentView
 
@@ -47,7 +45,6 @@ class AssessmentController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
-  categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView,
   traderProfileConnector: TraderProfileConnector
@@ -59,23 +56,14 @@ class AssessmentController @Inject() (
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
-        // TODO ?? userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         traderProfile      <- traderProfileConnector.getTraderProfile(request.eori)
         recordQuery         = request.userAnswers.get(RecordCategorisationsQuery)
         categorisationInfo <- Future.fromTry(Try(recordQuery.get.records(recordId)))
-        listItems           = categorisationInfo.categoryAssessments(index).getExemptionListItems
-        commodityCode       = categorisationInfo.commodityCode
-        exemptions          = categorisationInfo.categoryAssessments(index).exemptions
-        form                = formProvider(exemptions.size)
         userHasNiphls       = traderProfile.niphlNumber.isDefined
         isNiphlsAnAnswer    = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
         updatedAnswers     <-
-          updateAnswerIfNiphls(recordId, index, request.userAnswers, isNiphlsAnAnswer, userHasNiphls)
+          setAssessmentAnswerToBeNiphls(recordId, index, request.userAnswers, isNiphlsAnAnswer, userHasNiphls)
         _                  <- sessionRepository.set(updatedAnswers)
-        preparedForm        = updatedAnswers.get(AssessmentPage(recordId, index)) match {
-                                case Some(value) => form.fill(value)
-                                case None        => form
-                              }
       } yield {
         val exemptions                  = categorisationInfo.categoryAssessments(index).exemptions
         val isNiphlsCategory2Assessment = categorisationInfo.categoryAssessments(index).isEmptyCat2Assessment &&
@@ -83,32 +71,14 @@ class AssessmentController @Inject() (
 
         (userHasNiphls, isNiphlsAnAnswer, isNiphlsCategory2Assessment, exemptions.isEmpty) match {
           case (true, true, _, _)     =>
-            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
+            handleAppliedNiphlsAssessment(mode, recordId, index, updatedAnswers)
           case (true, false, true, _) =>
-            Future.successful(
-              Redirect(
-                navigator.nextPage(
-                  AssessmentPage(recordId, index, shouldRedirectToCya = true),
-                  mode,
-                  updatedAnswers
-                )
-              )
-            )
+            redirectToCya(mode, recordId, index, updatedAnswers)
           case (false, true, _, _)    =>
             // Should have not been allowed to get this far. Should not have loaded this page
-            Future.successful(
-              //TODO ???
-              Redirect(
-                routes.JourneyRecoveryController.onPageLoad()
-              )
-            )
+            Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           case (false, _, _, true)    =>
-            Future.successful(
-              Redirect(
-                navigator
-                  .nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
-              )
-            )
+            redirectToCya(mode, recordId, index, updatedAnswers)
           case _                      =>
             displayPage(
               mode,
@@ -116,10 +86,7 @@ class AssessmentController @Inject() (
               index,
               updatedAnswers,
               categorisationInfo,
-              exemptions,
-              listItems,
-              commodityCode,
-              preparedForm
+              exemptions
             )
         }
 
@@ -130,30 +97,51 @@ class AssessmentController @Inject() (
       }
     }
 
+  private def redirectToCya(mode: Mode, recordId: String, index: Int, updatedAnswers: UserAnswers) =
+    Future.successful(
+      Redirect(
+        navigator.nextPage(
+          AssessmentPage(recordId, index, shouldRedirectToCya = true),
+          mode,
+          updatedAnswers
+        )
+      )
+    )
+
+  private def handleAppliedNiphlsAssessment(mode: Mode, recordId: String, index: Int, updatedAnswers: UserAnswers) =
+    Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)))
+
   private def displayPage(
     mode: Mode,
     recordId: String,
     index: Int,
-    userAnswersWithCategorisations: UserAnswers,
+    updatedAnswers: UserAnswers,
     categorisationInfo: CategorisationInfo,
-    exemptions: Seq[ott.Exemption],
-    listItems: Seq[String],
-    commodityCode: String,
-    preparedForm: Form[AssessmentAnswer]
-  )(implicit messages: Messages, request: DataRequest[_]) =
-    //TODO cleanup after merging Ewan's stuff
-    Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)(request, messages)))
+    exemptions: Seq[ott.Exemption]
+  )(implicit messages: Messages, request: DataRequest[_]) = {
 
-  private def updateAnswerIfNiphls(
+    val listItems     = categorisationInfo.categoryAssessments(index).getExemptionListItems
+    val commodityCode = categorisationInfo.commodityCode
+
+    val form         = formProvider(exemptions.size)
+    val preparedForm = updatedAnswers.get(AssessmentPage(recordId, index)) match {
+      case Some(value) => form.fill(value)
+      case None        => form
+    }
+
+    Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)(request, messages)))
+  }
+
+  private def setAssessmentAnswerToBeNiphls(
     recordId: String,
     index: Int,
-    userAnswersWithCategorisations: UserAnswers,
+    userAnswers: UserAnswers,
     isNiphlsAnAnswer: Boolean,
     userHasNiphls: Boolean
   ) =
     if (isNiphlsAnAnswer && userHasNiphls)
-      Future.fromTry(userAnswersWithCategorisations.set(AssessmentPage(recordId, index), Exemption("true")))
-    else Future.successful(userAnswersWithCategorisations)
+      Future.fromTry(userAnswers.set(AssessmentPage(recordId, index), Exemption("true")))
+    else Future.successful(userAnswers)
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

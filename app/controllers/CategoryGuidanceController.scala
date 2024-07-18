@@ -27,7 +27,6 @@ import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
-import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -48,7 +47,6 @@ class CategoryGuidanceController @Inject() (
   categorisationService: CategorisationService,
   navigator: Navigator,
   goodsRecordConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository,
   traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -63,7 +61,7 @@ class CategoryGuidanceController @Inject() (
           val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
           val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
           val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
-          val recategorising        = userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
+          val areWeRecategorising   = userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
 
           scenario match {
             case Some(Category1NoExemptions | StandardNoAssessments) =>
@@ -85,7 +83,7 @@ class CategoryGuidanceController @Inject() (
             case Some(NiphlsAndOthers) =>
               whenNiphlsAndOthers(mode, recordId, userAnswers)
 
-            case Some(NoRedirectScenario) if recategorising =>
+            case Some(NoRedirectScenario) if areWeRecategorising =>
               Future.successful(
                 Redirect(
                   navigator.nextPage(CategoryGuidancePage(recordId, Some(NoRedirectScenario)), mode, userAnswers)

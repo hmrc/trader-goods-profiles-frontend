@@ -20,7 +20,6 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import models.{Category1, Category2, Standard, UserAnswers}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind

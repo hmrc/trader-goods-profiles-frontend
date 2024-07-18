@@ -17,10 +17,11 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import connectors.TraderProfileConnector
 import forms.AssessmentFormProvider
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate, OtherExemption}
-import models.{AssessmentAnswer, NormalMode, RecordCategorisations, TraderProfile, UserAnswers}
+import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import models.{AssessmentAnswer, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -34,9 +35,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
-import services.CategorisationService
-import utils.Constants.niphlsAssessment
-import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import scala.concurrent.Future
@@ -46,19 +44,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
   private def assessmentId    = "321"
-  private def recordId        = "1"
   private def index           = 0
-  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
+  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, testRecordId, index).url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
   private val fakeNavigator              = new FakeNavigator(onwardRoute)
 
   override def beforeEach(): Unit =
-    when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-      Future.successful(
-        TraderProfile("actorId", "ukimsNumber", None, None)
-      )
-    )
+    when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(Future.successful(traderNoNiphlsNoNirms))
 
   "AssessmentController" - {
 
@@ -71,7 +64,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
           val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
           val categorisationInfo         =
             CategorisationInfo("123", Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), 0)
-          val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations      = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
 
           val answers =
             emptyUserAnswers
@@ -79,12 +72,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .success
               .value
 
-          val mockCategorisationService = mock[CategorisationService]
-          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
-            .thenReturn(Future.successful(answers))
-          val application               = applicationBuilder(userAnswers = Some(answers))
+          val application = applicationBuilder(userAnswers = Some(answers))
             .overrides(
-              bind[CategorisationService].to(mockCategorisationService),
               bind[TraderProfileConnector].to(mockTraderProfileConnector),
               bind[Navigator].to(fakeNavigator)
             )
@@ -100,24 +89,17 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
         }
 
         "if user has niphls and the assessment question has niphls as an answer" in {
-          val assessmentNiphls      =
-            CategoryAssessment(assessmentId, 1, Seq(OtherExemption(niphlsAssessment, niphlsAssessment, "niphls")))
-          val categorisationInfo    =
-            CategorisationInfo("123", Seq(assessmentNiphls), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations =
+            RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsNoOtherAssessments))
 
-          val answers =
+          val answers               =
             emptyUserAnswers
               .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
-          val mockCategorisationService = mock[CategorisationService]
-          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
-            .thenReturn(Future.successful(answers))
-
           when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-            Future.successful(TraderProfile("actorId", "ukimsNumber", None, Some("niphlsNo")))
+            Future.successful(traderNiphls)
           )
 
           val mockSessionRepository                  = mock[SessionRepository]
@@ -126,7 +108,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           val application = applicationBuilder(userAnswers = Some(answers))
             .overrides(
-              bind[CategorisationService].to(mockCategorisationService),
               bind[TraderProfileConnector].to(mockTraderProfileConnector),
               bind[SessionRepository].to(mockSessionRepository),
               bind[Navigator].to(fakeNavigator)
@@ -142,48 +123,38 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             withClue("Should have set the value of the assessment to Yes since they have NIPHLS") {
               val resultingUA = argCaptor.getValue
-              resultingUA.get(AssessmentPage(recordId, index)) mustBe Some(AssessmentAnswer.Exemption("true"))
+              resultingUA.get(AssessmentPage(testRecordId, index)) mustBe Some(AssessmentAnswer.Exemption("true"))
             }
           }
 
         }
 
         "if user has niphls and the assessment question is a category 2 niphls empty question" in {
-          val assessmentNiphls      =
-            CategoryAssessment(assessmentId, 1, Seq(OtherExemption(niphlsAssessment, niphlsAssessment, "niphls")))
-          val assessmentEmptyNiphls =
-            CategoryAssessment("assId2", 2, Seq.empty)
-          val categorisationInfo    =
-            CategorisationInfo("123", Seq(assessmentNiphls, assessmentEmptyNiphls), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations =
+            RecordCategorisations(records = Map(testRecordId -> categorisationInfoNiphlsNoOtherAssessments))
 
-          val answers =
+          val answers               =
             emptyUserAnswers
               .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
-              .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("true"))
+              .set(AssessmentPage(testRecordId, index), AssessmentAnswer.Exemption("true"))
               .success
               .value
 
-          val mockCategorisationService = mock[CategorisationService]
-          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
-            .thenReturn(Future.successful(answers))
-
           when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-            Future.successful(TraderProfile("actorId", "ukimsNumber", None, Some("niphlsNo")))
+            Future.successful(traderNiphls)
           )
 
           val application = applicationBuilder(userAnswers = Some(answers))
             .overrides(
-              bind[CategorisationService].to(mockCategorisationService),
               bind[TraderProfileConnector].to(mockTraderProfileConnector),
               bind[Navigator].to(fakeNavigator)
             )
             .build()
 
           running(application) {
-            val assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, recordId, index + 1).url
+            val assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, testRecordId, index + 1).url
             val request         = FakeRequest(GET, assessmentRoute)
 
             val result = route(application, request).value
@@ -202,15 +173,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
           val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
           val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
-          val mockCategorisationService = mock[CategorisationService]
-          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
-            .thenReturn(Future.successful(answers))
-          val application               = applicationBuilder(userAnswers = Some(answers))
+          val application = applicationBuilder(userAnswers = Some(answers))
             .overrides(
-              bind[CategorisationService].to(mockCategorisationService),
               bind[TraderProfileConnector].to(mockTraderProfileConnector)
             )
             .build()
@@ -227,7 +194,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             }
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
+            contentAsString(result) mustEqual view(form, NormalMode, testRecordId, index, listItems, "123")(
               request,
               messages(application)
             ).toString
@@ -238,23 +205,19 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
           val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
 
           val answers =
             emptyUserAnswers
               .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
-              .set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption)
+              .set(AssessmentPage(testRecordId, index), AssessmentAnswer.NoExemption)
               .success
               .value
 
-          val mockCategorisationService = mock[CategorisationService]
-          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
-            .thenReturn(Future.successful(answers))
-          val application               = applicationBuilder(userAnswers = Some(answers))
+          val application = applicationBuilder(userAnswers = Some(answers))
             .overrides(
-              bind[CategorisationService].to(mockCategorisationService),
               bind[TraderProfileConnector].to(mockTraderProfileConnector)
             )
             .build()
@@ -271,7 +234,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             }
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
+            contentAsString(result) mustEqual view(form, NormalMode, testRecordId, index, listItems, "123")(
               request,
               messages(application)
             ).toString
@@ -298,7 +261,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
         "when this assessment index cannot be found" in {
 
           val categorisationInfo    = CategorisationInfo("123", Nil, Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
           val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
@@ -332,25 +295,17 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
         "when it is a niphls question and they don't have niphls, because they should not get this far in the journey" in {
 
-          val assessmentNiphls      =
-            CategoryAssessment(assessmentId, 1, Seq(OtherExemption(niphlsAssessment, niphlsAssessment, "niphls")))
-          val categorisationInfo    =
-            CategorisationInfo("123", Seq(assessmentNiphls), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val recordCategorisations =
+            RecordCategorisations(Map(testRecordId -> categorisationInfoNiphlsNoOtherAssessments))
 
-          val answers =
+          val answers               =
             emptyUserAnswers
               .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
-          val mockCategorisationService = mock[CategorisationService]
-          when(mockCategorisationService.requireCategorisation(any(), any())(any()))
-            .thenReturn(Future.successful(answers))
-
           val application = applicationBuilder(userAnswers = Some(answers))
             .overrides(
-              bind[CategorisationService].to(mockCategorisationService),
               bind[TraderProfileConnector].to(mockTraderProfileConnector)
             )
             .build()
@@ -374,7 +329,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
         val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
         val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-        val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+        val recordCategorisations = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
 
         val mockRepository = mock[SessionRepository]
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
@@ -394,7 +349,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           val result = route(application, request).value
 
-          val expectedAnswers = answers.set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption).success.value
+          val expectedAnswers =
+            answers.set(AssessmentPage(testRecordId, index), AssessmentAnswer.NoExemption).success.value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
@@ -406,7 +362,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
         val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
         val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-        val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+        val recordCategorisations = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
 
         val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
@@ -425,7 +381,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
           }
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, index, listItems, "123")(
+          contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, index, listItems, "123")(
             request,
             messages(application)
           ).toString
@@ -452,7 +408,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
+          val application     = applicationBuilder(userAnswers = Some(answers)).build()
+          def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, "differentRecordId", index).url
 
           running(application) {
             val request = FakeRequest(POST, assessmentRoute)

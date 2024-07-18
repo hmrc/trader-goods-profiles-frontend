@@ -17,14 +17,13 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.helper.CategorisationUpdate
-import models.{Category1, Category1NoExemptions, Category2, NiphlsOnly, NoRedirectScenario, NormalMode, RecordCategorisations, StandardNoAssessments, TraderProfile}
-import navigation.{FakeNavigator, Navigator}
+import models.{Category1, Category1NoExemptions, Category2, NoRedirectScenario, NormalMode, RecordCategorisations, StandardNoAssessments}
+import navigation.Navigator
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -50,9 +49,6 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
   private val mockNavigator = mock[Navigator]
   private val onwardRoute   = Call("", "")
 
-  private val traderNoNiphls = TraderProfile(testEori, "ukims1", None, None)
-  private val traderNiphls   = TraderProfile(testEori, "ukims2", None, Some("niphls123"))
-
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
@@ -62,7 +58,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       .thenReturn(Future.successful(Done))
 
     when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
-    when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(Future.successful(traderNoNiphls))
+    when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(Future.successful(traderNoNiphlsNoNirms))
   }
 
   override def afterEach(): Unit = {
@@ -203,7 +199,6 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
             .overrides(
               bind[CategorisationService].toInstance(categorisationService),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-              bind[Navigator].toInstance(mockNavigator),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
@@ -237,8 +232,6 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[CategorisationService].toInstance(categorisationService),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-              bind[Navigator].toInstance(mockNavigator),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
@@ -272,9 +265,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[CategorisationService].toInstance(categorisationService),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-              bind[Navigator].toInstance(mockNavigator),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
             )
             .build()
 

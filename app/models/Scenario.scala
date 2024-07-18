@@ -16,13 +16,12 @@
 
 package models
 
-import models.ott.{CategorisationInfo, ExemptionType}
+import models.ott.CategorisationInfo
 import play.api.mvc.JavascriptLiteral
 
 sealed trait Scenario
 
 case object NoRedirectScenario extends Scenario
-case object NoRedirectScenarioRecategorising extends Scenario
 
 case object Category1NoExemptions extends Scenario
 case object StandardNoAssessments extends Scenario
@@ -40,7 +39,6 @@ object Scenario {
       categorisationInfo.categoryAssessments.nonEmpty
 
     val category1Assessments = categorisationInfo.categoryAssessments.filter(_.category == 1)
-    val category2Assessments = categorisationInfo.categoryAssessments.filter(_.category == 2)
 
     val hasCategory1Assessments: Boolean =
       category1Assessments.nonEmpty
@@ -48,21 +46,11 @@ object Scenario {
     val hasEveryCategory1AssessmentGotExemptions: Boolean =
       category1Assessments.count(assessment => assessment.exemptions.nonEmpty) == category1Assessments.size
 
-    val niphlsAssessment =
-      category1Assessments.exists(assessment =>
-        assessment.exemptions.exists(exemption =>
-          exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012"
-        )
-      ) && category2Assessments.size == 1 && category2Assessments.exists(assessment => assessment.exemptions.isEmpty)
+    val niphlsAssessment = categorisationInfo.isNiphls
 
-    //TODO duplicate logic
     val hasOnlyNiphlsExemptionInCategory1: Boolean =
       category1Assessments
-        .count(assessment =>
-          assessment.exemptions.exists(exemption =>
-            exemption.exemptionType == ExemptionType.OtherExemption && exemption.code == "WFE012"
-          )
-        )
+        .count(assessment => assessment.isNiphlsAnswer)
         .equals(category1Assessments.size)
 
     (
@@ -94,5 +82,7 @@ object Scenario {
     case Standard              => "Standard"
     case Category1             => "Category1"
     case Category2             => "Category2"
+    case NiphlsOnly            => "NiphlsOnly"
+    case NiphlsAndOthers       => "NiphlsAndOthers"
   }
 }
