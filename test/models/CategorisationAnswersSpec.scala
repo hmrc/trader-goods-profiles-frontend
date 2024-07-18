@@ -57,7 +57,7 @@ class CategorisationAnswersSpec extends SpecBase {
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         result mustEqual Right(
-          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), None)
+          CategorisationAnswers(Seq(Exemption("true"), Exemption("true"), Exemption("true")), None)
         )
       }
 
@@ -72,7 +72,7 @@ class CategorisationAnswersSpec extends SpecBase {
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         result mustEqual Right(
-          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), None)
+          CategorisationAnswers(Seq(Exemption("true"), Exemption("true"), Exemption("true")), None)
         )
       }
 
@@ -90,7 +90,7 @@ class CategorisationAnswersSpec extends SpecBase {
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         result mustEqual Right(
-          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123"), Exemption("X812")), Some("42.0"))
+          CategorisationAnswers(Seq(Exemption("true"), Exemption("true"), Exemption("true")), Some("42.0"))
         )
       }
 
@@ -107,17 +107,17 @@ class CategorisationAnswersSpec extends SpecBase {
           .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categoryQuery)))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
           .success
           .value
 
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         result mustEqual Right(
-          CategorisationAnswers(Seq(Exemption("Y994"), Exemption("NC123")), None)
+          CategorisationAnswers(Seq(Exemption("true"), Exemption("true")), None)
         )
       }
 

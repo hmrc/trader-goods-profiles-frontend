@@ -566,7 +566,7 @@ class NavigatorSpec extends SpecBase {
                 .set(RecordCategorisationsQuery, recordCategorisations)
                 .success
                 .value
-                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                 .success
                 .value
 
@@ -587,10 +587,10 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("cert2"))
+                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
 
@@ -630,7 +630,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -656,7 +656,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -683,7 +683,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -714,7 +714,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -741,7 +741,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -768,7 +768,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -792,7 +792,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -816,7 +816,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -841,7 +841,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1489,7 +1489,7 @@ class NavigatorSpec extends SpecBase {
                 .set(RecordCategorisationsQuery, recordCategorisations)
                 .success
                 .value
-                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                 .success
                 .value
 
@@ -1510,10 +1510,10 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("cert2"))
+                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
 
@@ -1532,10 +1532,10 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("cert2"))
+                  .set(AssessmentPage(recordId, indexAssessment1 + 1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
 
@@ -1573,7 +1573,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit)))
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1600,7 +1600,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1627,7 +1627,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1652,7 +1652,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1676,7 +1676,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1701,7 +1701,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1732,7 +1732,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1759,7 +1759,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)
@@ -1786,7 +1786,7 @@ class NavigatorSpec extends SpecBase {
                   .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
-                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.NoExemption)

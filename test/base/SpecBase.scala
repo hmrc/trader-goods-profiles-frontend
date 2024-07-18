@@ -181,13 +181,13 @@ trait SpecBase
     .set(RecordCategorisationsQuery, recordCategorisations)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
     .success
     .value
-    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
     .success
     .value
-    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("true"))
     .success
     .value
 

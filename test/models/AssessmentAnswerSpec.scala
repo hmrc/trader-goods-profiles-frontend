@@ -27,10 +27,10 @@ class AssessmentAnswerSpec extends SpecBase {
 
     "must serialise / deserialise to / from JSON for an exemption" in {
 
-      val exemption = AssessmentAnswer.Exemption("foo")
+      val exemption = AssessmentAnswer.Exemption("true")
       val json      = Json.toJson[AssessmentAnswer](exemption)
 
-      json mustEqual JsString("foo")
+      json mustEqual JsString("true")
       json.validate[AssessmentAnswer] mustEqual JsSuccess(exemption)
     }
 

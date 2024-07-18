@@ -129,7 +129,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -157,10 +157,10 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
             .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
@@ -188,13 +188,13 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("true"))
             .success
             .value
             .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
@@ -222,16 +222,16 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption("cert4"))
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption("true"))
             .success
             .value
 
@@ -255,7 +255,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           .set(RecordCategorisationsQuery, noCategory1RecordCategorisations)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
           .success
           .value
 
@@ -279,7 +279,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
           .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
           .success
           .value
 

@@ -458,11 +458,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .value
         .set(
           AssessmentPage(testRecordId, 0),
-          AssessmentAnswer.Exemption("1234")
+          AssessmentAnswer.Exemption("true")
         )
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("4321"))
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
         .success
         .value
         .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
@@ -470,7 +470,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .value
         .set(
           AssessmentPage("b0082f50-f13b-416a-8071-3bd95107d44e", 0),
-          AssessmentAnswer.Exemption("1234")
+          AssessmentAnswer.Exemption("true")
         )
         .success
         .value
@@ -484,7 +484,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       withClue("Other record ids must be unaffected") {
         resultUserAnswers.get(AssessmentPage("b0082f50-f13b-416a-8071-3bd95107d44e", 0)) mustBe Some(
-          AssessmentAnswer.Exemption("1234")
+          AssessmentAnswer.Exemption("true")
         )
       }
 

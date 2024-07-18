@@ -61,17 +61,17 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("true"))
             .success
             .value
 
-        val result = answers.set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert22")).success.value
+        val result = answers.set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("true")).success.value
 
         result.isDefined(AssessmentPage(recordId, index)) mustBe true
         result.isDefined(AssessmentPage(recordId, index + 1)) mustBe true
@@ -85,16 +85,16 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
+            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("true"))
             .success
             .value
 
@@ -119,16 +119,16 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
+            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("true"))
             .success
             .value
 
@@ -147,16 +147,16 @@ class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("true"))
             .success
             .value
-            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
+            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("true"))
             .success
             .value
 
