@@ -194,11 +194,13 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             FakeRequest(POST, traderReferenceRoute)
               .withFormUrlEncodedBody(("value", "answer"))
 
-          val boundForm = form.copy(errors =
-            Seq(elems =
-              FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+          val boundForm = form
+            .fill("answer")
+            .copy(errors =
+              Seq(elems =
+                FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+              )
             )
-          )
 
           val view = application.injector.instanceOf[TraderReferenceView]
 
@@ -461,11 +463,13 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             FakeRequest(POST, traderReferenceRoute)
               .withFormUrlEncodedBody(("value", "answer"))
 
-          val boundForm = form.copy(errors =
-            Seq(elems =
-              FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+          val boundForm = form
+            .fill("answer")
+            .copy(errors =
+              Seq(elems =
+                FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+              )
             )
-          )
 
           val view = application.injector.instanceOf[TraderReferenceView]
 
