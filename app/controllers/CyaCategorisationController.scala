@@ -128,7 +128,7 @@ class CyaCategorisationController @Inject() (
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
+    val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(NormalMode, recordId).url)
 
     logger.warn(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))

@@ -83,13 +83,13 @@ class CategoryGuidanceController @Inject() (
 
             case Some(NiphlsAndOthers) =>
 
-              whenNiphlsAndOthers(mode, recordId, request, userAnswers)
+              whenNiphlsAndOthers(mode, recordId, userAnswers)
 
             case Some(NoRedirectScenario) if recategorising =>
               Future.successful(Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(NoRedirectScenario)),mode, userAnswers)))
 
             case Some(NoRedirectScenario) =>
-              Future.successful(Ok(view(recordId)))
+              Future.successful(Ok(view(mode, recordId)))
           }
         }
         .recover { e =>
@@ -109,14 +109,14 @@ class CategoryGuidanceController @Inject() (
     }
   }
 
-  private def whenNiphlsAndOthers(mode: Mode, recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)
-                                 (implicit hc: HeaderCarrier) = {
+  private def whenNiphlsAndOthers(mode: Mode, recordId: String, userAnswers: UserAnswers)
+                                 (implicit hc: HeaderCarrier, request: DataRequest[_]) = {
     val traderProfile = traderProfileConnector.getTraderProfile(request.eori)
 
     traderProfile.map {
       profile =>
         if (profile.niphlNumber.isDefined) {
-          Future.successful(Redirect(navigator.nextPage(CategoryGuidancePage(recordId), mode, userAnswers)))
+          Future.successful(Ok(view(mode, recordId)))
         } else {
           // User doesn't have NIPHLs so no point asking them anything
           val categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, profile)

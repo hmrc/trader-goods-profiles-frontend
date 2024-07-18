@@ -62,7 +62,7 @@ class Navigator @Inject() () {
     case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: CategoryGuidancePage                   => _ => navigateFromCategoryGuidance(NormalMode, p)
+    case p: CategoryGuidancePage                   => _ => navigateFromCategoryGuidance(p)
     case p: CyaCategorisationPage                  =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
@@ -257,10 +257,10 @@ class Navigator @Inject() () {
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromCategoryGuidance(mode: Mode, page: CategoryGuidancePage) = {
+  private def navigateFromCategoryGuidance(page: CategoryGuidancePage) = {
     page.scenario match {
       case Some(scenario) if scenario != NoRedirectScenario => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
-      case _ => routes.AssessmentController.onPageLoad(mode, page.recordId, firstAssessmentIndex)
+      case _ => routes.AssessmentController.onPageLoad(NormalMode, page.recordId, firstAssessmentIndex)
     }
   }
 
@@ -284,6 +284,7 @@ class Navigator @Inject() () {
       answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)
     case p: NamePage                               => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
+    case p: CategoryGuidancePage                   => _ => navigateFromCategoryGuidanceCheck(p)
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
@@ -361,7 +362,7 @@ class Navigator @Inject() () {
     } yield
       if (assessmentAnswer) {
         if (needToRecategorise) {
-          routes.AssessmentController.onPageLoad(CheckMode, recordId, firstAssessmentIndex)
+          routes.CategoryGuidanceController.onPageLoad(CheckMode, recordId)
         } else {
           if (categorisationInfo.measurementUnit.isDefined) {
             routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
@@ -389,6 +390,7 @@ class Navigator @Inject() () {
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
+    if (!assessmentPage.shouldRedirectToCya) {
     val recordId = assessmentPage.recordId
 
     for {
@@ -422,6 +424,9 @@ class Navigator @Inject() () {
             routes.CyaCategorisationController.onPageLoad(recordId)
         }
     }
+    } else {
+      Some(routes.CyaCategorisationController.onPageLoad(assessmentPage.recordId))
+    }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call =
@@ -437,6 +442,13 @@ class Navigator @Inject() () {
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromCategoryGuidanceCheck(page: CategoryGuidancePage) = {
+    page.scenario match {
+      case Some(scenario) if scenario != NoRedirectScenario => routes.CategorisationResultController.onPageLoad(page.recordId, scenario)
+      case _ => routes.AssessmentController.onPageLoad(CheckMode, page.recordId, firstAssessmentIndex)
+    }
+  }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>

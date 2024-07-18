@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.NormalMode
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -31,7 +32,7 @@ object CategorySummary {
       key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("singleRecord.categorise", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        ActionItemViewModel("singleRecord.categorise", routes.CategoryGuidanceController.onPageLoad(NormalMode, recordId).url)
           .withVisuallyHiddenText(messages("singleRecord.category.row"))
       )
     )

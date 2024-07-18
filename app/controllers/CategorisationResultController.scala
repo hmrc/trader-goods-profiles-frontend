@@ -27,7 +27,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategorisationResultView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
@@ -37,7 +37,7 @@ class CategorisationResultController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CategorisationResultView,
   sessionRepository: SessionRepository
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
