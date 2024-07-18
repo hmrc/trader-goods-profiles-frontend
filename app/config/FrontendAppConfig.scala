@@ -30,9 +30,10 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   private val contactFrontendUrl           = configuration.get[String]("contact-frontend.url")
   private val contactFormServiceIdentifier = configuration.get[String]("contact-frontend.serviceId")
+  private val playFrontendHost             = configuration.get[String]("play.frontend.host")
 
   def feedbackUrl(implicit request: RequestHeader): String = {
-    val backUrl = url"${host + request.uri}"
+    val backUrl = s"${playFrontendHost + request.uri}"
     s"$contactFrontendUrl?service=$contactFormServiceIdentifier&backUrl=$backUrl"
   }
 
