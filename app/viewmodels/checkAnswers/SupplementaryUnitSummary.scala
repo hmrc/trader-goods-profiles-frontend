@@ -27,25 +27,22 @@ import viewmodels.implicits._
 
 object SupplementaryUnitSummary {
 
-  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
-    val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-    val categorisationInfoOpt = recordCategorisations.records.get(recordId)
-    categorisationInfoOpt match {
-      case Some(categorisationInfo) =>
-        val measurementUnit = categorisationInfo.measurementUnit
-        answers.get(SupplementaryUnitPage(recordId)).map { answer =>
-          val value = if (measurementUnit.nonEmpty) s"$answer ${measurementUnit.get.trim}" else answer
-          SummaryListRowViewModel(
-            key = "supplementaryUnit.checkYourAnswersLabel",
-            value = ValueViewModel(value),
-            actions = Seq(
-              ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
-                .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
-            )
-          )
-        }
-      case _                        =>
-        None
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    for {
+      recordCategorisations <- answers.get(RecordCategorisationsQuery)
+      categorisationInfo    <- recordCategorisations.records.get(recordId)
+      supplementaryUnit     <- answers.get(SupplementaryUnitPage(recordId))
+    } yield {
+      val measurementUnit = categorisationInfo.measurementUnit
+      val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
+      SummaryListRowViewModel(
+        key = "supplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
+        )
+      )
     }
-  }
+
 }
