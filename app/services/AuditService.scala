@@ -20,9 +20,9 @@ import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CreateRecordJourney, UpdateRecordJourney, UpdateSection}
+import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection}
 import models.ott.response.OttResponse
-import models.{GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
+import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
@@ -101,6 +101,20 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"FinishUpdateGoodsRecord audit event status: $auditResult")
+      Done
+    }
+  }
+
+  def auditRequestAdvice(
+    affinityGroup: AffinityGroup,
+    adviceRequest: AdviceRequest
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
+    val event = auditEventFactory.createRequestAdviceEvent(affinityGroup, RequestAdviceJourney, adviceRequest)
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"RequestAdvice audit event status: $auditResult")
       Done
     }
   }

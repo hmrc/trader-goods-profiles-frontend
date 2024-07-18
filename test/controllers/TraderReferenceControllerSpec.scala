@@ -32,12 +32,13 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.TraderReferenceView
 
 import java.time.Instant
@@ -331,6 +332,85 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must set changesMade to true if trader reference is updated " in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            emptyResponse
+          )
+
+        val userAnswers =
+          UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "oldValue").success.value
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[TraderReferenceController]
+          val request    =
+            FakeRequest(POST, traderReferenceRoute)
+              .withFormUrlEncodedBody(("value", "newValue"))
+
+          val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          session(result).get(dataUpdated) must be(Some("true"))
+          session(result).get(pageUpdated) must be(Some("trader reference"))
+        }
+      }
+
+      "must set changesMade to false if trader reference is not updated" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            emptyResponse
+          )
+
+        val userAnswers =
+          UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "oldValue").success.value
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[TraderReferenceController]
+          val request    =
+            FakeRequest(POST, traderReferenceRoute)
+              .withFormUrlEncodedBody(("value", "oldValue"))
+
+          val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          session(result).get(dataUpdated) must be(Some("false"))
         }
       }
 

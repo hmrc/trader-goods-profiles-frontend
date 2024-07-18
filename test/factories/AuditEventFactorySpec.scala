@@ -19,9 +19,9 @@ package factories
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
-import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
+import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response._
-import models.{Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -308,6 +308,26 @@ class AuditEventFactorySpec extends SpecBase {
 
         }
       }
+    }
+
+    "create event when journey is advice request" in {
+      val adviceRequest = AdviceRequest(testEori, "Firstname Lastname", "actorId", testRecordId, "test@test.com")
+
+      val result =
+        AuditEventFactory().createRequestAdviceEvent(AffinityGroup.Individual, RequestAdviceJourney, adviceRequest)
+
+      result.auditSource mustBe "trader-goods-profiles-frontend"
+      result.auditType mustBe "AdviceRequestUpdate"
+      result.tags.isEmpty mustBe false
+
+      val auditDetails = result.detail
+      auditDetails.size mustBe 6
+      auditDetails("journey") mustBe "RequestAdvice"
+      auditDetails("affinityGroup") mustBe "Individual"
+      auditDetails("eori") mustBe testEori
+      auditDetails("recordId") mustBe testRecordId
+      auditDetails("requestorName") mustBe "Firstname Lastname"
+      auditDetails("requestorEmail") mustBe "test@test.com"
     }
 
     "create validate commodity code event" - {

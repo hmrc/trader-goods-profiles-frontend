@@ -61,15 +61,23 @@ class AssessmentController @Inject() (
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
-       // TODO ?? userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
+        // TODO ?? userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
-        recordQuery                     = request.userAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
+        recordQuery = request.userAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- Future.fromTry(Try(recordQuery.get.records(recordId)))
+        listItems = categorisationInfo.categoryAssessments(index).getExemptionListItems
+        commodityCode = categorisationInfo.commodityCode
+        exemptions = categorisationInfo.categoryAssessments(index).exemptions
+        form = formProvider(exemptions.size)
         userHasNiphls = traderProfile.niphlNumber.isDefined
-        isNiphlsAnAnswer                = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
-        updatedAnswers                 <-
+        isNiphlsAnAnswer = categorisationInfo.categoryAssessments(index).isNiphlsAnswer
+        updatedAnswers <-
           updateAnswerIfNiphls(recordId, index, request.userAnswers, isNiphlsAnAnswer, userHasNiphls)
-        _                              <- sessionRepository.set(updatedAnswers)
+        _ <- sessionRepository.set(updatedAnswers)
+        preparedForm = updatedAnswers.get(AssessmentPage(recordId, index)) match {
+          case Some(value) => form.fill(value)
+          case None => form
+        }
       } yield {
         val exemptions = categorisationInfo.categoryAssessments(index).exemptions
         val isNiphlsCategory2Assessment = categorisationInfo.categoryAssessments(index).isEmptyCat2Assessment &&
@@ -122,7 +130,9 @@ class AssessmentController @Inject() (
     index: Int,
     userAnswersWithCategorisations: UserAnswers,
     categorisationInfo: CategorisationInfo,
-    exemptions: Seq[ott.Exemption]
+    exemptions: Seq[ott.Exemption],
+      listItems: Seq[String],
+    commodityCode: String
   )(implicit messages: Messages,
     request: DataRequest[_]
   ) = {
@@ -140,7 +150,7 @@ class AssessmentController @Inject() (
       radioOptions = radioOptions
     )
 
-    Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)(request, messages)))
+    Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)(request, messages)))
   }
 
   private def updateAnswerIfNiphls(
@@ -160,32 +170,21 @@ class AssessmentController @Inject() (
         for {
           recordQuery        <- request.userAnswers.get(RecordCategorisationsQuery)
           categorisationInfo <- recordQuery.records.get(recordId)
-        } yield {
-
-          val exemptions = categorisationInfo.categoryAssessments(index).exemptions
-          val form       = formProvider(exemptions.map(_.id))
-
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => {
-                val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-                val viewModel    = AssessmentViewModel(
-                  commodityCode = categorisationInfo.commodityCode,
-                  numberOfThisAssessment = index + 1,
-                  numberOfAssessments = categorisationInfo.categoryAssessments.size,
-                  radioOptions = radioOptions
-                )
-
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, viewModel)))
-              },
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
-            )
-        }
+          listItems           = categorisationInfo.categoryAssessments(index).getExemptionListItems
+          commodityCode       = categorisationInfo.commodityCode
+          exemptions          = categorisationInfo.categoryAssessments(index).exemptions
+          form                = formProvider(exemptions.size)
+        } yield form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, commodityCode))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
+          )
       }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
     }
 }

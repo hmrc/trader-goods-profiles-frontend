@@ -25,17 +25,17 @@ sealed trait AssessmentAnswer
 
 object AssessmentAnswer {
 
-  case object NoExemption extends WithName("none") with AssessmentAnswer
-  final case class Exemption(id: String) extends AssessmentAnswer { override val toString: String = id }
+  case object NoExemption extends WithName("false") with AssessmentAnswer
+  final case class Exemption(value: String) extends AssessmentAnswer { override val toString: String = value }
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
-    case JsString("none") => JsSuccess(NoExemption)
-    case JsString(s)      => JsSuccess(Exemption(s))
-    case _                => JsError("unable to read assessment answer")
+    case JsString("false") => JsSuccess(NoExemption)
+    case JsString(s)       => JsSuccess(Exemption(s))
+    case _                 => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {
-    case NoExemption  => JsString("none")
+    case NoExemption  => JsString("false")
     case Exemption(s) => JsString(s)
   }
 

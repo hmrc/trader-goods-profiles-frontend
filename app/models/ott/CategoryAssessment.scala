@@ -33,6 +33,10 @@ final case class CategoryAssessment(
   override def compare(that: CategoryAssessment): Int =
     (this.category, this.exemptions.size) compare (that.category, that.exemptions.size)
 
+  def getExemptionListItems: Seq[String] = exemptions.map { exemption =>
+    exemption.code + " - " + exemption.description
+  }
+
   def isNiphlsAnswer: Boolean =
     category == 1 && exemptions.exists(ex => ex.exemptionType == localExemptionType.OtherExemption && ex.id == niphlsAssessment)
 
