@@ -24,7 +24,7 @@ import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnsw
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{atMostOnce, never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CountryOfOriginPage, LongerCommodityCodePage}
 import play.api.data.FormError
@@ -153,6 +153,18 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(LongerCommodityCodePage(testRecordId), "1234")
         .success
         .value
+        .set(CountryOfOriginPage, "DE")
+        .success
+        .value
+
+      val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
+
+      val testCommodity = Commodity("6543211234", List("Description"), Instant.now, None)
+      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+        .successful(
+          testCommodity
+        )
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
@@ -172,8 +184,14 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
 
-        verify(mockOttConnector, never()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
-        verify(mockSessionRepository, never()).set(any())
+        withClue("ensure user answers are set, even in the redirect scenario") {
+          verify(mockOttConnector, atMostOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+
+          val finalUserAnswers = uaCaptor.getValue
+
+          finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
+          finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+        }
 
       }
     }
@@ -306,6 +324,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       }
 
     }
+
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
