@@ -118,7 +118,7 @@ class GoodsRecordsController @Inject() (
                   ),
                   page
                 )
-              )
+              ).removingFromSession(dataUpdated, pageUpdated)
             },
           value =>
             for {
