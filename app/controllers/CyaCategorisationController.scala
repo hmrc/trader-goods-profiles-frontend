@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.helper.CategorisationJourney
 import models.requests.DataRequest
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario, ValidationError}
 import navigation.Navigator
@@ -112,9 +113,9 @@ class CyaCategorisationController @Inject() (
             model.categoryAssessmentsWithExemptions,
             model.category
           )
-          dataCleansingService.deleteMongoData(request.userAnswers.id)
 
           goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, model).map { _ =>
+            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
             Redirect(
               navigator.nextPage(
                 CyaCategorisationPage(recordId, model, Scenario.getScenario(model)),
@@ -137,7 +138,7 @@ class CyaCategorisationController @Inject() (
     val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
     logger.warn(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

@@ -16,14 +16,46 @@
 
 package models.helper
 
+import utils.SessionData._
+
 sealed trait Journey
 
+case object CreateProfileJourney extends Journey {
+  val pages: Seq[String]        = Seq(ukimsNumber, hasNirms, hasNiphl, nirmsNumber, niphlNumber)
+  override def toString: String = "CreateProfile"
+}
 case object CreateRecordJourney extends Journey {
+  val pages: Seq[String]        =
+    Seq(
+      traderReference,
+      useTraderReference,
+      goodsDescription,
+      countryOfOrigin,
+      commodityCode,
+      hasCorrectGoods
+    )
   override def toString: String = "CreateRecord"
 }
 case object UpdateRecordJourney extends Journey {
+
   override def toString: String = "UpdateRecord"
 }
+
+case object CategorisationJourney extends Journey {
+  val pages: Seq[String]        =
+    Seq(
+      assessments,
+      hasSupplementaryUnit,
+      supplementaryUnit,
+      longerCommodityCode
+    )
+  override def toString: String = "Categorisation"
+}
 case object RequestAdviceJourney extends Journey {
+  val pages: Seq[String]        =
+    Seq(
+      name,
+      email
+    )
   override def toString: String = "RequestAdvice"
 }

@@ -17,11 +17,24 @@
 package utils
 
 case object SessionData {
-  val dataUpdated: String      = "changesMade"
-  val pageUpdated: String      = "changedPage"
-  val traderReference: String  = "trader reference"
-  val goodsDescription: String = "goods description"
-  val countryOfOrigin: String  = "country of origin"
-  val commodityCode: String    = "commodity code"
+  val dataUpdated: String          = "changesMade"
+  val pageUpdated: String          = "changedPage"
+  val traderReference: String      = "trader reference"
+  val goodsDescription: String     = "goods description"
+  val countryOfOrigin: String      = "country of origin"
+  val commodityCode: String        = "commodity code"
+  val ukimsNumber: String          = "ukimsNumber"
+  val hasNirms: String             = "hasNirms"
+  val hasNiphl: String             = "hasNiphl"
+  val nirmsNumber: String          = "nirmsNumber"
+  val niphlNumber: String          = "niphlNumber"
+  val useTraderReference: String   = "useTraderReference"
+  val hasCorrectGoods: String      = "hasCorrectGoods"
+  val assessments: String          = "assessments"
+  val hasSupplementaryUnit: String = "hasSupplementaryUnit"
+  val supplementaryUnit: String    = "supplementaryUnit"
+  val longerCommodityCode: String  = "longerCommodityCode"
+  val name: String                 = "name"
+  val email: String                = "email"
 
 }

@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.AccreditationConnector
+import models.helper.RequestAdviceJourney
 import models.{AdviceRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -124,15 +125,14 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           .thenReturn(Future.successful(Done))
 
         val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[AccreditationConnector].toInstance(mockConnector),
               bind[AuditService].toInstance(mockAuditService),
-               bind[SessionRepository].toInstance(sessionRepository)
-
+              bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
 
@@ -155,7 +155,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           }
 
           withClue("must cleanse the user answers data") {
-            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(RequestAdviceJourney))
           }
         }
       }
@@ -168,7 +168,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           val continueUrl   = RedirectUrl(routes.AdviceStartController.onPageLoad(testRecordId).url)
 
           val sessionRepository = mock[SessionRepository]
-          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -186,7 +186,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockConnector, never()).submitRequestAccreditation(any())(any())
 
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id))
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(RequestAdviceJourney))
             }
           }
         }
@@ -205,7 +205,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           .thenReturn(Future.successful(Done))
 
         val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
@@ -222,9 +222,6 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           intercept[RuntimeException] {
             await(route(application, request).value)
           }
-          withClue("must cleanse the user answers data") {
-            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
-          }
 
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService, times(1))
@@ -234,6 +231,9 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
               )(
                 any()
               )
+          }
+          withClue("must not cleanse the user answers data when connector fails") {
+            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(RequestAdviceJourney))
           }
         }
       }

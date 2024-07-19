@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
+import models.helper.CategorisationJourney
 import models.{AssessmentAnswer, Category1, RecordCategorisations, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -512,7 +513,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .thenReturn(Future.successful(Done))
 
             val sessionRepository = mock[SessionRepository]
-            when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+            when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -539,7 +540,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
               }
               withClue("must cleanse the user answers data") {
-                verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+                verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
               }
 
             }
@@ -586,7 +587,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 verify(mockAuditService, times(1))
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
               }
-
 
             }
           }
@@ -642,7 +642,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
           val sessionRepository = mock[SessionRepository]
-          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -661,7 +661,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .url
             verify(mockConnector, never()).updateCategoryForGoodsRecord(any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id))
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
             }
           }
         }
@@ -679,7 +679,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
         val mockAuditService = mock[AuditService]
         when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
@@ -703,8 +703,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             verify(mockAuditService, times(1))
               .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
           }
-          withClue("must cleanse the user answers data") {
-            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+          withClue("must not cleanse the user answers data when connector fails") {
+            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
           }
         }
       }

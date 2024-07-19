@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.helper.CreateRecordJourney
 import models.requests.DataRequest
 import models.{Country, GoodsRecord, UserAnswers, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -86,9 +87,9 @@ class CyaCreateRecordController @Inject() (
     GoodsRecord.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
-        dataCleansingService.deleteMongoData(request.userAnswers.id)
         for {
           goodsRecordResponse <- goodsRecordConnector.submitGoodsRecord(model)
+          _                   <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
     }
@@ -98,7 +99,7 @@ class CyaCreateRecordController @Inject() (
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
-    dataCleansingService.deleteMongoData(request.userAnswers.id)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
     logger.warn(s"Unable to create Goods Record.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

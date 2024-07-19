@@ -22,6 +22,7 @@ import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
 import logging.Logging
+import models.helper.CreateProfileJourney
 import models.requests.DataRequest
 import models.{TraderProfile, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -73,8 +74,8 @@ class CyaCreateProfileController @Inject() (
     TraderProfile.build(request.userAnswers, request.eori) match {
       case Right(model) =>
         auditService.auditProfileSetUp(model, request.affinityGroup)
-        dataCleansingService.deleteMongoData(request.userAnswers.id)
         traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
           Redirect(routes.HomePageController.onPageLoad())
         }
 
@@ -89,7 +90,7 @@ class CyaCreateProfileController @Inject() (
     val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
     logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

@@ -20,7 +20,7 @@ import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CreateRecordJourney, UpdateRecordJourney, UpdateSection}
+import models.helper.{CreateProfileJourney, CreateRecordJourney, Journey, UpdateRecordJourney, UpdateSection}
 import models.ott.response.OttResponse
 import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
 import org.apache.pekko.Done
@@ -38,7 +38,7 @@ class DataCleansingService @Inject() (sessionRepository: SessionRepository)(impl
   ec: ExecutionContext
 ) extends Logging {
 
-  def deleteMongoData(id: String): Future[Boolean] =
-    sessionRepository.clearData(id)
+  def deleteMongoData(id: String, journey: Journey): Future[Boolean] =
+    sessionRepository.clearData(id, journey)
 
 }

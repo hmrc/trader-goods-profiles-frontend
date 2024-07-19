@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.helper.RequestAdviceJourney
 import models.requests.DataRequest
 import models.{AdviceRequest, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -75,7 +76,7 @@ class CyaRequestAdviceController @Inject() (
     val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(recordId).url)
 
     logger.warn(s"Unable to create Request Advice.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
@@ -83,11 +84,13 @@ class CyaRequestAdviceController @Inject() (
     implicit request =>
       AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
-          dataCleansingService.deleteMongoData(request.userAnswers.id)
           auditService.auditRequestAdvice(request.affinityGroup, model)
           accreditationConnector
             .submitRequestAccreditation(model)
-            .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url))
+            .map { _ =>
+              dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+              Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
+            }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }
   }

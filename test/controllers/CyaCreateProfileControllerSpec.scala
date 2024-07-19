@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
+import models.helper.CreateProfileJourney
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -29,7 +30,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -178,7 +179,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
           val sessionRepository = mock[SessionRepository]
-          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -204,7 +205,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             }
 
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+              verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
             }
           }
         }
@@ -220,7 +221,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val continueUrl      = RedirectUrl(routes.ProfileSetupController.onSubmit().url)
 
           val sessionRepository = mock[SessionRepository]
-          when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -242,7 +243,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
             }
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id))
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateProfileJourney))
             }
           }
         }
@@ -260,7 +261,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
         val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.clearData(any())).thenReturn(Future.successful(true))
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
@@ -278,8 +279,8 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockAuditService, times(1))
               .auditProfileSetUp(any(), any())(any())
           }
-          withClue("must cleanse the user answers data") {
-            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id))
+          withClue("must not cleanse the user answers data when connector fails") {
+            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
           }
 
         }
