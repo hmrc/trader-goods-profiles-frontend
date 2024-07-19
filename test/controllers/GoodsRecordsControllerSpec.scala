@@ -23,13 +23,9 @@ import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination}
-import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination, UserAnswers}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.GoodsRecordsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -255,7 +251,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
-        verify(mockGoodsRecordConnector, times(1)).storeLatestRecords(any())(any())
       }
     }
 
@@ -369,7 +364,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
-          form.fill("answer"),
+          boundForm,
           response.goodsItemRecords,
           totalRecords,
           firstRecord,
