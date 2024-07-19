@@ -259,7 +259,7 @@ class GoodsRecordConnectorSpec
         post(urlEqualTo(routerGoodsRecordsUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody(Json.toJson(testRecordId).toString))
+          .willReturn(ok().withBody(testRecordId))
       )
 
       connector.submitGoodsRecord(goodsRecord).futureValue mustBe testRecordId
