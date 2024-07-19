@@ -187,11 +187,20 @@ class HasCorrectGoodsController @Inject() (
       needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
 
       // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
-      updatedAnswersCleanedUp <-
+      updatedAnswersCleanedUp      <-
         Future
-          .fromTry(cleanupOldAssessmentAnswersForRecategorisation(updatedCategorisationAnswers, recordId, needToRecategorise, oldCommodityCategorisation, newCommodityCategorisation))
-      updatedAnswersRecategorising <- Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
-      _ <- sessionRepository.set(updatedAnswersRecategorising)
+          .fromTry(
+            cleanupOldAssessmentAnswersForRecategorisation(
+              updatedCategorisationAnswers,
+              recordId,
+              needToRecategorise,
+              oldCommodityCategorisation,
+              newCommodityCategorisation
+            )
+          )
+      updatedAnswersRecategorising <-
+        Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
+      _                            <- sessionRepository.set(updatedAnswersRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
@@ -214,7 +223,12 @@ class HasCorrectGoodsController @Inject() (
     newCommodityCategorisation: CategorisationInfo
   ): Try[UserAnswers] =
     if (needToRecategorise) {
-      categorisationService.updatingAnswersForRecategorisation(userAnswers, recordId, oldCommodityCategorisation, newCommodityCategorisation)
+      categorisationService.updatingAnswersForRecategorisation(
+        userAnswers,
+        recordId,
+        oldCommodityCategorisation,
+        newCommodityCategorisation
+      )
     } else {
       Success(userAnswers)
     }

@@ -70,8 +70,8 @@ class AssessmentController @Inject() (
 
         val hasAssessmentBeenAnswered = request.userAnswers.get(AssessmentPage(recordId, index)) match {
           case Some(NotAnsweredYet) => false
-          case Some(_) => true
-          case None => false
+          case Some(_)              => true
+          case None                 => false
         }
         if (exemptions.isEmpty) {
           Future.successful(
@@ -79,9 +79,7 @@ class AssessmentController @Inject() (
               navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
             )
           )
-        }
-
-        else if (areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode) {
+        } else if (areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode) {
           Future.successful(
             Redirect(
               navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)

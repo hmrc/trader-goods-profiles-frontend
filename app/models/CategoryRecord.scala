@@ -132,7 +132,9 @@ object CategoryRecord {
   ): Int =
     categorisationInfo.categoryAssessments.zipWithIndex
       .map(assessment => answers.get(AssessmentPage(recordId, assessment._2)))
-      .count(optionalAnswer => optionalAnswer.isDefined && !optionalAnswer.contains(NoExemption) && !optionalAnswer.contains(NotAnsweredYet))
+      .count(optionalAnswer =>
+        optionalAnswer.isDefined && !optionalAnswer.contains(NoExemption) && !optionalAnswer.contains(NotAnsweredYet)
+      )
 
   private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
     answers
