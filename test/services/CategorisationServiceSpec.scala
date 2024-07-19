@@ -19,15 +19,16 @@ package services
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.RecordCategorisations
 import models.ott.CategorisationInfo
-import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
+import models.ott.response._
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
+import models.{AssessmentAnswer, RecordCategorisations}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.AssessmentPage
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
@@ -343,6 +344,50 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       actualException mustBe expectedException
+    }
+
+  }
+
+  "cleanupOldAssessmentAnswers" - {
+
+    "remove old assessment answers for given recordId" in {
+
+      val initialUserAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, recordCategorisations)
+        .success
+        .value
+        .set(
+          AssessmentPage(testRecordId, 0),
+          AssessmentAnswer.Exemption("1234")
+        )
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("4321"))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+        .success
+        .value
+        .set(
+          AssessmentPage("b0082f50-f13b-416a-8071-3bd95107d44e", 0),
+          AssessmentAnswer.Exemption("1234")
+        )
+        .success
+        .value
+
+      val result            = categorisationService.cleanupOldAssessmentAnswers(initialUserAnswers, testRecordId)
+      val resultUserAnswers = result.get
+
+      resultUserAnswers.get(AssessmentPage(testRecordId, 0)) mustBe None
+      resultUserAnswers.get(AssessmentPage(testRecordId, 1)) mustBe None
+      resultUserAnswers.get(AssessmentPage(testRecordId, 2)) mustBe None
+
+      withClue("Other record ids must be unaffected") {
+        resultUserAnswers.get(AssessmentPage("b0082f50-f13b-416a-8071-3bd95107d44e", 0)) mustBe Some(
+          AssessmentAnswer.Exemption("1234")
+        )
+      }
+
     }
 
   }

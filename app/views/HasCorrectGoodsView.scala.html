@@ -33,7 +33,7 @@
 
     <p class="govuk-body">@messages("hasCorrectGoods.p1")</p>
 
-    <ul class="govuk-body">
+    <ul class="govuk-list govuk-list--bullet">
         @commodity.descriptions.zipWithIndex.map { case (description, index) =>
             <li>@description.toLowerCase</li>
         }

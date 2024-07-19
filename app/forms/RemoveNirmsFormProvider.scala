@@ -21,10 +21,10 @@ import javax.inject.Inject
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class HasNiphlsChangeFormProvider @Inject() extends Mappings {
+class RemoveNirmsFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("hasNiphlsChange.error.required")
+      "value" -> boolean("removeNirms.error.required")
     )
 }

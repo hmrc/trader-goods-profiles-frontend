@@ -73,14 +73,15 @@ class NavigatorSpec extends SpecBase {
         "must go from ProfileSetupPage to UkimsNumberPage" in {
 
           navigator.nextPage(ProfileSetupPage, NormalMode, emptyUserAnswers) mustBe routes.UkimsNumberController
-            .onPageLoad(NormalMode)
+            .onPageLoadCreate(NormalMode)
         }
 
         "must go from UkimsNumberPage to HasNirmsPage" in {
 
-          navigator.nextPage(UkimsNumberPage, NormalMode, emptyUserAnswers) mustBe routes.HasNirmsController.onPageLoad(
-            NormalMode
-          )
+          navigator.nextPage(UkimsNumberPage, NormalMode, emptyUserAnswers) mustBe routes.HasNirmsController
+            .onPageLoadCreate(
+              NormalMode
+            )
         }
 
         "must go from HasNirmsPage" - {
@@ -88,7 +89,7 @@ class NavigatorSpec extends SpecBase {
           "to NirmsNumberPage when answer is Yes" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsPage, true).success.value
-            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.NirmsNumberController.onPageLoad(
+            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.NirmsNumberController.onPageLoadCreate(
               NormalMode
             )
           }
@@ -96,7 +97,7 @@ class NavigatorSpec extends SpecBase {
           "to HasNiphlPage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsPage, false).success.value
-            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.HasNiphlController.onPageLoad(
+            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe routes.HasNiphlController.onPageLoadCreate(
               NormalMode
             )
           }
@@ -114,9 +115,10 @@ class NavigatorSpec extends SpecBase {
 
         "must go from NirmsNumberPage to HasNiphlPage" in {
 
-          navigator.nextPage(NirmsNumberPage, NormalMode, emptyUserAnswers) mustBe routes.HasNiphlController.onPageLoad(
-            NormalMode
-          )
+          navigator.nextPage(NirmsNumberPage, NormalMode, emptyUserAnswers) mustBe routes.HasNiphlController
+            .onPageLoadCreate(
+              NormalMode
+            )
         }
 
         "must go from HasNiphlPage" - {
@@ -124,7 +126,7 @@ class NavigatorSpec extends SpecBase {
           "to NiphlNumberPage when answer is Yes" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNiphlPage, true).success.value
-            navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.NiphlNumberController.onPageLoad(
+            navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.NiphlNumberController.onPageLoadCreate(
               NormalMode
             )
           }
@@ -153,6 +155,113 @@ class NavigatorSpec extends SpecBase {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateProfileController.onPageLoad
+        }
+      }
+
+      "in Update Profile Journey" - {
+
+        "must go from UkimsNumberUpdatePage to ProfilePage" in {
+
+          navigator.nextPage(
+            UkimsNumberUpdatePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad
+        }
+
+        "must go from HasNirmsUpdatePage" - {
+
+          "to NirmsNumberUpdatePage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, true).success.value
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              NormalMode,
+              answers
+            ) mustBe routes.NirmsNumberController.onPageLoadUpdate
+          }
+
+          "to RemoveNirmsPage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
+            navigator.nextPage(HasNirmsUpdatePage, NormalMode, answers) mustBe routes.RemoveNirmsController
+              .onPageLoad()
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+        }
+
+        "must go from RemoveNirmsPage to ProfilePage" in {
+
+          navigator.nextPage(
+            RemoveNirmsPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad
+        }
+
+        "must go from NirmsNumberUpdatePage to ProfilePage" in {
+
+          navigator.nextPage(NirmsNumberUpdatePage, NormalMode, emptyUserAnswers) mustBe routes.ProfileController
+            .onPageLoad()
+        }
+
+        "must go from HasNiphlUpdatePage" - {
+
+          "to NiphlNumberUpdatePage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, true).success.value
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              NormalMode,
+              answers
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate
+          }
+
+          "to RemoveNiphlPage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, false).success.value
+            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.RemoveNiphlController
+              .onPageLoad()
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+        }
+
+        "must go from RemoveNiphlPage to ProfilePage" in {
+
+          navigator.nextPage(
+            RemoveNiphlPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad
+        }
+
+        "must go from NiphlNumberUpdatePage to ProfilePage" in {
+
+          navigator.nextPage(
+            NiphlNumberUpdatePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad
         }
       }
 
@@ -894,11 +1003,6 @@ class NavigatorSpec extends SpecBase {
 
           "to first Assessment when answer is Yes and need to recategorise" in {
 
-            val assessment1Shorter        = assessment1
-            val assessment2Shorter        = assessment2.copy(id = "id432")
-            val categorisationInfoShorter =
-              CategorisationInfo("123456", Seq(assessment1Shorter, assessment2Shorter), None, 0)
-
             val answers = UserAnswers(userAnswersId)
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
@@ -984,7 +1088,7 @@ class NavigatorSpec extends SpecBase {
             "to NirmsNumberPage when NirmsNumberPage is empty" in {
 
               val answers = UserAnswers(userAnswersId).set(HasNirmsPage, true).success.value
-              navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.NirmsNumberController.onPageLoad(
+              navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.NirmsNumberController.onPageLoadCreate(
                 CheckMode
               )
             }
@@ -1035,7 +1139,7 @@ class NavigatorSpec extends SpecBase {
             "to NiphlNumberPage when NiphlNumberPage is empty" in {
 
               val answers = UserAnswers(userAnswersId).set(HasNiphlPage, true).success.value
-              navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.NiphlNumberController.onPageLoad(
+              navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.NiphlNumberController.onPageLoadCreate(
                 CheckMode
               )
             }

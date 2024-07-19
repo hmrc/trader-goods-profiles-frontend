@@ -25,14 +25,14 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("niphlNumber.title"))) {
 
     <h1 class="govuk-heading-l">@messages("niphlNumber.heading")</h1>
     <p class="govuk-body">@messages("niphlNumber.p1")</p>
 
-    <ul class="govuk-body">
+    <ul class="govuk-list govuk-list--bullet">
         <li>@messages("niphlNumber.li1")</li>
         <li>@messages("niphlNumber.li2")</li>
         <li>@messages("niphlNumber.li3")</li>
@@ -40,7 +40,7 @@
 
     <h2 class="govuk-heading-m">@messages("niphlNumber.h2")</h2>
 
-    @formHelper(action = routes.NiphlNumberController.onSubmit(mode)) {
+    @formHelper(action = action) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

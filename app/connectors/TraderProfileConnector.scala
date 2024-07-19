@@ -38,7 +38,7 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
 
   def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .post(traderProfileUrl(eori))
+      .put(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
       .map(_ => Done)

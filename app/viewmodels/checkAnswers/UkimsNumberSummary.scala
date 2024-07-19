@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, Mode, UserAnswers}
+import models.{CheckMode, UserAnswers}
 import pages.UkimsNumberPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -33,19 +33,18 @@ object UkimsNumberSummary {
         key = "ukimsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
       )
     }
 
-  //TODO - this will be updated to route to the update ukims number page
-  def row(value: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
+  def row(value: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "ukimsNumber.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoad(mode).url)
+        ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadUpdate.url)
           .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
       )
     )

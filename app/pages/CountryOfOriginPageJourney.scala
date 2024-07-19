@@ -14,32 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import play.api.libs.json.JsPath
 
-class HasNiphlsChangeFormProviderSpec extends BooleanFieldBehaviours {
+case object CountryOfOriginPageJourney extends QuestionPage[String] {
 
-  val requiredKey = "hasNiphlsChange.error.required"
-  val invalidKey  = "error.boolean"
+  override def path: JsPath = JsPath \ toString
 
-  val form = new HasNiphlsChangeFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
-    )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
+  override def toString: String = "countryOfOriginJourney"
 }

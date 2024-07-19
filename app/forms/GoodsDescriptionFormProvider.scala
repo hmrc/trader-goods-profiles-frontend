@@ -17,15 +17,15 @@
 package forms
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
+import models.RichString
 import play.api.data.Form
 
 class GoodsDescriptionFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("goodsDescription.error.required")
+      "value" -> adaptedText("goodsDescription.error.required")(_.removeDoubleSpaces())
         .verifying(maxLength(512, "goodsDescription.error.length"))
     )
 }

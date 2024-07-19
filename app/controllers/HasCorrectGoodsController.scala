@@ -30,12 +30,11 @@ import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Constants.firstAssessmentIndex
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 class HasCorrectGoodsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -197,7 +196,7 @@ class HasCorrectGoodsController @Inject() (
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
         mode,
-        updatedAnswersCleanedUp
+        updatedCategorisationAnswers
       )
     )
 
@@ -213,17 +212,7 @@ class HasCorrectGoodsController @Inject() (
     needToRecategorise: Boolean
   ): Try[UserAnswers] =
     if (needToRecategorise) {
-      (for {
-        recordQuery        <- userAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- recordQuery.records.get(recordId)
-        count               = categorisationInfo.categoryAssessments.size
-        //Go backwards to avoid recursion issues
-        rangeToRemove       = (firstAssessmentIndex to count + 1).reverse
-      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(userAnswers)) { (acc, currentIndexToRemove) =>
-        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
-      }).getOrElse(
-        Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
-      )
+      categorisationService.cleanupOldAssessmentAnswers(userAnswers, recordId)
     } else {
       Success(userAnswers)
     }

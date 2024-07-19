@@ -20,9 +20,9 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CategorisationUpdate, CreateRecordJourney, UpdateRecordJourney}
+import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
-import models.{GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -31,7 +31,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.{CommodityQuery, CommodityUpdateQuery}
+import queries.CommodityQuery
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -308,7 +308,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateRecord(any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val userAnswers               = generateUserAnswersForFinishUpdateGoodsTest(true)
       val expectedUpdateGoodsRecord =
         UpdateGoodsRecord(
           testEori,
@@ -350,7 +349,6 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateRecord(any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val userAnswers               = generateUserAnswersForFinishUpdateGoodsTest(false)
       val expectedUpdateGoodsRecord =
         UpdateGoodsRecord(
           testEori,
@@ -801,30 +799,65 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
-  private def generateUserAnswersForFinishUpdateGoodsTest(useTraderRef: Boolean) = {
-    val ua = emptyUserAnswers
-      .set(TraderReferencePage, "trader reference")
-      .success
-      .value
-      .set(CountryOfOriginPage, "PF")
-      .success
-      .value
-      .set(CommodityCodeUpdatePage(testRecordId), testCommodity.commodityCode)
-      .success
-      .value
-      .set(CommodityUpdateQuery(testRecordId), testCommodity)
-      .success
-      .value
+  "auditAdviceRequest" - {
 
-    if (useTraderRef) {
-      ua.set(UseTraderReferencePage, true).success.value
-    } else {
-      ua.set(UseTraderReferencePage, false)
-        .success
-        .value
-        .set(GoodsDescriptionPage, "goods description")
-        .success
-        .value
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createRequestAdviceEvent(any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      val adviceRequest = AdviceRequest(testEori, "Firstname Lastname", "actorId", testRecordId, "test@test.com")
+      val result        = await(auditService.auditRequestAdvice(AffinityGroup.Individual, adviceRequest))
+
+      result mustBe Done
+
+      withClue("Should have supplied the affinity group and request advice to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createRequestAdviceEvent(eqTo(AffinityGroup.Individual), eqTo(RequestAdviceJourney), eqTo(adviceRequest))(
+            any()
+          )
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createRequestAdviceEvent(any(), any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      val adviceRequest = AdviceRequest(testEori, "Firstname Lastname", "actorId", testRecordId, "test@test.com")
+      val result        = await(auditService.auditRequestAdvice(AffinityGroup.Individual, adviceRequest))
+
+      result mustBe Done
+
+      withClue("Should have supplied the request advice to the factory to create the event") {
+        verify(mockAuditFactory, times(1))
+          .createRequestAdviceEvent(eqTo(AffinityGroup.Individual), eqTo(RequestAdviceJourney), eqTo(adviceRequest))(
+            any()
+          )
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "must let the play error handler deal with an future failure" in {
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        val adviceRequest = AdviceRequest(testEori, "Firstname Lastname", "actorId", testRecordId, "test@test.com")
+        await(auditService.auditRequestAdvice(AffinityGroup.Individual, adviceRequest))
+      }
     }
   }
 

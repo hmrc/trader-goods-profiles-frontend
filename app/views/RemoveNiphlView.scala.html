@@ -23,23 +23,23 @@
     govukWarningText: GovukWarningText
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("hasNiphlsChange.title"))) {
+@layout(pageTitle = title(form, messages("removeNiphl.title"))) {
 
-        <h1 class="govuk-heading-l">@messages("hasNiphlsChange.h1")</h1>
+        <h1 class="govuk-heading-l">@messages("removeNiphl.h1")</h1>
 
-            <p class="govuk-body">@messages("hasNiphlsChange.p1")</p>
-            <p class="govuk-body">@messages("hasNiphlsChange.p2")</p>
+            <p class="govuk-body">@messages("removeNiphl.p1")</p>
+            <p class="govuk-body">@messages("removeNiphl.p2")</p>
 
          @govukWarningText(WarningText(
-            iconFallbackText = Some(messages("hasNiphlsChange.warning")),
-            content = Text(messages("hasNiphlsChange.warningText"))
+            iconFallbackText = Some(messages("removeNiphl.warning")),
+            content = Text(messages("removeNiphl.warningText"))
              ))
 
-    <h2 class="govuk-heading-m">@messages("hasNiphlsChange.h2")</h2>
+    <h2 class="govuk-heading-m">@messages("removeNiphl.h2")</h2>
 
-    @formHelper(action = routes.HasNiphlsChangeController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.RemoveNiphlController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -48,10 +48,10 @@
         @govukRadios(
                 RadiosViewModel.apply(
                     field = form("value"),
-                    legend = Legend(content = "hasNiphlsChange.h2", classes = "govuk-visually-hidden"),
+                    legend = Legend(content = "removeNiphl.h2", classes = "govuk-visually-hidden"),
                     items = Seq(
-                    RadioItem(content = messages("hasNiphlsChange.yes"), value = Some("true")),
-                    RadioItem(content = messages("hasNiphlsChange.no"), value = Some("false"))
+                    RadioItem(content = messages("removeNiphl.yes"), value = Some("true"), id = Some(s"value")),
+                    RadioItem(content = messages("removeNiphl.no"), value = Some("false"), id = Some(s"value-no"))
                                 )
                                 )
                     )
@@ -61,6 +61,6 @@
     }
 
 
-<p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("hasNiphlsChange.p3.linkText")</a></p>
+<p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("removeNiphl.p3.linkText")</a></p>
 
 }

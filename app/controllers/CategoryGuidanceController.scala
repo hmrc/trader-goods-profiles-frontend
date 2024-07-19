@@ -22,14 +22,14 @@ import logging.Logging
 import models.helper.CategorisationUpdate
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import navigation.Navigator
-import pages.{AssessmentPage, CategoryGuidancePage}
+import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Constants.firstAssessmentIndex
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
@@ -69,11 +69,12 @@ class CategoryGuidanceController @Inject() (
                     .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
+                        .removingFromSession(dataUpdated, pageUpdated)
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
             case Some(NoRedirectScenario)                            =>
-              Future.successful(Ok(view(recordId)))
+              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated))
           }
         }
         .recover { e =>
@@ -82,7 +83,7 @@ class CategoryGuidanceController @Inject() (
         }
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       auditService
         .auditStartUpdateGoodsRecord(
@@ -92,10 +93,6 @@ class CategoryGuidanceController @Inject() (
           recordId
         )
 
-      for {
-        updatedAnswers <-
-          Future.fromTry(request.userAnswers.remove(AssessmentPage(recordId, firstAssessmentIndex, cleanupAll = true)))
-        _              <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
+      Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
   }
 }

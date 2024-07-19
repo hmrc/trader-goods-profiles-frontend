@@ -21,13 +21,15 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.helper.CategorisationJourney
+import models.requests.DataRequest
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario, ValidationError}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.RecordCategorisationsQuery
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
@@ -43,6 +45,7 @@ class CyaCategorisationController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
+  dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
   navigator: Navigator
@@ -66,8 +69,7 @@ class CyaCategorisationController @Inject() (
                 recordId,
                 request.userAnswers,
                 assessment,
-                categorisationInfo.categoryAssessments.indexOf(assessment),
-                categorisationInfo.categoryAssessments.size
+                categorisationInfo.categoryAssessments.indexOf(assessment)
               )
             )
         case None                     => Seq.empty
@@ -95,7 +97,7 @@ class CyaCategorisationController @Inject() (
           Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
 
         case Left(errors) =>
-          logErrorsAndContinue(errors, recordId)
+          logErrorsAndContinue(errors, recordId, request)
 
       }
   }
@@ -113,6 +115,7 @@ class CyaCategorisationController @Inject() (
           )
 
           goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, model).map { _ =>
+            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
             Redirect(
               navigator.nextPage(
                 CyaCategorisationPage(recordId, model, Scenario.getScenario(model)),
@@ -121,16 +124,21 @@ class CyaCategorisationController @Inject() (
               )
             )
           }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
+  def logErrorsAndContinue(
+    errors: data.NonEmptyChain[ValidationError],
+    recordId: String,
+    request: DataRequest[AnyContent]
+  ): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
     logger.warn(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright 2024 HM Revenue & Customs
+@*
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this()
 
-import play.api.libs.json.JsPath
+@(text: String, textHidden: Option[String] = None, call: Call, target: String = "_self", id: Option[String] = None, classes: String = "govuk-link govuk-link--no-visited-state")
 
-case object HasNirmsChangePage extends QuestionPage[Boolean] {
+@hasHint = @{textHidden.exists(_.nonEmpty)}
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "hasNirmsChange"
-}
+<a class="@classes" href="@call" target=@target @id.map{id => id="@id"}
+ ><span @if(hasHint){aria-hidden="true"}>@text</span>@if(hasHint){<span class="govuk-visually-hidden">@{textHidden.getOrElse("")}</span>}</a>
