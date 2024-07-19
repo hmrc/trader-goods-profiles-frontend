@@ -15,11 +15,13 @@
  *@
 
 @import models.helper._
+@import views.html.components._
 
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
-        govukPanel: GovukPanel
+        govukPanel: GovukPanel,
+        feedbackSection: components.feedback_section
 )
 
 @(recordId: String, scenario: Scenario)(implicit request: Request[_], messages: Messages)
@@ -55,17 +57,7 @@
         </p>
     }
 
-    <h2 class="govuk-heading-m">
-        @messages("categorisationResult.tellUsWhatYouThink")
-    </h2>
-
-    <p class="govuk-body">
-        @messages("categorisationResult.thisIsNewService")
-    </p>
-
-    <p class="govuk-body">
-        <a href="#" class="govuk-link">@messages("categorisationResult.sendUsFeedback")</a> @messages("categorisationResult.improvements")
-    </p>
+    @feedbackSection()
 
     <p class="govuk-body">
         <a href="@routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link">@messages("categorisationResult.goToRecord")</a>

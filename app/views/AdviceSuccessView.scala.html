@@ -14,10 +14,13 @@
  * limitations under the License.
  *@
 
+@import views.html.components._
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
-        govukPanel: GovukPanel
+        govukPanel: GovukPanel,
+        feedbackSection: components.feedback_section
 )
 
 @(recordId: String)(implicit request: Request[_], messages: Messages)
@@ -41,10 +44,10 @@
     <p class="govuk-body">@messages("adviceSuccess.p3")</p>
     <p class="govuk-body">@messages("adviceSuccess.p4")</p>
     <p class="govuk-body">@messages("adviceSuccess.p5")</p>
-    <h2 class="govuk-heading-m">@messages("adviceSuccess.h2.1")</h2>
-    <p class="govuk-body">@messages("adviceSuccess.p6")</p>
-    <p class="govuk-body"><a href="#" class="govuk-link" >@messages("adviceSuccess.p7.linkText")</a>. @messages("adviceSuccess.p7")</p>
+
+    @feedbackSection()
+
     @*TODO correct link when defined by design*@
-    <p class="govuk-body"><a href="@routes.AdviceSuccessController.onPageLoad(recordId).url" class="govuk-link" >@messages("adviceSuccess.p8.linkText")</a></p>
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("adviceSuccess.p9.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.AdviceSuccessController.onPageLoad(recordId).url" class="govuk-link" >@messages("adviceSuccess.p6.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("adviceSuccess.p7.linkText")</a></p>
 }

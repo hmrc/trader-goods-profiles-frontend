@@ -21,12 +21,14 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.helper.CreateRecordJourney
+import models.requests.DataRequest
 import models.{Country, GoodsRecord, UserAnswers, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -43,6 +45,7 @@ class CyaCreateRecordController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
+  dataCleansingService: DataCleansingService,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   auditService: AuditService
@@ -63,7 +66,7 @@ class CyaCreateRecordController @Inject() (
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield displayView(updatedAnswersWithQuery, countries)
         }
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
     }
   }
 
@@ -86,16 +89,17 @@ class CyaCreateRecordController @Inject() (
         auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
         for {
           goodsRecordResponse <- goodsRecordConnector.submitGoodsRecord(model)
+          _                   <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
     }
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], request: DataRequest[AnyContent]): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
-
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
     logger.error(s"Unable to create Goods Record.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

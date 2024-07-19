@@ -21,10 +21,13 @@ import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
+import models.helper.RequestAdviceJourney
+import models.requests.DataRequest
 import models.{AdviceRequest, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
+import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
@@ -38,6 +41,7 @@ class CyaRequestAdviceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  dataCleansingService: DataCleansingService,
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
@@ -58,16 +62,21 @@ class CyaRequestAdviceController @Inject() (
             ).flatten
           )
           Ok(view(list, recordId))
-        case Left(errors) => logErrorsAndContinue(errors, recordId)
+        case Left(errors) => logErrorsAndContinue(errors, recordId, request)
       }
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
+  def logErrorsAndContinue(
+    errors: data.NonEmptyChain[ValidationError],
+    recordId: String,
+    request: DataRequest[AnyContent]
+  ): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(recordId).url)
 
     logger.error(s"Unable to create Request Advice.  Missing pages: $errorMessages")
+    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
@@ -78,8 +87,11 @@ class CyaRequestAdviceController @Inject() (
           auditService.auditRequestAdvice(request.affinityGroup, model)
           accreditationConnector
             .submitRequestAccreditation(model)
-            .map(_ => Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url))
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+            .map { _ =>
+              dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+              Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
+            }
+        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }
   }
 }
