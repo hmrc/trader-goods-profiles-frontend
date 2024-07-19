@@ -67,7 +67,7 @@ class CyaRequestAdviceController @Inject() (
 
     val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(recordId).url)
 
-    logger.warn(s"Unable to create Request Advice.  Missing pages: $errorMessages")
+    logger.error(s"Unable to create Request Advice.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 

@@ -96,7 +96,7 @@ class CyaCreateRecordController @Inject() (
 
     val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
 
-    logger.warn(s"Unable to create Goods Record.  Missing pages: $errorMessages")
+    logger.error(s"Unable to create Goods Record.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }
