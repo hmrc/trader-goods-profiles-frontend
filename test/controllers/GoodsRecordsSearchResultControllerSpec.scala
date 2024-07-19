@@ -272,8 +272,16 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
       ) thenReturn Future
         .successful(emptyResultResponse)
 
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        Seq(Country("EC", "Ecuador"))
+      )
+
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
         .build()
 
       running(application) {
