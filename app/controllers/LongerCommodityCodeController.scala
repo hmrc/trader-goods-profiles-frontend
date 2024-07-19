@@ -19,11 +19,11 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-import models.Mode
+import models.{CheckMode, Mode}
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.{CountryOfOriginPage, HasCorrectGoodsCommodityCodeUpdatePage, LongerCommodityCodePage}
+import pages.{CountryOfOriginPage, HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -52,15 +52,12 @@ class LongerCommodityCodeController @Inject() (
     with I18nSupport {
 
   private val form = formProvider()
+  private val validLength = 6
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val validLength = 6
       val previousAnswerOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
-      val shortComcodeOpt =
-        request.userAnswers.get(RecordCategorisationsQuery)
-          .flatMap(_.records.get(recordId))
-          .flatMap(_.originalCommodityCode.map(_.reverse.dropWhile(_ == '0').reverse.padTo(validLength, "0").mkString))
+      val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request, validLength)
       val preparedForm = previousAnswerOpt.map(answer => form.fill(answer)).getOrElse(form)
 
       shortComcodeOpt match {
@@ -73,25 +70,22 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val categorisationInfoOpt = request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
 
-      val originalComcodeOpt = categorisationInfoOpt.flatMap(_.originalCommodityCode)
-      val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
+      val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request, validLength)
+      val currentlyCategorisedOpt =
+        request.userAnswers.get(RecordCategorisationsQuery)
+          .flatMap(_.records.get(recordId))
+          .map(_.commodityCode.padTo(validLength, "0").mkString)
 
-      originalComcodeOpt match {
-        case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
-          val shortCode = commodityCodeSansTrailingZeros(shortCommodity)
+      shortComcodeOpt match {
+        case Some(shortComcode) if shortComcode.length == validLength =>
           form
             .bindFromRequest()
             .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId))),
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortComcode, recordId))),
               value => {
-                val longCommodityCode   = s"$shortCode$value"
-                val shouldRedirectToCya = latestComcodeOpt.exists(latest =>
-                  shortCode.concat(value) == latest &&
-                    categorisationInfoOpt.exists(_.latestDoesNotMatchOriginal)
-                )
-
+                val longCommodityCode = (shortComcode + value).padTo(validLength, "0").mkString
+                val shouldRedirectToCya = currentlyCategorisedOpt.contains(longCommodityCode) && mode == CheckMode
                 if (shouldRedirectToCya) {
                   Future.successful(
                     Redirect(
@@ -100,13 +94,20 @@ class LongerCommodityCodeController @Inject() (
                     )
                   )
                 } else {
-                  updateAnswersAndProceedWithJourney(mode, recordId, value, longCommodityCode, shortCode)
+                  updateAnswersAndProceedWithJourney(mode, recordId, value, longCommodityCode, shortComcode)
                 }
               }
             )
-        case _                                                                                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+        case _ =>
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
     }
+
+  private def getShortCommodityCodeOpt(recordId: String, request: DataRequest[AnyContent], validLength: Int): Option[String] = {
+    request.userAnswers.get(RecordCategorisationsQuery)
+      .flatMap(_.records.get(recordId))
+      .flatMap(_.originalCommodityCode.map(_.reverse.dropWhile(_ == "0").reverse.padTo(validLength, "0").mkString))
+  }
 
   private def updateAnswersAndProceedWithJourney(
     mode: Mode,
@@ -126,7 +127,7 @@ class LongerCommodityCodeController @Inject() (
                                    Some(recordId)
                                  )
       updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-      cleansedAnswers         <- Future.fromTry(updatedAnswers.remove(HasCorrectGoodsCommodityCodeUpdatePage(recordId)))
+      cleansedAnswers         <- Future.fromTry(updatedAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId)))
       updatedAnswersWithQuery <- Future.fromTry(cleansedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery))).recover {
@@ -138,15 +139,5 @@ class LongerCommodityCodeController @Inject() (
   }
 
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
-
-  private def commodityCodeSansTrailingZeros(commodityCode: String): String = {
-    val codeNoZeros = commodityCode.reverse.dropWhile(x => x == '0').reverse
-
-    if (codeNoZeros.length >= 6) {
-      codeNoZeros
-    } else {
-      codeNoZeros + "0".repeat(6 - codeNoZeros.length)
-    }
-  }
 
 }
