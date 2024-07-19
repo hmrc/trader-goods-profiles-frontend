@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package forms
+package viewmodels
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import models.RichString
-import play.api.data.Form
+import play.api.i18n.Messages
+import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
-class GoodsDescriptionFormProvider @Inject() extends Mappings {
+case class AssessmentCyaKey(listItems: Seq[String])(implicit messages: Messages) {
+  def content: HtmlContent = {
+    val listContent = listItems.map { item =>
+      s"<li>$item</li>"
+    }.mkString
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> adaptedText("goodsDescription.error.required")(_.removeDoubleSpaces())
-        .verifying(maxLength(512, "goodsDescription.error.length"))
+    HtmlContent(
+      Html(
+        s"""
+        <p class='govuk-body'>
+          ${messages("assessment.question")}
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+          $listContent
+        </ul>
+      """
+      )
     )
+  }
 }

@@ -29,6 +29,7 @@ import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
@@ -68,11 +69,12 @@ class CategoryGuidanceController @Inject() (
                     .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
+                        .removingFromSession(dataUpdated, pageUpdated)
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
             case Some(NoRedirectScenario)                            =>
-              Future.successful(Ok(view(recordId)))
+              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated))
           }
         }
         .recover { e =>

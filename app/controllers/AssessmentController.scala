@@ -29,7 +29,6 @@ import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.AssessmentViewModel
 import views.html.AssessmentView
 
 import javax.inject.Inject
@@ -58,21 +57,15 @@ class AssessmentController @Inject() (
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
         recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
         categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
+        listItems                       = categorisationInfo.categoryAssessments(index).getExemptionListItems
+        commodityCode                   = categorisationInfo.commodityCode
+        exemptions                      = categorisationInfo.categoryAssessments(index).exemptions
+        form                            = formProvider(exemptions.size)
+        preparedForm                    = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
+                                            case Some(value) => form.fill(value)
+                                            case None        => form
+                                          }
       } yield {
-        val exemptions   = categorisationInfo.categoryAssessments(index).exemptions
-        val form         = formProvider(exemptions.map(_.id))
-        val preparedForm = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
-          case Some(value) => form.fill(value)
-          case None        => form
-        }
-        val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-
-        val viewModel = AssessmentViewModel(
-          commodityCode = categorisationInfo.commodityCode,
-          numberOfThisAssessment = index + 1,
-          numberOfAssessments = categorisationInfo.categoryAssessments.size,
-          radioOptions = radioOptions
-        )
         val areWeRecategorising = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
 
         val hasAssessmentBeenAnswered = request.userAnswers.get(AssessmentPage(recordId, index)) match {
@@ -80,7 +73,6 @@ class AssessmentController @Inject() (
           case Some(_) => true
           case None => false
         }
-
         if (exemptions.isEmpty) {
           Future.successful(
             Redirect(
@@ -88,14 +80,15 @@ class AssessmentController @Inject() (
             )
           )
         }
-        else if(areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode) {
+
+        else if (areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode) {
           Future.successful(
             Redirect(
               navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)
             )
           )
         } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, viewModel)))
+          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
         }
       }
 
@@ -110,32 +103,21 @@ class AssessmentController @Inject() (
         for {
           recordQuery        <- request.userAnswers.get(RecordCategorisationsQuery)
           categorisationInfo <- recordQuery.records.get(recordId)
-        } yield {
-
-          val exemptions = categorisationInfo.categoryAssessments(index).exemptions
-          val form       = formProvider(exemptions.map(_.id))
-
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => {
-                val radioOptions = AssessmentAnswer.radioOptions(exemptions)
-                val viewModel    = AssessmentViewModel(
-                  commodityCode = categorisationInfo.commodityCode,
-                  numberOfThisAssessment = index + 1,
-                  numberOfAssessments = categorisationInfo.categoryAssessments.size,
-                  radioOptions = radioOptions
-                )
-
-                Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, viewModel)))
-              },
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
-            )
-        }
+          listItems           = categorisationInfo.categoryAssessments(index).getExemptionListItems
+          commodityCode       = categorisationInfo.commodityCode
+          exemptions          = categorisationInfo.categoryAssessments(index).exemptions
+          form                = formProvider(exemptions.size)
+        } yield form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, commodityCode))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
+          )
       }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
     }
 }

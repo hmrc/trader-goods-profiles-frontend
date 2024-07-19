@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import javax.inject.Inject
-import forms.mappings.Mappings
-import models.RichString
-import play.api.data.Form
+import play.api.libs.json.JsPath
 
-class GoodsDescriptionFormProvider @Inject() extends Mappings {
+case object CountryOfOriginPageJourney extends QuestionPage[String] {
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> adaptedText("goodsDescription.error.required")(_.removeDoubleSpaces())
-        .verifying(maxLength(512, "goodsDescription.error.length"))
-    )
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "countryOfOriginJourney"
 }

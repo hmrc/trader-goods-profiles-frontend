@@ -28,16 +28,20 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val host: String    = configuration.get[String]("host")
   val appName: String = configuration.get[String]("appName")
 
-  private val contactHost                  = configuration.get[String]("contact-frontend.host")
-  private val contactFormServiceIdentifier = "trader-goods-profiles-frontend"
+  private val contactFrontendUrl           = configuration.get[String]("contact-frontend.url")
+  private val contactFormServiceIdentifier = configuration.get[String]("contact-frontend.serviceId")
+  private val playFrontendHost             = configuration.get[String]("play.frontend.host")
 
-  def feedbackUrl(implicit request: RequestHeader): java.net.URL =
-    url"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${host + request.uri}"
+  def feedbackUrl(implicit request: RequestHeader): String = {
+    val backUrl = s"${playFrontendHost + request.uri}"
+    s"$contactFrontendUrl?service=$contactFormServiceIdentifier&backUrl=$backUrl"
+  }
 
   val loginUrl: String           = configuration.get[String]("urls.login")
   val loginContinueUrl: String   = configuration.get[String]("urls.loginContinue")
   val signOutUrl: String         = configuration.get[String]("urls.signOut")
   val signOutContinueUrl: String = configuration.get[String]("urls.signOutContinue")
+  val feedbackFrontend: String   = configuration.get[String]("urls.feedbackFrontend")
 
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/trader-goods-profiles-frontend"

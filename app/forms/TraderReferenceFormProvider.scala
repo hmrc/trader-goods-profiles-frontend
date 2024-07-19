@@ -20,12 +20,13 @@ import javax.inject.Inject
 
 import forms.mappings.Mappings
 import play.api.data.Form
+import models.RichString
 
 class TraderReferenceFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("traderReference.error.required")
+      "value" -> adaptedText("traderReference.error.required")(_.removeDoubleSpaces())
         .verifying(maxLength(512, "traderReference.error.length"))
     )
 }

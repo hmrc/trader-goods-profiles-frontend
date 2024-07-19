@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
+import models.helper.CreateProfileJourney
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -28,7 +29,8 @@ import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.AuditService
+import repositories.SessionRepository
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -176,10 +178,14 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val mockAuditService = mock[AuditService]
           when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -197,8 +203,13 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               verify(mockAuditService, times(1))
                 .auditProfileSetUp(eqTo(expectedPayload), eqTo(AffinityGroup.Individual))(any())
             }
+
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
+            }
           }
         }
+
       }
 
       "when user answers cannot create a trader profile" - {
@@ -209,10 +220,14 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val mockAuditService = mock[AuditService]
           val continueUrl      = RedirectUrl(routes.ProfileSetupController.onSubmit().url)
 
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -226,6 +241,9 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
             withClue("must not try and submit an audit") {
               verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
+            }
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateProfileJourney))
             }
           }
         }
@@ -242,10 +260,14 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         val mockAuditService = mock[AuditService]
         when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AuditService].toInstance(mockAuditService))
             .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
+            .overrides(bind[SessionRepository].toInstance(sessionRepository))
             .build()
 
         running(application) {
@@ -256,6 +278,9 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService, times(1))
               .auditProfileSetUp(any(), any())(any())
+          }
+          withClue("must not cleanse the user answers data when connector fails") {
+            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
           }
 
         }

@@ -31,6 +31,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
 import play.api.inject.bind
 import repositories.SessionRepository
+import utils.SessionData.{dataUpdated, pageUpdated}
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -109,10 +110,18 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SingleRecordView]
-
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(testRecordId, detailsList, categorisationList, adviceList)(
+        contentAsString(result) mustEqual view(
+          testRecordId,
+          detailsList,
+          categorisationList,
+          adviceList,
+          changesMade,
+          changedPage
+        )(
           request,
           messages(application)
         ).toString
