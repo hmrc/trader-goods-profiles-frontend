@@ -217,10 +217,6 @@ createRecordSuccess.p2 = You still need to categorise the goods before you can u
 createRecordSuccess.p3 = You do not have to categorise this record now. You can review the record from your list of goods records and start categorisation later.
 createRecordSuccess.p4.linkText = Categorise goods now
 createRecordSuccess.p5.linkText = Go to homepage
-createRecordSuccess.h2.1 = Tell us what you think
-createRecordSuccess.p6 = This is a new service and we want to know what you think of it.
-createRecordSuccess.p7.linkText = Send us your feedback
-createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvements.
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
@@ -298,10 +294,6 @@ categorisationResult.Standard.panelBody = Your goods are standard goods and elig
 categorisationResult.StandardNoAssessments.panelBody = Your goods are standard goods and eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = These goods are Standard goods and there are no category assessments needed.
 categorisationResult.Category2.panelBody = Your goods are Category 2 goods and are eligible for Simplified Process for Internal Market Movements (SPIMM).
-categorisationResult.tellUsWhatYouThink = Tell us what you think
-categorisationResult.thisIsNewService = This is a new service and we want to know what you think of it.
-categorisationResult.sendUsFeedback = Send us your feedback.
-categorisationResult.improvements = Your thoughts and ideas will help us to make improvements.
 categorisationResult.goToRecord = Go to goods record
 categorisationResult.goToHome = Go to homepage
 
@@ -330,12 +322,8 @@ adviceSuccess.p2.4 = saying the record is wrong, and why
 adviceSuccess.p3 = You can send more information to HMRC about your goods to [email address] with your EORI number.
 adviceSuccess.p4 = Email is not a secure method of communication so do not include any personal details if you email HMRC.
 adviceSuccess.p5 = You should get a response to your request within 5 working days, but it could take longer.
-adviceSuccess.h2.1 = Tell us what you think
-adviceSuccess.p6 = This is a new service and we want to know what you think of it.
-adviceSuccess.p7.linkText = Send us your feedback
-adviceSuccess.p7 = Your thoughts and ideas will help us to make improvements.
-adviceSuccess.p8.linkText = Go to goods record
-adviceSuccess.p9.linkText = Go to homepage
+adviceSuccess.p6.linkText = Go to goods record
+adviceSuccess.p7.linkText = Go to homepage
 
 email.title = What is your email address?
 email.heading = What is your email address?
@@ -525,3 +513,8 @@ sucessBanner.heading = You have changed the {0}
 sucessBanner.p1 = Contact
 sucessBanner.email = example@department.gov.uk
 sucessBanner.p2 = if you think there’s a problem.
+
+feedback.header = Tell us what you think
+feedback.line.1 = This is a new service and we want to know what you think of it.
+feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
+feedback.link = Send us your feedback
