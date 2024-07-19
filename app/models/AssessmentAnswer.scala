@@ -28,7 +28,7 @@ object AssessmentAnswer {
   case object NoExemption extends WithName("none") with AssessmentAnswer
   final case class Exemption(id: String) extends AssessmentAnswer { override val toString: String = id }
 
-  // Unideal but need it as a placeholder when recategorising
+  // Unideal but need it as a placeholder when recategorising - because it stores answers in a JSON array
   case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {

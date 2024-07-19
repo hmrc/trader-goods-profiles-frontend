@@ -18,11 +18,16 @@ package controllers
 
 import controllers.actions._
 import models.Scenario
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.RecategorisingQuery
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategorisationResultView
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
@@ -30,12 +35,19 @@ class CategorisationResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView
-) extends FrontendBaseController
+  view: CategorisationResultView,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
+      if (request.userAnswers.get(RecategorisingQuery(recordId)).isDefined) {
+        for {
+          updatedAnswers <- Future.fromTry(request.userAnswers.remove(RecategorisingQuery(recordId)))
+          _ <- sessionRepository.set(updatedAnswers)
+        } yield updatedAnswers
+      }
       Ok(view(recordId, scenario))
     }
 }

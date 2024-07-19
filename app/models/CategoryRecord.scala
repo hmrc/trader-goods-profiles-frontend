@@ -18,7 +18,7 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple3Parallel
-import models.AssessmentAnswer.NoExemption
+import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
@@ -132,7 +132,7 @@ object CategoryRecord {
   ): Int =
     categorisationInfo.categoryAssessments.zipWithIndex
       .map(assessment => answers.get(AssessmentPage(recordId, assessment._2)))
-      .count(optionalAnswer => optionalAnswer.isDefined && !optionalAnswer.contains(NoExemption))
+      .count(optionalAnswer => optionalAnswer.isDefined && !optionalAnswer.contains(NoExemption) && !optionalAnswer.contains(NotAnsweredYet))
 
   private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
     answers

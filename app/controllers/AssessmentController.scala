@@ -19,12 +19,13 @@ package controllers
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import logging.Logging
-import models.{AssessmentAnswer, Mode}
+import models.AssessmentAnswer.NotAnsweredYet
+import models.{AssessmentAnswer, Mode, NormalMode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecordCategorisationsQuery
+import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -72,11 +73,25 @@ class AssessmentController @Inject() (
           numberOfAssessments = categorisationInfo.categoryAssessments.size,
           radioOptions = radioOptions
         )
+        val areWeRecategorising = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
+
+        val hasAssessmentBeenAnswered = request.userAnswers.get(AssessmentPage(recordId, index)) match {
+          case Some(NotAnsweredYet) => false
+          case Some(_) => true
+          case None => false
+        }
 
         if (exemptions.isEmpty) {
           Future.successful(
             Redirect(
               navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+            )
+          )
+        }
+        else if(areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode) {
+          Future.successful(
+            Redirect(
+              navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)
             )
           )
         } else {

@@ -394,15 +394,18 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
-  "cleanupOldAssessmentAnswersNewFunction" - {
+  "updatingAnswersForRecategorisation" - {
 
     "should return the same user answers if old and new category assessments are the same" in {
-      val result = categorisationService.cleanupOldAssessmentAnswersNewFunction(
-        userAnswersForCategorisation,
-        testRecordId,
-        categoryQuery,
-        categoryQuery
-      )
+      val result = categorisationService
+        .updatingAnswersForRecategorisation(
+          userAnswersForCategorisation,
+          testRecordId,
+          categoryQuery,
+          categoryQuery
+        )
+        .success
+        .value
       result shouldBe userAnswersForCategorisation
     }
 
@@ -414,12 +417,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         1,
         Some("123")
       )
-      val result                     = categorisationService.cleanupOldAssessmentAnswersNewFunction(
-        userAnswersForCategorisation,
-        testRecordId,
-        categoryQuery,
-        newCommodityCategorisation
-      )
+      val result                     = categorisationService
+        .updatingAnswersForRecategorisation(
+          userAnswersForCategorisation,
+          testRecordId,
+          categoryQuery,
+          newCommodityCategorisation
+        )
+        .success
+        .value
       result.get(AssessmentPage(testRecordId, 0)) shouldBe Some(NotAnsweredYet)
       result.get(AssessmentPage(testRecordId, 1)) shouldBe None
       result.get(AssessmentPage(testRecordId, 2)) shouldBe None
@@ -438,12 +444,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         0,
         Some("1234567890")
       )
-      val result                     = categorisationService.cleanupOldAssessmentAnswersNewFunction(
-        userAnswersForCategorisation,
-        testRecordId,
-        categoryQuery,
-        newCommodityCategorisation
-      )
+      val result                     = categorisationService
+        .updatingAnswersForRecategorisation(
+          userAnswersForCategorisation,
+          testRecordId,
+          categoryQuery,
+          newCommodityCategorisation
+        )
+        .success
+        .value
       result.get(AssessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer.Exemption("Y994"))
       result.get(AssessmentPage(testRecordId, 1)) shouldBe Some(AssessmentAnswer.Exemption("NC123"))
       result.get(AssessmentPage(testRecordId, 2)) shouldBe Some(AssessmentAnswer.Exemption("X812"))
@@ -482,12 +491,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         Some("1234567890")
       )
 
-      val newUserAnswers = categorisationService.cleanupOldAssessmentAnswersNewFunction(
-        oldUserAnswers,
-        testRecordId,
-        oldCommodityCategorisation,
-        newCommodityCategorisation
-      )
+      val newUserAnswers = categorisationService
+        .updatingAnswersForRecategorisation(
+          oldUserAnswers,
+          testRecordId,
+          oldCommodityCategorisation,
+          newCommodityCategorisation
+        )
+        .success
+        .value
       newUserAnswers.get(AssessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption("X812"))
       newUserAnswers.get(AssessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer.Exemption("Y994"))
       newUserAnswers.get(AssessmentPage(testRecordId, 2)) mustBe Some(NotAnsweredYet)
@@ -527,12 +539,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         Some("1234567890")
       )
 
-      val newUserAnswers = categorisationService.cleanupOldAssessmentAnswersNewFunction(
-        oldUserAnswers,
-        testRecordId,
-        oldCommodityCategorisation,
-        newCommodityCategorisation
-      )
+      val newUserAnswers = categorisationService
+        .updatingAnswersForRecategorisation(
+          oldUserAnswers,
+          testRecordId,
+          oldCommodityCategorisation,
+          newCommodityCategorisation
+        )
+        .success
+        .value
       newUserAnswers.get(AssessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption("Y994"))
       newUserAnswers.get(AssessmentPage(testRecordId, 1)) mustBe Some(NotAnsweredYet)
       newUserAnswers.get(AssessmentPage(testRecordId, 2)) mustBe None

@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -189,14 +189,14 @@ class HasCorrectGoodsController @Inject() (
       // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
       updatedAnswersCleanedUp <-
         Future
-          .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise, oldCommodityCategorisation, newCommodityCategorisation))
-
-      _ <- sessionRepository.set(updatedAnswersCleanedUp)
+          .fromTry(cleanupOldAssessmentAnswersForRecategorisation(updatedCategorisationAnswers, recordId, needToRecategorise, oldCommodityCategorisation, newCommodityCategorisation))
+      updatedAnswersRecategorising <- Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
+      _ <- sessionRepository.set(updatedAnswersRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
         mode,
-        updatedCategorisationAnswers
+        updatedAnswersRecategorising
       )
     )
 
@@ -206,7 +206,7 @@ class HasCorrectGoodsController @Inject() (
   ) =
     !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments)
 
-  private def cleanupOldAssessmentAnswers(
+  private def cleanupOldAssessmentAnswersForRecategorisation(
     userAnswers: UserAnswers,
     recordId: String,
     needToRecategorise: Boolean,
@@ -214,7 +214,7 @@ class HasCorrectGoodsController @Inject() (
     newCommodityCategorisation: CategorisationInfo
   ): Try[UserAnswers] =
     if (needToRecategorise) {
-      Success(categorisationService.cleanupOldAssessmentAnswersNewFunction(userAnswers, recordId, oldCommodityCategorisation, newCommodityCategorisation))
+      categorisationService.updatingAnswersForRecategorisation(userAnswers, recordId, oldCommodityCategorisation, newCommodityCategorisation)
     } else {
       Success(userAnswers)
     }
