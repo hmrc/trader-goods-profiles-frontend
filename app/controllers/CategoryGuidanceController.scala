@@ -20,6 +20,7 @@ import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import controllers.actions._
 import logging.Logging
 import models.helper.CategorisationUpdate
+import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{Category1, Category1NoExemptions, CategoryRecord, Mode, NiphlsAndOthers, NiphlsOnly, NoRedirectScenario, Scenario, StandardNoAssessments, UserAnswers}
 import navigation.Navigator
@@ -35,6 +36,7 @@ import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -78,10 +80,10 @@ class CategoryGuidanceController @Inject() (
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
 
             case Some(NiphlsOnly) =>
-              whenNiphlsOnly(mode, recordId, request, userAnswers)
+              whenNiphlsOnly(mode, recordId, request, userAnswers, categorisationInfo)
 
             case Some(NiphlsAndOthers) =>
-              whenNiphlsAndOthers(mode, recordId, userAnswers)
+              whenNiphlsAndOthers(mode, recordId, userAnswers, categorisationInfo)
 
             case Some(NoRedirectScenario) if areWeRecategorising =>
               Future.successful(
@@ -100,18 +102,32 @@ class CategoryGuidanceController @Inject() (
         }
     }
 
-  private def whenNiphlsOnly(mode: Mode, recordId: String, request: DataRequest[AnyContent], userAnswers: UserAnswers)(
-    implicit hc: HeaderCarrier
+  private def whenNiphlsOnly(
+    mode: Mode,
+    recordId: String,
+    request: DataRequest[AnyContent],
+    userAnswers: UserAnswers,
+    categorisationInfo: Option[CategorisationInfo]
+  )(implicit
+    hc: HeaderCarrier
   ) =
     for {
-      traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
-      categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, traderProfile)
-      _             <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+      traderProfile      <- traderProfileConnector.getTraderProfile(request.eori)
+      categorisationInfo <- Future.fromTry(Try(categorisationInfo.get))
+      categoryRecord      =
+        CategoryRecord
+          .buildForNiphls(request.eori, recordId, traderProfile, categorisationInfo.categoryAssessments.size)
+      _                  <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
     } yield Redirect(
       navigator.nextPage(CategoryGuidancePage(recordId, Some(Scenario.getScenario(categoryRecord))), mode, userAnswers)
     )
 
-  private def whenNiphlsAndOthers(mode: Mode, recordId: String, userAnswers: UserAnswers)(implicit
+  private def whenNiphlsAndOthers(
+    mode: Mode,
+    recordId: String,
+    userAnswers: UserAnswers,
+    categorisationInfo: Option[CategorisationInfo]
+  )(implicit
     hc: HeaderCarrier,
     request: DataRequest[_]
   ) = {
@@ -122,10 +138,11 @@ class CategoryGuidanceController @Inject() (
         Future.successful(Ok(view(mode, recordId)))
       } else {
         // User doesn't have NIPHLs so no point asking them anything
-        val categoryRecord = CategoryRecord.buildForNiphls(request.eori, recordId, profile)
-
         for {
-          _ <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+          categorisationInfo <- Future.fromTry(Try(categorisationInfo.get))
+          categoryRecord      =
+            CategoryRecord.buildForNiphls(request.eori, recordId, profile, categorisationInfo.categoryAssessments.size)
+          _                  <- goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
         } yield Redirect(navigator.nextPage(CategoryGuidancePage(recordId, Some(Category1)), mode, userAnswers))
       }
     }

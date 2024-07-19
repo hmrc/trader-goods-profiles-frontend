@@ -43,9 +43,9 @@ class CategorisationService @Inject() (
     (for {
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       recordCategorisations   =
-        request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+        request.userAnswers.get(RecordCategorisationsQuery)
       recategorising          = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
-    } yield recordCategorisations.records.get(recordId) match {
+    } yield recordCategorisations.flatMap(_.records.get(recordId)) match {
       case Some(catInfo) =>
         if (catInfo.commodityCode == getGoodsRecordResponse.comcode || recategorising) {
           Future.successful(request.userAnswers)
@@ -72,7 +72,7 @@ class CategorisationService @Inject() (
   private def updateCategorisationDetails(
     request: DataRequest[_],
     recordId: String,
-    recordCategorisations: RecordCategorisations,
+    recordCategorisations: Option[RecordCategorisations],
     commodityCode: String,
     countryOfOrigin: String
   )(implicit hc: HeaderCarrier) =
@@ -83,20 +83,24 @@ class CategorisationService @Inject() (
                                    request.affinityGroup,
                                    Some(recordId),
                                    countryOfOrigin,
-                                   LocalDate.now() //TODO where does DateOfTrade come from??
+                                   LocalDate.now()
                                  )
       originalCommodityCodeOpt =
-        recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
+        recordCategorisations.flatMap(_.records.get(recordId)).flatMap(_.originalCommodityCode)
       originalCommodityCode    = originalCommodityCodeOpt.getOrElse(commodityCode)
       categorisationInfo      <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
                                    case Some(categorisationInfo) => Future.successful(categorisationInfo)
                                    case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
                                  }
+      newRecordCategorisations = recordCategorisations match {
+                                   case Some(x) => x.copy(records = x.records + (recordId -> categorisationInfo))
+                                   case _       => RecordCategorisations(Map(recordId -> categorisationInfo))
+                                 }
       updatedAnswers          <-
         Future.fromTry(
           request.userAnswers.set(
             RecordCategorisationsQuery,
-            recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
+            newRecordCategorisations
           )
         )
       _                       <- sessionRepository.set(updatedAnswers)
@@ -112,7 +116,7 @@ class CategorisationService @Inject() (
       getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
       newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
       recordCategorisations   =
-        request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+        request.userAnswers.get(RecordCategorisationsQuery)
     } yield updateCategorisationDetails(
       request,
       recordId,

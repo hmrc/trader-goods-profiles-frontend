@@ -18,6 +18,7 @@ package models
 
 import models.ott.CategorisationInfo
 import play.api.mvc.JavascriptLiteral
+import utils.Constants.{Category1AsInt, Category2AsInt, StandardAsInt}
 
 sealed trait Scenario
 
@@ -38,7 +39,7 @@ object Scenario {
     val hasCategoryAssessments: Boolean =
       categorisationInfo.categoryAssessments.nonEmpty
 
-    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.category == 1)
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory1)
 
     val hasCategory1Assessments: Boolean =
       category1Assessments.nonEmpty
@@ -70,9 +71,9 @@ object Scenario {
 
   def getScenario(goodsRecord: CategoryRecord): Scenario =
     goodsRecord.category match {
-      case 1 => Category1
-      case 2 => Category2
-      case 3 => Standard
+      case Category1AsInt => Category1
+      case Category2AsInt => Category2
+      case StandardAsInt  => Standard
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {

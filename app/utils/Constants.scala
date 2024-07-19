@@ -20,4 +20,8 @@ case object Constants {
   val firstAssessmentIndex: Int = 0
 
   val niphlsAssessment = "WFE012"
+
+  val Category1AsInt: Int = 1
+  val Category2AsInt: Int = 2
+  val StandardAsInt: Int  = 3
 }

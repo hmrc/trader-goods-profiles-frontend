@@ -37,7 +37,7 @@ final case class CategorisationInfo(
   }
 
   def isNiphls: Boolean = categoryAssessments.exists(_.isNiphlsAnswer) &&
-    categoryAssessments.count(_.category == 2) == 1 &&
+    categoryAssessments.count(_.isCategory2) == 1 &&
     categoryAssessments.exists(_.isEmptyCat2Assessment)
 
 }

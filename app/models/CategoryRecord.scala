@@ -23,6 +23,7 @@ import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
 import queries.RecordCategorisationsQuery
+import utils.Constants.{Category1AsInt, Category2AsInt, StandardAsInt}
 
 final case class CategoryRecord(
   eori: String,
@@ -57,22 +58,22 @@ object CategoryRecord {
       )
     )
 
-  def buildForNiphls(eori: String, recordId: String, traderProfile: TraderProfile): CategoryRecord = {
+  def buildForNiphls(
+    eori: String,
+    recordId: String,
+    traderProfile: TraderProfile,
+    assessmentCount: Int
+  ): CategoryRecord = {
+
     val category = if (traderProfile.niphlNumber.isDefined) {
-      Category2
+      Category2AsInt
     } else {
-      Category1
+      Category1AsInt
     }
 
-    val categoryAsNumber = if (category == Category1) CATEGORY_1 else CATEGORY_2
-
-    CategoryRecord(eori, recordId, categoryAsNumber, 1)
+    CategoryRecord(eori, recordId, category, assessmentCount)
 
   }
-
-  private val CATEGORY_1 = 1
-  private val CATEGORY_2 = 2
-  private val STANDARD   = 3
 
   private case class GetCategoryReturn(category: Int, categoryAssessmentsWithExemptions: Int)
 
@@ -97,19 +98,19 @@ object CategoryRecord {
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
   ): Int = {
-    val category2AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 2)
+    val category2AssessmentsCount = categorisationInfo.categoryAssessments.count(_.isCategory2)
     if (category2AssessmentsCount > 0) {
       answers.getPageValue(AssessmentPage(recordId, categorisationInfo.categoryAssessments.length - 1)) match {
-        case Right(AssessmentAnswer.NoExemption) => CATEGORY_2
-        case Right(_)                            => STANDARD
-        case _                                   => CATEGORY_2
+        case Right(AssessmentAnswer.NoExemption) => Category2AsInt
+        case Right(_)                            => StandardAsInt
+        case _                                   => Category2AsInt
       }
     } else {
-      val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 1)
+      val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.isCategory1)
       if (category1AssessmentsCount != 0 && category2AssessmentsCount == 0) {
-        CATEGORY_2
+        Category2AsInt
       } else {
-        STANDARD
+        StandardAsInt
       }
     }
   }
@@ -119,14 +120,14 @@ object CategoryRecord {
     answers: UserAnswers,
     categorisationInfo: CategorisationInfo
   ): Int = {
-    val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 1)
+    val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.isCategory1)
     if (category1AssessmentsCount > 0) {
       answers.getPageValue(
         AssessmentPage(recordId, category1AssessmentsCount - 1)
       ) match {
-        case Right(AssessmentAnswer.NoExemption) => CATEGORY_1
+        case Right(AssessmentAnswer.NoExemption) => Category1AsInt
         case Right(_)                            => chooseCategory2Or3(recordId, answers, categorisationInfo)
-        case _                                   => CATEGORY_1
+        case _                                   => Category1AsInt
       }
     } else {
       chooseCategory2Or3(recordId, answers, categorisationInfo)

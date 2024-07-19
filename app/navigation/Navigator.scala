@@ -23,7 +23,7 @@ import pages._
 import play.api.mvc.Call
 import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.firstAssessmentIndex
+import utils.Constants.{Category2AsInt, firstAssessmentIndex}
 
 import javax.inject.{Inject, Singleton}
 import scala.util.Try
@@ -413,13 +413,13 @@ class Navigator @Inject() () {
           }
         case AssessmentAnswer.NoExemption  =>
           record.categoryAssessments(assessmentPage.index).category match {
-            case 2
+            case Category2AsInt
                 if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
                   record.descendantCount != 0 =>
               routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
-            case 2 if record.measurementUnit.isDefined =>
+            case Category2AsInt if record.measurementUnit.isDefined =>
               routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-            case _                                     =>
+            case _                                                  =>
               routes.CyaCategorisationController.onPageLoad(recordId)
           }
       }
