@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data
-import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}

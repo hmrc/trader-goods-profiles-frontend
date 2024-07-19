@@ -21,18 +21,18 @@ import utils.SessionData._
 sealed trait Journey
 
 case object CreateProfileJourney extends Journey {
-  val pages: Seq[String]        = Seq(ukimsNumber, hasNirms, hasNiphl, nirmsNumber, niphlNumber)
+  val pages: Seq[String]        = Seq(ukimsNumberPage, hasNirmsPage, hasNiphlPage, nirmsNumberPage, niphlNumberPage)
   override def toString: String = "CreateProfile"
 }
 case object CreateRecordJourney extends Journey {
   val pages: Seq[String]        =
     Seq(
-      traderReference,
-      useTraderReference,
-      goodsDescription,
-      countryOfOrigin,
-      commodityCode,
-      hasCorrectGoods
+      traderReferencePage,
+      useTraderReferencePage,
+      goodsDescriptionPage,
+      countryOfOriginPage,
+      commodityCodePage,
+      hasCorrectGoodsPage
     )
   override def toString: String = "CreateRecord"
 }
@@ -44,18 +44,18 @@ case object UpdateRecordJourney extends Journey {
 case object CategorisationJourney extends Journey {
   val pages: Seq[String]        =
     Seq(
-      assessments,
-      hasSupplementaryUnit,
-      supplementaryUnit,
-      longerCommodityCode
+      assessmentsPage,
+      hasSupplementaryUnitPage,
+      supplementaryUnitPage,
+      longerCommodityCodePage
     )
   override def toString: String = "Categorisation"
 }
 case object RequestAdviceJourney extends Journey {
   val pages: Seq[String]        =
     Seq(
-      name,
-      email
+      namePage,
+      emailPage
     )
   override def toString: String = "RequestAdvice"
 }
