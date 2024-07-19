@@ -56,31 +56,50 @@ class LongerCommodityCodeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val categorisationInfoOpt: Option[CategorisationInfo] =
-        request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
+      val validLength = 6
+      val previousAnswerOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
+      val shortComcodeOpt =
+        request.userAnswers.get(RecordCategorisationsQuery)
+          .flatMap(_.records.get(recordId))
+          .flatMap(_.originalCommodityCode.map(_.reverse.dropWhile(x => x == '0').reverse.padTo(validLength, "0").mkString))
+      val preparedForm = previousAnswerOpt.map(answer => form.fill(answer)).getOrElse(form)
 
-      val originalComcodeOpt = categorisationInfoOpt.flatMap(_.originalCommodityCode)
-      val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
-
-      val answerToFillFormWith = for {
-        originalCode <- originalComcodeOpt
-        latestCode   <- latestComcodeOpt
-      } yield latestCode.drop(originalCode.length)
-
-      val preparedForm = (categorisationInfoOpt, answerToFillFormWith) match {
-        case (Some(categorisationInfo), Some(answerToFillFormWith)) if categorisationInfo.latestDoesNotMatchOriginal =>
-          form.fill(answerToFillFormWith)
-        case _                                                                                                       =>
-          form
-      }
-
-      originalComcodeOpt match {
-        case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
-          Ok(view(preparedForm, mode, commodityCodeSansTrailingZeros(shortCommodity), recordId))
-        case _                                                                                  =>
+      shortComcodeOpt match {
+        case Some(shortComcode) if shortComcode.length == validLength =>
+          Ok(view(preparedForm, mode, shortComcode, recordId))
+        case _ =>
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
+
+
+//  def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+//    implicit request =>
+//      val categorisationInfoOpt: Option[CategorisationInfo] =
+//        request.userAnswers.get(RecordCategorisationsQuery).flatMap(_.records.get(recordId))
+//
+//      val originalComcodeOpt = categorisationInfoOpt.flatMap(_.originalCommodityCode)
+//      val latestComcodeOpt   = categorisationInfoOpt.map(_.commodityCode)
+//
+//      val answerToFillFormWith = for {
+//        originalCode <- originalComcodeOpt
+//        latestCode   <- latestComcodeOpt
+//      } yield latestCode.drop(originalCode.length)
+//
+//      val preparedForm = (categorisationInfoOpt, answerToFillFormWith) match {
+//        case (Some(categorisationInfo), Some(answerToFillFormWith)) if categorisationInfo.latestDoesNotMatchOriginal =>
+//          form.fill(answerToFillFormWith)
+//        case _                                                                                                       =>
+//          form
+//      }
+//
+//      originalComcodeOpt match {
+//        case Some(shortCommodity) if commodityCodeSansTrailingZeros(shortCommodity).length == 6 =>
+//          Ok(view(preparedForm, mode, commodityCodeSansTrailingZeros(shortCommodity), recordId))
+//        case _                                                                                  =>
+//          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+//      }
+//  }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
