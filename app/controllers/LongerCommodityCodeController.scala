@@ -23,7 +23,7 @@ import models.{CheckMode, Mode}
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.{CountryOfOriginPage, HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
+import pages.{CountryOfOriginPageJourney, HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -120,7 +120,7 @@ class LongerCommodityCodeController @Inject() (
     shortCode: String,
     shouldRedirect: Boolean
   )(implicit request: DataRequest[AnyContent]) = {
-    val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
+    val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPageJourney).get
     (for {
       validCommodityCode      <- ottConnector.getCommodityCode(
                                    longCommodityCode,

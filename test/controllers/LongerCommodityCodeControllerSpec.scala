@@ -26,7 +26,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.{atMostOnce, never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CountryOfOriginPage, LongerCommodityCodePage}
+import pages.{CountryOfOriginPageJourney, LongerCommodityCodePage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -153,7 +153,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(LongerCommodityCodePage(testRecordId), "1234")
         .success
         .value
-        .set(CountryOfOriginPage, "DE")
+        .set(CountryOfOriginPageJourney, "DE")
         .success
         .value
 
@@ -207,7 +207,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
-        .set(CountryOfOriginPage, "CX")
+        .set(CountryOfOriginPageJourney, "CX")
         .success
         .value
 
@@ -288,7 +288,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         .set(LongerCommodityCodePage(testRecordId), "answer")
         .success
         .value
-        .set(CountryOfOriginPage, "CX")
+        .set(CountryOfOriginPageJourney, "CX")
         .success
         .value
 

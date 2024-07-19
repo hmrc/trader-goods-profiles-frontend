@@ -22,7 +22,7 @@ import forms.CountryOfOriginFormProvider
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
+import pages.{CountryOfOriginPage, CountryOfOriginPageJourney, CountryOfOriginUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import queries.CountriesQuery
@@ -97,8 +97,9 @@ class CountryOfOriginController @Inject() (
           ),
         value =>
           for {
-            updatedAnswers <- Future.fromTry(userAnswers.set(CountryOfOriginPage, value))
-            _              <- sessionRepository.set(updatedAnswers)
+            updatedAnswers                    <- Future.fromTry(userAnswers.set(CountryOfOriginPage, value))
+            updatedAnswersWithCountryOfOrigin <- Future.fromTry(updatedAnswers.set(CountryOfOriginPageJourney, value))
+            _                                 <- sessionRepository.set(updatedAnswersWithCountryOfOrigin)
           } yield Redirect(navigator.nextPage(CountryOfOriginPage, mode, updatedAnswers))
       )
   }
