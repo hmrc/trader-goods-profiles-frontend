@@ -24,7 +24,6 @@ import models.ott.response._
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import models.{AssessmentAnswer, RecordCategorisations}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach

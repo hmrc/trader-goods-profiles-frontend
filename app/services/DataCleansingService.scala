@@ -16,27 +16,14 @@
 
 package services
 
-import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
-import factories.AuditEventFactory
-import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CreateProfileJourney, CreateRecordJourney, Journey, UpdateRecordJourney, UpdateSection}
-import models.ott.response.OttResponse
-import models.{Commodity, GoodsRecord, TraderProfile, UserAnswers}
-import org.apache.pekko.Done
-import pages.UseTraderReferencePage
+import models.helper.Journey
 import play.api.Logging
 import repositories.SessionRepository
-import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
-import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCleansingService @Inject() (sessionRepository: SessionRepository)(implicit
-  ec: ExecutionContext
-) extends Logging {
+class DataCleansingService @Inject() (sessionRepository: SessionRepository) extends Logging {
 
   def deleteMongoData(id: String, journey: Journey): Future[Boolean] =
     sessionRepository.clearData(id, journey)

@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.helper.{CreateProfileJourney, CreateRecordJourney}
+import models.helper.CreateRecordJourney
 import models.router.responses.CreateGoodsRecordResponse
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done

@@ -19,7 +19,6 @@ package models
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 
 class ScenarioSpec extends SpecBase {
 
