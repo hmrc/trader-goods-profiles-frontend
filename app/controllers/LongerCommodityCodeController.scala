@@ -87,16 +87,7 @@ class LongerCommodityCodeController @Inject() (
               value => {
                 val longCommodityCode = (shortComcode + value).padTo(maxLength, "0").mkString
                 val shouldRedirectToCya = currentlyCategorisedOpt.contains(longCommodityCode) && mode == CheckMode
-                if (shouldRedirectToCya) {
-                  Future.successful(
-                    Redirect(
-                      navigator
-                        .nextPage(LongerCommodityCodePage(recordId, shouldRedirectToCya), mode, request.userAnswers)
-                    )
-                  )
-                } else {
-                  updateAnswersAndProceedWithJourney(mode, recordId, value, longCommodityCode, shortComcode)
-                }
+                updateAnswersAndProceedWithJourney(mode, recordId, value, longCommodityCode, shortComcode, shouldRedirectToCya)
               }
             )
         case _ =>
@@ -115,7 +106,8 @@ class LongerCommodityCodeController @Inject() (
     recordId: String,
     value: String,
     longCommodityCode: String,
-    shortCode: String
+    shortCode: String,
+    shouldRedirect: Boolean
   )(implicit request: DataRequest[AnyContent]) = {
     val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
     (for {
@@ -131,7 +123,7 @@ class LongerCommodityCodeController @Inject() (
       cleansedAnswers         <- Future.fromTry(updatedAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId)))
       updatedAnswersWithQuery <- Future.fromTry(cleansedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
-    } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery))).recover {
+    } yield Redirect(navigator.nextPage(LongerCommodityCodePage(recordId, shouldRedirectToCya = shouldRedirect), mode, updatedAnswersWithQuery))).recover {
       case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
         val formWithApiErrors =
           form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
