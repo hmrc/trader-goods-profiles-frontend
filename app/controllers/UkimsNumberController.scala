@@ -19,17 +19,17 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.UkimsNumberFormProvider
-
-import javax.inject.Inject
 import models.{Mode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsNumberView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 
@@ -44,7 +44,8 @@ class UkimsNumberController @Inject() (
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: UkimsNumberView
+  view: UkimsNumberView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -102,6 +103,9 @@ class UkimsNumberController @Inject() (
                   } else {
                     val newTraderProfile =
                       TraderProfile(request.eori, value, traderProfile.nirmsNumber, traderProfile.niphlNumber)
+
+                    auditService.auditMaintainProfile(traderProfile, newTraderProfile, request.affinityGroup)
+
                     traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori).map { _ =>
                       Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
                     }
