@@ -137,7 +137,7 @@ class CyaCategorisationController @Inject() (
 
     val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
-    logger.warn(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
+    logger.error(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
