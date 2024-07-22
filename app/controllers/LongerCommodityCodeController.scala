@@ -51,9 +51,9 @@ class LongerCommodityCodeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form        = formProvider()
-  private val validLength = 6
-  private val maxLength   = 10
+  private val form           = formProvider()
+  private val validLength    = 6
+  private val maxValidLength = 10
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -76,7 +76,7 @@ class LongerCommodityCodeController @Inject() (
         request.userAnswers
           .get(RecordCategorisationsQuery)
           .flatMap(_.records.get(recordId))
-          .map(_.commodityCode.padTo(maxLength, "0").mkString)
+          .map(_.commodityCode.padTo(maxValidLength, "0").mkString)
 
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == validLength =>
@@ -85,7 +85,7 @@ class LongerCommodityCodeController @Inject() (
             .fold(
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortComcode, recordId))),
               value => {
-                val longCommodityCode   = (shortComcode + value).padTo(maxLength, "0").mkString
+                val longCommodityCode   = (shortComcode + value).padTo(maxValidLength, "0").mkString
                 val shouldRedirectToCya = currentlyCategorisedOpt.contains(longCommodityCode) && mode == CheckMode
                 updateAnswersAndProceedWithJourney(
                   mode,
