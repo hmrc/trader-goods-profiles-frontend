@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
-import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination, UserAnswers}
@@ -39,8 +38,6 @@ import scala.concurrent.Future
 
 class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider                   = new GoodsRecordsFormProvider()
-  private val form                   = formProvider()
   private val currentPage            = firstPage
   private val totalRecords           = 23
   private val numberOfPages          = 3

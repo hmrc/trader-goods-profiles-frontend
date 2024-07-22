@@ -24,7 +24,6 @@ import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
@@ -118,7 +117,7 @@ class GoodsRecordsController @Inject() (
                   ),
                   page
                 )
-              ).removingFromSession(dataUpdated, pageUpdated)
+              )
             },
           value =>
             for {
