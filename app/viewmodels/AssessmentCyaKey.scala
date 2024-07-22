@@ -20,22 +20,25 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
-case class AssessmentCyaKey(codes: Seq[String], descriptions: Seq[String], assessmentNumber: String)(implicit messages: Messages) {
+case class AssessmentCyaKey(codes: Seq[String], descriptions: Seq[String], assessmentNumber: String)(implicit
+  messages: Messages
+) {
   def content: HtmlContent = {
 
-    val listContent = codes.zip(descriptions).map { item =>
-      s"<li><strong>${item._1}</strong> - ${item._2}</li>"
-    }.mkString
+    val exemptions = codes
+      .zip(descriptions)
+      .map { item =>
+        s"<p class='govuk-body'><strong>${item._1}</strong> - ${item._2}</p>"
+      }
+      .mkString
 
     HtmlContent(
       Html(
         s"""
         <p class='govuk-body'>
-          <strong>${messages("assessment.question", assessmentNumber)}</strong>
+          <strong> ${messages("assessment.heading", assessmentNumber)} </strong>
         </p>
-        <ul class="govuk-list govuk-list--bullet">
-          $listContent
-        </ul>
+        $exemptions
       """
       )
     )
