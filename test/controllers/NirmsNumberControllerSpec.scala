@@ -24,7 +24,7 @@ import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.inject.bind
@@ -32,6 +32,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.NirmsNumberView
 
@@ -212,7 +214,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -225,7 +228,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -241,12 +245,17 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
       "must return OK and the correct view for a GET when HasNirms hasn't been answered when there isn't a nirms number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", None, Some("3"))
+        val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -259,7 +268,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -275,6 +285,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
@@ -282,6 +296,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
+        val mockAuditService = mock[AuditService]
+
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
         )
@@ -294,7 +310,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -310,12 +327,18 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
       "must return OK and the correct view for a GET when HasNirms has been answered when there isn't a nirms number" in {
 
         val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
+
+        val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -329,7 +352,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -345,21 +369,30 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
       "must redirect to Profile for a POST and submit data if value is different from original" in {
         val answer = "RMS-GB-123456"
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
-
-        val userAnswers = emptyUserAnswers
+        val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val updatedTraderProfile = TraderProfile(testEori, "1", Some(answer), Some("3"))
+        val userAnswers          = emptyUserAnswers
           .set(HasNirmsUpdatePage, true)
           .success
           .value
           .set(NirmsNumberUpdatePage, answer)
           .success
           .value
+
+        val mockAuditService = mock[AuditService]
+
+        when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+          .thenReturn(Future.successful(Done))
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -372,7 +405,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -385,8 +419,19 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockTraderProfileConnector, times(1))
-            .submitTraderProfile(eqTo(TraderProfile(testEori, "1", Some(answer), Some("3"))), eqTo(testEori))(any())
+          verify(mockTraderProfileConnector)
+            .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
+
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService)
+              .auditMaintainProfile(
+                eqTo(traderProfile),
+                eqTo(updatedTraderProfile),
+                eqTo(AffinityGroup.Individual)
+              )(
+                any()
+              )
+          }
         }
       }
 
@@ -403,6 +448,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
+        val mockAuditService = mock[AuditService]
+
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -413,7 +460,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -428,6 +476,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
           verify(mockTraderProfileConnector, never())
             .submitTraderProfile(any(), any())(any())
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
@@ -496,6 +548,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
+        val mockAuditService = mock[AuditService]
+
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
@@ -504,7 +558,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -519,6 +574,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
     }

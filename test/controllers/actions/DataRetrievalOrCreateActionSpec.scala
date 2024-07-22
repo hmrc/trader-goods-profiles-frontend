@@ -56,7 +56,7 @@ class DataRetrievalOrCreateActionSpec extends SpecBase with MockitoSugar {
           .callTransform(IdentifierRequest(FakeRequest(), userAnswersId, testEori, AffinityGroup.Individual))
           .futureValue
 
-        verify(sessionRepository, times(1)).set(any())
+        verify(sessionRepository).set(any())
 
         val savedAnswers = captor.getValue
         savedAnswers.id mustEqual userAnswersId

@@ -29,6 +29,7 @@ import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RemoveNirmsView
@@ -46,7 +47,8 @@ class RemoveNirmsController @Inject() (
   formProvider: RemoveNirmsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   traderProfileConnector: TraderProfileConnector,
-  view: RemoveNirmsView
+  view: RemoveNirmsView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -70,6 +72,8 @@ class RemoveNirmsController @Inject() (
                   traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
                     TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
                       case Right(model) =>
+                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+
                         for {
                           _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
                         } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))

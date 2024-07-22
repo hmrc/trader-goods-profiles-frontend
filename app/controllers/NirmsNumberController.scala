@@ -29,6 +29,7 @@ import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsNumberView
@@ -47,7 +48,8 @@ class NirmsNumberController @Inject() (
   traderProfileConnector: TraderProfileConnector,
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
-  view: NirmsNumberView
+  view: NirmsNumberView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -137,6 +139,8 @@ class NirmsNumberController @Inject() (
                   sessionRepository.set(answers).flatMap { _ =>
                     TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
                       case Right(model) =>
+                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+
                         for {
                           _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
                         } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))

@@ -21,7 +21,7 @@ import base.TestConstants.testEori
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -85,7 +85,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
           redirectLocation(result).value mustEqual onwardRoute.url
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditStartCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual))(any())
           }
 
