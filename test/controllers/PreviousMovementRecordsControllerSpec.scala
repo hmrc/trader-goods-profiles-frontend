@@ -21,7 +21,7 @@ import connectors.GoodsRecordConnector
 import models.GoodsRecordsPagination.firstPage
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -56,8 +56,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
-        verify(mockGetGoodsRecordsconnector, times(1)).doRecordsExist(any())(any())
-        verify(mockGetGoodsRecordsconnector, times(1)).getRecordsCount(any())(any())
+        verify(mockGetGoodsRecordsconnector).doRecordsExist(any())(any())
+        verify(mockGetGoodsRecordsconnector).getRecordsCount(any())(any())
       }
     }
 
@@ -80,8 +80,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
-        verify(mockGetGoodsRecordsConnector, times(1)).doRecordsExist(any())(any())
-        verify(mockGetGoodsRecordsConnector, times(1)).getRecordsCount(any())(any())
+        verify(mockGetGoodsRecordsConnector).doRecordsExist(any())(any())
+        verify(mockGetGoodsRecordsConnector).getRecordsCount(any())(any())
 
       }
     }
@@ -105,7 +105,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
-        verify(mockGetGoodsRecordsconnector, times(1)).getRecordsCount(any())(any())
+        verify(mockGetGoodsRecordsconnector).getRecordsCount(any())(any())
       }
     }
 
@@ -133,7 +133,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
 
-        verify(mockGetGoodsRecordsConnector, times(1)).storeAllRecords(any())(any())
+        verify(mockGetGoodsRecordsConnector).storeAllRecords(any())(any())
       }
     }
   }

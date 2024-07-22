@@ -23,7 +23,7 @@ import forms.CommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.data.FormError
@@ -153,7 +153,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          verify(mockOttConnector, times(1))
+          verify(mockOttConnector)
             .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
               any()
             )
@@ -265,7 +265,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
 
-          verify(mockOttConnector, times(1))
+          verify(mockOttConnector)
             .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
               any()
             )

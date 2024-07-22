@@ -24,7 +24,7 @@ import models.GoodsRecordsPagination.firstPage
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -136,7 +136,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockConnector, times(1)).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
+        verify(mockConnector).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
       }
     }
 
@@ -165,7 +165,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-        verify(mockConnector, times(1)).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
+        verify(mockConnector).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
       }
     }
 

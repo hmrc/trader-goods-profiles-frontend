@@ -27,7 +27,7 @@ import models.{GoodsRecordsPagination, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
@@ -270,7 +270,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
