@@ -88,9 +88,9 @@ class CyaCreateRecordController @Inject() (
       case Right(model) =>
         auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
         for {
-          goodsRecordResponse <- goodsRecordConnector.submitGoodsRecord(model)
-          _                   <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(goodsRecordResponse.recordId))
+          recordId <- goodsRecordConnector.submitGoodsRecord(model)
+          _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+        } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(recordId))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
     }
   }

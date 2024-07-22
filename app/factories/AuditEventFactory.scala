@@ -54,6 +54,26 @@ case class AuditEventFactory() {
     )
   }
 
+  def createMaintainProfileEvent(
+    traderProfile: TraderProfile,
+    updatedTraderProfile: TraderProfile,
+    affinityGroup: AffinityGroup
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori"            -> traderProfile.actorId,
+      "affinityGroup"   -> affinityGroup.toString,
+      "previousProfile" -> addUpdatedFieldsOfTraderProfile(traderProfile, updatedTraderProfile),
+      "currentProfile"  -> addUpdatedFieldsOfTraderProfile(updatedTraderProfile, traderProfile)
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "MaintainProfile",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
   def createStartManageGoodsRecordEvent(
     eori: String,
     affinityGroup: AffinityGroup,
@@ -172,14 +192,6 @@ case class AuditEventFactory() {
     )
   }
 
-  private def createSubmitGoodsRecordEvent(auditDetails: Map[String, String])(implicit hc: HeaderCarrier) =
-    DataEvent(
-      auditSource = auditSource,
-      auditType = "SubmitGoodsRecord",
-      tags = hc.toAuditTags(),
-      detail = auditDetails
-    )
-
   def createValidateCommodityCodeEvent(
     auditData: OttAuditData,
     requestDateTime: Instant,
@@ -251,6 +263,30 @@ case class AuditEventFactory() {
       detail = Json.toJson(auditDetails)
     )
   }
+
+  private def createSubmitGoodsRecordEvent(auditDetails: Map[String, String])(implicit hc: HeaderCarrier) =
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "SubmitGoodsRecord",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+
+  private def addUpdatedFieldsOfTraderProfile(
+    traderProfile: TraderProfile,
+    updatedTraderProfile: TraderProfile
+  ): String =
+    if (traderProfile.ukimsNumber != updatedTraderProfile.ukimsNumber) {
+      Json.stringify(Json.obj("UKIMSNumber" -> traderProfile.ukimsNumber))
+    } else if (traderProfile.nirmsNumber != updatedTraderProfile.nirmsNumber) {
+      Json.stringify(
+        Json.toJson(writeOptionalWithAssociatedBooleanFlag("NIRMSRegistered", "NIRMSNumber", traderProfile.nirmsNumber))
+      )
+    } else {
+      Json.stringify(
+        Json.toJson(writeOptionalWithAssociatedBooleanFlag("NIPHLRegistered", "NIPHLNumber", traderProfile.niphlNumber))
+      )
+    }
 
   private def writeOptionalWithAssociatedBooleanFlag(
     booleanFlagDescription: String,

@@ -50,8 +50,8 @@
                     field = form("value"),
                     legend = Legend(content = "removeNiphl.h2", classes = "govuk-visually-hidden"),
                     items = Seq(
-                    RadioItem(content = messages("removeNiphl.yes"), value = Some("true")),
-                    RadioItem(content = messages("removeNiphl.no"), value = Some("false"))
+                    RadioItem(content = messages("removeNiphl.yes"), value = Some("true"), id = Some(s"value")),
+                    RadioItem(content = messages("removeNiphl.no"), value = Some("false"), id = Some(s"value-no"))
                                 )
                                 )
                     )

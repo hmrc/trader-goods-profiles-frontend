@@ -20,7 +20,6 @@ import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.helper.CreateRecordJourney
-import models.router.responses.CreateGoodsRecordResponse
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -175,7 +174,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.submitGoodsRecord(any())(any()))
-            .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
+            .thenReturn(Future.successful("test"))
 
           val mockAuditService  = mock[AuditService]
           when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))

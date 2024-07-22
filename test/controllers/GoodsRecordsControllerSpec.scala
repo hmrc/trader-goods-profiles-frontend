@@ -95,6 +95,11 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
   )
 
+  private val badResponse = GetRecordsResponse(
+    records,
+    GoodsRecordsPagination(totalRecords, currentPage, 0, None, None)
+  )
+
   private val pagination = Pagination(
     items = Option(
       Seq(
@@ -133,9 +138,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
         .successful(totalRecords)
 
-      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
-        .successful(Done)
-
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
         Seq(Country("EC", "Ecuador"))
@@ -169,7 +171,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
-        verify(mockGoodsRecordConnector, times(1)).storeLatestRecords(any())(any())
       }
     }
 
@@ -186,9 +187,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         .successful(response)
       when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
         .successful(totalRecords)
-
-      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
-        .successful(Done)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -255,7 +253,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
-        verify(mockGoodsRecordConnector, times(1)).storeLatestRecords(any())(any())
       }
     }
 
@@ -321,9 +318,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         .successful(response)
       when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
         .successful(response.goodsItemRecords.size)
-
-      when(mockGoodsRecordConnector.storeLatestRecords(eqTo(testEori))(any())) thenReturn Future
-        .successful(Done)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -446,7 +440,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "must redirect to Journey Recovery for a GET if no userAnswers existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 

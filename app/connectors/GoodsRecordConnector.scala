@@ -19,7 +19,7 @@ package connectors
 import config.Service
 import models.{CategoryRecord, GoodsRecord, UpdateGoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
-import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
+import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.NO_CONTENT
@@ -54,9 +54,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def checkGoodsRecordsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/checkRecords"
 
-  private def storeLatestGoodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/storeLatest"
-
   private def getGoodsRecordCountsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
 
@@ -70,13 +67,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
-  ): Future[CreateGoodsRecordResponse] =
+  ): Future[String] =
     httpClient
       .post(createGoodsRecordUrl(goodsRecord.eori))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
-      .map(response => response.json.as[CreateGoodsRecordResponse])
+      .map(response => response.body)
 
   def removeGoodsRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
@@ -159,15 +156,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   )(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .head(storeAllGoodsRecordsUrl(eori))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(_ => Done)
-
-  def storeLatestRecords(
-    eori: String
-  )(implicit hc: HeaderCarrier): Future[Done] =
-    httpClient
-      .head(storeLatestGoodsRecordsUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(_ => Done)
