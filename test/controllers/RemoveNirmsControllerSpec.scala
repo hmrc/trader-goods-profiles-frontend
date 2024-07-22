@@ -144,11 +144,11 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockTraderProfileConnector, times(1))
+        verify(mockTraderProfileConnector)
           .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
 
         withClue("must call the audit connector with the supplied details") {
-          verify(mockAuditService, times(1))
+          verify(mockAuditService)
             .auditMaintainProfile(
               eqTo(traderProfile),
               eqTo(updatedTraderProfile),

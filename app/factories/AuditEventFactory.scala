@@ -60,11 +60,11 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori"                -> traderProfile.actorId,
-      "affinityGroup"       -> affinityGroup.toString
-    ) ++
-      Map("previousProfile" -> addUpdatedFieldsOfTraderProfile(traderProfile, updatedTraderProfile)) ++
-      Map("currentProfile" -> addUpdatedFieldsOfTraderProfile(updatedTraderProfile, traderProfile))
+      "eori"            -> traderProfile.actorId,
+      "affinityGroup"   -> affinityGroup.toString,
+      "previousProfile" -> addUpdatedFieldsOfTraderProfile(traderProfile, updatedTraderProfile),
+      "currentProfile"  -> addUpdatedFieldsOfTraderProfile(updatedTraderProfile, traderProfile)
+    )
 
     DataEvent(
       auditSource = auditSource,
