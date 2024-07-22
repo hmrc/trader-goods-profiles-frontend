@@ -32,8 +32,6 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text

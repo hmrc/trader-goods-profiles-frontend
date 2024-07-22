@@ -17,23 +17,25 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
+import connectors.TraderProfileConnector
 import forms.RemoveNirmsFormProvider
 import models.TraderProfile
+import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import pages.HasNirmsUpdatePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.RemoveNirmsView
-import base.TestConstants.testEori
-import connectors.TraderProfileConnector
-import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
-import pages.HasNirmsUpdatePage
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import views.html.RemoveNirmsView
 
 import scala.concurrent.Future
 
@@ -51,8 +53,12 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
   "RemoveNirms Controller" - {
 
     "must return OK and the correct view for a GET" in {
+      val mockAuditService = mock[AuditService]
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AuditService].toInstance(mockAuditService)
+        )
         .build()
 
       running(application) {
@@ -64,10 +70,15 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form)(request, messages(application)).toString
+
+        withClue("must not try and submit an audit") {
+          verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+        }
       }
     }
 
     "must redirect to the next page when No submitted and not submit" in {
+      val mockAuditService = mock[AuditService]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -78,7 +89,8 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -92,17 +104,25 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
         verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
+
+        withClue("must not try and submit an audit") {
+          verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+        }
       }
     }
 
     "must redirect to the next page when Yes submitted and submit" in {
+      val mockAuditService = mock[AuditService]
+
+      when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+        .thenReturn(Future.successful(Done))
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
 
-      val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
-
+      val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
+      val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
       when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
       val application =
@@ -110,7 +130,8 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -123,8 +144,19 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockTraderProfileConnector, times(1))
-          .submitTraderProfile(eqTo(TraderProfile(testEori, "1", None, Some("3"))), eqTo(testEori))(any())
+        verify(mockTraderProfileConnector)
+          .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
+
+        withClue("must call the audit connector with the supplied details") {
+          verify(mockAuditService)
+            .auditMaintainProfile(
+              eqTo(traderProfile),
+              eqTo(updatedTraderProfile),
+              eqTo(AffinityGroup.Individual)
+            )(
+              any()
+            )
+        }
       }
     }
 
@@ -179,6 +211,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if Trader Profile cannot be built" in {
+      val mockAuditService = mock[AuditService]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -190,7 +223,8 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -206,6 +240,10 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+        withClue("must not try and submit an audit") {
+          verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+        }
       }
     }
   }

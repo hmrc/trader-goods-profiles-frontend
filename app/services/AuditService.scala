@@ -47,6 +47,20 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
+  def auditMaintainProfile(
+    traderProfile: TraderProfile,
+    updatedTraderProfile: TraderProfile,
+    affinityGroup: AffinityGroup
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
+    val event = auditEventFactory.createMaintainProfileEvent(traderProfile, updatedTraderProfile, affinityGroup)
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"MaintainProfile audit event status: $auditResult")
+      Done
+    }
+  }
+
   def auditStartCreateGoodsRecord(eori: String, affinityGroup: AffinityGroup)(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
