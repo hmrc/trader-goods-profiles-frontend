@@ -24,7 +24,7 @@ import models.helper.UpdateRecordJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.{CountryOfOriginPageJourney, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

@@ -26,7 +26,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CountryOfOriginPageJourney, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -216,9 +216,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .set(LongerCommodityCodePage(testRecordId), "answer")
           .success
           .value
-          .set(CountryOfOriginPageJourney, "CX")
-          .success
-          .value
 
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
@@ -302,9 +299,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .success
             .value
             .set(LongerCommodityCodePage(testRecordId), "answer")
-            .success
-            .value
-            .set(CountryOfOriginPageJourney, "CX")
             .success
             .value
 
