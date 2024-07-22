@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination, UserAnswers}
+import models.{Country, GoodsRecordsPagination}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
