@@ -596,6 +596,89 @@ class AuditEventFactorySpec extends SpecBase {
       }
     }
 
+    "create maintain profile event" - {
+
+      "create event on UKIMSNumber change" in {
+
+        val traderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+
+        val updatedTraderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("RMS-GB-123456"), Some("612345"))
+
+        val result =
+          AuditEventFactory().createMaintainProfileEvent(traderProfile, updatedTraderProfile, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "MaintainProfile"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 4
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+        auditDetails("previousProfile") mustBe Json.stringify(
+          Json.obj("UKIMSNumber" -> "XIUKIM47699357400020231115081800")
+        )
+        auditDetails("currentProfile") mustBe Json.stringify(
+          Json.obj("UKIMSNumber" -> "XIUKIM47699357400020231115081801")
+        )
+      }
+
+      "create event on NIRMSNumber change" in {
+
+        val traderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+
+        val updatedTraderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123457"), Some("612345"))
+
+        val result =
+          AuditEventFactory().createMaintainProfileEvent(traderProfile, updatedTraderProfile, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "MaintainProfile"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 4
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+        auditDetails("previousProfile") mustBe Json.stringify(
+          Json.obj("NIRMSRegistered" -> "true", "NIRMSNumber" -> "RMS-GB-123456")
+        )
+        auditDetails("currentProfile") mustBe Json.stringify(
+          Json.obj("NIRMSRegistered" -> "true", "NIRMSNumber" -> "RMS-GB-123457")
+        )
+      }
+
+      "create event on NIPHLNumber change" in {
+
+        val traderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+
+        val updatedTraderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612346"))
+
+        val result =
+          AuditEventFactory().createMaintainProfileEvent(traderProfile, updatedTraderProfile, AffinityGroup.Individual)
+
+        result.auditSource mustBe "trader-goods-profiles-frontend"
+        result.auditType mustBe "MaintainProfile"
+        result.tags.isEmpty mustBe false
+
+        val auditDetails = result.detail
+        auditDetails.size mustBe 4
+        auditDetails("eori") mustBe testEori
+        auditDetails("affinityGroup") mustBe "Individual"
+        auditDetails("previousProfile") mustBe Json.stringify(
+          Json.obj("NIPHLRegistered" -> "true", "NIPHLNumber" -> "612345")
+        )
+        auditDetails("currentProfile") mustBe Json.stringify(
+          Json.obj("NIPHLRegistered" -> "true", "NIPHLNumber" -> "612346")
+        )
+      }
+    }
   }
 
 }

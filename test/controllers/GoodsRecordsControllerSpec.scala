@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination}
+import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -91,11 +91,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val response = GetRecordsResponse(
     records,
     GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
-  )
-
-  private val badResponse = GetRecordsResponse(
-    records,
-    GoodsRecordsPagination(totalRecords, currentPage, 0, None, None)
   )
 
   private val pagination = Pagination(

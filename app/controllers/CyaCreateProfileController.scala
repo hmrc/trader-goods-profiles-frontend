@@ -88,7 +88,7 @@ class CyaCreateProfileController @Inject() (
 
     val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
 
-    logger.warn(s"Unable to create Trader profile.  Missing pages: $errorMessages")
+    logger.error(s"Unable to create Trader profile.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
