@@ -210,7 +210,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate.url
 
-      "must return OK and the correct view for a GET when HasNirms is not false when there is a nirms number" in {
+      "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
@@ -244,7 +244,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must return OK and the correct view for a GET when HasNirms is not false when there isn't a nirms number" in {
+      "must return OK and the correct view for a GET when HasNirms hasn't been answered when there isn't a nirms number" in {
 
         val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
 
@@ -278,10 +278,24 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to Journey Recovery for a GET when HasNirms is false" in {
+      "must return OK and the correct view for a GET when HasNirms has been answered when there is a nirms number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
             .build()
 
         running(application) {
@@ -289,10 +303,48 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+          val view = application.injector.instanceOf[NirmsNumberView]
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("2"), routes.NirmsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must return OK and the correct view for a GET when HasNirms has been answered when there isn't a nirms number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(GET, nirmsNumberRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[NirmsNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 

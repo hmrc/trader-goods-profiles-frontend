@@ -210,7 +210,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val niphlNumberRoute = routes.NiphlNumberController.onPageLoadUpdate.url
 
-      "must return OK and the correct view for a GET when HasNiphl is not false when there is a niphl number" in {
+      "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
@@ -244,9 +244,9 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must return OK and the correct view for a GET when HasNiphl is not false when there isn't a niphl number" in {
+      "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there isn't a niphl number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
+        val traderProfile = TraderProfile(testEori, "1", Some("3"), None)
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -278,10 +278,24 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to Journey Recovery for a GET when HasNiphl is false" in {
+      "must return OK and the correct view for a GET when HasNiphl has been answered when there is a niphl number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
             .build()
 
         running(application) {
@@ -289,10 +303,48 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+          val view = application.injector.instanceOf[NiphlNumberView]
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("3"), routes.NiphlNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must return OK and the correct view for a GET when HasNiphl has been answered when there isn't a niphl number" in {
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 

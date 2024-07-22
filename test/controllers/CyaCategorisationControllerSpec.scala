@@ -31,13 +31,12 @@ import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.LongerCommodityQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
