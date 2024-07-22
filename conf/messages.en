@@ -52,7 +52,8 @@ cyaRequestAdvice.subheading = Contact details
 
 cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your answers
-cyaCategorisation.categorisationHeader = Conditions
+cyaCategorisation.categorisationHeader = Category assessments
+cyaCategorisation.categorisationQuestion = Do you meet any of the following conditions and can you supply the relevant document code on your movements?
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
 
