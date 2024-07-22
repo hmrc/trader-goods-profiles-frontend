@@ -57,9 +57,12 @@ class LongerCommodityCodeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val previousAnswerOpt = request.userAnswers.get(LongerCommodityCodePage(recordId))
-      val shortComcodeOpt   = getShortCommodityCodeOpt(recordId, request, validLength)
-      val preparedForm      = previousAnswerOpt.map(answer => form.fill(answer)).getOrElse(form)
+      val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request, validLength)
+
+      val preparedForm = request.userAnswers.get(LongerCommodityCodePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == validLength =>
