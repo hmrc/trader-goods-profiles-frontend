@@ -424,6 +424,7 @@ singleRecord.warning = Warning
 singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 singleRecord.h2.categorisation = Categorisation
 singleRecord.category.row = Category
+singleRecord.h2.supplementaryUnit = Supplementary Unit
 singleRecord.h2.adviceStatus = Advice status
 singleRecord.adviceStatus.row = Advice received
 singleRecord.goodsProfile.link = Go to goods profile

@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataUpdated, pageUpdated}
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, HasSupplementaryUnitSummary, StatusSummary, SupplementaryUnitSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
@@ -74,21 +74,27 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val categorisationList = SummaryListViewModel(
+        val categorisationList    = SummaryListViewModel(
           rows = Seq(
             CategorySummary.row(record.category.toString, record.recordId)
           )
         )
-
-        val adviceList  = SummaryListViewModel(
+        val supplementaryUnitList = SummaryListViewModel(
+          rows = Seq(
+            HasSupplementaryUnitSummary.row(record.supplementaryUnit.isDefined, recordId),
+            SupplementaryUnitSummary
+              .row(record.supplementaryUnit, record.measurementUnit, request.userAnswers, recordId)
+          ).flatten
+        )
+        val adviceList            = SummaryListViewModel(
           rows = Seq(
             AdviceStatusSummary.row(record.adviceStatus, record.recordId)
           )
         )
-        val changesMade = request.session.get(dataUpdated).contains("true")
-        val changedPage = request.session.get(pageUpdated).getOrElse("")
+        val changesMade           = request.session.get(dataUpdated).contains("true")
+        val changedPage           = request.session.get(pageUpdated).getOrElse("")
 
-        Ok(view(recordId, detailsList, categorisationList, adviceList, changesMade, changedPage))
+        Ok(view(recordId, detailsList, categorisationList, supplementaryUnitList, adviceList, changesMade, changedPage))
       }
   }
 }

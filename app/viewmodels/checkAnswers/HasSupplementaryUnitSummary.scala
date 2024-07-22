@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, NormalMode, UserAnswers}
 import pages.HasSupplementaryUnitPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -39,4 +39,20 @@ object HasSupplementaryUnitSummary {
         )
       )
     }
+
+  def row(value: Boolean, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
+
+    val textValue = if (value) "site.yes" else "site.no"
+    Some(
+      SummaryListRowViewModel(
+        key = "hasSupplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(textValue),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url)
+            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+        )
+      )
+    )
+
+  }
 }

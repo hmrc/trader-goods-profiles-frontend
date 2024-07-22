@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, NormalMode, UserAnswers}
 import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
 import queries.RecordCategorisationsQuery
@@ -40,6 +40,24 @@ object SupplementaryUnitSummary {
         value = ValueViewModel(value),
         actions = Seq(
           ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
+        )
+      )
+    }
+
+  def row(suppValue: Option[Double], measureValue: Option[String], answers: UserAnswers, recordId: String)(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
+    for {
+      suppUnit <- suppValue
+    } yield {
+      val displayValue =
+        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString()
+      SummaryListRowViewModel(
+        key = "supplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(displayValue),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(NormalMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )
