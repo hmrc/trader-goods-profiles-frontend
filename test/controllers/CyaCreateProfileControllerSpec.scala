@@ -30,7 +30,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.{AuditService, DataCleansingService}
+import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -197,15 +197,15 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
-            verify(mockConnector, times(1)).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
+            verify(mockConnector).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditProfileSetUp(eqTo(expectedPayload), eqTo(AffinityGroup.Individual))(any())
             }
 
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
+              verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
             }
           }
         }
@@ -243,7 +243,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
             }
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateProfileJourney))
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateProfileJourney))
             }
           }
         }
@@ -276,7 +276,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             await(route(application, request).value)
           }
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditProfileSetUp(any(), any())(any())
           }
           withClue("must not cleanse the user answers data when connector fails") {

@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.{CheckMode, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.Application
@@ -216,11 +216,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
-              verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
-              verify(mockSessionRepository, times(1)).set(any())
+              verify(mockConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockSessionRepository).set(any())
 
               withClue("must call the audit connector with the supplied details") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishUpdateGoodsRecord(
                     eqTo(testRecordId),
                     eqTo(AffinityGroup.Individual),
@@ -288,7 +288,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditFinishUpdateGoodsRecord(
                   eqTo(testRecordId),
                   eqTo(AffinityGroup.Individual),
@@ -439,10 +439,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
-              verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
 
               withClue("must call the audit connector with the supplied details") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishUpdateGoodsRecord(
                     eqTo(testRecordId),
                     eqTo(AffinityGroup.Individual),
@@ -511,7 +511,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditFinishUpdateGoodsRecord(
                   eqTo(testRecordId),
                   eqTo(AffinityGroup.Individual),
@@ -655,10 +655,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
-              verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
 
               withClue("must call the audit connector with the supplied details") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishUpdateGoodsRecord(
                     eqTo(testRecordId),
                     eqTo(AffinityGroup.Individual),
@@ -724,7 +724,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditFinishUpdateGoodsRecord(
                   eqTo(testRecordId),
                   eqTo(AffinityGroup.Individual),
@@ -895,10 +895,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
-              verify(mockConnector, times(1)).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
 
               withClue("must call the audit connector with the supplied details") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishUpdateGoodsRecord(
                     eqTo(testRecordId),
                     eqTo(AffinityGroup.Individual),
@@ -972,7 +972,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditFinishUpdateGoodsRecord(
                   eqTo(testRecordId),
                   eqTo(AffinityGroup.Individual),

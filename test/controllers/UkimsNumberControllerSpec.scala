@@ -24,7 +24,7 @@ import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.inject.bind
@@ -32,6 +32,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.UkimsNumberView
 
 import scala.concurrent.Future
@@ -217,7 +219,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET with all trader profile complete" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -230,7 +233,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -246,6 +250,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
@@ -253,12 +261,17 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
-        val answer = "XIUKIM47699357400020231115081800"
+        val answer               = "XIUKIM47699357400020231115081800"
+        val updatedTraderProfile = TraderProfile(testEori, answer, Some("2"), Some("3"))
 
         val userAnswers = emptyUserAnswers
           .set(UkimsNumberUpdatePage, answer)
           .success
           .value
+
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+          .thenReturn(Future.successful(Done))
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -271,7 +284,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -284,8 +298,19 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockTraderProfileConnector, times(1))
-            .submitTraderProfile(eqTo(TraderProfile(testEori, answer, Some("2"), Some("3"))), eqTo(testEori))(any())
+          verify(mockTraderProfileConnector)
+            .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
+
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService)
+              .auditMaintainProfile(
+                eqTo(traderProfile),
+                eqTo(updatedTraderProfile),
+                eqTo(AffinityGroup.Individual)
+              )(
+                any()
+              )
+          }
         }
       }
 
@@ -301,6 +326,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           .value
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        val mockAuditService                                   = mock[AuditService]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -313,7 +339,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -327,6 +354,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
           verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 

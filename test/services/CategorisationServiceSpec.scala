@@ -114,17 +114,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call the router to get the goods record") {
-        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
+        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
       }
 
       withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
+        verify(mockOttConnector).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
           any()
         )
       }
 
       withClue("Should call session repository to update user answers") {
-        verify(mockSessionRepository, times(1)).set(any())
+        verify(mockSessionRepository).set(any())
       }
     }
 
@@ -228,17 +228,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should not need to call the goods record connector") {
-        verify(mockGoodsRecordsConnector, times(1)).getRecord(any(), any())(any())
+        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
       }
 
       withClue("Should call OTT to get categorisation info for new commodity code") {
-        verify(mockOttConnector, times(1)).getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(
+        verify(mockOttConnector).getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(
           any()
         )
       }
 
       withClue("Should call session repository to update user answers") {
-        verify(mockSessionRepository, times(1)).set(any())
+        verify(mockSessionRepository).set(any())
       }
     }
 
@@ -272,13 +272,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector, times(1)).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
+        verify(mockOttConnector).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
           any()
         )
       }
 
       withClue("Should call session repository to update user answers") {
-        verify(mockSessionRepository, times(1)).set(any())
+        verify(mockSessionRepository).set(any())
       }
     }
 
