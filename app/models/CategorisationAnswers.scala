@@ -89,7 +89,7 @@ object CategorisationAnswers {
           userAnswers.get(AssessmentPage(recordId, assessment._2))
         )
       )
-      .filter(x => x.answer.isDefined && x.answer.get != NotAnsweredYet) //TODO update unit tests
+      .filter(x => x.answer.isDefined && x.answer.get != NotAnsweredYet)
       .map(x => CategorisationDetails(x.index, x.assessment, x.answer.get))
 
     if (answers.isEmpty) {

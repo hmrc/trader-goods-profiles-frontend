@@ -18,7 +18,7 @@ package models
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.AssessmentAnswer.{Exemption, NoExemption}
+import models.AssessmentAnswer.{Exemption, NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
@@ -49,6 +49,29 @@ class CategorisationAnswersSpec extends SpecBase {
         )
       }
 
+      "an assessment answer has not been answered yet" in {
+
+        val answers = emptyUserAnswers
+          .set(RecordCategorisationsQuery, recordCategorisations)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), NotAnsweredYet)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), NoExemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers.build(answers, testRecordId)
+
+        result mustEqual Right(
+          CategorisationAnswers(Seq(Exemption("Y994"), NoExemption), None)
+        )
+
+      }
       "all assessments are answered and supplementary unit was not asked" in {
 
         val answers =
