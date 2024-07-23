@@ -458,13 +458,81 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                   pageSentToNavigator.needToRecategorise mustBe true
                 }
 
-                withClue("must not reset the user answers") {
+                withClue("must reset the user answers") {
                   verify(mockCategorisationService).cleanupOldAssessmentAnswers(any(), any())
                 }
 
               }
             }
           }
+
+          "remove old supplementary unit answer if unit is different" in {
+            val categorisationInfoNew = categorisationInfo.copy(measurementUnit = Some("another measurement unit"))
+
+            val mockSessionRepository                          = mock[SessionRepository]
+            val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            when(mockSessionRepository.set(userAnswersCaptor.capture())) thenReturn Future.successful(true)
+
+            val mockNavigator = mock[Navigator]
+            when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
+
+            val initialUserAnswers = emptyUserAnswers
+              .set(
+                RecordCategorisationsQuery,
+                RecordCategorisations(Map(testRecordId -> categorisationInfo))
+              )
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), Exemption("Y322"))
+              .success
+              .value
+              .set(HasSupplementaryUnitPage(testRecordId), true)
+              .success
+              .value
+              .set(SupplementaryUnitPage(testRecordId), "123")
+              .success
+              .value
+
+            val updatedUserAnswers = initialUserAnswers
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNew)))
+              .success
+              .value
+
+            val mockCategorisationService = mock[CategorisationService]
+            when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
+              .thenReturn(Future.successful(updatedUserAnswers))
+            when(mockCategorisationService.cleanupOldAssessmentAnswers(any(), any()))
+              .thenReturn(Success(updatedUserAnswers))
+
+            val application =
+              applicationBuilder(userAnswers = Some(initialUserAnswers))
+                .overrides(
+                  bind[Navigator].toInstance(mockNavigator),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[CategorisationService].toInstance(mockCategorisationService)
+                )
+                .build()
+
+            running(application) {
+              val request =
+                FakeRequest(POST, hasCorrectGoodsRoute)
+                  .withFormUrlEncodedBody(("value", "true"))
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual onwardRoute.url
+
+              withClue("must have removed the supplementary unit answer") {
+                val finalUserAnswers = userAnswersCaptor.getValue
+
+                finalUserAnswers.get(HasSupplementaryUnitPage(testRecordId)) mustBe None
+                finalUserAnswers.get(SupplementaryUnitPage(testRecordId)) mustBe None
+              }
+
+            }
+          }
+
         }
 
         "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {

@@ -52,7 +52,8 @@ cyaRequestAdvice.subheading = Contact details
 
 cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your answers
-cyaCategorisation.categorisationHeader = Conditions
+cyaCategorisation.categorisationHeader = Category assessments
+cyaCategorisation.categorisationQuestion = Do you meet any of the following conditions and can you supply the relevant document code on your movements?
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
 
@@ -217,6 +218,10 @@ createRecordSuccess.p2 = You still need to categorise the goods before you can u
 createRecordSuccess.p3 = You do not have to categorise this record now. You can review the record from your list of goods records and start categorisation later.
 createRecordSuccess.p4.linkText = Categorise goods now
 createRecordSuccess.p5.linkText = Go to homepage
+createRecordSuccess.h2.1 = Tell us what you think
+createRecordSuccess.p6 = This is a new service and we want to know what you think of it.
+createRecordSuccess.p7.linkText = Send us your feedback
+createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvements.
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
@@ -383,7 +388,7 @@ previousMovementRecords.p5 = You have to categorise your goods to see if you can
 previousMovementRecords.p6 = We are loading your records
 previousMovementRecords.loadrecord = Load records
 
-goodsRecords.error.required = Enter search term
+goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
 goodsRecords.heading = Goods profile
@@ -424,6 +429,7 @@ singleRecord.warning = Warning
 singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 singleRecord.h2.categorisation = Categorisation
 singleRecord.category.row = Category
+singleRecord.h2.supplementaryUnit = Supplementary Unit
 singleRecord.h2.adviceStatus = Advice status
 singleRecord.adviceStatus.row = Advice received
 singleRecord.goodsProfile.link = Go to goods profile
@@ -507,6 +513,17 @@ helpAndSupport.p13.linkText = Guidance for using a Northern Ireland plant health
 helpAndSupport.p14.linkText = Find additional support and contacts to help you
 helpAndSupport.p15 = You can use the Trader Support Service to create IMMI forms with information from your TGP.
 helpAndSupport.p15.linkText = Sign up for the Trader Support Service
+
+goodsRecordSearchResult.title = There are {0} search results
+goodsRecordSearchResult.h1 = There are {0} search results
+goodsRecordSearchResult.p1 = You searched for the term ''{0}''.
+goodsRecordSearchResult.p2.linkText = Go back to goods records
+
+goodsRecordSearchResultEmptyView.title = There are no matching results
+goodsRecordSearchResultEmptyView.h1 = There are no matching results
+goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
+goodsRecordSearchResultEmptyView.p2.linkText = Go back to goods records
+
 
 sucessBanner.title = Success
 sucessBanner.heading = You have changed the {0}

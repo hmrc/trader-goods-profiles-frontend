@@ -20,7 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, Commodity, GoodsRecord, GoodsRecordsPagination, UpdateGoodsRecord}
+import models.{CategoryRecord, Commodity, GoodsRecord, UpdateGoodsRecord}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -627,6 +627,49 @@ class GoodsRecordConnectorSpec
       )
 
       connector.filterRecordsByField(testEori, "TOM001001", "traderRef").failed.futureValue
+    }
+  }
+
+  ".getSearch" - {
+
+    val searchString               = "banana"
+    val exactMatch                 = false
+    val pagedGoodsRecordsSearchUrl =
+      s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
+
+    "must get a page of goods records" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(getRecordsResponse.toString))
+      )
+
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe getRecordsResponse
+        .validate[GetRecordsResponse]
+        .get
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
+    }
+
+    "must return a failed future when the json does not match the format" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+      )
+
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
     }
   }
 }

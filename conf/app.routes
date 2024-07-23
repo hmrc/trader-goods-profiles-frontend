@@ -194,6 +194,9 @@ GET         /goods-profile                                                      
 POST        /goods-profile                                                                  controllers.GoodsRecordsController.onSearch(page: Int)
 GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
 
+GET         /goods-profile/search-results                                                   controllers.GoodsRecordsSearchResultController.onPageLoad(page: Int)
+GET         /goods-profile/search-no-results                                                controllers.GoodsRecordsSearchResultController.onPageLoadNoRecords()
+
 GET         /remove-record/:recordId/goods-profile                                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
 GET        /remove-record/:recordId/goods-record                                            controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
 POST       /remove-record/:recordId/goods-profile                                           controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsProfileLocation)
