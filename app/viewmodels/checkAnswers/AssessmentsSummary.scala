@@ -34,12 +34,10 @@ object AssessmentsSummary {
     indexOfThisAssessment: Int
   )(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
-      val codes        = assessment.exemptions.map(_.code)
-      val descriptions = assessment.exemptions.map(_.description)
+      val listItems = assessment.exemptions.map(_.code)
 
       SummaryListRowViewModel(
-        key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
-          .withCssClass("govuk-!-width-one-half"),
+        key = KeyViewModel(AssessmentCyaKey(listItems).content),
         value = ValueViewModel(
           if (answer.toString == "true") {
             messages("site.yes")
