@@ -281,7 +281,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
         )
       }
 
-      "when recordCategorisations is missing category 2 assessments but completed category 1 so is category 2" in {
+      "when recordCategorisations is missing category 2 assessments but completed category 1 so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
           .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
@@ -298,7 +298,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             testEori,
             testRecordId,
             None,
-            2,
+            3,
             1,
             None,
             Some("kg")
