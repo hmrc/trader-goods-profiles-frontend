@@ -70,12 +70,12 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the trader profile and affinity group to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createSetUpProfileEvent(eqTo(traderProfile), eqTo(AffinityGroup.Individual))(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -94,12 +94,12 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the trader profile to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createSetUpProfileEvent(eqTo(traderProfile), eqTo(AffinityGroup.Individual))(any())
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -132,7 +132,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the sensible details to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createStartManageGoodsRecordEvent(
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
@@ -143,7 +143,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -162,7 +162,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied sensible details to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createStartManageGoodsRecordEvent(
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
@@ -173,7 +173,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -215,7 +215,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the correct parameters to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createSubmitGoodsRecordEventForCreateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
@@ -225,7 +225,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -248,7 +248,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createSubmitGoodsRecordEventForCreateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
@@ -258,7 +258,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -326,7 +326,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the correct parameters to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createSubmitGoodsRecordEventForUpdateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
@@ -336,7 +336,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
     }
 
@@ -367,7 +367,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createSubmitGoodsRecordEventForUpdateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
@@ -377,7 +377,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
     }
 
@@ -431,7 +431,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the correct parameters to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createStartManageGoodsRecordEvent(
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
@@ -442,7 +442,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
     }
 
@@ -468,7 +468,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createStartManageGoodsRecordEvent(
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
@@ -479,7 +479,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
 
     }
@@ -554,7 +554,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         result mustBe Done
 
         withClue("Should have supplied the parameters to the factory to create the event") {
-          verify(mockAuditFactory, times(1))
+          verify(mockAuditFactory)
             .createValidateCommodityCodeEvent(
               eqTo(auditData),
               eqTo(startTime),
@@ -566,7 +566,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         withClue("Should have submitted the created event to the audit connector") {
-          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+          verify(mockAuditConnector).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
         }
 
       }
@@ -602,7 +602,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         result mustBe Done
 
         withClue("Should have supplied the parameters to the factory to create the event") {
-          verify(mockAuditFactory, times(1))
+          verify(mockAuditFactory)
             .createValidateCommodityCodeEvent(
               eqTo(auditData),
               eqTo(startTime),
@@ -614,7 +614,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         withClue("Should have submitted the created event to the audit connector") {
-          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+          verify(mockAuditConnector).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
         }
 
       }
@@ -694,7 +694,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         result mustBe Done
 
         withClue("Should have supplied the parameters to the factory to create the event") {
-          verify(mockAuditFactory, times(1))
+          verify(mockAuditFactory)
             .createGetCategorisationAssessmentDetailsEvent(
               eqTo(auditData),
               eqTo(startTime),
@@ -706,7 +706,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         withClue("Should have submitted the created event to the audit connector") {
-          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+          verify(mockAuditConnector).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
         }
 
       }
@@ -742,7 +742,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         result mustBe Done
 
         withClue("Should have supplied the parameters to the factory to create the event") {
-          verify(mockAuditFactory, times(1))
+          verify(mockAuditFactory)
             .createGetCategorisationAssessmentDetailsEvent(
               eqTo(auditData),
               eqTo(startTime),
@@ -754,7 +754,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         withClue("Should have submitted the created event to the audit connector") {
-          verify(mockAuditConnector, times(1)).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
+          verify(mockAuditConnector).sendExtendedEvent(eqTo(fakeAuditEvent))(any(), any())
         }
 
       }
@@ -814,14 +814,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the affinity group and request advice to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createRequestAdviceEvent(eqTo(AffinityGroup.Individual), eqTo(RequestAdviceJourney), eqTo(adviceRequest))(
             any()
           )
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
     }
 
@@ -839,14 +839,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should have supplied the request advice to the factory to create the event") {
-        verify(mockAuditFactory, times(1))
+        verify(mockAuditFactory)
           .createRequestAdviceEvent(eqTo(AffinityGroup.Individual), eqTo(RequestAdviceJourney), eqTo(adviceRequest))(
             any()
           )
       }
 
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector, times(1)).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
       }
     }
 

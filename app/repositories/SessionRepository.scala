@@ -101,7 +101,7 @@ class SessionRepository @Inject() (
     collection
       .updateOne(
         filter = byId(id),
-        update = Updates.combine((updates :+ Updates.set("lastUpdated", Instant.now())): _*)
+        update = Updates.combine(updates :+ Updates.set("lastUpdated", Instant.now()): _*)
       )
       .toFuture()
       .map(_ => true)
