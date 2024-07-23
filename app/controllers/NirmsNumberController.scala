@@ -29,6 +29,7 @@ import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsNumberView
@@ -47,13 +48,13 @@ class NirmsNumberController @Inject() (
   traderProfileConnector: TraderProfileConnector,
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
-  view: NirmsNumberView
+  view: NirmsNumberView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form        = formProvider()
-  private val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+  private val form = formProvider()
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
@@ -82,16 +83,27 @@ class NirmsNumberController @Inject() (
 
   def onPageLoadUpdate: Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(HasNirmsUpdatePage) match {
-        case Some(false) =>
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
-        case _           =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        request.userAnswers.get(HasNirmsUpdatePage) match {
+          case Some(_) =>
+            traderProfile.nirmsNumber match {
+              case None       =>
+                Future.successful(Ok(view(form, routes.NirmsNumberController.onSubmitUpdate)))
+              case Some(data) =>
+                for {
+                  updatedAnswers <-
+                    Future.fromTry(request.userAnswers.set(NirmsNumberPage, data))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Ok(
+                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
+                )
+            }
+          case None    =>
             traderProfile.nirmsNumber match {
               case None       =>
                 for {
                   updatedAnswers <-
-                    Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, true))
+                    Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, false))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
                   view(form, routes.NirmsNumberController.onSubmitUpdate)
@@ -107,7 +119,7 @@ class NirmsNumberController @Inject() (
                   view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
                 )
             }
-          }
+        }
       }
     }
 
@@ -127,6 +139,8 @@ class NirmsNumberController @Inject() (
                   sessionRepository.set(answers).flatMap { _ =>
                     TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
                       case Right(model) =>
+                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+
                         for {
                           _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
                         } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
@@ -143,7 +157,7 @@ class NirmsNumberController @Inject() (
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    logger.error(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }

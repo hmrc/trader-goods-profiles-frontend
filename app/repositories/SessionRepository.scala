@@ -18,6 +18,7 @@ package repositories
 
 import config.FrontendAppConfig
 import models.UserAnswers
+import models.helper._
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
@@ -89,4 +90,21 @@ class SessionRepository @Inject() (
       .deleteOne(byId(id))
       .toFuture()
       .map(_ => true)
+
+  def clearData(id: String, journey: Journey): Future[Boolean] = {
+    val updates = journey match {
+      case CreateProfileJourney  => CreateProfileJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case CreateRecordJourney   => CreateRecordJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case CategorisationJourney => CategorisationJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case RequestAdviceJourney  => RequestAdviceJourney.pages.map(page => Updates.unset(s"data.$page"))
+    }
+    collection
+      .updateOne(
+        filter = byId(id),
+        update = Updates.combine(updates :+ Updates.set("lastUpdated", Instant.now()): _*)
+      )
+      .toFuture()
+      .map(_ => true)
+  }
+
 }

@@ -76,7 +76,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val result  = route(application, request).value
 
         status(result) mustEqual OK
-        verify(categorisationService, times(1)).requireCategorisation(any(), any())(any())
+        verify(categorisationService).requireCategorisation(any(), any())(any())
 
       }
     }
@@ -147,7 +147,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
           .url
 
         withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+          verify(mockGoodsRecordsConnector).updateCategoryForGoodsRecord(
             any(),
             any(),
             any()
@@ -178,7 +178,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
           .url
 
         withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector, times(1)).updateCategoryForGoodsRecord(
+          verify(mockGoodsRecordsConnector).updateCategoryForGoodsRecord(
             any(),
             any(),
             any()
@@ -239,7 +239,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 0).url
 
         withClue("must call the audit service with the correct details") {
-          verify(mockAuditService, times(1))
+          verify(mockAuditService)
             .auditStartUpdateGoodsRecord(
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),

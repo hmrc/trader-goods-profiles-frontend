@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.router.responses.CreateGoodsRecordResponse
+import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -30,6 +30,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.CountriesQuery
+import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -173,16 +174,19 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.submitGoodsRecord(any())(any()))
-            .thenReturn(Future.successful(CreateGoodsRecordResponse("test")))
+            .thenReturn(Future.successful("test"))
 
-          val mockAuditService = mock[AuditService]
+          val mockAuditService  = mock[AuditService]
           when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -200,11 +204,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
-            verify(mockConnector, times(1)).submitGoodsRecord(eqTo(expectedPayload))(any())
+            verify(mockConnector).submitGoodsRecord(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+            }
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
             }
           }
         }
@@ -218,10 +225,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockAuditService = mock[AuditService]
           val continueUrl      = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
 
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
               .build()
 
           running(application) {
@@ -235,6 +246,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             withClue("must not try and submit an audit") {
               verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
+            }
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateRecordJourney))
             }
           }
 
@@ -252,10 +266,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val mockAuditService = mock[AuditService]
         when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
 
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AuditService].toInstance(mockAuditService))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+            .overrides(bind[SessionRepository].toInstance(sessionRepository))
             .build()
 
         running(application) {
@@ -265,8 +283,11 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             await(route(application, request).value)
           }
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+          }
+          withClue("must not cleanse the user answers data when connector fails") {
+            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
           }
 
         }
