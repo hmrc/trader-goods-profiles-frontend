@@ -16,14 +16,14 @@
 
 package controllers
 
-import connectors.OttConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
 import models.{CheckMode, Mode}
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.{CountryOfOriginPageJourney, HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,7 +46,8 @@ class LongerCommodityCodeController @Inject() (
   formProvider: LongerCommodityCodeFormProvider,
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: LongerCommodityCodeView
+  view: LongerCommodityCodeView,
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -122,15 +123,15 @@ class LongerCommodityCodeController @Inject() (
     longCommodityCode: String,
     shortCode: String,
     shouldRedirect: Boolean
-  )(implicit request: DataRequest[AnyContent]) = {
-    val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPageJourney).get
+  )(implicit request: DataRequest[AnyContent]) =
     (for {
+      record                  <- goodsRecordConnector.getRecord(request.eori, recordId)
       validCommodityCode      <- ottConnector.getCommodityCode(
                                    longCommodityCode,
                                    request.eori,
                                    request.affinityGroup,
                                    UpdateRecordJourney,
-                                   countryOfOrigin,
+                                   record.countryOfOrigin,
                                    Some(recordId)
                                  )
       updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
@@ -147,7 +148,6 @@ class LongerCommodityCodeController @Inject() (
         form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
       BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
     }
-  }
 
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 

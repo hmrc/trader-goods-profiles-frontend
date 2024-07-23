@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import connectors.OttConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import forms.LongerCommodityCodeFormProvider
 import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -26,7 +26,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.{atMostOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CountryOfOriginPageJourney, LongerCommodityCodePage}
+import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -69,290 +69,325 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
   "LongerCommodityCode Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "GET" - {
+      "must return OK and the correct view" in {
 
-      val userAnswers =
-        emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisationsShortCommodity).success.value
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val userAnswers =
+          emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisationsShortCommodity).success.value
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-      running(application) {
-        val request = FakeRequest(GET, longerCommodityCodeRoute)
+        running(application) {
+          val request = FakeRequest(GET, longerCommodityCodeRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[LongerCommodityCodeView]
+          val view = application.injector.instanceOf[LongerCommodityCodeView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, shortCommodity, testRecordId)(
-          request,
-          messages(application)
-        ).toString
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, shortCommodity, testRecordId)(
+            request,
+            messages(application)
+          ).toString
+        }
       }
-    }
 
-    "must redirect on GET to JourneyRecovery Page if user doesn't have commodity answer" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      "must redirect to JourneyRecovery Page" - {
 
-      running(application) {
-        val request = FakeRequest(GET, longerCommodityCodeRoute)
-        val result  = route(application, request).value
+        "if user doesn't have commodity answer" in {
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
+          running(application) {
+            val request = FakeRequest(GET, longerCommodityCodeRoute)
+            val result  = route(application, request).value
 
-    "must redirect on GET to JourneyRecovery Page if user's commodity code is 10 digits" in {
-      val userAnswers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
 
-      running(application) {
-        val request = FakeRequest(GET, longerCommodityCodeRoute)
-        val result  = route(application, request).value
+        "if user's commodity code is 10 digits" in {
+          val userAnswers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
+          running(application) {
+            val request = FakeRequest(GET, longerCommodityCodeRoute)
+            val result  = route(application, request).value
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
 
-      val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
-        .success
-        .value
-        .set(LongerCommodityCodePage(testRecordId, true), "1234")
-        .success
-        .value
+        "if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = None).build()
 
-      running(application) {
-        val request = FakeRequest(GET, longerCommodityCodeRoute)
+          running(application) {
+            val request = FakeRequest(GET, longerCommodityCodeRoute)
 
-        val view = application.injector.instanceOf[LongerCommodityCodeView]
+            val result = route(application, request).value
 
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("1234"), NormalMode, shortCommodity, testRecordId)(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-      val mockOttConnector      = mock[OttConnector]
-      val userAnswers           = emptyUserAnswers
-        .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
-        .success
-        .value
-        .set(LongerCommodityCodePage(testRecordId), "1234")
-        .success
-        .value
-        .set(CountryOfOriginPageJourney, "DE")
-        .success
-        .value
-
-      val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
-
-      val testCommodity = Commodity("6543211234", List("Description"), Instant.now, None)
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
-        .successful(
-          testCommodity
-        )
-
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, longerCommodityCheckRoute)
-            .withFormUrlEncodedBody(("value", "1234"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
-
-        withClue("ensure user answers are set, even in the redirect scenario") {
-          verify(mockOttConnector, atMostOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
-
-          val finalUserAnswers = uaCaptor.getValue
-
-          finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
-          finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
         }
 
       }
-    }
 
-    "must redirect to the next page when valid data is submitted" in {
+      "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-      val mockOttConnector      = mock[OttConnector]
-      val userAnswers           = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
-        .success
-        .value
-        .set(LongerCommodityCodePage(testRecordId), "answer")
-        .success
-        .value
-        .set(CountryOfOriginPageJourney, "CX")
-        .success
-        .value
+        val userAnswers = emptyUserAnswers
+          .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
+          .success
+          .value
+          .set(LongerCommodityCodePage(testRecordId, true), "1234")
+          .success
+          .value
 
-      val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-      val testCommodity = Commodity("654321", List("Description"), Instant.now, None)
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
-        .successful(
-          testCommodity
-        )
+        running(application) {
+          val request = FakeRequest(GET, longerCommodityCodeRoute)
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
+          val view = application.injector.instanceOf[LongerCommodityCodeView]
 
-      running(application) {
-        val request =
-          FakeRequest(POST, longerCommodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "12"))
+          val result = route(application, request).value
 
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
-
-        verify(mockOttConnector).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
-
-        withClue("ensure user answers has set the new commodity query") {
-          val finalUserAnswers = uaCaptor.getValue
-
-          finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "12"
-          finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill("1234"), NormalMode, shortCommodity, testRecordId)(
+            request,
+            messages(application)
+          ).toString
         }
       }
+
     }
 
-    "must return a Bad Request and errors when invalid is submitted" in {
-      val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
-        .success
-        .value
-        .set(LongerCommodityCodePage(testRecordId), "answer")
-        .success
-        .value
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+    "POST" - {
 
-      running(application) {
-        val request =
-          FakeRequest(POST, longerCommodityCodeRoute)
-            .withFormUrlEncodedBody(("value", ""))
+      "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
 
-        val view = application.injector.instanceOf[LongerCommodityCodeView]
+        val mockSessionRepository = mock[SessionRepository]
+        val mockOttConnector      = mock[OttConnector]
+        val userAnswers           = emptyUserAnswers
+          .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
+          .success
+          .value
+          .set(LongerCommodityCodePage(testRecordId), "1234")
+          .success
+          .value
 
-        val result = route(application, request).value
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
+        val testCommodity = Commodity("6543211234", List("Description"), Instant.now, None)
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+          .successful(
+            testCommodity
+          )
 
-    "must return a Bad Request and errors when correct data format but wrong data is submitted" in {
-      val mockOttConnector = mock[OttConnector]
-      val userAnswers      = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
-        .success
-        .value
-        .set(LongerCommodityCodePage(testRecordId), "answer")
-        .success
-        .value
-        .set(CountryOfOriginPageJourney, "CX")
-        .success
-        .value
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
 
-      when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
-        .failed(
-          UpstreamErrorResponse(" ", NOT_FOUND)
-        )
+        running(application) {
+          val request =
+            FakeRequest(POST, longerCommodityCheckRoute)
+              .withFormUrlEncodedBody(("value", "1234"))
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(
-          bind[OttConnector].toInstance(mockOttConnector)
-        )
-        .build()
+          val result = route(application, request).value
 
-      running(application) {
-        val request =
-          FakeRequest(POST, longerCommodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "1234"))
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
 
-        val boundForm = form.copy(errors = Seq(elems = FormError("value", "longerCommodityCode.error.invalid")))
+          withClue("ensure user answers are set, even in the redirect scenario") {
+            verify(mockOttConnector, atMostOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
 
-        val view = application.injector.instanceOf[LongerCommodityCodeView]
+            val finalUserAnswers = uaCaptor.getValue
 
-        val result = route(application, request).value
+            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
+            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+          }
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
-          request,
-          messages(application)
-        ).toString
-
-        verify(mockOttConnector).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+        }
       }
 
-    }
+      "must redirect to the next page when valid data is submitted" in {
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
 
-      val application = applicationBuilder(userAnswers = None).build()
+        val mockSessionRepository = mock[SessionRepository]
+        val mockOttConnector      = mock[OttConnector]
+        val userAnswers           = emptyUserAnswers
+          .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+          .success
+          .value
+          .set(LongerCommodityCodePage(testRecordId), "answer")
+          .success
+          .value
 
-      running(application) {
-        val request = FakeRequest(GET, longerCommodityCodeRoute)
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
 
-        val result = route(application, request).value
+        val testCommodity = Commodity("654321", List("Description"), Instant.now, None)
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+          .successful(
+            testCommodity
+          )
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, longerCommodityCodeRoute)
+              .withFormUrlEncodedBody(("value", "12"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockOttConnector).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+
+          withClue("ensure user answers has set the new commodity query") {
+            val finalUserAnswers = uaCaptor.getValue
+
+            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "12"
+            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+          }
+        }
       }
-    }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+      "must return a Bad Request and errors" - {
 
-      val application = applicationBuilder(userAnswers = None).build()
+        "when invalid is submitted" in {
+          val userAnswers = emptyUserAnswers
+            .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+            .success
+            .value
+            .set(LongerCommodityCodePage(testRecordId), "answer")
+            .success
+            .value
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, longerCommodityCodeRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+          running(application) {
+            val request =
+              FakeRequest(POST, longerCommodityCodeRoute)
+                .withFormUrlEncodedBody(("value", ""))
 
-        val result = route(application, request).value
+            val boundForm = form.bind(Map("value" -> ""))
 
-        status(result) mustEqual SEE_OTHER
+            val view = application.injector.instanceOf[LongerCommodityCodeView]
 
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            val result = route(application, request).value
+
+            status(result) mustEqual BAD_REQUEST
+            contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when correct data format but wrong data is submitted" in {
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+            .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
+
+          val mockOttConnector = mock[OttConnector]
+          val userAnswers      = emptyUserAnswers
+            .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+            .success
+            .value
+            .set(LongerCommodityCodePage(testRecordId), "answer")
+            .success
+            .value
+
+          when(
+            mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())
+          ) thenReturn Future
+            .failed(
+              UpstreamErrorResponse(" ", NOT_FOUND)
+            )
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request =
+              FakeRequest(POST, longerCommodityCodeRoute)
+                .withFormUrlEncodedBody(("value", "1234"))
+
+            val boundForm = form.copy(errors = Seq(elems = FormError("value", "longerCommodityCode.error.invalid")))
+
+            val view = application.injector.instanceOf[LongerCommodityCodeView]
+
+            val result = route(application, request).value
+
+            status(result) mustEqual BAD_REQUEST
+            contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
+              request,
+              messages(application)
+            ).toString
+
+            verify(mockOttConnector).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+          }
+
+        }
+
+        "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request = FakeRequest(GET, longerCommodityCodeRoute)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
+
+        "must redirect to Journey Recovery if no existing data is found" in {
+
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request =
+              FakeRequest(POST, longerCommodityCodeRoute)
+                .withFormUrlEncodedBody(("value", "answer"))
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
       }
     }
   }

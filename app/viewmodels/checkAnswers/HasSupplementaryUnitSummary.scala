@@ -39,4 +39,20 @@ object HasSupplementaryUnitSummary {
         )
       )
     }
+
+  def row(value: Boolean, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
+
+    val textValue = if (value) "site.yes" else "site.no"
+    Some(
+      SummaryListRowViewModel(
+        key = "hasSupplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(textValue),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+        )
+      )
+    )
+
+  }
 }
