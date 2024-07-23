@@ -145,7 +145,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           redirectLocation(result).value mustEqual routes.AdviceSuccessController.onPageLoad(testRecordId).url
 
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditRequestAdvice(
                 eqTo(AffinityGroup.Individual),
                 eqTo(expectedPayload)
@@ -155,7 +155,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           }
 
           withClue("must cleanse the user answers data") {
-            verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(RequestAdviceJourney))
+            verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(RequestAdviceJourney))
           }
         }
       }
@@ -186,7 +186,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
             verify(mockConnector, never()).submitRequestAccreditation(any())(any())
 
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(RequestAdviceJourney))
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(RequestAdviceJourney))
             }
           }
         }
@@ -224,7 +224,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
           }
 
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditRequestAdvice(
                 eqTo(AffinityGroup.Individual),
                 eqTo(expectedPayload)

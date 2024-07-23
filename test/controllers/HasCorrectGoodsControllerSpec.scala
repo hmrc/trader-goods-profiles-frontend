@@ -459,7 +459,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 }
 
                 withClue("must reset the user answers") {
-                  verify(mockCategorisationService, times(1)).cleanupOldAssessmentAnswers(any(), any())
+                  verify(mockCategorisationService).cleanupOldAssessmentAnswers(any(), any())
                 }
 
               }

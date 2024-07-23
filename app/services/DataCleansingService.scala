@@ -21,11 +21,9 @@ import models.helper.Journey
 import play.api.Logging
 import repositories.SessionRepository
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class DataCleansingService @Inject() (sessionRepository: SessionRepository)(implicit
-  ec: ExecutionContext
-) extends Logging {
+class DataCleansingService @Inject() (sessionRepository: SessionRepository) extends Logging {
 
   def deleteMongoData(id: String, journey: Journey): Future[Boolean] =
     sessionRepository.clearData(id, journey)

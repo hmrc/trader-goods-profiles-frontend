@@ -54,8 +54,7 @@ class NiphlNumberController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form        = formProvider()
-  private val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+  private val form = formProvider()
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
@@ -84,16 +83,27 @@ class NiphlNumberController @Inject() (
 
   def onPageLoadUpdate: Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(HasNiphlUpdatePage) match {
-        case Some(false) =>
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))))
-        case _           =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        request.userAnswers.get(HasNiphlUpdatePage) match {
+          case Some(_) =>
+            traderProfile.niphlNumber match {
+              case None       =>
+                Future.successful(Ok(view(form, routes.NiphlNumberController.onSubmitUpdate)))
+              case Some(data) =>
+                for {
+                  updatedAnswers <-
+                    Future.fromTry(request.userAnswers.set(NiphlNumberPage, data))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Ok(
+                  view(form.fill(data), routes.NiphlNumberController.onSubmitUpdate)
+                )
+            }
+          case None    =>
             traderProfile.niphlNumber match {
               case None       =>
                 for {
                   updatedAnswers <-
-                    Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, true))
+                    Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, false))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
                   view(form, routes.NiphlNumberController.onSubmitUpdate)
@@ -109,7 +119,7 @@ class NiphlNumberController @Inject() (
                   view(form.fill(data), routes.NiphlNumberController.onSubmitUpdate)
                 )
             }
-          }
+        }
       }
     }
 
@@ -147,7 +157,7 @@ class NiphlNumberController @Inject() (
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    logger.error(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }
