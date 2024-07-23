@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, NormalMode, UserAnswers}
+import models.{CheckMode, UserAnswers}
 import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
 import queries.RecordCategorisationsQuery
