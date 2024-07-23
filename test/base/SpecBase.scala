@@ -254,6 +254,37 @@ trait SpecBase
       updatedDateTime
     )
 
+  def goodsRecordResponseWithSupplementaryUnit(
+    createdDateTime: Instant,
+    updatedDateTime: Instant
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      Some(1234.0),
+      Some("grams"),
+      Instant.now(),
+      None,
+      1,
+      true,
+      true,
+      None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

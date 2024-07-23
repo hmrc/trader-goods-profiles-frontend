@@ -44,4 +44,22 @@ object SupplementaryUnitSummary {
         )
       )
     }
+
+  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
+    for {
+      suppUnit <- suppValue
+    } yield {
+      val displayValue =
+        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString()
+      SummaryListRowViewModel(
+        key = "supplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(displayValue),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
+        )
+      )
+    }
 }
