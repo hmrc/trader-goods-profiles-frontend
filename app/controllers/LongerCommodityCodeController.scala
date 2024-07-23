@@ -134,12 +134,7 @@ class LongerCommodityCodeController @Inject() (
                                    Some(recordId)
                                  )
       updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-      cleansedAnswers         <- if (shouldRedirect) {
-                                   Future.successful(updatedAnswers)
-                                 } else {
-                                   Future.fromTry(updatedAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId)))
-                                 }
-      updatedAnswersWithQuery <- Future.fromTry(cleansedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
+      updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), validCommodityCode))
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield Redirect(
       navigator.nextPage(
