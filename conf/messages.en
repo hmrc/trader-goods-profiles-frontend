@@ -514,12 +514,12 @@ helpAndSupport.p15.linkText = Sign up for the Trader Support Service
 
 goodsRecordSearchResult.title = There are {0} search results
 goodsRecordSearchResult.h1 = There are {0} search results
-goodsRecordSearchResult.p1 = You searched for the term ''{0}''
+goodsRecordSearchResult.p1 = You searched for the term ''{0}''.
 goodsRecordSearchResult.p2.linkText = Go back to goods records
 
 goodsRecordSearchResultEmptyView.title = There are no matching results
 goodsRecordSearchResultEmptyView.h1 = There are no matching results
-goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''
+goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
 goodsRecordSearchResultEmptyView.p2.linkText = Go back to goods records
 
 
