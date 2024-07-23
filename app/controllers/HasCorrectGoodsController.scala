@@ -199,17 +199,17 @@ class HasCorrectGoodsController @Inject() (
             )
           )
       // Any answered Supplementary Unit needs to be removed if different on new commodity
-      updatedAnswersSuppUnit  <- Future.fromTry(
-                                   cleanupSupplementaryUnit(
-                                     updatedAnswersCleanedUp,
-                                     recordId,
-                                     oldCommodityCategorisation.measurementUnit,
-                                     newCommodityCategorisation.measurementUnit
-                                   )
-                                 )
+      updatedAnswersSuppUnit       <- Future.fromTry(
+                                        cleanupSupplementaryUnit(
+                                          updatedAnswersCleanedUp,
+                                          recordId,
+                                          oldCommodityCategorisation.measurementUnit,
+                                          newCommodityCategorisation.measurementUnit
+                                        )
+                                      )
       updatedAnswersRecategorising <-
         Future.fromTry(updatedAnswersSuppUnit.set(RecategorisingQuery(recordId), needToRecategorise))
-      _ <- sessionRepository.set(updatedAnswersRecategorising)
+      _                            <- sessionRepository.set(updatedAnswersRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
