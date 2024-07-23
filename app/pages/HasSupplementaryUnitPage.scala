@@ -33,7 +33,7 @@ case class HasSupplementaryUnitPage(recordId: String) extends QuestionPage[Boole
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
     updatedUserAnswers.get(HasSupplementaryUnitPage(recordId)) match {
-      case Some(false) => updatedUserAnswers.remove(SupplementaryUnitPage(recordId))
-      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+      case Some(true) => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+      case _          => updatedUserAnswers.remove(SupplementaryUnitPage(recordId))
     }
 }
