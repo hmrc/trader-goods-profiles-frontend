@@ -1033,6 +1033,29 @@ class NavigatorSpec extends SpecBase {
               routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
           }
 
+          "to CyaCategorisation when answer is Yes and goods do not need recategorising and the supplementary unit is already set" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
+              .success
+              .value
+              .set(HasSupplementaryUnitPage(testRecordId), true)
+              .success
+              .value
+              .set(SupplementaryUnitPage(testRecordId), "1234")
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
+          }
+
           "to JourneyRecoveryPage when answer is not present" in {
 
             navigator.nextPage(
@@ -1924,6 +1947,29 @@ class NavigatorSpec extends SpecBase {
                 .value
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), CheckMode, answers) mustBe
               routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+          }
+
+          "to CyaCategorisation when answer is Yes and goods do not need recategorising and the supplementary unit is already set" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
+              .success
+              .value
+              .set(HasSupplementaryUnitPage(testRecordId), true)
+              .success
+              .value
+              .set(SupplementaryUnitPage(testRecordId), "1234")
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              CheckMode,
+              answers
+            ) mustBe routes.CyaCategorisationController.onPageLoad(testRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {

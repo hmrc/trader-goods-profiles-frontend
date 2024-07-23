@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,31 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package viewmodels
+@this(layout: templates.Layout)
 
-import play.api.i18n.Messages
-import play.twirl.api.Html
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+@(searchText: String)(implicit request: Request[_], messages: Messages)
 
-case class AssessmentCyaKey(listItems: Seq[String])(implicit messages: Messages) {
-  def content: HtmlContent = {
-    val listContent = listItems.map { item =>
-      s"<li>$item</li>"
-    }.mkString
+@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResultEmptyView.title"))) {
 
-    HtmlContent(
-      Html(
-        s"""
-        <p class='govuk-body'>
-          ${messages("assessment.question")}
-        </p>
-        <ul class="govuk-list govuk-list--bullet">
-          $listContent
-        </ul>
-      """
-      )
-    )
-  }
+    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResultEmptyView.h1")</h1>
+
+    <p class="govuk-body">@messages("goodsRecordSearchResultEmptyView.p1", searchText)</p>
+
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("goodsRecordSearchResultEmptyView.p2.linkText")</a></p>
 }

@@ -141,7 +141,8 @@ class Navigator @Inject() () {
         if (needToRecategorise) {
           routes.AssessmentController.onPageLoad(NormalMode, recordId, firstAssessmentIndex)
         } else {
-          if (categorisationInfo.measurementUnit.isDefined) {
+          val supplementaryUnitAnswer = answers.get(HasSupplementaryUnitPage(recordId))
+          if (categorisationInfo.measurementUnit.isDefined && supplementaryUnitAnswer.isEmpty) {
             routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
           } else {
             routes.CyaCategorisationController.onPageLoad(recordId)
@@ -356,7 +357,8 @@ class Navigator @Inject() () {
         if (needToRecategorise) {
           routes.AssessmentController.onPageLoad(CheckMode, recordId, firstAssessmentIndex)
         } else {
-          if (categorisationInfo.measurementUnit.isDefined) {
+          val supplementaryUnitAnswer = answers.get(HasSupplementaryUnitPage(recordId))
+          if (categorisationInfo.measurementUnit.isDefined && supplementaryUnitAnswer.isEmpty) {
             routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
           } else {
             routes.CyaCategorisationController.onPageLoad(recordId)

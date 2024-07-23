@@ -14,7 +14,10 @@
  * limitations under the License.
  *@
 
+@import config.FrontendAppConfig
+
 @this(
+    appConfig: FrontendAppConfig,
     layout: templates.Layout,
     govukSummaryList: GovukSummaryList,
     formHelper: FormWithCSRF,
@@ -56,8 +59,10 @@
     @govukSummaryList(categorisationList)
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
     @govukSummaryList(supplementaryUnitList)
-    <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>
-    @govukSummaryList(adviceStatusList)
+    @if(appConfig.requestingAdviceEnabled) {
+        <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>
+        @govukSummaryList(adviceStatusList)
+    }
     <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">

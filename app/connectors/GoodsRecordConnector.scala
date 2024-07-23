@@ -65,6 +65,14 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
+  private def searchRecordsUrl(
+    eori: String,
+    searchTerm: String,
+    exactMatch: Boolean,
+    queryParams: Map[String, String]
+  ) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
+
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[String] =
@@ -187,6 +195,28 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
     httpClient
       .get(filterRecordsUrl(eori, queryParams))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map(response => response.json.as[GetRecordsResponse])
+  }
+
+  def searchRecords(
+    eori: String,
+    searchTerm: String,
+    exactMatch: Boolean,
+    page: Int,
+    size: Int
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[GetRecordsResponse] = {
+
+    val queryParams = Map(
+      "page" -> page.toString,
+      "size" -> size.toString
+    )
+
+    httpClient
+      .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetRecordsResponse])

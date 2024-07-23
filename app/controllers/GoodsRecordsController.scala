@@ -24,7 +24,6 @@ import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
@@ -64,14 +63,11 @@ class GoodsRecordsController @Inject() (
               countries           <- ottConnector.getCountries
             } yield
               if (goodsRecordResponse.pagination.totalRecords != 0) {
-                val preparedForm = request.userAnswers.get(GoodsRecordsPage) match {
-                  case None        => form
-                  case Some(value) => form.fill(value)
-                }
-                val firstRecord  = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                //TODO cleanse GoodsRecordsPage from session
+                val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
                 Ok(
                   view(
-                    preparedForm,
+                    form,
                     goodsRecordResponse.goodsItemRecords,
                     goodsRecordResponse.pagination.totalRecords,
                     getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
@@ -102,30 +98,32 @@ class GoodsRecordsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(formWithErrors, Seq.empty, 0, 0, 0, Seq.empty, Pagination(), page))
-            ),
-          value =>
             for {
-              updatedAnswers      <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
-              _                   <- sessionRepository.set(updatedAnswers)
               goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
               countries           <- ottConnector.getCountries
             } yield {
               val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-              Ok(
+              BadRequest(
                 view(
-                  form.fill(value),
+                  formWithErrors,
                   goodsRecordResponse.goodsItemRecords,
                   goodsRecordResponse.pagination.totalRecords,
                   getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
                   getLastRecordIndex(firstRecord, pageSize),
                   countries,
-                  getPagination(goodsRecordResponse.pagination.currentPage, goodsRecordResponse.pagination.totalPages),
+                  getPagination(
+                    goodsRecordResponse.pagination.currentPage,
+                    goodsRecordResponse.pagination.totalPages
+                  ),
                   page
                 )
-              ).removingFromSession(dataUpdated, pageUpdated)
-            }
+              )
+            },
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(routes.GoodsRecordsSearchResultController.onPageLoad(1))
         )
   }
 }
