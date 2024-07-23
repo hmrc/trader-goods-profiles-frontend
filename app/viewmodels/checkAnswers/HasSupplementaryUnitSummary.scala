@@ -48,7 +48,7 @@ object HasSupplementaryUnitSummary {
         key = "hasSupplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(textValue),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url)
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
         )
       )

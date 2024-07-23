@@ -57,7 +57,7 @@ object SupplementaryUnitSummary {
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(NormalMode, recordId).url)
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )
