@@ -24,7 +24,7 @@ import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnsw
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{atMostOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
@@ -167,6 +167,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
+
         val mockSessionRepository = mock[SessionRepository]
         val mockOttConnector      = mock[OttConnector]
         val userAnswers           = emptyUserAnswers
@@ -177,11 +181,21 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
+
+        val testCommodity = Commodity("6543211234", List("Description"), Instant.now, None)
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+          .successful(
+            testCommodity
+          )
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -195,8 +209,14 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
 
-          verify(mockOttConnector, never()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
-          verify(mockSessionRepository, never()).set(any())
+          withClue("ensure user answers are set, even in the redirect scenario") {
+            verify(mockOttConnector, atMostOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+
+            val finalUserAnswers = uaCaptor.getValue
+
+            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
+            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+          }
 
         }
       }
@@ -338,22 +358,35 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         }
 
-      }
+        "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      "must redirect to Journey Recovery if no existing data is found" in {
+          val application = applicationBuilder(userAnswers = None).build()
 
-        val application = applicationBuilder(userAnswers = None).build()
+          running(application) {
+            val request = FakeRequest(GET, longerCommodityCodeRoute)
 
-        running(application) {
-          val request =
-            FakeRequest(POST, longerCommodityCodeRoute)
-              .withFormUrlEncodedBody(("value", "answer"))
+            val result = route(application, request).value
 
-          val result = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
 
-          status(result) mustEqual SEE_OTHER
+        "must redirect to Journey Recovery if no existing data is found" in {
 
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request =
+              FakeRequest(POST, longerCommodityCodeRoute)
+                .withFormUrlEncodedBody(("value", "answer"))
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
         }
       }
     }
