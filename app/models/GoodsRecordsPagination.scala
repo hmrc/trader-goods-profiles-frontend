@@ -94,4 +94,48 @@ object GoodsRecordsPagination {
         }
       )
     }
+
+  def getSearchPagination(currentPage: Int, totalPages: Int): Pagination =
+    if (currentPage < firstPage || totalPages < firstPage || currentPage > totalPages) {
+      Pagination(None, None, None)
+    } else {
+
+      val start = if (currentPage <= 2) {
+        1
+      } else {
+        currentPage - 2
+      }
+
+      val end = if (currentPage >= totalPages - 2) {
+        totalPages + 1
+      } else {
+        currentPage + 3
+      }
+
+      Pagination(
+        items = Some((start until end).map { page =>
+          val ellipsis = if (page < currentPage - 1 || page > currentPage + 1) {
+            true
+          } else {
+            false
+          }
+          PaginationItem(
+            number = Some(page.toString),
+            current = Some(currentPage == page),
+            href = routes.GoodsRecordsSearchResultController.onPageLoad(page).url,
+            ellipsis = Some(ellipsis)
+          )
+        }),
+        previous = if (currentPage == firstPage) {
+          None
+        } else {
+          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
+        },
+        next = if (currentPage == totalPages) {
+          None
+        } else {
+          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
+        }
+      )
+    }
 }
