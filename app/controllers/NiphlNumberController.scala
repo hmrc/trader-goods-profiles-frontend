@@ -157,7 +157,7 @@ class NiphlNumberController @Inject() (
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
-    logger.warn(s"Unable to update Trader profile.  Missing pages: $errorMessages")
+    logger.error(s"Unable to update Trader profile.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }
