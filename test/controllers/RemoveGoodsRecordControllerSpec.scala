@@ -55,17 +55,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val mockConnector = mock[GoodsRecordConnector]
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockConnector)
-          )
           .build()
-
-      when(mockConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.successful(record))
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
@@ -84,17 +76,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the alternate correct view for a GET with different url" in {
 
-      val mockConnector = mock[GoodsRecordConnector]
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockConnector)
-          )
           .build()
-
-      when(mockConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.successful(record))
 
       running(application) {
         val request =
