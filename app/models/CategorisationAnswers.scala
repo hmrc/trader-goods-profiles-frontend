@@ -63,6 +63,7 @@ object CategorisationAnswers {
       categorisationInfo    <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
       answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
+      _                     <- ensureNoNotAnsweredYetInAnswers(answeredAssessments, recordId)
       _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, countAssessmentsThatRequireAnswers(categorisationInfo))
       justTheAnswers         = answeredAssessments.map(_.answer)
     } yield justTheAnswers
@@ -89,7 +90,7 @@ object CategorisationAnswers {
           userAnswers.get(AssessmentPage(recordId, assessment._2))
         )
       )
-      .filter(x => x.answer.isDefined && x.answer.get != NotAnsweredYet)
+      .filter(x => x.answer.isDefined)
       .map(x => CategorisationDetails(x.index, x.assessment, x.answer.get))
 
     if (answers.isEmpty) {
@@ -117,6 +118,22 @@ object CategorisationAnswers {
       Left(nec)
     }
 
+  }
+
+  private def ensureNoNotAnsweredYetInAnswers(
+    answeredAssessments: Seq[CategorisationDetails],
+    recordId: String
+  ): EitherNec[ValidationError, Done] = {
+    val notAnsweredYetAssessments = answeredAssessments.filter(ass => ass.answer == NotAnsweredYet)
+
+    if (notAnsweredYetAssessments.isEmpty) {
+      Right(Done)
+    } else {
+      val errors = notAnsweredYetAssessments.map(ass => MissingAssessmentAnswers(AssessmentPage(recordId, ass.index)))
+      val nec    =
+        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
+      Left(nec)
+    }
   }
 
   private def ensureHaveAnsweredTheRightAmount(
