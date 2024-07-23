@@ -45,7 +45,7 @@ object SupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[Double], measureValue: Option[String], answers: UserAnswers, recordId: String)(implicit
+  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
