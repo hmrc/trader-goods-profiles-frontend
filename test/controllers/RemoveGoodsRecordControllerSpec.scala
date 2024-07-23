@@ -33,7 +33,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
@@ -45,11 +44,6 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
-
-  private val record = goodsRecordResponse(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
-  )
 
   "RemoveGoodsRecord Controller" - {
 

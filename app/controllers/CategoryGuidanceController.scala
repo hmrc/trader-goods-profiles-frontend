@@ -78,7 +78,7 @@ class CategoryGuidanceController @Inject() (
           }
         }
         .recover { e =>
-          logger.error(e.getMessage)
+          logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
   }

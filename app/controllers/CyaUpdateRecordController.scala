@@ -135,9 +135,7 @@ class CyaUpdateRecordController @Inject() (
         }
     }
 
-  def findCountryName(countries: Seq[Country], answer: String)(implicit
-    request: Request[_]
-  ): String =
+  def findCountryName(countries: Seq[Country], answer: String): String =
     countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
 
   def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
@@ -215,7 +213,7 @@ class CyaUpdateRecordController @Inject() (
     //TODO: route to correct location
     val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
 
-    logger.warn(s"Unable to update Goods Record.  Missing pages: $errorMessages")
+    logger.error(s"Unable to update Goods Record.  Missing pages: $errorMessages")
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 }
