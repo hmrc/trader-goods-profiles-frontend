@@ -17,36 +17,35 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
-import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination}
+import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.GoodsRecordsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
-import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
+import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
 import java.time.Instant
 import scala.concurrent.Future
 
-class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
+class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider                   = new GoodsRecordsFormProvider()
-  private val form                   = formProvider()
   private val currentPage            = firstPage
   private val totalRecords           = 23
   private val numberOfPages          = 3
   private val firstRecord            = 1
   private val lastRecord             = 10
-  private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(currentPage).url
+  private lazy val goodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url
+
+  val searchText = "bananas"
 
   private val records = Seq(
     goodsRecordResponse(
@@ -99,44 +98,46 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         PaginationItem(
           number = Some(currentPage.toString),
           current = Some(true),
-          href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+          href = routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url,
           ellipsis = Some(false)
         ),
         PaginationItem(
           number = Some((1 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(1 + currentPage).url,
+          href = routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url,
           ellipsis = Some(false)
         ),
         PaginationItem(
           number = Some((2 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(2 + currentPage).url,
+          href = routes.GoodsRecordsSearchResultController.onPageLoad(2 + currentPage).url,
           ellipsis = Some(true)
         )
       )
     ),
     previous = None,
-    next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
+    next = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url))
   )
 
-  "GoodsRecords Controller" - {
+  "GoodsRecordsSearch Controller" - {
 
-    "must return OK and the correct view for a GET with records and latest records are stored" in {
+    "must return OK and the correct view for a GET with search results records" in {
+
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+      when(
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+      ) thenReturn Future
         .successful(response)
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
         Seq(Country("EC", "Ecuador"))
       )
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[OttConnector].toInstance(mockOttConnector)
@@ -148,18 +149,19 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[GoodsRecordsView]
+        val view = application.injector.instanceOf[GoodsRecordsSearchResultView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
-          form,
           response.goodsItemRecords,
           totalRecords,
           firstRecord,
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          currentPage
+          currentPage,
+          searchText,
+          numberOfPages
         )(
           request,
           messages(application)
@@ -167,33 +169,35 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return OK and the correct view for a GET with records and latest records are stored when it is a middle page" in {
+    "must return OK and the correct view for a GET with  search results records when it is a middle page" in {
 
       val middlePage = 2
+
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
       val response                 = GetRecordsResponse(
         records,
         GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
       )
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(middlePage), any())(any())) thenReturn Future
+      when(
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(middlePage), any())(any())
+      ) thenReturn Future
         .successful(response)
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
         Seq(Country("EC", "Ecuador"))
       )
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[OttConnector].toInstance(mockOttConnector)
         )
         .build()
 
-      val middleGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(middlePage).url
+      val middleGoodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoad(middlePage).url
 
       val pagination = Pagination(
         items = Option(
@@ -201,25 +205,25 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             PaginationItem(
               number = Some((middlePage - 1).toString),
               current = Some(false),
-              href = routes.GoodsRecordsController.onPageLoad(middlePage - 1).url,
+              href = routes.GoodsRecordsSearchResultController.onPageLoad(middlePage - 1).url,
               ellipsis = Some(false)
             ),
             PaginationItem(
               number = Some(middlePage.toString),
               current = Some(true),
-              href = routes.GoodsRecordsController.onPageLoad(middlePage).url,
+              href = routes.GoodsRecordsSearchResultController.onPageLoad(middlePage).url,
               ellipsis = Some(false)
             ),
             PaginationItem(
               number = Some((1 + middlePage).toString),
               current = Some(false),
-              href = routes.GoodsRecordsController.onPageLoad(1 + middlePage).url,
+              href = routes.GoodsRecordsSearchResultController.onPageLoad(1 + middlePage).url,
               ellipsis = Some(false)
             )
           )
         ),
-        previous = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(middlePage - 1).url)),
-        next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + middlePage).url))
+        previous = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(middlePage - 1).url)),
+        next = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(1 + middlePage).url))
       )
 
       running(application) {
@@ -227,21 +231,22 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[GoodsRecordsView]
+        val view = application.injector.instanceOf[GoodsRecordsSearchResultView]
 
         val firstRecord = 11
         val lastRecord  = 20
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
-          form,
           response.goodsItemRecords,
           totalRecords,
           firstRecord,
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          middlePage
+          middlePage,
+          searchText,
+          numberOfPages
         )(
           request,
           messages(application)
@@ -249,14 +254,31 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return OK and the correct view for a GET without records" in {
+    "must redirect to no records page GET without records" in {
+
+      val emptyResultResponse = GetRecordsResponse(
+        Seq.empty,
+        GoodsRecordsPagination(0, 0, 1, None, None)
+      )
+
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(0)
+      when(
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+      ) thenReturn Future
+        .successful(emptyResultResponse)
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        Seq(Country("EC", "Ecuador"))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
         .build()
 
       running(application) {
@@ -265,29 +287,13 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
+        redirectLocation(result).value mustEqual routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
       }
     }
 
-    "must return OK and the empty view onPageLoadNoRecords" in {
-      val emptyGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoadNoRecords().url
+    "must redirect to JourneyRecovery when search text is not defined in onPageLoad" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
-      val view        = application.injector.instanceOf[GoodsRecordsEmptyView]
-
-      running(application) {
-        val request = FakeRequest(GET, emptyGoodsRecordsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to JourneyRecovery when page number is less than 1" in {
-      val badPageRoute = routes.GoodsRecordsController.onPageLoad(0).url
+      val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoad(1).url
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -301,85 +307,16 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to result page when valid data is submitted via onSearch" in {
+    "must redirect to JourneyRecovery when page number is less than 1" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoad(0).url
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, goodsRecordsRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsSearchResultController.onPageLoad(1).url
-      }
-    }
-
-    "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(response)
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsRecordsRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
-        val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[GoodsRecordsView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(
-          boundForm,
-          response.goodsItemRecords,
-          totalRecords,
-          firstRecord,
-          lastRecord,
-          Seq(Country("EC", "Ecuador")),
-          pagination,
-          currentPage
-        )(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no userAnswers existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, goodsRecordsRoute)
+        val request = FakeRequest(GET, badPageRoute)
 
         val result = route(application, request).value
 
@@ -388,14 +325,34 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must return OK and the empty view onPageLoadNoRecords" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+
+      val emptyGoodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .build()
+      val view        = application.injector.instanceOf[GoodsRecordsSearchResultEmptyView]
 
       running(application) {
-        val request =
-          FakeRequest(POST, goodsRecordsRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        val request = FakeRequest(GET, emptyGoodsRecordsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(searchText)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to JourneyRecovery when search text is not defined in onPageLoadNoRecords" in {
+
+      val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, badPageRoute)
 
         val result = route(application, request).value
 
@@ -403,5 +360,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
+
   }
 }

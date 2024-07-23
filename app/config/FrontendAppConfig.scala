@@ -21,7 +21,6 @@ import models.EnrolmentConfig
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.StringContextOps
 @Singleton
 class FrontendAppConfig @Inject() (configuration: Configuration) {
 
@@ -48,6 +47,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")
+
+  val requestingAdviceEnabled: Boolean =
+    configuration.get[Boolean]("features.requesting-advice")
 
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),

@@ -18,8 +18,7 @@ package repositories
 
 import config.FrontendAppConfig
 import models.UserAnswers
-import models.helper.{CategorisationJourney, CreateProfileJourney, CreateRecordJourney, Journey, RequestAdviceJourney}
-import org.mongodb.scala.bson.Document
+import models.helper._
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
 import play.api.libs.json.Format
@@ -102,7 +101,7 @@ class SessionRepository @Inject() (
     collection
       .updateOne(
         filter = byId(id),
-        update = Updates.combine((updates :+ Updates.set("lastUpdated", Instant.now())): _*)
+        update = Updates.combine(updates :+ Updates.set("lastUpdated", Instant.now()): _*)
       )
       .toFuture()
       .map(_ => true)

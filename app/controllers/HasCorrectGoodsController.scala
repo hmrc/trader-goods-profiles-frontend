@@ -198,9 +198,18 @@ class HasCorrectGoodsController @Inject() (
               newCommodityCategorisation
             )
           )
+      // Any answered Supplementary Unit needs to be removed if different on new commodity
+      updatedAnswersSuppUnit  <- Future.fromTry(
+                                   cleanupSupplementaryUnit(
+                                     updatedAnswersCleanedUp,
+                                     recordId,
+                                     oldCommodityCategorisation.measurementUnit,
+                                     newCommodityCategorisation.measurementUnit
+                                   )
+                                 )
       updatedAnswersRecategorising <-
-        Future.fromTry(updatedAnswersCleanedUp.set(RecategorisingQuery(recordId), needToRecategorise))
-      _                            <- sessionRepository.set(updatedAnswersRecategorising)
+        Future.fromTry(updatedAnswersSuppUnit.set(RecategorisingQuery(recordId), needToRecategorise))
+      _ <- sessionRepository.set(updatedAnswersRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
@@ -229,6 +238,18 @@ class HasCorrectGoodsController @Inject() (
         oldCommodityCategorisation,
         newCommodityCategorisation
       )
+    } else {
+      Success(userAnswers)
+    }
+
+  private def cleanupSupplementaryUnit(
+    userAnswers: UserAnswers,
+    recordId: String,
+    oldMeasurementUnit: Option[String],
+    newMeasurementUnit: Option[String]
+  ): Try[UserAnswers] =
+    if (oldMeasurementUnit != newMeasurementUnit) {
+      userAnswers.remove(HasSupplementaryUnitPage(recordId))
     } else {
       Success(userAnswers)
     }

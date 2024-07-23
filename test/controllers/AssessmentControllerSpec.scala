@@ -23,7 +23,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.AssessmentPage
 import play.api.inject.bind
@@ -284,7 +284,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockRepository, times(1)).set(eqTo(expectedAnswers))
+          verify(mockRepository).set(eqTo(expectedAnswers))
         }
       }
 

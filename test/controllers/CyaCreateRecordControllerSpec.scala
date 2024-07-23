@@ -19,8 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.helper.{CreateProfileJourney, CreateRecordJourney}
-import models.router.responses.CreateGoodsRecordResponse
+import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -205,14 +204,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
-            verify(mockConnector, times(1)).submitGoodsRecord(eqTo(expectedPayload))(any())
+            verify(mockConnector).submitGoodsRecord(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, times(1))
+              verify(mockAuditService)
                 .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
             }
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
+              verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
             }
           }
         }
@@ -249,7 +248,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
             }
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateRecordJourney))
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateRecordJourney))
             }
           }
 
@@ -284,7 +283,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             await(route(application, request).value)
           }
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
           }
           withClue("must not cleanse the user answers data when connector fails") {

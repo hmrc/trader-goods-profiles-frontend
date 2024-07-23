@@ -31,13 +31,12 @@ import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.LongerCommodityQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
@@ -532,15 +531,15 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .onPageLoad(testRecordId, Category1)
                 .url
               //TODO update with new expected - Why was this TODO in main?
-//              verify(mockConnector, times(1))
+//              verify(mockConnector)
 //                .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
 
               withClue("audit event has been fired") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
               }
               withClue("must cleanse the user answers data") {
-                verify(sessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
+                verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
               }
 
             }
@@ -580,11 +579,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .onPageLoad(testRecordId, Category1)
                 .url
               //TODO update with new expected
-//              verify(mockConnector, times(1))
+//              verify(mockConnector)
 //                .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
 
               withClue("audit event has been fired") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
               }
 
@@ -624,7 +623,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               withClue("connector was called even though audit failed") {
 //TODO what is expected here now??
-                //                verify(mockConnector, times(1))
+                //                verify(mockConnector)
 //                  .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
               }
             }
@@ -661,7 +660,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .url
             verify(mockConnector, never()).updateCategoryForGoodsRecord(any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
             }
           }
         }
@@ -700,7 +699,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           }
 
           withClue("audit event has been fired even though connector failed") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
           }
           withClue("must not cleanse the user answers data when connector fails") {

@@ -22,7 +22,7 @@ import models.Commodity
 import models.helper.CreateRecordJourney
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{reset, verify, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -87,7 +87,7 @@ class OttConnectorSpec
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
-          verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+          verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
         }
 
       }
@@ -107,7 +107,7 @@ class OttConnectorSpec
           .futureValue mustBe commodity
 
         withClue("must have audited the request") {
-          verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+          verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
         }
       }
 
@@ -127,7 +127,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -145,7 +145,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -162,7 +162,7 @@ class OttConnectorSpec
         .futureValue
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -184,7 +184,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -206,7 +206,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(any)
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
       }
     }
 
@@ -286,7 +286,7 @@ class OttConnectorSpec
       connectorResponse.descendents.size mustEqual 3
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(
           any
         )
       }
@@ -306,7 +306,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(
           any
         )
       }
@@ -326,7 +326,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(
           any
         )
       }
@@ -345,7 +345,7 @@ class OttConnectorSpec
         .futureValue
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(
           any
         )
       }
@@ -369,7 +369,7 @@ class OttConnectorSpec
       connectorFailure.isInstanceOf[Exception] mustBe true
 
       withClue("must have audited the request") {
-        verify(auditService, times(1)).auditOttCall(any, any, any, any, any, any)(
+        verify(auditService).auditOttCall(any, any, any, any, any, any)(
           any
         )
       }

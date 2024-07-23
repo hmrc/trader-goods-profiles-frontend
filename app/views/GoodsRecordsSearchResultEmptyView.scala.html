@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package services
+@this(layout: templates.Layout)
 
-import com.google.inject.Inject
-import models.helper.Journey
-import play.api.Logging
-import repositories.SessionRepository
+@(searchText: String)(implicit request: Request[_], messages: Messages)
 
-import scala.concurrent.Future
+@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResultEmptyView.title"))) {
 
-class DataCleansingService @Inject() (sessionRepository: SessionRepository) extends Logging {
+    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResultEmptyView.h1")</h1>
 
-  def deleteMongoData(id: String, journey: Journey): Future[Boolean] =
-    sessionRepository.clearData(id, journey)
+    <p class="govuk-body">@messages("goodsRecordSearchResultEmptyView.p1", searchText)</p>
 
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("goodsRecordSearchResultEmptyView.p2.linkText")</a></p>
 }
