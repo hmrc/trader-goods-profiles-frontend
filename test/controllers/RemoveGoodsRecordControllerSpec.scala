@@ -33,7 +33,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
@@ -46,26 +45,13 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
-  private val record = goodsRecordResponse(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
-  )
-
   "RemoveGoodsRecord Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val mockConnector = mock[GoodsRecordConnector]
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockConnector)
-          )
           .build()
-
-      when(mockConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.successful(record))
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
@@ -84,17 +70,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the alternate correct view for a GET with different url" in {
 
-      val mockConnector = mock[GoodsRecordConnector]
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockConnector)
-          )
           .build()
-
-      when(mockConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.successful(record))
 
       running(application) {
         val request =
