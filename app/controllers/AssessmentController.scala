@@ -68,11 +68,9 @@ class AssessmentController @Inject() (
       } yield {
         val areWeRecategorising = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
 
-        val hasAssessmentBeenAnswered = request.userAnswers.get(AssessmentPage(recordId, index)) match {
-          case Some(NotAnsweredYet) => false
-          case Some(_)              => true
-          case None                 => false
-        }
+        val hasAssessmentBeenAnswered =
+          request.userAnswers.get(AssessmentPage(recordId, index)).exists(_ != NotAnsweredYet)
+
         if (exemptions.isEmpty) {
           Future.successful(
             Redirect(

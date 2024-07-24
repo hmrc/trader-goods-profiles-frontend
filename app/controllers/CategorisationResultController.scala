@@ -43,12 +43,10 @@ class CategorisationResultController @Inject() (
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      if (request.userAnswers.get(RecategorisingQuery(recordId)).isDefined) {
-        for {
-          updatedAnswers <- Future.fromTry(request.userAnswers.remove(RecategorisingQuery(recordId)))
-          _              <- sessionRepository.set(updatedAnswers)
-        } yield updatedAnswers
-      }
+      for {
+        updatedAnswers <- Future.fromTry(request.userAnswers.remove(RecategorisingQuery(recordId)))
+        _              <- sessionRepository.set(updatedAnswers)
+      } yield updatedAnswers
       Ok(view(recordId, scenario))
     }
 }
