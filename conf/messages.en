@@ -283,6 +283,7 @@ assessment.error.required.onlyOne = Select yes if you meet the condition
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 assessment.insetText = You could be asked up to 25 different category assessments for each good.
+assessment.change.hidden = Category assessment {0}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)

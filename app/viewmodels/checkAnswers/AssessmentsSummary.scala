@@ -51,7 +51,7 @@ object AssessmentsSummary {
           ActionItemViewModel(
             "site.change",
             routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
-          ).withVisuallyHiddenText(messages("assessment.change.hidden"))
+          ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
         )
       )
     }
