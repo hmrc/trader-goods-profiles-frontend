@@ -38,7 +38,7 @@ class ProfileController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  authenticateProfile: ProfileAuthenticateAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: ProfileView
 )(implicit ec: ExecutionContext)
@@ -46,7 +46,7 @@ class ProfileController @Inject() (
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] =
-    (identify andThen authenticateProfile andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       cleanseProfileData(request.userAnswers).flatMap { _ =>
         traderProfileConnector.getTraderProfile(request.eori).map { profile =>
           val detailsList = SummaryListViewModel(
