@@ -199,7 +199,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] = {
+  ): Future[Either[Done, GetRecordsResponse]] = {
 
     val queryParams = Map(
       "page" -> page.toString,
@@ -210,6 +210,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[GetRecordsResponse])
+      .map { response =>
+        response.status match {
+          case OK       => Right(response.json.as[GetRecordsResponse])
+          case ACCEPTED => Left(Done)
+        }
+      }
   }
 }

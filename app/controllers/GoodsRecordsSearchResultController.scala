@@ -51,36 +51,43 @@ class GoodsRecordsSearchResultController @Inject() (
           if (page < 1) {
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
-            for {
-              searchResponse <-
-                goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize)
-              countries      <- ottConnector.getCountries
-            } yield
-              if (searchResponse.pagination.totalRecords != 0) {
-                val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
-                Ok(
-                  view(
-                    searchResponse.goodsItemRecords,
-                    searchResponse.pagination.totalRecords,
-                    getFirstRecordIndex(searchResponse.pagination, pageSize),
-                    getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
-                    countries,
-                    getSearchPagination(
-                      searchResponse.pagination.currentPage,
-                      searchResponse.pagination.totalPages
-                    ),
-                    page,
-                    searchText,
-                    searchResponse.pagination.totalPages
+            goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize).flatMap {
+              case Right(searchResponse) =>
+                if (searchResponse.pagination.totalRecords != 0) {
+                  ottConnector.getCountries.map { countries =>
+                    val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
+                    Ok(
+                      view(
+                        searchResponse.goodsItemRecords,
+                        searchResponse.pagination.totalRecords,
+                        getFirstRecordIndex(searchResponse.pagination, pageSize),
+                        getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
+                        countries,
+                        getSearchPagination(
+                          searchResponse.pagination.currentPage,
+                          searchResponse.pagination.totalPages
+                        ),
+                        page,
+                        searchText,
+                        searchResponse.pagination.totalPages
+                      )
+                    )
+                  }
+                } else {
+                  request.userAnswers.get(GoodsRecordsPage) match {
+                    case Some(searchText) => Future.successful(Ok(emptyView(searchText)))
+                    case None             => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+                  }
+                }
+              case Left(_)               =>
+                Future.successful(
+                  Redirect(
+                    routes.GoodsRecordsLoadingController
+                      .onPageLoad(Some(routes.GoodsRecordsController.onPageLoad(page).url))
                   )
                 )
-              } else {
-                request.userAnswers.get(GoodsRecordsPage) match {
-                  case Some(searchText) => Ok(emptyView(searchText))
-                  case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-                }
-              }
 
+            }
           }
         case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }

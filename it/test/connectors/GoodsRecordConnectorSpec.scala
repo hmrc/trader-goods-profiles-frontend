@@ -561,9 +561,22 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe getRecordsResponse
-        .validate[GetRecordsResponse]
-        .get
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe Right(
+        getRecordsResponse
+          .validate[GetRecordsResponse]
+          .get
+      )
+    }
+
+    "must return done when the status is ACCEPTED" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(ACCEPTED))
+      )
+
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe Left(Done)
     }
 
     "must return a failed future when the server returns an error" in {
