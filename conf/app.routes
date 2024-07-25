@@ -237,3 +237,7 @@ GET        /update-profile/removing-niphl-number                                
 POST       /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
 
 GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()
+
+
+GET        /*path                                                                           controllers.PageNotFoundController.onPageLoad(path: String)
+
