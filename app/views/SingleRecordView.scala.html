@@ -57,7 +57,10 @@
     @govukSummaryList(detailsList)
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
     @govukSummaryList(categorisationList)
-    <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
+    @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
+        <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
+        @govukSummaryList(supplementaryUnitList)
+    }
     @govukSummaryList(supplementaryUnitList)
     @if(appConfig.requestingAdviceEnabled) {
         <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>

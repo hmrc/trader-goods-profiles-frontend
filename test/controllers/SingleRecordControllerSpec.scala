@@ -107,7 +107,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val supplementaryUnitList = SummaryListViewModel(
         rows = Seq(
-          HasSupplementaryUnitSummary.row(record.supplementaryUnit.isDefined, testRecordId),
+          HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, testRecordId),
           SupplementaryUnitSummary
             .row(record.supplementaryUnit, record.measurementUnit, testRecordId)
         ).flatten
@@ -159,10 +159,40 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         val supplementaryValue = row.value.content match {
           case Text(innerContent) => innerContent
-
         }
 
         supplementaryValue must equal("1234.0 grams")
+
+      }
+    }
+
+    "must return none when measurement unit is empty" in {
+
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      implicit val localMessages: Messages = messages(application)
+
+      running(application) {
+        val row = HasSupplementaryUnitSummary
+          .row(None, None, testRecordId)
+        row mustBe None
+
+      }
+    }
+
+    "must show hasSupplementaryUnit two when measurement unit is not empty and supplementary unit is No" in {
+
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      implicit val localMessages: Messages = messages(application)
+
+      running(application) {
+        val row                  = HasSupplementaryUnitSummary
+          .row(None, recordWithSupplementaryUnit.measurementUnit, testRecordId)
+          .value
+        val hasSupplementaryUnit = row.value.content match {
+          case Text(innerContent) => innerContent
+        }
+
+        hasSupplementaryUnit contains "Do you want to add the supplementary unit?"
 
       }
     }

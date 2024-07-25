@@ -81,7 +81,7 @@ class SingleRecordController @Inject() (
         )
         val supplementaryUnitList = SummaryListViewModel(
           rows = Seq(
-            HasSupplementaryUnitSummary.row(record.supplementaryUnit.isDefined, recordId),
+            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
             SupplementaryUnitSummary
               .row(record.supplementaryUnit, record.measurementUnit, recordId)
           ).flatten
