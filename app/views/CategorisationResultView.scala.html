@@ -47,7 +47,10 @@
     }
 }
 
-@layout(pageTitle = titleNoForm(messages("categorisationResult.title"))) {
+@layout(
+    pageTitle = titleNoForm(messages("categorisationResult.title")),
+    showBackLink = false
+) {
 
     @panel
 
