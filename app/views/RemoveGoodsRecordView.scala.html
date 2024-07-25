@@ -46,8 +46,8 @@
                 field = form("value"),
                 legend = Legend(content = "removeGoodsRecord.question", classes = "govuk-visually-hidden"),
                   items = Seq(
-                                RadioItem(content = messages("removeGoodsRecord.yes"), value = Some("true")),
-                                RadioItem(content = if(location == GoodsProfileLocation) { messages("removeGoodsRecord.noProfile") } else {messages("removeGoodsRecord.noRecord")}, value = Some("false"))
+                                RadioItem(content = messages("removeGoodsRecord.yes"), value = Some("true"),id = Some(s"value")),
+                                RadioItem(content = if(location == GoodsProfileLocation) { messages("removeGoodsRecord.noProfile") } else {messages("removeGoodsRecord.noRecord")}, value = Some("false"),id = Some(s"value-no"))
                             )
             )
         )
