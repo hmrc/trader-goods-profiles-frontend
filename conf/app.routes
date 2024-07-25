@@ -182,9 +182,6 @@ POST        /update-record/:recordId/categorisation/supplementary-unit-amount   
 GET         /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET        /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onPageLoad()
-POST       /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onSubmit()
-
 GET        /update-record/:recordId/categorisation/longer-commodity-code                    controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update-record/:recordId/categorisation/longer-commodity-code                    controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
@@ -192,10 +189,8 @@ POST       /update-record/:recordId/categorisation/longer-commodity-code/check  
 
 GET         /goods-profile                                                                  controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                                                  controllers.GoodsRecordsController.onSearch(page: Int)
-GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
 
 GET         /goods-profile/search-results                                                   controllers.GoodsRecordsSearchResultController.onPageLoad(page: Int)
-GET         /goods-profile/search-no-results                                                controllers.GoodsRecordsSearchResultController.onPageLoadNoRecords()
 
 GET         /remove-record/:recordId/goods-profile                                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
 GET        /remove-record/:recordId/goods-record                                            controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
@@ -237,3 +232,5 @@ GET        /update-profile/removing-niphl-number                                
 POST       /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
 
 GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()
+
+GET        /goodsRecordsLoading                       controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[String] ?= None)

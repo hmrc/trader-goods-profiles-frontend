@@ -280,14 +280,15 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           bind[OttConnector].toInstance(mockOttConnector)
         )
         .build()
+      val view        = application.injector.instanceOf[GoodsRecordsSearchResultEmptyView]
 
       running(application) {
         val request = FakeRequest(GET, goodsRecordsRoute)
 
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(searchText)(request, messages(application)).toString
       }
     }
 
@@ -314,42 +315,6 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
       val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoad(0).url
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, badPageRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must return OK and the empty view onPageLoadNoRecords" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
-
-      val emptyGoodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .build()
-      val view        = application.injector.instanceOf[GoodsRecordsSearchResultEmptyView]
-
-      running(application) {
-        val request = FakeRequest(GET, emptyGoodsRecordsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(searchText)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to JourneyRecovery when search text is not defined in onPageLoadNoRecords" in {
-
-      val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, badPageRoute)

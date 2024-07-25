@@ -16,13 +16,14 @@
 
 package connectors
 
+import cats.data.EitherT
 import config.Service
-import models.{CategoryRecord, GoodsRecord, UpdateGoodsRecord}
+import models.{CategoryRecord, GoodsRecord, RecordsSummary, UpdateGoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.NO_CONTENT
+import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -53,6 +54,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   private def checkGoodsRecordsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/checkRecords"
+
+  private def recordsSummaryUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records-summary"
 
   private def getGoodsRecordCountsUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
@@ -134,7 +138,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] = {
+  ): Future[Either[Done, GetRecordsResponse]] = {
 
     val queryParams = Map(
       "page" -> page.toString,
@@ -145,7 +149,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(goodsRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[GetRecordsResponse])
+      .map { response =>
+        response.status match {
+          case OK       => Right(response.json.as[GetRecordsResponse])
+          case ACCEPTED => Left(Done)
+        }
+      }
   }
 
   def getRecordsCount(
@@ -159,26 +168,14 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.json.as[Int])
 
-  def storeAllRecords(
+  def getRecordsSummary(
     eori: String
-  )(implicit hc: HeaderCarrier): Future[Done] =
+  )(implicit hc: HeaderCarrier): Future[RecordsSummary] =
     httpClient
-      .head(storeAllGoodsRecordsUrl(eori))
+      .head(recordsSummaryUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(_ => Done)
-
-  def doRecordsExist(
-    eori: String
-  )(implicit hc: HeaderCarrier): Future[Boolean] =
-    httpClient
-      .head(checkGoodsRecordsUrl(eori))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(_ => true)
-      .recover { case _: NotFoundException =>
-        false
-      }
+      .map(response => response.json.as[RecordsSummary])
 
   def filterRecordsByField(
     eori: String,

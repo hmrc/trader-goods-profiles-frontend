@@ -75,17 +75,13 @@ class GoodsRecordsSearchResultController @Inject() (
                   )
                 )
               } else {
-                Redirect(routes.GoodsRecordsSearchResultController.onPageLoadNoRecords())
+                request.userAnswers.get(GoodsRecordsPage) match {
+                  case Some(searchText) => Ok(emptyView(searchText))
+                  case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+                }
               }
           }
         case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
-  }
-
-  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    request.userAnswers.get(GoodsRecordsPage) match {
-      case Some(searchText) => Ok(emptyView(searchText))
-      case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-    }
   }
 }

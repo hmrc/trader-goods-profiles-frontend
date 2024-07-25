@@ -22,8 +22,10 @@ import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
@@ -57,41 +59,46 @@ class GoodsRecordsController @Inject() (
         Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       } else {
         goodsRecordConnector.getRecordsCount(request.eori).flatMap {
-          case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
+          case 0 => Future.successful(Ok(emptyView()))
           case _ =>
-            for {
-              goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
-              countries           <- ottConnector.getCountries
-            } yield
-              if (goodsRecordResponse.pagination.totalRecords != 0) {
-                //TODO cleanse GoodsRecordsPage from session
-                val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-                Ok(
-                  view(
-                    form,
-                    goodsRecordResponse.goodsItemRecords,
-                    goodsRecordResponse.pagination.totalRecords,
-                    getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
-                    getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
-                    countries,
-                    getPagination(
-                      goodsRecordResponse.pagination.currentPage,
-                      goodsRecordResponse.pagination.totalPages
-                    ),
-                    page
+            goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
+              case Right(goodsRecordResponse) =>
+                if (goodsRecordResponse.pagination.totalRecords != 0) {
+                  ottConnector.getCountries.map { countries =>
+                    //TODO cleanse GoodsRecordsPage from session
+                    val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                    Ok(
+                      view(
+                        form,
+                        goodsRecordResponse.goodsItemRecords,
+                        goodsRecordResponse.pagination.totalRecords,
+                        getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                        getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
+                        countries,
+                        getPagination(
+                          goodsRecordResponse.pagination.currentPage,
+                          goodsRecordResponse.pagination.totalPages
+                        ),
+                        page
+                      )
+                    ).removingFromSession(dataUpdated, pageUpdated)
+                  }
+                } else {
+                  Future.successful(
+                    Ok(emptyView())
+                      .removingFromSession(dataUpdated, pageUpdated)
                   )
-                ).removingFromSession(dataUpdated, pageUpdated)
-              } else {
-                Redirect(routes.GoodsRecordsController.onPageLoadNoRecords())
-                  .removingFromSession(dataUpdated, pageUpdated)
-              }
+                }
+              case Left(_)                    =>
+                Future.successful(
+                  Redirect(
+                    routes.GoodsRecordsLoadingController
+                      .onPageLoad(Some(routes.GoodsRecordsController.onPageLoad(page).url))
+                  )
+                )
+            }
         }
       }
-    }
-
-  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      Ok(emptyView())
   }
 
   def onSearch(page: Int): Action[AnyContent] =
@@ -100,26 +107,35 @@ class GoodsRecordsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            for {
-              goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
-              countries           <- ottConnector.getCountries
-            } yield {
-              val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-              BadRequest(
-                view(
-                  formWithErrors,
-                  goodsRecordResponse.goodsItemRecords,
-                  goodsRecordResponse.pagination.totalRecords,
-                  getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
-                  getLastRecordIndex(firstRecord, pageSize),
-                  countries,
-                  getPagination(
-                    goodsRecordResponse.pagination.currentPage,
-                    goodsRecordResponse.pagination.totalPages
-                  ),
-                  page
+            goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
+              case Right(goodsRecordResponse) =>
+                ottConnector.getCountries.map { countries =>
+                  val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      goodsRecordResponse.goodsItemRecords,
+                      goodsRecordResponse.pagination.totalRecords,
+                      getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                      getLastRecordIndex(firstRecord, pageSize),
+                      countries,
+                      getPagination(
+                        goodsRecordResponse.pagination.currentPage,
+                        goodsRecordResponse.pagination.totalPages
+                      ),
+                      page
+                    )
+                  )
+                }
+              case Left(_)                    =>
+                Future.successful(
+                  Redirect(
+                    routes.GoodsRecordsLoadingController
+                      .onPageLoad(
+                        Some(routes.GoodsRecordsController.onPageLoad(page).url)
+                      )
+                  )
                 )
-              )
             },
           value =>
             for {
