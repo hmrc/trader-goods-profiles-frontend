@@ -31,10 +31,10 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ValidateProfileActionSpec extends SpecBase with MockitoSugar {
+class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
 
   class Harness(mockTraderProfileConnector: TraderProfileConnector)
-      extends ValidateProfileActionImpl(mockTraderProfileConnector) {
+      extends ProfileAuthenticateActionImpl(mockTraderProfileConnector) {
     def callFilter[A](request: IdentifierRequest[A]): Future[Option[Result]] = filter(request)
   }
 

@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.TraderProfileConnector
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidateProfileAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.UserAnswers
 import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,15 +38,15 @@ class ProfileController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  validateProfile: ValidateProfileAction,
+  authenticateProfile: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: ProfileView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen validateProfile andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(): Action[AnyContent] =
+    (identify andThen authenticateProfile andThen getData andThen requireData).async { implicit request =>
       cleanseProfileData(request.userAnswers).flatMap { _ =>
         traderProfileConnector.getTraderProfile(request.eori).map { profile =>
           val detailsList = SummaryListViewModel(
@@ -62,7 +62,7 @@ class ProfileController @Inject() (
           Ok(view(detailsList))
         }
       }
-  }
+    }
 
   def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
     for {

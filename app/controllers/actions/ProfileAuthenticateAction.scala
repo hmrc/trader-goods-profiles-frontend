@@ -27,10 +27,10 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ValidateProfileActionImpl @Inject() (
+class ProfileAuthenticateActionImpl @Inject() (
   traderProfileConnector: TraderProfileConnector
 )(implicit val executionContext: ExecutionContext)
-    extends ValidateProfileAction {
+    extends ProfileAuthenticateAction {
 
   def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
@@ -41,4 +41,4 @@ class ValidateProfileActionImpl @Inject() (
   }
 }
 
-trait ValidateProfileAction extends ActionFilter[IdentifierRequest]
+trait ProfileAuthenticateAction extends ActionFilter[IdentifierRequest]

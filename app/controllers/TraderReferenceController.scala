@@ -42,7 +42,7 @@ class TraderReferenceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  validateProfile: ValidateProfileAction,
+  authenticateProfile: ProfileAuthenticateAction,
   auditService: AuditService,
   formProvider: TraderReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -56,7 +56,7 @@ class TraderReferenceController @Inject() (
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen validateProfile andThen getData andThen requireData) { implicit request =>
+    (identify andThen authenticateProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(TraderReferencePage) match {
         case None        => form
         case Some(value) => form.fill(value)

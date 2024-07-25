@@ -28,13 +28,13 @@ class HomePageController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getOrCreate: DataRetrievalOrCreateAction,
-  validateProfile: ValidateProfileAction,
+  authenticateProfile: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen validateProfile andThen getOrCreate) { implicit request =>
+  def onPageLoad: Action[AnyContent] = (identify andThen authenticateProfile andThen getOrCreate) { implicit request =>
     Ok(view())
   }
 }
