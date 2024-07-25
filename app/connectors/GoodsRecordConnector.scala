@@ -157,17 +157,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       }
   }
 
-  def getRecordsCount(
-    eori: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Int] =
-    httpClient
-      .get(getGoodsRecordCountsUrl(eori))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(response => response.json.as[Int])
-
   def getRecordsSummary(
     eori: String
   )(implicit hc: HeaderCarrier): Future[RecordsSummary] =
@@ -183,7 +172,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     field: String
   )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] = {
+  ): Future[Either[Done, GetRecordsResponse]] = {
 
     val queryParams = Map(
       "searchTerm" -> searchTerm,
@@ -194,7 +183,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(filterRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[GetRecordsResponse])
+      .map { response =>
+        response.status match {
+          case OK       => Right(response.json.as[GetRecordsResponse])
+          case ACCEPTED => Left(Done)
+        }
+      }
   }
 
   def searchRecords(

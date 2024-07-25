@@ -492,44 +492,6 @@ class GoodsRecordConnectorSpec
     }
   }
 
-  ".getRecordsCount" - {
-
-    val getRecordsCountUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/count"
-
-    "must get the number of records" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(getRecordsCountUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody("3"))
-      )
-
-      connector.getRecordsCount(testEori).futureValue mustBe 3
-    }
-
-    "must return 0 if there are no records" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(getRecordsCountUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody("0"))
-      )
-
-      connector.getRecordsCount(testEori).futureValue mustBe 0
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(getRecordsCountUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(serverError())
-      )
-
-      connector.getRecordsCount(testEori).failed.futureValue
-    }
-  }
-
   ".filterRecordsByField" - {
 
     val filterRecordsUrl =
@@ -543,9 +505,22 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe getRecordsResponse
-        .validate[GetRecordsResponse]
-        .get
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe Right(
+        getRecordsResponse
+          .validate[GetRecordsResponse]
+          .get
+      )
+    }
+
+    "must return done when the status is ACCEPTED" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(filterRecordsUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(ACCEPTED))
+      )
+
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe Left(Done)
     }
 
     "must return a failed future when the server returns an error" in {

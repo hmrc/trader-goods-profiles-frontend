@@ -21,7 +21,7 @@ import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.router.responses.GetRecordsResponse
+import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Country, GoodsRecordsPagination}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -132,8 +132,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(Right(response))
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -178,8 +176,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(Left(Done))
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -216,8 +212,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       )
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(middlePage), any())(any())) thenReturn Future
         .successful(Right(response))
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -291,8 +285,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET without records" in {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(0)
+
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        .successful(Right(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 0, None, None))))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(

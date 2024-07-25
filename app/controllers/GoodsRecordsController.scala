@@ -58,45 +58,41 @@ class GoodsRecordsController @Inject() (
       if (page < 1) {
         Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       } else {
-        goodsRecordConnector.getRecordsCount(request.eori).flatMap {
-          case 0 => Future.successful(Ok(emptyView()))
-          case _ =>
-            goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-              case Right(goodsRecordResponse) =>
-                if (goodsRecordResponse.pagination.totalRecords != 0) {
-                  ottConnector.getCountries.map { countries =>
-                    //TODO cleanse GoodsRecordsPage from session
-                    val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-                    Ok(
-                      view(
-                        form,
-                        goodsRecordResponse.goodsItemRecords,
-                        goodsRecordResponse.pagination.totalRecords,
-                        getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
-                        getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
-                        countries,
-                        getPagination(
-                          goodsRecordResponse.pagination.currentPage,
-                          goodsRecordResponse.pagination.totalPages
-                        ),
-                        page
-                      )
-                    ).removingFromSession(dataUpdated, pageUpdated)
-                  }
-                } else {
-                  Future.successful(
-                    Ok(emptyView())
-                      .removingFromSession(dataUpdated, pageUpdated)
+        goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
+          case Right(goodsRecordResponse) =>
+            if (goodsRecordResponse.pagination.totalRecords != 0) {
+              ottConnector.getCountries.map { countries =>
+                //TODO cleanse GoodsRecordsPage from session
+                val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                Ok(
+                  view(
+                    form,
+                    goodsRecordResponse.goodsItemRecords,
+                    goodsRecordResponse.pagination.totalRecords,
+                    getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                    getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
+                    countries,
+                    getPagination(
+                      goodsRecordResponse.pagination.currentPage,
+                      goodsRecordResponse.pagination.totalPages
+                    ),
+                    page
                   )
-                }
-              case Left(_)                    =>
-                Future.successful(
-                  Redirect(
-                    routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(routes.GoodsRecordsController.onPageLoad(page).url))
-                  )
-                )
+                ).removingFromSession(dataUpdated, pageUpdated)
+              }
+            } else {
+              Future.successful(
+                Ok(emptyView())
+                  .removingFromSession(dataUpdated, pageUpdated)
+              )
             }
+          case Left(_)                    =>
+            Future.successful(
+              Redirect(
+                routes.GoodsRecordsLoadingController
+                  .onPageLoad(Some(routes.GoodsRecordsController.onPageLoad(page).url))
+              )
+            )
         }
       }
   }
