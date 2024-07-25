@@ -80,6 +80,7 @@ class GoodsRecordsSearchResultController @Inject() (
                   case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
                 }
               }
+
           }
         case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
