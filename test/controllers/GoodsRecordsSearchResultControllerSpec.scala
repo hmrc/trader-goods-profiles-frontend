@@ -22,6 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination, UserAnswers}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -166,6 +167,41 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           request,
           messages(application)
         ).toString
+      }
+    }
+
+    "must redirect to the loading page when the records need updating" in {
+
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+
+      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+      when(
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+      ) thenReturn Future
+        .successful(Left(Done))
+
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        Seq(Country("EC", "Ecuador"))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, goodsRecordsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
+          .onPageLoad(Some(goodsRecordsRoute))
+          .url
       }
     }
 

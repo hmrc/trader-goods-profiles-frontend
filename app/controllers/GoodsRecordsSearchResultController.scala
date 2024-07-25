@@ -83,7 +83,7 @@ class GoodsRecordsSearchResultController @Inject() (
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(routes.GoodsRecordsController.onPageLoad(page).url))
+                      .onPageLoad(Some(routes.GoodsRecordsSearchResultController.onPageLoad(page).url))
                   )
                 )
 
