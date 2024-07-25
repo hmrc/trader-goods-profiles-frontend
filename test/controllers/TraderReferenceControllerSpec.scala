@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import forms.TraderReferenceFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.helper.GoodsDetailsUpdate
@@ -69,6 +69,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
     GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
   )
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "TraderReference Controller" - {
 
     "for create journey" - {
@@ -78,7 +81,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, traderReferenceRoute)
@@ -96,7 +101,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val userAnswers = UserAnswers(userAnswersId).set(TraderReferencePage, "answer").success.value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, traderReferenceRoute)
@@ -213,7 +220,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, traderReferenceRoute)

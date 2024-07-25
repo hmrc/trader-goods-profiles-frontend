@@ -33,6 +33,7 @@ class CreateRecordStartController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  validateProfile: ValidateProfileAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordStartView,
   navigator: Navigator,
@@ -40,8 +41,9 @@ class CreateRecordStartController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Ok(view())
+  def onPageLoad: Action[AnyContent] = (identify andThen validateProfile andThen getData andThen requireData) {
+    implicit request =>
+      Ok(view())
   }
 
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>

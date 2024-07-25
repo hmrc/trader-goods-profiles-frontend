@@ -42,6 +42,7 @@ class TraderReferenceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  validateProfile: ValidateProfileAction,
   auditService: AuditService,
   formProvider: TraderReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -54,8 +55,8 @@ class TraderReferenceController @Inject() (
   private val form                                                         = formProvider()
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen validateProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(TraderReferencePage) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -64,7 +65,7 @@ class TraderReferenceController @Inject() (
       val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>

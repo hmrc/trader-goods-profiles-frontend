@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.TraderProfileConnector
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidateProfileAction}
 import models.UserAnswers
 import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,28 +38,30 @@ class ProfileController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  validateProfile: ValidateProfileAction,
   val controllerComponents: MessagesControllerComponents,
   view: ProfileView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    cleanseProfileData(request.userAnswers).flatMap { _ =>
-      traderProfileConnector.getTraderProfile(request.eori).map { profile =>
-        val detailsList = SummaryListViewModel(
-          rows = Seq(
-            Some(UkimsNumberSummary.row(profile.ukimsNumber)),
-            Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined)),
-            NirmsNumberSummary.row(profile.nirmsNumber),
-            Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
-            NiphlNumberSummary.row(profile.niphlNumber)
-          ).flatten
-        )
+  def onPageLoad(): Action[AnyContent] = (identify andThen validateProfile andThen getData andThen requireData).async {
+    implicit request =>
+      cleanseProfileData(request.userAnswers).flatMap { _ =>
+        traderProfileConnector.getTraderProfile(request.eori).map { profile =>
+          val detailsList = SummaryListViewModel(
+            rows = Seq(
+              Some(UkimsNumberSummary.row(profile.ukimsNumber)),
+              Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined)),
+              NirmsNumberSummary.row(profile.nirmsNumber),
+              Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
+              NiphlNumberSummary.row(profile.niphlNumber)
+            ).flatten
+          )
 
-        Ok(view(detailsList))
+          Ok(view(detailsList))
+        }
       }
-    }
   }
 
   def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
