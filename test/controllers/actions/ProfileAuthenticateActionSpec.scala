@@ -38,7 +38,7 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
     def callFilter[A](request: IdentifierRequest[A]): Future[Option[Result]] = filter(request)
   }
 
-  "Validate Profile Action" - {
+  "Profile Authenticate Action" - {
     "must redirect to profile setup page when profile does not exists" in {
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
