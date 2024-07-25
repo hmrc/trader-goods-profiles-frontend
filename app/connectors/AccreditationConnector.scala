@@ -31,15 +31,18 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
   ec: ExecutionContext
 ) {
 
-  private val routerBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val routerBaseUrl: Service                           = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val clientIdAndAcceptHeaders                         =
+    Seq("X-Client-ID" -> "tgp-frontend", "Accept" -> "application/vnd.hmrc.1.0+json")
 
+  //TODO call should go to data store instead of router directly
   private def accreditationUrl(eori: String, recordId: String) =
     url"$routerBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId/advice"
 
   def submitRequestAccreditation(adviceRequest: AdviceRequest)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .post(accreditationUrl(adviceRequest.eori, adviceRequest.recordId))
-      .setHeader(header = ("X-Client-ID", "tgp-frontend"))
+      .setHeader(clientIdAndAcceptHeaders: _*)
       .withBody(Json.toJson(adviceRequest))
       .execute[HttpResponse]
       .map(_ => Done)
