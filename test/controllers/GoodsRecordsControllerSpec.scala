@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
@@ -120,6 +120,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "GoodsRecords Controller" - {
 
     "must return OK and the correct view for a GET with records and latest records are stored" in {
@@ -139,7 +142,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -189,7 +193,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -256,7 +261,10 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         .successful(0)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
         .build()
 
       running(application) {
@@ -273,6 +281,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val emptyGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoadNoRecords().url
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
       val view        = application.injector.instanceOf[GoodsRecordsEmptyView]
 
@@ -289,7 +298,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to JourneyRecovery when page number is less than 1" in {
       val badPageRoute = routes.GoodsRecordsController.onPageLoad(0).url
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, badPageRoute)
@@ -310,7 +321,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -342,7 +354,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[OttConnector].toInstance(mockOttConnector)
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -376,7 +389,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no userAnswers existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, goodsRecordsRoute)
@@ -390,7 +405,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =

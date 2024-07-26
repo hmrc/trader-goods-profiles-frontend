@@ -37,6 +37,7 @@ class GoodsRecordsController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: GoodsRecordsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsView,
@@ -50,8 +51,8 @@ class GoodsRecordsController @Inject() (
   private val form     = formProvider()
   private val pageSize = 10
 
-  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(page: Int): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       if (page < 1) {
         Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       } else {
@@ -86,14 +87,15 @@ class GoodsRecordsController @Inject() (
               }
         }
       }
-  }
+    }
 
-  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Ok(emptyView())
-  }
-
-  def onSearch(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      Ok(emptyView())
+  }
+
+  def onSearch(page: Int): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -125,5 +127,5 @@ class GoodsRecordsController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(routes.GoodsRecordsSearchResultController.onPageLoad(1))
         )
-  }
+    }
 }
