@@ -45,6 +45,7 @@ class RemoveNirmsController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: RemoveNirmsFormProvider,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   traderProfileConnector: TraderProfileConnector,
   view: RemoveNirmsView,
@@ -55,37 +56,39 @@ class RemoveNirmsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        value =>
-          request.userAnswers.set(RemoveNirmsPage, value) match {
-            case Success(answers) =>
-              sessionRepository.set(answers).flatMap { _ =>
-                if (value) {
-                  traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                    TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
-                      case Right(model) =>
-                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          value =>
+            request.userAnswers.set(RemoveNirmsPage, value) match {
+              case Success(answers) =>
+                sessionRepository.set(answers).flatMap { _ =>
+                  if (value) {
+                    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+                      TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
+                        case Right(model) =>
+                          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
 
-                        for {
-                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
-                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                          for {
+                            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                          } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
+                        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                      }
                     }
+                  } else {
+                    Future.successful(Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers)))
                   }
-                } else {
-                  Future.successful(Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers)))
                 }
-              }
-          }
-      )
+            }
+        )
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {

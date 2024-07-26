@@ -44,6 +44,7 @@ class RemoveNiphlController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveNiphlFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
@@ -55,37 +56,39 @@ class RemoveNiphlController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Ok(view(form))
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        value =>
-          request.userAnswers.set(RemoveNiphlPage, value) match {
-            case Success(answers) =>
-              sessionRepository.set(answers).flatMap { _ =>
-                if (value) {
-                  traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                    TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
-                      case Right(model) =>
-                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          value =>
+            request.userAnswers.set(RemoveNiphlPage, value) match {
+              case Success(answers) =>
+                sessionRepository.set(answers).flatMap { _ =>
+                  if (value) {
+                    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+                      TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
+                        case Right(model) =>
+                          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
 
-                        for {
-                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
-                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                          for {
+                            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+                          } yield Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
+                        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                      }
                     }
+                  } else {
+                    Future.successful(Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers)))
                   }
-                } else {
-                  Future.successful(Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers)))
                 }
-              }
-          }
-      )
+            }
+        )
   }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {

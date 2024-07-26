@@ -284,7 +284,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -319,7 +320,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -347,7 +349,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -380,7 +383,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -409,7 +413,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(updatedUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -442,7 +447,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(updatedUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -467,7 +473,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
             .build()
 
         running(application) {
@@ -485,7 +494,9 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
         val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -510,7 +521,9 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, countryOfOriginRoute)
@@ -524,7 +537,9 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =

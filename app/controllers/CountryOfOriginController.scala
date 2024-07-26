@@ -114,7 +114,7 @@ class CountryOfOriginController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
 
       request.userAnswers
@@ -129,7 +129,7 @@ class CountryOfOriginController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers
         .get(CountriesQuery) match {
         case Some(countries) =>
