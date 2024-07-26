@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.GoodsRecordsPagination.firstPage
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
@@ -33,6 +33,9 @@ import scala.concurrent.Future
 
 class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar with GetRecordsResponseUtil {
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "PreviousMovementRecords Controller" - {
 
     "must return OK and the correct view for a GET when this the users first time on this page and they do have records but they have not been stored" in {
@@ -43,7 +46,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -69,7 +73,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector)
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -94,7 +99,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector)
+          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -113,14 +119,13 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
       val mockGetGoodsRecordsConnector = mock[GoodsRecordConnector]
 
-      when(mockGetGoodsRecordsConnector.storeAllRecords(any())(any())) thenReturn Future.successful(
-        Done
-      )
+      when(mockGetGoodsRecordsConnector.storeAllRecords(any())(any())) thenReturn Future.successful(Done)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector)
+            bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
