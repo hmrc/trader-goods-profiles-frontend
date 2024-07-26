@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.helper.CategorisationUpdate
 import models.{Category1NoExemptions, NormalMode, StandardNoAssessments}
 import org.apache.pekko.Done
@@ -56,6 +56,9 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     reset(mockGoodsRecordsConnector)
   }
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "CategoryGuidance Controller" - {
 
     "must call categorisation service to load and save ott info" in {
@@ -66,7 +69,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[SessionRepository].toInstance(mockSessionRepository)
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -89,7 +93,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[CategorisationService].toInstance(categorisationService)
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -113,7 +118,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -134,7 +140,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -165,7 +172,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -192,7 +200,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -226,7 +235,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[AuditService].toInstance(mockAuditService)
+          bind[AuditService].toInstance(mockAuditService),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
