@@ -77,7 +77,8 @@ class CreateRecordStartControllerSpec extends SpecBase {
           .overrides(
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[AuditService].toInstance(mockAuditService)
+            bind[AuditService].toInstance(mockAuditService),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 

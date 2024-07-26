@@ -86,8 +86,8 @@ class TraderReferenceController @Inject() (
       Ok(view(preparedForm, onSubmitAction))
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
 
       form
@@ -112,7 +112,7 @@ class TraderReferenceController @Inject() (
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
         )
-  }
+    }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

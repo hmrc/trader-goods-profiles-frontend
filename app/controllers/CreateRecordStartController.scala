@@ -46,9 +46,10 @@ class CreateRecordStartController @Inject() (
       Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    auditService.auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      auditService.auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
 
-    Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers))
+      Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers))
   }
 }
