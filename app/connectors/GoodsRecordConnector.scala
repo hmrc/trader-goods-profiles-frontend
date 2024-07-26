@@ -80,8 +80,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .post(createGoodsRecordUrl(goodsRecord.eori))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
-      .executeAndDeserialise[String]
-      .map(response => response)
+      .execute[HttpResponse]
+      .map(response => response.body)
 
   def removeGoodsRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
