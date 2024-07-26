@@ -32,7 +32,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import views.html.HasCorrectGoodsView
@@ -427,11 +427,14 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNew)))
                 .success
                 .value
+                .set(RecategorisingQuery(testRecordId), true)
+                .success
+                .value
 
               val mockCategorisationService = mock[CategorisationService]
               when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
                 .thenReturn(Future.successful(updatedUserAnswers))
-              when(mockCategorisationService.cleanupOldAssessmentAnswers(any(), any()))
+              when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
                 .thenReturn(Success(updatedUserAnswers))
 
               val application =
@@ -458,8 +461,13 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                   pageSentToNavigator.needToRecategorise mustBe true
                 }
 
-                withClue("must reset the user answers") {
-                  verify(mockCategorisationService).cleanupOldAssessmentAnswers(any(), any())
+                withClue("must update user answers for recategorisation") {
+                  verify(mockCategorisationService)
+                    .updatingAnswersForRecategorisation(any(), any(), any(), any())
+                }
+
+                withClue("must save user answers to session repository") {
+                  verify(mockSessionRepository).set(any())
                 }
 
               }

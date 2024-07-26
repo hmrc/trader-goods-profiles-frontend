@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -187,26 +187,34 @@ class HasCorrectGoodsController @Inject() (
       needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
 
       // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
-      updatedAnswersCleanedUp <-
+      updatedAnswersCleanedUp      <-
         Future
-          .fromTry(cleanupOldAssessmentAnswers(updatedCategorisationAnswers, recordId, needToRecategorise))
-
+          .fromTry(
+            cleanupOldAssessmentAnswersForRecategorisation(
+              updatedCategorisationAnswers,
+              recordId,
+              needToRecategorise,
+              oldCommodityCategorisation,
+              newCommodityCategorisation
+            )
+          )
       // Any answered Supplementary Unit needs to be removed if different on new commodity
-      updatedAnswersSuppUnit  <- Future.fromTry(
-                                   cleanupSupplementaryUnit(
-                                     updatedAnswersCleanedUp,
-                                     recordId,
-                                     oldCommodityCategorisation.measurementUnit,
-                                     newCommodityCategorisation.measurementUnit
-                                   )
-                                 )
-
-      _ <- sessionRepository.set(updatedAnswersSuppUnit)
+      updatedAnswersSuppUnit       <- Future.fromTry(
+                                        cleanupSupplementaryUnit(
+                                          updatedAnswersCleanedUp,
+                                          recordId,
+                                          oldCommodityCategorisation.measurementUnit,
+                                          newCommodityCategorisation.measurementUnit
+                                        )
+                                      )
+      updatedAnswersRecategorising <-
+        Future.fromTry(updatedAnswersSuppUnit.set(RecategorisingQuery(recordId), needToRecategorise))
+      _                            <- sessionRepository.set(updatedAnswersRecategorising)
     } yield Redirect(
       navigator.nextPage(
         HasCorrectGoodsLongerCommodityCodePage(recordId, needToRecategorise = needToRecategorise),
         mode,
-        updatedAnswersSuppUnit
+        updatedAnswersRecategorising
       )
     )
 
@@ -216,13 +224,20 @@ class HasCorrectGoodsController @Inject() (
   ) =
     !oldCommodityCategorisation.categoryAssessments.equals(newCommodityCategorisation.categoryAssessments)
 
-  private def cleanupOldAssessmentAnswers(
+  private def cleanupOldAssessmentAnswersForRecategorisation(
     userAnswers: UserAnswers,
     recordId: String,
-    needToRecategorise: Boolean
+    needToRecategorise: Boolean,
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
   ): Try[UserAnswers] =
     if (needToRecategorise) {
-      categorisationService.cleanupOldAssessmentAnswers(userAnswers, recordId)
+      categorisationService.updatingAnswersForRecategorisation(
+        userAnswers,
+        recordId,
+        oldCommodityCategorisation,
+        newCommodityCategorisation
+      )
     } else {
       Success(userAnswers)
     }

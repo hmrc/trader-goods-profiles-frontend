@@ -18,7 +18,7 @@ package models
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.AssessmentAnswer.{Exemption, NoExemption}
+import models.AssessmentAnswer.{Exemption, NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
@@ -219,6 +219,30 @@ class CategorisationAnswersSpec extends SpecBase {
             "differentId"
           )
         }
+      }
+
+      "when assessment answer has not been answered yet" in {
+
+        val answers = emptyUserAnswers
+          .set(RecordCategorisationsQuery, recordCategorisations)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), NotAnsweredYet)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), NoExemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers.build(answers, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only MissingAssessmentAnswers(AssessmentPage(testRecordId, 1))
+        }
+
       }
 
     }
