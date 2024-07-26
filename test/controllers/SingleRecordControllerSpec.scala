@@ -31,12 +31,13 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
 import play.api.inject.bind
 import repositories.SessionRepository
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import utils.SessionData.{dataUpdated, pageUpdated}
 
 import java.time.Instant
 import scala.concurrent.Future
 import viewmodels.govuk.summarylist._
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, StatusSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, HasSupplementaryUnitSummary, StatusSummary, SupplementaryUnitSummary, TraderReferenceSummary}
 import views.html.SingleRecordView
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
@@ -46,6 +47,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
   private val mockSessionRepository    = mock[SessionRepository]
 
   private val record = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId)
+
+  private val recordWithSupplementaryUnit = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
@@ -99,6 +105,14 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         )
       )
 
+      val supplementaryUnitList = SummaryListViewModel(
+        rows = Seq(
+          HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, testRecordId),
+          SupplementaryUnitSummary
+            .row(record.supplementaryUnit, record.measurementUnit, testRecordId)
+        ).flatten
+      )
+
       val adviceList = SummaryListViewModel(
         rows = Seq(
           AdviceStatusSummary.row(record.adviceStatus, testRecordId)
@@ -118,6 +132,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           testRecordId,
           detailsList,
           categorisationList,
+          supplementaryUnitList,
           adviceList,
           changesMade,
           changedPage
@@ -129,6 +144,56 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         verify(mockSessionRepository).set(uaCaptor.capture)
 
         uaCaptor.getValue.data mustEqual userAnswers.data
+      }
+    }
+
+    "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
+
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      implicit val localMessages: Messages = messages(application)
+
+      running(application) {
+        val row = SupplementaryUnitSummary
+          .row(recordWithSupplementaryUnit.supplementaryUnit, recordWithSupplementaryUnit.measurementUnit, testRecordId)
+          .value
+
+        val supplementaryValue = row.value.content match {
+          case Text(innerContent) => innerContent
+        }
+
+        supplementaryValue must equal("1234.0 grams")
+
+      }
+    }
+
+    "must return none when measurement unit is empty" in {
+
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      implicit val localMessages: Messages = messages(application)
+
+      running(application) {
+        val row = HasSupplementaryUnitSummary
+          .row(None, None, testRecordId)
+        row mustBe None
+
+      }
+    }
+
+    "must show hasSupplementaryUnit two when measurement unit is not empty and supplementary unit is No" in {
+
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      implicit val localMessages: Messages = messages(application)
+
+      running(application) {
+        val row                  = HasSupplementaryUnitSummary
+          .row(None, recordWithSupplementaryUnit.measurementUnit, testRecordId)
+          .value
+        val hasSupplementaryUnit = row.value.content match {
+          case Text(innerContent) => innerContent
+        }
+
+        hasSupplementaryUnit contains "Do you want to add the supplementary unit?"
+
       }
     }
 

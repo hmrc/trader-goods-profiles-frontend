@@ -52,7 +52,8 @@ cyaRequestAdvice.subheading = Contact details
 
 cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your answers
-cyaCategorisation.categorisationHeader = Conditions
+cyaCategorisation.categorisationHeader = Category assessments
+cyaCategorisation.categorisationQuestion = Do you meet any of the following conditions and can you supply the relevant document code on your movements?
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
 
@@ -282,6 +283,7 @@ assessment.error.required.onlyOne = Select yes if you meet the condition
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 assessment.insetText = You could be asked up to 25 different category assessments for each good.
+assessment.change.hidden = Category assessment {0}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -428,6 +430,7 @@ singleRecord.warning = Warning
 singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 singleRecord.h2.categorisation = Categorisation
 singleRecord.category.row = Category
+singleRecord.h2.supplementaryUnit = Supplementary Unit
 singleRecord.h2.adviceStatus = Advice status
 singleRecord.adviceStatus.row = Advice received
 singleRecord.goodsProfile.link = Go to goods profile
@@ -514,12 +517,12 @@ helpAndSupport.p15.linkText = Sign up for the Trader Support Service
 
 goodsRecordSearchResult.title = There are {0} search results
 goodsRecordSearchResult.h1 = There are {0} search results
-goodsRecordSearchResult.p1 = You searched for the term ''{0}''
+goodsRecordSearchResult.p1 = You searched for the term ''{0}''.
 goodsRecordSearchResult.p2.linkText = Go back to goods records
 
 goodsRecordSearchResultEmptyView.title = There are no matching results
 goodsRecordSearchResultEmptyView.h1 = There are no matching results
-goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''
+goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
 goodsRecordSearchResultEmptyView.p2.linkText = Go back to goods records
 
 

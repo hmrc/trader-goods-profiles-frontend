@@ -282,7 +282,7 @@ class GoodsRecordConnectorSpec
 
     val removeRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
 
-    "must remove a goods record" in {
+    "must return true when goods record is removed" in {
 
       wireMockServer.stubFor(
         delete(urlEqualTo(removeRecordUrl))
@@ -304,7 +304,7 @@ class GoodsRecordConnectorSpec
       connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
     }
 
-    "must return a failed future when the server returns not found" in {
+    "must return false when the server returns not found" in {
 
       wireMockServer.stubFor(
         delete(urlEqualTo(removeRecordUrl))

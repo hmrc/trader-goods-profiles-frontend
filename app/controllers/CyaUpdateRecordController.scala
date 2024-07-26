@@ -135,9 +135,7 @@ class CyaUpdateRecordController @Inject() (
         }
     }
 
-  def findCountryName(countries: Seq[Country], answer: String)(implicit
-    request: Request[_]
-  ): String =
+  def findCountryName(countries: Seq[Country], answer: String): String =
     countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
 
   def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
