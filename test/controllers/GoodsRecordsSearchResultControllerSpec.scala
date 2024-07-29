@@ -29,6 +29,7 @@ import pages.GoodsRecordsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
 import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
@@ -137,10 +138,14 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         Seq(Country("EC", "Ecuador"))
       )
 
+      val sessionRepository = mock[SessionRepository]
+      when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[SessionRepository].toInstance(sessionRepository)
         )
         .build()
 
@@ -190,10 +195,14 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         Seq(Country("EC", "Ecuador"))
       )
 
+      val sessionRepository = mock[SessionRepository]
+      when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[SessionRepository].toInstance(sessionRepository)
         )
         .build()
 
@@ -274,10 +283,14 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         Seq(Country("EC", "Ecuador"))
       )
 
+      val sessionRepository = mock[SessionRepository]
+      when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[SessionRepository].toInstance(sessionRepository)
         )
         .build()
 
@@ -331,7 +344,13 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
       val emptyGoodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoadNoRecords().url
 
+      val sessionRepository = mock[SessionRepository]
+      when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
       val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[SessionRepository].toInstance(sessionRepository)
+        )
         .build()
       val view        = application.injector.instanceOf[GoodsRecordsSearchResultEmptyView]
 
