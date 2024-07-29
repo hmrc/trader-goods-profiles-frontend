@@ -26,7 +26,6 @@ import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
-import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataUpdated, pageUpdated}
