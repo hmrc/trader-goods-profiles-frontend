@@ -38,6 +38,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.TraderReferenceView
 
@@ -130,7 +131,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Right(emptyResponse)
+            Some(emptyResponse)
           )
 
         val application =
@@ -187,7 +188,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Right(response)
+            Some(response)
           )
 
         val application =
@@ -232,7 +233,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Left(Done)
+            None
           )
 
         val application =
@@ -253,7 +254,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
-            .onPageLoad(Some(traderReferenceRoute))
+            .onPageLoad(Some(RedirectUrl(traderReferenceRoute)))
             .url
         }
       }
@@ -367,7 +368,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Right(emptyResponse)
+            Some(emptyResponse)
           )
 
         val application =
@@ -402,7 +403,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Right(emptyResponse)
+            Some(emptyResponse)
           )
 
         val userAnswers =
@@ -443,7 +444,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Right(emptyResponse)
+            Some(emptyResponse)
           )
 
         val userAnswers =
@@ -505,7 +506,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Right(response)
+            Some(response)
           )
 
         val application =
@@ -550,7 +551,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            Left(Done)
+            None
           )
 
         val application =
@@ -571,7 +572,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
-            .onPageLoad(Some(traderReferenceRoute))
+            .onPageLoad(Some(RedirectUrl(traderReferenceRoute)))
             .url
         }
       }

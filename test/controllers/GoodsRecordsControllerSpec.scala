@@ -33,6 +33,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
@@ -131,7 +132,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(Right(response))
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -175,7 +176,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(Left(Done))
+        .successful(None)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -196,7 +197,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
-          .onPageLoad(Some(goodsRecordsRoute))
+          .onPageLoad(Some(RedirectUrl(goodsRecordsRoute)))
           .url
       }
     }
@@ -211,7 +212,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
       )
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(middlePage), any())(any())) thenReturn Future
-        .successful(Right(response))
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -287,7 +288,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(Right(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 0, None, None))))
+        .successful(Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 0, None, None))))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -355,7 +356,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(Right(response))
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(

@@ -22,6 +22,7 @@ import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, g
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
@@ -52,7 +53,7 @@ class GoodsRecordsSearchResultController @Inject() (
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
             goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize).flatMap {
-              case Right(searchResponse) =>
+              case Some(searchResponse) =>
                 if (searchResponse.pagination.totalRecords != 0) {
                   ottConnector.getCountries.map { countries =>
                     val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
@@ -79,11 +80,11 @@ class GoodsRecordsSearchResultController @Inject() (
                     case None             => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
                   }
                 }
-              case Left(_)               =>
+              case None               =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(routes.GoodsRecordsSearchResultController.onPageLoad(page).url))
+                      .onPageLoad(Some(RedirectUrl(routes.GoodsRecordsSearchResultController.onPageLoad(page).url)))
                   )
                 )
 

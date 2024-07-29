@@ -225,12 +225,12 @@ POST        /update-record/:recordId/check-your-answers/commodity-code          
 
 GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
 
-GET        /update-profile/removing-nirms-number                                            controllers.RemoveNirmsController.onPageLoad()
-POST       /update-profile/removing-nirms-number                                            controllers.RemoveNirmsController.onSubmit()
+GET         /update-profile/removing-nirms-number                                           controllers.RemoveNirmsController.onPageLoad()
+POST        /update-profile/removing-nirms-number                                           controllers.RemoveNirmsController.onSubmit()
 
-GET        /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onPageLoad()
-POST       /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
+GET         /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onPageLoad()
+POST        /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
 
-GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()
+GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
 
-GET        /goodsRecordsLoading                       controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[String] ?= None)
+GET         /goods-records-loading                                                          controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)

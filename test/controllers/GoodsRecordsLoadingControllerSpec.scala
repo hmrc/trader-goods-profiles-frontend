@@ -27,6 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.GoodsRecordsLoadingView
 
 import java.time.Instant
@@ -56,7 +57,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.GoodsRecordsLoadingController.onPageLoad(Some(continueUrl)).url)
+          FakeRequest(GET, routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
 
         val result = route(application, request).value
 
@@ -81,7 +82,8 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.GoodsRecordsLoadingController.onPageLoad(Some(continueUrl)).url)
+        val request =
+          FakeRequest(GET, routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
 
         val result = route(application, request).value
 

@@ -16,11 +16,10 @@
 
 package connectors
 
-import cats.data.EitherT
 import config.Service
-import models.{CategoryRecord, GoodsRecord, RecordsSummary, UpdateGoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
+import models.{CategoryRecord, GoodsRecord, RecordsSummary, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
@@ -138,7 +137,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[Either[Done, GetRecordsResponse]] = {
+  ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
       "page" -> page.toString,
@@ -151,8 +150,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK       => Right(response.json.as[GetRecordsResponse])
-          case ACCEPTED => Left(Done)
+          case OK       => Some(response.json.as[GetRecordsResponse])
+          case ACCEPTED => None
         }
       }
   }
@@ -172,7 +171,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     field: String
   )(implicit
     hc: HeaderCarrier
-  ): Future[Either[Done, GetRecordsResponse]] = {
+  ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
       "searchTerm" -> searchTerm,
@@ -185,8 +184,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK       => Right(response.json.as[GetRecordsResponse])
-          case ACCEPTED => Left(Done)
+          case OK       => Some(response.json.as[GetRecordsResponse])
+          case ACCEPTED => None
         }
       }
   }
@@ -199,7 +198,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[Either[Done, GetRecordsResponse]] = {
+  ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
       "page" -> page.toString,
@@ -212,8 +211,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK       => Right(response.json.as[GetRecordsResponse])
-          case ACCEPTED => Left(Done)
+          case OK       => Some(response.json.as[GetRecordsResponse])
+          case ACCEPTED => None
         }
       }
   }

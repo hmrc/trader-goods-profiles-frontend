@@ -18,13 +18,14 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl._
+import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.GoodsRecordsLoadingView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class GoodsRecordsLoadingController @Inject() (
@@ -37,19 +38,18 @@ class GoodsRecordsLoadingController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(continueUrl: Option[String] = None): Action[AnyContent] =
+  def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] =
     identify.async { implicit request =>
       goodsRecordConnector.getRecordsSummary(request.eori).map { recordsSummary =>
-        if (recordsSummary.isUpdating) {
-          val recordsStored  = recordsSummary.currentUpdate.get.recordsStored
-          val recordsToStore = recordsSummary.currentUpdate.get.recordsToStore
-
+        recordsSummary.currentUpdate.map { update =>
+          val recordsStored  = update.recordsStored
+          val recordsToStore = update.recordsToStore
           Ok(view(recordsStored, recordsToStore))
-        } else {
-          continueUrl match {
-            case Some(url) => Redirect(url)
-            case None      => Redirect(routes.HomePageController.onPageLoad().url)
-          }
+        }.getOrElse {
+          continueUrl
+            .flatMap(_.getEither(OnlyRelative).toOption)
+            .map(safeRedirect => Redirect(safeRedirect.url))
+            .getOrElse(Redirect(routes.HomePageController.onPageLoad().url))
         }
       }
     }

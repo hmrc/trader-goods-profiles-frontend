@@ -28,6 +28,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.TraderReferenceView
@@ -96,7 +97,7 @@ class TraderReferenceController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef").flatMap {
-              case Right(traderRef) =>
+              case Some(traderRef) =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferencePage, value))
                   _              <- sessionRepository.set(updatedAnswers)
@@ -113,11 +114,11 @@ class TraderReferenceController @Inject() (
                         )
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
-              case Left(_)          =>
+              case None          =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(onSubmitAction.url))
+                      .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )
             }
@@ -136,7 +137,7 @@ class TraderReferenceController @Inject() (
             val oldValueOpt    = request.userAnswers.get(TraderReferenceUpdatePage(recordId))
             val isValueChanged = oldValueOpt.exists(_ != value)
             goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef").flatMap {
-              case Right(traderRef) =>
+              case Some(traderRef) =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
@@ -155,11 +156,11 @@ class TraderReferenceController @Inject() (
                         )
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
-              case Left(_)          =>
+              case None          =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(onSubmitAction.url))
+                      .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )
             }

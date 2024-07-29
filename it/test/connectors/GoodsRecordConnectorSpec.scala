@@ -22,6 +22,7 @@ import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, UpdateGoodsRecord}
 import org.apache.pekko.Done
+import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -41,7 +42,8 @@ class GoodsRecordConnectorSpec
     with WireMockSupport
     with ScalaFutures
     with IntegrationPatience
-    with GetRecordsResponseUtil {
+    with GetRecordsResponseUtil
+    with OptionValues {
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
@@ -455,7 +457,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.getRecords(testEori, 1, 3).futureValue mustBe Right(getRecordsResponse.validate[GetRecordsResponse].get)
+      connector.getRecords(testEori, 1, 3).futureValue.value mustEqual getRecordsResponse.as[GetRecordsResponse]
     }
 
     "must return done when the status is ACCEPTED" in {
@@ -466,7 +468,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(ACCEPTED))
       )
 
-      connector.getRecords(testEori, 1, 3).futureValue mustBe Left(Done)
+      connector.getRecords(testEori, 1, 3).futureValue mustBe None
     }
 
     "must return a failed future when the server returns an error" in {
@@ -505,11 +507,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe Right(
-        getRecordsResponse
-          .validate[GetRecordsResponse]
-          .get
-      )
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue.value mustEqual getRecordsResponse.as[GetRecordsResponse]
     }
 
     "must return done when the status is ACCEPTED" in {
@@ -520,7 +518,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(ACCEPTED))
       )
 
-      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe Left(Done)
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe None
     }
 
     "must return a failed future when the server returns an error" in {
@@ -561,11 +559,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe Right(
-        getRecordsResponse
-          .validate[GetRecordsResponse]
-          .get
-      )
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue.value mustBe getRecordsResponse.as[GetRecordsResponse]
     }
 
     "must return done when the status is ACCEPTED" in {
@@ -576,7 +570,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(ACCEPTED))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe Left(Done)
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe None
     }
 
     "must return a failed future when the server returns an error" in {

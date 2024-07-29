@@ -22,7 +22,6 @@ import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -59,7 +58,7 @@ class GoodsRecordsController @Inject() (
         Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       } else {
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-          case Right(goodsRecordResponse) =>
+          case Some(goodsRecordResponse) =>
             if (goodsRecordResponse.pagination.totalRecords != 0) {
               ottConnector.getCountries.map { countries =>
                 //TODO cleanse GoodsRecordsPage from session
@@ -86,11 +85,11 @@ class GoodsRecordsController @Inject() (
                   .removingFromSession(dataUpdated, pageUpdated)
               )
             }
-          case Left(_)                    =>
+          case None                    =>
             Future.successful(
               Redirect(
                 routes.GoodsRecordsLoadingController
-                  .onPageLoad(Some(routes.GoodsRecordsController.onPageLoad(page).url))
+                  .onPageLoad(Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(page).url)))
               )
             )
         }
@@ -104,7 +103,7 @@ class GoodsRecordsController @Inject() (
         .fold(
           formWithErrors =>
             goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-              case Right(goodsRecordResponse) =>
+              case Some(goodsRecordResponse) =>
                 ottConnector.getCountries.map { countries =>
                   val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
                   BadRequest(
@@ -123,12 +122,12 @@ class GoodsRecordsController @Inject() (
                     )
                   )
                 }
-              case Left(_)                    =>
+              case None                    =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
                       .onPageLoad(
-                        Some(routes.GoodsRecordsController.onPageLoad(page).url)
+                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(page).url))
                       )
                   )
                 )
