@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
+import connectors.TraderProfileConnector
 import forms.EmailFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -44,11 +45,16 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val emailRoute = routes.EmailController.onPageLoad(NormalMode, testRecordId).url
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "Email Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, emailRoute)
@@ -66,7 +72,9 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = UserAnswers(userAnswersId).set(EmailPage(testRecordId), "answer").success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, emailRoute)
@@ -93,7 +101,8 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -111,7 +120,9 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =
@@ -134,7 +145,9 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, emailRoute)
@@ -148,7 +161,9 @@ class EmailControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =

@@ -40,6 +40,7 @@ class RemoveGoodsRecordController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveGoodsRecordFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveGoodsRecordView
@@ -50,12 +51,12 @@ class RemoveGoodsRecordController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       Ok(view(form, recordId, location))
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

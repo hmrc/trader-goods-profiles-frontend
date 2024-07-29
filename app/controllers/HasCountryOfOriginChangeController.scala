@@ -40,6 +40,7 @@ class HasCountryOfOriginChangeController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   auditService: AuditService,
   formProvider: HasCountryOfOriginChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -50,18 +51,18 @@ class HasCountryOfOriginChangeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
       Ok(view(preparedForm, mode, recordId))
-  }
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

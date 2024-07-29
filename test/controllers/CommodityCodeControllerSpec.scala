@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.OttConnector
+import connectors.{OttConnector, TraderProfileConnector}
 import forms.CommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -46,6 +46,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new CommodityCodeFormProvider()
   private val form = formProvider()
+
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "CommodityCode Controller" - {
 
@@ -78,7 +81,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, commodityCodeRoute)
@@ -96,7 +101,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         val userAnswers = UserAnswers(userAnswersId).set(page, "654321").success.value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, commodityCodeRoute)
@@ -139,7 +146,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -174,7 +182,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .success
             .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -206,7 +216,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .success
             .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -247,7 +259,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[OttConnector].toInstance(mockOttConnector)
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -274,7 +287,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, commodityCodeRoute)
@@ -288,7 +303,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -335,7 +352,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[OttConnector].toInstance(mockOttConnector)
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -384,7 +402,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[OttConnector].toInstance(mockOttConnector)
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 

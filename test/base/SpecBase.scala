@@ -294,6 +294,7 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
         bind[ProfileCheckAction].to[ProfileCheckActionImpl],
+        bind[ProfileAuthenticateAction].to[ProfileAuthenticateActionImpl],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
 }

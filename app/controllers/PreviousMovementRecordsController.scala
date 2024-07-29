@@ -32,6 +32,7 @@ class PreviousMovementRecordsController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
   goodsRecordConnector: GoodsRecordConnector
@@ -39,20 +40,22 @@ class PreviousMovementRecordsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    goodsRecordConnector.getRecordsCount(request.eori).flatMap {
-      case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
-      case _ =>
-        goodsRecordConnector.doRecordsExist(request.eori).map {
-          case false => Ok(view())
-          case true  => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
-        }
-    }
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      goodsRecordConnector.getRecordsCount(request.eori).flatMap {
+        case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
+        case _ =>
+          goodsRecordConnector.doRecordsExist(request.eori).map {
+            case false => Ok(view())
+            case true  => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
+          }
+      }
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    goodsRecordConnector
-      .storeAllRecords(request.eori)
-      .map(_ => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage)))
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      goodsRecordConnector
+        .storeAllRecords(request.eori)
+        .map(_ => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage)))
   }
 }
