@@ -387,9 +387,9 @@ class Navigator @Inject() () {
     val recordId = assessmentPage.recordId
 
     for {
-      recordQuery      <- answers.get(RecordCategorisationsQuery)
-      record           <- recordQuery.records.get(recordId)
-      assessmentAnswer <- answers.get(assessmentPage)
+      recordQuery        <- answers.get(RecordCategorisationsQuery)
+      categorisationInfo <- recordQuery.records.get(recordId)
+      assessmentAnswer   <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
         val assessmentCount = Try {
@@ -397,23 +397,27 @@ class Navigator @Inject() () {
         }.getOrElse(0)
 
         if (assessmentPage.index + 1 < assessmentCount) {
-          if (answers.isDefined(AssessmentPage(recordId, assessmentPage.index + 1))) {
-            routes.CyaCategorisationController.onPageLoad(recordId)
-          } else {
-            routes.AssessmentController.onPageLoad(CheckMode, recordId, assessmentPage.index + 1)
+          val nextAnswer = answers.get(AssessmentPage(recordId, assessmentPage.index + 1))
+
+          nextAnswer match {
+            case Some(_) if !categorisationInfo.areThereAnyNonAnsweredQuestions(recordId, answers) =>
+              routes.CyaCategorisationController.onPageLoad(recordId)
+            case _                                                                                 =>
+              routes.AssessmentController.onPageLoad(CheckMode, recordId, assessmentPage.index + 1)
+
           }
         } else {
           routes.CyaCategorisationController.onPageLoad(recordId)
         }
       case AssessmentAnswer.NoExemption  =>
-        record.categoryAssessments(assessmentPage.index).category match {
+        categorisationInfo.categoryAssessments(assessmentPage.index).category match {
           case 2
-              if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
-                record.descendantCount != 0 =>
+              if commodityCodeSansTrailingZeros(categorisationInfo.commodityCode).length <= 6 &&
+                categorisationInfo.descendantCount != 0 =>
             routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
-          case 2 if record.measurementUnit.isDefined =>
+          case 2 if categorisationInfo.measurementUnit.isDefined =>
             routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-          case _                                     =>
+          case _                                                 =>
             routes.CyaCategorisationController.onPageLoad(recordId)
         }
     }

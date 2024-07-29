@@ -1478,28 +1478,60 @@ class NavigatorSpec extends SpecBase {
 
         "must go from an assessment" - {
 
-          "to the next assessment when the answer is an exemption and the next assessment is unanswered" in {
+          "to the next assessment" - {
+            "when the answer is an exemption and the next assessment is unanswered" in {
 
-            val answers =
-              emptyUserAnswers
-                .set(RecordCategorisationsQuery, recordCategorisations)
-                .success
-                .value
-                .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
-                .success
-                .value
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, recordCategorisations)
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
+                  .success
+                  .value
 
-            navigator.nextPage(
-              AssessmentPage(recordId, indexAssessment1),
-              CheckMode,
-              answers
-            ) mustEqual routes.AssessmentController
-              .onPageLoad(CheckMode, recordId, indexAssessment1 + 1)
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1),
+                CheckMode,
+                answers
+              ) mustEqual routes.AssessmentController
+                .onPageLoad(CheckMode, recordId, indexAssessment1 + 1)
+            }
+
+            "when the answer is an exemption and the next assessment is answered but future ones still need to be answered" in {
+
+              val newCatInfo = categorisationInfo.copy(categoryAssessments =
+                Seq(assessment1, assessment2, assessment1.copy(id = "id3"))
+              )
+
+              val answers =
+                emptyUserAnswers
+                  .set(RecordCategorisationsQuery, RecordCategorisations(Map(recordId -> newCatInfo)))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, indexAssessment2), AssessmentAnswer.Exemption("true"))
+                  .success
+                  .value
+                  .set(AssessmentPage(recordId, 2), AssessmentAnswer.NotAnsweredYet)
+                  .success
+                  .value
+
+              navigator.nextPage(
+                AssessmentPage(recordId, indexAssessment1),
+                CheckMode,
+                answers
+              ) mustEqual routes.AssessmentController
+                .onPageLoad(CheckMode, recordId, indexAssessment1 + 1)
+            }
+
           }
 
           "to the Check Your Answers page" - {
 
-            "when the answer is an exemption and the next assessment has been answered" in {
+            "when the answer is an exemption and the next assessment has been answered and no unanswered questions" in {
 
               val answers =
                 emptyUserAnswers
