@@ -378,17 +378,6 @@ longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct 
 longerCommodityCode.error.invalid = Enter a real commodity code
 longerCommodityCode.change.hidden = LongerCommodityCode
 
-previousMovementRecords.title = Previous movement records
-previousMovementRecords.h1 = Previous movement records
-previousMovementRecords.p1 = Trader Goods Profile (TGP) has your previous movement information saved as individual records. HMRC have removed any duplicate records.
-previousMovementRecords.p2 = TGP has created goods descriptions from information we already have. You can change the goods description to anything to help you identify the record.
-previousMovementRecords.p3 = We’ve added your previous movements from the last 12 months to your goods records. You may want to check that the information is correct before you use them on a movement.
-previousMovementRecords.p4 = Your records will be loading onto your TGP and may take some time to load. We’ll send you to another page when loading is completed.
-previousMovementRecords.subheading = Categorisation
-previousMovementRecords.p5 = You have to categorise your goods to see if you can move them under the Simplified Process for Internal Market Movements (SPIMM). We’ll tell you more about how to do this when you check your records.
-previousMovementRecords.p6 = We are loading your records
-previousMovementRecords.loadrecord = Load records
-
 goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
@@ -536,3 +525,11 @@ feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.
 feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
 feedback.link = Send us your feedback
+
+goodsRecordsLoading.title = We''re loading your records
+goodsRecordsLoading.heading = We''re loading your records
+goodsRecordsLoading.p1 = We''re loading {0} records. We''ll take you to your goods records page when they''re ready to view.
+goodsRecordsLoading.p2 = We''ve currently loaded {0} out of {1} records.
+goodsRecordsLoading.p3.1 = You can
+goodsRecordsLoading.p3.2 = refresh this page
+goodsRecordsLoading.p3.3 = to check the progress of loading your records.

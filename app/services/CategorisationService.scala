@@ -17,9 +17,10 @@
 package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.ott.CategorisationInfo
+import models.AssessmentAnswer.NotAnsweredYet
+import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.requests.DataRequest
-import models.{RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
 import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
@@ -171,4 +172,48 @@ class CategorisationService @Inject() (
     }).getOrElse(
       Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
     )
+
+  def updatingAnswersForRecategorisation(
+    userAnswers: UserAnswers,
+    recordId: String,
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
+  ): Try[UserAnswers] =
+    if (oldCommodityCategorisation == newCommodityCategorisation) {
+      Success(userAnswers)
+    } else {
+      val oldAssessments = oldCommodityCategorisation.categoryAssessments
+      val newAssessments = newCommodityCategorisation.categoryAssessments
+
+      val listOfAnswersToKeep = oldAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer]]) {
+        (currentMap, assessment) =>
+          val newAssessmentsTheAnswerAppliesTo =
+            newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
+          newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
+            current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
+              AssessmentPage(recordId, assessment._2)
+            ))
+          }
+      }
+
+      val cleanedUserAnswers = cleanupOldAssessmentAnswers(userAnswers, recordId).get
+      // Avoid it getting upset if answers have moved too far
+      val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(cleanedUserAnswers)) {
+        (currentAnswers, newAssessment) =>
+          currentAnswers.flatMap(_.set(AssessmentPage(recordId, newAssessment._2), NotAnsweredYet))
+      }
+
+      val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
+      // Apply them backwards
+      // That way, a NoExemption being set will do the automatic cleanup required by CYA and delete any answers afterwards
+      answersToKeepSortedByNewIndex.reverse.foldLeft[Try[UserAnswers]](uaWithPlaceholders) {
+        (currentAnswers, answerToKeep) =>
+          val assessmentIndex     = answerToKeep._1
+          val assessmentAnswerOpt = answerToKeep._2
+          assessmentAnswerOpt match {
+            case Some(answer) => currentAnswers.flatMap(_.set(AssessmentPage(recordId, assessmentIndex), answer))
+            case None         => currentAnswers
+          }
+      }
+    }
 }

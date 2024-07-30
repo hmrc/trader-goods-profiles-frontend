@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import connectors.TraderProfileConnector
 import forms.UseTraderReferenceFormProvider
 import models.NormalMode
 import navigation.{FakeNavigator, Navigator}
@@ -42,6 +43,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val useTraderReferenceRoute = routes.UseTraderReferenceController.onPageLoad(NormalMode).url
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "UseTraderReferenceController" - {
 
     "must return OK and the correct view for a GET" in {
@@ -51,7 +55,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         .success
         .value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, useTraderReferenceRoute)
@@ -69,7 +75,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
     }
     "must redirect to JourneyRecovery Page on GET when the user doesn't have a trader reference answer" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, useTraderReferenceRoute)
@@ -91,7 +99,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         .success
         .value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, useTraderReferenceRoute)
@@ -118,7 +128,8 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -135,7 +146,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to JourneyRecovery page on POST when user doesn't have a trader reference" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =
@@ -153,7 +166,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = emptyUserAnswers.set(TraderReferencePage, "trader reference").success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =
@@ -176,7 +191,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, useTraderReferenceRoute)
@@ -190,7 +207,9 @@ class UseTraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =

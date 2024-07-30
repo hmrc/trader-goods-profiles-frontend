@@ -39,6 +39,7 @@ class GoodsDescriptionController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: GoodsDescriptionFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsDescriptionView
@@ -48,8 +49,8 @@ class GoodsDescriptionController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(GoodsDescriptionPage) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -58,10 +59,10 @@ class GoodsDescriptionController @Inject() (
       val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, mode, submitAction))
-  }
+    }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
       form
         .bindFromRequest()
@@ -76,7 +77,7 @@ class GoodsDescriptionController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(GoodsDescriptionUpdatePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -88,7 +89,7 @@ class GoodsDescriptionController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()

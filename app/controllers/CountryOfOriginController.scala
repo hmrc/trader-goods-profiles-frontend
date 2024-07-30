@@ -42,6 +42,7 @@ class CountryOfOriginController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: CountryOfOriginFormProvider,
   val controllerComponents: MessagesControllerComponents,
   ottConnector: OttConnector,
@@ -60,8 +61,8 @@ class CountryOfOriginController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield (countries, updatedAnswersWithQuery)
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.CountryOfOriginController.onSubmitCreate(mode)
       request.userAnswers
         .get(CountriesQuery) match {
@@ -71,7 +72,7 @@ class CountryOfOriginController @Inject() (
             displayViewCreate(countriesAndQuery._1, submitAction, countriesAndQuery._2)
           )
       }
-  }
+    }
 
   def displayViewCreate(countries: Seq[Country], action: Call, userAnswers: UserAnswers)(implicit
     request: Request[_]
@@ -103,17 +104,17 @@ class CountryOfOriginController @Inject() (
       )
   }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers
         .get(CountriesQuery) match {
         case Some(countries) => submitForm(countries, mode, request.userAnswers)
         case None            => throw new Exception("Countries should have been populated on page load.")
       }
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
 
       request.userAnswers
@@ -128,7 +129,7 @@ class CountryOfOriginController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers
         .get(CountriesQuery) match {
         case Some(countries) =>

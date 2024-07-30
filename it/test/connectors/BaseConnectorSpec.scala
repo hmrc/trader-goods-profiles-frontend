@@ -22,7 +22,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
+import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.libs.json._
 import uk.gov.hmrc.http.client.RequestBuilder
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
@@ -180,6 +180,47 @@ class BaseConnectorSpec extends AsyncWordSpec with Matchers with ScalaFutures wi
       } map { ex =>
         ex.statusCode shouldBe INTERNAL_SERVER_ERROR
         ex.message    shouldBe "Error body"
+      }
+    }
+
+    "return Some with deserialized object when executeAndDeserialiseOption is called with 200 response and valid json" in {
+      val requestBuilder = mock[RequestBuilder]
+      val response       = mock[HttpResponse]
+
+      when(response.status).thenReturn(OK)
+      when(response.json).thenReturn(getRecordResponse)
+      when(requestBuilder.execute[HttpResponse]).thenReturn(Future.successful(response))
+
+      val helper = new TestBaseConnector {}.RequestBuilderHelpers(requestBuilder)
+      helper.executeAndDeserialiseOption[GetGoodsRecordResponse].map { result =>
+        result shouldBe Some(goodsItemRecords)
+      }
+    }
+
+    "return None when executeAndDeserialiseOption is called with 202 response but deserialization fails" in {
+      val requestBuilder = mock[RequestBuilder]
+      val response       = mock[HttpResponse]
+
+      when(response.status).thenReturn(ACCEPTED)
+      when(requestBuilder.execute[HttpResponse]).thenReturn(Future.successful(response))
+
+      val helper = new TestBaseConnector {}.RequestBuilderHelpers(requestBuilder)
+      helper.executeAndDeserialiseOption[GetGoodsRecordResponse].map { result =>
+        result shouldBe None
+      }
+    }
+
+    "return None when executeAndDeserialiseOption is called with non-200 response" in {
+      val requestBuilder = mock[RequestBuilder]
+      val response       = mock[HttpResponse]
+
+      when(response.status).thenReturn(INTERNAL_SERVER_ERROR)
+      when(response.body).thenReturn("Error body")
+      when(requestBuilder.execute[HttpResponse]).thenReturn(Future.successful(response))
+
+      val helper = new TestBaseConnector {}.RequestBuilderHelpers(requestBuilder)
+      helper.executeAndDeserialiseOption[GetGoodsRecordResponse].map { result =>
+        result shouldBe None
       }
     }
   }

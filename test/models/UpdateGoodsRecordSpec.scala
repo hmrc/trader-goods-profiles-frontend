@@ -36,7 +36,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CountryOfOriginUpdatePage(testRecordId), "1")
+            .set(CountryOfOriginUpdatePage(testRecordId), "CN")
             .success
             .value
             .set(HasCountryOfOriginChangePage(testRecordId), true)
@@ -46,7 +46,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
 
         result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, Some("1"))
+          UpdateGoodsRecord(testEori, testRecordId, Some("CN"), category = Some(1))
         )
       }
 
@@ -54,7 +54,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(GoodsDescriptionUpdatePage(testRecordId), "1")
+            .set(GoodsDescriptionUpdatePage(testRecordId), "goods description")
             .success
             .value
             .set(HasGoodsDescriptionChangePage(testRecordId), true)
@@ -64,7 +64,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
 
         result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, goodsDescription = Some("1"))
+          UpdateGoodsRecord(testEori, testRecordId, goodsDescription = Some("goods description"))
         )
       }
 
@@ -72,14 +72,14 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferenceUpdatePage(testRecordId), "1")
+            .set(TraderReferenceUpdatePage(testRecordId), "trader reference")
             .success
             .value
 
         val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
 
         result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, traderReference = Some("1"))
+          UpdateGoodsRecord(testEori, testRecordId, traderReference = Some("trader reference"))
         )
       }
 
@@ -116,7 +116,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
 
         result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(commodity))
+          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(commodity), category = Some(1))
         )
       }
     }

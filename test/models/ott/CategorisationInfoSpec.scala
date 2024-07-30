@@ -16,14 +16,16 @@
 
 package models.ott
 
+import base.SpecBase
+import base.TestConstants.testRecordId
 import models.ott.response._
-import org.scalatest.OptionValues
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
+import models.{AssessmentAnswer, RecordCategorisations}
+import pages.AssessmentPage
+import queries.RecordCategorisationsQuery
 
 import java.time.Instant
 
-class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues {
+class CategorisationInfoSpec extends SpecBase {
 
   ".build" - {
 
@@ -312,6 +314,82 @@ class CategorisationInfoSpec extends AnyFreeSpec with Matchers with OptionValues
       )
 
       CategorisationInfo.build(ottResponse) must not be defined
+    }
+  }
+
+  "areThereAnyNonAnsweredQuestions" - {
+
+    val categorisationInfo = CategorisationInfo(
+      commodityCode = "commodity code",
+      categoryAssessments = Seq(
+        CategoryAssessment(
+          "assessmentId1",
+          1,
+          Seq(Certificate("exemptionId1", "code1", "description1"))
+        ),
+        CategoryAssessment(
+          "assessmentId3",
+          1,
+          Seq(
+            Certificate("exemptionId1", "code1", "description1"),
+            AdditionalCode("exemptionId2", "code2", "description2")
+          )
+        ),
+        CategoryAssessment(
+          "assessmentId4",
+          2,
+          Nil
+        ),
+        CategoryAssessment(
+          "assessmentId2",
+          2,
+          Seq(
+            Certificate("exemptionId1", "code1", "description1"),
+            AdditionalCode("exemptionId2", "code2", "description2")
+          )
+        )
+      ),
+      Some("some measure unit"),
+      2
+    )
+
+    "return true if non-answered questions" in {
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NotAnsweredYet)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
+        .success
+        .value
+
+      categorisationInfo.areThereAnyNonAnsweredQuestions(testRecordId, userAnswers) mustBe true
+    }
+
+    "return false if all questions answered or do not need to be answered" in {
+      val userAnswers = emptyUserAnswers
+        .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("true"))
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+        .success
+        .value
+
+      categorisationInfo.areThereAnyNonAnsweredQuestions(testRecordId, userAnswers) mustBe false
     }
   }
 }

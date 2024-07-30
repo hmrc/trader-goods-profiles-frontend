@@ -38,6 +38,7 @@ class UseTraderReferenceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: UseTraderReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UseTraderReferenceView
@@ -47,20 +48,21 @@ class UseTraderReferenceController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val preparedForm = request.userAnswers.get(UseTraderReferencePage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(UseTraderReferencePage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-    request.userAnswers.get(TraderReferencePage) match {
-      case Some(traderReference) => Ok(view(preparedForm, traderReference, mode))
-      case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-    }
+      request.userAnswers.get(TraderReferencePage) match {
+        case Some(traderReference) => Ok(view(preparedForm, traderReference, mode))
+        case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -75,5 +77,5 @@ class UseTraderReferenceController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(UseTraderReferencePage, mode, updatedAnswers))
         )
-  }
+    }
 }

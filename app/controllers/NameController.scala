@@ -37,6 +37,7 @@ class NameController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: NameFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NameView
@@ -46,18 +47,18 @@ class NameController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(NamePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
       Ok(view(preparedForm, mode, recordId))
-  }
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

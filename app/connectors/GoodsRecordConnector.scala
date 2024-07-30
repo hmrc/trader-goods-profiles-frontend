@@ -17,12 +17,11 @@
 package connectors
 
 import config.Service
-import models.{CategoryRecord, GoodsRecord, UpdateGoodsRecord}
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
+import models.{CategoryRecord, GoodsRecord, RecordsSummary, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -51,16 +50,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
 
-  private def checkGoodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/checkRecords"
-
-  private def getGoodsRecordCountsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
-
-  private def storeAllGoodsRecordsUrl(
-    eori: String
-  ) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/store"
+  private def recordsSummaryUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records-summary"
 
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
@@ -130,7 +121,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] = {
+  ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
       "page" -> page.toString,
@@ -140,41 +131,18 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(goodsRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
-      .executeAndDeserialise[GetRecordsResponse]
+      .executeAndDeserialiseOption[GetRecordsResponse]
       .map(response => response)
   }
 
-  def getRecordsCount(
+  def getRecordsSummary(
     eori: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Int] =
+  )(implicit hc: HeaderCarrier): Future[RecordsSummary] =
     httpClient
-      .get(getGoodsRecordCountsUrl(eori))
+      .get(recordsSummaryUrl(eori))
       .setHeader(clientIdHeader)
-      .executeAndDeserialise[Int]
+      .executeAndDeserialise[RecordsSummary]
       .map(response => response)
-
-  def storeAllRecords(
-    eori: String
-  )(implicit hc: HeaderCarrier): Future[Done] =
-    httpClient
-      .head(storeAllGoodsRecordsUrl(eori))
-      .setHeader(clientIdHeader)
-      .executeAndContinue
-      .map(_ => Done)
-
-  def doRecordsExist(
-    eori: String
-  )(implicit hc: HeaderCarrier): Future[Boolean] =
-    httpClient
-      .head(checkGoodsRecordsUrl(eori))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(_ => true)
-      .recover { case _: NotFoundException =>
-        false
-      }
 
   def filterRecordsByField(
     eori: String,
@@ -182,7 +150,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     field: String
   )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] = {
+  ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
       "searchTerm" -> searchTerm,
@@ -192,7 +160,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(filterRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
-      .executeAndDeserialise[GetRecordsResponse]
+      .executeAndDeserialiseOption[GetRecordsResponse]
       .map(response => response)
   }
 
@@ -204,7 +172,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[GetRecordsResponse] = {
+  ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
       "page" -> page.toString,
@@ -214,7 +182,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
-      .executeAndDeserialise[GetRecordsResponse]
+      .executeAndDeserialiseOption[GetRecordsResponse]
       .map(response => response)
   }
 }
