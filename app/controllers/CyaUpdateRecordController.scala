@@ -24,7 +24,7 @@ import logging.Logging
 import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers, ValidationError}
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
@@ -66,7 +66,10 @@ class CyaUpdateRecordController @Inject() (
             )
             Ok(view(list, onSubmitAction))
           }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors) =>
+          Future.successful(
+            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
+          )
       }
     }
 
@@ -80,7 +83,8 @@ class CyaUpdateRecordController @Inject() (
             Seq(GoodsDescriptionSummary.row(goodsDescription, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
-        case Left(errors)            => logErrorsAndContinue(errors, recordId)
+        case Left(errors)            =>
+          logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId))
       }
     }
 
@@ -94,7 +98,8 @@ class CyaUpdateRecordController @Inject() (
             Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
-        case Left(errors)           => logErrorsAndContinue(errors, recordId)
+        case Left(errors)           =>
+          logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId))
       }
     }
 
@@ -108,7 +113,8 @@ class CyaUpdateRecordController @Inject() (
             Seq(CommodityCodeSummary.row(commodity.commodityCode, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
-        case Left(errors)     => logErrorsAndContinue(errors, recordId)
+        case Left(errors)     =>
+          logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
       }
     }
 
@@ -152,7 +158,10 @@ class CyaUpdateRecordController @Inject() (
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors)           => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors)           =>
+          Future.successful(
+            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId))
+          )
       }
     }
 
@@ -168,7 +177,10 @@ class CyaUpdateRecordController @Inject() (
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
             _                        <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors) =>
+          Future.successful(
+            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
+          )
       }
     }
 
@@ -190,7 +202,10 @@ class CyaUpdateRecordController @Inject() (
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(GoodsDescriptionUpdatePage(recordId)))
             _                        <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors)            => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors)            =>
+          Future.successful(
+            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId))
+          )
       }
     }
 
@@ -212,17 +227,20 @@ class CyaUpdateRecordController @Inject() (
             _                        <- sessionRepository.set(updatedAnswers)
             _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors)     => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors)     =>
+          Future.successful(
+            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+          )
       }
     }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], continueUrl: Call): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     //TODO: route to correct location
-    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    //val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
 
     logger.error(s"Unable to update Goods Record.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueUrl.url))))
   }
 }

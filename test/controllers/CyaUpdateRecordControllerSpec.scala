@@ -27,6 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.Application
 import play.api.inject.bind
+import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CommodityUpdateQuery, CountriesQuery}
@@ -150,7 +151,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must redirect to Journey Recovery if no answers are found" in {
 
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -158,7 +158,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
 
           }
         }
@@ -237,8 +238,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           "must not submit anything, and redirect to Journey Recovery" in {
 
-            val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
-
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .build()
@@ -249,9 +248,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(continueUrl))
-                .url
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
             }
           }
         }
@@ -375,7 +373,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must redirect to Journey Recovery if no answers are found" in {
 
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -383,7 +380,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
 
           }
         }
@@ -459,8 +457,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           "must not submit anything, and redirect to Journey Recovery" in {
 
-            val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
-
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .build()
@@ -471,9 +467,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(continueUrl))
-                .url
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
             }
           }
         }
@@ -594,7 +589,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must redirect to Journey Recovery if no answers are found" in {
 
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -602,7 +596,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
 
           }
         }
@@ -675,8 +670,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           "must not submit anything, and redirect to Journey Recovery" in {
 
-            val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
-
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .build()
@@ -687,9 +680,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(continueUrl))
-                .url
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
             }
           }
         }
@@ -818,7 +810,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must redirect to Journey Recovery if no answers are found" in {
 
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -826,7 +817,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
 
           }
         }
@@ -915,8 +907,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           "must not submit anything, and redirect to Journey Recovery" in {
 
-            val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
-
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .build()
@@ -927,9 +917,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(continueUrl))
-                .url
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
             }
           }
         }
