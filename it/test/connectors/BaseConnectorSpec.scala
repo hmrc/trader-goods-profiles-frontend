@@ -107,6 +107,17 @@ class BaseConnectorSpec extends AsyncWordSpec with Matchers with ScalaFutures wi
       }
     }
 
+    "return a failed future with JsResultException when as is called with invalid json" in {
+
+      val response = mock[HttpResponse]
+      val json     = Json.obj("invalidField" -> "testName")
+
+      when(response.json).thenReturn(json)
+
+      val helper = new TestBaseConnector {}.HttpResponseHelpers(response)
+
+      assertThrows[JsResultException](helper.as[GetGoodsRecordResponse])
+    }
   }
 
   "RequestBuilderHelpers" should {
