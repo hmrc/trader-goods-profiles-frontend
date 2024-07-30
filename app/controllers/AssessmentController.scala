@@ -76,15 +76,24 @@ class AssessmentController @Inject() (
 
         val commodityCodeWithoutZeros = commodityCode.reverse.dropWhile(char => char == '0').reverse
 
-        val shouldGoToLongerCommodityCode = exemptions.isEmpty && category == 2 && commodityCodeWithoutZeros.length <= 6 &&
-          categorisationInfo.descendantCount != 0
+        val shouldGoToLongerCommodityCode =
+          exemptions.isEmpty && category == 2 && commodityCodeWithoutZeros.length <= 6 &&
+            categorisationInfo.descendantCount != 0
 
         val shouldGoToCya = exemptions.isEmpty && !shouldGoToLongerCommodityCode
 
         (shouldGoToCya, shouldGoToLongerCommodityCode, shouldDisplayNext) match {
-          case (true, _, _) => Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)))
-          case (_, true, _) => Future.successful(Redirect(routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url))
-          case (_, _, true) => Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)))
+          case (true, _, _) =>
+            Future.successful(
+              Redirect(
+                navigator
+                  .nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+              )
+            )
+          case (_, true, _) =>
+            Future.successful(Redirect(routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url))
+          case (_, _, true) =>
+            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)))
           case _            => Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
         }
       }

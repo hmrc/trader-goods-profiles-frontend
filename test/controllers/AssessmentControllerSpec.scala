@@ -53,12 +53,17 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
         "to LongerCommodityCode if there's a cat 2 assessment without exemptions, the commodity code's short, and there are descendants" in {
 
-          val commodityCode = "1234560"
-          val descendantCount = 1
+          val commodityCode              = "1234560"
+          val descendantCount            = 1
           val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
-          val categorisationInfo =
-            CategorisationInfo(commodityCode, Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), descendantCount)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val categorisationInfo         =
+            CategorisationInfo(
+              commodityCode,
+              Seq(assessmentCat2NoExemptions),
+              Some("Weight, in kilograms"),
+              descendantCount
+            )
+          val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
           val answers =
             emptyUserAnswers
@@ -73,7 +78,9 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId).url
+            redirectLocation(result).value mustEqual routes.LongerCommodityCodeController
+              .onPageLoad(NormalMode, recordId)
+              .url
           }
         }
 
@@ -86,12 +93,17 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           )
 
           scenarios.map { scenario =>
-            val commodityCode = scenario._1
-            val descendantCount = scenario._2
+            val commodityCode              = scenario._1
+            val descendantCount            = scenario._2
             val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
-            val categorisationInfo =
-              CategorisationInfo(commodityCode, Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), descendantCount)
-            val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+            val categorisationInfo         =
+              CategorisationInfo(
+                commodityCode,
+                Seq(assessmentCat2NoExemptions),
+                Some("Weight, in kilograms"),
+                descendantCount
+              )
+            val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
             val answers =
               emptyUserAnswers
