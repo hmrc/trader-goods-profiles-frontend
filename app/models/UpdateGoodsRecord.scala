@@ -63,20 +63,12 @@ object UpdateGoodsRecord {
 
   def buildCommodityCode(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, Commodity] =
     (
-      Right(eori),
       Right(recordId),
       getCommodityCode(answers, recordId)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        commodityCode = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
   def buildTraderReference(
     answers: UserAnswers,

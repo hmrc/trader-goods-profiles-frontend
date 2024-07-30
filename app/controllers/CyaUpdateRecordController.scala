@@ -91,9 +91,7 @@ class CyaUpdateRecordController @Inject() (
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
 
           val list = SummaryListViewModel(
-            Seq(
-              TraderReferenceSummary.row(traderReference, recordId, CheckMode)
-            )
+            Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)           => logErrorsAndContinue(errors, recordId)
@@ -102,18 +100,15 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, request.eori, recordId) match {
-        case Right(updateGoodsRecord: UpdateGoodsRecord) =>
+      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, recordId) match {
+        case Right(commodity) =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
           val list = SummaryListViewModel(
-            Seq(
-              //TODO remove .get
-              CommodityCodeSummary.row(updateGoodsRecord.commodityCode.map(_.commodityCode).get, recordId, CheckMode)
-            )
+            Seq(CommodityCodeSummary.row(commodity.commodityCode, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
-        case Left(errors)                                => logErrorsAndContinue(errors, recordId)
+        case Left(errors)     => logErrorsAndContinue(errors, recordId)
       }
     }
 
@@ -201,17 +196,23 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, request.eori, recordId) match {
-        case Right(model) =>
-          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
+      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, recordId) match {
+        case Right(commodity) =>
+          auditService.auditFinishUpdateGoodsRecord(
+            recordId,
+            request.affinityGroup,
+            UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+          )
           for {
-            _                        <- goodsRecordConnector.updateGoodsRecord(model)
+            _                        <- goodsRecordConnector.updateGoodsRecord(
+                                          UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+                                        )
             updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
             _                        <- sessionRepository.set(updatedAnswers)
             _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors)     => Future.successful(logErrorsAndContinue(errors, recordId))
       }
     }
 
