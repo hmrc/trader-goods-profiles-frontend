@@ -506,7 +506,8 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue.value mustEqual getRecordsResponse.as[GetRecordsResponse]
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue.value mustEqual getRecordsResponse
+        .as[GetRecordsResponse]
     }
 
     "must return done when the status is ACCEPTED" in {
@@ -558,7 +559,10 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue.value mustBe getRecordsResponse.as[GetRecordsResponse]
+      connector
+        .searchRecords(testEori, searchString, exactMatch = false, 1, 3)
+        .futureValue
+        .value mustBe getRecordsResponse.as[GetRecordsResponse]
     }
 
     "must return done when the status is ACCEPTED" in {

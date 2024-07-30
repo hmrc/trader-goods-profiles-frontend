@@ -45,17 +45,19 @@ class GoodsRecordsLoadingController @Inject() (
   def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] =
     identify.async { implicit request =>
       goodsRecordConnector.getRecordsSummary(request.eori).map { recordsSummary =>
-        recordsSummary.currentUpdate.map { update =>
-          val recordsStored  = update.recordsStored
-          val totalRecords = update.totalRecords
-          Ok(view(recordsStored, totalRecords, continueUrl))
-            .withHeaders("Refresh" -> refreshRate.toString)
-        }.getOrElse {
-          continueUrl
-            .flatMap(_.getEither(OnlyRelative).toOption)
-            .map(safeRedirect => Redirect(safeRedirect.url))
-            .getOrElse(Redirect(routes.HomePageController.onPageLoad().url))
-        }
+        recordsSummary.currentUpdate
+          .map { update =>
+            val recordsStored = update.recordsStored
+            val totalRecords  = update.totalRecords
+            Ok(view(recordsStored, totalRecords, continueUrl))
+              .withHeaders("Refresh" -> refreshRate.toString)
+          }
+          .getOrElse {
+            continueUrl
+              .flatMap(_.getEither(OnlyRelative).toOption)
+              .map(safeRedirect => Redirect(safeRedirect.url))
+              .getOrElse(Redirect(routes.HomePageController.onPageLoad().url))
+          }
       }
     }
 }

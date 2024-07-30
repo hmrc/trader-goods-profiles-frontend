@@ -114,7 +114,7 @@ class TraderReferenceController @Inject() (
                         )
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
-              case None          =>
+              case None            =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
@@ -156,7 +156,7 @@ class TraderReferenceController @Inject() (
                         )
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
-              case None          =>
+              case None            =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController

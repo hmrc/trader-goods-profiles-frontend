@@ -85,7 +85,7 @@ class GoodsRecordsController @Inject() (
                   .removingFromSession(dataUpdated, pageUpdated)
               )
             }
-          case None                    =>
+          case None                      =>
             Future.successful(
               Redirect(
                 routes.GoodsRecordsLoadingController
@@ -94,7 +94,7 @@ class GoodsRecordsController @Inject() (
             )
         }
       }
-  }
+    }
 
   def onSearch(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
@@ -122,7 +122,7 @@ class GoodsRecordsController @Inject() (
                     )
                   )
                 }
-              case None                    =>
+              case None                      =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController
