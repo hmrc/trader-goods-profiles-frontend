@@ -54,7 +54,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(GoodsDescriptionUpdatePage(testRecordId), "1")
+            .set(GoodsDescriptionUpdatePage(testRecordId), "good description")
             .success
             .value
             .set(HasGoodsDescriptionChangePage(testRecordId), true)
@@ -63,7 +63,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val result = UpdateGoodsRecord.buildGoodsDescription(answers, testRecordId)
 
-        result mustEqual Right("1")
+        result mustEqual Right("good description")
 
       }
 
