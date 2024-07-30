@@ -28,7 +28,8 @@ final case class UpdateGoodsRecord(
   countryOfOrigin: Option[String] = None,
   goodsDescription: Option[String] = None,
   traderReference: Option[String] = None,
-  commodityCode: Option[Commodity] = None
+  commodityCode: Option[Commodity] = None,
+  category: Option[Int] = None
 )
 
 object UpdateGoodsRecord {
@@ -48,7 +49,8 @@ object UpdateGoodsRecord {
       UpdateGoodsRecord(
         eori,
         recordId,
-        countryOfOrigin = Some(value)
+        countryOfOrigin = Some(value),
+        category = Some(1)
       )
     )
 
@@ -82,7 +84,8 @@ object UpdateGoodsRecord {
       UpdateGoodsRecord(
         eori,
         recordId,
-        commodityCode = Some(value)
+        commodityCode = Some(value),
+        category = Some(1)
       )
     )
 
