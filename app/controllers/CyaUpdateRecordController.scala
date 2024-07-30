@@ -72,18 +72,15 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, request.eori, recordId) match {
-        case Right(updateGoodsRecord: UpdateGoodsRecord) =>
+      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, recordId) match {
+        case Right(goodsDescription) =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
 
           val list = SummaryListViewModel(
-            Seq(
-              //TODO remove .get
-              GoodsDescriptionSummary.row(updateGoodsRecord.goodsDescription.get, recordId, CheckMode)
-            )
+            Seq(GoodsDescriptionSummary.row(goodsDescription, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
-        case Left(errors)                                => logErrorsAndContinue(errors, recordId)
+        case Left(errors)            => logErrorsAndContinue(errors, recordId)
       }
     }
 
@@ -177,11 +174,17 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, request.eori, recordId) match {
+      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, recordId) match {
         case Right(model) =>
-          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
+          auditService.auditFinishUpdateGoodsRecord(
+            recordId,
+            request.affinityGroup,
+            UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(model))
+          )
           for {
-            _                        <- goodsRecordConnector.updateGoodsRecord(model)
+            _                        <- goodsRecordConnector.updateGoodsRecord(
+                                          UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(model))
+                                        )
             updatedAnswersWithChange <-
               Future.fromTry(request.userAnswers.remove(HasGoodsDescriptionChangePage(recordId)))
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(GoodsDescriptionUpdatePage(recordId)))

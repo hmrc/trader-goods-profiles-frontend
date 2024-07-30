@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
@@ -54,20 +54,12 @@ object UpdateGoodsRecord {
 
   def buildGoodsDescription(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, String] =
     (
-      Right(eori),
       Right(recordId),
       getGoodsDescription(answers, recordId)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        goodsDescription = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
   def buildCommodityCode(
     answers: UserAnswers,
