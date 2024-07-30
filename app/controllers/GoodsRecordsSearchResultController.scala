@@ -22,7 +22,6 @@ import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, g
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
@@ -36,7 +35,6 @@ class GoodsRecordsSearchResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   identify: IdentifierAction,
-  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
   emptyView: GoodsRecordsSearchResultEmptyView
@@ -86,8 +84,7 @@ class GoodsRecordsSearchResultController @Inject() (
 
   def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     request.userAnswers.get(GoodsRecordsPage) match {
-      case Some(searchText) =>
-        Ok(emptyView(searchText))
+      case Some(searchText) => Ok(emptyView(searchText))
       case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
     }
   }
