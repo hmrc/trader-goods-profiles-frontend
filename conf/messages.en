@@ -526,8 +526,10 @@ feedback.line.1 = This is a new service and we want to know what you think of it
 feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
 feedback.link = Send us your feedback
 
-goodsRecordsLoading.title = Goods Records Loading
-goodsRecordsLoading.heading = Goods Records Loading
-goodsRecordsLoading.information = Go and make yourself a coffee, this could take some time...
-goodsRecordsLoading.recordsStored = Records Stored:
-goodsRecordsLoading.recordsToStore = Records to Store:
+goodsRecordsLoading.title = We''re loading your records
+goodsRecordsLoading.heading = We''re loading your records
+goodsRecordsLoading.p1 = We''re loading {0} records. We''ll take you to your goods records page when they''re ready to view.
+goodsRecordsLoading.p2 = We''ve currently loaded {0} out of {1} records.
+goodsRecordsLoading.p3.1 = You can
+goodsRecordsLoading.p3.2 = refresh this page
+goodsRecordsLoading.p3.3 = to check the progress of loading your records.

@@ -21,7 +21,6 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, UpdateGoodsRecord}
-import org.apache.pekko.Done
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec

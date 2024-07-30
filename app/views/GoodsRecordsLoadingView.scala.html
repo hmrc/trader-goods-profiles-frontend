@@ -14,19 +14,22 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
 )
 
-@(recordsStored: Int, recordsToStore: Int)(implicit request: Request[_], messages: Messages)
+@(recordsStored: Int, totalRecords: Int, continueUrl: Option[RedirectUrl])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("goodsRecordsLoading.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("goodsRecordsLoading.heading")</h1>
-    <h2 class="govuk-heading-l">@messages("goodsRecordsLoading.information")</h2>
-    <p class="govuk-body">@messages("goodsRecordsLoading.recordsStored")</p>
-    <p class="govuk-body">@recordsStored</p>
-    <p class="govuk-body">@messages("goodsRecords.recordsToStore")</p>
-    <p class="govuk-body">@recordsToStore</p>
+  <h1 class="govuk-heading-l">@messages("goodsRecordsLoading.heading")</h1>
+  <p class="govuk-body">@messages("goodsRecordsLoading.p1", totalRecords)</p>
+  <p class="govuk-body">@messages("goodsRecordsLoading.p2", recordsStored, totalRecords)</p>
+  <p class="govuk-body">
+    @messages("goodsRecordsLoading.p3.1")
+    <a href="@routes.GoodsRecordsLoadingController.onPageLoad(continueUrl).url">@messages("goodsRecordsLoading.p3.2")</a>
+    @messages("goodsRecordsLoading.p3.3")
+  </p>
 }

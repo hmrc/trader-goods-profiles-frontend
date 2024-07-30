@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.GoodsRecordConnector
 import models.RecordsSummary
 import models.RecordsSummary.Update
 import org.mockito.ArgumentMatchers.any
@@ -50,6 +50,9 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
         .successful(RecordsSummary(testEori, Some(Update(recordsStored, recordsToStore)), Instant.now))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .configure(
+          "goods-records-loading-page.refresh-rate" -> 3
+        )
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )
@@ -64,7 +67,11 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[GoodsRecordsLoadingView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(recordsStored, recordsToStore)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(recordsStored, recordsToStore, Some(RedirectUrl(continueUrl)))(
+          request,
+          messages(application)
+        ).toString
+        header("Refresh", result).value mustEqual "3"
       }
     }
 

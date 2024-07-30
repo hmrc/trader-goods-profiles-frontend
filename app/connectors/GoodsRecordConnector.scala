@@ -51,19 +51,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
 
-  private def checkGoodsRecordsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/checkRecords"
-
   private def recordsSummaryUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records-summary"
-
-  private def getGoodsRecordCountsUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/count"
-
-  private def storeAllGoodsRecordsUrl(
-    eori: String
-  ) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/store"
 
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
@@ -160,10 +149,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     eori: String
   )(implicit hc: HeaderCarrier): Future[RecordsSummary] =
     httpClient
-      .head(recordsSummaryUrl(eori))
+      .get(recordsSummaryUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[RecordsSummary])
+      .map { response =>
+        response.json.as[RecordsSummary]
+      }
 
   def filterRecordsByField(
     eori: String,

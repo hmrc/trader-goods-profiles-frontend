@@ -18,6 +18,7 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl._
@@ -33,18 +34,22 @@ class GoodsRecordsLoadingController @Inject() (
   identify: IdentifierAction,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsLoadingView,
-  goodsRecordConnector: GoodsRecordConnector
+  goodsRecordConnector: GoodsRecordConnector,
+  configuration: Configuration
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
+
+  private val refreshRate = configuration.get[Int]("goods-records-loading-page.refresh-rate")
 
   def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] =
     identify.async { implicit request =>
       goodsRecordConnector.getRecordsSummary(request.eori).map { recordsSummary =>
         recordsSummary.currentUpdate.map { update =>
           val recordsStored  = update.recordsStored
-          val recordsToStore = update.recordsToStore
-          Ok(view(recordsStored, recordsToStore))
+          val totalRecords = update.totalRecords
+          Ok(view(recordsStored, totalRecords, continueUrl))
+            .withHeaders("Refresh" -> refreshRate.toString)
         }.getOrElse {
           continueUrl
             .flatMap(_.getEither(OnlyRelative).toOption)

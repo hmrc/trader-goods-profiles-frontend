@@ -36,7 +36,7 @@
     fullWidthMainContent: fullWidthMainContent
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false, extraHead: Html = HtmlFormat.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -57,6 +57,7 @@
     )
     <link href="@routes.Assets.versioned("stylesheets/accessible-autocomplete.min.css").url" media="screen" rel="stylesheet" type="text/css" />
     <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" />
+    @extraHead
 }
 
 @additionalScripts = {
