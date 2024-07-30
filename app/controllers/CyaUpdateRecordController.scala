@@ -86,18 +86,17 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {
-        case Right(updateGoodsRecord: UpdateGoodsRecord) =>
+      UpdateGoodsRecord.buildTraderReference(request.userAnswers, recordId) match {
+        case Right(traderReference) =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
 
           val list = SummaryListViewModel(
             Seq(
-              //TODO remove .get
-              TraderReferenceSummary.row(updateGoodsRecord.traderReference.get, recordId, CheckMode)
+              TraderReferenceSummary.row(traderReference, recordId, CheckMode)
             )
           )
           Ok(view(list, onSubmitAction))
-        case Left(errors)                                => logErrorsAndContinue(errors, recordId)
+        case Left(errors)           => logErrorsAndContinue(errors, recordId)
       }
     }
 
@@ -144,15 +143,21 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildTraderReference(request.userAnswers, request.eori, recordId) match {
-        case Right(model) =>
-          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
+      UpdateGoodsRecord.buildTraderReference(request.userAnswers, recordId) match {
+        case Right(traderReference) =>
+          auditService.auditFinishUpdateGoodsRecord(
+            recordId,
+            request.affinityGroup,
+            UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
+          )
           for {
-            _              <- goodsRecordConnector.updateGoodsRecord(model)
+            _              <- goodsRecordConnector.updateGoodsRecord(
+                                UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
+                              )
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors)           => Future.successful(logErrorsAndContinue(errors, recordId))
       }
     }
 
@@ -175,22 +180,22 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, recordId) match {
-        case Right(model) =>
+        case Right(goodsDescription) =>
           auditService.auditFinishUpdateGoodsRecord(
             recordId,
             request.affinityGroup,
-            UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(model))
+            UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
           )
           for {
             _                        <- goodsRecordConnector.updateGoodsRecord(
-                                          UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(model))
+                                          UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
                                         )
             updatedAnswersWithChange <-
               Future.fromTry(request.userAnswers.remove(HasGoodsDescriptionChangePage(recordId)))
             updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(GoodsDescriptionUpdatePage(recordId)))
             _                        <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId))
+        case Left(errors)            => Future.successful(logErrorsAndContinue(errors, recordId))
       }
     }
 

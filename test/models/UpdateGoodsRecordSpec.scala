@@ -71,15 +71,13 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferenceUpdatePage(testRecordId), "1")
+            .set(TraderReferenceUpdatePage(testRecordId), "trader reference")
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.buildTraderReference(answers, testRecordId)
 
-        result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, traderReference = Some("1"))
-        )
+        result mustEqual Right("trader reference")
       }
 
       "and all commodity code data is present" in {
@@ -182,7 +180,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.buildTraderReference(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(TraderReferenceUpdatePage(testRecordId))
