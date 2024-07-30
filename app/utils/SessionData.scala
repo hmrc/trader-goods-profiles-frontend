@@ -40,5 +40,4 @@ case object SessionData {
   val longerCommodityCodePage: String  = "longerCommodityCode"
   val namePage: String                 = "name"
   val emailPage: String                = "email"
-  val goodsRecordsPage: String         = "goodsRecords"
 }

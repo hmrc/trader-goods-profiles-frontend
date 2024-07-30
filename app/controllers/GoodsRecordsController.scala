@@ -62,6 +62,8 @@ class GoodsRecordsController @Inject() (
             for {
               goodsRecordResponse <- goodsRecordConnector.getRecords(request.eori, page, pageSize)
               countries           <- ottConnector.getCountries
+              updatedAnswers      <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
+              _                   <- sessionRepository.set(updatedAnswers)
             } yield
               if (goodsRecordResponse.pagination.totalRecords != 0) {
                 val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)

@@ -59,10 +59,3 @@ case object RequestAdviceJourney extends Journey {
     )
   override def toString: String = "RequestAdvice"
 }
-case object SearchRecordJourney extends Journey {
-  val pages: Seq[String]        =
-    Seq(
-      goodsRecordsPage
-    )
-  override def toString: String = "SearchRecord"
-}

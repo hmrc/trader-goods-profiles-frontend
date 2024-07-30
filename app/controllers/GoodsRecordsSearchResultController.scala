@@ -19,7 +19,6 @@ package controllers
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
-import models.helper.SearchRecordJourney
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -60,7 +59,6 @@ class GoodsRecordsSearchResultController @Inject() (
               countries      <- ottConnector.getCountries
             } yield
               if (searchResponse.pagination.totalRecords != 0) {
-                dataCleansingService.deleteMongoData(request.userAnswers.id, SearchRecordJourney)
                 val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
                 Ok(
                   view(
@@ -89,7 +87,6 @@ class GoodsRecordsSearchResultController @Inject() (
   def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     request.userAnswers.get(GoodsRecordsPage) match {
       case Some(searchText) =>
-        dataCleansingService.deleteMongoData(request.userAnswers.id, SearchRecordJourney)
         Ok(emptyView(searchText))
       case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
     }

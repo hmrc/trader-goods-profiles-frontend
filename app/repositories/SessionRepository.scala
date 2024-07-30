@@ -97,7 +97,6 @@ class SessionRepository @Inject() (
       case CreateRecordJourney   => CreateRecordJourney.pages.map(page => Updates.unset(s"data.$page"))
       case CategorisationJourney => CategorisationJourney.pages.map(page => Updates.unset(s"data.$page"))
       case RequestAdviceJourney  => RequestAdviceJourney.pages.map(page => Updates.unset(s"data.$page"))
-      case SearchRecordJourney   => SearchRecordJourney.pages.map(page => Updates.unset(s"data.$page"))
     }
     collection
       .updateOne(
