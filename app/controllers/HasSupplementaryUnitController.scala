@@ -22,6 +22,7 @@ import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.HasSupplementaryUnitPage
+import queries.RecategorisingQuery
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -48,6 +49,13 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
+      //TODO this definitely will not survive in the new world
+      // All questions answered so no need to be in recategorising mode it just breaks the back navigation
+      for {
+        updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
+        _         <- sessionRepository.set(updatedUA)
+      } yield updatedUA
+
       val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
