@@ -65,7 +65,7 @@ class CategoryGuidanceController @Inject() (
                 .build(userAnswers, request.eori, recordId)
                 .map { categoryRecord =>
                   goodsRecordConnector
-                    .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+                    .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
                         .removingFromSession(dataUpdated, pageUpdated)
