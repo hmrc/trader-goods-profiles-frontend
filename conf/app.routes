@@ -195,6 +195,9 @@ POST        /update-record/:recordId/categorisation/supplementary-unit-amount/up
 GET         /update-record/:recordId/categorisation/check-your-answers/supplementary-unit          controllers.CyaSupplementaryUnitController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/check-your-answers/supplementary-unit          controllers.CyaSupplementaryUnitController.onSubmit(recordId: String)
 
+GET        /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onPageLoad()
+POST       /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onSubmit()
+
 GET        /update-record/:recordId/categorisation/longer-commodity-code                    controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update-record/:recordId/categorisation/longer-commodity-code                    controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET        /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
@@ -246,4 +249,4 @@ POST        /update-profile/removing-niphl-number                               
 
 GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
 
-GET         /goods-records-loading                                                          controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)

@@ -50,12 +50,13 @@ object UpdateRecordRequest {
       goodsRecord.category
     )
 
-  def mapFromCategory(categoryRecord: CategoryRecord): UpdateRecordRequest =
+  def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): UpdateRecordRequest =
     UpdateRecordRequest(
       categoryRecord.eori,
       categoryRecord.recordId,
       categoryRecord.eori,
       category = Some(categoryRecord.category),
+      comcode = categoryRecord.comcode,
       supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
     )
