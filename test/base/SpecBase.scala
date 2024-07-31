@@ -32,7 +32,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -136,6 +136,18 @@ trait SpecBase
       .success
       .value
       .set(EmailPage(testRecordId), "test@test.com")
+      .success
+      .value
+
+  def mandatorySupplementaryUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+      .success
+      .value
+      .set(SupplementaryUnitUpdatePage(testRecordId), "100")
+      .success
+      .value
+      .set(MeasurementQuery, "litres")
       .success
       .value
 

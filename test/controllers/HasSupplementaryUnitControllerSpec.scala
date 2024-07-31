@@ -45,6 +45,8 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private lazy val hasSupplementaryUnitRoute =
     routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
 
+  private lazy val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(NormalMode, recordId)
+
   "HasSupplementaryUnit Controller" - {
 
     "must return OK and the correct view for a GET" in {
@@ -59,7 +61,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, recordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, recordId, onSubmitAction)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -77,7 +82,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId)(
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId, onSubmitAction)(
           request,
           messages(application)
         ).toString
@@ -98,7 +103,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, recordId)(
+        contentAsString(result) mustEqual view(form, NormalMode, recordId, onSubmitAction)(
           request,
           messages(application)
         ).toString
@@ -147,7 +152,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, recordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, onSubmitAction)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

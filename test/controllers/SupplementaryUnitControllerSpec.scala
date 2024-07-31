@@ -45,6 +45,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private val validAnswer = "10.0"
 
   private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
+  lazy val submitAction: Call             = routes.SupplementaryUnitController.onSubmit(NormalMode, testRecordId)
 
   "SupplementaryUnit Controller" - {
 
@@ -65,7 +66,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "Weight, in kilograms")(
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "Weight, in kilograms", submitAction)(
           request,
           messages(application)
         ).toString
@@ -89,7 +90,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SupplementaryUnitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "")(
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "", submitAction)(
           request,
           messages(application)
         ).toString
@@ -120,7 +121,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           form.fill(validAnswer),
           NormalMode,
           testRecordId,
-          "Weight, in kilograms"
+          "Weight, in kilograms",
+          submitAction
         )(request, messages(application)).toString
       }
     }
@@ -177,7 +179,13 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "Weight, in kilograms")(
+        contentAsString(result) mustEqual view(
+          boundForm,
+          NormalMode,
+          testRecordId,
+          "Weight, in kilograms",
+          submitAction
+        )(
           request,
           messages(application)
         ).toString
@@ -205,7 +213,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "")(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "", submitAction)(
           request,
           messages(application)
         ).toString

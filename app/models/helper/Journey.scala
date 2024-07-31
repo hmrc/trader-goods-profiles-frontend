@@ -59,3 +59,13 @@ case object RequestAdviceJourney extends Journey {
     )
   override def toString: String = "RequestAdvice"
 }
+
+case object SupplementaryUnitUpdateJourney extends Journey {
+  val pages: Seq[String]        =
+    Seq(
+      hasSupplementaryUnitUpdatePage,
+      supplementaryUnitUpdatePage,
+      measurementUnitQuery
+    )
+  override def toString: String = "SupplementaryUnitUpdate"
+}
