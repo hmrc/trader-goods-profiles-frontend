@@ -17,38 +17,29 @@
 package controllers
 
 import base.SpecBase
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import connectors.TraderProfileConnector
 import models.GoodsRecordsPagination.firstPage
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
+import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.GetRecordsResponseUtil
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.PreviousMovementRecordsView
 
 import scala.concurrent.Future
 
-class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar with GetRecordsResponseUtil {
+class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-  /*
+
   "PreviousMovementRecords Controller" - {
 
-    "must return OK and the correct view for a GET when this the users first time on this page and they do have records but they have not been stored" in {
-      val totalRecords                 = 10
-      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsconnector.doRecordsExist(any())(any())) thenReturn Future.successful(false)
-      when(mockGetGoodsRecordsconnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
-
+    "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
+        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -60,73 +51,13 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
-        verify(mockGetGoodsRecordsconnector).doRecordsExist(any())(any())
-        verify(mockGetGoodsRecordsconnector).getRecordsCount(any())(any())
       }
     }
 
-    "must redirect to goods list page for a GET when this the users records have been stored" in {
-      val totalRecords                 = 10
-      val mockGetGoodsRecordsConnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsConnector.doRecordsExist(any())(any())) thenReturn Future.successful(true)
-      when(mockGetGoodsRecordsConnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
-        verify(mockGetGoodsRecordsConnector).doRecordsExist(any())(any())
-        verify(mockGetGoodsRecordsConnector).getRecordsCount(any())(any())
-
-      }
-    }
-
-    "must redirect to no records page for a GET when this the users first time on this page and they do not have any records" in {
-
-      val totalRecords                 = 0
-      val mockGetGoodsRecordsconnector = mock[GoodsRecordConnector]
-      when(mockGetGoodsRecordsconnector.getRecordsCount(any())(any())) thenReturn Future.successful(totalRecords)
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsconnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
-        verify(mockGetGoodsRecordsconnector).getRecordsCount(any())(any())
-      }
-    }
-
-    "must redirect to the next page on load record and store all records" in {
-
-      val mockGetGoodsRecordsConnector = mock[GoodsRecordConnector]
-
-      when(mockGetGoodsRecordsConnector.storeAllRecords(any())(any())) thenReturn Future.successful(Done)
-
+    "must redirect to the next page on load record" in {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockGetGoodsRecordsConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
+          .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
       running(application) {
@@ -137,11 +68,7 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar w
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
-
-        verify(mockGetGoodsRecordsConnector).storeAllRecords(any())(any())
       }
     }
   }
-
-   */
 }

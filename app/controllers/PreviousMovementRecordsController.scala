@@ -16,7 +16,6 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
 import controllers.actions._
 import models.GoodsRecordsPagination.firstPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -30,12 +29,9 @@ import scala.concurrent.ExecutionContext
 class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView,
-  goodsRecordConnector: GoodsRecordConnector
+  view: PreviousMovementRecordsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {

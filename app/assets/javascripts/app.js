@@ -109,11 +109,3 @@ if (typeof accessibleAutocomplete != 'undefined' && document.querySelector('.aut
   }
 }
 
-var loadButton = document.getElementById('load-button');
-if (loadButton) {
-  loadButton.addEventListener('click', function (e) {
-    e.preventDefault();
-    document.getElementById("previousMovementForm").submit();
-  });
-}
-

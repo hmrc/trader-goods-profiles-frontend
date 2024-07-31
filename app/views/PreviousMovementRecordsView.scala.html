@@ -44,11 +44,9 @@ formHelper: FormWithCSRF
 </div>
 
 
- @formHelper(action = PreviousMovementRecordsController.onSubmit(),Symbol("id") -> "previousMovementForm") {
+ @formHelper(action = PreviousMovementRecordsController.onSubmit()) {
   @govukButton(
-   ButtonViewModel(messages("previousMovementRecords.loadrecord")).withAttribute(("id", "load-button"))
+   ButtonViewModel(messages("previousMovementRecords.loadrecord"))
   )
  }
-
-
 }
