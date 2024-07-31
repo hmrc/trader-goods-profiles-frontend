@@ -23,5 +23,13 @@
 
 @layout(pageTitle = titleNoForm(messages("reviewReason.title"))) {
 
+    @reviewReason match {
+        case Some("mismatch") => "show content 1"
+        case Some("inadequate") => "show content 1"
+        case Some("unclear") => "show content 1"
+        case Some("commodity") => "show content 1"
+        case Some("measure") => "show content 1"
+    }
+
     <h1 class="govuk-heading-xl">@messages("reviewReason.heading")</h1>
 }
