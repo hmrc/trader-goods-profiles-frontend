@@ -61,7 +61,10 @@ class GoodsRecordsController @Inject() (
           case Some(goodsRecordResponse) =>
             if (goodsRecordResponse.pagination.totalRecords != 0) {
               ottConnector.getCountries.map { countries =>
-                //TODO cleanse GoodsRecordsPage from session
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield {}
                 val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
                 Ok(
                   view(
