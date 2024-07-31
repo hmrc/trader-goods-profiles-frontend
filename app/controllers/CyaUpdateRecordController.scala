@@ -118,7 +118,7 @@ class CyaUpdateRecordController @Inject() (
       }
     }
 
-  def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
+  private def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
     request: Request[_]
   ): Future[String] =
     userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
@@ -132,7 +132,7 @@ class CyaUpdateRecordController @Inject() (
         }
     }
 
-  def findCountryName(countries: Seq[Country], answer: String): String =
+  private def findCountryName(countries: Seq[Country], answer: String): String =
     countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
 
   def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
