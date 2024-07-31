@@ -1,0 +1,11 @@
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton
+)
+
+@(recordId: String, reviewReason: String)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("reviewReason.title"))) {
+
+    <h1 class="govuk-heading-xl">@messages("reviewReason.heading")</h1>
+}

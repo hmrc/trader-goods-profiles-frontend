@@ -198,6 +198,9 @@ POST       /remove-record/:recordId/goods-profile                               
 POST        /remove-record/:recordId/goods-record                                           controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsRecordLocation)
 
 GET         /goods-record/:recordId                                                         controllers.SingleRecordController.onPageLoad(recordId: String)
+GET         /goods-record/:recordId/to-review/review-reason                                 controllers.ReviewReasonController.onPageLoad(recordId: String, reviewReason: String)
+
+/goods-record/:recordId/to-review/review-reason
 
 GET        /update-record/:recordId/change-record-warning/commodity-code                    controllers.HasCommodityCodeChangeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST       /update-record/:recordId/change-record-warning/commodity-code                    controllers.HasCommodityCodeChangeController.onSubmit(mode: Mode = NormalMode, recordId: String)

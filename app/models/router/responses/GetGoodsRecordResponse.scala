@@ -50,11 +50,7 @@ case class GetGoodsRecordResponse(
   def getChangeOrReviewUrl: String = {
     if (toReview) {
       reviewReason match {
-        case Some("mismatch") => routes.IndexController.onPageLoad.url
-        case Some("inadequate") => routes.IndexController.onPageLoad.url
-        case Some("unclear") => routes.IndexController.onPageLoad.url
-        case Some("commodity") => routes.IndexController.onPageLoad.url
-        case Some("measure") => routes.IndexController.onPageLoad.url
+        case Some(_) => routes.ReviewReasonController.onPageLoad(recordId).url
         case _ => routes.JourneyRecoveryController.onPageLoad().url
       }
     } else {
