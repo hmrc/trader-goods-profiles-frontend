@@ -19,6 +19,7 @@ package models.router.responses
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 
 import java.time.Instant
+import controllers.routes
 
 case class GetGoodsRecordResponse(
   recordId: String,
@@ -45,9 +46,25 @@ case class GetGoodsRecordResponse(
   niphlNumber: Option[String] = None,
   createdDateTime: Instant,
   updatedDateTime: Instant
-)
+) {
+  def getChangeOrReviewUrl: String = {
+    if (toReview) {
+      reviewReason match {
+        case Some("mismatch") => routes.IndexController.onPageLoad.url
+        case Some("inadequate") => routes.IndexController.onPageLoad.url
+        case Some("unclear") => routes.IndexController.onPageLoad.url
+        case Some("commodity") => routes.IndexController.onPageLoad.url
+        case Some("measure") => routes.IndexController.onPageLoad.url
+        case _ => routes.JourneyRecoveryController.onPageLoad().url
+      }
+    } else {
+      routes.SingleRecordController.onPageLoad(recordId).url
+    }
+  }
+}
 
 object GetGoodsRecordResponse {
+
   implicit val reads: Reads[GetGoodsRecordResponse] = (json: JsValue) =>
     JsSuccess(
       GetGoodsRecordResponse(
