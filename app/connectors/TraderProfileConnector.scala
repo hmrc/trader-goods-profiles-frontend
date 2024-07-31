@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) {
+) extends BaseConnector {
 
   private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private def traderProfileUrl(eori: String) =
@@ -40,19 +40,15 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
     httpClient
       .put(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
-      .execute[HttpResponse]
+      .executeAndContinue
       .map(_ => Done)
 
   def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
       .head(traderProfileUrl(eori))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK => true
-        }
-      }
-      .recover { case e: NotFoundException =>
+      .executeAndContinue
+      .map(_ => true)
+      .recover { case _: NotFoundException =>
         false
       }
 
@@ -62,6 +58,6 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient
       .get(getTraderProfileUrl(eori))
-      .execute[HttpResponse]
-      .map(response => response.json.as[TraderProfile])
+      .executeAndDeserialise[TraderProfile]
+      .map(response => response)
 }

@@ -22,7 +22,6 @@ import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, GoodsRecord, RecordsSummary, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -32,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) {
+) extends BaseConnector {
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
 
@@ -81,13 +80,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .delete(deleteGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case NO_CONTENT => true
-        }
-      }
-      .recover { case e: NotFoundException =>
+      .executeAndContinue
+      .map(_ => true)
+      .recover { case _: NotFoundException =>
         false
       }
 
@@ -98,7 +93,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .patch(goodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.map(updateGoodsRecord)))
-      .execute[HttpResponse]
+      .executeAndContinue
       .map(_ => Done)
 
   def updateCategoryForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
@@ -108,7 +103,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .patch(goodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.mapFromCategory(categoryRecord)))
-      .execute[HttpResponse]
+      .executeAndContinue
       .map(_ => Done)
 
   def getRecord(eori: String, recordId: String)(implicit
@@ -117,8 +112,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(singleGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map(response => response.json.as[GetGoodsRecordResponse])
+      .executeAndDeserialise[GetGoodsRecordResponse]
+      .map(response => response)
 
   def getRecords(
     eori: String,
@@ -136,13 +131,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(goodsRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
-        }
-      }
+      .executeAndDeserialiseOption[GetRecordsResponse]
+      .map(response => response)
   }
 
   def getRecordsSummary(
@@ -151,10 +141,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(recordsSummaryUrl(eori))
       .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map { response =>
-        response.json.as[RecordsSummary]
-      }
+      .executeAndDeserialise[RecordsSummary]
+      .map(response => response)
 
   def filterRecordsByField(
     eori: String,
@@ -172,13 +160,8 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(filterRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
-        }
-      }
+      .executeAndDeserialiseOption[GetRecordsResponse]
+      .map(response => response)
   }
 
   def searchRecords(
@@ -199,12 +182,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     httpClient
       .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
-        }
-      }
+      .executeAndDeserialiseOption[GetRecordsResponse]
+      .map(response => response)
   }
 }

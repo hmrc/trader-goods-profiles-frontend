@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) {
+) extends BaseConnector {
 
   private val routerBaseUrl: Service                           = config.get[Service]("microservice.services.trader-goods-profiles-router")
   private val clientIdAndAcceptHeaders                         =
@@ -44,6 +44,6 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
       .post(accreditationUrl(adviceRequest.eori, adviceRequest.recordId))
       .setHeader(clientIdAndAcceptHeaders: _*)
       .withBody(Json.toJson(adviceRequest))
-      .execute[HttpResponse]
+      .executeAndContinue
       .map(_ => Done)
 }
