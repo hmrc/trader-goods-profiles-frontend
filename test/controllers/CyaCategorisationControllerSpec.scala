@@ -541,7 +541,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .url
 
               verify(mockConnector)
-                .updateCategoryForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+                .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                  any()
+                )
 
               withClue("audit event has been fired") {
                 verify(mockAuditService)
@@ -598,7 +600,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .url
 
               verify(mockConnector)
-                .updateCategoryForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+                .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                  any()
+                )
 
               withClue("audit event has been fired") {
                 verify(mockAuditService)
@@ -650,7 +654,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               withClue("connector was called even though audit failed") {
                 verify(mockConnector)
-                  .updateCategoryForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+                  .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                    any()
+                  )
               }
             }
           }
