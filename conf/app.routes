@@ -233,4 +233,4 @@ POST        /update-profile/removing-niphl-number                               
 
 GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
 
-GET         /goods-records-loading                                                          controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
