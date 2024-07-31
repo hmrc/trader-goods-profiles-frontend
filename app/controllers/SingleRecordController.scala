@@ -74,10 +74,10 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val categoryValue         = record.category.toString match {
-          case "1" => "Category 1"
-          case "2" => "Category 2"
-          case "3" => "Standard goods"
+        val categoryValue         = record.category match {
+          case 1 => "Category 1"
+          case 2 => "Category 2"
+          case 3 => "Standard goods"
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
