@@ -28,7 +28,8 @@ final case class UpdateGoodsRecord(
   countryOfOrigin: Option[String] = None,
   goodsDescription: Option[String] = None,
   traderReference: Option[String] = None,
-  commodityCode: Option[Commodity] = None
+  commodityCode: Option[Commodity] = None,
+  category: Option[Int] = None
 )
 
 object UpdateGoodsRecord {

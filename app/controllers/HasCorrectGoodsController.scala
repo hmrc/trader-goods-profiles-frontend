@@ -183,8 +183,11 @@ class HasCorrectGoodsController @Inject() (
         Future
           .fromTry(Try(updatedCategorisationAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
 
+      areWeRecategorisingAlready    = updatedCategorisationAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
       // We then have both assessments so can decide if to recategorise or not
-      needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
+      // If already recategorising then they've probably gone back and we need it to behave when going forward again
+      needToRecategorise            =
+        isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation) || areWeRecategorisingAlready
 
       // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
       updatedAnswersCleanedUp      <-

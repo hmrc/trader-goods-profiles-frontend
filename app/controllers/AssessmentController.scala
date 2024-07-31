@@ -60,6 +60,7 @@ class AssessmentController @Inject() (
         listItems                       = categorisationInfo.categoryAssessments(index).getExemptionListItems
         commodityCode                   = categorisationInfo.commodityCode
         exemptions                      = categorisationInfo.categoryAssessments(index).exemptions
+        category                        = categorisationInfo.categoryAssessments(index).category
         form                            = formProvider(exemptions.size)
         preparedForm                    = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
                                             case Some(value) => form.fill(value)
@@ -71,20 +72,29 @@ class AssessmentController @Inject() (
         val hasAssessmentBeenAnswered =
           request.userAnswers.get(AssessmentPage(recordId, index)).exists(_ != NotAnsweredYet)
 
-        if (exemptions.isEmpty) {
-          Future.successful(
-            Redirect(
-              navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+        val shouldDisplayNext = areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode
+
+        val commodityCodeWithoutZeros = commodityCode.reverse.dropWhile(char => char == '0').reverse
+
+        val shouldGoToLongerCommodityCode =
+          exemptions.isEmpty && category == 2 && commodityCodeWithoutZeros.length <= 6 &&
+            categorisationInfo.descendantCount != 0
+
+        val shouldGoToCya = exemptions.isEmpty && !shouldGoToLongerCommodityCode
+
+        (shouldGoToCya, shouldGoToLongerCommodityCode, shouldDisplayNext) match {
+          case (true, _, _) =>
+            Future.successful(
+              Redirect(
+                navigator
+                  .nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+              )
             )
-          )
-        } else if (areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode) {
-          Future.successful(
-            Redirect(
-              navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)
-            )
-          )
-        } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
+          case (_, true, _) =>
+            Future.successful(Redirect(routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url))
+          case (_, _, true) =>
+            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)))
+          case _            => Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
         }
       }
 

@@ -36,7 +36,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CountryOfOriginUpdatePage(testRecordId), "1")
+            .set(CountryOfOriginUpdatePage(testRecordId), "CN")
             .success
             .value
             .set(HasCountryOfOriginChangePage(testRecordId), true)
@@ -46,7 +46,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId)
 
         result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, Some("1"))
+          UpdateGoodsRecord(testEori, testRecordId, Some("CN"), category = Some(1))
         )
       }
 

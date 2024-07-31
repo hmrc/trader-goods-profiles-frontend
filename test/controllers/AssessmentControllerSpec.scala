@@ -51,11 +51,18 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect" - {
 
-        "to CyaCategorisation if there's a category 2 assessment without possible exemptions" in {
+        "to LongerCommodityCode if there's a cat 2 assessment without exemptions, the commodity code's short, and there are descendants" in {
 
+          val commodityCode              = "1234560"
+          val descendantCount            = 1
           val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
           val categorisationInfo         =
-            CategorisationInfo("123", Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), 0)
+            CategorisationInfo(
+              commodityCode,
+              Seq(assessmentCat2NoExemptions),
+              Some("Weight, in kilograms"),
+              descendantCount
+            )
           val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
           val answers =
@@ -71,7 +78,48 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+            redirectLocation(result).value mustEqual routes.LongerCommodityCodeController
+              .onPageLoad(NormalMode, recordId)
+              .url
+          }
+        }
+
+        "to CyaCategorisation if there's a cat 2 assessment without exemptions and the user's not being redirected to LongerCommodityCode" in {
+
+          val scenarios = Seq(
+            ("12345600", 0), // short comcode, no descendants
+            ("1234567800", 0), // long comcode, no descendants
+            ("1234567800", 1) // long comcode, with descendants
+          )
+
+          scenarios.map { scenario =>
+            val commodityCode              = scenario._1
+            val descendantCount            = scenario._2
+            val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
+            val categorisationInfo         =
+              CategorisationInfo(
+                commodityCode,
+                Seq(assessmentCat2NoExemptions),
+                Some("Weight, in kilograms"),
+                descendantCount
+              )
+            val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+
+            val answers =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, assessmentRoute)
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+            }
           }
         }
 

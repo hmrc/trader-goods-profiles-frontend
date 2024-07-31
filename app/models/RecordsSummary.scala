@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-case object PreviousMovementRecordsPage extends QuestionPage[String] {
+import java.time.Instant
 
-  override def path: JsPath = JsPath \ toString
+final case class RecordsSummary(
+  eori: String,
+  currentUpdate: Option[RecordsSummary.Update],
+  lastUpdated: Instant
+)
 
-  override def toString: String = "previousMovementRecords"
+object RecordsSummary extends MongoJavatimeFormats.Implicits {
+
+  final case class Update(recordsStored: Int, totalRecords: Int)
+
+  object Update {
+    implicit lazy val format: OFormat[Update] = Json.format
+  }
+
+  implicit lazy val format: OFormat[RecordsSummary] = Json.format
 }
