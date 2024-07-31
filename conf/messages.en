@@ -528,7 +528,7 @@ feedback.link = Send us your feedback
 
 goodsRecordsLoading.title = We''re loading your records
 goodsRecordsLoading.heading = We''re loading your records
-goodsRecordsLoading.p1 = We''re loading {0} records. We''ll take you to your goods records page when they''re ready to view.
+goodsRecordsLoading.p1 = We''re loading {0} records. We will take you to your goods records page when they''re ready to view.
 goodsRecordsLoading.p2 = We''ve currently loaded {0} out of {1} records.
 goodsRecordsLoading.p3.1 = You can
 goodsRecordsLoading.p3.2 = refresh this page
