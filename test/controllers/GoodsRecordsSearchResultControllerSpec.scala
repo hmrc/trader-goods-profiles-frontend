@@ -132,7 +132,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
       when(
         mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
       ) thenReturn Future
-        .successful(response)
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
