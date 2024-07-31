@@ -20,7 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, Commodity, GoodsRecord, UpdateGoodsRecord}
+import models.{CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -361,6 +361,50 @@ class GoodsRecordConnectorSpec
       )
 
       connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+    }
+  }
+
+  ".updateSupplementaryUnitForGoodsRecord" - {
+
+    val supplementaryRequest = SupplementaryRequest(
+      eori = testEori,
+      recordId = testRecordId,
+      hasSupplementaryUnit = Some(true),
+      supplementaryUnit = Some("123"),
+      measurementUnit = Some("1")
+    )
+
+    val updateRecordRequest = UpdateRecordRequest(
+      testEori,
+      testRecordId,
+      testEori,
+      category = None,
+      supplementaryUnit = Some(123),
+      measurementUnit = Some("1")
+    )
+
+    "must update a goods record" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok())
+      )
+
+      connector.updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest).futureValue
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest).failed.futureValue
     }
   }
 

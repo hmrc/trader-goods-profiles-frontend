@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.GoodsRecordConnector
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.NormalMode
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -36,6 +36,7 @@ class SingleRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
   identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
@@ -44,8 +45,8 @@ class SingleRecordController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
         updatedAnswersWithTraderReference  <-
@@ -96,5 +97,5 @@ class SingleRecordController @Inject() (
 
         Ok(view(recordId, detailsList, categorisationList, supplementaryUnitList, adviceList, changesMade, changedPage))
       }
-  }
+    }
 }

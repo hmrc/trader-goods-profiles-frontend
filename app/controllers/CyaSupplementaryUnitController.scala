@@ -73,7 +73,7 @@ class CyaSupplementaryUnitController @Inject() (
 
     val continueUrl = RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url)
 
-    logger.error(s"Unable to create Request Advice.  Missing pages: $errorMessages")
+    logger.error(s"Unable to create Supplementary Unit.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

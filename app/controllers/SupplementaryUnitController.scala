@@ -44,6 +44,7 @@ class SupplementaryUnitController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   goodsRecordConnector: GoodsRecordConnector,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: SupplementaryUnitFormProvider,
   ottService: OttService,
   val controllerComponents: MessagesControllerComponents,
@@ -55,8 +56,8 @@ class SupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -72,10 +73,10 @@ class SupplementaryUnitController @Inject() (
       }
 
       result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-  }
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
@@ -99,7 +100,7 @@ class SupplementaryUnitController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val userAnswerValue = request.userAnswers.get(SupplementaryUnitUpdatePage(recordId))
 
       val preparedFormFuture: Future[(Form[String], String)] = userAnswerValue match {
@@ -128,7 +129,7 @@ class SupplementaryUnitController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()

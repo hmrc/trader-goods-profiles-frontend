@@ -1904,6 +1904,160 @@ class NavigatorSpec extends SpecBase {
           }
 
         }
+        "in Supplementary Unit Update Journey" - {
+
+          "must go from HasSupplementaryUnitUpdatePage" - {
+
+            "to SupplementaryUnitUpdatePage when answer is Yes and unit is not defined" in {
+
+              val answers =
+                UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), true).success.value
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.SupplementaryUnitController
+                .onPageLoadUpdate(
+                  CheckMode,
+                  testRecordId
+                )
+            }
+
+            "to CyaSupplementaryUnitController when answer is Yes and unit is already defined" in {
+
+              val answers = UserAnswers(userAnswersId)
+                .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+                .success
+                .value
+                .set(SupplementaryUnitUpdatePage(testRecordId), "974.0")
+                .success
+                .value
+
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaSupplementaryUnitController
+                .onPageLoad(testRecordId)
+            }
+
+            "to CyaSupplementaryUnitController when answer is No" in {
+
+              val answers =
+                UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), false).success.value
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaSupplementaryUnitController
+                .onPageLoad(
+                  testRecordId
+                )
+            }
+
+            "to JourneyRecoveryPage when answer is not present" in {
+
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                emptyUserAnswers
+              ) mustBe routes.JourneyRecoveryController
+                .onPageLoad()
+            }
+          }
+
+          "must go from SupplementaryUnitUpdatePage to CyaSupplementaryUnitController" in {
+
+            navigator.nextPage(
+              SupplementaryUnitUpdatePage(testRecordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.CyaSupplementaryUnitController.onPageLoad(
+              testRecordId
+            )
+          }
+
+        }
+
+        "in Supplementary Unit Update Journey (CheckMode)" - {
+
+          "must go from HasSupplementaryUnitUpdatePage" - {
+
+            "to SupplementaryUnitUpdatePage when answer is Yes and supplementary unit is not defined" in {
+
+              val answers = UserAnswers(userAnswersId)
+                .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+                .success
+                .value
+                .remove(SupplementaryUnitUpdatePage(testRecordId))
+                .success
+                .value
+
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.SupplementaryUnitController
+                .onPageLoadUpdate(
+                  CheckMode,
+                  testRecordId
+                )
+            }
+
+            "to CyaSupplementaryUnitController when answer is Yes and supplementary unit is already defined" in {
+
+              val answers = UserAnswers(userAnswersId)
+                .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+                .success
+                .value
+                .set(SupplementaryUnitUpdatePage(testRecordId), "974.0")
+                .success
+                .value
+
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaSupplementaryUnitController
+                .onPageLoad(testRecordId)
+            }
+
+            "to CyaSupplementaryUnitController when answer is No" in {
+
+              val answers = UserAnswers(userAnswersId)
+                .set(HasSupplementaryUnitUpdatePage(testRecordId), false)
+                .success
+                .value
+
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe routes.CyaSupplementaryUnitController
+                .onPageLoad(testRecordId)
+            }
+
+            "to JourneyRecoveryPage when answer is not present" in {
+
+              navigator.nextPage(
+                HasSupplementaryUnitUpdatePage(testRecordId),
+                CheckMode,
+                emptyUserAnswers
+              ) mustBe routes.JourneyRecoveryController
+                .onPageLoad()
+            }
+          }
+
+          "must go from SupplementaryUnitUpdatePage to CyaSupplementaryUnitController" in {
+
+            navigator.nextPage(
+              SupplementaryUnitUpdatePage(testRecordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.CyaSupplementaryUnitController
+              .onPageLoad(testRecordId)
+          }
+        }
 
         "must go from LongerCommodityCodePage to HasCorrectGoods page" in {
           navigator.nextPage(

@@ -41,6 +41,7 @@ class HasSupplementaryUnitController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   goodsRecordConnector: GoodsRecordConnector,
   formProvider: HasSupplementaryUnitFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -51,8 +52,8 @@ class HasSupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       //TODO this definitely will not survive in the new world
       // All questions answered so no need to be in recategorising mode it just breaks the back navigation
       for {
@@ -68,10 +69,10 @@ class HasSupplementaryUnitController @Inject() (
       val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, mode, recordId, onSubmitAction))
-  }
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
@@ -86,7 +87,7 @@ class HasSupplementaryUnitController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
 
       val preparedFormFuture: Future[Form[Boolean]] = userAnswerValue match {
@@ -108,22 +109,17 @@ class HasSupplementaryUnitController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, onSubmitAction))),
-          value => {
-            val oldValueOpt    = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
-            val isValueChanged = oldValueOpt.exists(_ != value)
+          value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasSupplementaryUnitUpdatePage(recordId), mode, updatedAnswers))
-              // .addingToSession(dataUpdated -> isValueChanged.toString)
-              .addingToSession(pageUpdated -> supplementaryUnit)
-          }
         )
     }
 }
