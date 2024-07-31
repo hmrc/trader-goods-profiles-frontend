@@ -425,7 +425,6 @@ singleRecord.adviceStatus.row = Advice received
 singleRecord.goodsProfile.link = Go to goods profile
 singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
-singleRecord.categorise = Categorise this good
 singleRecord.askForAdvice = Ask for advice
 
 hasCountryOfOriginChange.title = Change record information
