@@ -316,48 +316,64 @@ class GoodsRecordConnectorSpec
     }
   }
 
-  ".updateCategoryForGoodsRecord" - {
+  ".updateCategoryAndComcodeForGoodsRecord" - {
 
-    val goodsRecord = CategoryRecord(
+    def goodsRecord(longerCommodityCode: Option[String] = None) = CategoryRecord(
       eori = testEori,
       recordId = testRecordId,
       category = 1,
       categoryAssessmentsWithExemptions = 3,
       measurementUnit = Some("1"),
-      supplementaryUnit = Some("123")
+      supplementaryUnit = Some("123"),
+      comcode = longerCommodityCode
     )
 
-    val updateRecordRequest = UpdateRecordRequest(
+    def updateRecordRequest(longerCommodityCode: Option[String] = None) = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
       category = Some(1),
       supplementaryUnit = Some(123),
-      measurementUnit = Some("1")
+      measurementUnit = Some("1"),
+      comcode = longerCommodityCode
     )
 
-    "must update a goods record" in {
+    "must update a goods record with a category" in {
 
       wireMockServer.stubFor(
         patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest()).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord()).futureValue
+    }
+
+    "must update a goods record with a category and a longer commodity code" in {
+
+      val longerCommodityCode = Some("1234567890")
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest(longerCommodityCode)).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok())
+      )
+
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord(longerCommodityCode)).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
         patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest()).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord()).failed.futureValue
     }
   }
 
