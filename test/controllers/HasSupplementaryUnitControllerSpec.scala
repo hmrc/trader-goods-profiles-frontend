@@ -233,9 +233,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
           .successful(record)
 
-        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
-
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),

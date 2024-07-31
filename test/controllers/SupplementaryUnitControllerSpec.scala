@@ -296,7 +296,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to Journey Recovery when invalid data is submitted and RecordCategorisationsQuery is empty " in {
+      "must redirect to Journey Recovery when invalid data is submitted and RecordCategorisationsQuery is empty" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
