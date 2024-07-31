@@ -37,7 +37,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
           .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
           .success
           .value
-          .set(MeasurementQuery, "kg")
+          .set(MeasurementQuery, Map(testRecordId -> "kg"))
           .success
           .value
 
@@ -61,7 +61,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
           .set(HasSupplementaryUnitUpdatePage(testRecordId), false)
           .success
           .value
-          .set(MeasurementQuery, "kg")
+          .set(MeasurementQuery, Map(testRecordId -> "kg"))
           .success
           .value
 

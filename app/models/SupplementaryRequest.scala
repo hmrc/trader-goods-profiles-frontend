@@ -38,7 +38,7 @@ object SupplementaryRequest {
     (
       getHasSupplementaryUnit(answers, recordId),
       getSupplementaryUnit(answers, recordId),
-      getMeasurementUnit(answers)
+      getMeasurementUnit(answers, recordId)
     ).parMapN((hasSupplementaryUnit, supplementaryUnit, measurementUnit) =>
       SupplementaryRequest(
         eori = eori,
@@ -60,7 +60,7 @@ object SupplementaryRequest {
   ): EitherNec[ValidationError, Option[String]] =
     Right(userAnswers.getPageValue(SupplementaryUnitUpdatePage(recordId)).toOption)
 
-  private def getMeasurementUnit(answers: UserAnswers): EitherNec[ValidationError, Option[String]] =
-    Right(answers.getPageValue(MeasurementQuery).toOption)
+  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
+    Right(answers.getPageValue(MeasurementQuery).map(_.getOrElse(recordId, "")).toOption)
 
 }

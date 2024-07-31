@@ -50,7 +50,7 @@ object SupplementaryUnitSummary {
   ): Option[SummaryListRow] =
     for {
       supplementaryUnit <- answers.get(SupplementaryUnitUpdatePage(recordId))
-      measurementUnit   <- answers.get(MeasurementQuery)
+      measurementUnit   <- answers.get(MeasurementQuery).map(_.getOrElse(recordId, ""))
     } yield {
       val value = if (!measurementUnit.isEmpty) s"$supplementaryUnit $measurementUnit" else supplementaryUnit
       SummaryListRowViewModel(
@@ -74,7 +74,7 @@ object SupplementaryUnitSummary {
       if suppUnit != 0
     } yield {
       val displayValue =
-        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString()
+        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),

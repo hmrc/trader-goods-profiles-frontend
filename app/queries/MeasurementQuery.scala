@@ -16,10 +16,9 @@
 
 package queries
 
-import models.RecordCategorisations
-import play.api.libs.json.{JsPath, Json, OFormat}
+import play.api.libs.json.JsPath
 
-case object MeasurementQuery extends Gettable[String] with Settable[String] {
+case object MeasurementQuery extends Gettable[Map[String, String]] with Settable[Map[String, String]] {
 
   override def path: JsPath = JsPath \ "measurementUnit"
 
