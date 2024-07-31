@@ -109,13 +109,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def updateCategoryForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
-    hc: HeaderCarrier
+  def updateCategoryAndComcodeForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
+                                                                                                             hc: HeaderCarrier
   ): Future[Done] =
     httpClient
       .patch(goodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
-      .withBody(Json.toJson(UpdateRecordRequest.mapFromCategory(categoryRecord)))
+      .withBody(Json.toJson(UpdateRecordRequest.mapFromCategoryAndComcode(categoryRecord)))
       .execute[HttpResponse]
       .map(_ => Done)
 

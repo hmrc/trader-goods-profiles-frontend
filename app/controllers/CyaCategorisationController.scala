@@ -114,7 +114,7 @@ class CyaCategorisationController @Inject() (
             model.category
           )
 
-          goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, model).map { _ =>
+          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
             Redirect(
               navigator.nextPage(

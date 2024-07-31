@@ -504,7 +504,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -556,7 +556,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -598,7 +598,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateCategoryForGoodsRecord(any(), any(), any())(any()))
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -658,7 +658,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
               .url
-            verify(mockConnector, never()).updateCategoryForGoodsRecord(any(), any(), any())(any())
+            verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
               verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
             }

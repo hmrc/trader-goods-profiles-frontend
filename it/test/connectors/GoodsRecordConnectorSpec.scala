@@ -345,7 +345,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -357,7 +357,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateCategoryForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord).failed.futureValue
     }
   }
 
