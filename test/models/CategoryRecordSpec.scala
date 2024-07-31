@@ -23,7 +23,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 
 class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -34,16 +34,11 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
     val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
     val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
-    val categorisationInfo                  =
+    val categorisationInfo               =
       CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"), 0)
-    val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
-    val emptyRecordCategorisations          = RecordCategorisations(records = Map())
-    val noCategory1RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"), 0)))
-    val noCategory1Or2RecordCategorisations =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"), 0)))
-    val noCategory2RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"), 0)))
+    val noCategory1CategorisationInfo    = CategorisationInfo("123", Seq(assessment3), Some("kg"), 0)
+    val noCategory1Or2CategorisationInfo = CategorisationInfo("123", Seq(), Some("kg"), 0)
+    val noCategory2CategorisationInfo    = CategorisationInfo("123", Seq(assessment1), Some("kg"), 0)
 
     "must return a CategoryRecord when all mandatory questions are answered" - {
 
@@ -57,7 +52,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 
@@ -80,7 +75,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 
@@ -103,7 +98,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
@@ -129,7 +124,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -158,7 +153,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -190,7 +185,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -225,7 +220,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -259,7 +254,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
       "where recordCategorisations is missing category 1 assessments but completed category 2 so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, noCategory1RecordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), noCategory1CategorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -284,7 +279,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
       "when recordCategorisations is missing category 2 assessments but completed category 1 so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), noCategory2CategorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -309,7 +304,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
       "when recordCategorisations is missing any assessments so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, noCategory1Or2RecordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), noCategory1Or2CategorisationInfo)
           .success
           .value
 
@@ -332,23 +327,6 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
     "must return errors" - {
 
-      "when recordCategorisations is missing recordId" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, emptyRecordCategorisations)
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            RecordIdMissing(RecordCategorisationsQuery),
-            RecordIdMissing(RecordCategorisationsQuery)
-          )
-        }
-      }
-
       "when all mandatory answers are missing" in {
 
         val answers = UserAnswers(userAnswersId)
@@ -357,9 +335,9 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(RecordCategorisationsQuery),
-            PageMissing(RecordCategorisationsQuery)
-          )
+            PageMissing(CategorisationDetailsQuery(testRecordId)),
+            PageMissing(CategorisationDetailsQuery(testRecordId))
+          ) // TODO Same error twice???
         }
       }
 
@@ -370,7 +348,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 
@@ -391,7 +369,7 @@ class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with O
             .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 

@@ -23,7 +23,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.apache.pekko.Done
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 
 final case class CategorisationAnswers(
   assessmentValues: Seq[AssessmentAnswer],
@@ -59,23 +59,28 @@ object CategorisationAnswers {
     recordId: String
   ): Either[NonEmptyChain[ValidationError], Seq[AssessmentAnswer]] =
     for {
-      recordCategorisations <- userAnswers.getPageValue(RecordCategorisationsQuery)
-      categorisationInfo    <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
-      answeredAssessments   <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
-      _                     <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
-      _                     <- ensureNoNotAnsweredYetInAnswers(answeredAssessments, recordId)
-      _                     <- ensureHaveAnsweredTheRightAmount(answeredAssessments, countAssessmentsThatRequireAnswers(categorisationInfo))
-      justTheAnswers         = answeredAssessments.map(_.answer)
+      categorisationInfo  <- getCategorisationInfoForThisRecord(userAnswers, recordId)
+      answeredAssessments <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
+      _                   <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
+      _                   <- ensureNoNotAnsweredYetInAnswers(answeredAssessments, recordId)
+      _                   <- ensureHaveAnsweredTheRightAmount(
+                               answeredAssessments,
+                               countAssessmentsThatRequireAnswers(categorisationInfo),
+                               recordId
+                             )
+      justTheAnswers       = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
   private def countAssessmentsThatRequireAnswers(categorisationInfo: CategorisationInfo): Int =
     categorisationInfo.categoryAssessments.takeWhile(a => !(a.category == 2 && a.exemptions.isEmpty)).size
 
-  private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) =
-    recordCategorisations.records
-      .get(recordId)
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
+    userAnswers
+      .getPageValue(CategorisationDetailsQuery(recordId))
       .map(Right(_))
-      .getOrElse(Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(RecordCategorisationsQuery, recordId))))
+      .getOrElse(
+        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
+      )
 
   private def getAssessmentsFromUserAnswers(
     categorisationInfo: CategorisationInfo,
@@ -114,7 +119,9 @@ object CategorisationAnswers {
     } else {
       val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage(recordId, ass.index)))
       val nec    =
-        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(UnexpectedNoExemption(RecordCategorisationsQuery)))
+        NonEmptyChain
+          .fromSeq(errors)
+          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(CategorisationDetailsQuery(recordId))))
       Left(nec)
     }
 
@@ -131,14 +138,17 @@ object CategorisationAnswers {
     } else {
       val errors = notAnsweredYetAssessments.map(ass => MissingAssessmentAnswers(AssessmentPage(recordId, ass.index)))
       val nec    =
-        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
+        NonEmptyChain
+          .fromSeq(errors)
+          .getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery(recordId))))
       Left(nec)
     }
   }
 
   private def ensureHaveAnsweredTheRightAmount(
     answeredAssessments: Seq[CategorisationDetails],
-    assessmentCount: Int
+    assessmentCount: Int,
+    recordId: String
   ): Either[NonEmptyChain[ValidationError], Done] = {
 
     val lastAnswerIsExemption = answeredAssessments.last.answer.equals(NoExemption)
@@ -147,7 +157,7 @@ object CategorisationAnswers {
     if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
       Right(Done)
     } else {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery(recordId))))
     }
 
   }

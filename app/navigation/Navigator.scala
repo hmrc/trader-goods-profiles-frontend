@@ -16,16 +16,16 @@
 
 package navigation
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.Call
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import pages._
 import models._
-import queries.RecordCategorisationsQuery
+import pages._
+import play.api.mvc.Call
+import queries.CategorisationDetailsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
+import javax.inject.{Inject, Singleton}
 import scala.util.Try
 
 @Singleton
@@ -132,10 +132,9 @@ class Navigator @Inject() () {
     answers: UserAnswers
   ): Call = {
     for {
-      recordCategorisations <- answers.get(RecordCategorisationsQuery)
-      categorisationInfo    <- recordCategorisations.records.get(recordId)
-      assessmentAnswer      <- answers
-                                 .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
+      assessmentAnswer   <- answers
+                              .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
     } yield
       if (assessmentAnswer) {
         if (needToRecategorise) {
@@ -227,13 +226,12 @@ class Navigator @Inject() () {
       val recordId = assessmentPage.recordId
 
       for {
-        recordQuery      <- answers.get(RecordCategorisationsQuery)
-        record           <- recordQuery.records.get(recordId)
-        assessmentAnswer <- answers.get(assessmentPage)
+        categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
+        assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
         case AssessmentAnswer.Exemption(_) =>
           val assessmentCount = Try {
-            recordQuery.records(recordId).categoryAssessments.size
+            categorisationInfo.categoryAssessments.size
           }.getOrElse(0)
 
           if (assessmentPage.index + 1 < assessmentCount) {
@@ -242,14 +240,14 @@ class Navigator @Inject() () {
             routes.CyaCategorisationController.onPageLoad(recordId)
           }
         case AssessmentAnswer.NoExemption  =>
-          record.categoryAssessments(assessmentPage.index).category match {
+          categorisationInfo.categoryAssessments(assessmentPage.index).category match {
             case 2
-                if commodityCodeSansTrailingZeros(record.commodityCode).length <= 6 &&
-                  record.descendantCount != 0 =>
+                if commodityCodeSansTrailingZeros(categorisationInfo.commodityCode).length <= 6 &&
+                  categorisationInfo.descendantCount != 0 =>
               routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
-            case 2 if record.measurementUnit.isDefined =>
+            case 2 if categorisationInfo.measurementUnit.isDefined =>
               routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
-            case _                                     =>
+            case _                                                 =>
               routes.CyaCategorisationController.onPageLoad(recordId)
           }
       }
@@ -348,10 +346,9 @@ class Navigator @Inject() () {
     answers: UserAnswers
   ): Call = {
     for {
-      recordCategorisations <- answers.get(RecordCategorisationsQuery)
-      categorisationInfo    <- recordCategorisations.records.get(recordId)
-      assessmentAnswer      <- answers
-                                 .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
+      assessmentAnswer   <- answers
+                              .get(HasCorrectGoodsLongerCommodityCodePage(recordId))
     } yield
       if (assessmentAnswer) {
         if (needToRecategorise) {
@@ -387,13 +384,12 @@ class Navigator @Inject() () {
     val recordId = assessmentPage.recordId
 
     for {
-      recordQuery        <- answers.get(RecordCategorisationsQuery)
-      categorisationInfo <- recordQuery.records.get(recordId)
+      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
       assessmentAnswer   <- answers.get(assessmentPage)
     } yield assessmentAnswer match {
       case AssessmentAnswer.Exemption(_) =>
         val assessmentCount = Try {
-          recordQuery.records(recordId).categoryAssessments.size
+          categorisationInfo.categoryAssessments.size
         }.getOrElse(0)
 
         if (assessmentPage.index + 1 < assessmentCount) {

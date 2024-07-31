@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataUpdated, pageUpdated}
@@ -56,9 +56,8 @@ class CategoryGuidanceController @Inject() (
       categorisationService
         .requireCategorisation(request, recordId)
         .flatMap { userAnswers =>
-          val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
-          val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
-          val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
+          val categorisationInfo = userAnswers.get(CategorisationDetailsQuery(recordId))
+          val scenario           = categorisationInfo.map(Scenario.getRedirectScenarios)
           scenario match {
             case Some(Category1NoExemptions | StandardNoAssessments) =>
               CategoryRecord

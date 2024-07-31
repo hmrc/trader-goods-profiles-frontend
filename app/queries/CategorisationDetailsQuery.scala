@@ -16,10 +16,12 @@
 
 package queries
 
-import models.router.responses.GetRecordsResponse
+import models.ott.CategorisationInfo
 import play.api.libs.json.JsPath
 
-case object GetGoodsRecordsQuery extends Gettable[GetRecordsResponse] with Settable[GetRecordsResponse] {
+case class CategorisationDetailsQuery(recordId: String)
+    extends Gettable[CategorisationInfo]
+    with Settable[CategorisationInfo] {
 
-  override def path: JsPath = JsPath \ "getRecordsResponse"
+  override def path: JsPath = JsPath \ "categorisationDetails" \ recordId
 }

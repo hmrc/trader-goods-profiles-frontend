@@ -22,7 +22,7 @@ import models.AssessmentAnswer.{Exemption, NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 
 class CategorisationAnswersSpec extends SpecBase {
 
@@ -32,7 +32,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
       "a NoExemption means some assessment pages are unanswered" in {
         val answers = emptyUserAnswers
-          .set(RecordCategorisationsQuery, recordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
@@ -96,7 +96,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
       "all category 1 are answered and category 2 have no exemptions" in {
 
-        val categoryQuery = CategorisationInfo(
+        val categorisationInfo = CategorisationInfo(
           "1234567890",
           Seq(category1, category2, category3.copy(exemptions = Seq.empty)),
           Some("Weight, in kilograms"),
@@ -104,7 +104,7 @@ class CategorisationAnswersSpec extends SpecBase {
         )
 
         val answers = emptyUserAnswers
-          .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categoryQuery)))
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
@@ -158,7 +158,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "when additional assessments have been answered after a NoExemption" in {
 
         val answers = emptyUserAnswers
-          .set(RecordCategorisationsQuery, recordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
@@ -181,7 +181,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "when you have not finished answering assessments" in {
 
         val answers = emptyUserAnswers
-          .set(RecordCategorisationsQuery, recordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
@@ -194,14 +194,14 @@ class CategorisationAnswersSpec extends SpecBase {
         val result = CategorisationAnswers.build(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only MissingAssessmentAnswers(RecordCategorisationsQuery)
+          errors.toChain.toList must contain only MissingAssessmentAnswers(CategorisationDetailsQuery(testRecordId))
         }
       }
 
       "when no answers for the record Id" in {
 
         val answers = emptyUserAnswers
-          .set(RecordCategorisationsQuery, recordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))
@@ -215,7 +215,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only NoCategorisationDetailsForRecordId(
-            RecordCategorisationsQuery,
+            CategorisationDetailsQuery("differentId"),
             "differentId"
           )
         }
@@ -224,7 +224,7 @@ class CategorisationAnswersSpec extends SpecBase {
       "when assessment answer has not been answered yet" in {
 
         val answers = emptyUserAnswers
-          .set(RecordCategorisationsQuery, recordCategorisations)
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), Exemption("Y994"))

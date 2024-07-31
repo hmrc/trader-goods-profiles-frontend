@@ -57,4 +57,4 @@ final case class MissingAssessmentAnswers(query: Query) extends ValidationError 
 
 final case class NoCategorisationDetailsForRecordId(query: Query, recordId: String) extends ValidationError {
   override val message: String = s"No categorisation details for record id $recordId"
-}
+} //TODO pass in recordId?

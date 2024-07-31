@@ -22,7 +22,7 @@ import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 
 final case class CategoryRecord(
   eori: String,
@@ -70,19 +70,14 @@ object CategoryRecord {
 
   private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, GetCategoryReturn] =
     answers
-      .get(RecordCategorisationsQuery)
-      .map { recordCategorisations =>
-        recordCategorisations.records
-          .get(recordId)
-          .map { categorisationInfo =>
-            val exemptionsCount = getHowManyAssessmentsHadExemptions(recordId, answers, categorisationInfo)
-            val category        = chooseCategory(recordId, answers, categorisationInfo)
+      .get(CategorisationDetailsQuery(recordId))
+      .map { categorisationInfo =>
+        val exemptionsCount = getHowManyAssessmentsHadExemptions(recordId, answers, categorisationInfo)
+        val category        = chooseCategory(recordId, answers, categorisationInfo)
 
-            Right(GetCategoryReturn(category, exemptionsCount))
-          }
-          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
+        Right(GetCategoryReturn(category, exemptionsCount))
       }
-      .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
+      .getOrElse(Left(NonEmptyChain.one(PageMissing(CategorisationDetailsQuery(recordId)))))
 
   private def chooseCategory2Or3(
     recordId: String,
@@ -133,14 +128,9 @@ object CategoryRecord {
 
   private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
     answers
-      .get(RecordCategorisationsQuery)
-      .map { recordCategorisations =>
-        recordCategorisations.records
-          .get(recordId)
-          .map { categorisationInfo =>
-            Right(categorisationInfo.measurementUnit)
-          }
-          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
+      .get(CategorisationDetailsQuery(recordId))
+      .map { categorisationInfo =>
+        Right(categorisationInfo.measurementUnit)
       }
-      .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
+      .getOrElse(Left(NonEmptyChain.one(PageMissing(CategorisationDetailsQuery(recordId)))))
 }

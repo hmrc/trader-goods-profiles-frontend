@@ -21,7 +21,7 @@ import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -32,7 +32,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, CommodityQuery}
 
 import java.time.Instant
 
@@ -154,7 +154,7 @@ trait SpecBase
     )
   )
 
-  lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
+  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
@@ -162,23 +162,15 @@ trait SpecBase
     Some("1234567890")
   )
 
-  private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
+  lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
     None,
     0
   )
 
-  lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQuery)
-  )
-
-  lazy val recordCategorisationsEmptyMeasurementUnit: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
-  )
-
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisations)
+    .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
     .success
     .value
     .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
@@ -191,38 +183,30 @@ trait SpecBase
     .success
     .value
 
-  private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
+  private lazy val categoryInfoNoAssessments: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(),
     Some("Weight, in kilograms"),
     0
   )
 
-  lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryNoAssessments)
-  )
-
   lazy val uaForCategorisationStandardNoAssessments: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisationsNoAssessments)
+    .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
     .success
     .value
 
-  lazy val category1NoExemptions: CategoryAssessment =
+  private lazy val category1NoExemptions: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
 
-  private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
+  private lazy val categorisationInfoNoExemptions: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1NoExemptions),
     Some("Weight, in kilograms"),
     0
   )
 
-  lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryNoExemptions)
-  )
-
   lazy val uaForCategorisationCategory1NoExemptions: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
+    .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoExemptions)
     .success
     .value
 
@@ -243,8 +227,8 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
-      true,
+      active = true,
+      toReview = true,
       None,
       "Not ready",
       None,
@@ -274,8 +258,8 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
-      true,
+      active = true,
+      toReview = true,
       None,
       "Not ready",
       None,

@@ -21,9 +21,8 @@ import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
+import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar

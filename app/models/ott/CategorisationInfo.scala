@@ -29,6 +29,7 @@ final case class CategorisationInfo(
   measurementUnit: Option[String],
   descendantCount: Int,
   originalCommodityCode: Option[String] = None
+  //TODO needs country for comparisions??
 ) {
   def areThereAnyNonAnsweredQuestions(recordId: String, userAnswers: UserAnswers): Boolean =
     categoryAssessments.indices

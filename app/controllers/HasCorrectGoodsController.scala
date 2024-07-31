@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
+import queries._
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -171,7 +171,7 @@ class HasCorrectGoodsController @Inject() (
 
       // Find out what the assessment details for the old (shorter) code was
       oldCommodityCategorisation   <-
-        Future.fromTry(Try(updatedAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
+        Future.fromTry(Try(updatedAnswers.get(CategorisationDetailsQuery(recordId)).get))
 
       // Update the categorisation with the new value details for future categorisation attempts
       updatedCategorisationAnswers <-
@@ -181,7 +181,7 @@ class HasCorrectGoodsController @Inject() (
       // And then get the new assessment details
       newCommodityCategorisation   <-
         Future
-          .fromTry(Try(updatedCategorisationAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
+          .fromTry(Try(updatedCategorisationAnswers.get(CategorisationDetailsQuery(recordId)).get))
 
       areWeRecategorisingAlready    = updatedCategorisationAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
       // We then have both assessments so can decide if to recategorise or not

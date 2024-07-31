@@ -26,19 +26,19 @@ import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.Messages
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.NotFoundException
-import play.api.inject.bind
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.http.NotFoundException
 import utils.SessionData.{dataUpdated, pageUpdated}
+import viewmodels.checkAnswers._
+import viewmodels.govuk.summarylist._
+import views.html.SingleRecordView
 
 import java.time.Instant
 import scala.concurrent.Future
-import viewmodels.govuk.summarylist._
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, HasSupplementaryUnitSummary, StatusSummary, SupplementaryUnitSummary, TraderReferenceSummary}
-import views.html.SingleRecordView
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 

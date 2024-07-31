@@ -20,7 +20,7 @@ import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -29,9 +29,8 @@ object SupplementaryUnitSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
-      recordCategorisations <- answers.get(RecordCategorisationsQuery)
-      categorisationInfo    <- recordCategorisations.records.get(recordId)
-      supplementaryUnit     <- answers.get(SupplementaryUnitPage(recordId))
+      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
+      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
       val measurementUnit = categorisationInfo.measurementUnit
       val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
@@ -52,7 +51,7 @@ object SupplementaryUnitSummary {
       suppUnit <- suppValue
     } yield {
       val displayValue =
-        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString()
+        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),

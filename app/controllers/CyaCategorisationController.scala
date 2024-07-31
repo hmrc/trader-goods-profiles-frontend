@@ -28,7 +28,7 @@ import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, RecategorisingQuery}
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -59,8 +59,7 @@ class CyaCategorisationController @Inject() (
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val categorisationAnswers = for {
-        recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
-        categorisationAnswers <- recordCategorisations.records.get(recordId)
+        categorisationAnswers <- request.userAnswers.get(CategorisationDetailsQuery(recordId))
       } yield categorisationAnswers
 
       val categorisationRows = categorisationAnswers match {

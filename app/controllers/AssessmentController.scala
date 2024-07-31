@@ -20,12 +20,12 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import forms.AssessmentFormProvider
 import logging.Logging
 import models.AssessmentAnswer.NotAnsweredYet
-import models.{AssessmentAnswer, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, RecategorisingQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -55,8 +55,8 @@ class AssessmentController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
-        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
+        categorisationInfo             <-
+          Future.fromTry(Try(userAnswersWithCategorisations.get(CategorisationDetailsQuery(recordId)).get))
         listItems                       = categorisationInfo.categoryAssessments(index).getExemptionListItems
         commodityCode                   = categorisationInfo.commodityCode
         exemptions                      = categorisationInfo.categoryAssessments(index).exemptions
@@ -107,8 +107,7 @@ class AssessmentController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       {
         for {
-          recordQuery        <- request.userAnswers.get(RecordCategorisationsQuery)
-          categorisationInfo <- recordQuery.records.get(recordId)
+          categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery(recordId))
           listItems           = categorisationInfo.categoryAssessments(index).getExemptionListItems
           commodityCode       = categorisationInfo.commodityCode
           exemptions          = categorisationInfo.categoryAssessments(index).exemptions

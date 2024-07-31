@@ -18,7 +18,7 @@ package pages
 
 import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 
 import scala.util.{Failure, Success, Try}
 
@@ -38,8 +38,7 @@ case class AssessmentPage(
   ): Try[UserAnswers] =
     if ((value.contains(AssessmentAnswer.NoExemption) && !shouldRedirectToCya) || cleanupAll) {
       (for {
-        recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- recordQuery.records.get(recordId)
+        categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery(recordId))
         count               = categorisationInfo.categoryAssessments.size
         //Go backwards to avoid recursion issues
         rangeToRemove       = if (cleanupAll) (index to count).reverse else ((index + 1) to count).reverse
