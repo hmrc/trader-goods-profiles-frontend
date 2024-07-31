@@ -153,7 +153,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit("recordId").url)
+          val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)

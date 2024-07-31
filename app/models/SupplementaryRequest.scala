@@ -16,8 +16,8 @@
 
 package models
 
-import cats.data.EitherNec
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.data.{EitherNec, NonEmptyChain}
+import cats.implicits.catsSyntaxTuple2Parallel
 import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitUpdatePage}
 import play.api.libs.json.{Json, OFormat}
 import queries.MeasurementQuery
@@ -25,42 +25,78 @@ import queries.MeasurementQuery
 final case class SupplementaryRequest(
   eori: String,
   recordId: String,
-  hasSupplementaryUnit: Option[Boolean],
-  supplementaryUnit: Option[String],
-  measurementUnit: Option[String]
+  hasSupplementaryUnit: Option[Boolean] = None,
+  supplementaryUnit: Option[String] = None,
+  measurementUnit: Option[String] = None
 )
 
 object SupplementaryRequest {
 
   implicit lazy val format: OFormat[SupplementaryRequest] = Json.format
 
-  def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, SupplementaryRequest] =
-    (
-      getHasSupplementaryUnit(answers, recordId),
-      getSupplementaryUnit(answers, recordId),
-      getMeasurementUnit(answers, recordId)
-    ).parMapN((hasSupplementaryUnit, supplementaryUnit, measurementUnit) =>
-      SupplementaryRequest(
-        eori = eori,
-        hasSupplementaryUnit = hasSupplementaryUnit,
-        recordId = recordId,
-        supplementaryUnit = supplementaryUnit,
-        measurementUnit = measurementUnit
-      )
-    )
+  def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, SupplementaryRequest] = {
+    val hasSupplementaryUnitEither = getHasSupplementaryUnit(answers, recordId)
+    val supplementaryUnitEither    = getSupplementaryUnit(answers, recordId)
+    val measurementUnitEither      = getMeasurementUnit(answers, recordId)
+
+    hasSupplementaryUnitEither
+      .flatMap { hasSupplementaryUnit =>
+        if (hasSupplementaryUnit) {
+          (supplementaryUnitEither, measurementUnitEither).parMapN { (supplementaryUnit, measurementUnit) =>
+            SupplementaryRequest(
+              eori = eori,
+              recordId = recordId,
+              hasSupplementaryUnit = Some(true),
+              supplementaryUnit = Some(supplementaryUnit),
+              measurementUnit = Some(measurementUnit)
+            )
+          }
+        } else {
+          Right(
+            SupplementaryRequest(
+              eori = eori,
+              recordId = recordId,
+              hasSupplementaryUnit = Some(false),
+              supplementaryUnit = None,
+              measurementUnit = None
+            )
+          )
+        }
+      }
+      .orElse {
+        (supplementaryUnitEither, measurementUnitEither).parMapN { (supplementaryUnit, measurementUnit) =>
+          SupplementaryRequest(
+            eori = eori,
+            recordId = recordId,
+            hasSupplementaryUnit = None,
+            supplementaryUnit = Some(supplementaryUnit),
+            measurementUnit = Some(measurementUnit)
+          )
+        }
+      }
+  }
+
   private def getHasSupplementaryUnit(
     userAnswers: UserAnswers,
     recordId: String
-  ): EitherNec[ValidationError, Option[Boolean]]                                                                    =
-    Right(userAnswers.getPageValue(HasSupplementaryUnitUpdatePage(recordId)).toOption)
+  ): EitherNec[ValidationError, Boolean] =
+    userAnswers.getPageValue(HasSupplementaryUnitUpdatePage(recordId))
 
   private def getSupplementaryUnit(
     userAnswers: UserAnswers,
     recordId: String
-  ): EitherNec[ValidationError, Option[String]] =
-    Right(userAnswers.getPageValue(SupplementaryUnitUpdatePage(recordId)).toOption)
+  ): EitherNec[ValidationError, String] =
+    userAnswers.getPageValue(SupplementaryUnitUpdatePage(recordId))
 
-  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
-    Right(answers.getPageValue(MeasurementQuery).map(_.getOrElse(recordId, "")).toOption)
+  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+    answers
+      .get(MeasurementQuery)
+      .map { measurementMap =>
+        measurementMap
+          .get(recordId)
+          .map(Right(_))
+          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(MeasurementQuery))))
+      }
+      .getOrElse(Left(NonEmptyChain.one(PageMissing(MeasurementQuery))))
 
 }

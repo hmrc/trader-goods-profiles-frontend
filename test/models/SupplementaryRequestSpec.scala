@@ -17,11 +17,12 @@
 package models
 
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import queries.MeasurementQuery
+import queries.{MeasurementQuery, RecordCategorisationsQuery}
 
 class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -54,11 +55,11 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
       )
     }
 
-    "must return a SupplementaryRequest when optional data is missing" in {
+    "must return a SupplementaryRequest when HasSupplementaryUnitUpdatePage is missing but have SupplementaryUnitUpdatePage" in {
 
       val answers =
         UserAnswers(userAnswersId)
-          .set(HasSupplementaryUnitUpdatePage(testRecordId), false)
+          .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
           .success
           .value
           .set(MeasurementQuery, Map(testRecordId -> "kg"))
@@ -71,21 +72,36 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
         SupplementaryRequest(
           testEori,
           testRecordId,
-          hasSupplementaryUnit = Some(false),
-          supplementaryUnit = None,
+          hasSupplementaryUnit = None,
+          supplementaryUnit = Some("1.0"),
           measurementUnit = Some("kg")
         )
       )
     }
 
-    "must return a SupplementaryRequest when measurement unit is missing" in {
+    "must return errors when the user said they have a SupplementaryUnit but it is missing" in {
 
       val answers =
         UserAnswers(userAnswersId)
           .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
           .success
           .value
-          .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
+
+      val result = SupplementaryRequest.build(answers, testEori, testRecordId)
+
+      inside(result) { case Left(errors) =>
+        errors.toChain.toList must contain theSameElementsAs Seq(
+          PageMissing(SupplementaryUnitUpdatePage(testRecordId)),
+          PageMissing(MeasurementQuery)
+        )
+      }
+    }
+
+    "must return supplementaryrequest when user said they don't have a SupplementaryUnit and it is missing" in {
+
+      val answers =
+        UserAnswers(userAnswersId)
+          .set(HasSupplementaryUnitUpdatePage(testRecordId), false)
           .success
           .value
 
@@ -95,28 +111,44 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
         SupplementaryRequest(
           testEori,
           testRecordId,
-          hasSupplementaryUnit = Some(true),
-          supplementaryUnit = Some("1.0"),
+          hasSupplementaryUnit = Some(false),
+          supplementaryUnit = None,
           measurementUnit = None
         )
       )
     }
 
-    "must return a SupplementaryRequest when all data is missing" in {
+    "must return error when all data is missing" in {
 
       val answers = UserAnswers(userAnswersId)
 
       val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
-      result mustEqual Right(
-        SupplementaryRequest(
-          testEori,
-          testRecordId,
-          hasSupplementaryUnit = None,
-          supplementaryUnit = None,
-          measurementUnit = None
+      inside(result) { case Left(errors) =>
+        errors.toChain.toList must contain theSameElementsAs Seq(
+          PageMissing(SupplementaryUnitUpdatePage(testRecordId)),
+          PageMissing(MeasurementQuery)
         )
-      )
+      }
+    }
+
+    "when measurementquery is missing recordId" in {
+
+      val answers = UserAnswers(userAnswersId)
+        .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
+        .success
+        .value
+        .set(MeasurementQuery, Map.empty[String, String])
+        .success
+        .value
+
+      val result = SupplementaryRequest.build(answers, testEori, testRecordId)
+
+      inside(result) { case Left(errors) =>
+        errors.toChain.toList must contain theSameElementsAs Seq(
+          RecordIdMissing(MeasurementQuery)
+        )
+      }
     }
 
   }
