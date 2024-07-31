@@ -28,7 +28,8 @@ import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.RecordCategorisationsQuery
+import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -48,7 +49,8 @@ class CyaCategorisationController @Inject() (
   dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
-  navigator: Navigator
+  navigator: Navigator,
+  sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -93,6 +95,13 @@ class CyaCategorisationController @Inject() (
               LongerCommodityCodeSummary.row(request.userAnswers, recordId)
             ).flatten
           )
+
+          //TODO this definitely will not survive in the new world
+          // All questions answered so no need to be in recategorising mode it just breaks the back navigation
+          for {
+            updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
+            _         <- sessionRepository.set(updatedUA)
+          } yield updatedUA
 
           Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
 

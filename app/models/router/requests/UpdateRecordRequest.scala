@@ -46,7 +46,8 @@ object UpdateRecordRequest {
       goodsRecord.countryOfOrigin,
       goodsRecord.goodsDescription,
       goodsRecord.traderReference,
-      goodsRecord.commodityCode.map(_.commodityCode)
+      goodsRecord.commodityCode.map(_.commodityCode),
+      goodsRecord.category
     )
 
   def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): UpdateRecordRequest =

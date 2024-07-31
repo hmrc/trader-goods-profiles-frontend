@@ -38,6 +38,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.TraderReferenceView
 
@@ -130,7 +131,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            emptyResponse
+            Some(emptyResponse)
           )
 
         val application =
@@ -187,7 +188,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            response
+            Some(response)
           )
 
         val application =
@@ -219,6 +220,44 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to loading page for a POST if loading data" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            None
+          )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, traderReferenceRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
+            .onPageLoad(Some(RedirectUrl(traderReferenceRoute)))
+            .url
         }
       }
 
@@ -331,7 +370,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            emptyResponse
+            Some(emptyResponse)
           )
 
         val application =
@@ -366,7 +405,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            emptyResponse
+            Some(emptyResponse)
           )
 
         val userAnswers =
@@ -407,7 +446,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            emptyResponse
+            Some(emptyResponse)
           )
 
         val userAnswers =
@@ -469,7 +508,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
-            response
+            Some(response)
           )
 
         val application =
@@ -501,6 +540,44 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to loading page for a POST if loading data" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            None
+          )
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, traderReferenceRoute)
+              .withFormUrlEncodedBody(("value", "answer"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
+            .onPageLoad(Some(RedirectUrl(traderReferenceRoute)))
+            .url
         }
       }
 
