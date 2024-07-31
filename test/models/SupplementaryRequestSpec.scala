@@ -18,8 +18,7 @@ package models
 
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
 import queries.MeasurementQuery
@@ -44,7 +43,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
-      result must be(
+      result mustEqual Right(
         SupplementaryRequest(
           testEori,
           testRecordId,
@@ -68,7 +67,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
-      result must be(
+      result mustEqual Right(
         SupplementaryRequest(
           testEori,
           testRecordId,
@@ -92,7 +91,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
-      result must be(
+      result mustEqual Right(
         SupplementaryRequest(
           testEori,
           testRecordId,
@@ -109,7 +108,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
-      result must be(
+      result mustEqual Right(
         SupplementaryRequest(
           testEori,
           testRecordId,

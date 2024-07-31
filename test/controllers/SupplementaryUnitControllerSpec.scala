@@ -18,9 +18,9 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import forms.SupplementaryUnitFormProvider
-import models.{GoodsRecord, NormalMode, UserAnswers}
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -33,7 +33,6 @@ import play.api.test.Helpers._
 import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.OttService
-import utils.SessionData.supplementaryUnit
 import views.html.SupplementaryUnitView
 
 import java.time.Instant
@@ -51,6 +50,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
   lazy val submitAction: Call             = routes.SupplementaryUnitController.onSubmit(NormalMode, testRecordId)
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   private val record = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
@@ -67,7 +69,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -91,7 +95,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -118,7 +124,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -153,6 +161,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -176,7 +185,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -210,7 +221,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -233,7 +246,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -247,7 +262,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -264,7 +281,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery when the RecordCategorisationsQuery is empty for a GET" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, supplementaryUnitRoute)
@@ -279,7 +298,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery when invalid data is submitted and RecordCategorisationsQuery is empty " in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -304,7 +325,10 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
             .build()
 
         running(application) {
@@ -334,7 +358,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -360,16 +386,17 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to the next page when valid data is submitted" in {
         val mockSessionRepository = mock[SessionRepository]
-        val mockOttService        = mock[OttService]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-        when(mockOttService.getMeasurementUnit(any(), any())(any())) thenReturn Future.successful(Some(""))
+        val mockOttService = mock[OttService]
+        when(mockOttService.getMeasurementUnit(any(), any())(any())) thenReturn Future.successful(Some("litres"))
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[OttService].toInstance(mockOttService)
             )
             .build()
@@ -393,7 +420,10 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[OttService].toInstance(mockOttService))
+            .overrides(
+              bind[OttService].toInstance(mockOttService),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
             .build()
 
         running(application) {
@@ -422,7 +452,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
@@ -436,7 +468,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         running(application) {
           val request =
