@@ -121,7 +121,6 @@ class CategorisationService @Inject() (
     } yield updatedAnswers
   }
 
-  //TODO this will be refactored out in TGP-1600 but solves the immediate problem
   def updateCategorisationWithUpdatedCommodityCode(
     request: DataRequest[_],
     recordId: String

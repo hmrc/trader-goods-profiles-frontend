@@ -96,8 +96,6 @@ class CyaCategorisationController @Inject() (
             ).flatten
           )
 
-          //TODO this definitely will not survive in the new world
-          // All questions answered so no need to be in recategorising mode it just breaks the back navigation
           for {
             updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
             _         <- sessionRepository.set(updatedUA)
