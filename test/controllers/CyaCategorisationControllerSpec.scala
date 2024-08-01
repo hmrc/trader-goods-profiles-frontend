@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
 import models.helper.CategorisationJourney
-import models.{AssessmentAnswer, Category1, UserAnswers}
+import models.{AssessmentAnswer, Category1,   CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -515,8 +515,17 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .overrides(bind[SessionRepository].toInstance(sessionRepository))
                 .build()
 
+            val expectedPayload = CategoryRecord(
+              testEori,
+              testRecordId,
+              None,
+              category = 1,
+              categoryAssessmentsWithExemptions = 0,
+              measurementUnit = categoryQuery.measurementUnit
+            )
+
             running(application) {
-              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+              val request = FakeRequest(POST, routes.CyaCategorisationController.onSubmit(testRecordId).url)
 
               val result = route(application, request).value
 
@@ -524,9 +533,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               redirectLocation(result).value mustEqual routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1)
                 .url
-              //TODO update with new expected - Why was this TODO in main?
-//              verify(mockConnector)
-//                .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+
+              verify(mockConnector)
+                .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                  any()
+                )
 
               withClue("audit event has been fired") {
                 verify(mockAuditService)
@@ -563,6 +574,15 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .overrides(bind[AuditService].toInstance(mockAuditService))
                 .build()
 
+            val expectedPayload = CategoryRecord(
+              testEori,
+              testRecordId,
+              Some(categoryQuery.commodityCode),
+              category = 1,
+              categoryAssessmentsWithExemptions = 0,
+              measurementUnit = categoryQuery.measurementUnit
+            )
+
             running(application) {
               val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
@@ -572,9 +592,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               redirectLocation(result).value mustEqual routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1)
                 .url
-              //TODO update with new expected
-//              verify(mockConnector)
-//                .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+
+              verify(mockConnector)
+                .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                  any()
+                )
 
               withClue("audit event has been fired") {
                 verify(mockAuditService)
@@ -605,6 +627,15 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .overrides(bind[AuditService].toInstance(mockAuditService))
                 .build()
 
+            val expectedPayload = CategoryRecord(
+              testEori,
+              testRecordId,
+              None,
+              category = 1,
+              categoryAssessmentsWithExemptions = 0,
+              measurementUnit = categoryQuery.measurementUnit
+            )
+
             running(application) {
               val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
 
@@ -616,9 +647,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .url
 
               withClue("connector was called even though audit failed") {
-//TODO what is expected here now??
-                //                verify(mockConnector)
-//                  .updateGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(any())
+                verify(mockConnector)
+                  .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                    any()
+                  )
               }
             }
           }
