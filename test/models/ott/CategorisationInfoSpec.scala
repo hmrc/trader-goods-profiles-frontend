@@ -78,7 +78,7 @@ class CategorisationInfoSpec extends SpecBase {
         val expectedResult = CategorisationInfo2(
           commodityCode = "commodity code",
           categoryAssessments = assessments,
-          categoryAssessmentsThatNeedAnswers =  assessments
+          categoryAssessmentsThatNeedAnswers = assessments
         )
 
         val result = CategorisationInfo2.build(ottResponse)

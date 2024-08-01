@@ -39,21 +39,18 @@ class CategorisationService @Inject() (
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
-  // get details from OTT
-  // work out what questions need answerin'
-
   def getCategorisationInfo(
     request: DataRequest[_],
     commodityCode: String,
     country: String,
-    recordId: Option[String] = None
+    recordId: String
   )(implicit hc: HeaderCarrier): Future[CategorisationInfo2] = {
 
     val ottResponse = ottConnector.getCategorisationInfo(
       commodityCode,
       request.eori,
       request.affinityGroup,
-      recordId,
+      Some(recordId),
       country,
       LocalDate.now()
     )

@@ -117,11 +117,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "create a categorisation info record for the given commodity code" in {
 
-      await(categorisationService.getCategorisationInfo(mockDataRequest,"1234567890", "BV")) mustBe
+      await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
         CategorisationInfo2("some comcode", Seq(), Seq())
 
       withClue("should ask for details for this commodity and country from OTT") {
-        verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"),any(),any(), any(), eqTo("BV"), any())(any())
+        verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
+          any()
+        )
       }
 
     }
@@ -135,7 +137,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 
       val actualException = intercept[RuntimeException] {
-        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE")
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE", testRecordId)
         await(result)
       }
 
@@ -145,7 +147,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should return future failed when categorisation info does not build" in {
 
       val mockOttResponseThatIsBroken = OttResponse(
-        GoodsNomenclatureResponse("some id", "brokenComCode", Some("some measure unit"), Instant.EPOCH, None, List("test")),
+        GoodsNomenclatureResponse(
+          "some id",
+          "brokenComCode",
+          Some("some measure unit"),
+          Instant.EPOCH,
+          None,
+          List("test")
+        ),
         categoryAssessmentRelationships = Seq(
           CategoryAssessmentRelationship("assessmentId1")
         ),
@@ -159,7 +168,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 
       val actualException = intercept[RuntimeException] {
-        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE")
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE", testRecordId)
         await(result)
       }
 

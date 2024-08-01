@@ -19,7 +19,7 @@ package base
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
-import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
+import models.ott.{AdditionalCode, CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import models.router.responses.GetGoodsRecordResponse
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -176,7 +176,28 @@ trait SpecBase
     Some("1234567890")
   )
 
+  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(category1, category2, category3),
+    Some("Weight, in kilograms"),
+    0,
+    Some("1234567890")
+  )
+
   private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Seq(category1, category2, category3),
+    None,
+    0
+  )
+
+  lazy val categorisationInfo2: CategorisationInfo2 = CategorisationInfo2(
+    "1234567890",
+    Seq(category1, category2, category3),
+    Seq(category1, category2, category3)
+  )
+
+  lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
     None,
@@ -240,16 +261,19 @@ trait SpecBase
     .success
     .value
 
-  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant): GetGoodsRecordResponse =
+  def goodsRecordResponse(
+    createdDateTime: Instant = Instant.now,
+    updatedDateTime: Instant = Instant.now
+  ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       "1",
       "10410100",
       "10410100",
       "BAN0010011",
-      "1234567",
+      "12345678",
       "Not requested",
       "Organic bananas",
-      "UK",
+      "GB",
       1,
       None,
       None,
@@ -371,7 +395,7 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
         bind[ProfileCheckAction].to[ProfileCheckActionImpl],
-        bind[ProfileAuthenticateAction].to[ProfileAuthenticateActionImpl],
+        bind[ProfileAuthenticateAction].to[FakeProfileAuthenticateAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
 }

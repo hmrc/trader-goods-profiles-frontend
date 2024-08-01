@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
 import models.helper.CategorisationJourney
-import models.{AssessmentAnswer, Category1, CategoryRecord, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}

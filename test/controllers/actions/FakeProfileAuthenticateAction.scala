@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package queries
+package controllers.actions
 
-import models.ott.{CategorisationInfo, CategorisationInfo2}
-import play.api.libs.json.JsPath
+import models.requests.IdentifierRequest
+import play.api.mvc.Result
 
-case class CategorisationDetailsQuery(recordId: String)
-    extends Gettable[CategorisationInfo]
-    with Settable[CategorisationInfo] {
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-  override def path: JsPath = JsPath \ "categorisationDetails" \ recordId
-}
+class FakeProfileAuthenticateAction @Inject() extends ProfileAuthenticateAction {
 
-case class CategorisationDetailsQuery2(recordId: String)
-    extends Gettable[CategorisationInfo2]
-    with Settable[CategorisationInfo2] {
+  override protected def executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 
-  override def path: JsPath = JsPath \ "categorisationDetails2" \ recordId
+  override protected def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = Future.successful(None)
 }
