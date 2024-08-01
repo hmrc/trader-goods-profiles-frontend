@@ -151,7 +151,7 @@ class SupplementaryUnitController @Inject() (
               measurementUnit               <- ottService.getMeasurementUnit(request, recordId)
               updatedAnswers                <- Future.fromTry(request.userAnswers.set(SupplementaryUnitUpdatePage(recordId), value))
               updatedAnswersWithMeasurement <-
-                Future.fromTry(updatedAnswers.set(MeasurementQuery, Map(recordId -> measurementUnit.getOrElse(""))))
+                Future.fromTry(updatedAnswers.set(MeasurementQuery(recordId), measurementUnit.getOrElse("")))
               _                             <- sessionRepository.set(updatedAnswersWithMeasurement)
             } yield Redirect(
               navigator.nextPage(SupplementaryUnitUpdatePage(recordId), mode, updatedAnswersWithMeasurement)

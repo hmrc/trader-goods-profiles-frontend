@@ -88,15 +88,11 @@ object SupplementaryRequest {
   ): EitherNec[ValidationError, String] =
     userAnswers.getPageValue(SupplementaryUnitUpdatePage(recordId))
 
-  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
+  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] = {
+    val query = MeasurementQuery(recordId)
     answers
-      .get(MeasurementQuery)
-      .map { measurementMap =>
-        measurementMap
-          .get(recordId)
-          .map(Right(_))
-          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(MeasurementQuery))))
-      }
-      .getOrElse(Left(NonEmptyChain.one(PageMissing(MeasurementQuery))))
+      .get(query)
+      .toRight(NonEmptyChain.one(if (answers.isDefined(query)) RecordIdMissing(query) else PageMissing(query)))
+  }
 
 }

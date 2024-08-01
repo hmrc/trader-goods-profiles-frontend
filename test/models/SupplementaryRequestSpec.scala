@@ -22,7 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import queries.{MeasurementQuery, RecordCategorisationsQuery}
+import queries.MeasurementQuery
 
 class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -38,7 +38,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
           .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
           .success
           .value
-          .set(MeasurementQuery, Map(testRecordId -> "kg"))
+          .set(MeasurementQuery(testRecordId), "kg")
           .success
           .value
 
@@ -62,7 +62,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
           .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
           .success
           .value
-          .set(MeasurementQuery, Map(testRecordId -> "kg"))
+          .set(MeasurementQuery(testRecordId), "kg")
           .success
           .value
 
@@ -92,7 +92,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
       inside(result) { case Left(errors) =>
         errors.toChain.toList must contain theSameElementsAs Seq(
           PageMissing(SupplementaryUnitUpdatePage(testRecordId)),
-          PageMissing(MeasurementQuery)
+          PageMissing(MeasurementQuery(testRecordId))
         )
       }
     }
@@ -127,18 +127,15 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
       inside(result) { case Left(errors) =>
         errors.toChain.toList must contain theSameElementsAs Seq(
           PageMissing(SupplementaryUnitUpdatePage(testRecordId)),
-          PageMissing(MeasurementQuery)
+          PageMissing(MeasurementQuery(testRecordId))
         )
       }
     }
 
-    "when measurementquery is missing recordId" in {
+    "when supplementaryunit is define but measurementquery is missing " in {
 
       val answers = UserAnswers(userAnswersId)
         .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
-        .success
-        .value
-        .set(MeasurementQuery, Map.empty[String, String])
         .success
         .value
 
@@ -146,7 +143,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       inside(result) { case Left(errors) =>
         errors.toChain.toList must contain theSameElementsAs Seq(
-          RecordIdMissing(MeasurementQuery)
+          PageMissing(MeasurementQuery(testRecordId))
         )
       }
     }

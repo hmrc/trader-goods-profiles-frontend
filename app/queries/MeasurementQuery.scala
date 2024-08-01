@@ -18,8 +18,7 @@ package queries
 
 import play.api.libs.json.JsPath
 
-case object MeasurementQuery extends Gettable[Map[String, String]] with Settable[Map[String, String]] {
-
-  override def path: JsPath = JsPath \ "measurementUnit"
+case class MeasurementQuery(recordId: String) extends Gettable[String] with Settable[String] {
+  override def path: JsPath = JsPath \ "measurementUnit" \ recordId
 
 }

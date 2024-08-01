@@ -147,7 +147,7 @@ trait SpecBase
       .set(SupplementaryUnitUpdatePage(testRecordId), "100")
       .success
       .value
-      .set(MeasurementQuery, Map(testRecordId -> "litres"))
+      .set(MeasurementQuery(testRecordId), "litres")
       .success
       .value
 
