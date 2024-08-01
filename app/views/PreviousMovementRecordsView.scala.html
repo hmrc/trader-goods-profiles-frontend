@@ -34,6 +34,7 @@ formHelper: FormWithCSRF
 <div class="govuk-grid-column-full">
  @govukTable(
  Table(
+ firstCellIsHeader = true,
  head = Some(Seq(
  HeadCell(
  content = Text(messages("previousMovementRecords.tableHeader.state"))
