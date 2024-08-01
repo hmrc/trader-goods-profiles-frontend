@@ -39,7 +39,7 @@ class ReviewReasonController @Inject()(
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request => {
-      Ok(view(recordId, "unclear"))
+      Ok(view(recordId, "commodity"))
 
 //      goodsRecordConnector.getRecord(request.eori, recordId).map { getGoodsRecordResponse =>
 //        if (getGoodsRecordResponse.toReview) {

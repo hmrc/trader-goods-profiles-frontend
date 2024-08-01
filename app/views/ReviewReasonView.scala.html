@@ -34,7 +34,7 @@
         </ol>
     }
 
-    @if(reviewReason == "unclear") {
+    @if(reviewReason == "unclear" || reviewReason == "inadequate") {
         <p class="govuk-body">@messages(s"reviewReason.${reviewReason}.p2")</p>
     }
 
