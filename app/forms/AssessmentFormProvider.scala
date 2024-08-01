@@ -55,4 +55,3 @@ class AssessmentFormProvider2 @Inject() extends Mappings {
     )
   }
 }
-

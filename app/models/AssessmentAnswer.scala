@@ -30,19 +30,19 @@ object AssessmentAnswer2 {
 
   implicit val reads: Reads[AssessmentAnswer2] = Reads {
     case JsString("false") => JsSuccess(NoExemption)
-    case JsString("true") => JsSuccess(Exemption)
-    case _ => JsError("unable to read assessment answer")
+    case JsString("true")  => JsSuccess(Exemption)
+    case _                 => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer2] = Writes {
     case Exemption => JsString("true")
-    case _ => JsString("false")
+    case _         => JsString("false")
   }
 
   def fromString(input: String): AssessmentAnswer2 =
     input match {
       case NoExemption.toString => NoExemption
-      case _ => Exemption
+      case _                    => Exemption
     }
 }
 
