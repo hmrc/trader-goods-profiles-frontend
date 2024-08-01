@@ -19,7 +19,6 @@ package models.router.responses
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 
 import java.time.Instant
-import controllers.routes
 
 case class GetGoodsRecordResponse(
   recordId: String,
@@ -49,7 +48,6 @@ case class GetGoodsRecordResponse(
 )
 
 object GetGoodsRecordResponse {
-
   implicit val reads: Reads[GetGoodsRecordResponse] = (json: JsValue) =>
     JsSuccess(
       GetGoodsRecordResponse(
