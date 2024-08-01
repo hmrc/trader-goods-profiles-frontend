@@ -23,12 +23,40 @@ import models.ott.response.OttResponse
 import pages.AssessmentPage
 import play.api.libs.json.{Json, OFormat}
 
+final case class CategorisationInfo2(
+  commodityCode: String,
+  categoryAssessments: Seq[CategoryAssessment],
+  categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment]
+)
+
+object CategorisationInfo2 {
+
+  def build(ott: OttResponse): Option[CategorisationInfo2] =
+    ott.categoryAssessmentRelationships
+      .map(x => CategoryAssessment.build(x.id, ott))
+      .sequence
+      .map { assessments =>
+        val assessmentsSorted = assessments.sorted
+
+        CategorisationInfo2(
+          ott.goodsNomenclature.commodityCode,
+          assessmentsSorted,
+          assessmentsSorted //TODO this will need to check for e.g. empty assessments
+        )
+      }
+
+  implicit lazy val format: OFormat[CategorisationInfo2] = Json.format
+}
+
+
+
 final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String],
   descendantCount: Int,
-  originalCommodityCode: Option[String] = None
+  originalCommodityCode: Option[String] = None //TODO hopefully dies?
+  //TODO needs country for comparisions??
 ) {
   def areThereAnyNonAnsweredQuestions(recordId: String, userAnswers: UserAnswers): Boolean =
     categoryAssessments.indices
