@@ -39,12 +39,10 @@ class ReviewReasonController @Inject()(
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { getGoodsRecordResponse =>
-        val reviewReason = getGoodsRecordResponse.reviewReason
-        if (getGoodsRecordResponse.toReview && reviewReason.isDefined) {
-          Ok(view(recordId, reviewReason.get))
-        } else {
-          Redirect(routes.SingleRecordController.onPageLoad (recordId).url)
+      goodsRecordConnector.getRecord(request.eori, recordId).map { recordResponse =>
+        recordResponse.reviewReason match {
+          case Some(reviewReason) if recordResponse.toReview => Ok(view(recordId, reviewReason))
+          case _ => Redirect(routes.SingleRecordController.onPageLoad (recordId).url)
         }
       }
   }
