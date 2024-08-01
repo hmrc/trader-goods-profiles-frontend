@@ -28,20 +28,20 @@ import views.html.ReviewReasonView
 import scala.concurrent.ExecutionContext
 
 class ReviewReasonController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ReviewReasonView,
-                                       goodsRecordConnector: GoodsRecordConnector
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: ReviewReasonView,
+  goodsRecordConnector: GoodsRecordConnector
+)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { recordResponse =>
-        recordResponse.reviewReason match {
-          case Some(reviewReason) if recordResponse.toReview => Ok(view(recordId, reviewReason))
+      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
+        record.reviewReason match {
+          case Some(reviewReason) if record.toReview => Ok(view(recordId, reviewReason))
           case _ => Redirect(routes.SingleRecordController.onPageLoad (recordId).url)
         }
       }
