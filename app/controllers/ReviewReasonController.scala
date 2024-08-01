@@ -27,7 +27,7 @@ import views.html.ReviewReasonView
 
 import scala.concurrent.ExecutionContext
 
-class ReviewReasonController @Inject()(
+class ReviewReasonController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
@@ -35,18 +35,22 @@ class ReviewReasonController @Inject()(
   val controllerComponents: MessagesControllerComponents,
   view: ReviewReasonView,
   goodsRecordConnector: GoodsRecordConnector
-)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-        record.reviewReason match {
-          case Some(reviewReason) if record.toReview => Ok(view(recordId, reviewReason))
-          case _ => Redirect(routes.SingleRecordController.onPageLoad(recordId).url)
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .map { record =>
+          record.reviewReason match {
+            case Some(reviewReason) if record.toReview => Ok(view(recordId, reviewReason))
+            case _                                     => Redirect(routes.SingleRecordController.onPageLoad(recordId).url)
+          }
         }
-      }.recover {
-        case _ =>
+        .recover { case _ =>
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-      }
-    }
+        }
+  }
 }

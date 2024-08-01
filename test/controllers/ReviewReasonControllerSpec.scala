@@ -34,7 +34,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.{ReviewReasonView, UkimsNumberView}
+import views.html.{HasCountryOfOriginChangeView, ReviewReasonView, UkimsNumberView}
 import views.html.helper.form
 
 import java.time.Instant
@@ -60,7 +60,35 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
     "onPageLoad" - {
 
-      "must OK and display correct view for each review reason" in {}
+      "must OK and display correct view for each review reason" in {
+
+        val reviewReasons = Seq("mismatch", "inadequate", "unclear", "commodity")
+
+        reviewReasons.map { reviewReason =>
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+            .thenReturn(Future.successful(goodsRecordResponseWithReviewReason(Instant.now, Instant.now, reviewReason)))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, reviewReasonRoute)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[ReviewReasonView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(testRecordId, reviewReason)(request, messages(application)).toString
+          }
+        }
+
+      }
 
       "must redirect to SingleRecordController when the record is not marked with 'toReview'" in {
 
