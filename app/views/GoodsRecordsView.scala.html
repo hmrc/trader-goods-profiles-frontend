@@ -122,7 +122,7 @@
                                     text2 = messages("site.remove"),
                                     visuallyHiddenContent1 = messages("goodsRecords.hidden.change"),
                                     visuallyHiddenContent2 = messages("goodsRecords.hidden.remove"),
-                                    href1 = goodsRecord.getChangeOrReviewUrl,
+                                    href1 = routes.ReviewReasonController.onPageLoad(recordId).url,
                                     href2 = routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
                                 )
                             )

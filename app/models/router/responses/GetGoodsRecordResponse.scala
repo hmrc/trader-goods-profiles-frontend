@@ -46,18 +46,7 @@ case class GetGoodsRecordResponse(
   niphlNumber: Option[String] = None,
   createdDateTime: Instant,
   updatedDateTime: Instant
-) {
-  def getChangeOrReviewUrl: String = {
-    if (toReview) {
-      reviewReason match {
-        case Some(_) => routes.ReviewReasonController.onPageLoad(recordId).url
-        case _ => routes.JourneyRecoveryController.onPageLoad().url
-      }
-    } else {
-      routes.SingleRecordController.onPageLoad(recordId).url
-    }
-  }
-}
+)
 
 object GetGoodsRecordResponse {
 
