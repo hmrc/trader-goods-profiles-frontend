@@ -55,13 +55,14 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
   "ReviewReasonController" - {
 
-
+    val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+    when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
     "onPageLoad" - {
 
+      "must OK and display correct view for each review reason" in {}
+
       "must redirect to SingleRecordController when the record is not marked with 'toReview'" in {
-        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
@@ -74,16 +75,40 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           )
           .build()
 
-          running(application) {
-            val request = FakeRequest(GET, reviewReasonRoute)
+        running(application) {
+          val request = FakeRequest(GET, reviewReasonRoute)
 
-            val result = route(application, request).value
+          val result = route(application, request).value
 
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
-          }
-
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+        }
       }
+
+      "must redirect to JourneyRecovery when there is an issue getting the goods record" in {
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Something went wrong")))
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, reviewReasonRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
     }
 
   }
