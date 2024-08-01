@@ -51,6 +51,11 @@ class CategoryGuidanceController @Inject() (
     with I18nSupport
     with Logging {
 
+  def onPageLoad2(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(recordId))
+    }
+
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       categorisationService

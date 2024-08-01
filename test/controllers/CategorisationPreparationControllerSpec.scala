@@ -76,7 +76,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         running(application) {
 
           val request =
-            FakeRequest(POST, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
@@ -108,7 +108,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         running(application) {
           val request =
-            FakeRequest(POST, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -123,7 +123,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         running(application) {
           val request =
-            FakeRequest(POST, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -137,7 +137,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         running(application) {
           val request =
-            FakeRequest(POST, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url

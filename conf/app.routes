@@ -71,6 +71,7 @@ POST        /update-profile/ukims-number                                        
 
 GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)
+GET         /update-record/:recordId/categorisation/start2                                  controllers.CategoryGuidanceController.onPageLoad2(recordId: String)
 
 GET         /create-record/commodity-code                                                   controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/commodity-code                                                   controllers.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)
@@ -147,6 +148,8 @@ POST        /update-record/:recordId/categorisation/category-assessment/:index  
 GET         /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
 POST        /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
 
+GET         /update-record/:recordId/categorisation/category-assessment2/:index              controllers.AssessmentController.onPageLoad2(recordId: String, index: Int)
+
 GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
 
 GET         /update-record/:recordId/categorisation/result/category-1                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1)
@@ -158,7 +161,7 @@ GET         /update-record/:recordId/categorisation/result/standard-no-assessmen
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
 
-POST        /update-record/:recordId/categorisation/categorisationPreparation               controllers.CategorisationPreparationController.startCategorisation(recordId:String)
+GET        /update-record/:recordId/categorisation/categorisationPreparation                controllers.CategorisationPreparationController.startCategorisation(recordId:String)
 
 GET         /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onSubmit(recordId:String)
