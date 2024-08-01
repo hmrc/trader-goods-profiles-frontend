@@ -18,7 +18,7 @@ package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.CategorisationInfo
+import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.requests.DataRequest
 import models.{AssessmentAnswer, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
@@ -37,6 +37,36 @@ class CategorisationService @Inject() (
   ottConnector: OttConnector,
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
+
+  // get details from OTT
+  // work out what questions need answerin'
+
+  def getCategorisationInfo(
+    request: DataRequest[_],
+    commodityCode: String,
+    country: String,
+    recordId: Option[String] = None
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo2] = {
+
+    val ottResponse = ottConnector.getCategorisationInfo(
+      commodityCode,
+      request.eori,
+      request.affinityGroup,
+      recordId,
+      country,
+      LocalDate.now()
+    )
+
+    ottResponse.flatMap { response =>
+      CategorisationInfo2.build(response) match {
+        case Some(categorisationInfo) => Future.successful(categorisationInfo)
+        case _                        =>
+          Future.failed(new RuntimeException("Could not build categorisation info"))
+      }
+
+    }
+
+  }
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier

@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.response._
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -35,6 +35,7 @@ import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.Instant
@@ -86,13 +87,20 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val categorisationService =
     new CategorisationService(mockSessionRepository, mockOttConnector, mockGoodsRecordsConnector)
 
+  private val mockDataRequest = mock[DataRequest[AnyContent]]
+
   override def beforeEach(): Unit = {
     super.beforeEach()
+
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
+
+    when(mockDataRequest.eori).thenReturn("eori")
+    when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
+
   }
 
   override def afterEach(): Unit = {
@@ -100,6 +108,61 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     reset(mockSessionRepository)
     reset(mockGoodsRecordsConnector)
     reset(mockOttConnector)
+  }
+
+  "getCategorisationInfo" - {
+
+    "create a categorisation info record for the given commodity code" in {
+
+      await(categorisationService.getCategorisationInfo(mockDataRequest,"1234567890", "BV")) mustBe
+        CategorisationInfo2("some comcode", Seq(), Seq())
+
+      withClue("should ask for details for this commodity and country from OTT") {
+        verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"),any(),any(), any(), eqTo("BV"), any())(any())
+      }
+
+    }
+
+    "should return future failed when the call to OTT fails" in {
+      val expectedException = new RuntimeException("Failed communicating with OTT")
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE")
+        await(result)
+      }
+
+      actualException mustBe expectedException
+    }
+
+    "should return future failed when categorisation info does not build" in {
+
+      val mockOttResponseThatIsBroken = OttResponse(
+        GoodsNomenclatureResponse("some id", "brokenComCode", Some("some measure unit"), Instant.EPOCH, None, List("test")),
+        categoryAssessmentRelationships = Seq(
+          CategoryAssessmentRelationship("assessmentId1")
+        ),
+        Seq[IncludedElement](),
+        Seq[Descendant]()
+      )
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(mockOttResponseThatIsBroken))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE")
+        await(result)
+      }
+
+      actualException.getMessage mustEqual "Could not build categorisation info"
+    }
+
   }
 
   "requireCategorisation" - {

@@ -27,6 +27,270 @@ import java.time.Instant
 
 class CategorisationInfoSpec extends SpecBase {
 
+  ".build2" - {
+
+    "must return a model from an OTT response" - {
+
+      "one assessment with exemptions" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "commodity code",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId2")
+          ),
+          includedElements = Seq(
+            ThemeResponse("themeId1", 1),
+            CategoryAssessmentResponse(
+              "assessmentId2",
+              "themeId2",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            ThemeResponse("themeId2", 2),
+            CertificateResponse("exemptionId1", "code1", "description1"),
+            AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+            ThemeResponse("ignoredTheme", 3),
+            CertificateResponse("ignoredExemption", "code3", "description3")
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        val assessments = Seq(
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+        )
+
+        val expectedResult = CategorisationInfo2(
+          commodityCode = "commodity code",
+          categoryAssessments = assessments,
+          categoryAssessmentsThatNeedAnswers =  assessments
+        )
+
+        val result = CategorisationInfo2.build(ottResponse)
+        result.value mustEqual expectedResult
+      }
+
+      "and order its assessments in order of category (lowest first) then number of exemptions (lowest first)" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "commodity code",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId1"),
+            CategoryAssessmentRelationship("assessmentId2"),
+            CategoryAssessmentRelationship("assessmentId3"),
+            CategoryAssessmentRelationship("assessmentId4")
+          ),
+          includedElements = Seq(
+            CategoryAssessmentResponse(
+              "assessmentId1",
+              "themeId1",
+              Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate))
+            ),
+            CategoryAssessmentResponse(
+              "assessmentId2",
+              "themeId2",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            CategoryAssessmentResponse(
+              "assessmentId3",
+              "themeId1",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            CategoryAssessmentResponse(
+              "assessmentId4",
+              "themeId2",
+              Nil
+            ),
+            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId2", 2),
+            CertificateResponse("exemptionId1", "code1", "description1"),
+            AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+            ThemeResponse("ignoredTheme", 3),
+            CertificateResponse("ignoredExemption", "code3", "description3")
+          ),
+          descendents = Seq(Descendant("1", "type1"), Descendant("2", "type2"))
+        )
+
+        val expectedAssessments = Seq(
+          CategoryAssessment(
+            "assessmentId1",
+            1,
+            Seq(Certificate("exemptionId1", "code1", "description1"))
+          ),
+          CategoryAssessment(
+            "assessmentId3",
+            1,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          ),
+          CategoryAssessment(
+            "assessmentId4",
+            2,
+            Nil
+          ),
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+        )
+
+        val expectedResult = CategorisationInfo2(
+          commodityCode = "commodity code",
+          categoryAssessments = expectedAssessments,
+          categoryAssessmentsThatNeedAnswers = expectedAssessments
+        )
+
+        val result = CategorisationInfo2.build(ottResponse)
+        result.value mustEqual expectedResult
+      }
+
+    }
+
+    "must return None" - {
+      "when a category assessment cannot be found" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "commodity code",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
+          includedElements = Seq(
+            ThemeResponse("otherThemeId", 2)
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        CategorisationInfo2.build(ottResponse) mustBe None
+      }
+
+      "when the correct theme cannot be found" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "commodity code",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
+          includedElements = Seq(
+            CategoryAssessmentResponse("assessmentId", "themeId", Nil),
+            ThemeResponse("otherThemeId", 2)
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        CategorisationInfo2.build(ottResponse) mustBe None
+      }
+
+      "when a certificate cannot be found" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "commodity code",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId1")
+          ),
+          includedElements = Seq(
+            CategoryAssessmentResponse(
+              "assessmentId1",
+              "themeId1",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            ThemeResponse("themeId1", 1),
+            AdditionalCodeResponse("exemptionId2", "code2", "description2")
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        CategorisationInfo.build(ottResponse) mustBe None
+      }
+
+      "when an additional code cannot be found" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "commodity code",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId1")
+          ),
+          includedElements = Seq(
+            CategoryAssessmentResponse(
+              "assessmentId1",
+              "themeId1",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            ThemeResponse("themeId1", 1),
+            CertificateResponse("exemptionId1", "code1", "description1")
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        CategorisationInfo.build(ottResponse) mustBe None
+      }
+
+    }
+  }
+
   ".build" - {
 
     "must return a model from a simple OTT response (one assessment, no exemptions)" in {
