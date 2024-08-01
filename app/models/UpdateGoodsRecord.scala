@@ -54,7 +54,7 @@ object UpdateGoodsRecord {
       )
     )
 
-  def buildGoodsDescription(
+  def validateGoodsDescription(
     answers: UserAnswers,
     recordId: String
   ): EitherNec[ValidationError, String] =
@@ -63,7 +63,7 @@ object UpdateGoodsRecord {
       getGoodsDescription(answers, recordId)
     ).parMapN((_, value) => value)
 
-  def buildCommodityCode(
+  def validateCommodityCode(
     answers: UserAnswers,
     recordId: String
   ): EitherNec[ValidationError, Commodity] =
@@ -72,7 +72,7 @@ object UpdateGoodsRecord {
       getCommodityCode(answers, recordId)
     ).parMapN((_, value) => value)
 
-  def buildTraderReference(
+  def validateTraderReference(
     answers: UserAnswers,
     recordId: String
   ): EitherNec[ValidationError, String] =

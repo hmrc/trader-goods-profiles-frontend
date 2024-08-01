@@ -75,7 +75,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, recordId) match {
+      UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId) match {
         case Right(goodsDescription) =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
 
@@ -90,7 +90,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.buildTraderReference(request.userAnswers, recordId) match {
+      UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
         case Right(traderReference) =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
 
@@ -105,7 +105,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, recordId) match {
+      UpdateGoodsRecord.validateCommodityCode(request.userAnswers, recordId) match {
         case Right(commodity) =>
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
@@ -144,7 +144,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildTraderReference(request.userAnswers, recordId) match {
+      UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
         case Right(traderReference) =>
           auditService.auditFinishUpdateGoodsRecord(
             recordId,
@@ -186,7 +186,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildGoodsDescription(request.userAnswers, recordId) match {
+      UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId) match {
         case Right(goodsDescription) =>
           auditService.auditFinishUpdateGoodsRecord(
             recordId,
@@ -211,7 +211,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildCommodityCode(request.userAnswers, recordId) match {
+      UpdateGoodsRecord.validateCommodityCode(request.userAnswers, recordId) match {
         case Right(commodity) =>
           auditService.auditFinishUpdateGoodsRecord(
             recordId,

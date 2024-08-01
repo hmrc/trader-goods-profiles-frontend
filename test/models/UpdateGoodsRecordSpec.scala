@@ -61,7 +61,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
         result mustEqual Right("goods description")
 
@@ -75,7 +75,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildTraderReference(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
 
         result mustEqual Right("trader reference")
       }
@@ -110,7 +110,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         result mustEqual Right(commodity)
       }
@@ -153,7 +153,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionUpdatePage(testRecordId))
@@ -167,7 +167,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasGoodsDescriptionChangePage(testRecordId))
@@ -178,7 +178,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = UpdateGoodsRecord.buildTraderReference(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(TraderReferenceUpdatePage(testRecordId))
@@ -192,7 +192,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(CommodityCodeUpdatePage(testRecordId))
@@ -209,7 +209,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
@@ -229,7 +229,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
@@ -243,7 +243,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCommodityCodeChangePage(testRecordId))
