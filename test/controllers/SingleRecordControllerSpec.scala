@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
-import models.helper.{CreateRecordJourney, SupplementaryUnitUpdateJourney}
+import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
