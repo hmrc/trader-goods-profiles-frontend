@@ -61,11 +61,10 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
-        result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, goodsDescription = Some("goods description"))
-        )
+        result mustEqual Right("goods description")
+
       }
 
       "and all trader reference data is present" in {
@@ -76,11 +75,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
 
-        result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, traderReference = Some("trader reference"))
-        )
+        result mustEqual Right("trader reference")
       }
 
       "and all commodity code data is present" in {
@@ -113,11 +110,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
-        result mustEqual Right(
-          UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(commodity), category = Some(1))
-        )
+        result mustEqual Right(commodity)
       }
     }
 
@@ -158,7 +153,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionUpdatePage(testRecordId))
@@ -172,7 +167,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildGoodsDescription(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasGoodsDescriptionChangePage(testRecordId))
@@ -183,7 +178,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = UpdateGoodsRecord.buildTraderReference(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(TraderReferenceUpdatePage(testRecordId))
@@ -197,7 +192,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(CommodityCodeUpdatePage(testRecordId))
@@ -214,7 +209,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
@@ -234,7 +229,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
@@ -248,7 +243,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCommodityCode(answers, testEori, testRecordId)
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCommodityCodeChangePage(testRecordId))

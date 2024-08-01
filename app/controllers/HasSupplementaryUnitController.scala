@@ -19,6 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.HasSupplementaryUnitFormProvider
+import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
@@ -31,7 +32,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{pageUpdated, supplementaryUnit}
 import views.html.HasSupplementaryUnitView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasSupplementaryUnitController @Inject() (
@@ -54,8 +54,6 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      //TODO this definitely will not survive in the new world
-      // All questions answered so no need to be in recategorising mode it just breaks the back navigation
       for {
         updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
         _         <- sessionRepository.set(updatedUA)

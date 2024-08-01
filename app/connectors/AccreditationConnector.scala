@@ -35,7 +35,6 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
   private val clientIdAndAcceptHeaders                         =
     Seq("X-Client-ID" -> "tgp-frontend", "Accept" -> "application/vnd.hmrc.1.0+json")
 
-  //TODO call should go to data store instead of router directly
   private def accreditationUrl(eori: String, recordId: String) =
     url"$routerBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId/advice"
 
