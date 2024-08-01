@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-package queries
+package pages
 
-import models.ott.{CategorisationInfo, CategorisationInfo2}
-import play.api.libs.json.JsPath
-
-case class CategorisationDetailsQuery(recordId: String)
-    extends Gettable[CategorisationInfo]
-    with Settable[CategorisationInfo] {
-
-  override def path: JsPath = JsPath \ "categorisationDetails" \ recordId
-}
-
-case class CategorisationDetailsQuery2(recordId: String)
-    extends Gettable[CategorisationInfo2]
-    with Settable[CategorisationInfo2] {
-
-  override def path: JsPath = JsPath \ "categorisationDetails2" \ recordId
-}
+case class CategorisationPreparationPage(recordId: String) extends Page

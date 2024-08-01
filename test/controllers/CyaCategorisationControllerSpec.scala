@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
 import models.helper.CategorisationJourney
-import models.{AssessmentAnswer, Category1,   CategoryRecord, UserAnswers}
+import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -521,7 +521,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               None,
               category = 1,
               categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categoryQuery.measurementUnit
+              measurementUnit = categorisationInfo.measurementUnit
             )
 
             running(application) {
@@ -577,10 +577,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedPayload = CategoryRecord(
               testEori,
               testRecordId,
-              Some(categoryQuery.commodityCode),
+              Some(categorisationInfo.commodityCode),
               category = 1,
               categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categoryQuery.measurementUnit
+              measurementUnit = categorisationInfo.measurementUnit
             )
 
             running(application) {
@@ -633,7 +633,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               None,
               category = 1,
               categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categoryQuery.measurementUnit
+              measurementUnit = categorisationInfo.measurementUnit
             )
 
             running(application) {

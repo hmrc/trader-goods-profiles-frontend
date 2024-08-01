@@ -56,6 +56,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     reset(mockGoodsRecordsConnector)
   }
 
+  //TODO clean this up everywhere
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
