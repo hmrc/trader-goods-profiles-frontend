@@ -393,7 +393,6 @@ previousMovementRecords.description.notImmiReady = You can not use these records
 previousMovementRecords.state.notReadyForUse = Not ready for use
 previousMovementRecords.description.notReadyForUse = Not ready for use records have missing, expired or invalid information. You’ll need to complete the record to see if it is ready for IMMI.
 
-
 goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
