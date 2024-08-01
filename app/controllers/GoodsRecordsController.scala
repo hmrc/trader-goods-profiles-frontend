@@ -60,27 +60,28 @@ class GoodsRecordsController @Inject() (
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
           case Some(goodsRecordResponse) =>
             if (goodsRecordResponse.pagination.totalRecords != 0) {
-              ottConnector.getCountries.map { countries =>
+              ottConnector.getCountries.flatMap { countries =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield {}
-                val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-                Ok(
-                  view(
-                    form,
-                    goodsRecordResponse.goodsItemRecords,
-                    goodsRecordResponse.pagination.totalRecords,
-                    getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
-                    getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
-                    countries,
-                    getPagination(
-                      goodsRecordResponse.pagination.currentPage,
-                      goodsRecordResponse.pagination.totalPages
-                    ),
-                    page
-                  )
-                ).removingFromSession(dataUpdated, pageUpdated)
+                } yield {
+                  val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                  Ok(
+                    view(
+                      form,
+                      goodsRecordResponse.goodsItemRecords,
+                      goodsRecordResponse.pagination.totalRecords,
+                      firstRecord,
+                      getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
+                      countries,
+                      getPagination(
+                        goodsRecordResponse.pagination.currentPage,
+                        goodsRecordResponse.pagination.totalPages
+                      ),
+                      page
+                    )
+                  ).removingFromSession(dataUpdated, pageUpdated)
+                }
               }
             } else {
               Future.successful(
