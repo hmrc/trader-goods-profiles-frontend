@@ -17,28 +17,18 @@
 package controllers
 
 import base.SpecBase
-import connectors.TraderProfileConnector
 import models.GoodsRecordsPagination.firstPage
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.PreviousMovementRecordsView
 
-import scala.concurrent.Future
-
 class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
-
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "PreviousMovementRecords Controller" - {
 
     "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -56,7 +46,6 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page on load record" in {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
       running(application) {

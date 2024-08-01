@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import connectors.GoodsRecordConnector
 import forms.TraderReferenceFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.helper.GoodsDetailsUpdate
@@ -70,9 +70,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
     GoodsRecordsPagination(totalRecords, currentPage, numberOfPages, None, None)
   )
 
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
   "TraderReference Controller" - {
 
     "for create journey" - {
@@ -83,7 +80,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must return OK and the correct view for a GET" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -103,7 +99,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val userAnswers = UserAnswers(userAnswersId).set(TraderReferencePage, "answer").success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -139,8 +134,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -159,7 +153,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must return a Bad Request and errors when invalid data is submitted" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -196,8 +189,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -228,7 +220,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
@@ -242,8 +233,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -264,7 +254,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -280,7 +269,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -309,8 +297,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[AuditService].toInstance(mockAuditService),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -342,7 +329,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "answer").success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -378,8 +364,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -415,8 +400,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -456,8 +440,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -479,7 +462,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must return a Bad Request and errors when invalid data is submitted" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -516,8 +498,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -548,7 +529,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
@@ -562,8 +542,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
             .build()
 
@@ -584,7 +563,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -600,7 +578,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
