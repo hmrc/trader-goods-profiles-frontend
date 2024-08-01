@@ -30,13 +30,11 @@ final case class CategorisationInfo2(
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
-
     if (index + 1 > categoryAssessmentsThatNeedAnswers.size) {
       None
     } else {
       Some(categoryAssessmentsThatNeedAnswers(index))
     }
-
 
 }
 
@@ -58,8 +56,6 @@ object CategorisationInfo2 {
 
   implicit lazy val format: OFormat[CategorisationInfo2] = Json.format
 }
-
-
 
 final case class CategorisationInfo(
   commodityCode: String,

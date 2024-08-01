@@ -55,21 +55,22 @@ class AssessmentController @Inject() (
 
   def onPageLoad2(recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-
-      request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+      request.userAnswers
+        .get(CategorisationDetailsQuery2(recordId))
         .flatMap { categorisationInfo =>
-          categorisationInfo.getAssessmentFromIndex(index).map{ assessment =>
+          categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
             val listItems = assessment.getExemptionListItems
-            val form = formProvider2(listItems.size)
+            val form      = formProvider2(listItems.size)
 
             val preparedForm = request.userAnswers.get(AssessmentPage2(recordId, index)) match {
               case Some(value) => form.fill(value)
-              case None => form
+              case None        => form
             }
 
             Ok(view(preparedForm, NormalMode, recordId, index, listItems, categorisationInfo.commodityCode))
           }
-      }.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        }
+        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -115,7 +116,7 @@ class AssessmentController @Inject() (
             Future.successful(Redirect(routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url))
           case (_, _, true) =>
             Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)))
-          case _ => Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
+          case _            => Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
         }
       }
 
@@ -149,25 +150,30 @@ class AssessmentController @Inject() (
     }
 
   def onSubmit2(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request => {
-      for {
-        categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery(recordId))
-        listItems = categorisationInfo.categoryAssessments(index).getExemptionListItems
-        commodityCode = categorisationInfo.commodityCode
-        exemptions = categorisationInfo.categoryAssessments(index).exemptions
-        form = formProvider(exemptions.size)
-      } yield form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, commodityCode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
-              _ <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
-        )
-    }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+    (identify andThen getData andThen requireData).async { implicit request =>
+      request.userAnswers
+        .get(CategorisationDetailsQuery2(recordId))
+        .flatMap { categorisationInfo =>
+          categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
+            val listItems = assessment.getExemptionListItems
+            val form = formProvider2(listItems.size)
+
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+                  ),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage2(recordId, index), value))
+                    _ <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(AssessmentPage2(recordId, index), mode, updatedAnswers))
+              )
+          }
+        }
+        .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
     }
 
 }

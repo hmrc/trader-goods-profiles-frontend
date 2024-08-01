@@ -77,7 +77,7 @@ class Navigator @Inject() () {
     case p: HasSupplementaryUnitUpdatePage         => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
     case p: SupplementaryUnitUpdatePage            => _ => routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case p: CategorisationPreparationPage => _ => routes.CategoryGuidanceController.onPageLoad2(p.recordId)
+    case p: CategorisationPreparationPage          => _ => routes.CategoryGuidanceController.onPageLoad2(p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
