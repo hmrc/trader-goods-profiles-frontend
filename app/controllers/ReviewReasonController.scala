@@ -38,17 +38,14 @@ class ReviewReasonController @Inject()(
                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request => {
+    implicit request =>
       goodsRecordConnector.getRecord(request.eori, recordId).map { getGoodsRecordResponse =>
-        if (getGoodsRecordResponse.toReview) {
-          getGoodsRecordResponse.reviewReason match {
-            case Some(reason) => Ok(view(recordId, reason))
-            case _ => Redirect(routes.JourneyRecoveryController.onPageLoad ().url)
-          }
+        val reviewReason = getGoodsRecordResponse.reviewReason
+        if (getGoodsRecordResponse.toReview && reviewReason.isDefined) {
+          Ok(view(recordId, reviewReason.get))
         } else {
           Redirect(routes.SingleRecordController.onPageLoad (recordId).url)
         }
       }
-    }
   }
 }
