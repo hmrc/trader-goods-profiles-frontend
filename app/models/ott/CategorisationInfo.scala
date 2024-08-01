@@ -27,7 +27,18 @@ final case class CategorisationInfo2(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment]
-)
+) {
+
+  def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
+
+    if (index + 1 > categoryAssessmentsThatNeedAnswers.size) {
+      None
+    } else {
+      Some(categoryAssessmentsThatNeedAnswers(index))
+    }
+
+
+}
 
 object CategorisationInfo2 {
 

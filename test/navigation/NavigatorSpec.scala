@@ -531,6 +531,25 @@ class NavigatorSpec extends SpecBase {
 
       }
 
+      "in Categorisation Journey 2" - {
+
+        "must go from categorisation preparation to category guidance page" in {
+          val answers = emptyUserAnswers
+
+          navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, answers) mustEqual
+            routes.CategoryGuidanceController.onPageLoad2(testRecordId)
+
+        }
+
+        "must go from category guidance to the first assessment page" in {
+
+          navigator.nextPage(CategoryGuidancePage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
+            routes.AssessmentController.onPageLoad2(testRecordId, firstAssessmentIndex)
+
+        }
+
+      }
+
       "in Categorisation Journey" - {
 
         val recordId           = testRecordId
@@ -909,15 +928,15 @@ class NavigatorSpec extends SpecBase {
 
         }
 
-        "must go from CategoryGuidancePage to Category Assessment page" in {
-          val recordId = testRecordId
-          val index    = 0
-          navigator.nextPage(
-            CategoryGuidancePage(recordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
-        }
+//        "must go from CategoryGuidancePage to Category Assessment page" in {
+//          val recordId = testRecordId
+//          val index    = 0
+//          navigator.nextPage(
+//            CategoryGuidancePage(recordId),
+//            NormalMode,
+//            emptyUserAnswers
+//          ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
+//        }
 
         "must go from CyaCategorisationPage to CategorisationResult page" in {
           val categoryRecord = CategoryRecord(

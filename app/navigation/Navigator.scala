@@ -63,7 +63,7 @@ class Navigator @Inject() () {
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: CategoryGuidancePage                   =>
-      _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentIndex)
+      _ => routes.AssessmentController.onPageLoad2(p.recordId, firstAssessmentIndex)
     case p: CyaCategorisationPage                  =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
@@ -74,6 +74,7 @@ class Navigator @Inject() () {
     case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
     case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
+    case p: CategorisationPreparationPage => _ => routes.CategoryGuidanceController.onPageLoad2(p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -220,6 +221,15 @@ class Navigator @Inject() () {
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  // TODO next - 3 cases + error handling
+  // if answer is yes
+  //  if next question exists
+  //    go to assessmentpage
+  //  else
+  //    go to cya
+  // else
+  // go to cya
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     if (!assessmentPage.shouldRedirectToCya) {

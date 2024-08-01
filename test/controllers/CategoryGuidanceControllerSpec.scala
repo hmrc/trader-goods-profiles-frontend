@@ -21,12 +21,14 @@ import base.TestConstants.{testEori, testRecordId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.helper.CategorisationUpdate
 import models.{Category1NoExemptions, NormalMode, StandardNoAssessments}
+import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
@@ -56,9 +58,60 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     reset(mockGoodsRecordsConnector)
   }
 
-  //TODO clean this up everywhere
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  private val onwardRoute = Call("GET", "/foo")
+
+  "CategoryGuidance Controller 2" - {
+
+    "onPageLoad should display view" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad2(testRecordId).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CategoryGuidanceView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
+      }
+    }
+
+    "onSubmit should call navigator to redirect" in {
+
+      val mockAuditService = mock[AuditService]
+
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
+        .overrides(
+          bind[AuditService].toInstance(mockAuditService),
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(testRecordId).url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        withClue("must call the audit service with the correct details") {
+          verify(mockAuditService)
+            .auditStartUpdateGoodsRecord(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(CategorisationUpdate),
+              eqTo(testRecordId)
+            )(any())
+        }
+      }
+    }
+
+  }
 
   "CategoryGuidance Controller" - {
 
@@ -70,8 +123,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
 
@@ -94,8 +146,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[CategorisationService].toInstance(categorisationService)
         )
         .build()
 
@@ -119,8 +170,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -141,8 +191,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -173,8 +222,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -201,8 +249,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -226,39 +273,39 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to the categorisation page when the user click continue button" in {
-
-      val mockAuditService = mock[AuditService]
-
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[AuditService].toInstance(mockAuditService),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(testRecordId).url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 0).url
-
-        withClue("must call the audit service with the correct details") {
-          verify(mockAuditService)
-            .auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(CategorisationUpdate),
-              eqTo(testRecordId)
-            )(any())
-        }
-      }
-    }
+//    "must redirect to the categorisation page when the user click continue button" in {
+//
+//      val mockAuditService = mock[AuditService]
+//
+//      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+//        .thenReturn(Future.successful(Done))
+//
+//      val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
+//        .overrides(
+//          bind[CategorisationService].toInstance(categorisationService),
+//          bind[AuditService].toInstance(mockAuditService),
+//          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+//        )
+//        .build()
+//
+//      running(application) {
+//        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(testRecordId).url)
+//
+//        val result = route(application, request).value
+//
+//        status(result) mustEqual SEE_OTHER
+//        redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 0).url
+//
+//        withClue("must call the audit service with the correct details") {
+//          verify(mockAuditService)
+//            .auditStartUpdateGoodsRecord(
+//              eqTo(testEori),
+//              eqTo(AffinityGroup.Individual),
+//              eqTo(CategorisationUpdate),
+//              eqTo(testRecordId)
+//            )(any())
+//        }
+//      }
+//    }
   }
 }

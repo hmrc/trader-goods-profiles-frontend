@@ -16,11 +16,20 @@
 
 package pages
 
-import models.{AssessmentAnswer, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
 import play.api.libs.json.JsPath
 import queries.CategorisationDetailsQuery
 
 import scala.util.{Failure, Success, Try}
+
+case class AssessmentPage2(
+  recordId: String,
+  index: Int
+) extends QuestionPage[AssessmentAnswer2] {
+  override def path: JsPath = JsPath \ "assessments2" \ recordId \ index
+
+  //TODO cleanup
+}
 
 case class AssessmentPage(
   recordId: String,
