@@ -539,3 +539,8 @@ reviewReason.commodity.heading = There is a problem with this record
 reviewReason.commodity.p1 = The commodity code has expired. If you want to see if you can use the record within an IMMI, you''ll need to:
 reviewReason.commodity.li1 = change the commodity code
 reviewReason.commodity.li2 = categorise the goods
+
+reviewReason.unclear.title = This record needs to be reviewed
+reviewReason.unclear.heading = This record needs to be reviewed
+reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you'll need to amend the goods description.
+reviewReason.unclear.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.

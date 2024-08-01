@@ -34,6 +34,10 @@
         </ol>
     }
 
+    @if(reviewReason == "unclear") {
+        <p class="govuk-body">@messages(s"reviewReason.${reviewReason}.p2")</p>
+    }
+
     <a href="@{routes.SingleRecordController.onPageLoad(recordId).url}" class="govuk-button">@messages("site.continue")</a>
 
 }
