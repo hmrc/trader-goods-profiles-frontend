@@ -29,6 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, pageUpdated, supplementaryUnit}
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaSupplementaryUnitView
@@ -83,9 +84,21 @@ class CyaSupplementaryUnitController @Inject() (
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           //TODO : Audit service implementation
+          val initialValueOfHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
+          val initialValueOfSuppUnitOpt    = request.session.get(initialValueOfHasSuppUnit)
+          val finalValueOfHasSuppUnit      = model.hasSupplementaryUnit.getOrElse(false)
+          val finalValueOfSuppUnit         = model.supplementaryUnit.getOrElse("")
+          val hasSuppUnitChanged           = initialValueOfHasSuppUnitOpt.exists(_ != finalValueOfHasSuppUnit)
+          val suppUnitChanged              = initialValueOfSuppUnitOpt.exists(_ != finalValueOfSuppUnit)
+          val isValueChanged               = hasSuppUnitChanged || suppUnitChanged
+          val isSuppUnitRemoved            = initialValueOfHasSuppUnitOpt.contains(true) && !finalValueOfHasSuppUnit
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
             Redirect(routes.SingleRecordController.onPageLoad(recordId))
+              .addingToSession(dataUpdated -> isValueChanged.toString)
+              .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
+              .addingToSession(pageUpdated -> supplementaryUnit)
+
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }

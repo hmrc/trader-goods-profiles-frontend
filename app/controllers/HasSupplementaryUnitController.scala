@@ -28,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.RecategorisingQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, pageUpdated}
 import views.html.HasSupplementaryUnitView
 
 import javax.inject.Inject
@@ -100,8 +101,13 @@ class HasSupplementaryUnitController @Inject() (
           }
       }
       preparedFormFuture.map { preparedForm =>
+        val formValue            = preparedForm.value.getOrElse(false)
         val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
         Ok(view(preparedForm, mode, recordId, onSubmitAction))
+          .addingToSession(
+            initialValueOfHasSuppUnit -> formValue.toString
+          )
+          .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
       }
     }
 

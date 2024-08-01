@@ -30,8 +30,9 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{MeasurementQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import services.OttService
+import services.{DataCleansingService, OttService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
 import views.html.SupplementaryUnitView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -119,8 +120,13 @@ class SupplementaryUnitController @Inject() (
 
       preparedFormFuture
         .map { case (preparedForm, measurementUnit) =>
+          val formValue            = preparedForm.value.getOrElse(false)
           val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
           Ok(view(preparedForm, mode, recordId, measurementUnit, onSubmitAction))
+            .addingToSession(
+              initialValueOfSuppUnit -> formValue.toString
+            )
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
         }
         .recover { case ex: Exception =>
           logger.error(s"Error occurred while fetching record for recordId: $recordId", ex)
