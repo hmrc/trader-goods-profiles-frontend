@@ -19,7 +19,7 @@ package connectors
 import config.Service
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, GoodsRecord, RecordsSummary, UpdateGoodsRecord}
+import models.{CategoryRecord, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
@@ -108,6 +108,20 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .patch(goodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(UpdateRecordRequest.mapFromCategoryAndComcode(categoryRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
+
+  def updateSupplementaryUnitForGoodsRecord(
+    eori: String,
+    recordId: String,
+    supplementaryRequest: SupplementaryRequest
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Done] =
+    httpClient
+      .patch(goodsRecordUrl(eori, recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(UpdateRecordRequest.mapFromSupplementary(supplementaryRequest)))
       .execute[HttpResponse]
       .map(_ => Done)
 

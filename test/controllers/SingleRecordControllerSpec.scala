@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.{NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -56,6 +56,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
 
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "SingleRecord Controller" - {
 
     "must return OK and the correct view for a GET and set up userAnswers" in {
@@ -77,7 +80,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[SessionRepository].toInstance(mockSessionRepository)
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -149,7 +153,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
 
-      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
       implicit val localMessages: Messages = messages(application)
 
       running(application) {
@@ -168,7 +174,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return none when measurement unit is empty" in {
 
-      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
       implicit val localMessages: Messages = messages(application)
 
       running(application) {
@@ -181,7 +189,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must show hasSupplementaryUnit two when measurement unit is not empty and supplementary unit is No" in {
 
-      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
       implicit val localMessages: Messages = messages(application)
 
       running(application) {
@@ -201,7 +211,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
