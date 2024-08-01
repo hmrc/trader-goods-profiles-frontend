@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
@@ -54,57 +54,32 @@ object UpdateGoodsRecord {
       )
     )
 
-  def buildGoodsDescription(
+  def validateGoodsDescription(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, String] =
     (
-      Right(eori),
       Right(recordId),
       getGoodsDescription(answers, recordId)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        goodsDescription = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
-  def buildCommodityCode(
+  def validateCommodityCode(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, Commodity] =
     (
-      Right(eori),
       Right(recordId),
       getCommodityCode(answers, recordId)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        commodityCode = Some(value),
-        category = Some(1)
-      )
-    )
+    ).parMapN((_, value) => value)
 
-  def buildTraderReference(
+  def validateTraderReference(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, String] =
     (
-      Right(eori),
       Right(recordId),
       answers.getPageValue(TraderReferenceUpdatePage(recordId))
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        traderReference = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
   private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
