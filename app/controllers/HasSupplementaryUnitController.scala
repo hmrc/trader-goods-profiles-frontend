@@ -19,19 +19,18 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.HasSupplementaryUnitFormProvider
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.data.Form
-import queries.RecategorisingQuery
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import queries.RecategorisingQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{pageUpdated, supplementaryUnit}
 import views.html.HasSupplementaryUnitView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasSupplementaryUnitController @Inject() (
