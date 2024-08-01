@@ -17,39 +17,20 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
-import forms.UkimsNumberFormProvider
-import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
-import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.{HasCountryOfOriginChangeView, ReviewReasonView, UkimsNumberView}
-import views.html.helper.form
+import views.html.ReviewReasonView
 
 import java.time.Instant
 import scala.concurrent.Future
 
 class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
-
-  //  private def onwardRoute = Call("GET", "/foo")
-  //
-  //  val formProvider = new UkimsNumberFormProvider()
-  //  private val form = formProvider()
-  //
-  //
-  //  val mockSessionRepository: SessionRepository = mock[SessionRepository]
-  //
 
   private lazy val reviewReasonRoute = routes.ReviewReasonController.onPageLoad(testRecordId).url
 
