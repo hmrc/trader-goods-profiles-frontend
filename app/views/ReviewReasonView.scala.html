@@ -21,15 +21,19 @@
 
 @(recordId: String, reviewReason: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("reviewReason.title"))) {
+@layout(pageTitle = titleNoForm(messages(s"reviewReason.${reviewReason}.title"))) {
 
-    @reviewReason match {
-        case Some("mismatch") => "show content 1"
-        case Some("inadequate") => "show content 1"
-        case Some("unclear") => "show content 1"
-        case Some("commodity") => "show content 1"
-        case Some("measure") => "show content 1"
+    <h1 class="govuk-heading-l">@messages(s"reviewReason.${reviewReason}.heading")</h1>
+
+    <p class="govuk-body">@messages(s"reviewReason.${reviewReason}.p1")</p>
+
+    @if(reviewReason == "commodity") {
+        <ol class="govuk-list govuk-list--number">
+            <li>@messages(s"reviewReason.commodity.li1")</li>
+            <li>@messages(s"reviewReason.commodity.li2")</li>
+        </ol>
     }
 
-    <h1 class="govuk-heading-xl">@messages("reviewReason.heading")</h1>
+    <a href="@{routes.SingleRecordController.onPageLoad(recordId).url}" class="govuk-button">@messages("site.continue")</a>
+
 }
