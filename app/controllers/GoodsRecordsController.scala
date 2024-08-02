@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import javax.inject.Inject
@@ -80,13 +80,13 @@ class GoodsRecordsController @Inject() (
                       ),
                       page
                     )
-                  ).removingFromSession(dataUpdated, pageUpdated)
+                  ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
                 }
               }
             } else {
               Future.successful(
                 Ok(emptyView())
-                  .removingFromSession(dataUpdated, pageUpdated)
+                  .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
               )
             }
           case None                      =>

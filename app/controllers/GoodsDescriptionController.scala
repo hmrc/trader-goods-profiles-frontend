@@ -85,7 +85,7 @@ class GoodsDescriptionController @Inject() (
 
       val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
 
-      Ok(view(preparedForm, mode, submitAction))
+      Ok(view(preparedForm, mode, submitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =

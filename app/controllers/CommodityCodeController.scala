@@ -75,7 +75,7 @@ class CommodityCodeController @Inject() (
 
       val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
 
-      Ok(view(preparedForm, onSubmitAction))
+      Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =

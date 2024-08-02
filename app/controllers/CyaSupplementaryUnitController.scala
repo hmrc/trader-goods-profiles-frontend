@@ -29,6 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated, supplementaryUnit}
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaSupplementaryUnitView
@@ -83,9 +84,25 @@ class CyaSupplementaryUnitController @Inject() (
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           //TODO : Audit service implementation
+          val (initialHasSuppUnitOpt, initialSuppUnitOpt) = (
+            request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean),
+            request.session.get(initialValueOfSuppUnit)
+          )
+          val (finalHasSuppUnit, finalSuppUnit)           = (
+            model.hasSupplementaryUnit.getOrElse(false),
+            model.supplementaryUnit.getOrElse("")
+          )
+          val isValueChanged                              =
+            initialHasSuppUnitOpt.exists(_ != finalHasSuppUnit) || initialSuppUnitOpt.exists(_ != finalSuppUnit)
+          val isSuppUnitRemoved                           = initialHasSuppUnitOpt.exists(_ && !finalHasSuppUnit)
+
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
             Redirect(routes.SingleRecordController.onPageLoad(recordId))
+              .addingToSession(dataUpdated -> isValueChanged.toString)
+              .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
+              .addingToSession(pageUpdated -> supplementaryUnit)
+
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }

@@ -23,7 +23,7 @@ import pages.AdviceStartPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.AdviceStartView
 
 import javax.inject.Inject
@@ -42,7 +42,7 @@ class AdviceStartController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated)
+      Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
     }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {

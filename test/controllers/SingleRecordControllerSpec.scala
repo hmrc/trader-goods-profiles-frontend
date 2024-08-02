@@ -33,7 +33,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.NotFoundException
-import utils.SessionData.{dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
@@ -134,6 +134,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         val view                                  = application.injector.instanceOf[SingleRecordView]
         val changesMade                           = request.session.get(dataUpdated).contains("true")
         val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           testRecordId,
@@ -142,7 +143,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           supplementaryUnitList,
           adviceList,
           changesMade,
-          changedPage
+          changedPage,
+          pageRemoved
         )(
           request,
           messages(application)

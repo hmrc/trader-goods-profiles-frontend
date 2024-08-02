@@ -18,6 +18,7 @@ package utils
 
 case object SessionData {
   val dataUpdated: String                    = "changesMade"
+  val dataRemoved: String                    = "valueRemoved"
   val pageUpdated: String                    = "changedPage"
   val traderReference: String                = "trader reference"
   val goodsDescription: String               = "goods description"
@@ -44,5 +45,7 @@ case object SessionData {
   val longerCommodityCodePage: String        = "longerCommodityCode"
   val namePage: String                       = "name"
   val emailPage: String                      = "email"
+  val initialValueOfHasSuppUnit: String      = "initialValueOfHasSuppUnit"
+  val initialValueOfSuppUnit: String         = "initialValueOfSuppUnit"
 
 }
