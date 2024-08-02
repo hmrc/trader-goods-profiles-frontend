@@ -51,6 +51,12 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
 
+  private val recordToReview = goodsRecordResponseWithReviewReason(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z"),
+    "inadequate"
+  ).copy(recordId = testRecordId)
+
   private val recordWithSupplementaryUnit = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
@@ -194,6 +200,25 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         hasSupplementaryUnit contains "Do you want to add the supplementary unit?"
 
+      }
+    }
+
+    "must redirect to Review Reason for a GET if goods record is marked 'toReview'" in {
+
+      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        .successful(recordToReview)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, singleRecordRoute)
+        val result  = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.ReviewReasonController.onPageLoad(testRecordId).url
       }
     }
 

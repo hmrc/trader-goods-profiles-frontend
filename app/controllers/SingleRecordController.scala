@@ -44,6 +44,7 @@ class SingleRecordController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
+  //noinspection ScalaStyle
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       for {
@@ -63,38 +64,43 @@ class SingleRecordController @Inject() (
             updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
         _                                  <- sessionRepository.set(updatedAnswersWithAll)
-      } yield {
-        val detailsList = SummaryListViewModel(
-          rows = Seq(
-            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
-            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
-            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
-            CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
-            StatusSummary.row(record.declarable)
+      } yield
+        if (record.toReview) {
+          Redirect(routes.ReviewReasonController.onPageLoad(recordId).url)
+        } else {
+          val detailsList = SummaryListViewModel(
+            rows = Seq(
+              TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
+              GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
+              CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
+              CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
+              StatusSummary.row(record.declarable)
+            )
           )
-        )
 
-        val categorisationList    = SummaryListViewModel(
-          rows = Seq(
-            CategorySummary.row(record.category.toString, record.recordId)
+          val categorisationList    = SummaryListViewModel(
+            rows = Seq(
+              CategorySummary.row(record.category.toString, record.recordId)
+            )
           )
-        )
-        val supplementaryUnitList = SummaryListViewModel(
-          rows = Seq(
-            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
-            SupplementaryUnitSummary
-              .row(record.supplementaryUnit, record.measurementUnit, recordId)
-          ).flatten
-        )
-        val adviceList            = SummaryListViewModel(
-          rows = Seq(
-            AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+          val supplementaryUnitList = SummaryListViewModel(
+            rows = Seq(
+              HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
+              SupplementaryUnitSummary
+                .row(record.supplementaryUnit, record.measurementUnit, recordId)
+            ).flatten
           )
-        )
-        val changesMade           = request.session.get(dataUpdated).contains("true")
-        val changedPage           = request.session.get(pageUpdated).getOrElse("")
+          val adviceList            = SummaryListViewModel(
+            rows = Seq(
+              AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+            )
+          )
+          val changesMade           = request.session.get(dataUpdated).contains("true")
+          val changedPage           = request.session.get(pageUpdated).getOrElse("")
 
-        Ok(view(recordId, detailsList, categorisationList, supplementaryUnitList, adviceList, changesMade, changedPage))
-      }
+          Ok(
+            view(recordId, detailsList, categorisationList, supplementaryUnitList, adviceList, changesMade, changedPage)
+          )
+        }
   }
 }
