@@ -51,6 +51,7 @@ class AssessmentController @Inject() (
     with I18nSupport
     with Logging {
 
+  //noinspection ScalaStyle
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
