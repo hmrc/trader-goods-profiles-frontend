@@ -31,6 +31,6 @@
     @govukSummaryList(supplementaryUnitList)
 
     @formHelper(action = routes.CyaSupplementaryUnitController.onSubmit(recordId)) {
-        @govukButton(ButtonViewModel(messages("site.continue")))
+        @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
 }
