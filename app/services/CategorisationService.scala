@@ -38,7 +38,6 @@ class CategorisationService @Inject() (
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
-  //noinspection ScalaStyle
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[UserAnswers] = {
