@@ -266,7 +266,7 @@ trait SpecBase
       updatedDateTime
     )
 
-  def goodsRecordResponseWithReviewReason(
+  def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
     updatedDateTime: Instant,
     reviewReason: String

@@ -48,7 +48,7 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
         reviewReasons.map { reviewReason =>
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordResponseWithReviewReason(Instant.now, Instant.now, reviewReason)))
+            .thenReturn(Future.successful(toReviewGoodsRecordResponse(Instant.now, Instant.now, reviewReason)))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
