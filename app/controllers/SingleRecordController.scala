@@ -39,7 +39,6 @@ class SingleRecordController @Inject() (
   sessionRepository: SessionRepository,
   identify: IdentifierAction,
   profileAuth: ProfileAuthenticateAction,
-  dataCleansingService: DataCleansingService,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   dataCleansingService: DataCleansingService,
@@ -107,7 +106,6 @@ class SingleRecordController @Inject() (
         //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
         dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
 
-        Ok(view(recordId, detailsList, categorisationList, supplementaryUnitList, adviceList, changesMade, changedPage))
         Ok(
           view(
             recordId,
@@ -119,7 +117,7 @@ class SingleRecordController @Inject() (
             changedPage,
             pageRemoved
           )
-        )
+        ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
     }
 }

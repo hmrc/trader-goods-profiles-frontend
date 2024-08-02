@@ -17,20 +17,23 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.helper.SupplementaryUnitUpdateJourney
-import models.{NormalMode, SupplementaryRequest}
+import models.{SupplementaryRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
 import play.api.inject.bind
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.MeasurementQuery
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaSupplementaryUnitView
@@ -131,6 +134,177 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
               verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
             }
           }
+        }
+
+        "must set dataUpdated to true if supplementary question is updated" in {
+
+          val userAnswers = UserAnswers(userAnswersId)
+            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitUpdatePage(testRecordId), "200")
+            .success
+            .value
+            .set(MeasurementQuery(testRecordId), "litres")
+            .success
+            .value
+
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[SessionRepository].toInstance(sessionRepository)
+            )
+            .build()
+
+          running(application) {
+            val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
+            val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+              .withSession(
+                initialValueOfHasSuppUnit -> "false"
+              )
+
+            val result: Future[Result] = controller.onSubmit(testRecordId)(request)
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+
+            session(result).get(dataUpdated) must be(Some("true"))
+            session(result).get(pageUpdated) must be(Some("supplementary unit"))
+          }
+        }
+
+        "must set dataUpdated to true if supplementary unit is updated" in {
+
+          val userAnswers = UserAnswers(userAnswersId)
+            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitUpdatePage(testRecordId), "200")
+            .success
+            .value
+            .set(MeasurementQuery(testRecordId), "litres")
+            .success
+            .value
+
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[SessionRepository].toInstance(sessionRepository)
+            )
+            .build()
+
+          running(application) {
+            val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
+            val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+              .withSession(
+                initialValueOfHasSuppUnit -> "true",
+                initialValueOfSuppUnit    -> "300"
+              )
+
+            val result: Future[Result] = controller.onSubmit(testRecordId)(request)
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+
+            session(result).get(dataUpdated) must be(Some("true"))
+            session(result).get(pageUpdated) must be(Some("supplementary unit"))
+          }
+        }
+
+        "must set dataUpdated to false if no updates made" in {
+
+          val userAnswers = UserAnswers(userAnswersId)
+            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitUpdatePage(testRecordId), "200")
+            .success
+            .value
+            .set(MeasurementQuery(testRecordId), "litres")
+            .success
+            .value
+
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[SessionRepository].toInstance(sessionRepository)
+            )
+            .build()
+
+          running(application) {
+            val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
+            val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+              .withSession(
+                initialValueOfHasSuppUnit -> "true",
+                initialValueOfSuppUnit    -> "200"
+              )
+
+            val result: Future[Result] = controller.onSubmit(testRecordId)(request)
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+
+            session(result).get(dataUpdated) must be(Some("false"))
+          }
+        }
+      }
+
+      "must set dataRemoved to true if supplementary unit is removed" in {
+
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(HasSupplementaryUnitUpdatePage(testRecordId), false)
+          .success
+          .value
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[SessionRepository].toInstance(sessionRepository)
+          )
+          .build()
+
+        running(application) {
+          val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
+          val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+            .withSession(
+              initialValueOfHasSuppUnit -> "true"
+            )
+
+          val result: Future[Result] = controller.onSubmit(testRecordId)(request)
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+
+          session(result).get(dataRemoved) must be(Some("true"))
+          session(result).get(pageUpdated) must be(Some("supplementary unit"))
         }
       }
 
