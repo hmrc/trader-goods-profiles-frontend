@@ -22,7 +22,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String,action:Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasSupplementaryUnit.title"))) {
     <h1 class="govuk-heading-l">@messages("hasSupplementaryUnit.h1")</h1>
@@ -32,7 +32,7 @@
 
     <h2 class="govuk-heading-m">@messages("hasSupplementaryUnit.h2")</h2>
 
-    @formHelper(action = routes.HasSupplementaryUnitController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = action) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

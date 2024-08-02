@@ -16,17 +16,23 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.SupplementaryUnitFormProvider
+
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.SupplementaryUnitPage
+import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
+import play.api.Logging
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecordCategorisationsQuery
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import queries.{MeasurementQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
+import services.{DataCleansingService, OttService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
 import views.html.SupplementaryUnitView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,17 +44,21 @@ class SupplementaryUnitController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  goodsRecordConnector: GoodsRecordConnector,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: SupplementaryUnitFormProvider,
+  ottService: OttService,
   val controllerComponents: MessagesControllerComponents,
   view: SupplementaryUnitView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -59,14 +69,16 @@ class SupplementaryUnitController @Inject() (
         categorisationInfo <- query.records.get(recordId)
       } yield {
         val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-        Ok(view(preparedForm, mode, recordId, measurementUnit))
+        val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+        Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
       }
 
       result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-  }
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(
@@ -76,7 +88,7 @@ class SupplementaryUnitController @Inject() (
               categorisationInfo <- query.records.get(recordId)
             } yield {
               val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction)))
             }
             result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
           },
@@ -85,6 +97,71 @@ class SupplementaryUnitController @Inject() (
               updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(SupplementaryUnitPage(recordId), mode, updatedAnswers))
+        )
+    }
+
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val userAnswerValue = request.userAnswers.get(SupplementaryUnitUpdatePage(recordId))
+
+      val preparedFormFuture: Future[(Form[String], String)] = userAnswerValue match {
+        case Some(value) =>
+          Future.successful((form.fill(value), ""))
+        case None        =>
+          goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
+            val formValue: String = record.supplementaryUnit match {
+              case Some(value) if value != 0 => value.toString
+              case _                         => ""
+            }
+            val measurementUnit   = record.measurementUnit.getOrElse("")
+            (form.fill(formValue), measurementUnit)
+          }
+      }
+
+      preparedFormFuture
+        .map { case (preparedForm, measurementUnit) =>
+          val formValue            = preparedForm.value.getOrElse(false)
+          val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+          Ok(view(preparedForm, mode, recordId, measurementUnit, onSubmitAction))
+            .addingToSession(
+              initialValueOfSuppUnit -> formValue.toString
+            )
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+        }
+        .recover { case ex: Exception =>
+          logger.error(s"Error occurred while fetching record for recordId: $recordId", ex)
+          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        }
+    }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => {
+            val result = for {
+              value <- ottService.getMeasurementUnit(request, recordId)
+            } yield {
+              val measurementUnit = value.getOrElse("")
+              BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction))
+            }
+            result.recover { case ex: Exception =>
+              logger.error(s"Error occurred while fetching measurement unit for recordId: $recordId", ex)
+              Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+            }
+          },
+          value =>
+            for {
+              measurementUnit               <- ottService.getMeasurementUnit(request, recordId)
+              updatedAnswers                <- Future.fromTry(request.userAnswers.set(SupplementaryUnitUpdatePage(recordId), value))
+              updatedAnswersWithMeasurement <-
+                Future.fromTry(updatedAnswers.set(MeasurementQuery(recordId), measurementUnit.getOrElse("")))
+              _                             <- sessionRepository.set(updatedAnswersWithMeasurement)
+            } yield Redirect(
+              navigator.nextPage(SupplementaryUnitUpdatePage(recordId), mode, updatedAnswersWithMeasurement)
+            )
         )
     }
 }

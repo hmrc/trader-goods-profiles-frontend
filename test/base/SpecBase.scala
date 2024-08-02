@@ -32,7 +32,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -136,6 +136,18 @@ trait SpecBase
       .success
       .value
       .set(EmailPage(testRecordId), "test@test.com")
+      .success
+      .value
+
+  def mandatorySupplementaryUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+      .success
+      .value
+      .set(SupplementaryUnitUpdatePage(testRecordId), "100")
+      .success
+      .value
+      .set(MeasurementQuery(testRecordId), "litres")
       .success
       .value
 
@@ -243,8 +255,8 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
-      false,
+      active = true,
+      toReview = false,
       None,
       "Not ready",
       None,
@@ -275,7 +287,7 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
+      active = true,
       toReview = true,
       reviewReason = Some(reviewReason),
       "Not ready",
@@ -306,8 +318,39 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
-      true,
+      active = true,
+      toReview = true,
+      None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
+  def goodsRecordResponseWithOutSupplementaryUnit(
+    createdDateTime: Instant,
+    updatedDateTime: Instant
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      Some(0.0),
+      Some("grams"),
+      Instant.now(),
+      None,
+      1,
+      active = true,
+      toReview = true,
       None,
       "Not ready",
       None,

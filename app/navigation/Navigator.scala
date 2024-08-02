@@ -74,6 +74,8 @@ class Navigator @Inject() () {
     case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
     case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
+    case p: HasSupplementaryUnitUpdatePage         => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
+    case p: SupplementaryUnitUpdatePage            => _ => routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -95,6 +97,17 @@ class Navigator @Inject() () {
       .map {
         case false => routes.SingleRecordController.onPageLoad(recordId)
         case true  => routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def navigateFromHasSupplementaryUnitUpdatePage(answers: UserAnswers, recordId: String): Call = {
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(HasSupplementaryUnitUpdatePage(recordId))
+      .map {
+        case false => routes.CyaSupplementaryUnitController.onPageLoad(recordId)
+        case true  => routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
@@ -281,6 +294,9 @@ class Navigator @Inject() () {
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
     case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case p: HasSupplementaryUnitUpdatePage         =>
+      navigateFromHasSupplementaryUnitUpdateCheck(p.recordId)
+    case p: SupplementaryUnitUpdatePage            => _ => routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => navigateFromLongerCommodityCode(p.recordId, p.shouldRedirectToCya, CheckMode)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -423,7 +439,7 @@ class Navigator @Inject() () {
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call =
+  private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call       =
     answers
       .get(HasSupplementaryUnitPage(recordId))
       .map {
@@ -434,6 +450,19 @@ class Navigator @Inject() () {
             routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
           }
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  private def navigateFromHasSupplementaryUnitUpdateCheck(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitUpdatePage(recordId))
+      .map {
+        case true  =>
+          if (answers.isDefined(SupplementaryUnitUpdatePage(recordId))) {
+            routes.CyaSupplementaryUnitController.onPageLoad(recordId)
+          } else {
+            routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId)
+          }
+        case false => routes.CyaSupplementaryUnitController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

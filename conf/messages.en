@@ -378,6 +378,21 @@ longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct 
 longerCommodityCode.error.invalid = Enter a real commodity code
 longerCommodityCode.change.hidden = LongerCommodityCode
 
+previousMovementRecords.title = Previous movement records
+previousMovementRecords.h1 = Previous movement records
+previousMovementRecords.p1 = Trader Goods Profile (TGP) has your previous movement information from 01/04/2023 to 19/06/2024 saved as individual records. HMRC have removed any duplicate records. You may want to check record information is correct before using them on a movement.
+previousMovementRecords.p2 = TGP has created trader references from information we already have. You can change the trader reference to anything to help you identify the record.
+previousMovementRecords.h2 = States
+previousMovementRecords.p3 = TGP will let you know if a record is ready to move under Internal Market Movement Information (IMMI) by using states. You’ll be able to see the states on your goods records list.
+previousMovementRecords.tableHeader.state = State
+previousMovementRecords.tableHeader.description = Description
+previousMovementRecords.state.immiReady = IMMI ready
+previousMovementRecords.description.immiReady = This record is ready to move under IMMI
+previousMovementRecords.state.notImmiReady = Not ready for IMMI
+previousMovementRecords.description.notImmiReady = You can not use these records to move using IMMI. You may be able to update the information or categorise the record to see if it is ready for IMMI.
+previousMovementRecords.state.notReadyForUse = Not ready for use
+previousMovementRecords.description.notReadyForUse = Not ready for use records have missing, expired or invalid information. You’ll need to complete the record to see if it is ready for IMMI.
+
 goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
@@ -425,7 +440,6 @@ singleRecord.adviceStatus.row = Advice received
 singleRecord.goodsProfile.link = Go to goods profile
 singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
-singleRecord.categorise = Categorise this good
 singleRecord.askForAdvice = Ask for advice
 
 hasCountryOfOriginChange.title = Change record information
@@ -514,9 +528,14 @@ goodsRecordSearchResultEmptyView.h1 = There are no matching results
 goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
 goodsRecordSearchResultEmptyView.p2.linkText = Go back to goods records
 
+cyaSupplementaryUnit.title = Check your answers
+cyaSupplementaryUnit.heading = Check your answers
+cyaSupplementaryUnit.h2 = Check if the details on this record are correct.
+
 
 sucessBanner.title = Success
 sucessBanner.heading = You have changed the {0}
+sucessBannerRemove.heading = You have removed the {0}
 sucessBanner.p1 = Contact
 sucessBanner.email = example@department.gov.uk
 sucessBanner.p2 = if you think there’s a problem.

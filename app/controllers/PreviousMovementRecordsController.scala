@@ -17,36 +17,30 @@
 package controllers
 
 import controllers.actions._
-import models.NormalMode
-import navigation.Navigator
-import pages.AdviceStartPage
+import models.GoodsRecordsPagination.firstPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import views.html.AdviceStartView
+import views.html.PreviousMovementRecordsView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
-class AdviceStartController @Inject() (
+class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: AdviceStartView,
-  navigator: Navigator
-) extends FrontendBaseController
+  view: PreviousMovementRecordsView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
-    }
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+    Ok(view())
+  }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-      Redirect(navigator.nextPage(AdviceStartPage(recordId), NormalMode, request.userAnswers))
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+    Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
   }
 }

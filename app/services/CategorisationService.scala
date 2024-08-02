@@ -60,7 +60,7 @@ class CategorisationService @Inject() (
                                                 request.affinityGroup,
                                                 Some(recordId),
                                                 getGoodsRecordResponse.countryOfOrigin,
-                                                LocalDate.now() //TODO where does DateOfTrade come from??
+                                                LocalDate.now()
                                               )
           originalCommodityCode             = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
           categorisationInfo               <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
@@ -103,7 +103,7 @@ class CategorisationService @Inject() (
                                   request.affinityGroup,
                                   Some(recordId),
                                   getGoodsRecordResponse.countryOfOrigin,
-                                  LocalDate.now() //TODO where does DateOfTrade come from??
+                                  LocalDate.now()
                                 )
       originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
       categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
@@ -121,7 +121,6 @@ class CategorisationService @Inject() (
     } yield updatedAnswers
   }
 
-  //TODO this will be refactored out in TGP-1600 but solves the immediate problem
   def updateCategorisationWithUpdatedCommodityCode(
     request: DataRequest[_],
     recordId: String
@@ -141,7 +140,7 @@ class CategorisationService @Inject() (
                                             request.affinityGroup,
                                             Some(recordId),
                                             getGoodsRecordResponse.countryOfOrigin,
-                                            LocalDate.now() //TODO where does DateOfTrade come from??
+                                            LocalDate.now()
                                           )
       categorisationInfo               <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
       updatedAnswers                   <-
