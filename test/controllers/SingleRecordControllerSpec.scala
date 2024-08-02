@@ -229,7 +229,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 

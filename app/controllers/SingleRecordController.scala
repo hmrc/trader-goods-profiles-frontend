@@ -81,46 +81,46 @@ class SingleRecordController @Inject() (
             )
           )
 
-        val categoryValue         = record.category match {
-          case 1 => "Category 1"
-          case 2 => "Category 2"
-          case 3 => "Standard goods"
-        }
-        val categorisationList    = SummaryListViewModel(
-          rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId)
+          val categoryValue         = record.category match {
+            case 1 => "Category 1"
+            case 2 => "Category 2"
+            case 3 => "Standard goods"
+          }
+          val categorisationList    = SummaryListViewModel(
+            rows = Seq(
+              CategorySummary.row(categoryValue, record.recordId)
+            )
           )
-        )
-        val supplementaryUnitList = SummaryListViewModel(
-          rows = Seq(
-            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
-            SupplementaryUnitSummary
-              .row(record.supplementaryUnit, record.measurementUnit, recordId)
-          ).flatten
-        )
-        val adviceList            = SummaryListViewModel(
-          rows = Seq(
-            AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+          val supplementaryUnitList = SummaryListViewModel(
+            rows = Seq(
+              HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
+              SupplementaryUnitSummary
+                .row(record.supplementaryUnit, record.measurementUnit, recordId)
+            ).flatten
           )
-        )
-        val changesMade           = request.session.get(dataUpdated).contains("true")
-        val pageRemoved           = request.session.get(dataRemoved).contains("true")
-        val changedPage           = request.session.get(pageUpdated).getOrElse("")
-        //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
-        dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+          val adviceList            = SummaryListViewModel(
+            rows = Seq(
+              AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+            )
+          )
+          val changesMade           = request.session.get(dataUpdated).contains("true")
+          val pageRemoved           = request.session.get(dataRemoved).contains("true")
+          val changedPage           = request.session.get(pageUpdated).getOrElse("")
+          //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
+          dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
 
-        Ok(
-          view(
-            recordId,
-            detailsList,
-            categorisationList,
-            supplementaryUnitList,
-            adviceList,
-            changesMade,
-            changedPage,
-            pageRemoved
-          )
-        ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
-      }
+          Ok(
+            view(
+              recordId,
+              detailsList,
+              categorisationList,
+              supplementaryUnitList,
+              adviceList,
+              changesMade,
+              changedPage,
+              pageRemoved
+            )
+          ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
+        }
     }
 }
