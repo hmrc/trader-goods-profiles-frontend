@@ -132,9 +132,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should not call for category assessments if they are already present, then return successful updated answers" in {
       val expectedRecordCategorisations =
-        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
+        RecordCategorisations(
+          Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0, Some("comcode")))
+        )
 
-      val userAnswers                   = emptyUserAnswers
+      val userAnswers = emptyUserAnswers
         .set(RecordCategorisationsQuery, expectedRecordCategorisations)
         .success
         .value

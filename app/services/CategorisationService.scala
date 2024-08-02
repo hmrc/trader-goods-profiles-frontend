@@ -40,7 +40,7 @@ class CategorisationService @Inject() (
 
   //noinspection ScalaStyle
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
-                                                                       hc: HeaderCarrier
+    hc: HeaderCarrier
   ): Future[UserAnswers] = {
 
     val recordCategorisations =
@@ -52,21 +52,20 @@ class CategorisationService @Inject() (
     recordCategorisations.records.get(recordId) match {
       case Some(record) =>
         if (originalCommodityCodeOpt.isEmpty) {
-          val updatedRecord = record.copy(originalCommodityCode = Some(record.commodityCode))
-          val updatedRecordsMap = recordCategorisations.records + (recordId -> updatedRecord)
+          val updatedRecord                = record.copy(originalCommodityCode = Some(record.commodityCode))
+          val updatedRecordsMap            = recordCategorisations.records + (recordId -> updatedRecord)
           val updatedRecordCategorisations = RecordCategorisations(updatedRecordsMap)
 
           for {
-            userAnswersWithOriginal <- Future.fromTry(request.userAnswers.set(RecordCategorisationsQuery, updatedRecordCategorisations))
-            _ <- sessionRepository.set(userAnswersWithOriginal)
-          } yield {
-            userAnswersWithOriginal
-          }
+            userAnswersWithOriginal <-
+              Future.fromTry(request.userAnswers.set(RecordCategorisationsQuery, updatedRecordCategorisations))
+            _                       <- sessionRepository.set(userAnswersWithOriginal)
+          } yield userAnswersWithOriginal
         } else {
           Future.successful(request.userAnswers)
         }
 
-      case None    =>
+      case None =>
         for {
           getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature                <- ottConnector.getCategorisationInfo(

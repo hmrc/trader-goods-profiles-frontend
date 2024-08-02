@@ -114,7 +114,10 @@ class LongerCommodityCodeController @Inject() (
     request.userAnswers
       .get(RecordCategorisationsQuery)
       .flatMap(_.records.get(recordId))
-      .flatMap(_.originalCommodityCode.map(_.reverse.dropWhile(char => char == '0' || char == "0").reverse.padTo(validLength, "0").mkString))
+      .flatMap(
+        _.originalCommodityCode
+          .map(_.reverse.dropWhile(char => char == '0' || char == "0").reverse.padTo(validLength, "0").mkString)
+      )
 
   private def updateAnswersAndProceedWithJourney(
     mode: Mode,
