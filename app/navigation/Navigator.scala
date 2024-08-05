@@ -21,7 +21,7 @@ import models.GoodsRecordsPagination.firstPage
 import models._
 import pages._
 import play.api.mvc.Call
-import queries.CategorisationDetailsQuery
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
@@ -75,6 +75,7 @@ class Navigator @Inject() () {
     case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
     case p: CategorisationPreparationPage          => _ => routes.CategoryGuidanceController.onPageLoad2(p.recordId)
+    case p: AssessmentPage2                        => navigateFromAssessment2(p)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -222,14 +223,23 @@ class Navigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  // TODO next - 3 cases + error handling
-  // if answer is yes
-  //  if next question exists
-  //    go to assessmentpage
-  //  else
-  //    go to cya
-  // else
-  // go to cya
+  private def navigateFromAssessment2(assessmentPage: AssessmentPage2)(answers: UserAnswers): Call = {
+    val recordId  = assessmentPage.recordId
+    val nextIndex = assessmentPage.index + 1
+
+    {
+      for {
+        categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
+        assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        assessmentAnswer   <- answers.get(assessmentPage)
+      } yield assessmentAnswer match {
+        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount =>
+          routes.AssessmentController.onPageLoad2(recordId, nextIndex)
+        case _                                                          =>
+          routes.CyaCategorisationController.onPageLoad(recordId)
+      }
+    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     if (!assessmentPage.shouldRedirectToCya) {

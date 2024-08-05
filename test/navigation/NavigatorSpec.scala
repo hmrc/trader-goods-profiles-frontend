@@ -23,7 +23,7 @@ import models.GoodsRecordsPagination.firstPage
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import pages._
-import queries.CategorisationDetailsQuery
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
@@ -534,9 +534,8 @@ class NavigatorSpec extends SpecBase {
       "in Categorisation Journey 2" - {
 
         "must go from categorisation preparation to category guidance page" in {
-          val answers = emptyUserAnswers
 
-          navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, answers) mustEqual
+          navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
             routes.CategoryGuidanceController.onPageLoad2(testRecordId)
 
         }
@@ -545,6 +544,84 @@ class NavigatorSpec extends SpecBase {
 
           navigator.nextPage(CategoryGuidancePage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
             routes.AssessmentController.onPageLoad2(testRecordId, firstAssessmentIndex)
+
+        }
+
+        "must go from assessment page" - {
+
+          "to the next assessment if answer is yes and there are more assessments" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+
+            navigator.nextPage(AssessmentPage2(testRecordId, 0), NormalMode, userAnswers) mustEqual
+              routes.AssessmentController.onPageLoad2(testRecordId, 1)
+
+          }
+
+          "to the check your answers page" - {
+            "if answer is yes and there are no more assessments" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad(testRecordId)
+
+            }
+
+            "if the Assessment answer is no" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad(testRecordId)
+
+            }
+
+          }
+
+          "to journey recovery" - {
+
+            "if categorisation details are not defined" in {
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), NormalMode, emptyUserAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+            "if assessment answer is not defined" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), NormalMode, userAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+          }
 
         }
 
