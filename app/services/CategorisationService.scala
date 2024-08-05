@@ -18,14 +18,14 @@ package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.{CategorisationInfo, CategorisationInfo2}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import models.requests.DataRequest
-import models.{AssessmentAnswer, UserAnswers}
-import pages.{AssessmentPage, InconsistentUserAnswersException}
-import queries.{CategorisationDetailsQuery, CommodityUpdateQuery, LongerCommodityQuery}
+import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
+import pages.{AssessmentPage, AssessmentPage2, InconsistentUserAnswersException}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, CommodityUpdateQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.firstAssessmentIndex
+import utils.Constants.{Category1, Category2, StandardGoods, firstAssessmentIndex}
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -64,6 +64,23 @@ class CategorisationService @Inject() (
     }
 
   }
+
+// makeSureAllQuestionsAreAnswered
+  //
+
+  def calculateResult(categorisationInfo: CategorisationInfo2,
+                      userAnswers: UserAnswers, recordId: String): Int = {
+
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    val getFirstNo = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
+
+    getFirstNo match {
+      case Some(details) => details.question.category
+      case _ => StandardGoods
+    }
+
+    }
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
