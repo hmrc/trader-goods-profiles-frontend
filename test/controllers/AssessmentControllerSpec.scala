@@ -49,7 +49,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
   private def recordId         = testRecordId
   private def index            = 0
   private def assessmentRoute  = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
-  private def assessmentRoute2 = routes.AssessmentController.onPageLoad2(testRecordId, 0).url
+  private def assessmentRoute2 = routes.AssessmentController.onPageLoad2(NormalMode, testRecordId, 0).url
 
   "AssessmentController 2" - {
 

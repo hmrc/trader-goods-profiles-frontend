@@ -545,7 +545,7 @@ class NavigatorSpec extends SpecBase {
         "must go from category guidance to the first assessment page" in {
 
           navigator.nextPage(CategoryGuidancePage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
-            routes.AssessmentController.onPageLoad2(testRecordId, firstAssessmentIndex)
+            routes.AssessmentController.onPageLoad2(NormalMode, testRecordId, firstAssessmentIndex)
 
         }
 
@@ -562,7 +562,7 @@ class NavigatorSpec extends SpecBase {
                 .value
 
             navigator.nextPage(AssessmentPage2(testRecordId, 0), NormalMode, userAnswers) mustEqual
-              routes.AssessmentController.onPageLoad2(testRecordId, 1)
+              routes.AssessmentController.onPageLoad2(NormalMode, testRecordId, 1)
 
           }
 
@@ -584,7 +584,7 @@ class NavigatorSpec extends SpecBase {
                   .value
 
               navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
 
             }
 
@@ -599,7 +599,7 @@ class NavigatorSpec extends SpecBase {
                   .value
 
               navigator.nextPage(AssessmentPage2(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
 
             }
 
@@ -1705,6 +1705,106 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad()
           }
+        }
+
+      }
+
+      "in Categorisation Journey 2" - {
+
+        "must go from assessment page" - {
+
+          "to the next assessment if answer is yes and there are more assessments and the next one is not answered" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+
+            navigator.nextPage(AssessmentPage2(testRecordId, 0), CheckMode, userAnswers) mustEqual
+              routes.AssessmentController.onPageLoad2(CheckMode, testRecordId, 1)
+
+          }
+
+          "to the check your answers page" - {
+            "if answer is yes and there are no more assessments" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if answer is yes and there are more assessments and the next one is already answered" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), CheckMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if the Assessment answer is no" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), CheckMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+          }
+
+          "to journey recovery" - {
+
+            "if categorisation details are not defined" in {
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), CheckMode, emptyUserAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+            "if assessment answer is not defined" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 0), CheckMode, userAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+          }
+
         }
 
       }

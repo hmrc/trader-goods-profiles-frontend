@@ -28,6 +28,7 @@ import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import queries.{CategorisationDetailsQuery, RecategorisingQuery, CategorisationDetailsQuery2}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
@@ -109,6 +110,34 @@ class CyaCategorisationController @Inject() (
       }
   }
 
+  def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+
+    categorisationInfo.map{ info =>
+      val categorisationRows = info.categoryAssessments
+        .flatMap(assessment =>
+          AssessmentsSummary.row2(
+            recordId,
+            request.userAnswers,
+            assessment,
+            info.categoryAssessments.indexOf(assessment)
+          )
+        )
+
+      val categorisationList = SummaryListViewModel(
+        rows = categorisationRows
+      )
+
+      Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
+
+    }.getOrElse(
+      //TODO errors propa
+      Redirect(routes.JourneyRecoveryController.onPageLoad())
+
+    )
+
+  }
+
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
@@ -148,4 +177,5 @@ class CyaCategorisationController @Inject() (
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
+
 }
