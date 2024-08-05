@@ -62,8 +62,6 @@ class Navigator @Inject() () {
     case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: CategoryGuidancePage                   =>
-      _ => routes.AssessmentController.onPageLoad2(p.recordId, firstAssessmentIndex)
     case p: CyaCategorisationPage                  =>
       _ => routes.CategorisationResultController.onPageLoad(p.recordId, Scenario.getScenario(p.categoryRecord))
     case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
@@ -75,6 +73,8 @@ class Navigator @Inject() () {
     case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
     case p: CategorisationPreparationPage          => _ => routes.CategoryGuidanceController.onPageLoad2(p.recordId)
+    case p: CategoryGuidancePage =>
+      _ => routes.AssessmentController.onPageLoad2(NormalMode, p.recordId, firstAssessmentIndex)
     case p: AssessmentPage2                        => navigateFromAssessment2(p)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
@@ -234,9 +234,9 @@ class Navigator @Inject() () {
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
         case AssessmentAnswer2.Exemption if nextIndex < assessmentCount =>
-          routes.AssessmentController.onPageLoad2(recordId, nextIndex)
+          routes.AssessmentController.onPageLoad2(NormalMode, recordId, nextIndex)
         case _                                                          =>
-          routes.CyaCategorisationController.onPageLoad(recordId)
+          routes.CyaCategorisationController.onPageLoad2(recordId)
       }
     }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
   }
@@ -303,6 +303,7 @@ class Navigator @Inject() () {
       _ => navigateFromLongerCommodityCode(p.recordId, p.shouldRedirectToCya, CheckMode)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       navigateFromHasCorrectGoodsLongerCommodityCodeCheck(p.recordId, p.needToRecategorise)
+    case p: AssessmentPage2 => navigateFromAssessmentCheck2(p)
     case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -399,6 +400,26 @@ class Navigator @Inject() () {
         case false => routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromAssessmentCheck2(assessmentPage: AssessmentPage2)(answers: UserAnswers): Call = {
+    val recordId = assessmentPage.recordId
+    val nextIndex = assessmentPage.index + 1
+
+    {
+      for {
+        categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
+        assessmentCount = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        assessmentAnswer <- answers.get(assessmentPage)
+        nextAnswer = answers.get(AssessmentPage2(recordId, nextIndex))
+      } yield assessmentAnswer match {
+        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount && nextAnswer.isEmpty =>
+          routes.AssessmentController.onPageLoad2(CheckMode, recordId, nextIndex)
+
+        case _ =>
+          routes.CyaCategorisationController.onPageLoad2(recordId)
+      }
+    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     val recordId = assessmentPage.recordId

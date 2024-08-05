@@ -52,7 +52,7 @@ class AssessmentController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad2(recordId: String, index: Int): Action[AnyContent] =
+  def onPageLoad2(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       request.userAnswers
         .get(CategorisationDetailsQuery2(recordId))
@@ -66,7 +66,7 @@ class AssessmentController @Inject() (
               case None        => form
             }
 
-            Ok(view(preparedForm, NormalMode, recordId, index, listItems, categorisationInfo.commodityCode))
+            Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode))
           }
         }
         .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))

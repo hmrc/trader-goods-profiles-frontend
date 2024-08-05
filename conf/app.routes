@@ -144,7 +144,8 @@ POST        /update-record/:recordId/categorisation/category-assessment/:index  
 GET         /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
 POST        /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
 
-GET         /update-record/:recordId/categorisation/category-assessment2/:index              controllers.AssessmentController.onPageLoad2(recordId: String, index: Int)
+GET         /update-record/:recordId/categorisation/category-assessment2/:index              controllers.AssessmentController.onPageLoad2(mode: Mode = NormalMode, recordId: String, index: Int)
+GET         /update-record/:recordId/categorisation/category-assessment2/:index/check        controllers.AssessmentController.onPageLoad2(mode: Mode = CheckMode, recordId: String, index: Int)
 
 GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
 
@@ -156,6 +157,7 @@ GET         /update-record/:recordId/categorisation/result/standard-no-assessmen
 
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
+GET         /update-record/:recordId/categorisation2/check-your-answers                      controllers.CyaCategorisationController.onPageLoad2(recordId:String)
 
 GET        /update-record/:recordId/categorisation/categorisationPreparation                controllers.CategorisationPreparationController.startCategorisation(recordId:String)
 
