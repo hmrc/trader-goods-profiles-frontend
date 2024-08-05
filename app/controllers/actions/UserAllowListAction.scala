@@ -18,15 +18,14 @@ package controllers.actions
 
 import com.google.inject.ImplementedBy
 import connectors.UserAllowListConnector
+import controllers.routes
 import models.requests.IdentifierRequest
-import play.api.libs.json.Json
-import play.api.mvc.Results.Forbidden
-import play.api.mvc.{ActionRefiner, Result}
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{ActionFilter, Result}
 import play.api.{Configuration, Logging}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,39 +37,25 @@ class UserAllowListActionImpl @Inject() (
 ) extends UserAllowListAction
     with Logging {
 
-  override def refine[A](request: IdentifierRequest[A]): Future[Either[Result, IdentifierRequest[A]]] = {
+  override protected def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     val userAllowListEnabled       = config.get[Boolean]("features.user-allow-list-enabled")
 
     if (userAllowListEnabled) {
       userAllowListConnector
         .check("private-beta", request.eori)
-        .flatMap {
+        .map {
           case false =>
-            Future.successful(
-              Left(
-                Forbidden(
-                  Json.toJson(
-                    UUID.randomUUID(),
-                    "FORBIDDEN",
-                    "This service is in private beta and not available to the public. We will aim to open the service to the public soon."
-                  )
-                )
-              )
-            )
-          case true  => Future.successful(Right(request))
-        } recoverWith { case e: Exception =>
-        logger.warn(
-          s"[UserAllowListAction] - Exception when checking if user was on the allow list",
-          e
-        )
-        Future.failed(e)
-      }
+            logger.info(s"trader with eori: ${request.eori} does not have access to TGP")
+            Some(Redirect(routes.UnauthorisedController.onPageLoad))
+          case true  => None
+        }
     } else {
-      Future.successful(Right(request))
+      logger.info("user allow list feature flag is disabled, always returning successfully")
+      Future.successful(None)
     }
   }
 }
 
 @ImplementedBy(classOf[UserAllowListActionImpl])
-trait UserAllowListAction extends ActionRefiner[IdentifierRequest, IdentifierRequest]
+trait UserAllowListAction extends ActionFilter[IdentifierRequest]

@@ -19,18 +19,62 @@ package controllers.actions
 import base.SpecBase
 import connectors.UserAllowListConnector
 import models.requests.IdentifierRequest
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.Configuration
 import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
+import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class UserAllowListActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(mockUserAllowListConnector: UserAllowListConnector)
-      extends UserAllowListActionImpl(mockUserAllowListConnector) {
-    def callRefine[A](request: IdentifierRequest[A]): Future[Either[Result, IdentifierRequest[A]]] = refine(request)
+  class Harness(mockUserAllowListConnector: UserAllowListConnector, config: Configuration)
+      extends UserAllowListActionImpl(mockUserAllowListConnector, config) {
+    def callFilter[A](request: IdentifierRequest[A]): Future[Option[Result]] = filter(request)
   }
 
-  "refine action" - {}
+  private val connector             = mock[UserAllowListConnector]
+  private val appConfig             = mock[Configuration]
+  implicit val hc: HeaderCarrier    = HeaderCarrier()
+  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
+  "refine action" - {
+    "return a None if the user is on the user allow list" in {
+      val request = IdentifierRequest(FakeRequest(), "1234", "eori", AffinityGroup.Individual)
+      when(connector.check(any, any)(any)).thenReturn(Future.successful(true))
+      when(appConfig.get[Boolean]("features.user-allow-list-enabled")).thenReturn(true)
+
+      val harness = new Harness(connector, appConfig)
+      val result  = harness.callFilter(request).futureValue
+
+      result mustBe None
+    }
+
+    "should redirect a user to the /unauthorised-service-user page" in {
+      val request = IdentifierRequest(FakeRequest(), "1234", "eori", AffinityGroup.Individual)
+      when(connector.check(any, any)(any)).thenReturn(Future.successful(true))
+      when(appConfig.get[Boolean]("features.user-allow-list-enabled")).thenReturn(false)
+
+      val harness = new Harness(connector, appConfig)
+      val result  = harness.callFilter(request).futureValue
+
+      result mustBe Some(Redirect("/problem/technical-issue"))
+    }
+
+    "should return a None if the userAllowListEnabled feature flag is false" in {
+      val request = IdentifierRequest(FakeRequest(), "1234", "eori", AffinityGroup.Individual)
+      when(appConfig.get[Boolean]("features.user-allow-list-enabled")).thenReturn(false)
+
+      val harness = new Harness(connector, appConfig)
+      val result  = harness.callFilter(request).futureValue
+
+      result mustBe None
+      verifyNoInteractions(connector)
+    }
+  }
 }

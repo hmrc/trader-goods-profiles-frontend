@@ -19,13 +19,12 @@ package controllers.actions
 import models.requests.IdentifierRequest
 import play.api.mvc.Result
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class FakeUserAllowListAction extends UserAllowListAction {
 
-  override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, IdentifierRequest[A]]] =
-    Future.successful(Right(request))
-
   override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
+  override protected def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = Future(None)
 }

@@ -17,23 +17,24 @@
 package controllers
 
 import connectors.TraderProfileConnector
-import controllers.actions.IdentifierAction
-import javax.inject.Inject
+import controllers.actions.{IdentifierAction, UserAllowListAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class IndexController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   identify: IdentifierAction,
-  traderProfileConnector: TraderProfileConnector
+  traderProfileConnector: TraderProfileConnector,
+  userAllowListAction: UserAllowListAction
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
+  def onPageLoad: Action[AnyContent] = (identify andThen userAllowListAction).async { implicit request =>
     traderProfileConnector.checkTraderProfile(request.eori).map {
       case true  => Redirect(routes.HomePageController.onPageLoad())
       case false => Redirect(routes.ProfileSetupController.onPageLoad())
