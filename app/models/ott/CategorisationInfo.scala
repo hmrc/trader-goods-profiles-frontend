@@ -18,9 +18,9 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.AssessmentAnswer.NotAnsweredYet
-import models.UserAnswers
+import models.{AnsweredQuestions, UserAnswers}
 import models.ott.response.OttResponse
-import pages.AssessmentPage
+import pages.{AssessmentPage, AssessmentPage2}
 import play.api.libs.json.{Json, OFormat}
 
 final case class CategorisationInfo2(
@@ -35,6 +35,15 @@ final case class CategorisationInfo2(
     } else {
       Some(categoryAssessmentsThatNeedAnswers(index))
     }
+
+  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] = {
+    categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
+      AnsweredQuestions(
+        assessment._2,
+        assessment._1,
+        userAnswers.get(AssessmentPage2(recordId, assessment._2))
+      ))
+  }
 
 }
 

@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.AssessmentAnswer
+import models.{AssessmentAnswer, AssessmentAnswer2}
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import models.ott.response._
@@ -33,13 +33,15 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.AssessmentPage
+import pages.{AssessmentPage, AssessmentPage2}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Constants.{Category1, Category2, StandardGoods}
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -173,6 +175,52 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       actualException.getMessage mustEqual "Could not build categorisation info"
+    }
+
+  }
+
+  "calculateAnswer" - {
+
+    "return Standard Goods if all answers are Yes" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+        .success.value
+
+      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual StandardGoods
+
+    }
+
+    "return Category 1 if a category 1 question is No" in {
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+        .success.value
+
+      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category1
+
+    }
+
+    "return Category 2 if a category 2 question is No" in {
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+        .success.value
+        .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+        .success.value
+
+      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category2
+
     }
 
   }
