@@ -85,7 +85,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         val effectiveTo   = effectiveFrom.plusSeconds(99)
         val commodity     =
           Commodity(
-            "030821",
+            "1704900000",
             List(
               "Sea urchins",
               "Live, fresh or chilled",
@@ -97,7 +97,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CommodityCodeUpdatePage(testRecordId), "030821")
+            .set(CommodityCodeUpdatePage(testRecordId), "170490")
             .success
             .value
             .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
@@ -112,7 +112,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId)
 
-        result mustEqual Right(commodity)
+        result mustBe Right(commodity.copy(commodityCode = "170490"))
       }
     }
 
