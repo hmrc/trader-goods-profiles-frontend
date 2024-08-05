@@ -43,7 +43,7 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
       "must OK and display correct view for each review reason" in {
 
-        val reviewReasons = Seq("mismatch", "inadequate", "unclear", "commodity")
+        val reviewReasons = Seq("mismatch", "inadequate", "unclear", "commodity", "measure")
 
         reviewReasons.map { reviewReason =>
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]

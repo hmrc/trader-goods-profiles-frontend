@@ -559,6 +559,10 @@ reviewReason.commodity.p1 = The commodity code has expired. If you want to see i
 reviewReason.commodity.li1 = change the commodity code
 reviewReason.commodity.li2 = categorise the goods
 
+reviewReason.measure.title = There is a problem with this record
+reviewReason.measure.heading = There is a problem with this record
+reviewReason.measure.p1 = The commodity code or restrictions have changed. You''ll need to categorise the record.
+
 reviewReason.unclear.title = This record needs to be reviewed
 reviewReason.unclear.heading = This record needs to be reviewed
 reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you''ll need to amend the goods description.
