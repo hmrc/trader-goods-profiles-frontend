@@ -60,7 +60,7 @@ object UpdateGoodsRecord {
   ): EitherNec[ValidationError, String] =
     (
       Right(recordId),
-      getGoodsDescription(answers, recordId)
+      answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
     ).parMapN((_, value) => value)
 
   def validateCommodityCode(
@@ -108,13 +108,6 @@ object UpdateGoodsRecord {
         Right(commodity)
       case Left(errors)                                                 => Left(errors)
       case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodeUpdatePage(recordId))))
-    }
-
-  private def getGoodsDescription(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
-    answers.getPageValue(HasGoodsDescriptionChangePage(recordId)) match {
-      case Right(true)  => answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
-      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasGoodsDescriptionChangePage(recordId))))
-      case Left(errors) => Left(errors)
     }
 
   private def getCountryOfOrigin(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
