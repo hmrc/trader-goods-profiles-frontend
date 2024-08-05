@@ -105,7 +105,7 @@ object UpdateGoodsRecord {
   ): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(CommodityUpdateQuery(recordId)) match {
       case Right(commodity) if commodity.commodityCode.startsWith(code) =>
-        Right(commodity)
+        Right(commodity.copy(commodityCode = code))
       case Left(errors)                                                 => Left(errors)
       case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodeUpdatePage(recordId))))
     }
