@@ -19,7 +19,6 @@ package services
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, StandardGoodsScenario}
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import models.ott.response._
@@ -28,6 +27,7 @@ import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, 
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import models.{AssessmentAnswer, RecordCategorisations}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, StandardGoodsScenario}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -41,7 +41,6 @@ import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerC
 import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.{Category1AsInt, Category2AsInt, StandardGoodsAsInt}
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -120,7 +119,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "create a categorisation info record for the given commodity code" in {
 
       await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
-        CategorisationInfo2("some comcode", Seq(), Seq())
+        CategorisationInfo2("1234567890", Seq.empty, Seq.empty)
 
       withClue("should ask for details for this commodity and country from OTT") {
         verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(

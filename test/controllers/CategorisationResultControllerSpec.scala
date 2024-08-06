@@ -18,10 +18,10 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.{Category1, Category2, Standard}
+import models.{Category1, Category1Scenario, Category2, Category2Scenario, Standard, StandardGoodsScenario}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CategorisationResultView
+import views.html.{CategorisationResultView, CategorisationResultView2}
 
 class CategorisationResultControllerSpec extends SpecBase {
 
@@ -81,4 +81,74 @@ class CategorisationResultControllerSpec extends SpecBase {
       }
     }
   }
+
+  "CategorisationResult Controller2" - {
+
+    "must return OK and the correct view for a GET" - {
+
+      "Category1" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, Category1Scenario).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView2]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, Category1Scenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "Category2" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, Category2Scenario).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView2]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, Category2Scenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "Standard" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, StandardGoodsScenario).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView2]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, StandardGoodsScenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+    }
+  }
+
 }

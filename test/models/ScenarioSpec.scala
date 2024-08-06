@@ -16,13 +16,28 @@
 
 package models
 
+import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
+import utils.Constants.{Category1AsInt, Category2AsInt, StandardGoodsAsInt}
 
-class ScenarioSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class ScenarioSpec extends SpecBase {
+
+  ".getResult" - {
+
+    "must return 3 for standard goods scenario" in {
+      Scenario2.getResultAsInt(StandardGoodsScenario) mustBe StandardGoodsAsInt
+    }
+
+    "must return 2 for category 2 scenario" in {
+      Scenario2.getResultAsInt(Category2Scenario) mustBe Category2AsInt
+    }
+
+    "must return 1 for category 1 scenario" in {
+      Scenario2.getResultAsInt(Category1Scenario) mustBe Category1AsInt
+    }
+
+  }
 
   ".getRedirectScenarios" - {
 

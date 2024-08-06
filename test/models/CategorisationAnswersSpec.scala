@@ -75,6 +75,20 @@ class CategorisationAnswersSpec extends SpecBase {
 
     "must return errors" - {
 
+      "when no questions are answered" in {
+
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        val result = CategorisationAnswers2.build(answers, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only MissingAssessmentAnswers(AssessmentPage2(testRecordId, 0))
+        }
+      }
+
       "when additional assessments have been answered after a NoExemption" in {
 
         val answers = emptyUserAnswers

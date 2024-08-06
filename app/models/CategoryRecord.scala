@@ -67,7 +67,6 @@ object CategoryRecord2 {
     )
   }
 
-  //TODO duplicated function
   private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
     userAnswers
       .getPageValue(CategorisationDetailsQuery2(recordId))

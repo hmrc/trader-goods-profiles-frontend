@@ -20,6 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
+import models.{Category1Scenario, CategoryRecord, CategoryRecord2, Commodity, GoodsRecord, UpdateGoodsRecord}
 import models.{CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -319,6 +320,51 @@ class GoodsRecordConnectorSpec
     }
   }
 
+  ".updateCategoryAndComcodeForGoodsRecord2" - {
+
+    val goodsRecord = CategoryRecord2(
+      eori = testEori,
+      recordId = testRecordId,
+      category = Category1Scenario,
+      categoryAssessmentsWithExemptions = 3,
+      comcode = "1234567890"
+    )
+
+    val updateRecordRequest = UpdateRecordRequest(
+      testEori,
+      testRecordId,
+      testEori,
+      category = Some(1),
+      supplementaryUnit = None,
+      measurementUnit = None,
+      comcode = Some("1234567890")
+    )
+
+    "must update a goods record with a category" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok())
+      )
+
+      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, goodsRecord).futureValue
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, goodsRecord).failed.futureValue
+    }
+  }
+
   ".updateCategoryAndComcodeForGoodsRecord" - {
 
     def goodsRecord(longerCommodityCode: Option[String] = None) = CategoryRecord(
@@ -364,7 +410,9 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord(longerCommodityCode)).futureValue
+      connector
+        .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord(longerCommodityCode))
+        .futureValue
     }
 
     "must return a failed future when the server returns an error" in {

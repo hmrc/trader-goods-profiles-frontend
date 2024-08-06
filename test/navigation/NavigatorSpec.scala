@@ -23,15 +23,26 @@ import models.GoodsRecordsPagination.firstPage
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar.mock
 import queries.RecordCategorisationsQuery
 import pages._
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
-class NavigatorSpec extends SpecBase {
+class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
-  val navigator = new Navigator
+  private val mockCategorisationService = mock[CategorisationService]
+  private val navigator                 = new Navigator(mockCategorisationService)
+
+  override def beforeEach(): Unit = {
+    reset(mockCategorisationService)
+    super.beforeEach()
+  }
 
   "Navigator" - {
 
@@ -623,6 +634,62 @@ class NavigatorSpec extends SpecBase {
                 routes.JourneyRecoveryController.onPageLoad()
             }
 
+          }
+
+        }
+
+        "must go from check your answers page" - {
+
+          "to category 1 result when categorisation result is so" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                .success
+                .value
+
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+
+            navigator.nextPage(CyaCategorisationPage2(testRecordId), NormalMode, userAnswers) mustBe
+              routes.CategorisationResultController.onPageLoad2(testRecordId, Category1Scenario)
+          }
+
+          "to category 2 result when categorisation result is so" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                .success
+                .value
+
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
+
+            navigator.nextPage(CyaCategorisationPage2(testRecordId), NormalMode, userAnswers) mustBe
+              routes.CategorisationResultController.onPageLoad2(testRecordId, Category2Scenario)
+          }
+
+          "to standard goods result when categorisation result is so" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                .success
+                .value
+
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsScenario)
+
+            navigator.nextPage(CyaCategorisationPage2(testRecordId), NormalMode, userAnswers) mustBe
+              routes.CategorisationResultController.onPageLoad2(testRecordId, StandardGoodsScenario)
+          }
+
+          "to journey recovery when no categorisation info is found" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                .success
+                .value
+
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
+
+            navigator.nextPage(CyaCategorisationPage2(testRecordId), NormalMode, userAnswers) mustBe
+              routes.CategorisationResultController.onPageLoad2(testRecordId, Category2Scenario)
           }
 
         }
