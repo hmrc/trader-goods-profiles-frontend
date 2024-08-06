@@ -173,15 +173,28 @@ POST        /update-record/:recordId/create-advice/name                         
 GET         /update-record/:recordId/create-advice/name/check                               controllers.NameController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/create-advice/name/check                               controllers.NameController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/categorisation/supplementary-unit-question             controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-question             controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/supplementary-unit-question/check       controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-question/check       controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-question/create            controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-question/create             controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-question/create/check       controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-question/create/check       controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/categorisation/supplementary-unit-amount               controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-amount               controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-question/update             controllers.HasSupplementaryUnitController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-question/update             controllers.HasSupplementaryUnitController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-question/update/check       controllers.HasSupplementaryUnitController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-question/update/check       controllers.HasSupplementaryUnitController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
+
+GET         /update-record/:recordId/categorisation/supplementary-unit-amount/create               controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-amount/create               controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-amount/create/check         controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-amount/create/check         controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
+GET         /update-record/:recordId/categorisation/supplementary-unit-amount/update               controllers.SupplementaryUnitController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-amount/update               controllers.SupplementaryUnitController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation/supplementary-unit-amount/update/check         controllers.SupplementaryUnitController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation/supplementary-unit-amount/update/check         controllers.SupplementaryUnitController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
+
+GET         /update-record/:recordId/categorisation/check-your-answers/supplementary-unit          controllers.CyaSupplementaryUnitController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/categorisation/check-your-answers/supplementary-unit          controllers.CyaSupplementaryUnitController.onSubmit(recordId: String)
 
 GET        /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onPageLoad()
 POST       /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onSubmit()
@@ -193,10 +206,8 @@ POST       /update-record/:recordId/categorisation/longer-commodity-code/check  
 
 GET         /goods-profile                                                                  controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                                                  controllers.GoodsRecordsController.onSearch(page: Int)
-GET         /goods-profile/no-record                                                        controllers.GoodsRecordsController.onPageLoadNoRecords()
 
 GET         /goods-profile/search-results                                                   controllers.GoodsRecordsSearchResultController.onPageLoad(page: Int)
-GET         /goods-profile/search-no-results                                                controllers.GoodsRecordsSearchResultController.onPageLoadNoRecords()
 
 GET         /remove-record/:recordId/goods-profile                                          controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
 GET        /remove-record/:recordId/goods-record                                            controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
@@ -231,10 +242,12 @@ POST        /update-record/:recordId/check-your-answers/commodity-code          
 
 GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
 
-GET        /update-profile/removing-nirms-number                                            controllers.RemoveNirmsController.onPageLoad()
-POST       /update-profile/removing-nirms-number                                            controllers.RemoveNirmsController.onSubmit()
+GET         /update-profile/removing-nirms-number                                           controllers.RemoveNirmsController.onPageLoad()
+POST        /update-profile/removing-nirms-number                                           controllers.RemoveNirmsController.onSubmit()
 
-GET        /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onPageLoad()
-POST       /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
+GET         /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onPageLoad()
+POST        /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
 
-GET        /help-and-support                                                                controllers.HelpAndSupportController.onPageLoad()
+GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
+
+GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)

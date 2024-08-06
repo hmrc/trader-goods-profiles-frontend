@@ -49,9 +49,22 @@ class CategorisationService @Inject() (
       recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
 
     recordCategorisations.records.get(recordId) match {
-      case Some(_) =>
-        Future.successful(request.userAnswers)
-      case None    =>
+      case Some(record) =>
+        if (originalCommodityCodeOpt.isEmpty) {
+          val updatedRecord                = record.copy(originalCommodityCode = Some(record.commodityCode))
+          val updatedRecordsMap            = recordCategorisations.records + (recordId -> updatedRecord)
+          val updatedRecordCategorisations = RecordCategorisations(updatedRecordsMap)
+
+          for {
+            userAnswersWithOriginal <-
+              Future.fromTry(request.userAnswers.set(RecordCategorisationsQuery, updatedRecordCategorisations))
+            _                       <- sessionRepository.set(userAnswersWithOriginal)
+          } yield userAnswersWithOriginal
+        } else {
+          Future.successful(request.userAnswers)
+        }
+
+      case None =>
         for {
           getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature                <- ottConnector.getCategorisationInfo(
@@ -60,7 +73,7 @@ class CategorisationService @Inject() (
                                                 request.affinityGroup,
                                                 Some(recordId),
                                                 getGoodsRecordResponse.countryOfOrigin,
-                                                LocalDate.now() //TODO where does DateOfTrade come from??
+                                                LocalDate.now()
                                               )
           originalCommodityCode             = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
           categorisationInfo               <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
@@ -103,7 +116,7 @@ class CategorisationService @Inject() (
                                   request.affinityGroup,
                                   Some(recordId),
                                   getGoodsRecordResponse.countryOfOrigin,
-                                  LocalDate.now() //TODO where does DateOfTrade come from??
+                                  LocalDate.now()
                                 )
       originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
       categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
@@ -121,7 +134,6 @@ class CategorisationService @Inject() (
     } yield updatedAnswers
   }
 
-  //TODO this will be refactored out in TGP-1600 but solves the immediate problem
   def updateCategorisationWithUpdatedCommodityCode(
     request: DataRequest[_],
     recordId: String
@@ -141,7 +153,7 @@ class CategorisationService @Inject() (
                                             request.affinityGroup,
                                             Some(recordId),
                                             getGoodsRecordResponse.countryOfOrigin,
-                                            LocalDate.now() //TODO where does DateOfTrade come from??
+                                            LocalDate.now()
                                           )
       categorisationInfo               <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
       updatedAnswers                   <-

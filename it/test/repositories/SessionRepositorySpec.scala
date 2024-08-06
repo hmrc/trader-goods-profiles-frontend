@@ -19,6 +19,7 @@ package repositories
 import base.TestConstants.userAnswersId
 import config.FrontendAppConfig
 import models.UserAnswers
+import models.helper.{CategorisationJourney, CreateProfileJourney, CreateRecordJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney}
 import org.mockito.Mockito.when
 import org.mongodb.scala.model.Filters
 import org.scalatest.OptionValues
@@ -108,6 +109,76 @@ class SessionRepositorySpec
 
     "must return true when there is no record to remove" in {
       val result = repository.clear("id that does not exist").futureValue
+
+      result mustEqual true
+    }
+  }
+
+  ".clearData" - {
+
+    "must clear data for CreateProfileJourney" in {
+      val journey = CreateProfileJourney
+      insert(userAnswers).futureValue
+
+      val result = repository.clearData(userAnswers.id, journey).futureValue
+
+      result mustEqual true
+      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
+      val expectedJson  = Json.obj("foo" -> "bar")
+      updatedRecord.data mustEqual expectedJson
+    }
+
+    "must clear data for CreateRecordJourney" in {
+      val journey = CreateRecordJourney
+      insert(userAnswers).futureValue
+
+      val result = repository.clearData(userAnswers.id, journey).futureValue
+
+      result mustEqual true
+      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
+      val expectedJson  = Json.obj("foo" -> "bar")
+      updatedRecord.data mustEqual expectedJson
+    }
+
+    "must clear data for CategorisationJourney" in {
+      val journey = CategorisationJourney
+      insert(userAnswers).futureValue
+
+      val result = repository.clearData(userAnswers.id, journey).futureValue
+
+      result mustEqual true
+      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
+      val expectedJson  = Json.obj("foo" -> "bar")
+      updatedRecord.data mustEqual expectedJson
+    }
+
+    "must clear data for RequestAdviceJourney" in {
+      val journey = RequestAdviceJourney
+      insert(userAnswers).futureValue
+
+      val result = repository.clearData(userAnswers.id, journey).futureValue
+
+      result mustEqual true
+      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
+      val expectedJson  = Json.obj("foo" -> "bar")
+      updatedRecord.data mustEqual expectedJson
+    }
+
+    "must clear data for SupplementaryUnitUpdateJourney" in {
+      val journey = SupplementaryUnitUpdateJourney
+      insert(userAnswers).futureValue
+
+      val result = repository.clearData(userAnswers.id, journey).futureValue
+
+      result mustEqual true
+      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
+      val expectedJson  = Json.obj("foo" -> "bar")
+      updatedRecord.data mustEqual expectedJson
+    }
+
+    "must return true when there is no data to clear for any journey" in {
+      val journey = CreateProfileJourney
+      val result  = repository.clearData("nonexistent-id", journey).futureValue
 
       result mustEqual true
     }

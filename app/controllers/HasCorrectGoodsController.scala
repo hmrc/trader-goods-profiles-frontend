@@ -81,7 +81,6 @@ class HasCorrectGoodsController @Inject() (
       }
     }
 
-  // TODO - this is still not functional, it is just to create the url. Implement this properly
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
@@ -183,8 +182,11 @@ class HasCorrectGoodsController @Inject() (
         Future
           .fromTry(Try(updatedCategorisationAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
 
+      areWeRecategorisingAlready    = updatedCategorisationAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
       // We then have both assessments so can decide if to recategorise or not
-      needToRecategorise            = isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation)
+      // If already recategorising then they've probably gone back and we need it to behave when going forward again
+      needToRecategorise            =
+        isRecategorisationNeeded(oldCommodityCategorisation, newCommodityCategorisation) || areWeRecategorisingAlready
 
       // If we are recategorising we need to remove the old assessments so they don't prepopulate / break CYA
       updatedAnswersCleanedUp      <-

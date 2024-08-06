@@ -21,8 +21,9 @@ import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.router.responses.GetRecordsResponse
+import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Country, GoodsRecordsPagination}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,6 +33,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
@@ -130,9 +132,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(response)
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -171,6 +171,39 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to Loading page if the records needing to be stored is more than one batch (will take time)" in {
+
+      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        .successful(None)
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val mockOttConnector = mock[OttConnector]
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+        Seq(Country("EC", "Ecuador"))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, goodsRecordsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
+          .onPageLoad(Some(RedirectUrl(goodsRecordsRoute)))
+          .url
+      }
+    }
+
     "must return OK and the correct view for a GET with records and latest records are stored when it is a middle page" in {
 
       val middlePage = 2
@@ -181,9 +214,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
       )
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(middlePage), any())(any())) thenReturn Future
-        .successful(response)
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(totalRecords)
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -257,8 +288,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET without records" in {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-      when(mockGoodsRecordConnector.getRecordsCount(eqTo(testEori))(any())) thenReturn Future
-        .successful(0)
+
+      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        .successful(Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 0, None, None))))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -266,27 +298,10 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
-
-      running(application) {
-        val request = FakeRequest(GET, goodsRecordsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoadNoRecords().url
-      }
-    }
-
-    "must return OK and the empty view onPageLoadNoRecords" in {
-      val emptyGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoadNoRecords().url
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-        .build()
       val view        = application.injector.instanceOf[GoodsRecordsEmptyView]
 
       running(application) {
-        val request = FakeRequest(GET, emptyGoodsRecordsRoute)
+        val request = FakeRequest(GET, goodsRecordsRoute)
 
         val result = route(application, request).value
 
@@ -343,7 +358,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(response)
+        .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -384,40 +399,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no userAnswers existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, goodsRecordsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-        .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsRecordsRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

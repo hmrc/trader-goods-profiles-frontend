@@ -17,7 +17,10 @@
 package models.ott
 
 import cats.implicits.toTraverseOps
+import models.AssessmentAnswer.NotAnsweredYet
+import models.UserAnswers
 import models.ott.response.OttResponse
+import pages.AssessmentPage
 import play.api.libs.json.{Json, OFormat}
 
 final case class CategorisationInfo(
@@ -27,14 +30,11 @@ final case class CategorisationInfo(
   descendantCount: Int,
   originalCommodityCode: Option[String] = None
 ) {
-  private val padlength = 10
+  def areThereAnyNonAnsweredQuestions(recordId: String, userAnswers: UserAnswers): Boolean =
+    categoryAssessments.indices
+      .map(index => userAnswers.get(AssessmentPage(recordId, index)))
+      .count(x => x.contains(NotAnsweredYet)) > 0
 
-  def latestDoesNotMatchOriginal: Boolean = originalCommodityCode match {
-    case Some(originalComcode) =>
-      commodityCode != originalComcode.padTo[Char](padlength, '0').mkString
-    case None                  =>
-      false
-  }
 }
 
 object CategorisationInfo {

@@ -22,6 +22,7 @@ import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, g
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
@@ -51,41 +52,45 @@ class GoodsRecordsSearchResultController @Inject() (
           if (page < 1) {
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
-            for {
-              searchResponse <-
-                goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize)
-              countries      <- ottConnector.getCountries
-            } yield
-              if (searchResponse.pagination.totalRecords != 0) {
-                val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
-                Ok(
-                  view(
-                    searchResponse.goodsItemRecords,
-                    searchResponse.pagination.totalRecords,
-                    getFirstRecordIndex(searchResponse.pagination, pageSize),
-                    getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
-                    countries,
-                    getSearchPagination(
-                      searchResponse.pagination.currentPage,
-                      searchResponse.pagination.totalPages
-                    ),
-                    page,
-                    searchText,
-                    searchResponse.pagination.totalPages
+            goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize).flatMap {
+              case Some(searchResponse) =>
+                if (searchResponse.pagination.totalRecords != 0) {
+                  ottConnector.getCountries.map { countries =>
+                    val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
+                    Ok(
+                      view(
+                        searchResponse.goodsItemRecords,
+                        searchResponse.pagination.totalRecords,
+                        getFirstRecordIndex(searchResponse.pagination, pageSize),
+                        getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
+                        countries,
+                        getSearchPagination(
+                          searchResponse.pagination.currentPage,
+                          searchResponse.pagination.totalPages
+                        ),
+                        page,
+                        searchText,
+                        searchResponse.pagination.totalPages
+                      )
+                    )
+                  }
+                } else {
+                  request.userAnswers.get(GoodsRecordsPage) match {
+                    case Some(searchText) => Future.successful(Ok(emptyView(searchText)))
+                    case None             => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+                  }
+                }
+              case None                 =>
+                Future.successful(
+                  Redirect(
+                    routes.GoodsRecordsLoadingController
+                      .onPageLoad(Some(RedirectUrl(routes.GoodsRecordsSearchResultController.onPageLoad(page).url)))
                   )
                 )
-              } else {
-                Redirect(routes.GoodsRecordsSearchResultController.onPageLoadNoRecords())
-              }
+
+            }
           }
         case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
-  }
-
-  def onPageLoadNoRecords(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    request.userAnswers.get(GoodsRecordsPage) match {
-      case Some(searchText) => Ok(emptyView(searchText))
-      case None             => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
-    }
   }
 }

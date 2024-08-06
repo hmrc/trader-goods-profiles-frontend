@@ -17,15 +17,17 @@
 package controllers
 
 import connectors.GoodsRecordConnector
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.NormalMode
+import models.helper.SupplementaryUnitUpdateJourney
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataUpdated, pageUpdated}
-import viewmodels.checkAnswers.{AdviceStatusSummary, CategorySummary, CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, HasSupplementaryUnitSummary, StatusSummary, SupplementaryUnitSummary, TraderReferenceSummary}
+import utils.SessionData._
+import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
@@ -36,16 +38,18 @@ class SingleRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
   identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
         updatedAnswersWithTraderReference  <-
@@ -74,9 +78,14 @@ class SingleRecordController @Inject() (
           )
         )
 
+        val categoryValue         = record.category match {
+          case 1 => "Category 1"
+          case 2 => "Category 2"
+          case 3 => "Standard goods"
+        }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(record.category.toString, record.recordId)
+            CategorySummary.row(categoryValue, record.recordId)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
@@ -92,9 +101,23 @@ class SingleRecordController @Inject() (
           )
         )
         val changesMade           = request.session.get(dataUpdated).contains("true")
+        val pageRemoved           = request.session.get(dataRemoved).contains("true")
         val changedPage           = request.session.get(pageUpdated).getOrElse("")
+        //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
+        dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
 
-        Ok(view(recordId, detailsList, categorisationList, supplementaryUnitList, adviceList, changesMade, changedPage))
+        Ok(
+          view(
+            recordId,
+            detailsList,
+            categorisationList,
+            supplementaryUnitList,
+            adviceList,
+            changesMade,
+            changedPage,
+            pageRemoved
+          )
+        ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
-  }
+    }
 }

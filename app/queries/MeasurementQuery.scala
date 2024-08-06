@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
 import play.api.libs.json.JsPath
 
-case object PreviousMovementRecordsPage extends QuestionPage[String] {
+case class MeasurementQuery(recordId: String) extends Gettable[String] with Settable[String] {
+  override def path: JsPath = JsPath \ "measurementUnit" \ recordId
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "previousMovementRecords"
 }
