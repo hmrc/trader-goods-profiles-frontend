@@ -325,7 +325,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val getUrl          = routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId).url
       val call            = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId)
       val postUrl         = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId).url
-      val warningPage     = HasGoodsDescriptionChangePage(testRecordId)
 
       "for a GET" - {
 
@@ -339,9 +338,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
-            .success
-            .value
-            .set(warningPage, true)
             .success
             .value
 
@@ -412,9 +408,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .set(page, answer)
               .success
               .value
-              .set(warningPage, true)
-              .success
-              .value
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
@@ -478,9 +471,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
-            .success
-            .value
-            .set(warningPage, true)
             .success
             .value
 

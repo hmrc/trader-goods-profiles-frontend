@@ -194,13 +194,11 @@ class CyaUpdateRecordController @Inject() (
             UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
           )
           for {
-            _                        <- goodsRecordConnector.updateGoodsRecord(
-                                          UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
-                                        )
-            updatedAnswersWithChange <-
-              Future.fromTry(request.userAnswers.remove(HasGoodsDescriptionChangePage(recordId)))
-            updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(GoodsDescriptionUpdatePage(recordId)))
-            _                        <- sessionRepository.set(updatedAnswers)
+            _              <- goodsRecordConnector.updateGoodsRecord(
+                                UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
+                              )
+            updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
+            _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors)            =>
           Future.successful(

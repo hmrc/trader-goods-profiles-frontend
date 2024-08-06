@@ -57,9 +57,6 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .set(GoodsDescriptionUpdatePage(testRecordId), "goods description")
             .success
             .value
-            .set(HasGoodsDescriptionChangePage(testRecordId), true)
-            .success
-            .value
 
         val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
@@ -149,28 +146,11 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       "when goods description is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(HasGoodsDescriptionChangePage(testRecordId), true)
-          .success
-          .value
 
         val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionUpdatePage(testRecordId))
-        }
-      }
-
-      "when goods description warning page is false" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(HasGoodsDescriptionChangePage(testRecordId), false)
-          .success
-          .value
-
-        val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(HasGoodsDescriptionChangePage(testRecordId))
         }
       }
 
