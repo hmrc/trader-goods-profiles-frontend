@@ -84,20 +84,19 @@ class CyaSupplementaryUnitController @Inject() (
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           //TODO : Audit service implementation
-          val (initialHasSuppUnitOpt, initialSuppUnitOpt) = (
-            request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean),
-            request.session.get(initialValueOfSuppUnit)
-          )
-          val (finalHasSuppUnit, finalSuppUnit)           = (
-            model.hasSupplementaryUnit.getOrElse(false),
-            model.supplementaryUnit.getOrElse("")
-          )
-          val isValueChanged                              =
+
+          val initialHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
+          val initialSuppUnitOpt    = request.session.get(initialValueOfSuppUnit)
+
+          val finalHasSuppUnit = model.hasSupplementaryUnit.getOrElse(false)
+          val finalSuppUnit    = model.supplementaryUnit.getOrElse("")
+
+          val isValueChanged    =
             initialHasSuppUnitOpt.exists(_ != finalHasSuppUnit) || compareSupplementaryUnits(
               initialSuppUnitOpt.getOrElse("0"),
               finalSuppUnit
             )
-          val isSuppUnitRemoved                           = initialHasSuppUnitOpt.exists(_ && !finalHasSuppUnit)
+          val isSuppUnitRemoved = initialHasSuppUnitOpt.exists(_ && !finalHasSuppUnit)
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
