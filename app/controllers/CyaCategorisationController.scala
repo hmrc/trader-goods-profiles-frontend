@@ -23,11 +23,12 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.helper.CategorisationJourney
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario, ValidationError}
+import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, NormalMode, Scenario, ValidationError}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, RecategorisingQuery}
 import queries.{CategorisationDetailsQuery, RecategorisingQuery, CategorisationDetailsQuery2}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
@@ -114,23 +115,28 @@ class CyaCategorisationController @Inject() (
     val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
 
     categorisationInfo.map{ info =>
-      val categorisationRows = info.categoryAssessments
-        .flatMap(assessment =>
-          AssessmentsSummary.row2(
-            recordId,
-            request.userAnswers,
-            assessment,
-            info.categoryAssessments.indexOf(assessment)
+      CategorisationAnswers2.build(request.userAnswers, recordId) match {
+        case Right(_) =>
+
+          val categorisationRows = info.categoryAssessments
+            .flatMap(assessment =>
+              AssessmentsSummary.row2(
+                recordId,
+                request.userAnswers,
+                assessment,
+                info.categoryAssessments.indexOf(assessment)
+              )
+            )
+
+          val categorisationList = SummaryListViewModel(
+            rows = categorisationRows
           )
-        )
 
-      val categorisationList = SummaryListViewModel(
-        rows = categorisationRows
-      )
+          Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
 
-      Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
-
-    }.getOrElse(
+        case Left(errors) =>
+          logErrorsAndContinue(errors, recordId, request)
+      }}.getOrElse(
       //TODO errors propa
       Redirect(routes.JourneyRecoveryController.onPageLoad())
 

@@ -21,10 +21,128 @@ import base.TestConstants.testRecordId
 import models.AssessmentAnswer.{Exemption, NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
+import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, SupplementaryUnitPage}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import queries.RecordCategorisationsQuery
 
 class CategorisationAnswersSpec extends SpecBase {
+
+  ".build2" - {
+
+    "must return a CategorisationAnswer when" - {
+
+      "a NoExemption means the following assessment pages are unanswered" in {
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers2.build(answers, testRecordId)
+
+        result mustBe Right(
+          CategorisationAnswers2(Seq(Some(AssessmentAnswer2.Exemption), Some(AssessmentAnswer2.NoExemption), None))
+        )
+      }
+
+      "all assessments are answered Yes" in {
+
+        val answers =
+          userAnswersForCategorisation2
+
+        val result = CategorisationAnswers2.build(answers, testRecordId)
+
+        result mustEqual
+          Right(
+            CategorisationAnswers2(
+              Seq(
+                Some(AssessmentAnswer2.Exemption),
+                Some(AssessmentAnswer2.Exemption),
+                Some(AssessmentAnswer2.Exemption)
+              )
+            )
+          )
+
+      }
+
+    }
+
+    "must return errors" - {
+
+      "when additional assessments have been answered after a NoExemption" in {
+
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers2.build(answers, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedNoExemption(AssessmentPage2(testRecordId, 1))
+        }
+      }
+
+      "when you have not finished answering assessments" in {
+
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers2.build(answers, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only MissingAssessmentAnswers(CategorisationDetailsQuery2(testRecordId))
+        }
+      }
+
+      "when no answers for the record Id" in {
+
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+          .success
+          .value
+
+        val result = CategorisationAnswers2.build(answers, "differentId")
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only NoCategorisationDetailsForRecordId(
+            CategorisationDetailsQuery2("differentId"),
+            "differentId"
+          )
+        }
+      }
+
+    }
+  }
 
   ".build" - {
 

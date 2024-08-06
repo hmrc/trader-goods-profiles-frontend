@@ -21,6 +21,7 @@ import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import models.router.responses.GetGoodsRecordResponse
+import models.{AssessmentAnswer, AssessmentAnswer2, Commodity, UserAnswers}
 import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -33,6 +34,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, CommodityQuery}
 
 import java.time.Instant
 
@@ -223,6 +225,20 @@ trait SpecBase
     .success
     .value
     .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+    .success
+    .value
+
+  lazy val userAnswersForCategorisation2: UserAnswers = emptyUserAnswers
+    .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+    .success
+    .value
+    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+    .success
+    .value
+    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+    .success
+    .value
+    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
     .success
     .value
 
