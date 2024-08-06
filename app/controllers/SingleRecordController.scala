@@ -67,60 +67,57 @@ class SingleRecordController @Inject() (
             updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
         _                                  <- sessionRepository.set(updatedAnswersWithAll)
-      } yield
-        if (record.toReview) {
-          Redirect(routes.ReviewReasonController.onPageLoad(recordId).url)
-        } else {
-          val detailsList = SummaryListViewModel(
-            rows = Seq(
-              TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
-              GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
-              CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
-              CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
-              StatusSummary.row(record.declarable)
-            )
+      } yield {
+        val detailsList = SummaryListViewModel(
+          rows = Seq(
+            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
+            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
+            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
+            CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
+            StatusSummary.row(record.declarable)
           )
+        )
 
-          val categoryValue         = record.category match {
-            case 1 => "Category 1"
-            case 2 => "Category 2"
-            case 3 => "Standard goods"
-          }
-          val categorisationList    = SummaryListViewModel(
-            rows = Seq(
-              CategorySummary.row(categoryValue, record.recordId)
-            )
-          )
-          val supplementaryUnitList = SummaryListViewModel(
-            rows = Seq(
-              HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
-              SupplementaryUnitSummary
-                .row(record.supplementaryUnit, record.measurementUnit, recordId)
-            ).flatten
-          )
-          val adviceList            = SummaryListViewModel(
-            rows = Seq(
-              AdviceStatusSummary.row(record.adviceStatus, record.recordId)
-            )
-          )
-          val changesMade           = request.session.get(dataUpdated).contains("true")
-          val pageRemoved           = request.session.get(dataRemoved).contains("true")
-          val changedPage           = request.session.get(pageUpdated).getOrElse("")
-          //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
-          dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-
-          Ok(
-            view(
-              recordId,
-              detailsList,
-              categorisationList,
-              supplementaryUnitList,
-              adviceList,
-              changesMade,
-              changedPage,
-              pageRemoved
-            )
-          ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
+        val categoryValue         = record.category match {
+          case 1 => "Category 1"
+          case 2 => "Category 2"
+          case 3 => "Standard goods"
         }
+        val categorisationList    = SummaryListViewModel(
+          rows = Seq(
+            CategorySummary.row(categoryValue, record.recordId)
+          )
+        )
+        val supplementaryUnitList = SummaryListViewModel(
+          rows = Seq(
+            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
+            SupplementaryUnitSummary
+              .row(record.supplementaryUnit, record.measurementUnit, recordId)
+          ).flatten
+        )
+        val adviceList            = SummaryListViewModel(
+          rows = Seq(
+            AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+          )
+        )
+        val changesMade           = request.session.get(dataUpdated).contains("true")
+        val pageRemoved           = request.session.get(dataRemoved).contains("true")
+        val changedPage           = request.session.get(pageUpdated).getOrElse("")
+        //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
+        dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+
+        Ok(
+          view(
+            recordId,
+            detailsList,
+            categorisationList,
+            supplementaryUnitList,
+            adviceList,
+            changesMade,
+            changedPage,
+            pageRemoved
+          )
+        ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
+      }
     }
 }

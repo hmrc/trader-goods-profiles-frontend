@@ -68,7 +68,7 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
       }
 
-      "must redirect to JourneyRecovery when the record is not marked with 'toReview'" in {
+      "must redirect to SingleRecordController when the record is not marked with 'toReview'" in {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
@@ -85,7 +85,7 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val request = FakeRequest(GET, reviewReasonRoute)
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
         }
       }
 

@@ -222,26 +222,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Review Reason for a GET if goods record is marked 'toReview'" in {
-
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
-        .successful(recordToReview)
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, singleRecordRoute)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.ReviewReasonController.onPageLoad(testRecordId).url
-      }
-    }
-
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

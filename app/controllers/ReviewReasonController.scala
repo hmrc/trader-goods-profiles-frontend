@@ -46,7 +46,7 @@ class ReviewReasonController @Inject() (
         .map { record =>
           record.reviewReason match {
             case Some(reviewReason) if record.toReview => Ok(view(recordId, reviewReason))
-            case _                                     => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+            case _                                     => Redirect(routes.SingleRecordController.onPageLoad(recordId).url)
           }
         }
         .recover { case _ =>
