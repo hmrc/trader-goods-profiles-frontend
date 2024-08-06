@@ -577,7 +577,7 @@ reviewReason.mismatch.title = This record needs to be reviewed
 reviewReason.mismatch.heading = This record needs to be reviewed
 reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you''ll need to amend the commodity code and the goods description.
 
-unauthorisedServiceUser.title = unauthorisedServiceUser
+unauthorisedServiceUser.title = There is a problem - Trader Goods Profile
 unauthorisedServiceUser.heading = There is a problem
 unauthorisedServiceUser.p1 = Trader Goods Profile (TGP) is not available to the public yet.
 unauthorisedServiceUser.p2 = The details you have logged in with do not have access to TGP.
