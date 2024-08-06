@@ -93,7 +93,10 @@ class CyaSupplementaryUnitController @Inject() (
             model.supplementaryUnit.getOrElse("")
           )
           val isValueChanged                              =
-            initialHasSuppUnitOpt.exists(_ != finalHasSuppUnit) || initialSuppUnitOpt.exists(_ != finalSuppUnit)
+            initialHasSuppUnitOpt.exists(_ != finalHasSuppUnit) || compareSupplementaryUnits(
+              initialSuppUnitOpt.getOrElse("0"),
+              finalSuppUnit
+            )
           val isSuppUnitRemoved                           = initialHasSuppUnitOpt.exists(_ && !finalHasSuppUnit)
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
@@ -106,5 +109,11 @@ class CyaSupplementaryUnitController @Inject() (
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }
+  }
+
+  private def compareSupplementaryUnits(initialSuppUnit: String, finalSuppUnit: String): Boolean = {
+    val initialSuppUnitBD = BigDecimal(initialSuppUnit)
+    val finalSuppUnitBD   = BigDecimal(finalSuppUnit)
+    initialSuppUnitBD != finalSuppUnitBD
   }
 }

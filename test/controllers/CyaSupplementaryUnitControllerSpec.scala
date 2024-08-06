@@ -20,10 +20,10 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.helper.SupplementaryUnitUpdateJourney
-import models.{SupplementaryRequest, UserAnswers}
+import models.{NormalMode, SupplementaryRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
@@ -33,6 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.MeasurementQuery
 import repositories.SessionRepository
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
@@ -45,9 +46,6 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
   "CyaSupplementaryUnitController" - {
 
     "for a GET" - {
-      val emptySummaryList = SummaryListViewModel(
-        rows = Seq.empty
-      )
 
       "must return OK and the correct view with valid data" in {
 
@@ -88,6 +86,29 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
+
+      "when user answers cannot create a supplementary request" - {
+
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val continueUrl =
+            RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaSupplementaryUnitController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+          }
+        }
+      }
+
     }
 
     "for a POST" - {
@@ -231,7 +252,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
             .success
             .value
-            .set(SupplementaryUnitUpdatePage(testRecordId), "200")
+            .set(SupplementaryUnitUpdatePage(testRecordId), "200.0")
             .success
             .value
             .set(MeasurementQuery(testRecordId), "litres")
@@ -352,6 +373,41 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
+
+      "when user answers cannot create a supplementary request" - {
+
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          val continueUrl              =
+            RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
+
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[SessionRepository].toInstance(sessionRepository)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            verify(mockGoodsRecordConnector, never()).updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any())
+
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+            }
+          }
+        }
+      }
     }
+
   }
 }
