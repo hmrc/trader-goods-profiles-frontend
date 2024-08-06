@@ -325,7 +325,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val getUrl          = routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId).url
       val call            = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId)
       val postUrl         = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId).url
-      val warningPage     = HasGoodsDescriptionChangePage(testRecordId)
 
       "for a GET" - {
 
@@ -339,9 +338,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
-            .success
-            .value
-            .set(warningPage, true)
             .success
             .value
 
@@ -412,9 +408,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .set(page, answer)
               .success
               .value
-              .set(warningPage, true)
-              .success
-              .value
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
@@ -478,9 +471,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val userAnswers = emptyUserAnswers
             .set(page, answer)
-            .success
-            .value
-            .set(warningPage, true)
             .success
             .value
 
@@ -748,6 +738,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Commodity Code Update" - {
       val summaryKey      = "commodityCode.checkYourAnswersLabel"
       val summaryHidden   = "commodityCode.change.hidden"
+      val shorterCommCode = "174290"
       val summaryUrl      = routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = CommodityCodeUpdatePage(testRecordId)
       val expectedPayload =
@@ -762,6 +753,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         def createChangeList(app: Application): SummaryList = SummaryListViewModel(
           rows = Seq(
             UpdateRecordSummary.row(testCommodity.commodityCode, summaryKey, summaryHidden, summaryUrl)(messages(app))
+          )
+        )
+
+        def createChangeListShorterCommCode(app: Application): SummaryList = SummaryListViewModel(
+          rows = Seq(
+            UpdateRecordSummary.row(shorterCommCode, summaryKey, summaryHidden, summaryUrl)(messages(app))
           )
         )
 
@@ -796,6 +793,50 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val view = application.injector.instanceOf[CyaUpdateRecordView]
             val list = createChangeList(application)
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(list, call)(
+              request,
+              messages(application)
+            ).toString
+
+            withClue("must not try and submit an audit") {
+              verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
+            }
+          }
+        }
+
+        "display shorter commodity code as received from B&T / until it is categorised and longer comm code entered" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(page, shorterCommCode)
+            .success
+            .value
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(warningPage, true)
+            .success
+            .value
+            .set(HasCommodityCodeChangePage(testRecordId), true)
+            .success
+            .value
+            .set(CommodityUpdateQuery(testRecordId), testShorterCommodityQuery)
+            .success
+            .value
+
+          val mockAuditService = mock[AuditService]
+          val application      = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, getUrl)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[CyaUpdateRecordView]
+            val list = createChangeListShorterCommCode(application)
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(list, call)(

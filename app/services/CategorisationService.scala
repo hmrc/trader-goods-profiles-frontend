@@ -49,9 +49,22 @@ class CategorisationService @Inject() (
       recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
 
     recordCategorisations.records.get(recordId) match {
-      case Some(_) =>
-        Future.successful(request.userAnswers)
-      case None    =>
+      case Some(record) =>
+        if (originalCommodityCodeOpt.isEmpty) {
+          val updatedRecord                = record.copy(originalCommodityCode = Some(record.commodityCode))
+          val updatedRecordsMap            = recordCategorisations.records + (recordId -> updatedRecord)
+          val updatedRecordCategorisations = RecordCategorisations(updatedRecordsMap)
+
+          for {
+            userAnswersWithOriginal <-
+              Future.fromTry(request.userAnswers.set(RecordCategorisationsQuery, updatedRecordCategorisations))
+            _                       <- sessionRepository.set(userAnswersWithOriginal)
+          } yield userAnswersWithOriginal
+        } else {
+          Future.successful(request.userAnswers)
+        }
+
+      case None =>
         for {
           getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature                <- ottConnector.getCategorisationInfo(

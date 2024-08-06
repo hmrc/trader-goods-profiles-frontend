@@ -32,11 +32,10 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import views.html.HasSupplementaryUnitView
 
 import java.time.Instant
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
@@ -289,8 +288,15 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       "must populate the view correctly on a GET when the question has previously been answered" in {
         val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(recordId), true).success.value
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(record)
+
         val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          )
           .build()
 
         running(application) {
