@@ -38,8 +38,6 @@ final case class CategorisationAnswers2(
 
 object CategorisationAnswers2 {
 
-  // implicit lazy val format: OFormat[CategorisationAnswers2] = Json.format
-
   def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers2] =
     buildAssessmentDetails(userAnswers, recordId)
       .map(CategorisationAnswers2(_))

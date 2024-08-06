@@ -23,14 +23,14 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.helper.CategorisationJourney
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, NormalMode, Scenario, ValidationError}
+import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, Scenario, ValidationError}
 import navigation.Navigator
-import pages.CyaCategorisationPage
+import pages.{CyaCategorisationPage, CyaCategorisationPage2}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, RecategorisingQuery}
 import repositories.SessionRepository
-import services.{AuditService, DataCleansingService}
+import services.{AuditService, CategorisationService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
@@ -50,7 +50,8 @@ class CyaCategorisationController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
   navigator: Navigator,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -132,16 +133,45 @@ class CyaCategorisationController @Inject() (
           Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
 
         case Left(errors) =>
-          logErrorsAndContinue(errors, recordId, request)
+          logErrorsAndContinue2(errors, recordId, request)
       }}.getOrElse(
-      //TODO errors propa
-      Redirect(routes.JourneyRecoveryController.onPageLoad())
-
+      logErrorsAndContinue2("Failed to get categorisation details", recordId, request)
     )
 
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      CategoryRecord2.build(request.userAnswers, request.eori, recordId, categorisationService) match {
+        case Right(categoryRecord) =>
+          auditService.auditFinishCategorisation(
+            request.eori,
+            request.affinityGroup,
+            recordId,
+            categoryRecord.categoryAssessmentsWithExemptions,
+            categoryRecord.category
+          )
+
+          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(request.eori, recordId, categoryRecord).map { _ =>
+            //  dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+
+            Redirect(
+              navigator.nextPage(
+                CyaCategorisationPage2(recordId),
+                NormalMode,
+                request.userAnswers
+              )
+            )
+          }
+
+            case Left(error) => Future.successful(logErrorsAndContinue2(error, recordId, request))
+
+      }
+
+
+  }
+
+    def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
@@ -177,6 +207,29 @@ class CyaCategorisationController @Inject() (
     val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
 
     logger.error(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
+
+  private def logErrorsAndContinue2(
+    errors: data.NonEmptyChain[ValidationError],
+    recordId: String,
+    request: DataRequest[AnyContent]
+  ): Result = {
+    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+    logErrorsAndContinue2(errorMessages, recordId, request)
+  }
+
+  private def logErrorsAndContinue2(
+    errorMessage: String,
+    recordId: String,
+    request: DataRequest[AnyContent]
+  ): Result = {
+
+    val continueUrl = RedirectUrl(routes.CategorisationPreparationController.startCategorisation(recordId).url)
+
+    logger.error(s"Unable to update Goods Profile: $errorMessage")
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

@@ -41,7 +41,7 @@ govukButton: GovukButton
         @govukSummaryList(longerCommodityCodeList)
     }
 
-    @formHelper(action = routes.CyaCategorisationController.onSubmit(recordId)) {
+    @formHelper(action = routes.CyaCategorisationController.onSubmit2(recordId)) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
 }

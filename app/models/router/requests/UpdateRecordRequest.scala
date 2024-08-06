@@ -16,7 +16,7 @@
 
 package models.router.requests
 
-import models.{CategoryRecord, UpdateGoodsRecord}
+import models.{CategoryRecord, CategoryRecord2, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
@@ -59,6 +59,17 @@ object UpdateRecordRequest {
       comcode = categoryRecord.comcode,
       supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
+    )
+
+  def mapFromCategoryAndComcode2(categoryRecord: CategoryRecord2): UpdateRecordRequest =
+    UpdateRecordRequest(
+      categoryRecord.eori,
+      categoryRecord.recordId,
+      categoryRecord.eori,
+      category = Some(categoryRecord.category),
+      comcode = Some(categoryRecord.comcode),
+      //supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
+      //measurementUnit = categoryRecord.measurementUnit
     )
 
   implicit val reads: Reads[UpdateRecordRequest] =

@@ -158,6 +158,7 @@ GET         /update-record/:recordId/categorisation/result/standard-no-assessmen
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
 GET         /update-record/:recordId/categorisation2/check-your-answers                      controllers.CyaCategorisationController.onPageLoad2(recordId:String)
+POST         /update-record/:recordId/categorisation2/check-your-answers                      controllers.CyaCategorisationController.onSubmit2(recordId:String)
 
 GET        /update-record/:recordId/categorisation/categorisationPreparation                controllers.CategorisationPreparationController.startCategorisation(recordId:String)
 

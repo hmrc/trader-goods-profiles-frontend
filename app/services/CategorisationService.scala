@@ -65,9 +65,6 @@ class CategorisationService @Inject() (
 
   }
 
-// makeSureAllQuestionsAreAnswered
-  //
-
   def calculateResult(categorisationInfo: CategorisationInfo2,
                       userAnswers: UserAnswers, recordId: String): Int = {
 
