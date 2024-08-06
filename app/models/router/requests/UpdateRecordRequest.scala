@@ -17,6 +17,7 @@
 package models.router.requests
 
 import models.{CategoryRecord, SupplementaryRequest, UpdateGoodsRecord}
+import models.{CategoryRecord, CategoryRecord2, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import scala.util.Try
@@ -60,6 +61,17 @@ object UpdateRecordRequest {
       comcode = categoryRecord.comcode,
       supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
+    )
+
+  def mapFromCategoryAndComcode2(categoryRecord: CategoryRecord2): UpdateRecordRequest =
+    UpdateRecordRequest(
+      categoryRecord.eori,
+      categoryRecord.recordId,
+      categoryRecord.eori,
+      category = Some(categoryRecord.category),
+      comcode = Some(categoryRecord.comcode),
+      //supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
+      //measurementUnit = categoryRecord.measurementUnit
     )
 
   def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): UpdateRecordRequest =

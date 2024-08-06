@@ -22,6 +22,8 @@ import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
+import services.CategorisationService
 import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 
 final case class CategoryRecord(
@@ -33,6 +35,47 @@ final case class CategoryRecord(
   supplementaryUnit: Option[String] = None,
   measurementUnit: Option[String] = None
 )
+
+final case class CategoryRecord2(
+  eori: String,
+  recordId: String,
+  comcode: String,
+  category: Int,
+  categoryAssessmentsWithExemptions: Int
+  //TODO later - sup unit
+)
+
+object CategoryRecord2 {
+
+  def build(
+    userAnswers: UserAnswers,
+    eori: String,
+    recordId: String,
+    categorisationService: CategorisationService
+  ): EitherNec[ValidationError, CategoryRecord2] = {
+    val categorisationInfo = getCategorisationInfoForThisRecord(userAnswers, recordId)
+
+    categorisationInfo.map(info =>
+      CategoryRecord2(
+        eori,
+        recordId,
+        info.commodityCode,
+        //TODO cleanup
+        categorisationService.calculateResult(info, userAnswers, recordId),
+        info.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined)
+      )
+    )
+  }
+
+  //TODO duplicated function
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
+    userAnswers
+      .getPageValue(CategorisationDetailsQuery2(recordId))
+      .map(Right(_))
+      .getOrElse(
+        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
+      )
+}
 
 object CategoryRecord {
 

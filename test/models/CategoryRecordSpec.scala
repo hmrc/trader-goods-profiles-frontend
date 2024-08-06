@@ -16,6 +16,7 @@
 
 package models
 
+import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import org.scalatest.Inside.inside
@@ -24,8 +25,35 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
 import queries.RecordCategorisationsQuery
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import utils.Constants
 
-class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class CategoryRecordSpec extends SpecBase {
+
+  ".build2" - {
+
+//    "must return a CategoryRecord when all mandatory questions are answered" - {
+//      val answers =
+//        emptyUserAnswers
+//          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+//          .success
+//          .value
+//
+//      val result = CategoryRecord2.build(answers, testEori, testRecordId)
+//
+//      result mustEqual Right(
+//        CategoryRecord2(
+//          testEori,
+//          testRecordId,
+//          "1234567890",
+//          Constants.Category1,
+//          0 //TODO ???
+//        )
+//      )
+//
+//    }
+
+  }
 
   ".build" - {
 
