@@ -27,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.RecategorisingQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
 import views.html.HasSupplementaryUnitView
 
 import javax.inject.Inject
@@ -102,7 +102,7 @@ class HasSupplementaryUnitController @Inject() (
             .addingToSession(
               initialValueOfHasSuppUnit -> initialValue.toString
             )
-            .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved, initialValueOfSuppUnit)
         }
       }
     }

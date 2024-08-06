@@ -258,8 +258,40 @@ trait SpecBase
       None,
       1,
       active = true,
-      toReview = true,
+      toReview = false,
       None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
+  def toReviewGoodsRecordResponse(
+    createdDateTime: Instant,
+    updatedDateTime: Instant,
+    reviewReason: String
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      None,
+      None,
+      Instant.now(),
+      None,
+      1,
+      active = true,
+      toReview = true,
+      reviewReason = Some(reviewReason),
       "Not ready",
       None,
       None,
