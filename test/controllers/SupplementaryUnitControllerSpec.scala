@@ -358,8 +358,16 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(record))
+
         val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          )
           .build()
 
         running(application) {
@@ -375,7 +383,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             form.fill(validAnswer),
             NormalMode,
             testRecordId,
-            "",
+            "grams",
             routes.SupplementaryUnitController.onSubmitUpdate(NormalMode, testRecordId)
           )(
             request,

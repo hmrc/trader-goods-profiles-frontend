@@ -84,17 +84,18 @@ class CyaSupplementaryUnitController @Inject() (
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           //TODO : Audit service implementation
-          val (initialHasSuppUnitOpt, initialSuppUnitOpt) = (
-            request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean),
-            request.session.get(initialValueOfSuppUnit)
-          )
-          val (finalHasSuppUnit, finalSuppUnit)           = (
-            model.hasSupplementaryUnit.getOrElse(false),
-            model.supplementaryUnit.getOrElse("")
-          )
-          val isValueChanged                              =
-            initialHasSuppUnitOpt.exists(_ != finalHasSuppUnit) || initialSuppUnitOpt.exists(_ != finalSuppUnit)
-          val isSuppUnitRemoved                           = initialHasSuppUnitOpt.exists(_ && !finalHasSuppUnit)
+
+          val initialHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
+          val initialSuppUnitOpt    = request.session.get(initialValueOfSuppUnit)
+
+          val finalHasSuppUnitOpt = model.hasSupplementaryUnit
+          val finalSuppUnitOpt    = model.supplementaryUnit
+
+          val isValueChanged    =
+            initialHasSuppUnitOpt != finalHasSuppUnitOpt ||
+              compareSupplementaryUnits(initialSuppUnitOpt, finalSuppUnitOpt)
+          val isSuppUnitRemoved =
+            initialHasSuppUnitOpt.contains(true) && finalHasSuppUnitOpt.contains(false)
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
@@ -106,5 +107,14 @@ class CyaSupplementaryUnitController @Inject() (
           }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }
+  }
+
+  private def compareSupplementaryUnits(
+    initialSuppUnitOpt: Option[String],
+    finalSuppUnitOpt: Option[String]
+  ): Boolean = {
+    val initialSuppUnitBD = BigDecimal(initialSuppUnitOpt.getOrElse("0"))
+    val finalSuppUnitBD   = BigDecimal(finalSuppUnitOpt.getOrElse("0"))
+    initialSuppUnitBD != finalSuppUnitBD
   }
 }

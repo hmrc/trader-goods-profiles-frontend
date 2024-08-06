@@ -22,7 +22,6 @@ import forms.HasSupplementaryUnitFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
-import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.RecategorisingQuery
@@ -88,26 +87,23 @@ class HasSupplementaryUnitController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
 
-      val preparedFormFuture: Future[Form[Boolean]] = userAnswerValue match {
-        case Some(value) =>
-          Future.successful(form.fill(value))
-        case None        =>
-          goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-            if (record.supplementaryUnit.exists(_ != 0)) {
-              form.fill(true)
-            } else {
-              form.fill(false)
-            }
-          }
-      }
-      preparedFormFuture.map { preparedForm =>
-        val formValue            = preparedForm.value.getOrElse(false)
-        val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
-        Ok(view(preparedForm, mode, recordId, onSubmitAction))
-          .addingToSession(
-            initialValueOfHasSuppUnit -> formValue.toString
-          )
-          .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
+        val initialValue = record.supplementaryUnit.exists(_ != 0)
+
+        val preparedFormFuture = userAnswerValue match {
+          case Some(value) =>
+            Future.successful(form.fill(value))
+          case None        =>
+            Future.successful(form.fill(initialValue))
+        }
+        preparedFormFuture.map { preparedForm =>
+          val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
+          Ok(view(preparedForm, mode, recordId, onSubmitAction))
+            .addingToSession(
+              initialValueOfHasSuppUnit -> initialValue.toString
+            )
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+        }
       }
     }
 

@@ -19,22 +19,20 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.SupplementaryUnitFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.Logging
-import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{MeasurementQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import services.{DataCleansingService, OttService}
+import services.OttService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
 import views.html.SupplementaryUnitView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SupplementaryUnitController @Inject() (
@@ -104,29 +102,30 @@ class SupplementaryUnitController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val userAnswerValue = request.userAnswers.get(SupplementaryUnitUpdatePage(recordId))
 
-      val preparedFormFuture: Future[(Form[String], String)] = userAnswerValue match {
-        case Some(value) =>
-          Future.successful((form.fill(value), ""))
-        case None        =>
-          goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-            val formValue: String = record.supplementaryUnit match {
-              case Some(value) if value != 0 => value.toString
-              case _                         => ""
-            }
-            val measurementUnit   = record.measurementUnit.getOrElse("")
-            (form.fill(formValue), measurementUnit)
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .flatMap { record =>
+          val initialValue: String = record.supplementaryUnit match {
+            case Some(value) if value != 0 => value.toString
+            case _                         => ""
           }
-      }
+          val measurementUnit      = record.measurementUnit.getOrElse("")
 
-      preparedFormFuture
-        .map { case (preparedForm, measurementUnit) =>
-          val formValue            = preparedForm.value.getOrElse(false)
-          val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
-          Ok(view(preparedForm, mode, recordId, measurementUnit, onSubmitAction))
-            .addingToSession(
-              initialValueOfSuppUnit -> formValue.toString
-            )
-            .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+          val preparedFormFuture = userAnswerValue match {
+            case Some(value) =>
+              Future.successful((form.fill(value), measurementUnit))
+            case None        =>
+              Future.successful((form.fill(initialValue), measurementUnit))
+          }
+
+          preparedFormFuture.map { case (preparedForm, measurementUnit) =>
+            val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+            Ok(view(preparedForm, mode, recordId, measurementUnit, onSubmitAction))
+              .addingToSession(
+                initialValueOfSuppUnit -> initialValue
+              )
+              .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+          }
         }
         .recover { case ex: Exception =>
           logger.error(s"Error occurred while fetching record for recordId: $recordId", ex)
