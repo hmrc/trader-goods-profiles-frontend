@@ -71,7 +71,7 @@ class UserAllowListActionSpec extends SpecBase with MockitoSugar with BeforeAndA
       val harness = new Harness(connector, appConfig)
       val result  = harness.callFilter(request).futureValue
 
-      result mustBe Some(Redirect("/problem/unauthorised-service-user"))
+      result mustBe Some(Redirect("/trader-goods-profiles/problem/unauthorised-service-user"))
     }
 
     "should return a None if the userAllowListEnabled feature flag is false" in {
@@ -93,7 +93,7 @@ class UserAllowListActionSpec extends SpecBase with MockitoSugar with BeforeAndA
       val harness = new Harness(connector, appConfig)
       val result  = harness.callFilter(request).futureValue
 
-      result mustBe Some(Redirect("/problem/unauthorised-service-user"))
+      result mustBe Some(Redirect("/trader-goods-profiles/problem/unauthorised-service-user"))
     }
 
   }
