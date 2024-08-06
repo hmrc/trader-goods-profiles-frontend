@@ -536,5 +536,8 @@ feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.
 feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
 feedback.link = Send us your feedback
+
 unauthorisedServiceUser.title = unauthorisedServiceUser
-unauthorisedServiceUser.heading = unauthorisedServiceUser
+unauthorisedServiceUser.heading = There is a problem
+unauthorisedServiceUser.p1 = Trader Goods Profile (TGP) is not available to the public yet.
+unauthorisedServiceUser.p2 = The details you have logged in with do not have access to TGP.
