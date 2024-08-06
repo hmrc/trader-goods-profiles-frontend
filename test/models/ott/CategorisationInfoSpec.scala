@@ -36,7 +36,7 @@ class CategorisationInfoSpec extends SpecBase {
         val ottResponse = OttResponse(
           goodsNomenclature = GoodsNomenclatureResponse(
             "id",
-            "commodity code",
+            "1234567890",
             Some("some measure unit"),
             Instant.EPOCH,
             None,
@@ -76,12 +76,12 @@ class CategorisationInfoSpec extends SpecBase {
         )
 
         val expectedResult = CategorisationInfo2(
-          commodityCode = "commodity code",
+          commodityCode = "1234567890",
           categoryAssessments = assessments,
           categoryAssessmentsThatNeedAnswers = assessments
         )
 
-        val result = CategorisationInfo2.build(ottResponse)
+        val result = CategorisationInfo2.build(ottResponse, "1234567890")
         result.value mustEqual expectedResult
       }
 
@@ -90,7 +90,7 @@ class CategorisationInfoSpec extends SpecBase {
         val ottResponse = OttResponse(
           goodsNomenclature = GoodsNomenclatureResponse(
             "id",
-            "commodity code",
+            "1234567890",
             Some("some measure unit"),
             Instant.EPOCH,
             None,
@@ -169,12 +169,66 @@ class CategorisationInfoSpec extends SpecBase {
         )
 
         val expectedResult = CategorisationInfo2(
-          commodityCode = "commodity code",
+          commodityCode = "1234567890",
           categoryAssessments = expectedAssessments,
           categoryAssessmentsThatNeedAnswers = expectedAssessments
         )
 
-        val result = CategorisationInfo2.build(ottResponse)
+        val result = CategorisationInfo2.build(ottResponse, "1234567890")
+        result.value mustEqual expectedResult
+      }
+
+      "with the shorter entered commodity code rather than the padded ott one" in {
+
+        val ottResponse = OttResponse(
+          goodsNomenclature = GoodsNomenclatureResponse(
+            "id",
+            "1234560000",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId2")
+          ),
+          includedElements = Seq(
+            ThemeResponse("themeId1", 1),
+            CategoryAssessmentResponse(
+              "assessmentId2",
+              "themeId2",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            ThemeResponse("themeId2", 2),
+            CertificateResponse("exemptionId1", "code1", "description1"),
+            AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+            ThemeResponse("ignoredTheme", 3),
+            CertificateResponse("ignoredExemption", "code3", "description3")
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        val assessments = Seq(
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+        )
+
+        val expectedResult = CategorisationInfo2(
+          commodityCode = "123456",
+          categoryAssessments = assessments,
+          categoryAssessmentsThatNeedAnswers = assessments
+        )
+
+        val result = CategorisationInfo2.build(ottResponse, "123456")
         result.value mustEqual expectedResult
       }
 
@@ -186,7 +240,7 @@ class CategorisationInfoSpec extends SpecBase {
         val ottResponse = OttResponse(
           goodsNomenclature = GoodsNomenclatureResponse(
             "id",
-            "commodity code",
+            "1234567890",
             Some("some measure unit"),
             Instant.EPOCH,
             None,
@@ -199,7 +253,7 @@ class CategorisationInfoSpec extends SpecBase {
           descendents = Seq.empty[Descendant]
         )
 
-        CategorisationInfo2.build(ottResponse) mustBe None
+        CategorisationInfo2.build(ottResponse, "1234567890") mustBe None
       }
 
       "when the correct theme cannot be found" in {
@@ -207,7 +261,7 @@ class CategorisationInfoSpec extends SpecBase {
         val ottResponse = OttResponse(
           goodsNomenclature = GoodsNomenclatureResponse(
             "id",
-            "commodity code",
+            "1234567890",
             Some("some measure unit"),
             Instant.EPOCH,
             None,
@@ -221,7 +275,7 @@ class CategorisationInfoSpec extends SpecBase {
           descendents = Seq.empty[Descendant]
         )
 
-        CategorisationInfo2.build(ottResponse) mustBe None
+        CategorisationInfo2.build(ottResponse, "1234567890") mustBe None
       }
 
       "when a certificate cannot be found" in {

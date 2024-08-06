@@ -18,8 +18,8 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.AssessmentAnswer.NotAnsweredYet
-import models.{AnsweredQuestions, UserAnswers}
 import models.ott.response.OttResponse
+import models.{AnsweredQuestions, UserAnswers}
 import pages.{AssessmentPage, AssessmentPage2}
 import play.api.libs.json.{Json, OFormat}
 
@@ -36,20 +36,20 @@ final case class CategorisationInfo2(
       Some(categoryAssessmentsThatNeedAnswers(index))
     }
 
-  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] = {
+  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
     categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
       AnsweredQuestions(
         assessment._2,
         assessment._1,
         userAnswers.get(AssessmentPage2(recordId, assessment._2))
-      ))
-  }
+      )
+    )
 
 }
 
 object CategorisationInfo2 {
 
-  def build(ott: OttResponse): Option[CategorisationInfo2] =
+  def build(ott: OttResponse, commodityCodeUserEntered: String): Option[CategorisationInfo2] =
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
@@ -57,7 +57,7 @@ object CategorisationInfo2 {
         val assessmentsSorted = assessments.sorted
 
         CategorisationInfo2(
-          ott.goodsNomenclature.commodityCode,
+          commodityCodeUserEntered, //TODO test this
           assessmentsSorted,
           assessmentsSorted //TODO this will need to check for e.g. empty assessments
         )

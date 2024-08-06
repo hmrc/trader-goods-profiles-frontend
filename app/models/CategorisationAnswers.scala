@@ -49,7 +49,7 @@ object CategorisationAnswers2 {
     for {
       categorisationInfo       <- getCategorisationInfoForThisRecord(userAnswers, recordId)
       answeredQuestionsOptions <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
-      answeredQuestionsOnly     = answeredQuestionsOptions.filter(_.answer.isDefined)
+      answeredQuestionsOnly    <- getAnsweredQuestionsOnly(answeredQuestionsOptions, recordId)
       _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId)
       _                        <- ensureHaveAnsweredTheRightAmount(
                                     answeredQuestionsOnly,
@@ -65,6 +65,17 @@ object CategorisationAnswers2 {
       .getOrElse(
         Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
       )
+
+  private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
+    val answeredQuestionsOnly = answeredQuestionsOptions.filter(_.answer.isDefined)
+
+    if (answeredQuestionsOnly.isEmpty) {
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(AssessmentPage2(recordId, firstAssessmentIndex))))
+    } else {
+      Right(answeredQuestionsOnly)
+    }
+
+  }
 
   private def getAssessmentsFromUserAnswers(
     categorisationInfo: CategorisationInfo2,

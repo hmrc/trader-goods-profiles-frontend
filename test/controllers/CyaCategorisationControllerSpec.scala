@@ -20,20 +20,22 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
-import models.helper.CategorisationJourney
-import models.{AssessmentAnswer, Category1, CategoryRecord, UserAnswers}
+import models.helper.{CategorisationJourney, CategorisationJourney2}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1, Category1Scenario, CategoryRecord, CategoryRecord2, UserAnswers}
+import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{AssessmentPage, HasSupplementaryUnitPage, LongerCommodityCodePage, SupplementaryUnitPage}
+import pages._
 import play.api.i18n.Messages
 import play.api.inject.bind
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
@@ -50,6 +52,441 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
   private val previouslyUpdatedCategoryInfo =
     categorisationInfo.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+
+  private val onwardRoute      = Call("GET", "/foo")
+  private val fakeNavigator    = new FakeNavigator(onwardRoute)
+  lazy private val continueUrl = RedirectUrl(
+    routes.CategorisationPreparationController.startCategorisation(testRecordId).url
+  )
+
+  "CyaCategorisationController2" - {
+
+    "for a GET" - {
+
+      val emptySummaryList = SummaryListViewModel(
+        rows = Seq.empty
+      )
+
+      "must return OK and the correct view" - {
+
+        "when all category assessments answered" in {
+
+          val userAnswers = userAnswersForCategorisation2
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category1, 0)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category2, 1)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category3, 2)
+                  .get
+              )
+            )
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              emptySummaryList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when no exemption is used, meaning some assessment pages are not answered" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category1, 0)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category2, 1)
+                  .get
+              )
+            )
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              emptySummaryList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery" - {
+
+        "when no category assessments answered" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          }
+        }
+
+        "when no answers are found" in {
+          val application = applicationBuilder(Some(emptyUserAnswers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+          }
+        }
+
+        "when no existing data is found" in {
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
+
+        "if categorisation query is not defined" in {
+
+          val userAnswersForCategorisationEmptyQuery: UserAnswers = emptyUserAnswers
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1234.0")
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisationEmptyQuery)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
+          }
+        }
+
+        "when validation errors" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          }
+        }
+      }
+    }
+
+    "for a POST" - {
+
+      "when user answers can update a valid goods record" - {
+
+        "must update the goods record and redirect to the CategorisationResultController with correct view" - {
+
+          "when audit service works without longer commodity code" in {
+
+            val userAnswers = UserAnswers(userAnswersId)
+              .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+              .success
+              .value
+
+            val mockConnector = mock[GoodsRecordConnector]
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+
+            val mockAuditService = mock[AuditService]
+            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+
+            val mockSessionRepository = mock[SessionRepository]
+            when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+            val mockCategorisationService = mock[CategorisationService]
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[Navigator].toInstance(fakeNavigator),
+                  bind[CategorisationService].toInstance(mockCategorisationService)
+                )
+                .build()
+
+            val expectedPayload = CategoryRecord2(
+              testEori,
+              testRecordId,
+              "1234567890",
+              category = Category1Scenario,
+              categoryAssessmentsWithExemptions = 0
+            )
+
+            running(application) {
+              val request = FakeRequest(POST, routes.CyaCategorisationController.onSubmit2(testRecordId).url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual onwardRoute.url
+
+              verify(mockConnector)
+                .updateCategoryAndComcodeForGoodsRecord2(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                  any()
+                )
+
+              withClue("audit event has been fired") {
+                verify(mockAuditService)
+                  .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
+              }
+              withClue("must cleanse the user answers data") {
+                verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney2))
+              }
+
+            }
+          }
+
+          "when audit service fails" in {
+
+            val userAnswers = UserAnswers(userAnswersId)
+              .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+              .success
+              .value
+
+            val mockConnector = mock[GoodsRecordConnector]
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+
+            val mockAuditService = mock[AuditService]
+            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+              .thenReturn(Future.failed(new RuntimeException(":(")))
+
+            val mockCategorisationService = mock[CategorisationService]
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[Navigator].toInstance(fakeNavigator),
+                  bind[CategorisationService].toInstance(mockCategorisationService)
+                )
+                .build()
+
+            val expectedPayload = CategoryRecord2(
+              testEori,
+              testRecordId,
+              "1234567890",
+              category = Category1Scenario,
+              categoryAssessmentsWithExemptions = 0
+            )
+
+            running(application) {
+              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual onwardRoute.url
+
+              withClue("connector was called even though audit failed") {
+                verify(mockConnector)
+                  .updateCategoryAndComcodeForGoodsRecord2(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                    any()
+                  )
+              }
+            }
+          }
+
+        }
+
+      }
+
+      "when user answers cannot update a goods record" - {
+
+        "must not submit anything, and redirect to Journey Recovery" in {
+
+          val mockConnector = mock[GoodsRecordConnector]
+
+          val sessionRepository = mock[SessionRepository]
+          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
+              .overrides(bind[SessionRepository].toInstance(sessionRepository))
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+              .url
+
+            verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any())
+            withClue("must cleanse the user answers data") {
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney2))
+            }
+          }
+        }
+      }
+
+      "must let the play error handler deal with connector failure" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        val mockConnector = mock[GoodsRecordConnector]
+        when(mockConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val mockCategorisationService = mock[CategorisationService]
+        when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockConnector),
+              bind[AuditService].toInstance(mockAuditService),
+              bind[SessionRepository].toInstance(sessionRepository),
+              bind[CategorisationService].toInstance(mockCategorisationService)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+          intercept[RuntimeException] {
+            await(route(application, request).value)
+          }
+
+          withClue("audit event has been fired even though connector failed") {
+            verify(mockAuditService)
+              .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
+          }
+          withClue("must not cleanse the user answers data when connector fails") {
+            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney2))
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+    }
+  }
 
   "CyaCategorisationController" - {
 
