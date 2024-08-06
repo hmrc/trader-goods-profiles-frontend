@@ -26,13 +26,15 @@ import queries.RecordCategorisationsQuery
 import pages._
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
 import scala.util.Try
 
 @Singleton
-class Navigator @Inject() () {
+//TODO decide if actually needed cat service injected here?
+class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage                          => _ => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
@@ -82,6 +84,7 @@ class Navigator @Inject() () {
     case p: CategoryGuidancePage =>
       _ => routes.AssessmentController.onPageLoad2(NormalMode, p.recordId, firstAssessmentIndex)
     case p: AssessmentPage2                        => navigateFromAssessment2(p)
+    case p: CyaCategorisationPage2 => navigateFromCyaCategorisationPage(p)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -295,6 +298,17 @@ class Navigator @Inject() () {
     }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromCyaCategorisationPage(page: CyaCategorisationPage2)(answers: UserAnswers): Call = {
+    (for {
+      categorisationInfo <- answers.get(CategorisationDetailsQuery2(page.recordId))
+      scenario = categorisationService.calculateResult(categorisationInfo, answers, page.recordId)
+    } yield {
+      routes.CategorisationResultController.onPageLoad2(page.recordId, scenario)
+    }).getOrElse(routes.JourneyRecoveryController.onPageLoad(
+      Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(page.recordId).url))
+    ))
+
+  }
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                              => navigateFromHasNirmsCheck

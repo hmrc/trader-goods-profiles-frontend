@@ -37,6 +37,7 @@ case object SessionData {
   val commodityCodePage: String              = "commodityCode"
   val hasCorrectGoodsPage: String            = "hasCorrectGoods"
   val assessmentsPage: String                = "assessments"
+  val assessmentsPage2: String = "assessments2"
   val hasSupplementaryUnitPage: String       = "hasSupplementaryUnit"
   val supplementaryUnitPage: String          = "supplementaryUnit"
   val hasSupplementaryUnitUpdatePage: String = "hasSupplementaryUnitUpdate"
