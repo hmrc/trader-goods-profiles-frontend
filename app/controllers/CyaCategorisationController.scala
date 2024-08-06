@@ -112,34 +112,37 @@ class CyaCategorisationController @Inject() (
       }
   }
 
-  def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+  def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
 
-    categorisationInfo.map{ info =>
-      CategorisationAnswers2.build(request.userAnswers, recordId) match {
-        case Right(_) =>
+      categorisationInfo
+        .map { info =>
+          CategorisationAnswers2.build(request.userAnswers, recordId) match {
+            case Right(_) =>
+              val categorisationRows = info.categoryAssessments
+                .flatMap(assessment =>
+                  AssessmentsSummary.row2(
+                    recordId,
+                    request.userAnswers,
+                    assessment,
+                    info.categoryAssessments.indexOf(assessment)
+                  )
+                )
 
-          val categorisationRows = info.categoryAssessments
-            .flatMap(assessment =>
-              AssessmentsSummary.row2(
-                recordId,
-                request.userAnswers,
-                assessment,
-                info.categoryAssessments.indexOf(assessment)
+              val categorisationList = SummaryListViewModel(
+                rows = categorisationRows
               )
-            )
 
-          val categorisationList = SummaryListViewModel(
-            rows = categorisationRows
-          )
+              Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
 
-          Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
-
-        case Left(errors) =>
-          logErrorsAndContinue2(errors, recordId, request)
-      }}.getOrElse(
-      logErrorsAndContinue2("Failed to get categorisation details", recordId, request)
-    )
+            case Left(errors) =>
+              logErrorsAndContinue2(errors, recordId, request)
+          }
+        }
+        .getOrElse(
+          logErrorsAndContinue2("Failed to get categorisation details", recordId, request)
+        )
 
   }
 
@@ -155,26 +158,26 @@ class CyaCategorisationController @Inject() (
             Scenario2.getResultAsInt(categoryRecord.category)
           )
 
-          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(request.eori, recordId, categoryRecord).map { _ =>
-            //  dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(request.eori, recordId, categoryRecord).map {
+            _ =>
+              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney2)
 
-            Redirect(
-              navigator.nextPage(
-                CyaCategorisationPage2(recordId),
-                NormalMode,
-                request.userAnswers
+              Redirect(
+                navigator.nextPage(
+                  CyaCategorisationPage2(recordId),
+                  NormalMode,
+                  request.userAnswers
+                )
               )
-            )
           }
 
-            case Left(error) => Future.successful(logErrorsAndContinue2(error, recordId, request))
+        case Left(error) => Future.successful(logErrorsAndContinue2(error, recordId, request))
 
       }
 
-
   }
 
-    def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
