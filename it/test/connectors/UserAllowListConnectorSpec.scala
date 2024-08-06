@@ -67,7 +67,6 @@ private class UserAllowListConnectorSpec
     }
 
     "must return false when the server responds NOT_FOUND" in {
-
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))
@@ -79,7 +78,6 @@ private class UserAllowListConnectorSpec
     }
 
     "must fail when the server responds with any other status" in {
-
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))
@@ -91,7 +89,6 @@ private class UserAllowListConnectorSpec
     }
 
     "must fail when the connection fails" in {
-
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))

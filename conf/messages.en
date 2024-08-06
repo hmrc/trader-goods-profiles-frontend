@@ -536,3 +536,5 @@ feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.
 feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
 feedback.link = Send us your feedback
+unauthorisedServiceUser.title = unauthorisedServiceUser
+unauthorisedServiceUser.heading = unauthorisedServiceUser

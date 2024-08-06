@@ -47,9 +47,11 @@ class UserAllowListActionImpl @Inject() (
         .map {
           case false =>
             logger.info(s"trader with eori: ${request.eori} does not have access to TGP")
-            Some(Redirect(routes.UnauthorisedController.onPageLoad))
+            Some(Redirect(routes.UnauthorisedServiceUserController.onPageLoad()))
           case true  => None
-        }
+        } recover { case _ =>
+        Some(Redirect(routes.UnauthorisedServiceUserController.onPageLoad()))
+      }
     } else {
       logger.info("user allow list feature flag is disabled, always returning successfully")
       Future.successful(None)

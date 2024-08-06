@@ -18,11 +18,14 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.UserAllowListConnector
+import connectors.UserAllowListConnector.UnexpectedResponseException
 import models.requests.IdentifierRequest
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.mockito.Mockito.{reset, verifyNoInteractions, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
+import play.api.http.Status.BAD_REQUEST
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
@@ -31,7 +34,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserAllowListActionSpec extends SpecBase with MockitoSugar {
+class UserAllowListActionSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   class Harness(mockUserAllowListConnector: UserAllowListConnector, config: Configuration)
       extends UserAllowListActionImpl(mockUserAllowListConnector, config) {
@@ -42,6 +45,11 @@ class UserAllowListActionSpec extends SpecBase with MockitoSugar {
   private val appConfig             = mock[Configuration]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    reset(connector)
+  }
 
   "refine action" - {
     "return a None if the user is on the user allow list" in {
@@ -55,15 +63,15 @@ class UserAllowListActionSpec extends SpecBase with MockitoSugar {
       result mustBe None
     }
 
-    "should redirect a user to the /unauthorised-service-user page" in {
+    "should redirect a user to the /unauthorised-service-user page if they are not on the user allow list" in {
       val request = IdentifierRequest(FakeRequest(), "1234", "eori", AffinityGroup.Individual)
-      when(connector.check(any, any)(any)).thenReturn(Future.successful(true))
-      when(appConfig.get[Boolean]("features.user-allow-list-enabled")).thenReturn(false)
+      when(connector.check(any, any)(any)).thenReturn(Future.successful(false))
+      when(appConfig.get[Boolean]("features.user-allow-list-enabled")).thenReturn(true)
 
       val harness = new Harness(connector, appConfig)
       val result  = harness.callFilter(request).futureValue
 
-      result mustBe Some(Redirect("/problem/technical-issue"))
+      result mustBe Some(Redirect("/problem/unauthorised-service-user"))
     }
 
     "should return a None if the userAllowListEnabled feature flag is false" in {
@@ -76,5 +84,17 @@ class UserAllowListActionSpec extends SpecBase with MockitoSugar {
       result mustBe None
       verifyNoInteractions(connector)
     }
+
+    "should redirect a user to the /unauthorised-service-user page if the user-allow-list service throws an error" in {
+      val request = IdentifierRequest(FakeRequest(), "1234", "eori", AffinityGroup.Individual)
+      when(connector.check(any, any)(any)).thenReturn(Future.failed(UnexpectedResponseException(BAD_REQUEST)))
+      when(appConfig.get[Boolean]("features.user-allow-list-enabled")).thenReturn(true)
+
+      val harness = new Harness(connector, appConfig)
+      val result  = harness.callFilter(request).futureValue
+
+      result mustBe Some(Redirect("/problem/unauthorised-service-user"))
+    }
+
   }
 }
