@@ -50,7 +50,6 @@ object AssessmentsSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            //TODO next
             routes.AssessmentController.onPageLoad2(CheckMode, recordId, indexOfThisAssessment).url
           ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
         )

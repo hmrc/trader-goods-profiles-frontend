@@ -19,16 +19,107 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
 import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
-import models.ott.{CategorisationInfo, CategoryAssessment}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import org.apache.pekko.Done
-import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
+import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.CategorisationDetailsQuery
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import utils.Constants.firstAssessmentIndex
 
 final case class CategorisationAnswers(
   assessmentValues: Seq[AssessmentAnswer],
   supplementaryUnit: Option[String]
 )
+
+final case class CategorisationAnswers2(
+  assessmentValues: Seq[Option[AssessmentAnswer2]]
+  //supplementaryUnit: Option[String]
+)
+
+object CategorisationAnswers2 {
+
+  // implicit lazy val format: OFormat[CategorisationAnswers2] = Json.format
+
+  def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers2] =
+    buildAssessmentDetails(userAnswers, recordId)
+      .map(CategorisationAnswers2(_))
+
+  private def buildAssessmentDetails(
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[ValidationError, Seq[Option[AssessmentAnswer2]]] =
+    for {
+      categorisationInfo       <- getCategorisationInfoForThisRecord(userAnswers, recordId)
+      answeredQuestionsOptions <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
+      answeredQuestionsOnly     = answeredQuestionsOptions.filter(_.answer.isDefined)
+      _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId)
+      _                        <- ensureHaveAnsweredTheRightAmount(
+                                    answeredQuestionsOnly,
+                                    answeredQuestionsOptions.size,
+                                    recordId
+                                  )
+    } yield answeredQuestionsOptions.map(_.answer)
+
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
+    userAnswers
+      .getPageValue(CategorisationDetailsQuery2(recordId))
+      .map(Right(_))
+      .getOrElse(
+        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
+      )
+
+  private def getAssessmentsFromUserAnswers(
+    categorisationInfo: CategorisationInfo2,
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[ValidationError, Seq[AnsweredQuestions]] = {
+    val answers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    if (answers.isEmpty) {
+      Left(NonEmptyChain(PageMissing(AssessmentPage2(recordId, firstAssessmentIndex))))
+    } else {
+      Right(answers)
+    }
+  }
+
+  private def ensureNoExemptionIsOnlyFinalAnswer(
+    answeredQuestionsOnly: Seq[AnsweredQuestions],
+    recordId: String
+  ): EitherNec[ValidationError, Done] = {
+
+    //Last answer can be a NoExemption. Others can't
+    val allExceptLastAnswer          = answeredQuestionsOnly.reverse.tail
+    val noExemptionsBeforeLastAnswer =
+      allExceptLastAnswer.filter(ass => ass.answer.contains(AssessmentAnswer2.NoExemption))
+
+    if (noExemptionsBeforeLastAnswer.isEmpty) {
+      Right(Done)
+    } else {
+      val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage2(recordId, ass.index)))
+      val nec    =
+        NonEmptyChain
+          .fromSeq(errors)
+          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(CategorisationDetailsQuery2(recordId))))
+      Left(nec)
+    }
+  }
+
+  private def ensureHaveAnsweredTheRightAmount(
+    answeredQuestionsOnly: Seq[AnsweredQuestions],
+    totalQuestions: Int,
+    recordId: String
+  ): Either[NonEmptyChain[ValidationError], Done] = {
+
+    val lastAnswerIsExemption = answeredQuestionsOnly.last.answer.contains(AssessmentAnswer2.NoExemption)
+
+    if (lastAnswerIsExemption || totalQuestions == answeredQuestionsOnly.size) {
+      Right(Done)
+    } else {
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery2(recordId))))
+    }
+
+  }
+}
 
 object CategorisationAnswers {
 

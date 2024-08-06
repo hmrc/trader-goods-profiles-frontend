@@ -181,13 +181,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers = emptyUserAnswers
         .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
-        .success.value
+        .success
+        .value
 
       categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual StandardGoods
 
@@ -196,9 +200,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "return Category 1 if a category 1 question is No" in {
       val userAnswers = emptyUserAnswers
         .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
-        .success.value
+        .success
+        .value
 
       categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category1
 
@@ -207,13 +213,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "return Category 2 if a category 2 question is No" in {
       val userAnswers = emptyUserAnswers
         .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
-        .success.value
+        .success
+        .value
         .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
-        .success.value
+        .success
+        .value
 
       categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category2
 
