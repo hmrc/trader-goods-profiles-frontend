@@ -18,6 +18,33 @@ package models
 
 import models.ott.CategorisationInfo
 import play.api.mvc.JavascriptLiteral
+import utils.Constants._
+
+sealed trait Scenario2
+
+case object StandardGoodsScenario extends Scenario2
+case object Category1Scenario extends Scenario2
+case object Category2Scenario extends Scenario2
+
+object Scenario2 {
+
+  def getResultAsInt(scenario: Scenario2): Int = {
+    scenario match {
+      case StandardGoodsScenario => StandardGoodsAsInt
+      case Category1Scenario => Category1AsInt
+      case Category2Scenario => Category2AsInt
+    }
+  }
+
+  implicit val jsLiteral: JavascriptLiteral[Scenario2] = {
+    case StandardGoodsScenario => "Standard"
+    case Category1Scenario => "Category1"
+    case Category2Scenario => "Category2"
+  }
+
+
+}
+
 
 sealed trait Scenario
 

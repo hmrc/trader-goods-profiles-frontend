@@ -39,7 +39,7 @@ final case class CategoryRecord2(
   eori: String,
   recordId: String,
   comcode: String,
-  category: Int,
+  category: Scenario2,
   categoryAssessmentsWithExemptions: Int
   //TODO later - sup unit
 )

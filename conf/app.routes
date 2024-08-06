@@ -155,6 +155,11 @@ GET         /update-record/:recordId/categorisation/result/standard             
 GET         /update-record/:recordId/categorisation/result/category-1-no-exemptions         controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptions)
 GET         /update-record/:recordId/categorisation/result/standard-no-assessments          controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardNoAssessments)
 
+GET         /update-record/:recordId/categorisation2/result/category-1                       controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = Category1Scenario)
+GET         /update-record/:recordId/categorisation2/result/category-2                       controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = Category2Scenario)
+GET         /update-record/:recordId/categorisation2/result/standard                         controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = StandardGoodsScenario)
+
+
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
 GET         /update-record/:recordId/categorisation2/check-your-answers                      controllers.CyaCategorisationController.onPageLoad2(recordId:String)

@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.{AssessmentAnswer, AssessmentAnswer2}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, StandardGoodsScenario}
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.response._
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
@@ -37,7 +37,7 @@ import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerC
 import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.{Category1, Category2, StandardGoods}
+import utils.Constants.{Category1AsInt, Category2AsInt, StandardGoodsAsInt}
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -193,7 +193,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
 
-      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual StandardGoods
+      categorisationService.calculateResult(
+        categorisationInfo2,
+        userAnswers,
+        testRecordId
+      ) mustEqual StandardGoodsScenario
 
     }
 
@@ -206,7 +210,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
 
-      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category1
+      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category1Scenario
 
     }
 
@@ -225,7 +229,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
 
-      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category2
+      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category2Scenario
 
     }
 

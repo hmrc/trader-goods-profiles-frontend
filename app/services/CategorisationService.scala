@@ -20,12 +20,12 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import models.requests.DataRequest
-import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsScenario, UserAnswers}
 import pages.{AssessmentPage, AssessmentPage2, InconsistentUserAnswersException}
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, CommodityUpdateQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.{Category1, Category2, StandardGoods, firstAssessmentIndex}
+import utils.Constants.{Category1AsInt, Category2AsInt, StandardGoodsAsInt, firstAssessmentIndex}
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -66,15 +66,16 @@ class CategorisationService @Inject() (
   }
 
   def calculateResult(categorisationInfo: CategorisationInfo2,
-                      userAnswers: UserAnswers, recordId: String): Int = {
+                      userAnswers: UserAnswers, recordId: String): Scenario2 = {
 
     val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
     val getFirstNo = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
 
     getFirstNo match {
-      case Some(details) => details.question.category
-      case _ => StandardGoods
+      case None => StandardGoodsScenario
+      case Some(details) if details.question.category == 2 => Category2Scenario
+      case _ => Category1Scenario
     }
 
     }

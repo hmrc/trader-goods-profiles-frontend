@@ -21,9 +21,9 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.helper.CategorisationJourney
+import models.helper.{CategorisationJourney, CategorisationJourney2}
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, Scenario, ValidationError}
+import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, Scenario, Scenario2, ValidationError}
 import navigation.Navigator
 import pages.{CyaCategorisationPage, CyaCategorisationPage2}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -149,7 +149,7 @@ class CyaCategorisationController @Inject() (
             request.affinityGroup,
             recordId,
             categoryRecord.categoryAssessmentsWithExemptions,
-            categoryRecord.category
+            Scenario2.getResultAsInt(categoryRecord.category)
           )
 
           goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(request.eori, recordId, categoryRecord).map { _ =>
@@ -230,7 +230,7 @@ class CyaCategorisationController @Inject() (
     val continueUrl = RedirectUrl(routes.CategorisationPreparationController.startCategorisation(recordId).url)
 
     logger.error(s"Unable to update Goods Profile: $errorMessage")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney2)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 

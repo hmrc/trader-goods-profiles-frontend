@@ -19,7 +19,7 @@ package utils
 case object Constants {
   val firstAssessmentIndex: Int = 0
 
-  val Category1: Int = 1
-  val Category2: Int = 2
-  val StandardGoods: Int = 3
+  val Category1AsInt: Int = 1
+  val Category2AsInt: Int = 2
+  val StandardGoodsAsInt: Int = 3
 }
