@@ -88,15 +88,14 @@ class CyaSupplementaryUnitController @Inject() (
           val initialHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
           val initialSuppUnitOpt    = request.session.get(initialValueOfSuppUnit)
 
-          val finalHasSuppUnit = model.hasSupplementaryUnit.getOrElse(false)
-          val finalSuppUnit    = model.supplementaryUnit.getOrElse("")
+          val finalHasSuppUnitOpt = model.hasSupplementaryUnit
+          val finalSuppUnitOpt    = model.supplementaryUnit
 
           val isValueChanged    =
-            initialHasSuppUnitOpt.exists(_ != finalHasSuppUnit) || compareSupplementaryUnits(
-              initialSuppUnitOpt.getOrElse("0"),
-              finalSuppUnit
-            )
-          val isSuppUnitRemoved = initialHasSuppUnitOpt.exists(_ && !finalHasSuppUnit)
+            initialHasSuppUnitOpt != finalHasSuppUnitOpt ||
+              compareSupplementaryUnits(initialSuppUnitOpt, finalSuppUnitOpt)
+          val isSuppUnitRemoved =
+            initialHasSuppUnitOpt.contains(true) && finalHasSuppUnitOpt.contains(false)
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
@@ -110,9 +109,12 @@ class CyaSupplementaryUnitController @Inject() (
       }
   }
 
-  private def compareSupplementaryUnits(initialSuppUnit: String, finalSuppUnit: String): Boolean = {
-    val initialSuppUnitBD = BigDecimal(initialSuppUnit)
-    val finalSuppUnitBD   = BigDecimal(finalSuppUnit)
+  private def compareSupplementaryUnits(
+    initialSuppUnitOpt: Option[String],
+    finalSuppUnitOpt: Option[String]
+  ): Boolean = {
+    val initialSuppUnitBD = BigDecimal(initialSuppUnitOpt.getOrElse("0"))
+    val finalSuppUnitBD   = BigDecimal(finalSuppUnitOpt.getOrElse("0"))
     initialSuppUnitBD != finalSuppUnitBD
   }
 }
