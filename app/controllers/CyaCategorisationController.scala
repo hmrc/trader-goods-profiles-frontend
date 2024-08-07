@@ -28,7 +28,8 @@ import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.RecordCategorisationsQuery
+import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -48,7 +49,8 @@ class CyaCategorisationController @Inject() (
   dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
-  navigator: Navigator
+  navigator: Navigator,
+  sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -94,6 +96,11 @@ class CyaCategorisationController @Inject() (
             ).flatten
           )
 
+          for {
+            updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
+            _         <- sessionRepository.set(updatedUA)
+          } yield updatedUA
+
           Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
 
         case Left(errors) =>
@@ -114,7 +121,7 @@ class CyaCategorisationController @Inject() (
             model.category
           )
 
-          goodsRecordConnector.updateCategoryForGoodsRecord(request.eori, recordId, model).map { _ =>
+          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
             Redirect(
               navigator.nextPage(

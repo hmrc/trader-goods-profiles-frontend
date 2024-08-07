@@ -32,7 +32,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -77,6 +77,8 @@ trait SpecBase
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
+
+  def testShorterCommodityQuery: Commodity = Commodity("1742900000", List("test"), validityStartDate, None)
 
   def testAuditOttResponse: OttResponse = OttResponse(
     GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
@@ -136,6 +138,18 @@ trait SpecBase
       .success
       .value
       .set(EmailPage(testRecordId), "test@test.com")
+      .success
+      .value
+
+  def mandatorySupplementaryUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+      .success
+      .value
+      .set(SupplementaryUnitUpdatePage(testRecordId), "1234567890.123456")
+      .success
+      .value
+      .set(MeasurementQuery(testRecordId), "litres")
       .success
       .value
 
@@ -243,9 +257,41 @@ trait SpecBase
       Instant.now(),
       None,
       1,
-      true,
-      true,
+      active = true,
+      toReview = false,
       None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
+  def toReviewGoodsRecordResponse(
+    createdDateTime: Instant,
+    updatedDateTime: Instant,
+    reviewReason: String
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      None,
+      None,
+      Instant.now(),
+      None,
+      1,
+      active = true,
+      toReview = true,
+      reviewReason = Some(reviewReason),
       "Not ready",
       None,
       None,
@@ -269,13 +315,44 @@ trait SpecBase
       "UK",
       1,
       None,
-      Some(1234.0),
+      Some(1234567890.123456),
       Some("grams"),
       Instant.now(),
       None,
       1,
-      true,
-      true,
+      active = true,
+      toReview = true,
+      None,
+      "Not ready",
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
+  def goodsRecordResponseWithOutSupplementaryUnit(
+    createdDateTime: Instant,
+    updatedDateTime: Instant
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      "1",
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "1234567",
+      "Not requested",
+      "Organic bananas",
+      "UK",
+      1,
+      None,
+      Some(0.0),
+      Some("grams"),
+      Instant.now(),
+      None,
+      1,
+      active = true,
+      toReview = true,
       None,
       "Not ready",
       None,
@@ -294,6 +371,7 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
         bind[ProfileCheckAction].to[ProfileCheckActionImpl],
+        bind[ProfileAuthenticateAction].to[ProfileAuthenticateActionImpl],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
 }

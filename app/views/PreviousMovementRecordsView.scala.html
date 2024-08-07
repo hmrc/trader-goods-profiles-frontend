@@ -15,40 +15,62 @@
  *@
 
 @this(
-        layout: templates.Layout,
-        govukButton: GovukButton,
-        formHelper: FormWithCSRF
+layout: templates.Layout,
+govukButton: GovukButton,
+govukTable: GovukTable,
+formHelper: FormWithCSRF
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("previousMovementRecords.title"))) {
 
- <h1 class="govuk-heading-l">@messages("previousMovementRecords.h1")</h1>
- <p class="govuk-body">@messages("previousMovementRecords.p1")</p>
- <p class="govuk-body">@messages("previousMovementRecords.p2")</p>
- <p class="govuk-body">@messages("previousMovementRecords.p3")</p>
- <p class="govuk-body">@messages("previousMovementRecords.p4")</p>
- <h2 class="govuk-heading-m">@messages("previousMovementRecords.subheading")</h2>
- <p class="govuk-body">@messages("previousMovementRecords.p5")</p>
+<h1 class="govuk-heading-l">@messages("previousMovementRecords.h1")</h1>
+<p class="govuk-body">@messages("previousMovementRecords.p1")</p>
+<p class="govuk-body">@messages("previousMovementRecords.p2")</p>
+<h2 class="govuk-heading-m">@messages("previousMovementRecords.h2")</h2>
+<p class="govuk-body">@messages("previousMovementRecords.p3")</p>
 
- <div aria-live="polite">
-  <div id="spinning-wheel" hidden>
-   <div id="processing" class="govuk-!-margin-bottom-5" role="status">
-    <p class="govuk-visually-hidden">@messages("previousMovementRecords.p6")</p>
-    <svg class="ccms-loader" height="100" width="100">
-     <circle cx="50" cy="50" r="40"  fill="none"/>
-    </svg>
-   </div>
-  </div>
- </div>
+<div class="govuk-grid-column-full">
+ @govukTable(
+ Table(
+ firstCellIsHeader = true,
+ head = Some(Seq(
+ HeadCell(
+ content = Text(messages("previousMovementRecords.tableHeader.state"))
+ ),
+ HeadCell(
+ content = Text(messages("previousMovementRecords.tableHeader.description"))
+ )
+ )),
+ rows = Seq(
+ Seq(
+ TableRow(
+ content = Text(messages("previousMovementRecords.state.immiReady"))
+ ),
+ TableRow(
+ content = Text(messages("previousMovementRecords.description.immiReady"))
+ )),
+ Seq(
+ TableRow(
+ content = Text(messages("previousMovementRecords.state.notImmiReady"))
+ ),
+ TableRow(
+ content = Text(messages("previousMovementRecords.description.notImmiReady"))
+ )),
+ Seq(
+ TableRow(
+ content = Text(messages("previousMovementRecords.state.notReadyForUse"))
+ ),
+ TableRow(
+ content = Text(messages("previousMovementRecords.description.notReadyForUse"))
+ ))
+)))
+</div>
 
-
- @formHelper(action = PreviousMovementRecordsController.onSubmit(),Symbol("id") -> "previousMovementForm") {
+ @formHelper(action = PreviousMovementRecordsController.onSubmit()) {
   @govukButton(
-   ButtonViewModel(messages("previousMovementRecords.loadrecord")).withAttribute(("id", "load-button"))
+   ButtonViewModel(messages("site.continue"))
   )
  }
-
-
 }

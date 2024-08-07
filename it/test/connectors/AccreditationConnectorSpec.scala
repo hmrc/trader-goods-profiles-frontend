@@ -16,9 +16,8 @@
 
 package connectors
 
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.testRecordId
 import com.github.tomakehurst.wiremock.client.WireMock._
-import io.jsonwebtoken.Jwts.header
 import models.AdviceRequest
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -59,6 +58,7 @@ class AccreditationConnectorSpec
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
           .withRequestBody(equalTo(Json.toJson(adviceRequest).toString))
           .willReturn(ok())
       )
@@ -75,6 +75,7 @@ class AccreditationConnectorSpec
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
           .withRequestBody(equalTo(Json.toJson(adviceRequest).toString))
           .willReturn(serverError())
       )

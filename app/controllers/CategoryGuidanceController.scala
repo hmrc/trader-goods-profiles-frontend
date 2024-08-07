@@ -26,10 +26,9 @@ import pages.CategoryGuidancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
-import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
@@ -40,20 +39,20 @@ class CategoryGuidanceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
   auditService: AuditService,
   categorisationService: CategorisationService,
   navigator: Navigator,
-  goodsRecordConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       categorisationService
         .requireCategorisation(request, recordId)
         .flatMap { userAnswers =>
@@ -66,25 +65,25 @@ class CategoryGuidanceController @Inject() (
                 .build(userAnswers, request.eori, recordId)
                 .map { categoryRecord =>
                   goodsRecordConnector
-                    .updateCategoryForGoodsRecord(request.eori, recordId, categoryRecord)
+                    .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
-                        .removingFromSession(dataUpdated, pageUpdated)
+                        .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
             case Some(NoRedirectScenario)                            =>
-              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated))
+              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
           }
         }
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
-  }
+    }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onSubmit(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       auditService
         .auditStartUpdateGoodsRecord(
           request.eori,
@@ -94,5 +93,5 @@ class CategoryGuidanceController @Inject() (
         )
 
       Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
-  }
+    }
 }

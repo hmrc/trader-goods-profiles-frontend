@@ -29,6 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCommodityCodeChangeView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,6 +41,7 @@ class HasCommodityCodeChangeController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: HasCommodityCodeChangeFormProvider,
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
@@ -50,18 +52,18 @@ class HasCommodityCodeChangeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, recordId))
-  }
+      Ok(view(preparedForm, mode, recordId)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

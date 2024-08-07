@@ -25,7 +25,7 @@
 
 @(recordId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("createRecordSuccess.title"))) {
+@layout(pageTitle = titleNoForm(messages("createRecordSuccess.title")),showBackLink = false) {
 
     @govukPanel(Panel(
           title = messages("createRecordSuccess.h1")

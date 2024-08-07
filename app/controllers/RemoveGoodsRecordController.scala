@@ -29,7 +29,6 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.RemoveGoodsRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,6 +40,7 @@ class RemoveGoodsRecordController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveGoodsRecordFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveGoodsRecordView
@@ -51,17 +51,12 @@ class RemoveGoodsRecordController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector
-        .getRecord(request.eori, recordId)
-        .map { _ =>
-          Ok(view(form, recordId, location))
-            .removingFromSession(dataUpdated, pageUpdated)
-        }
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(form, recordId, location))
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

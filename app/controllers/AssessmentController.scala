@@ -19,12 +19,13 @@ package controllers
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import logging.Logging
-import models.Mode
+import models.AssessmentAnswer.NotAnsweredYet
+import models.{AssessmentAnswer, Mode, NormalMode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecordCategorisationsQuery
+import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -59,21 +60,43 @@ class AssessmentController @Inject() (
         listItems                       = categorisationInfo.categoryAssessments(index).getExemptionListItems
         commodityCode                   = categorisationInfo.commodityCode
         exemptions                      = categorisationInfo.categoryAssessments(index).exemptions
+        category                        = categorisationInfo.categoryAssessments(index).category
         form                            = formProvider(exemptions.size)
         preparedForm                    = userAnswersWithCategorisations.get(AssessmentPage(recordId, index)) match {
                                             case Some(value) => form.fill(value)
                                             case None        => form
                                           }
-      } yield
-        if (exemptions.isEmpty) {
-          Future.successful(
-            Redirect(
-              navigator.nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+      } yield {
+        val areWeRecategorising = request.userAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
+
+        val hasAssessmentBeenAnswered =
+          request.userAnswers.get(AssessmentPage(recordId, index)).exists(_ != NotAnsweredYet)
+
+        val shouldDisplayNext = areWeRecategorising && hasAssessmentBeenAnswered && mode == NormalMode
+
+        val commodityCodeWithoutZeros = commodityCode.reverse.dropWhile(char => char == '0').reverse
+
+        val shouldGoToLongerCommodityCode =
+          exemptions.isEmpty && category == 2 && commodityCodeWithoutZeros.length <= 6 &&
+            categorisationInfo.descendantCount != 0
+
+        val shouldGoToCya = exemptions.isEmpty && !shouldGoToLongerCommodityCode
+
+        (shouldGoToCya, shouldGoToLongerCommodityCode, shouldDisplayNext) match {
+          case (true, _, _) =>
+            Future.successful(
+              Redirect(
+                navigator
+                  .nextPage(AssessmentPage(recordId, index, shouldRedirectToCya = true), mode, request.userAnswers)
+              )
             )
-          )
-        } else {
-          Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
+          case (_, true, _) =>
+            Future.successful(Redirect(routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url))
+          case (_, _, true) =>
+            Future.successful(Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, request.userAnswers)))
+          case _            => Future.successful(Ok(view(preparedForm, mode, recordId, index, listItems, commodityCode)))
         }
+      }
 
       categorisationResult.flatMap(identity).recover { case _ =>
         Redirect(routes.JourneyRecoveryController.onPageLoad())

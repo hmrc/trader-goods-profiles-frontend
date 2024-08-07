@@ -16,7 +16,6 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
 import controllers.actions._
 import models.GoodsRecordsPagination.firstPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -25,34 +24,23 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.PreviousMovementRecordsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView,
-  goodsRecordConnector: GoodsRecordConnector
+  view: PreviousMovementRecordsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    goodsRecordConnector.getRecordsCount(request.eori).flatMap {
-      case 0 => Future.successful(Redirect(routes.GoodsRecordsController.onPageLoadNoRecords()))
-      case _ =>
-        goodsRecordConnector.doRecordsExist(request.eori).map {
-          case false => Ok(view())
-          case true  => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
-        }
-    }
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+    Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    goodsRecordConnector
-      .storeAllRecords(request.eori)
-      .map(_ => Redirect(routes.GoodsRecordsController.onPageLoad(firstPage)))
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+    Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
   }
 }

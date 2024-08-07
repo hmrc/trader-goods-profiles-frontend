@@ -16,9 +16,10 @@
 
 package models.router.requests
 
-import models.{CategoryRecord, UpdateGoodsRecord}
+import models.{CategoryRecord, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
+import scala.util.Try
 import play.api.libs.json.{JsPath, OWrites, Reads}
 
 import scala.Function.unlift
@@ -32,7 +33,7 @@ case class UpdateRecordRequest(
   traderRef: Option[String] = None,
   comcode: Option[String] = None,
   category: Option[Int] = None,
-  supplementaryUnit: Option[Double] = None,
+  supplementaryUnit: Option[BigDecimal] = None,
   measurementUnit: Option[String] = None
 )
 
@@ -46,17 +47,32 @@ object UpdateRecordRequest {
       goodsRecord.countryOfOrigin,
       goodsRecord.goodsDescription,
       goodsRecord.traderReference,
-      goodsRecord.commodityCode.map(_.commodityCode)
+      goodsRecord.commodityCode.map(_.commodityCode),
+      goodsRecord.category
     )
 
-  def mapFromCategory(categoryRecord: CategoryRecord): UpdateRecordRequest =
+  def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): UpdateRecordRequest =
     UpdateRecordRequest(
       categoryRecord.eori,
       categoryRecord.recordId,
       categoryRecord.eori,
       category = Some(categoryRecord.category),
-      supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
+      comcode = categoryRecord.comcode,
+      supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
+    )
+
+  def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): UpdateRecordRequest =
+    UpdateRecordRequest(
+      supplementaryUnitRequest.eori,
+      supplementaryUnitRequest.recordId,
+      supplementaryUnitRequest.eori,
+      supplementaryUnit = supplementaryUnitRequest.supplementaryUnit match {
+        case s if s.nonEmpty => convertToBigDecimal(supplementaryUnitRequest.supplementaryUnit)
+        //API don't support removing supplementaryUnit, so setting it to zero here
+        case _               => Some(0)
+      },
+      measurementUnit = supplementaryUnitRequest.measurementUnit
     )
 
   implicit val reads: Reads[UpdateRecordRequest] =
@@ -68,7 +84,7 @@ object UpdateRecordRequest {
       (JsPath \ "traderRef").readNullable[String] and
       (JsPath \ "comcode").readNullable[String] and
       (JsPath \ "category").readNullable[Int] and
-      (JsPath \ "supplementaryUnit").readNullable[Double] and
+      (JsPath \ "supplementaryUnit").readNullable[BigDecimal] and
       (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[UpdateRecordRequest] =
@@ -80,9 +96,9 @@ object UpdateRecordRequest {
       (JsPath \ "traderRef").writeNullable[String] and
       (JsPath \ "comcode").writeNullable[String] and
       (JsPath \ "category").writeNullable[Int] and
-      (JsPath \ "supplementaryUnit").writeNullable[Double] and
+      (JsPath \ "supplementaryUnit").writeNullable[BigDecimal] and
       (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
 
-  private def convertToDouble(value: Option[String]): Option[Double] =
-    value.map(_.toDouble)
+  private def convertToBigDecimal(value: Option[String]): Option[BigDecimal] =
+    value.flatMap(v => Try(BigDecimal(v)).toOption)
 }

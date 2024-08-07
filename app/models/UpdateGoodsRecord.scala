@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
@@ -28,7 +28,8 @@ final case class UpdateGoodsRecord(
   countryOfOrigin: Option[String] = None,
   goodsDescription: Option[String] = None,
   traderReference: Option[String] = None,
-  commodityCode: Option[Commodity] = None
+  commodityCode: Option[Commodity] = None,
+  category: Option[Int] = None
 )
 
 object UpdateGoodsRecord {
@@ -48,60 +49,37 @@ object UpdateGoodsRecord {
       UpdateGoodsRecord(
         eori,
         recordId,
-        countryOfOrigin = Some(value)
+        countryOfOrigin = Some(value),
+        category = Some(1)
       )
     )
 
-  def buildGoodsDescription(
+  def validateGoodsDescription(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, String] =
     (
-      Right(eori),
       Right(recordId),
-      getGoodsDescription(answers, recordId)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        goodsDescription = Some(value)
-      )
-    )
+      answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
+    ).parMapN((_, value) => value)
 
-  def buildCommodityCode(
+  def validateCommodityCode(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, Commodity] =
     (
-      Right(eori),
       Right(recordId),
       getCommodityCode(answers, recordId)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        commodityCode = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
-  def buildTraderReference(
+  def validateTraderReference(
     answers: UserAnswers,
-    eori: String,
     recordId: String
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, String] =
     (
-      Right(eori),
       Right(recordId),
       answers.getPageValue(TraderReferenceUpdatePage(recordId))
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        traderReference = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
   private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
@@ -127,16 +105,9 @@ object UpdateGoodsRecord {
   ): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(CommodityUpdateQuery(recordId)) match {
       case Right(commodity) if commodity.commodityCode.startsWith(code) =>
-        Right(commodity)
+        Right(commodity.copy(commodityCode = code))
       case Left(errors)                                                 => Left(errors)
       case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodeUpdatePage(recordId))))
-    }
-
-  private def getGoodsDescription(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
-    answers.getPageValue(HasGoodsDescriptionChangePage(recordId)) match {
-      case Right(true)  => answers.getPageValue(GoodsDescriptionUpdatePage(recordId))
-      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasGoodsDescriptionChangePage(recordId))))
-      case Left(errors) => Left(errors)
     }
 
   private def getCountryOfOrigin(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =

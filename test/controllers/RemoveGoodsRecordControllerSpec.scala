@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import forms.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{GoodsProfileLocation, GoodsRecordLocation}
@@ -33,7 +33,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
@@ -46,26 +45,17 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
-  private val record = goodsRecordResponse(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
-  )
+  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "RemoveGoodsRecord Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val mockConnector = mock[GoodsRecordConnector]
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockConnector)
-          )
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
-
-      when(mockConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.successful(record))
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
@@ -84,17 +74,10 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the alternate correct view for a GET with different url" in {
 
-      val mockConnector = mock[GoodsRecordConnector]
-
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockConnector)
-          )
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
-
-      when(mockConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.successful(record))
 
       running(application) {
         val request =
@@ -123,7 +106,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[GoodsRecordConnector].toInstance(mockConnector)
+            bind[GoodsRecordConnector].toInstance(mockConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -151,7 +135,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[GoodsRecordConnector].toInstance(mockConnector)
+            bind[GoodsRecordConnector].toInstance(mockConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -175,7 +160,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -195,7 +181,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =
@@ -218,7 +206,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
@@ -232,7 +222,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =

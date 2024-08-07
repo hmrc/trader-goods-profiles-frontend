@@ -47,6 +47,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
   private val form                       = formProvider()
   private val mockSessionRepository      = mock[SessionRepository]
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   private lazy val removeNiphlRoute = routes.RemoveNiphlController.onPageLoad().url
 
@@ -57,7 +58,8 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[AuditService].toInstance(mockAuditService)
+          bind[AuditService].toInstance(mockAuditService),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -81,8 +83,6 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       val mockAuditService = mock[AuditService]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val mockTraderProfileConnector = mock[TraderProfileConnector]
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -163,7 +163,9 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =
@@ -183,7 +185,9 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, removeNiphlRoute)
@@ -197,7 +201,9 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =

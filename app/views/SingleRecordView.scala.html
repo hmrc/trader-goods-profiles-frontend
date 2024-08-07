@@ -25,11 +25,15 @@
     govukNotificationBanner: GovukNotificationBanner
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean)(implicit request: Request[_], messages: Messages)
 
-    @bannerContentForUpdate(page: String) = {
+    @bannerContentForUpdate(page: String,dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
+        @if(dataRemoved) {
+            @messages("sucessBannerRemove.heading", page)
+        } else {
             @messages("sucessBanner.heading", page)
+        }
         </h3>
         <p class="govuk-body">@messages("sucessBanner.p1") <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> @messages("sucessBanner.p2")</p>
     }
@@ -41,7 +45,7 @@
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("sucessBanner.title")),
-            content = HtmlContent(bannerContentForUpdate(changedPage)),
+            content = HtmlContent(bannerContentForUpdate(changedPage,dataRemoved)),
             bannerType = Some("success"),
             role=Some("alert"))
         )
@@ -57,8 +61,10 @@
     @govukSummaryList(detailsList)
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
     @govukSummaryList(categorisationList)
-    <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
-    @govukSummaryList(supplementaryUnitList)
+    @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
+        <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
+        @govukSummaryList(supplementaryUnitList)
+    }
     @if(appConfig.requestingAdviceEnabled) {
         <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>
         @govukSummaryList(adviceStatusList)

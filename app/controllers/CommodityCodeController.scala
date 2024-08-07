@@ -43,6 +43,7 @@ class CommodityCodeController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: CommodityCodeFormProvider,
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
@@ -53,8 +54,8 @@ class CommodityCodeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(CommodityCodePage) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -63,7 +64,7 @@ class CommodityCodeController @Inject() (
       val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
@@ -74,11 +75,11 @@ class CommodityCodeController @Inject() (
 
       val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
 
-      Ok(view(preparedForm, onSubmitAction))
+      Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitCreate(mode)
       val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
       form

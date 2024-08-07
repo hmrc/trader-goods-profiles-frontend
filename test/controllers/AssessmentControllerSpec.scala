@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testRecordId
 import forms.AssessmentFormProvider
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
@@ -29,7 +30,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.RecordCategorisationsQuery
+import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import views.html.AssessmentView
 
@@ -40,7 +41,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
   private def assessmentId    = "321"
-  private def recordId        = "1"
+  private def recordId        = testRecordId
   private def index           = 0
   private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
 
@@ -50,11 +51,18 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect" - {
 
-        "to CyaCategorisation if there's a category 2 assessment without possible exemptions" in {
+        "to LongerCommodityCode if there's a cat 2 assessment without exemptions, the commodity code's short, and there are descendants" in {
 
+          val commodityCode              = "1234560"
+          val descendantCount            = 1
           val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
           val categorisationInfo         =
-            CategorisationInfo("123", Seq(assessmentCat2NoExemptions), Some("Weight, in kilograms"), 0)
+            CategorisationInfo(
+              commodityCode,
+              Seq(assessmentCat2NoExemptions),
+              Some("Weight, in kilograms"),
+              descendantCount
+            )
           val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
 
           val answers =
@@ -70,7 +78,80 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+            redirectLocation(result).value mustEqual routes.LongerCommodityCodeController
+              .onPageLoad(NormalMode, recordId)
+              .url
+          }
+        }
+
+        "to CyaCategorisation if there's a cat 2 assessment without exemptions and the user's not being redirected to LongerCommodityCode" in {
+
+          val scenarios = Seq(
+            ("12345600", 0), // short comcode, no descendants
+            ("1234567800", 0), // long comcode, no descendants
+            ("1234567800", 1) // long comcode, with descendants
+          )
+
+          scenarios.map { scenario =>
+            val commodityCode              = scenario._1
+            val descendantCount            = scenario._2
+            val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
+            val categorisationInfo         =
+              CategorisationInfo(
+                commodityCode,
+                Seq(assessmentCat2NoExemptions),
+                Some("Weight, in kilograms"),
+                descendantCount
+              )
+            val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+
+            val answers =
+              emptyUserAnswers
+                .set(RecordCategorisationsQuery, recordCategorisations)
+                .success
+                .value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, assessmentRoute)
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+            }
+          }
+        }
+
+        "when recategorising and has previously been answered" in {
+
+          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
+          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
+          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+
+          val answers =
+            emptyUserAnswers
+              .set(RecordCategorisationsQuery, recordCategorisations)
+              .success
+              .value
+              .set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(RecategorisingQuery(recordId), true)
+              .success
+              .value
+
+          val application = applicationBuilder(userAnswers = Some(answers))
+            .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, assessmentRoute)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual onwardRoute.url
           }
         }
 
@@ -100,6 +181,48 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when recategorising and has not previously been answered" in {
+
+          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
+          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
+          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          val answers               = emptyUserAnswers
+            .set(RecordCategorisationsQuery, recordCategorisations)
+            .success
+            .value
+            .set(RecategorisingQuery(testRecordId), true)
+            .success
+            .value
+          val listItems             = assessment.exemptions.map { exemption =>
+            exemption.code + " - " + exemption.description
+          }
+
+          val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+          running(application) {
+            val request = FakeRequest(GET, assessmentRoute)
+
+            val result = route(application, request).value
+
+            val view         = application.injector.instanceOf[AssessmentView]
+            val form         = formProvider(1)
+            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)(messages(application))
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              form,
+              NormalMode,
+              recordId,
+              index,
+              listItems,
+              categorisationInfo.commodityCode
+            )(
               request,
               messages(application)
             ).toString
@@ -263,7 +386,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
           val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
 
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
+          val application     = applicationBuilder(userAnswers = Some(answers)).build()
+          val assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, "differentRecordId", index).url
 
           running(application) {
             val request = FakeRequest(POST, assessmentRoute)

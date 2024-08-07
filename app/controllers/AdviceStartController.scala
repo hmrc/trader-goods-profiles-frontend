@@ -23,7 +23,7 @@ import pages.AdviceStartPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.AdviceStartView
 
 import javax.inject.Inject
@@ -33,16 +33,17 @@ class AdviceStartController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: AdviceStartView,
   navigator: Navigator
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-      Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated)
-  }
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+    }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

@@ -31,7 +31,7 @@ object CategorySummary {
       key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("singleRecord.categorise", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
           .withVisuallyHiddenText(messages("singleRecord.category.row"))
       )
     )

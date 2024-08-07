@@ -24,13 +24,13 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String, measurementUnit: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, measurementUnit: String,action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("supplementaryUnit.title"))) {
 
     <h1 class="govuk-heading-l">@messages("supplementaryUnit.h1")</h1>
 
-    @formHelper(action = routes.SupplementaryUnitController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = action) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

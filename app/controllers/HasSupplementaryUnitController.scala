@@ -16,18 +16,21 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.HasSupplementaryUnitFormProvider
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.HasSupplementaryUnitPage
+import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import queries.RecategorisingQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
 import views.html.HasSupplementaryUnitView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasSupplementaryUnitController @Inject() (
@@ -37,6 +40,8 @@ class HasSupplementaryUnitController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  goodsRecordConnector: GoodsRecordConnector,
   formProvider: HasSupplementaryUnitFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasSupplementaryUnitView
@@ -46,27 +51,74 @@ class HasSupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      for {
+        updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
+        _         <- sessionRepository.set(updatedUA)
+      } yield updatedUA
+
       val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, recordId))
-  }
+      val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
+
+      Ok(view(preparedForm, mode, recordId, onSubmitAction))
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, onSubmitAction))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitPage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasSupplementaryUnitPage(recordId), mode, updatedAnswers))
+        )
+    }
+
+  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
+
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
+        val initialValue = record.supplementaryUnit.exists(_ != 0)
+
+        val preparedFormFuture = userAnswerValue match {
+          case Some(value) =>
+            Future.successful(form.fill(value))
+          case None        =>
+            Future.successful(form.fill(initialValue))
+        }
+        preparedFormFuture.map { preparedForm =>
+          val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
+          Ok(view(preparedForm, mode, recordId, onSubmitAction))
+            .addingToSession(
+              initialValueOfHasSuppUnit -> initialValue.toString
+            )
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved, initialValueOfSuppUnit)
+        }
+      }
+    }
+
+  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, onSubmitAction))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitUpdatePage(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HasSupplementaryUnitUpdatePage(recordId), mode, updatedAnswers))
         )
     }
 }
