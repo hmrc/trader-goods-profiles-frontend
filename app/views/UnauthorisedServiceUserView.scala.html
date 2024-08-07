@@ -21,10 +21,10 @@
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = titleNoForm(messages("unauthorisedServiceUser.title")),
-timeout   = false,
-showBackLink = false,
-signOutUrl = controllers.auth.routes.AuthController.signOutNoSession.url
+    pageTitle = titleNoForm(messages("unauthorisedServiceUser.title")),
+    timeout   = false,
+    showBackLink = false,
+    signOutUrl = controllers.auth.routes.AuthController.signOutNoSession.url
 ) {
 
     <h1 class="govuk-heading-xl">@messages("unauthorisedServiceUser.heading")</h1>

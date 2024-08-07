@@ -55,7 +55,7 @@ private class UserAllowListConnectorSpec
     val url     = s"/user-allow-list/$feature/check"
     val request = CheckRequest("value")
 
-    "return true when the given EORi is found" in {
+    "return true when the given EORI is found" in {
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))
