@@ -1,0 +1,37 @@
+@import viewmodels.InputWidth._
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCharacterCount: GovukCharacterCount,
+    govukButton: GovukButton
+)
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukCharacterCount
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = title(form, messages("reasonForWithdrawAdvice.title"))) {
+
+    @formHelper(action = routes.ReasonForWithdrawAdviceController.onSubmit(mode)) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @govukCharacterCount(
+            CharacterCount(
+                id = form("value").id,
+                name = form("value").name,
+                maxLength = Some(512),
+                label = LabelViewModel(messages("reasonForWithdrawAdvice.heading")).asPageHeader(),
+                value = form("value").value,
+                errorMessage = form("value").error.map(error => ErrorMessage(content = error.format))
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
+}@import uk.gov.hmrc.govukfrontend.views.Aliases.CharacterCount

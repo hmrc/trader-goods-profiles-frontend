@@ -253,3 +253,8 @@ POST        /update-profile/removing-niphl-number                               
 GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
 
 GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+
+GET        /reasonForWithdrawAdvice                        controllers.ReasonForWithdrawAdviceController.onPageLoad(mode: Mode = NormalMode)
+POST       /reasonForWithdrawAdvice                        controllers.ReasonForWithdrawAdviceController.onSubmit(mode: Mode = NormalMode)
+GET        /changeReasonForWithdrawAdvice                  controllers.ReasonForWithdrawAdviceController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeReasonForWithdrawAdvice                  controllers.ReasonForWithdrawAdviceController.onSubmit(mode: Mode = CheckMode)

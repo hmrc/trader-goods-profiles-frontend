@@ -585,3 +585,10 @@ profileSuccess.h1 = You''ve created your Trader Goods Profile
 profileSuccess.h2 = What happens next
 profileSuccess.p1 = You can go to your TGP homepage and either view a list of any previous movement records or create a new record.
 profileSuccess.p2.linkText = Go to homepage
+
+reasonForWithdrawAdvice.title = reasonForWithdrawAdvice
+reasonForWithdrawAdvice.heading = reasonForWithdrawAdvice
+reasonForWithdrawAdvice.checkYourAnswersLabel = reasonForWithdrawAdvice
+reasonForWithdrawAdvice.error.required = Enter reasonForWithdrawAdvice
+reasonForWithdrawAdvice.error.length = ReasonForWithdrawAdvice must be 512 characters or less
+reasonForWithdrawAdvice.change.hidden = ReasonForWithdrawAdvice
