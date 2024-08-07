@@ -254,7 +254,6 @@ GET         /help-and-support                                                   
 
 GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET        /reasonForWithdrawAdvice                        controllers.ReasonForWithdrawAdviceController.onPageLoad(mode: Mode = NormalMode)
-POST       /reasonForWithdrawAdvice                        controllers.ReasonForWithdrawAdviceController.onSubmit(mode: Mode = NormalMode)
-GET        /changeReasonForWithdrawAdvice                  controllers.ReasonForWithdrawAdviceController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeReasonForWithdrawAdvice                  controllers.ReasonForWithdrawAdviceController.onSubmit(mode: Mode = CheckMode)
+GET        /update-record/:recordId/withdraw-request/reason                                 controllers.ReasonForWithdrawAdviceController.onPageLoad(recordId: String)
+POST       /update-record/:recordId/withdraw-request/reason                                 controllers.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
+
