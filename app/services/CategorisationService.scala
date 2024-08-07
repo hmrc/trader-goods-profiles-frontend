@@ -23,6 +23,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import models.requests.DataRequest
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
 import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
@@ -77,19 +78,20 @@ class CategorisationService @Inject() (
     categorisationInfo: CategorisationInfo2,
     userAnswers: UserAnswers,
     recordId: String
-  ): Scenario2 = {
+  ): Scenario2 =
+    if (categorisationInfo.categoryAssessments.isEmpty) {
+      StandardGoodsNoAssessmentsScenario
+    } else {
+      val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+      val getFirstNo = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
 
-    val getFirstNo = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
-
-    getFirstNo match {
-      case None                                            => StandardGoodsScenario
-      case Some(details) if details.question.category == 2 => Category2Scenario
-      case _                                               => Category1Scenario
+      getFirstNo match {
+        case None                                            => StandardGoodsScenario
+        case Some(details) if details.question.category == 2 => Category2Scenario
+        case _                                               => Category1Scenario
+      }
     }
-
-  }
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
