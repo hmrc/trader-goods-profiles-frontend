@@ -559,9 +559,9 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           }
 
-          "to category result page for standard goods no assessment" - {
+          "to category result page" - {
 
-            "when there are no assessments on the record" in {
+            "for standard goods no assessment when there are no assessments" in {
 
               val categoryInfoNoAssessments = CategorisationInfo2(
                 "1234567890",
@@ -583,6 +583,31 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 userAnswers
               ) mustBe routes.CategorisationResultController
                 .onPageLoad2(testRecordId, StandardGoodsNoAssessmentsScenario)
+
+            }
+
+            "for category 1 no exemptions when there is a category 1 assessment with no exemptions" in {
+
+              val categoryInfoNoAssessments = CategorisationInfo2(
+                "1234567890",
+                Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
+                Seq.empty
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category1NoExemptionsScenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad2(testRecordId, Category1NoExemptionsScenario)
 
             }
 

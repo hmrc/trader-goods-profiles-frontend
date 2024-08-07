@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
-import models.ott.CategorisationInfo2
+import models.ott.{CategorisationInfo2, CategoryAssessment}
 import models.{CategoryRecord2, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
@@ -70,15 +70,15 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
   "startCategorisation" - {
 
-    "when there are questions to answer" - {
+    "call the categorisation service to get the categorisation info" - {
 
-      "call the categorisation service to get the categorisation info" in {
+      "and not update the record if there are questions to answer" in {
 
         running(application) {
 
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
@@ -109,11 +109,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       }
 
-    }
-
-    "when there are no questions to answer" - {
-
-      "because there are no assessments" in {
+      "and update the record if there are no questions to answer" in {
 
         val categoryInfoNoAssessments = CategorisationInfo2(
           "1234567890",
@@ -135,7 +131,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
