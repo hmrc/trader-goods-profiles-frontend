@@ -22,7 +22,7 @@ import play.api.data.FormError
 class WithdrawAdviceStartFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "withdrawAdviceStart.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new WithdrawAdviceStartFormProvider()()
 
