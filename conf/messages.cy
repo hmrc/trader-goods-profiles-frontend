@@ -1,0 +1,19 @@
+
+profileSetup.title = Sefydlu eich proffil
+profileSetup.h1 = Sefydlu eich proffil
+profileSetup.intro = Rydym am ofyn rhai cwestiynau i chi, yna byddwn yn gofyn am beth o wybodaeth gennych yn dibynnu ar eich atebion.
+profileSetup.ukims.h2 = Cynllun Marchnad Fewnol y DU (UKIMS)
+profileSetup.p1 = Mae''n rhaid i''r masnachwr sy''n cofrestru ar gyfer Proffil Nwyddau Masnachwyr fod wedi''i gofrestru ar gyfer yr UKIMS. Bydd angen eich rhifau UKIMS arnoch er mwyn sefydlu eich proffil.
+profileSetup.p2 = Os ydych wedi gwneud cais i''r UKIMS, bydd CThEF yn anfon llythyr atoch gyda''ch rhif awdurdodi UKIMS.
+profileSetup.p3 = Os nad ydych wedi cofrestru ar gyfer yr UKIMS, gallwch wirio yma i ddarganfod
+profileSetup.p3.linkText = pwy all wneud cais i''r UKIMS.
+profileSetup.nirms.h2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
+profileSetup.p4 = Mae busnesau sy''n gyfrifol am werthu a chynorthwyo symud bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon yn gymwys i gael mantais o drefniadau''r NIRMS.
+profileSetup.p5 = Gall masnachwyr sydd wedi''u cofrestru ar gyfer y NIRMS ychwanegu eu hawdurdodiad NIRMS at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy''n destun y NIRMS.
+profileSetup.p6 = Mae awdurdodiad y NIRMS yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi''ch awdurdodi ar gyfer y NIRMS, dysgwch ragor am y
+profileSetup.p6.linkText = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
+profileSetup.niphl.h2 = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
+profileSetup.p7 = Mae''r cynllun NIPHL yn ffordd i dyfwyr a masnachwyr ym Mhrydain Fawr (Cymru, Lloegr a''r Alban) symud cynhyrchion penodol i Ogledd Iwerddon.
+profileSetup.p8 = Gall masnachwyr sydd wedi''u cofrestru ar gyfer y NIPHL ychwanegu eu hawdurdodiad NIPHL at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy''n destun y NIPHL.
+profileSetup.p9 = Mae awdurdodiad y NIPHL yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi''ch awdurdodi ar gyfer y NIPHL, dysgwch ragor am
+profileSetup.p9.linkText = Symud planhigion o Brydain Fawr i Ogledd Iwerddon
