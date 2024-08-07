@@ -23,20 +23,18 @@
         feedbackSection: components.feedback_section
 )
 
-@(recordId: String)(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("createRecordSuccess.title")),showBackLink = false) {
+@layout(pageTitle = titleNoForm(messages("profileSuccess.title")), showBackLink = false) {
 
     @govukPanel(Panel(
-          title = messages("createRecordSuccess.h1")
+          title = messages("profileSuccess.h1")
          )
     )
-    <h2 class="govuk-heading-m">@messages("createRecordSuccess.h2")</h2>
-    <p class="govuk-body">@messages("createRecordSuccess.p2")</p>
-    <p class="govuk-body">@messages("createRecordSuccess.p3")</p>
+    <h2 class="govuk-heading-m">@messages("profileSuccess.h2")</h2>
+    <p class="govuk-body">@messages("profileSuccess.p1")</p>
 
-    <p class="govuk-body"><a href="@routes.CategoryGuidanceController.onPageLoad(recordId).url" class="govuk-link" >@messages("createRecordSuccess.p4.linkText")</a></p>
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("createRecordSuccess.p5.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("profileSuccess.p2.linkText")</a></p>
 
     @feedbackSection()
 

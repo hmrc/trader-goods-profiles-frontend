@@ -576,6 +576,13 @@ reviewReason.inadequate.p2 = A goods description should contain a plain language
 reviewReason.mismatch.title = This record needs to be reviewed
 reviewReason.mismatch.heading = This record needs to be reviewed
 reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you''ll need to amend the commodity code and the goods description.
+
+profileSuccess.title = You''ve created your Trader Goods Profile
+profileSuccess.h1 = You''ve created your Trader Goods Profile
+profileSuccess.h2 = What happens next
+profileSuccess.p1 = You can go to your TGP homepage and either view a list of any previous movement records or create a new record.
+profileSuccess.p2.linkText = Go to homepage
+
 withdrawAdviceStart.title = Withdrawing your request
 withdrawAdviceStart.h1 = Withdrawing your request
 withdrawAdviceStart.h2 = Are you sure you want to withdraw your request for advice?
