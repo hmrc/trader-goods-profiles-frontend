@@ -591,3 +591,12 @@ unauthorisedServiceUser.title = There is a problem - Trader Goods Profile
 unauthorisedServiceUser.heading = There is a problem
 unauthorisedServiceUser.p1 = Trader Goods Profile (TGP) is not available to the public yet.
 unauthorisedServiceUser.p2 = The details you have logged in with do not have access to TGP.
+
+withdrawAdviceStart.title = Withdrawing your request
+withdrawAdviceStart.h1 = Withdrawing your request
+withdrawAdviceStart.h2 = Are you sure you want to withdraw your request for advice?
+withdrawAdviceStart.p1 = Withdrawing your request will mean HMRC will not contact you with a decision.
+withdrawAdviceStart.p2 = We''ll unlock your goods record if you withdraw your request. This means you''ll be able to update the goods record.
+withdrawAdviceStart.radio1 = Yes, remove my request for advice
+withdrawAdviceStart.radio2 = No, do not remove my request for advice
+withdrawAdviceStart.error.required = Select if you want to withdraw your request for advice

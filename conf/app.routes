@@ -256,3 +256,6 @@ POST        /update-profile/removing-niphl-number                               
 GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
 
 GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+
+GET        /update-record/:recordId/withdraw-request                                        controllers.WithdrawAdviceStartController.onPageLoad(recordId: String)
+POST       /update-record/:recordId/withdraw-request                                        controllers.WithdrawAdviceStartController.onSubmit(recordId: String)
