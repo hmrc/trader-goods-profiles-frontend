@@ -1,3 +1,4 @@
+site.continue = Yn eich blaen
 
 profileSetup.title = Sefydlu eich proffil
 profileSetup.h1 = Sefydlu eich proffil
