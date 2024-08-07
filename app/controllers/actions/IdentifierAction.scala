@@ -91,7 +91,6 @@ class AuthenticatedIdentifierAction @Inject() (
             throw UserNotAllowedException()
           case true  => Done
         } recover { case _ =>
-        logger.info("exception thrown by user allow list")
         throw UserNotAllowedException()
       }
     } else {
