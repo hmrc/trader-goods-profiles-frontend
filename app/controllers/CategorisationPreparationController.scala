@@ -21,13 +21,15 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.NormalMode
 import navigation.Navigator
+import org.apache.pekko.Done
+import pages.CategorisationPreparationPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CategorisationDetailsQuery2
 import repositories.SessionRepository
 import services.CategorisationService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import pages.CategorisationPreparationPage
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,13 +52,16 @@ class CategorisationPreparationController @Inject() (
   def startCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        goodsRecord        <- goodsRecordsConnector.getRecord(request.eori, recordId)
-        categorisationInfo <-
+        goodsRecord            <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        categorisationInfo     <-
           categorisationService
             .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
-        updatedUserAnswers <-
+        updatedUserAnswers     <-
           Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery2(recordId), categorisationInfo))
-        _                  <- sessionRepository.set(updatedUserAnswers)
+        _                      <- sessionRepository.set(updatedUserAnswers)
+        needToUpdateGoodsRecord = categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty
+        _                      <- if (needToUpdateGoodsRecord) updateCategory(updatedUserAnswers, request.eori, recordId)
+                                  else Future.successful(Done)
       } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
@@ -64,5 +69,20 @@ class CategorisationPreparationController @Inject() (
         }
 
     }
+
+  private def updateCategory(updatedUserAnswers: UserAnswers, eori: String, recordId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] =
+    CategoryRecord2.build(updatedUserAnswers, eori, recordId, categorisationService) match {
+      case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord2(eori, recordId, record)
+      case Left(errors)  =>
+        val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+
+        Future.failed(CategoryRecordBuildFailure(errorMessages))
+    }
+
+  final case class CategoryRecordBuildFailure(error: String) extends Exception {
+    override def getMessage: String = s"Failed to build category record: $error"
+  }
 
 }

@@ -244,6 +244,17 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromCategorisationPreparationPage(answers: UserAnswers, recordId: String): Call = {
+    answers.get(CategorisationDetailsQuery2(recordId)) match {
+      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty => routes.CategoryGuidanceController.onPageLoad2(recordId)
+      case Some(catInfo) =>
+        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
+        routes.CategorisationResultController.onPageLoad2(recordId, scenario)
+
+      case None => routes.JourneyRecoveryController.onPageLoad()
+    }
+  }
+
   private def navigateFromAssessment2(assessmentPage: AssessmentPage2)(answers: UserAnswers): Call = {
     val recordId  = assessmentPage.recordId
     val nextIndex = assessmentPage.index + 1

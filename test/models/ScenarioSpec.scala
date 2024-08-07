@@ -29,6 +29,10 @@ class ScenarioSpec extends SpecBase {
       Scenario2.getResultAsInt(StandardGoodsScenario) mustBe StandardGoodsAsInt
     }
 
+    "must return 3 for standard goods no assessment scenario" in {
+      Scenario2.getResultAsInt(StandardGoodsNoAssessmentsScenario) mustBe StandardGoodsAsInt
+    }
+
     "must return 2 for category 2 scenario" in {
       Scenario2.getResultAsInt(Category2Scenario) mustBe Category2AsInt
     }

@@ -19,13 +19,13 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
-import models.UserAnswers
-import models.ott.CategoryAssessment
-import models.router.responses.GetGoodsRecordResponse
+import models.ott.CategorisationInfo2
+import models.{CategoryRecord2, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
@@ -36,7 +36,6 @@ import queries.CategorisationDetailsQuery2
 import repositories.SessionRepository
 import services.CategorisationService
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAfterEach {
@@ -57,6 +56,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
+
+    reset(mockCategorisationService, mockGoodsRecordConnector, mockSessionRepository)
 
     when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
       Future.successful(categorisationInfo2)
@@ -91,6 +92,84 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val finalUserAnswers = uaArgCaptor.getValue
 
             finalUserAnswers.get(CategorisationDetailsQuery2(testRecordId)).get mustBe categorisationInfo2
+          }
+
+          withClue("must not get category result from categorisation service as not needed") {
+            verify(mockCategorisationService, times(0))
+              .calculateResult(any(), any(), any())
+          }
+
+          withClue("must not have updated goods record") {
+            verify(mockGoodsRecordConnector, times(0)).updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(
+              any()
+            )
+          }
+
+        }
+
+      }
+
+    }
+
+    "when there are no questions to answer" - {
+
+      "because there are no assessments" in {
+
+        val categoryInfoNoAssessments = CategorisationInfo2(
+          "1234567890",
+          Seq.empty,
+          Seq.empty
+        )
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
+
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
+          .thenReturn(StandardGoodsNoAssessmentsScenario)
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        running(application) {
+
+          val request =
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+          val result  = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must get category details from categorisation service") {
+            verify(mockCategorisationService)
+              .getCategorisationInfo(any(), eqTo("12345678"), eqTo("GB"), eqTo(testRecordId))(any())
+          }
+
+          withClue("must get category result from categorisation service") {
+            verify(mockCategorisationService)
+              .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId))
+          }
+
+          withClue("must have updated goods record") {
+            val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord2] =
+              ArgumentCaptor.forClass(classOf[CategoryRecord2])
+            verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord2(
+              any(),
+              eqTo(testRecordId),
+              categoryRecordArgCaptor.capture()
+            )(any())
+
+            val categoryRecord = categoryRecordArgCaptor.getValue
+            categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
+            categoryRecord.categoryAssessmentsWithExemptions mustBe 0
+          }
+
+          withClue("must update User Answers with Categorisation Info") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockSessionRepository).set(uaArgCaptor.capture())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(CategorisationDetailsQuery2(testRecordId)).get mustBe categoryInfoNoAssessments
           }
 
         }
@@ -134,6 +213,56 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
       "when session repository fails" in {
 
         when(mockSessionRepository.set(any())).thenReturn(Future.failed(new RuntimeException("error")))
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+          val result  = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when goods record connector update fails" in {
+
+        val categoryInfoNoAssessments = CategorisationInfo2(
+          "1234567890",
+          Seq.empty,
+          Seq.empty
+        )
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
+
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
+          .thenReturn(StandardGoodsNoAssessmentsScenario)
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException(":(")))
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+          val result  = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when category record fails to build" in {
+
+        val categoryInfoNoAssessments = CategorisationInfo2(
+          "1234567890",
+          Seq.empty,
+          Seq.empty
+        )
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
 
         running(application) {
           val request =
