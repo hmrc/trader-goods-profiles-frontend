@@ -18,6 +18,9 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import models.NormalMode
+import navigation.Navigator
+import pages.ReviewReasonPage
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -34,7 +37,8 @@ class ReviewReasonController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: ReviewReasonView,
-  goodsRecordConnector: GoodsRecordConnector
+  goodsRecordConnector: GoodsRecordConnector,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -53,4 +57,9 @@ class ReviewReasonController @Inject() (
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
   }
+
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request => Redirect(navigator.nextPage(ReviewReasonPage(recordId), NormalMode, request.userAnswers))
+  }
+
 }

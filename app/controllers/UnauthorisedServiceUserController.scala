@@ -16,27 +16,21 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
-import controllers.actions.IdentifierAction
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import views.html.UnauthorisedServiceUserView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
-class IndexController @Inject() (
+class UnauthorisedServiceUserController @Inject() (
+  override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
-  identify: IdentifierAction,
-  traderProfileConnector: TraderProfileConnector
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+  view: UnauthorisedServiceUserView
+) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    traderProfileConnector.checkTraderProfile(request.eori).map {
-      case true  => Redirect(routes.HomePageController.onPageLoad())
-      case false => Redirect(routes.ProfileSetupController.onPageLoad())
-    }
+  def onPageLoad: Action[AnyContent] = Action { implicit request =>
+    Ok(view())
   }
 }

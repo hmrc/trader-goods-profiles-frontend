@@ -16,7 +16,8 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF
 )
 
 @(recordId: String, reviewReason: String)(implicit request: Request[_], messages: Messages)
@@ -38,6 +39,10 @@
         <p class="govuk-body">@messages(s"reviewReason.${reviewReason}.p2")</p>
     }
 
-    <a href="@{routes.SingleRecordController.onPageLoad(recordId).url}" class="govuk-button">@messages("site.continue")</a>
+    @formHelper(action = ReviewReasonController.onSubmit(recordId)) {
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 
 }
