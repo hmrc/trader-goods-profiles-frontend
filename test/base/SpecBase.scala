@@ -146,7 +146,7 @@ trait SpecBase
       .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
       .success
       .value
-      .set(SupplementaryUnitUpdatePage(testRecordId), "100")
+      .set(SupplementaryUnitUpdatePage(testRecordId), "1234567890.123456")
       .success
       .value
       .set(MeasurementQuery(testRecordId), "litres")
@@ -315,7 +315,7 @@ trait SpecBase
       "UK",
       1,
       None,
-      Some(1234.0),
+      Some(1234567890.123456),
       Some("grams"),
       Instant.now(),
       None,

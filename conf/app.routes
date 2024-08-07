@@ -58,6 +58,8 @@ POST        /update-profile/nirms-number                                        
 GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
 POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()
 
+GET         /create-profile/success                                                         controllers.CreateProfileSuccessController.onPageLoad()
+
 GET         /create-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitCreate(mode: Mode = NormalMode)
 GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
