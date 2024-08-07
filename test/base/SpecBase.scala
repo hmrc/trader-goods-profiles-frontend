@@ -146,7 +146,7 @@ trait SpecBase
       .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
       .success
       .value
-      .set(SupplementaryUnitUpdatePage(testRecordId), "100")
+      .set(SupplementaryUnitUpdatePage(testRecordId), "1234567890.123456")
       .success
       .value
       .set(MeasurementQuery(testRecordId), "litres")
