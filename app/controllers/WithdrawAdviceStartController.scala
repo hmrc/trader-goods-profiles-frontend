@@ -18,8 +18,9 @@ package controllers
 
 import controllers.actions._
 import forms.WithdrawAdviceStartFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.WithdrawAdviceStartPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -47,27 +48,27 @@ class WithdrawAdviceStartController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(WithdrawAdviceStartPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, recordId))
+      Ok(view(preparedForm, recordId))
     }
 
-  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
+  def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(WithdrawAdviceStartPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(WithdrawAdviceStartPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(WithdrawAdviceStartPage, NormalMode, updatedAnswers))
         )
     }
 }

@@ -42,7 +42,7 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new WithdrawAdviceStartFormProvider()
   val form         = formProvider()
 
-  lazy val withdrawAdviceStartRoute                      = routes.WithdrawAdviceStartController.onPageLoad(NormalMode, testRecordId).url
+  lazy val withdrawAdviceStartRoute                      = routes.WithdrawAdviceStartController.onPageLoad(testRecordId).url
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
@@ -62,7 +62,7 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[WithdrawAdviceStartView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, testRecordId)(request, messages(application)).toString
       }
     }
 
@@ -82,7 +82,7 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
+        contentAsString(result) mustEqual view(form.fill(true), testRecordId)(
           request,
           messages(application)
         ).toString
@@ -134,7 +134,7 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
+        contentAsString(result) mustEqual view(boundForm, testRecordId)(
           request,
           messages(application)
         ).toString

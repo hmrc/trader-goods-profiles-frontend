@@ -22,7 +22,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], recordId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("withdrawAdviceStart.title"))) {
 
@@ -32,7 +32,7 @@
     <p class="govuk-body">@messages("withdrawAdviceStart.p2")</p>
     <h2 class="govuk-heading-m">@messages("withdrawAdviceStart.h2")</h2>
 
-    @formHelper(action = routes.WithdrawAdviceStartController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.WithdrawAdviceStartController.onSubmit(recordId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
