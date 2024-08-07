@@ -52,12 +52,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
 
-  private val recordToReview = toReviewGoodsRecordResponse(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z"),
-    "inadequate"
-  ).copy(recordId = testRecordId)
-
   private val recordWithSupplementaryUnit = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
