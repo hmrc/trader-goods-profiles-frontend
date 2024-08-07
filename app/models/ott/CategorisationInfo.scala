@@ -56,10 +56,18 @@ object CategorisationInfo2 {
       .map { assessments =>
         val assessmentsSorted = assessments.sorted
 
+        val findCategory1NoAssessments = assessments.count(ass => ass.isCategory1 && ass.hasNoAnswers)
+
+        val questionsToAnswers = if (findCategory1NoAssessments > 0) {
+          Seq.empty
+        } else {
+          assessmentsSorted
+        }
+
         CategorisationInfo2(
-          commodityCodeUserEntered, //TODO test this
+          commodityCodeUserEntered,
           assessmentsSorted,
-          assessmentsSorted //TODO this will need to check for e.g. empty assessments
+          questionsToAnswers
         )
       }
 

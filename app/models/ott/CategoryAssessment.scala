@@ -19,6 +19,7 @@ package models.ott
 import cats.implicits.toTraverseOps
 import models.ott.response.{ExemptionType, OttResponse}
 import play.api.libs.json.{Json, OFormat}
+import utils.Constants.Category1AsInt
 
 final case class CategoryAssessment(
   id: String,
@@ -34,6 +35,10 @@ final case class CategoryAssessment(
   def getExemptionListItems: Seq[String] = exemptions.map { exemption =>
     exemption.code + " - " + exemption.description
   }
+
+  def isCategory1: Boolean  = category == Category1AsInt
+  def hasNoAnswers: Boolean = exemptions.isEmpty
+
 }
 
 object CategoryAssessment {

@@ -26,27 +26,28 @@ case object StandardGoodsScenario extends Scenario2
 case object Category1Scenario extends Scenario2
 case object Category2Scenario extends Scenario2
 case object StandardGoodsNoAssessmentsScenario extends Scenario2
+case object Category1NoExemptionsScenario extends Scenario2
 
 object Scenario2 {
 
-  def getResultAsInt(scenario: Scenario2): Int = {
+  def getResultAsInt(scenario: Scenario2): Int =
     scenario match {
-      case StandardGoodsScenario => StandardGoodsAsInt
+      case StandardGoodsScenario              => StandardGoodsAsInt
       case StandardGoodsNoAssessmentsScenario => StandardGoodsAsInt
-      case Category1Scenario => Category1AsInt
-      case Category2Scenario => Category2AsInt
+      case Category1Scenario                  => Category1AsInt
+      case Category2Scenario                  => Category2AsInt
+      case Category1NoExemptionsScenario      => Category1AsInt
     }
-  }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario2] = {
-    case StandardGoodsScenario => "Standard"
-    case Category1Scenario => "Category1"
-    case Category2Scenario => "Category2"
+    case StandardGoodsScenario              => "Standard"
+    case Category1Scenario                  => "Category1"
+    case Category2Scenario                  => "Category2"
+    case StandardGoodsNoAssessmentsScenario => "StandardNoAssessments"
+    case Category1NoExemptionsScenario      => "Category1NoExemptions"
   }
 
-
 }
-
 
 sealed trait Scenario
 
