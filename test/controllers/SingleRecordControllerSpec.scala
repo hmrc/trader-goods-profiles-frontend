@@ -182,7 +182,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           case Text(innerContent) => innerContent
         }
 
-        supplementaryValue must equal("1234.0 grams")
+        supplementaryValue must equal("1234567890.123456 grams")
 
       }
     }

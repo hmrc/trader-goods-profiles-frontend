@@ -35,6 +35,7 @@ import viewmodels.govuk.summarylist._
 import views.html.CyaSupplementaryUnitView
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CyaSupplementaryUnitController @Inject() (
   override val messagesApi: MessagesApi,
@@ -91,11 +92,16 @@ class CyaSupplementaryUnitController @Inject() (
           val finalHasSuppUnitOpt = model.hasSupplementaryUnit
           val finalSuppUnitOpt    = model.supplementaryUnit
 
-          val isValueChanged    =
+          val isValueChanged =
             initialHasSuppUnitOpt != finalHasSuppUnitOpt ||
               compareSupplementaryUnits(initialSuppUnitOpt, finalSuppUnitOpt)
+
+          val finalSuppUnitBD = convertToBigDecimal(finalSuppUnitOpt)
+
+          //if supplementary unit is zero, we consider it removed. This needs to be re-factored when API starts supporting null for removing objects
           val isSuppUnitRemoved =
-            initialHasSuppUnitOpt.contains(true) && finalHasSuppUnitOpt.contains(false)
+            (initialHasSuppUnitOpt
+              .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(0)
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
@@ -117,4 +123,8 @@ class CyaSupplementaryUnitController @Inject() (
     val finalSuppUnitBD   = BigDecimal(finalSuppUnitOpt.getOrElse("0"))
     initialSuppUnitBD != finalSuppUnitBD
   }
+
+  private def convertToBigDecimal(value: Option[String]): Option[BigDecimal] =
+    value.flatMap(v => Try(BigDecimal(v)).toOption)
+
 }

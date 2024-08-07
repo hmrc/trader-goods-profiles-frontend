@@ -341,7 +341,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            form.fill("1234.0"),
+            form.fill("1234567890.123456"),
             NormalMode,
             testRecordId,
             "grams",
