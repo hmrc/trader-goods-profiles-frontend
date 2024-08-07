@@ -31,12 +31,14 @@
         case StandardGoodsScenario => messages("categorisationResult.Standard.panelBody")
         case Category1Scenario => messages("categorisationResult.Category1.panelBody")
         case Category2Scenario => messages("categorisationResult.Category2.panelBody")
+        case StandardGoodsNoAssessmentsScenario => messages("categorisationResult.StandardNoAssessments.panelBody")
     }
     govukPanel(Panel(title = messages("categorisationResult.heading"), content = HtmlContent("<p class=\"govuk-body\" style=\"color:#FFFFFF\">" + panelContent + "</p>")))
 }
 
 @paragraphContent = @{
     scenario match {
+        case StandardGoodsNoAssessmentsScenario => Some(messages("categorisationResult.StandardNoAssessments.p1"))
         case _ => None
     }
 }

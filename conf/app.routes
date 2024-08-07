@@ -158,6 +158,7 @@ GET         /update-record/:recordId/categorisation/result/standard-no-assessmen
 GET         /update-record/:recordId/categorisation2/result/category-1                       controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = Category1Scenario)
 GET         /update-record/:recordId/categorisation2/result/category-2                       controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = Category2Scenario)
 GET         /update-record/:recordId/categorisation2/result/standard                         controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = StandardGoodsScenario)
+GET         /update-record/:recordId/categorisation2/result/standard-no-assessments          controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = StandardGoodsNoAssessmentsScenario)
 
 
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)

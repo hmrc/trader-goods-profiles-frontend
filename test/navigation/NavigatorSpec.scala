@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models._
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -544,11 +544,55 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Categorisation Journey 2" - {
 
-        "must go from categorisation preparation to category guidance page" in {
+        "must go from categorisation preparation" - {
 
-          navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
-            routes.CategoryGuidanceController.onPageLoad2(testRecordId)
+          "to category guidance page when assessments need answering" in {
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+              .success
+              .value
 
+            navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+              routes.CategoryGuidanceController.onPageLoad2(testRecordId)
+
+          }
+
+          "to category result page for standard goods no assessment" - {
+
+            "when there are no assessments on the record" in {
+
+              val categoryInfoNoAssessments = CategorisationInfo2(
+                "1234567890",
+                Seq.empty,
+                Seq.empty
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery2(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(StandardGoodsNoAssessmentsScenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad2(testRecordId, StandardGoodsNoAssessmentsScenario)
+
+            }
+
+          }
+
+          "to journey recovery page when there's no categorisation info" in {
+            navigator.nextPage(
+              CategorisationPreparationPage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController.onPageLoad()
+          }
         }
 
         "must go from category guidance to the first assessment page" in {

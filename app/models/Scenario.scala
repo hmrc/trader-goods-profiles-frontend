@@ -25,12 +25,14 @@ sealed trait Scenario2
 case object StandardGoodsScenario extends Scenario2
 case object Category1Scenario extends Scenario2
 case object Category2Scenario extends Scenario2
+case object StandardGoodsNoAssessmentsScenario extends Scenario2
 
 object Scenario2 {
 
   def getResultAsInt(scenario: Scenario2): Int = {
     scenario match {
       case StandardGoodsScenario => StandardGoodsAsInt
+      case StandardGoodsNoAssessmentsScenario => StandardGoodsAsInt
       case Category1Scenario => Category1AsInt
       case Category2Scenario => Category2AsInt
     }
