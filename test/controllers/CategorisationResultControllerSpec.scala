@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.{Category1, Category1Scenario, Category2, Category2Scenario, Standard, StandardGoodsScenario}
+import models.{Category1, Category1NoExemptionsScenario, Category1Scenario, Category2, Category2Scenario, Standard, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.{CategorisationResultView, CategorisationResultView2}
@@ -148,6 +148,49 @@ class CategorisationResultControllerSpec extends SpecBase {
           ).toString
         }
       }
+
+      "StandardNoAssessments" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, StandardGoodsNoAssessmentsScenario).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView2]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, StandardGoodsNoAssessmentsScenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "Category1NoExemptions" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, Category1NoExemptionsScenario).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView2]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, Category1NoExemptionsScenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
     }
   }
 
