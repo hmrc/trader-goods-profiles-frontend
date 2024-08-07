@@ -168,7 +168,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
       "when user answers can create a valid trader profile" - {
 
-        "must submit the trader profile and redirect to the Home Page" in {
+        "must submit the trader profile and redirect to the Success Page" in {
 
           val userAnswers = mandatoryProfileUserAnswers
 
@@ -196,7 +196,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             val expectedPayload = TraderProfile(testEori, "1", None, None)
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+            redirectLocation(result).value mustEqual routes.CreateProfileSuccessController.onPageLoad().url
             verify(mockConnector).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
 
             withClue("must call the audit connector with the supplied details") {

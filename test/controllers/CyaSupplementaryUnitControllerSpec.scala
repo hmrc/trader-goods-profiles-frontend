@@ -142,7 +142,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
               eori = testEori,
               recordId = testRecordId,
               hasSupplementaryUnit = Some(true),
-              supplementaryUnit = Some("100"),
+              supplementaryUnit = Some("1234567890.123456"),
               measurementUnit = Some("litres")
             )
 

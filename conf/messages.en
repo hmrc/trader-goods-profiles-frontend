@@ -32,9 +32,12 @@ error.summary.title = There is a problem
 
 cyaCreateProfile.title = Check your answers
 cyaCreateProfile.h1 = Check your answers
-cyaCreateProfile.h2 = UKIMS, NIRMS and NIPHL
+cyaCreateProfile.h2 = Schemes
+cyaCreateProfile.li1 = UK Internal Market Scheme (UKIMS)
+cyaCreateProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
+cyaCreateProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 cyaCreateProfile.warning = Warning
-cyaCreateProfile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+cyaCreateProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
 
 cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
@@ -576,3 +579,9 @@ reviewReason.inadequate.p2 = A goods description should contain a plain language
 reviewReason.mismatch.title = This record needs to be reviewed
 reviewReason.mismatch.heading = This record needs to be reviewed
 reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you''ll need to amend the commodity code and the goods description.
+
+profileSuccess.title = You''ve created your Trader Goods Profile
+profileSuccess.h1 = You''ve created your Trader Goods Profile
+profileSuccess.h2 = What happens next
+profileSuccess.p1 = You can go to your TGP homepage and either view a list of any previous movement records or create a new record.
+profileSuccess.p2.linkText = Go to homepage
