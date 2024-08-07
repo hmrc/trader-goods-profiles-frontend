@@ -112,5 +112,26 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
       }
 
     }
+
+    "onSubmit" - {
+
+      "must redirect to SingleRecordController when the user clicks the continue button" in {
+
+        val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(POST, reviewReasonRoute)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+        }
+      }
+
+    }
   }
 }

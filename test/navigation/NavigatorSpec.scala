@@ -932,6 +932,15 @@ class NavigatorSpec extends SpecBase {
           ) mustEqual routes.AssessmentController.onPageLoad(NormalMode, recordId, index)
         }
 
+        "must go from ReviewReasonPage to Single Record page" in {
+          val recordId = testRecordId
+          navigator.nextPage(
+            ReviewReasonPage(recordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.SingleRecordController.onPageLoad(recordId)
+        }
+
         "must go from CyaCategorisationPage to CategorisationResult page" in {
           val categoryRecord = CategoryRecord(
             eori = testEori,
