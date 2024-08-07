@@ -20,11 +20,11 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.response.{ExemptionType => ResponseExemptionType, _}
 import models.ott._
+import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -153,7 +153,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         }
 
       }
-
+//TODO move specific tests to catInfo tests
       "when there are no assessments on the commodity" in {
         val ottResponseNoAssessments = OttResponse(
           GoodsNomenclatureResponse(
@@ -182,6 +182,88 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         }
       }
+
+      "when there is Category 1 assessment with no exemptions" in {
+
+        val mockOttResponse = OttResponse(
+          GoodsNomenclatureResponse(
+            "some id",
+            "1234567890",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId2"),
+            CategoryAssessmentRelationship("assessmentId1"),
+            CategoryAssessmentRelationship("assessmentId3")
+          ),
+          includedElements = Seq(
+            ThemeResponse("themeId1", 1),
+            CategoryAssessmentResponse(
+              "assessmentId2",
+              "themeId2",
+              Seq(
+                ExemptionResponse("exemptionId1", ResponseExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ResponseExemptionType.AdditionalCode)
+              )
+            ),
+            ThemeResponse("themeId2", 2),
+            CertificateResponse("exemptionId1", "code1", "description1"),
+            AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+            ThemeResponse("ignoredTheme", 3),
+            CertificateResponse("ignoredExemption", "code3", "description3"),
+            CategoryAssessmentResponse(
+              "assessmentId1",
+              "themeId1",
+              Seq.empty
+            ),
+            CategoryAssessmentResponse(
+              "assessmentId3",
+              "themeId1",
+              Seq(ExemptionResponse("exemptionId2", ResponseExemptionType.AdditionalCode))
+            )
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(mockOttResponse)
+        )
+
+        val expectedAssessments = Seq(
+          CategoryAssessment(
+            "assessmentId1",
+            1,
+            Seq.empty
+          ),
+          CategoryAssessment(
+            "assessmentId3",
+            1,
+            Seq(AdditionalCode("exemptionId2", "code2", "description2"))
+          ),
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+        )
+
+        await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
+          CategorisationInfo2("1234567890", expectedAssessments, Seq.empty)
+
+        withClue("should ask for details for this commodity and country from OTT") {
+          verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
+            any()
+          )
+        }
+
+      }
+
     }
 
     "should return future failed when the call to OTT fails" in {
@@ -233,7 +315,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
-  "calculateAnswer" - {
+  "calculateResult" - {
 
     "return Standard Goods if all answers are Yes" in {
 
@@ -309,6 +391,38 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         testRecordId
       ) mustBe StandardGoodsNoAssessmentsScenario
     }
+
+    "return Category 1 if a category 1 question has no exemptions" in {
+      val categorisationInfo = CategorisationInfo2(
+        "1234567890",
+        Seq(
+          CategoryAssessment(
+            "ass1",
+            1,
+            Seq.empty
+          ),
+          CategoryAssessment(
+            "ass2",
+            1,
+            Seq(Certificate("cert1", "cert1c", "cert1desc"))
+          )
+        ),
+        Seq.empty
+      )
+
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+        .success
+        .value
+
+      categorisationService.calculateResult(
+        categorisationInfo,
+        userAnswers,
+        testRecordId
+      ) mustEqual Category1NoExemptionsScenario
+
+    }
+
   }
 
   "requireCategorisation" - {

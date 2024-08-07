@@ -41,6 +41,10 @@ class ScenarioSpec extends SpecBase {
       Scenario2.getResultAsInt(Category1Scenario) mustBe Category1AsInt
     }
 
+    "must return 1 for category 1 no exemptions scenario" in {
+      Scenario2.getResultAsInt(Category1NoExemptionsScenario) mustBe Category1AsInt
+    }
+
   }
 
   ".getRedirectScenarios" - {
