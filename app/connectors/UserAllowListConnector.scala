@@ -58,4 +58,6 @@ object UserAllowListConnector {
   final case class UnexpectedResponseException(status: Int) extends Exception with NoStackTrace {
     override def getMessage: String = s"Unexpected status: $status"
   }
+
+  final case class UserNotAllowedException() extends Exception with NoStackTrace {}
 }
