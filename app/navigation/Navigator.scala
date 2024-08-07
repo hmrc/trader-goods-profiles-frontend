@@ -74,7 +74,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
     case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
-    case p: CategorisationPreparationPage          => _ => routes.CategoryGuidanceController.onPageLoad2(p.recordId)
+    case p: CategorisationPreparationPage          => answers => navigateFromCategorisationPreparationPage(answers, p.recordId)
     case p: CategoryGuidancePage                   =>
       _ => routes.AssessmentController.onPageLoad2(NormalMode, p.recordId, firstAssessmentIndex)
     case p: AssessmentPage2                        => navigateFromAssessment2(p)

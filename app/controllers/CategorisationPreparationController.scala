@@ -19,7 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import logging.Logging
-import models.NormalMode
+import models.{CategoryRecord2, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages.CategorisationPreparationPage
