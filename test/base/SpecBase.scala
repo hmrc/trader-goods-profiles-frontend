@@ -315,7 +315,7 @@ trait SpecBase
       "UK",
       1,
       None,
-      Some(1234.0),
+      Some(1234567890.123456),
       Some("grams"),
       Instant.now(),
       None,
