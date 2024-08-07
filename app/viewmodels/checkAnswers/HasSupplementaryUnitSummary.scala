@@ -57,7 +57,7 @@ object HasSupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
+  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
