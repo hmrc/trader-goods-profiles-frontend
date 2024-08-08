@@ -131,7 +131,14 @@ class CyaCategorisationController @Inject() (
                 rows = categorisationRows
               )
 
-              Ok(view(recordId, categorisationList, SummaryListViewModel(Seq.empty), SummaryListViewModel(Seq.empty)))
+              val supplementaryUnitList = SummaryListViewModel(
+                rows = Seq(
+                  HasSupplementaryUnitSummary.row2(request.userAnswers, recordId),
+                  SupplementaryUnitSummary.row2(request.userAnswers, recordId)
+                ).flatten
+              )
+
+              Ok(view(recordId, categorisationList, supplementaryUnitList, SummaryListViewModel(Seq.empty)))
 
             case Left(errors) =>
               logErrorsAndContinue2(errors, recordId, request)

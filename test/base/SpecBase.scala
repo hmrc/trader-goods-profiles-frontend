@@ -165,7 +165,8 @@ trait SpecBase
   lazy val categorisationInfo2: CategorisationInfo2 = CategorisationInfo2(
     "1234567890",
     Seq(category1, category2, category3),
-    Seq(category1, category2, category3)
+    Seq(category1, category2, category3),
+    Some("Weight, in kilograms")
   )
 
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
@@ -173,6 +174,13 @@ trait SpecBase
     Seq(category1, category2, category3),
     None,
     0
+  )
+
+  lazy val categorisationInfoWithEmptyMeasurementUnit2: CategorisationInfo2 = CategorisationInfo2(
+    "1234567890",
+    Seq(category1, category2, category3),
+    Seq(category1, category2, category3),
+    None
   )
 
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers

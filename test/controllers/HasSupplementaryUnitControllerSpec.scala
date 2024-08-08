@@ -42,10 +42,52 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private val form         = formProvider()
   private val recordId     = "record id"
 
-  private lazy val hasSupplementaryUnitRoute =
+  private lazy val hasSupplementaryUnitRoute  =
     routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
+  private lazy val hasSupplementaryUnitRoute2 =
+    routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, recordId).url
 
   "HasSupplementaryUnit Controller" - {
+
+    "for a GET 2" - {
+      "must return OK and the correct view" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, hasSupplementaryUnitRoute2)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[HasSupplementaryUnitView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, recordId)(request, messages(application)).toString
+        }
+      }
+
+      "must populate the view correctly when the question has previously been answered" in {
+
+        val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(recordId), true).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, hasSupplementaryUnitRoute2)
+
+          val view = application.injector.instanceOf[HasSupplementaryUnitView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+    }
 
     "must return OK and the correct view for a GET" in {
 

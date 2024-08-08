@@ -154,6 +154,117 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             ).toString
           }
         }
+
+        "when supplementary unit is supplied" in {
+
+          val userAnswers = userAnswersForCategorisation2
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1234.0")
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category1, 0)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category2, 1)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category3, 2)
+                  .get
+              )
+            )
+
+            val supplementaryUnitRow          = SupplementaryUnitSummary.row2(userAnswers, testRecordId)
+            val expectedSupplementaryUnitList = SummaryListViewModel(
+              rows = Seq(
+                HasSupplementaryUnitSummary.row2(userAnswers, testRecordId),
+                supplementaryUnitRow
+              ).flatten
+            )
+
+            withClue("should append measurement unit to supplementary unit") {
+              val supplementaryValue = supplementaryUnitRow.get.value.content match {
+                case Text(innerContent) => innerContent
+              }
+              supplementaryValue must be("1234.0 Weight, in kilograms")
+            }
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              expectedSupplementaryUnitList,
+              emptySummaryList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when supplementary unit is not supplied" in {
+
+          val userAnswers = userAnswersForCategorisation2
+            .set(HasSupplementaryUnitPage(testRecordId), false)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[CyaCategorisationView]
+
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category1, 0)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category2, 1)
+                  .get,
+                AssessmentsSummary
+                  .row2(testRecordId, userAnswers, category3, 2)
+                  .get
+              )
+            )
+
+            val expectedSupplementaryUnitList = SummaryListViewModel(
+              rows = Seq(
+                HasSupplementaryUnitSummary.row2(userAnswers, testRecordId)
+              ).flatten
+            )
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              expectedSupplementaryUnitList,
+              emptySummaryList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
       }
 
       "must redirect to Journey Recovery" - {
@@ -306,8 +417,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               testEori,
               testRecordId,
               "1234567890",
-              category = Category1Scenario,
-              categoryAssessmentsWithExemptions = 0
+              Category1Scenario,
+              0,
+              None
             )
 
             running(application) {
@@ -366,8 +478,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               testEori,
               testRecordId,
               "1234567890",
-              category = Category1Scenario,
-              categoryAssessmentsWithExemptions = 0
+              Category1Scenario,
+              0,
+              None
             )
 
             running(application) {

@@ -23,7 +23,7 @@ import navigation.Navigator
 import pages.SupplementaryUnitPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CategorisationDetailsQuery
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SupplementaryUnitView
@@ -63,6 +63,45 @@ class SupplementaryUnitController @Inject() (
 
       result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
   }
+
+  def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
+        case None => form
+        case Some(value) => form.fill(value)
+      }
+
+      val result = for {
+        categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+      } yield {
+        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+        Ok(view(preparedForm, mode, recordId, measurementUnit))
+      }
+
+      result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+  }
+
+  def onSubmit2(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => {
+            val result = for {
+              categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+            } yield {
+              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+            }
+            result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+          },
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))
+              _ <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(SupplementaryUnitPage(recordId), mode, updatedAnswers))
+        )
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

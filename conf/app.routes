@@ -161,7 +161,6 @@ GET         /update-record/:recordId/categorisation2/result/standard            
 GET         /update-record/:recordId/categorisation2/result/category-1-no-exemptions         controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = Category1NoExemptionsScenario)
 GET         /update-record/:recordId/categorisation2/result/standard-no-assessments          controllers.CategorisationResultController.onPageLoad2(recordId: String, scenario: Scenario2 = StandardGoodsNoAssessmentsScenario)
 
-
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
 GET         /update-record/:recordId/categorisation2/check-your-answers                      controllers.CyaCategorisationController.onPageLoad2(recordId:String)
@@ -192,10 +191,18 @@ POST        /update-record/:recordId/categorisation/supplementary-unit-question 
 GET         /update-record/:recordId/categorisation/supplementary-unit-question/check       controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/categorisation/supplementary-unit-question/check       controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
+GET         /update-record/:recordId/categorisation2/supplementary-unit-question            controllers.HasSupplementaryUnitController.onPageLoad2(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation2/supplementary-unit-question/check      controllers.HasSupplementaryUnitController.onPageLoad2(mode: Mode = CheckMode, recordId: String)
+
 GET         /update-record/:recordId/categorisation/supplementary-unit-amount               controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST        /update-record/:recordId/categorisation/supplementary-unit-amount               controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET         /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/categorisation/supplementary-unit-amount/check         controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
+GET         /update-record/:recordId/categorisation2/supplementary-unit-amount              controllers.SupplementaryUnitController.onPageLoad2(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation2/supplementary-unit-amount              controllers.SupplementaryUnitController.onSubmit2(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation2/supplementary-unit-amount/check        controllers.SupplementaryUnitController.onPageLoad2(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation2/supplementary-unit-amount/check        controllers.SupplementaryUnitController.onSubmit2(mode: Mode = CheckMode, recordId: String)
 
 GET        /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onPageLoad()
 POST       /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onSubmit()

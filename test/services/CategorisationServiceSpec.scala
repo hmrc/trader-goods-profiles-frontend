@@ -51,7 +51,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
   private def mockOttResponse(comCode: String = "1234567890") = OttResponse(
-    GoodsNomenclatureResponse("some id", comCode, Some("some measure unit"), Instant.EPOCH, None, List("test")),
+    GoodsNomenclatureResponse("some id", comCode, Some("Weight, in kilograms"), Instant.EPOCH, None, List("test")),
     categoryAssessmentRelationships = Seq(
       CategoryAssessmentRelationship("assessmentId2")
     ),
@@ -142,7 +142,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
-        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments)
+        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"))
 
       withClue("should ask for details for this commodity and country from OTT") {
         verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
@@ -174,7 +174,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         GoodsNomenclatureResponse(
           "some id",
           "brokenComCode",
-          Some("some measure unit"),
+          Some("Weight, in kilograms"),
           Instant.EPOCH,
           None,
           List("test")
@@ -284,7 +284,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             assessment4,
             assessment3
           ),
-          Seq(assessment1, assessment2)
+          Seq(assessment1, assessment2),
+          None
         )
 
         val userAnswers = emptyUserAnswers
@@ -323,7 +324,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(Certificate("cert1", "cert1c", "cert1desc"))
           )
         ),
-        Seq.empty
+        Seq.empty,
+        None
       )
 
       val userAnswers = emptyUserAnswers
@@ -378,7 +380,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
               Seq(Certificate("cert1", "cert1c", "cert1desc"))
             )
           ),
-          Seq.empty
+          Seq.empty,
+          None
         )
 
         val userAnswers = emptyUserAnswers
@@ -433,7 +436,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             assessment4,
             assessment3
           ),
-          Seq(assessment1, assessment2)
+          Seq(assessment1, assessment2),
+          None
         )
 
         val userAnswers = emptyUserAnswers
@@ -461,7 +465,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val categoryInfoNoAssessments = CategorisationInfo2(
         "1234567890",
         Seq.empty,
-        Seq.empty
+        Seq.empty,
+        None
       )
 
       val userAnswers = emptyUserAnswers

@@ -44,7 +44,215 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
   private val validAnswer = "10.0"
 
-  private lazy val supplementaryUnitRoute = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
+  private lazy val supplementaryUnitRoute  = routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId).url
+  private lazy val supplementaryUnitRoute2 =
+    routes.SupplementaryUnitController.onPageLoad2(NormalMode, testRecordId).url
+
+  "SupplementaryUnit Controller 2" - {
+
+    "for a GET" - {
+
+      "must return OK and the correct view" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, supplementaryUnitRoute2)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[SupplementaryUnitView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "Weight, in kilograms")(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must return OK and the correct view when Measurement Unit is Empty" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoWithEmptyMeasurementUnit2)
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, supplementaryUnitRoute2)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[SupplementaryUnitView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "")(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must populate the view correctly when the question has previously been answered" in {
+
+        val userAnswers = UserAnswers(userAnswersId)
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), validAnswer)
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, supplementaryUnitRoute2)
+
+          val view = application.injector.instanceOf[SupplementaryUnitView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill(validAnswer),
+            NormalMode,
+            testRecordId,
+            "Weight, in kilograms"
+          )(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to Journey Recovery for a GET if no category info is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, supplementaryUnitRoute2)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+    }
+
+    "for a POST" - {
+
+      "must redirect to the next page when valid data is submitted" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, supplementaryUnitRoute2)
+              .withFormUrlEncodedBody(("value", validAnswer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, supplementaryUnitRoute2)
+              .withFormUrlEncodedBody(("value", "invalid value"))
+
+          val boundForm = form.bind(Map("value" -> "invalid value"))
+
+          val view = application.injector.instanceOf[SupplementaryUnitView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "Weight, in kilograms")(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must return a Bad Request and errors when invalid data is submitted and Measurement Unit is Empty" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoWithEmptyMeasurementUnit2)
+          .success
+          .value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, supplementaryUnitRoute2)
+              .withFormUrlEncodedBody(("value", "invalid value"))
+
+          val boundForm = form.bind(Map("value" -> "invalid value"))
+
+          val view = application.injector.instanceOf[SupplementaryUnitView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "")(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "must redirect to Journey Recovery if no category info is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, supplementaryUnitRoute2)
+              .withFormUrlEncodedBody(("value", validAnswer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+    }
+
+  }
 
   "SupplementaryUnit Controller" - {
 

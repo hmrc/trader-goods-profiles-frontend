@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
 import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
@@ -40,8 +40,9 @@ final case class CategoryRecord2(
   recordId: String,
   comcode: String,
   category: Scenario2,
-  categoryAssessmentsWithExemptions: Int
-  //TODO later - sup unit
+  categoryAssessmentsWithExemptions: Int,
+  measurementUnit: Option[String],
+  supplementaryUnit: Option[String] = None
 )
 
 object CategoryRecord2 {
@@ -51,20 +52,26 @@ object CategoryRecord2 {
     eori: String,
     recordId: String,
     categorisationService: CategorisationService
-  ): EitherNec[ValidationError, CategoryRecord2] = {
-    val categorisationInfo = getCategorisationInfoForThisRecord(userAnswers, recordId)
-
-    categorisationInfo.map(info =>
+  ): EitherNec[ValidationError, CategoryRecord2] =
+    (
+      getCategorisationInfoForThisRecord(userAnswers, recordId),
+      userAnswers.getOptionalPageValueForOptionalBooleanPage(
+        userAnswers,
+        HasSupplementaryUnitPage(recordId),
+        SupplementaryUnitPage(recordId)
+      )
+    ).parMapN((categorisationInfo, supplementaryUnit) =>
       CategoryRecord2(
         eori,
         recordId,
-        info.commodityCode,
+        categorisationInfo.commodityCode,
         //TODO cleanup
-        categorisationService.calculateResult(info, userAnswers, recordId),
-        info.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined)
+        categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
+        categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
+        categorisationInfo.measurementUnit,
+        supplementaryUnit
       )
     )
-  }
 
   private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
     userAnswers

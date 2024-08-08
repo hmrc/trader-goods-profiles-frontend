@@ -321,12 +321,13 @@ class GoodsRecordConnectorSpec
 
   ".updateCategoryAndComcodeForGoodsRecord2" - {
 
-    val goodsRecord = CategoryRecord2(
+    val categoryRecord = CategoryRecord2(
       eori = testEori,
       recordId = testRecordId,
       category = Category1Scenario,
       categoryAssessmentsWithExemptions = 3,
-      comcode = "1234567890"
+      comcode = "1234567890",
+      measurementUnit = None
     )
 
     val updateRecordRequest = UpdateRecordRequest(
@@ -348,7 +349,29 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, goodsRecord).futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).futureValue
+    }
+
+    "must update a goods record with a category and supplementary unit" in {
+
+      val categoryRecordWithSupp = categoryRecord.copy(
+        measurementUnit = Some("weight"),
+        supplementaryUnit = Some("123")
+      )
+
+      val updateRecordRequestWithSupp = updateRecordRequest.copy(
+        measurementUnit = Some("weight"),
+        supplementaryUnit = Some(123)
+      )
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequestWithSupp).toString))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok())
+      )
+
+      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecordWithSupp).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -360,7 +383,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, goodsRecord).failed.futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).failed.futureValue
     }
   }
 

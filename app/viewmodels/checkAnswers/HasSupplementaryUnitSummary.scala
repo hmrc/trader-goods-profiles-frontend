@@ -40,6 +40,20 @@ object HasSupplementaryUnitSummary {
       )
     }
 
+  def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(HasSupplementaryUnitPage(recordId)).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+
+      SummaryListRowViewModel(
+        key = "hasSupplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+        )
+      )
+    }
+
   def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
@@ -52,6 +66,23 @@ object HasSupplementaryUnitSummary {
         value = ValueViewModel(displayValue),
         actions = Seq(
           ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+        )
+      )
+    }
+
+  def row2(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
+                                                                                     messages: Messages
+  ): Option[SummaryListRow] =
+    for {
+      _ <- measureValue
+    } yield {
+      val displayValue = if (suppValue.isDefined) "site.yes" else "site.no"
+      SummaryListRowViewModel(
+        key = "hasSupplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(displayValue),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
         )
       )

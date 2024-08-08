@@ -47,6 +47,17 @@ class HasSupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
+  def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+
+      val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
+        case None => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm, mode, recordId))
+  }
+
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       for {
