@@ -260,6 +260,5 @@ GET         /loading-records                                                    
 GET        /update-record/:recordId/withdraw-request                                        controllers.WithdrawAdviceStartController.onPageLoad(recordId: String)
 POST       /update-record/:recordId/withdraw-request                                        controllers.WithdrawAdviceStartController.onSubmit(recordId: String)
 
-
 GET        /*path                                                                           controllers.PageNotFoundController.onPageLoad(path: String)
 
