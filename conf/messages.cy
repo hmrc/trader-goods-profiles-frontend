@@ -2,8 +2,27 @@ site.yes = Iawn
 site.no = Na
 site.continue = Yn eich blaen
 site.change = Newid
+site.startAgain = Dechrau eto
+site.goToHomePage = Ewch i’r hafan
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
+
+signedOut.title = Rydych bellach wedi allgofnodi
+signedOut.heading = Rydych bellach wedi allgofnodi
+
+unauthorised.title = Mae problem wedi codi
+unauthorised.heading = Mae problem wedi codi
+unauthorised.p1 = Nid yw’r manylion sydd wedi’u mewngofnodi i GOV.UK wedi’u cysylltu â Phroffil Nwyddau Masnachwyr.
+unauthorised.p2.part1 = Os oes gennych Broffil Nwyddau Masnachwyr,
+unauthorised.p2.linkText = dylech allgofnodi
+unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio’r manylion cywir.
+
+journeyRecovery.continue.title = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o’i le – bydd angen i chi ddechrau eto. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
+journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o’i le – ewch i hafan y Proffil Nwyddau Masnachwyr. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
 
 profileSetup.title = Sefydlu eich proffil
 profileSetup.h1 = Sefydlu eich proffil
@@ -109,7 +128,6 @@ name.heading = Beth yw eich enw?
 name.hint = Mae angen i ni wybod eich enw er mwyn i ni allu cysylltu â chi.
 name.checkYourAnswersLabel = Enw
 name.error.required = Nodwch eich enw
-    name.error.length = Enter a name with 70 characters or less
 name.change.hidden = Enw
 
 email.title = Beth yw''ch cyfeiriad e-bost?
@@ -117,8 +135,6 @@ email.heading = Beth yw''ch cyfeiriad e-bost?
 email.hint = Byddwn ond yn defnyddio''ch e-bost i gysylltu â chi ynglŷn â''ch cais.
 email.checkYourAnswersLabel = E-bost
 email.error.required = Nodwch eich cyfeiriad e-bost
-    email.error.invalidFormat = Enter a valid email address
-    email.error.length = Email must be 254 characters or less
 email.change.hidden = E-bost
 
 cyaRequestAdvice.title = Gwiriwch eich atebion cyn anfon eich cais am gyngor
@@ -137,5 +153,4 @@ adviceSuccess.p2.4 = nodi bod y cofnod yn anghywir, ac yn esbonio pam
 adviceSuccess.p3 = Gallwch anfon rhagor o wybodaeth am eich nwyddau at CThEF yn [email address] – cofiwch nodi''ch rhif EORI.
 adviceSuccess.p4 = Nid yw e-bost yn ddull diogel o gyfathrebu, felly peidiwch â chynnwys unrhyw fanylion personol yn eich e-bost at CThEF.
 adviceSuccess.p5 = Dylech gael ymateb i''ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
-    adviceSuccess.p6.linkText = Go to goods record
 adviceSuccess.p7.linkText = Ewch i''r hafan
