@@ -261,3 +261,7 @@ GET        /update-record/:recordId/withdraw-request                            
 POST       /update-record/:recordId/withdraw-request                                        controllers.WithdrawAdviceStartController.onSubmit(recordId: String)
 
 GET        /update-record/:recordId/withdraw-request/success                                controllers.WithdrawAdviceSuccessController.onPageLoad(recordId: String)
+
+GET        /update-record/:recordId/withdraw-request/reason                                 controllers.ReasonForWithdrawAdviceController.onPageLoad(recordId: String)
+POST       /update-record/:recordId/withdraw-request/reason                                 controllers.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
+
