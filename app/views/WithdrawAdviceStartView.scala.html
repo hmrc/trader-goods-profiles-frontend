@@ -43,8 +43,8 @@
                 field = form("value"),
                 legend = Legend(content = "withdrawAdviceStart.h1", classes = "govuk-visually-hidden"),
                 items = Seq(
-                    RadioItem(content = messages("withdrawAdviceStart.radio1"), value = Some("true")),
-                    RadioItem(content = messages("withdrawAdviceStart.radio2"), value = Some("false"))
+                    RadioItem(content = messages("withdrawAdviceStart.radio1"), value = Some("true"), id = Some(s"value")),
+                    RadioItem(content = messages("withdrawAdviceStart.radio2"), value = Some("false"), id = Some(s"value-no"))
                 )
             )
         )
