@@ -114,7 +114,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         val categoryInfoNoAssessments = CategorisationInfo2(
           "1234567890",
           Seq.empty,
-          Seq.empty
+          Seq.empty,
+          None
         )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
@@ -225,7 +226,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         val categoryInfoNoAssessments = CategorisationInfo2(
           "1234567890",
           Seq.empty,
-          Seq.empty
+          Seq.empty,
+          None
         )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
@@ -253,7 +255,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         val categoryInfoNoAssessments = CategorisationInfo2(
           "1234567890",
           Seq.empty,
-          Seq.empty
+          Seq.empty,
+          None
         )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(

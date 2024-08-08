@@ -71,8 +71,8 @@ object UpdateRecordRequest {
       categoryRecord.eori,
       category = Some(Scenario2.getResultAsInt(categoryRecord.category)),
       comcode = Some(categoryRecord.comcode),
-      //supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
-      //measurementUnit = categoryRecord.measurementUnit
+      supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
+      measurementUnit = categoryRecord.measurementUnit
     )
 
   def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): UpdateRecordRequest =

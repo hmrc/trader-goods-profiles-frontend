@@ -54,7 +54,7 @@ class AssessmentPageSpec extends SpecBase {
     )
     val assessmentList = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo =
-      CategorisationInfo2("1234567890", assessmentList, assessmentList)
+      CategorisationInfo2("1234567890", assessmentList, assessmentList, None)
 
     "must not remove any assessments" - {
       "when an assessment is answered with an exemption" in {

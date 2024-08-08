@@ -23,12 +23,13 @@ import models.GoodsRecordsPagination.firstPage
 import pages._
 import models._
 import queries.RecordCategorisationsQuery
+import models.ott.{CategorisationInfo2, CategoryAssessment}
 import pages._
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.firstAssessmentIndex
+import utils.Constants.{Category2AsInt, firstAssessmentIndex}
 
 import scala.util.Try
 
@@ -263,6 +264,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       for {
         categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
         assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
         case AssessmentAnswer2.Exemption if nextIndex < assessmentCount =>
@@ -271,6 +273,10 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
           routes.CyaCategorisationController.onPageLoad2(recordId)
       }
     }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
+
+  private def shouldGoToSupplementaryUnit(categorisationInfo: CategorisationInfo2, assessmentQuestion: CategoryAssessment) = {
+    assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined
   }
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
@@ -340,8 +346,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: NamePage                               => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
-    case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
-    case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case p: HasSupplementaryUnitPage => navigateFromHasSupplementaryUnitCheck2(p.recordId)
+    case p: SupplementaryUnitPage => _ => routes.CyaCategorisationController.onPageLoad2(p.recordId)
     case p: HasSupplementaryUnitUpdatePage         =>
       navigateFromHasSupplementaryUnitUpdateCheck(p.recordId)
     case p: SupplementaryUnitUpdatePage            => _ => routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
@@ -456,16 +462,23 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       for {
         categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
         assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
         nextAnswer          = answers.get(AssessmentPage2(recordId, nextIndex))
       } yield assessmentAnswer match {
         case AssessmentAnswer2.Exemption if nextIndex < assessmentCount && nextAnswer.isEmpty =>
           routes.AssessmentController.onPageLoad2(CheckMode, recordId, nextIndex)
-
+        case AssessmentAnswer2.NoExemption if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId)
+        => routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, recordId)
         case _ =>
           routes.CyaCategorisationController.onPageLoad2(recordId)
       }
     }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
+
+  private def shouldGoToSupplementaryUnitCheck(userAnswers: UserAnswers, categorisationInfo: CategorisationInfo2, assessmentQuestion: CategoryAssessment, recordId: String) = {
+    assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined &&
+      userAnswers.get(HasSupplementaryUnitPage(recordId)).isEmpty
   }
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
@@ -532,6 +545,20 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
             routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId)
           }
         case false => routes.CyaSupplementaryUnitController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasSupplementaryUnitCheck2(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage(recordId))
+      .map {
+        case true =>
+          if (answers.isDefined(SupplementaryUnitPage(recordId))) {
+            routes.CyaCategorisationController.onPageLoad2(recordId)
+          } else {
+            routes.SupplementaryUnitController.onPageLoad2(CheckMode, recordId)
+          }
+        case false => routes.CyaCategorisationController.onPageLoad2(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

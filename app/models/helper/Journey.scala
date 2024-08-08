@@ -56,8 +56,8 @@ case object CategorisationJourney2 extends Journey {
   val pages: Seq[String]        =
     Seq(
       assessmentsPage2,
-     // hasSupplementaryUnitPage,
-     // supplementaryUnitPage,
+      hasSupplementaryUnitPage,
+      supplementaryUnitPage,
      // longerCommodityCodePage
     )
   override def toString: String = "Categorisation2"

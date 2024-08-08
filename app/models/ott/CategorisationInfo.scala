@@ -26,7 +26,8 @@ import play.api.libs.json.{Json, OFormat}
 final case class CategorisationInfo2(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
-  categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment]
+  categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
+  measurementUnit: Option[String]
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
@@ -77,7 +78,8 @@ object CategorisationInfo2 {
         CategorisationInfo2(
           commodityCodeUserEntered,
           assessmentsSorted,
-          questionsToAnswers
+          questionsToAnswers,
+          ott.goodsNomenclature.measurementUnit
         )
       }
 
