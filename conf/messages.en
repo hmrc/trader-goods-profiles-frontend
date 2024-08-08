@@ -13,6 +13,7 @@ site.signIn = Sign in
 site.govuk = GOV.UK
 site.or = or
 site.search = Search
+site.goToHomePage = Go to homepage
 
 date.day = Day
 date.month = Month
@@ -60,12 +61,12 @@ cyaCategorisation.categorisationQuestion = Do you meet any of the following cond
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
 
-journeyRecovery.continue.title = Sorry, there is a problem with the service
-journeyRecovery.continue.heading = Sorry, there is a problem with the service
-journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
-journeyRecovery.startAgain.title = Sorry, there is a problem with the service
-journeyRecovery.startAgain.heading = Sorry, there is a problem with the service
-journeyRecovery.startAgain.guidance = [Add content to explain why the user needs to start again.]
+journeyRecovery.continue.title = Something has gone wrong
+journeyRecovery.continue.heading = Something has gone wrong
+journeyRecovery.continue.guidance = Something has gone wrong and you'll need to start again. We have not saved any information you've entered.
+journeyRecovery.startAgain.title = Something has gone wrong
+journeyRecovery.startAgain.heading = Something has gone wrong
+journeyRecovery.startAgain.guidance = Something has gone wrong and you'll need to go to the Trader Goods Profile homepage. We have not saved any information you've entered.
 
 signedOut.title = You have now signed out
 signedOut.heading = You have now signed out
