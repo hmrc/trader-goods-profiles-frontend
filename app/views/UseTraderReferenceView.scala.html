@@ -54,8 +54,8 @@
                 field = form("value"),
                 legend = Legend(content = "useTraderReference.h1", classes = "govuk-visually-hidden"),
                 items = Seq(
-                    RadioItem(content = messages("useTraderReference.radio1"), value = Some("true")),
-                    RadioItem(content = messages("useTraderReference.radio2"), value = Some("false"))
+                    RadioItem(content = messages("useTraderReference.radio1"), value = Some("true"),id = Some(s"value")),
+                    RadioItem(content = messages("useTraderReference.radio2"), value = Some("false"),id = Some(s"value-no"))
                 )
             )
         )
