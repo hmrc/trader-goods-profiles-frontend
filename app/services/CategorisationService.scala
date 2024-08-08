@@ -23,6 +23,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
+import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.requests.DataRequest
 import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
@@ -84,22 +85,33 @@ class CategorisationService @Inject() (
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)){
+      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
         Category1NoExemptionsScenario
       } else {
         Category2Scenario
       }
     } else {
-      val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
-
-      val getFirstNo = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
-
-      getFirstNo match {
-        case None                                            => StandardGoodsScenario
-        case Some(details) if details.question.category == 2 => Category2Scenario
-        case _                                               => Category1Scenario
-      }
+      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
     }
+
+  private def calculateBasedOnAnswers(
+    categorisationInfo: CategorisationInfo2,
+    userAnswers: UserAnswers,
+    recordId: String
+  ) = {
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    val getFirstNo                                = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
+    val areThereCategory2QuestionsWithNoExemption =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+
+    getFirstNo match {
+      case None if areThereCategory2QuestionsWithNoExemption => Category2Scenario
+      case None                                              => StandardGoodsScenario
+      case Some(details) if details.question.category == 2   => Category2Scenario
+      case _                                                 => Category1Scenario
+    }
+  }
 
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
