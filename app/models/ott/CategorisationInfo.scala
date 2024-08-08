@@ -56,14 +56,23 @@ object CategorisationInfo2 {
       .map { assessments =>
         val assessmentsSorted = assessments.sorted
 
-        val findCategory1NoAssessments = assessments.count(ass => ass.isCategory1 && ass.hasNoAnswers)
-        val findCategory2NoAssessments = assessments.count(ass => ass.isCategory2 && ass.hasNoAnswers)
+        val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
+        val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
-        val questionsToAnswers = if (findCategory1NoAssessments > 0 || findCategory2NoAssessments > 0) {
-          Seq.empty
-        } else {
-          assessmentsSorted
-        }
+        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers)
+        val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
+
+        val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
+        val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
+
+        val questionsToAnswers =
+          if (!areAllCategory1Answerable) {
+            Seq.empty
+          } else if (!areAllCategory2Answerable) {
+            category1ToAnswer
+          } else {
+            category1ToAnswer ++ category2ToAnswer
+          }
 
         CategorisationInfo2(
           commodityCodeUserEntered,

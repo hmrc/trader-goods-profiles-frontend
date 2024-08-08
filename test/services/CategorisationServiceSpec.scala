@@ -227,58 +227,88 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
-    "return Category 1 if a category 1 question is No" in {
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-        .success
-        .value
-        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
-        .success
-        .value
+    "return Category 1" - {
+      "if a category 1 question is No" in {
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+          .success
+          .value
 
-      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category1Scenario
+        categorisationService.calculateResult(
+          categorisationInfo2,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category1Scenario
+
+      }
+
+      "if some category 1 are answered No and there are category 2 with no exemptions" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("cert1", "cert1code", "cert1desc")
+          )
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("cert2", "cert2code", "cert2desc")
+          )
+        )
+
+        val assessment3 = CategoryAssessment(
+          "ass3",
+          2,
+          Seq(
+            Certificate("cert3", "cert3code", "cert3desc")
+          )
+        )
+
+        val assessment4 = CategoryAssessment(
+          "ass4",
+          2,
+          Seq.empty
+        )
+
+        val categorisationInfo = CategorisationInfo2(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2,
+            assessment4,
+            assessment3
+          ),
+          Seq(assessment1, assessment2)
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category1Scenario
+
+      }
 
     }
 
-    "return Category 2 if a category 2 question is No" in {
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-        .success
-        .value
-        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
-        .success
-        .value
-        .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
-        .success
-        .value
-        .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
-        .success
-        .value
-
-      categorisationService.calculateResult(categorisationInfo2, userAnswers, testRecordId) mustEqual Category2Scenario
-
-    }
-
-    "return StandardNoAssessments if no assessments" in {
-      val categoryInfoNoAssessments = CategorisationInfo2(
-        "1234567890",
-        Seq.empty,
-        Seq.empty
-      )
-
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery2(testRecordId), categoryInfoNoAssessments)
-        .success
-        .value
-
-      categorisationService.calculateResult(
-        categoryInfoNoAssessments,
-        userAnswers,
-        testRecordId
-      ) mustBe StandardGoodsNoAssessmentsScenario
-    }
-
-    "return Category 1 if a category 1 question has no exemptions" in {
+    "return Category 1 No Exemptions if a category 1 question has no exemptions" in {
       val categorisationInfo = CategorisationInfo2(
         "1234567890",
         Seq(
@@ -309,36 +339,143 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
-    "return Category 2 if no category 1 assessments and category 2 question has no exemptions" in {
-      val categorisationInfo = CategorisationInfo2(
-        "1234567890",
-        Seq(
-          CategoryAssessment(
-            "ass1",
-            2,
-            Seq.empty
+    "return Category 2" - {
+      "if a category 2 question is No" in {
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo2,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+
+      }
+
+      "if no category 1 assessments and category 2 question has no exemptions" in {
+        val categorisationInfo = CategorisationInfo2(
+          "1234567890",
+          Seq(
+            CategoryAssessment(
+              "ass1",
+              2,
+              Seq.empty
+            ),
+            CategoryAssessment(
+              "ass2",
+              2,
+              Seq(Certificate("cert1", "cert1c", "cert1desc"))
+            )
           ),
-          CategoryAssessment(
-            "ass2",
-            2,
-            Seq(Certificate("cert1", "cert1c", "cert1desc"))
+          Seq.empty
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+
+      }
+
+      "if all category 1 are answered Yes and there are category 2 with no exemptions" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("cert1", "cert1code", "cert1desc")
           )
-        ),
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("cert2", "cert2code", "cert2desc")
+          )
+        )
+
+        val assessment3 = CategoryAssessment(
+          "ass3",
+          2,
+          Seq(
+            Certificate("cert3", "cert3code", "cert3desc")
+          )
+        )
+
+        val assessment4 = CategoryAssessment(
+          "ass4",
+          2,
+          Seq.empty
+        )
+
+        val categorisationInfo = CategorisationInfo2(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2,
+            assessment4,
+            assessment3
+          ),
+          Seq(assessment1, assessment2)
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+
+      }
+
+    }
+
+    "return StandardNoAssessments if no assessments" in {
+      val categoryInfoNoAssessments = CategorisationInfo2(
+        "1234567890",
+        Seq.empty,
         Seq.empty
       )
 
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+        .set(CategorisationDetailsQuery2(testRecordId), categoryInfoNoAssessments)
         .success
         .value
 
       categorisationService.calculateResult(
-        categorisationInfo,
+        categoryInfoNoAssessments,
         userAnswers,
         testRecordId
-      ) mustEqual Category2Scenario
-
+      ) mustBe StandardGoodsNoAssessmentsScenario
     }
+
   }
 
   "requireCategorisation" - {
