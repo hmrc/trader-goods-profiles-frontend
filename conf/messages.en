@@ -601,6 +601,12 @@ withdrawAdviceStart.radio1 = Yes, remove my request for advice
 withdrawAdviceStart.radio2 = No, do not remove my request for advice
 withdrawAdviceStart.error.required = Select if you want to withdraw your request for advice
 
+withdrawAdviceSuccess.title = Request for advice withdrawn
+withdrawAdviceSuccess.h1 = Request for advice withdrawn
+withdrawAdviceSuccess.p1 = We have unlocked the goods record and you can now make changes to it.
+withdrawAdviceSuccess.goToRecord = Go to goods record
+withdrawAdviceSuccess.goToHome = Go to homepage
+
 reasonForWithdrawAdvice.title = Can you tell us why you''re withdrawing your request for advice?
 reasonForWithdrawAdvice.h1 = Can you tell us why you''re withdrawing your request for advice?
 reasonForWithdrawAdvice.hint = This is optional and you can withdraw your request without giving us a reason. Telling us why can help us improve the service.
