@@ -156,7 +156,10 @@ class CategorisationResultControllerSpec extends SpecBase {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, StandardGoodsNoAssessmentsScenario).url)
+            FakeRequest(
+              GET,
+              routes.CategorisationResultController.onPageLoad2(testRecordId, StandardGoodsNoAssessmentsScenario).url
+            )
 
           val result = route(application, request).value
 
@@ -177,7 +180,10 @@ class CategorisationResultControllerSpec extends SpecBase {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.CategorisationResultController.onPageLoad2(testRecordId, Category1NoExemptionsScenario).url)
+            FakeRequest(
+              GET,
+              routes.CategorisationResultController.onPageLoad2(testRecordId, Category1NoExemptionsScenario).url
+            )
 
           val result = route(application, request).value
 

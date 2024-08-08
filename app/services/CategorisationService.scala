@@ -22,6 +22,7 @@ import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import models.requests.DataRequest
 import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
@@ -83,8 +84,11 @@ class CategorisationService @Inject() (
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-      //TODO probably be more specific with logic
-      Category1NoExemptionsScenario
+      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)){
+        Category1NoExemptionsScenario
+      } else {
+        Category2Scenario
+      }
     } else {
       val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 

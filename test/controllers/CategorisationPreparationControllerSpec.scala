@@ -78,7 +78,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result = route(application, request).value
+          val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
@@ -131,7 +131,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result = route(application, request).value
+          val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 

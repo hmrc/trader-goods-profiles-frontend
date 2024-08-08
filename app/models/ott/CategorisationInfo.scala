@@ -57,8 +57,9 @@ object CategorisationInfo2 {
         val assessmentsSorted = assessments.sorted
 
         val findCategory1NoAssessments = assessments.count(ass => ass.isCategory1 && ass.hasNoAnswers)
+        val findCategory2NoAssessments = assessments.count(ass => ass.isCategory2 && ass.hasNoAnswers)
 
-        val questionsToAnswers = if (findCategory1NoAssessments > 0) {
+        val questionsToAnswers = if (findCategory1NoAssessments > 0 || findCategory2NoAssessments > 0) {
           Seq.empty
         } else {
           assessmentsSorted

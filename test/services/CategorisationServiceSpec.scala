@@ -138,25 +138,25 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   "getCategorisationInfo" - {
 
     "create a categorisation info record for the given commodity code" in {
-        val expectedAssessments = Seq(
-          CategoryAssessment(
-            "assessmentId2",
-            2,
-            Seq(
-              Certificate("exemptionId1", "code1", "description1"),
-              AdditionalCode("exemptionId2", "code2", "description2")
-            )
+      val expectedAssessments = Seq(
+        CategoryAssessment(
+          "assessmentId2",
+          2,
+          Seq(
+            Certificate("exemptionId1", "code1", "description1"),
+            AdditionalCode("exemptionId2", "code2", "description2")
           )
         )
+      )
 
-        await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
-          CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments)
+      await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
+        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments)
 
-        withClue("should ask for details for this commodity and country from OTT") {
-          verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
-            any()
-          )
-        }
+      withClue("should ask for details for this commodity and country from OTT") {
+        verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
+          any()
+        )
+      }
 
     }
 
@@ -317,6 +317,36 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
+    "return Category 2 if no category 1 assessments and category 2 question has no exemptions" in {
+      val categorisationInfo = CategorisationInfo2(
+        "1234567890",
+        Seq(
+          CategoryAssessment(
+            "ass1",
+            2,
+            Seq.empty
+          ),
+          CategoryAssessment(
+            "ass2",
+            2,
+            Seq(Certificate("cert1", "cert1c", "cert1desc"))
+          )
+        ),
+        Seq.empty
+      )
+
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+        .success
+        .value
+
+      categorisationService.calculateResult(
+        categorisationInfo,
+        userAnswers,
+        testRecordId
+      ) mustEqual Category2Scenario
+
+    }
   }
 
   "requireCategorisation" - {
