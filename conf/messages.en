@@ -275,7 +275,7 @@ traderReference.change.hidden = Trader reference
 assessment.title = Categorisation question
 assessment.heading = Category assessment {0}
 assessment.guidance = You need to confirm which of these conditions you hold for {0}. We need this information to be able to categorise your goods.
-assessment.linkText = Review this code on the Online Tariff Tool (opens in a new tab)
+assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
 assessment.question = Do you meet any of the following conditions and can you supply the relevant document code on your movements?
 assessment.question.onlyOne = Do you meet the following condition and can you supply the relevant document code on your movement?
 assessment.hint = Select one answer.
@@ -285,7 +285,7 @@ assessment.error.required = Select yes if you meet any of the conditions
 assessment.error.required.onlyOne = Select yes if you meet the condition
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
-assessment.insetText = You could be asked up to 25 different category assessments for each good.
+assessment.insetText = You could be asked up to 10 different category assessments for each good.
 assessment.change.hidden = Category assessment {0}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -587,7 +587,7 @@ profileSuccess.p1 = You can go to your TGP homepage and either view a list of an
 profileSuccess.p2.linkText = Go to homepage
 
 
-unauthorisedServiceUser.title = There is a problem - Trader Goods Profile
+unauthorisedServiceUser.title = There is a problem
 unauthorisedServiceUser.heading = There is a problem
 unauthorisedServiceUser.p1 = Trader Goods Profile (TGP) is not available to the public yet.
 unauthorisedServiceUser.p2 = The details you have logged in with do not have access to TGP.
@@ -600,6 +600,18 @@ withdrawAdviceStart.p2 = We''ll unlock your goods record if you withdraw your re
 withdrawAdviceStart.radio1 = Yes, remove my request for advice
 withdrawAdviceStart.radio2 = No, do not remove my request for advice
 withdrawAdviceStart.error.required = Select if you want to withdraw your request for advice
+
+withdrawAdviceSuccess.title = Request for advice withdrawn
+withdrawAdviceSuccess.h1 = Request for advice withdrawn
+withdrawAdviceSuccess.p1 = We have unlocked the goods record and you can now make changes to it.
+withdrawAdviceSuccess.goToRecord = Go to goods record
+withdrawAdviceSuccess.goToHome = Go to homepage
+
+reasonForWithdrawAdvice.title = Can you tell us why you''re withdrawing your request for advice?
+reasonForWithdrawAdvice.h1 = Can you tell us why you''re withdrawing your request for advice?
+reasonForWithdrawAdvice.hint = This is optional and you can withdraw your request without giving us a reason. Telling us why can help us improve the service.
+reasonForWithdrawAdvice.continue = Withdraw request
+reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
 
 pageNotFound.title = Page not found - Trader Goods Profile
 pageNotFound.h1 = Page not found

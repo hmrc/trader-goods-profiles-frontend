@@ -14,43 +14,43 @@
  * limitations under the License.
  *@
 
+@import viewmodels.govuk.characterCount._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukRadios: GovukRadios,
+    textArea: HmrcCharacterCount,
     govukButton: GovukButton
 )
 
 @(form: Form[_], recordId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("withdrawAdviceStart.title"))) {
+@layout(pageTitle = title(form, messages("reasonForWithdrawAdvice.title"))) {
 
+    <h1 class="govuk-heading-l">@messages("reasonForWithdrawAdvice.h1")</h1>
 
-    <h1 class="govuk-heading-l">@messages("withdrawAdviceStart.h1")</h1>
-    <p class="govuk-body">@messages("withdrawAdviceStart.p1")</p>
-    <p class="govuk-body">@messages("withdrawAdviceStart.p2")</p>
-    <h2 class="govuk-heading-m">@messages("withdrawAdviceStart.h2")</h2>
-
-    @formHelper(action = routes.WithdrawAdviceStartController.onSubmit(recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.ReasonForWithdrawAdviceController.onSubmit(recordId)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukRadios(
-            RadiosViewModel.apply(
+
+
+        @textArea(
+            CharacterCountViewModel(
                 field = form("value"),
-                legend = Legend(content = "withdrawAdviceStart.h1", classes = "govuk-visually-hidden"),
-                items = Seq(
-                    RadioItem(content = messages("withdrawAdviceStart.radio1"), value = Some("true"), id = Some(s"value")),
-                    RadioItem(content = messages("withdrawAdviceStart.radio2"), value = Some("false"), id = Some(s"value-no"))
-                )
+                label = Label(content = messages("reasonForWithdrawAdvice.h1"), classes = "govuk-visually-hidden")
             )
+            .withRows(5)
+            .withMaxLength(512)
+            .withHint(Hint(content = HtmlContent(messages("reasonForWithdrawAdvice.hint"))))
+            .withId("value")
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("reasonForWithdrawAdvice.continue"))
         )
     }
 }
