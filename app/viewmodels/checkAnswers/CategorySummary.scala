@@ -25,13 +25,12 @@ import viewmodels.implicits._
 
 object CategorySummary {
 
-  //TBD - this will be updated to route to the update trader reference page
   def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        ActionItemViewModel("site.change", routes.CategorisationPreparationController.startCategorisation(recordId).url)
           .withVisuallyHiddenText(messages("singleRecord.category.row"))
       )
     )
