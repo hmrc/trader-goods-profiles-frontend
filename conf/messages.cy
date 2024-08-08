@@ -3,7 +3,7 @@ site.no = Na
 site.continue = Yn eich blaen
 site.change = Newid
 site.startAgain = Dechrau eto
-site.goToHomePage = Ewch i’r hafan
+site.goToHomePage = Ewch i''r hafan
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -12,17 +12,17 @@ signedOut.heading = Rydych bellach wedi allgofnodi
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
-unauthorised.p1 = Nid yw’r manylion sydd wedi’u mewngofnodi i GOV.UK wedi’u cysylltu â Phroffil Nwyddau Masnachwyr.
+unauthorised.p1 = Nid yw''r manylion sydd wedi''u mewngofnodi i GOV.UK wedi''u cysylltu â Phroffil Nwyddau Masnachwyr.
 unauthorised.p2.part1 = Os oes gennych Broffil Nwyddau Masnachwyr,
 unauthorised.p2.linkText = dylech allgofnodi
-unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio’r manylion cywir.
+unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio''r manylion cywir.
 
-journeyRecovery.continue.title = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o’i le – bydd angen i chi ddechrau eto. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
-journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o’i le – ewch i hafan y Proffil Nwyddau Masnachwyr. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
+journeyRecovery.continue.title = Mae rhywbeth wedi mynd o''i le
+journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o''i le
+journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o''i le – bydd angen i chi ddechrau eto. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
+journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o''i le
+journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o''i le
+journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o''i le – ewch i hafan y Proffil Nwyddau Masnachwyr. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
 
 profileSetup.title = Sefydlu eich proffil
 profileSetup.h1 = Sefydlu eich proffil
