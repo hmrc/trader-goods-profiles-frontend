@@ -600,3 +600,9 @@ withdrawAdviceStart.p2 = We''ll unlock your goods record if you withdraw your re
 withdrawAdviceStart.radio1 = Yes, remove my request for advice
 withdrawAdviceStart.radio2 = No, do not remove my request for advice
 withdrawAdviceStart.error.required = Select if you want to withdraw your request for advice
+
+withdrawAdviceSuccess.title = Request for advice withdrawn
+withdrawAdviceSuccess.h1 = Request for advice withdrawn
+withdrawAdviceSuccess.p1 = We have unlocked the goods record and you can now make changes to it.
+withdrawAdviceSuccess.goToRecord = Go to goods record
+withdrawAdviceSuccess.goToHome = Go to homepage
