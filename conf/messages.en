@@ -587,7 +587,7 @@ profileSuccess.p1 = You can go to your TGP homepage and either view a list of an
 profileSuccess.p2.linkText = Go to homepage
 
 
-unauthorisedServiceUser.title = There is a problem - Trader Goods Profile
+unauthorisedServiceUser.title = There is a problem
 unauthorisedServiceUser.heading = There is a problem
 unauthorisedServiceUser.p1 = Trader Goods Profile (TGP) is not available to the public yet.
 unauthorisedServiceUser.p2 = The details you have logged in with do not have access to TGP.
