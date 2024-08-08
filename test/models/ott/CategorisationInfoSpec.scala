@@ -326,6 +326,78 @@ class CategorisationInfoSpec extends SpecBase {
 
       }
 
+      "when there are no Category 1 and there are Category 2 assessment with no exemptions" in {
+        val mockOttResponse = OttResponse(
+          GoodsNomenclatureResponse(
+            "some id",
+            "1234567890",
+            Some("some measure unit"),
+            Instant.EPOCH,
+            None,
+            List("test")
+          ),
+          categoryAssessmentRelationships = Seq(
+            CategoryAssessmentRelationship("assessmentId2"),
+            CategoryAssessmentRelationship("assessmentId1"),
+            CategoryAssessmentRelationship("assessmentId3")
+          ),
+          includedElements = Seq(
+            ThemeResponse("themeId1", 1),
+            CategoryAssessmentResponse(
+              "assessmentId2",
+              "themeId2",
+              Seq(
+                ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+              )
+            ),
+            ThemeResponse("themeId2", 2),
+            CertificateResponse("exemptionId1", "code1", "description1"),
+            AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+            ThemeResponse("ignoredTheme", 3),
+            CertificateResponse("ignoredExemption", "code3", "description3"),
+            CategoryAssessmentResponse(
+              "assessmentId1",
+              "themeId2",
+              Seq.empty
+            ),
+            CategoryAssessmentResponse(
+              "assessmentId3",
+              "themeId2",
+              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode))
+            )
+          ),
+          descendents = Seq.empty[Descendant]
+        )
+
+        val expectedAssessments = Seq(
+          CategoryAssessment(
+            "assessmentId1",
+            2,
+            Seq.empty
+          ),
+          CategoryAssessment(
+            "assessmentId3",
+            2,
+            Seq(AdditionalCode("exemptionId2", "code2", "description2"))
+          ),
+          CategoryAssessment(
+            "assessmentId2",
+            2,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+        )
+
+        val expectedResult = CategorisationInfo2("1234567890", expectedAssessments, Seq.empty)
+
+        val result = CategorisationInfo2.build(mockOttResponse, "1234567890")
+        result.value mustEqual expectedResult
+
+      }
+
     }
 
     "must return None" - {

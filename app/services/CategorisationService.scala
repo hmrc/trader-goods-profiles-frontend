@@ -18,7 +18,7 @@ package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.{CategorisationInfo, CategorisationInfo2}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import models.requests.DataRequest
 import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
@@ -74,8 +74,11 @@ class CategorisationService @Inject() (
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-      //TODO probably be more specific with logic
-      Category1NoExemptionsScenario
+      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)){
+        Category1NoExemptionsScenario
+      } else {
+        Category2Scenario
+      }
     } else {
       val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
