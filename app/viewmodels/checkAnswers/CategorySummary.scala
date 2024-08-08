@@ -34,7 +34,7 @@ object CategorySummary {
         Seq.empty
       } else {
         Seq(
-          ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+          ActionItemViewModel("site.change", routes.CategorisationPreparationController.startCategorisation(recordId).url)
             .withVisuallyHiddenText(messages("singleRecord.category.row"))
         )
       }
