@@ -547,3 +547,68 @@ goodsRecordsLoading.p2 = We''ve currently loaded {0} out of {1} records.
 goodsRecordsLoading.p3.1 = You can
 goodsRecordsLoading.p3.2 = refresh this page
 goodsRecordsLoading.p3.3 = to check the progress of loading your records.
+
+reviewReason.commodity.title = There is a problem with this record
+reviewReason.commodity.heading = There is a problem with this record
+reviewReason.commodity.p1 = The commodity code has expired. If you want to see if you can use the record within an IMMI, you''ll need to:
+reviewReason.commodity.li1 = change the commodity code
+reviewReason.commodity.li2 = categorise the goods
+
+reviewReason.measure.title = There is a problem with this record
+reviewReason.measure.heading = There is a problem with this record
+reviewReason.measure.p1 = The commodity code or restrictions have changed. You''ll need to categorise the record.
+
+reviewReason.unclear.title = This record needs to be reviewed
+reviewReason.unclear.heading = This record needs to be reviewed
+reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you''ll need to amend the goods description.
+reviewReason.unclear.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
+
+reviewReason.inadequate.title = This record needs to be reviewed
+reviewReason.inadequate.heading = This record needs to be reviewed
+reviewReason.inadequate.p1 = HMRC have reviewed this record. The goods description does not have enough detail. If you want to use this record on an IMMI, you''ll need to amend the goods description.
+reviewReason.inadequate.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
+
+reviewReason.mismatch.title = This record needs to be reviewed
+reviewReason.mismatch.heading = This record needs to be reviewed
+reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you''ll need to amend the commodity code and the goods description.
+
+profileSuccess.title = You''ve created your Trader Goods Profile
+profileSuccess.h1 = You''ve created your Trader Goods Profile
+profileSuccess.h2 = What happens next
+profileSuccess.p1 = You can go to your TGP homepage and either view a list of any previous movement records or create a new record.
+profileSuccess.p2.linkText = Go to homepage
+
+
+unauthorisedServiceUser.title = There is a problem
+unauthorisedServiceUser.heading = There is a problem
+unauthorisedServiceUser.p1 = Trader Goods Profile (TGP) is not available to the public yet.
+unauthorisedServiceUser.p2 = The details you have logged in with do not have access to TGP.
+
+withdrawAdviceStart.title = Withdrawing your request
+withdrawAdviceStart.h1 = Withdrawing your request
+withdrawAdviceStart.h2 = Are you sure you want to withdraw your request for advice?
+withdrawAdviceStart.p1 = Withdrawing your request will mean HMRC will not contact you with a decision.
+withdrawAdviceStart.p2 = We''ll unlock your goods record if you withdraw your request. This means you''ll be able to update the goods record.
+withdrawAdviceStart.radio1 = Yes, remove my request for advice
+withdrawAdviceStart.radio2 = No, do not remove my request for advice
+withdrawAdviceStart.error.required = Select if you want to withdraw your request for advice
+
+withdrawAdviceSuccess.title = Request for advice withdrawn
+withdrawAdviceSuccess.h1 = Request for advice withdrawn
+withdrawAdviceSuccess.p1 = We have unlocked the goods record and you can now make changes to it.
+withdrawAdviceSuccess.goToRecord = Go to goods record
+withdrawAdviceSuccess.goToHome = Go to homepage
+
+reasonForWithdrawAdvice.title = Can you tell us why you''re withdrawing your request for advice?
+reasonForWithdrawAdvice.h1 = Can you tell us why you''re withdrawing your request for advice?
+reasonForWithdrawAdvice.hint = This is optional and you can withdraw your request without giving us a reason. Telling us why can help us improve the service.
+reasonForWithdrawAdvice.continue = Withdraw request
+reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
+
+pageNotFound.title = Page not found - Trader Goods Profile
+pageNotFound.h1 = Page not found
+pageNotFound.p1 = If you typed the web address, check it is correct.
+pageNotFound.p2 = If you pasted the web address, check you copied the entire address.
+pageNotFound.p3 = If the web address is correct or you selected a link or button,
+pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
+pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
