@@ -76,8 +76,8 @@ class AuthenticatedIdentifierAction @Inject() (
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: AuthorisationException  =>
-        logger.info("Authorisation failure: No enrolments found for TGP. Redirecting to UnauthorisedController")
-        Redirect(routes.UnauthorisedController.onPageLoad)
+        logger.info("Authorisation failure: No enrolments found for TGP. Redirecting to UnauthorisedCdsEnrolmentController")
+        Redirect(routes.UnauthorisedCdsEnrolmentController.onPageLoad)
     }
   }
 
