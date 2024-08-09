@@ -60,8 +60,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
     case p: AssessmentPage                         => navigateFromAssessment(p)
-    case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnit(p.recordId)
-    case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnit2(p.recordId)
+    case p: SupplementaryUnitPage                  => _ => routes.CyaCategorisationController.onPageLoad2(p.recordId)
     case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
@@ -227,6 +227,15 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromHasSupplementaryUnit2(recordId: String)(answers: UserAnswers): Call =
+    answers
+      .get(HasSupplementaryUnitPage(recordId))
+      .map {
+        case true => routes.SupplementaryUnitController.onPageLoad2(NormalMode, recordId)
+        case false => routes.CyaCategorisationController.onPageLoad2(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
   private def navigateFromCategorisationPreparationPage(answers: UserAnswers, recordId: String): Call = {
     answers.get(CategorisationDetailsQuery2(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty => routes.CategoryGuidanceController.onPageLoad2(recordId)
@@ -251,6 +260,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       } yield assessmentAnswer match {
         case AssessmentAnswer2.Exemption if nextIndex < assessmentCount =>
           routes.AssessmentController.onPageLoad2(NormalMode, recordId, nextIndex)
+        case AssessmentAnswer2.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion)
+        => routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, recordId)
         case _                                                          =>
           routes.CyaCategorisationController.onPageLoad2(recordId)
       }
