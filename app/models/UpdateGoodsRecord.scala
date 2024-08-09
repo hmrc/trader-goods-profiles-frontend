@@ -66,11 +66,12 @@ object UpdateGoodsRecord {
 
   def validateCommodityCode(
     answers: UserAnswers,
-    recordId: String
+    recordId: String,
+    isCategorised: Boolean
   ): EitherNec[ValidationError, Commodity] =
     (
       Right(recordId),
-      getCommodityCode(answers, recordId)
+      getCommodityCode(answers, recordId, isCategorised)
     ).parMapN((_, value) => value)
 
   def validateTraderReference(
@@ -82,21 +83,38 @@ object UpdateGoodsRecord {
       answers.getPageValue(TraderReferenceUpdatePage(recordId))
     ).parMapN((_, value) => value)
 
-  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Commodity] =
-    answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
-      case Right(true)  =>
-        answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
-          case Right(code)  =>
-            answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
-              case Right(true)  => getCommodityUpdateQuery(answers, code, recordId)
-              case Right(false) =>
-                Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
-              case Left(errors) => Left(errors)
-            }
-          case Left(errors) => Left(errors)
-        }
-      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
-      case Left(errors) => Left(errors)
+  private def getCommodityCode(
+    answers: UserAnswers,
+    recordId: String,
+    isCategorised: Boolean
+  ): EitherNec[ValidationError, Commodity] =
+    if (isCategorised) {
+      answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
+        case Right(true)  =>
+          answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
+            case Right(code)  =>
+              answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
+                case Right(true)  => getCommodityUpdateQuery(answers, code, recordId)
+                case Right(false) =>
+                  Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
+                case Left(errors) => Left(errors)
+              }
+            case Left(errors) => Left(errors)
+          }
+        case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
+        case Left(errors) => Left(errors)
+      }
+    } else {
+      answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
+        case Right(code)  =>
+          answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
+            case Right(true)  => getCommodityUpdateQuery(answers, code, recordId)
+            case Right(false) =>
+              Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
+            case Left(errors) => Left(errors)
+          }
+        case Left(errors) => Left(errors)
+      }
     }
 
   private def getCommodityUpdateQuery(

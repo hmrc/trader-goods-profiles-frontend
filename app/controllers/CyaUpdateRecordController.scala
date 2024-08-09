@@ -107,17 +107,25 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.validateCommodityCode(request.userAnswers, recordId) match {
-        case Right(commodity) =>
-          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
+    (identify andThen getData andThen requireData).async { implicit request =>
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
+        UpdateGoodsRecord
+          .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+          case Right(commodity) =>
+            val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
-          val list = SummaryListViewModel(
-            Seq(CommodityCodeSummary.row(commodity.commodityCode, recordId, CheckMode))
-          )
-          Ok(view(list, onSubmitAction))
-        case Left(errors)     =>
-          logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+            val list = SummaryListViewModel(
+              Seq(
+                CommodityCodeSummary
+                  .row(commodity.commodityCode, recordId, CheckMode, recordResponse.category.isDefined)
+              )
+            )
+            Future.successful(Ok(view(list, onSubmitAction)))
+          case Left(errors)     =>
+            Future.successful(
+              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+            )
+        }
       }
     }
 
@@ -215,26 +223,30 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.validateCommodityCode(request.userAnswers, recordId) match {
-        case Right(commodity) =>
-          auditService.auditFinishUpdateGoodsRecord(
-            recordId,
-            request.affinityGroup,
-            UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
-          )
-          for {
-            _                        <- goodsRecordConnector.updateGoodsRecord(
-                                          UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
-                                        )
-            updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-            updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-            _                        <- sessionRepository.set(updatedAnswers)
-            _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors)     =>
-          Future.successful(
-            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
-          )
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
+        UpdateGoodsRecord
+          .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+          case Right(commodity) =>
+            auditService.auditFinishUpdateGoodsRecord(
+              recordId,
+              request.affinityGroup,
+              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
+            )
+            for {
+              _                        <- goodsRecordConnector.updateGoodsRecord(
+                                            UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
+                                          )
+              updatedAnswersWithChange <-
+                Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+              updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+              _                        <- sessionRepository.set(updatedAnswers)
+              _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
+            } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          case Left(errors)     =>
+            Future.successful(
+              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+            )
+        }
       }
     }
 

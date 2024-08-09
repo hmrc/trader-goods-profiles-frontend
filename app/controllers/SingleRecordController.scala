@@ -74,7 +74,7 @@ class SingleRecordController @Inject() (
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
             GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
             CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode, isCategorised),
-            CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
+            CommodityCodeSummary.row(record.comcode, recordId, NormalMode, isCategorised),
             StatusSummary.row(record.declarable)
           )
         )
