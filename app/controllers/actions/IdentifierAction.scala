@@ -65,19 +65,26 @@ class AuthenticatedIdentifierAction @Inject() (
               checkUserAllowList(enrolment.value)(hc).flatMap { _ =>
                 block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup))
               }
+            case Some(enrolment) if enrolment.value.isBlank  =>
+              throw InternalError("EORI is empty")
             case _                                           =>
               throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
       } recover {
-      case _: UserNotAllowedException =>
+      case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")
         Redirect(routes.UnauthorisedServiceUserController.onPageLoad())
-      case _: NoActiveSession         =>
+      case _: NoActiveSession                =>
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-      case _: AuthorisationException  =>
-        logger.info("Authorisation failure: No enrolments found for TGP. Redirecting to UnauthorisedCdsEnrolmentController")
+      case _: InsufficientEnrolments         =>
+        logger.info(
+          "Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController"
+        )
         Redirect(routes.UnauthorisedCdsEnrolmentController.onPageLoad)
+      case exception: AuthorisationException =>
+        logger.info(f"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController")
+        Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }
 
