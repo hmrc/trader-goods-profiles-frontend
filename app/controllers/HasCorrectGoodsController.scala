@@ -170,7 +170,7 @@ class HasCorrectGoodsController @Inject() (
 
       // Find out what the assessment details for the old (shorter) code was
       oldCommodityCategorisation   <-
-        Future.fromTry(Try(updatedAnswers.get(CategorisationDetailsQuery(recordId)).get))
+        Future.fromTry(Try(updatedAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
 
       // Update the categorisation with the new value details for future categorisation attempts
       updatedCategorisationAnswers <-
@@ -180,7 +180,7 @@ class HasCorrectGoodsController @Inject() (
       // And then get the new assessment details
       newCommodityCategorisation   <-
         Future
-          .fromTry(Try(updatedCategorisationAnswers.get(CategorisationDetailsQuery(recordId)).get))
+          .fromTry(Try(updatedCategorisationAnswers.get(RecordCategorisationsQuery).get.records(recordId)))
 
       areWeRecategorisingAlready    = updatedCategorisationAnswers.get(RecategorisingQuery(recordId)).getOrElse(false)
       // We then have both assessments so can decide if to recategorise or not

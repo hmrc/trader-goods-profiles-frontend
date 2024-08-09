@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages.{AssessmentPage, AssessmentPage2}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, RecategorisingQuery}
+import queries.{CategorisationDetailsQuery2, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -76,8 +76,8 @@ class AssessmentController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
         userAnswersWithCategorisations <- categorisationService.requireCategorisation(request, recordId)
-        categorisationInfo             <-
-          Future.fromTry(Try(userAnswersWithCategorisations.get(CategorisationDetailsQuery(recordId)).get))
+        recordQuery                     = userAnswersWithCategorisations.get(RecordCategorisationsQuery)
+        categorisationInfo             <- Future.fromTry(Try(recordQuery.get.records(recordId)))
         listItems                       = categorisationInfo.categoryAssessments(index).getExemptionListItems
         commodityCode                   = categorisationInfo.commodityCode
         exemptions                      = categorisationInfo.categoryAssessments(index).exemptions
@@ -124,7 +124,7 @@ class AssessmentController @Inject() (
       }
     }
 
-  def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+  def onSubmit2(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       request.userAnswers
         .get(CategorisationDetailsQuery2(recordId))
@@ -149,5 +149,29 @@ class AssessmentController @Inject() (
           }
         }
         .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+    }
+
+  def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      {
+        for {
+          recordQuery        <- request.userAnswers.get(RecordCategorisationsQuery)
+          categorisationInfo <- recordQuery.records.get(recordId)
+          listItems           = categorisationInfo.categoryAssessments(index).getExemptionListItems
+          commodityCode       = categorisationInfo.commodityCode
+          exemptions          = categorisationInfo.categoryAssessments(index).exemptions
+          form                = formProvider(exemptions.size)
+        } yield form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, index, listItems, commodityCode))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
+          )
+      }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
     }
 }

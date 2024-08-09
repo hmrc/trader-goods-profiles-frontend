@@ -29,7 +29,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import views.html.SupplementaryUnitView
 
@@ -259,7 +259,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
 
@@ -283,7 +283,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET When Measurement Unit is Empty" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfoWithEmptyMeasurementUnit)
+        .set(RecordCategorisationsQuery, recordCategorisationsEmptyMeasurementUnit)
         .success
         .value
 
@@ -307,7 +307,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
         .set(SupplementaryUnitPage(testRecordId), validAnswer)
@@ -336,7 +336,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page when valid data is submitted" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
 
@@ -367,7 +367,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
 
@@ -395,7 +395,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted and Measurement Unit is Empty" in {
 
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfoWithEmptyMeasurementUnit)
+        .set(RecordCategorisationsQuery, recordCategorisationsEmptyMeasurementUnit)
         .success
         .value
 

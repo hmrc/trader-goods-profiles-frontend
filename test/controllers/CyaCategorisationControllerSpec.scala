@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
 import models.helper.{CategorisationJourney, CategorisationJourney2}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1, Category1Scenario, CategoryRecord, CategoryRecord2, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1, Category1Scenario, CategoryRecord, CategoryRecord2, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -34,6 +34,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
+import queries.RecordCategorisationsQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -48,10 +49,16 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
   private val shortCommodity        = "654321"
   private val unchangedCategoryInfo =
-    categorisationInfo.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
+    categoryQuery.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
 
   private val previouslyUpdatedCategoryInfo =
-    categorisationInfo.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+    categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+  private val previouslyUpdatedCommodity    = RecordCategorisations(
+    Map(testRecordId -> previouslyUpdatedCategoryInfo)
+  )
+  private val unchangedCommodity            = RecordCategorisations(
+    Map(testRecordId -> unchangedCategoryInfo)
+  )
 
   private val onwardRoute      = Call("GET", "/foo")
   private val fakeNavigator    = new FakeNavigator(onwardRoute)
@@ -654,7 +661,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when no exemption is used, meaning some assessment pages are not answered" in {
 
           val userAnswers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
@@ -827,7 +834,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when longer commodity code is given" in {
 
           val userAnswers = userAnswersForCategorisation
-            .set(CategorisationDetailsQuery(testRecordId), previouslyUpdatedCategoryInfo)
+            .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
             .success
             .value
             .set(LongerCommodityCodePage(testRecordId), "1234")
@@ -880,7 +887,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when longer commodity code is not given" in {
           val userAnswers = userAnswersForCategorisation
-            .set(CategorisationDetailsQuery(testRecordId), unchangedCategoryInfo)
+            .set(RecordCategorisationsQuery, unchangedCommodity)
             .success
             .value
 
@@ -926,7 +933,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when no category assessments answered" in {
 
           val userAnswers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
 
@@ -1011,7 +1018,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when validation errors" in {
 
           val userAnswers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(SupplementaryUnitPage(testRecordId), "123.0")
@@ -1043,7 +1050,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           "when audit service works without longer commodity code" in {
 
             val userAnswers = UserAnswers(userAnswersId)
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
@@ -1071,7 +1078,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               None,
               category = 1,
               categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categorisationInfo.measurementUnit
+              measurementUnit = categoryQuery.measurementUnit
             )
 
             running(application) {
@@ -1103,7 +1110,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           "when audit service works with longer commodity code" in {
 
             val userAnswers = UserAnswers(userAnswersId)
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
               .set(LongerCommodityQuery(testRecordId), testCommodity)
@@ -1127,10 +1134,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedPayload = CategoryRecord(
               testEori,
               testRecordId,
-              Some(categorisationInfo.commodityCode),
+              Some(categoryQuery.commodityCode),
               category = 1,
               categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categorisationInfo.measurementUnit
+              measurementUnit = categoryQuery.measurementUnit
             )
 
             running(application) {
@@ -1159,7 +1166,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           "when audit service fails" in {
 
             val userAnswers = UserAnswers(userAnswersId)
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
@@ -1183,7 +1190,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               None,
               category = 1,
               categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categorisationInfo.measurementUnit
+              measurementUnit = categoryQuery.measurementUnit
             )
 
             running(application) {
@@ -1245,7 +1252,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
       "must let the play error handler deal with connector failure" in {
 
         val userAnswers = UserAnswers(userAnswersId)
-          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .set(RecordCategorisationsQuery, recordCategorisations)
           .success
           .value
 

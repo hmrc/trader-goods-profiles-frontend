@@ -27,7 +27,7 @@ import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -78,7 +78,8 @@ class LongerCommodityCodeController @Inject() (
       val shortComcodeOpt         = getShortCommodityCodeOpt(recordId, request, validLength)
       val currentlyCategorisedOpt =
         request.userAnswers
-          .get(CategorisationDetailsQuery(recordId))
+          .get(RecordCategorisationsQuery)
+          .flatMap(_.records.get(recordId))
           .map(_.commodityCode.padTo(maxValidLength, "0").mkString)
 
       shortComcodeOpt match {
@@ -111,7 +112,8 @@ class LongerCommodityCodeController @Inject() (
     validLength: Int
   ): Option[String] =
     request.userAnswers
-      .get(CategorisationDetailsQuery(recordId))
+      .get(RecordCategorisationsQuery)
+      .flatMap(_.records.get(recordId))
       .flatMap(_.originalCommodityCode.map(_.reverse.dropWhile(_ == '0').reverse.padTo(validLength, "0").mkString))
 
   private def updateAnswersAndProceedWithJourney(

@@ -31,6 +31,7 @@ import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
+import queries.RecordCategorisationsQuery
 
 class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
@@ -877,13 +878,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Categorisation Journey" - {
 
-        val recordId           = testRecordId
-        val indexAssessment1   = 0
-        val indexAssessment2   = 1
-        val assessment1        = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
-        val assessment2        = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-        val categorisationInfo =
+        val recordId              = testRecordId
+        val indexAssessment1      = 0
+        val indexAssessment2      = 1
+        val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo    =
           CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"), 0)
+        val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
 
         "must go from an assessment" - {
 
@@ -891,7 +893,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             val answers =
               emptyUserAnswers
-                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .set(RecordCategorisationsQuery, recordCategorisations)
                 .success
                 .value
 
@@ -906,7 +908,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             val answers =
               emptyUserAnswers
-                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .set(RecordCategorisationsQuery, recordCategorisations)
                 .success
                 .value
                 .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -927,7 +929,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -949,7 +951,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.NoExemption)
@@ -966,10 +968,11 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 10 digits and no supplementary unit" in {
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
+              val recordCategorisations        = RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit))
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoSuppUnit)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -990,10 +993,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when the answer is No Exemption for Category 2 and the commodity code is 8 digits and no supplementary unit" in {
               val categorisationInfo8Digit =
                 categorisationInfo.copy(commodityCode = "12345678", measurementUnit = None)
+              val eightDigitsRecordCat     =
+                RecordCategorisations(Map(recordId -> categorisationInfo8Digit))
 
-              val answers =
+              val answers                  =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo8Digit)
+                  .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1013,12 +1018,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 6 digits and no supplementary unit and there are no descendants" in {
 
-              val categorisationInfo6Digit =
-                categorisationInfo.copy(commodityCode = "123456", measurementUnit = None)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "123456", measurementUnit = None))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo6Digit)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1042,12 +1049,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "the answer is No Exemption for Category 2 and the commodity code is 6 digits and there are descendants" in {
 
-              val sixDigitCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123456", descendantCount = 3)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "123456", descendantCount = 3))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1067,12 +1076,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "the answer is No Exemption for Category 2 and the commodity code is 6 digits with a zero and there are descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123450", descendantCount = 3)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "123450", descendantCount = 3))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1092,12 +1103,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "the answer is No Exemption for Category 2 and the commodity code is 6 digits padded to 10 and there are descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "1234560000", descendantCount = 3)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "1234560000", descendantCount = 3))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1121,7 +1134,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1140,11 +1153,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             }
 
             "the answer is No Exemption for Category 2 and the commodity code is 8 digits and there's a supplementary unit" in {
-              val eightDigitsCategorisationInfo = categorisationInfo.copy(commodityCode = "12345678")
+              val eightDigitsRecordCat =
+                RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
 
-              val answers =
+              val answers              =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), eightDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1164,12 +1178,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "the answer is No Exemption for Category 2 and the commodity code is 6 digits and there's a supplementary unit and there are no descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123456")
+              val sixDigitsRecordCat =
+                RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "123456")))
 
-              val answers =
+              val answers            =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -1304,7 +1318,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoSuppUnit)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit)))
               .success
               .value
 
@@ -1321,7 +1335,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
@@ -1338,7 +1352,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
@@ -1356,7 +1370,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false)
                 .success
                 .value
-                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .set(RecordCategorisationsQuery, recordCategorisations)
                 .success
                 .value
 
@@ -1370,7 +1384,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
               .success
               .value
               .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -2049,13 +2063,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Categorisation Journey" - {
 
-        val recordId           = testRecordId
-        val indexAssessment1   = 0
-        val indexAssessment2   = 1
-        val assessment1        = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
-        val assessment2        = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-        val categorisationInfo =
+        val recordId              = testRecordId
+        val indexAssessment1      = 0
+        val indexAssessment2      = 1
+        val assessment1           = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
+        val assessment2           = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
+        val categorisationInfo    =
           CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"), 0)
+        val recordCategorisations = RecordCategorisations(Map(recordId -> categorisationInfo))
 
         "must go from an assessment" - {
 
@@ -2064,7 +2079,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2087,7 +2102,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), newCatInfo)
+                  .set(RecordCategorisationsQuery, RecordCategorisations(Map(recordId -> newCatInfo)))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("true"))
@@ -2116,7 +2131,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2138,7 +2153,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2160,7 +2175,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.NoExemption)
@@ -2179,7 +2194,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
               val answers                      =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoSuppUnit)
+                  .set(RecordCategorisationsQuery, RecordCategorisations(Map(recordId -> categorisationInfoNoSuppUnit)))
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2199,12 +2214,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is length 8 and no supplementary unit" in {
 
-              val eightDigitsCategorisationInfo =
-                categorisationInfo.copy(measurementUnit = None, commodityCode = "12345678")
+              val eightDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(measurementUnit = None, commodityCode = "12345678"))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), eightDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2224,12 +2241,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 6 digits and no supplementary unit and there are no descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123456", measurementUnit = None)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "123456", measurementUnit = None))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2254,7 +2273,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .set(RecordCategorisationsQuery, recordCategorisations)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2273,12 +2292,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             }
 
             "the answer is No Exemption for Category 2 and the commodity code is 8 digits and there's a supplementary unit" in {
-              val eightDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "12345678")
+              val eightDigitsRecordCat =
+                RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "12345678")))
 
-              val answers =
+              val answers              =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), eightDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, eightDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2298,12 +2317,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 6 digits and there's a supplementary unit and there are no descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123456")
+              val sixDigitsRecordCat =
+                RecordCategorisations(Map(recordId -> categorisationInfo.copy(commodityCode = "123456")))
 
-              val answers =
+              val answers            =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2327,12 +2346,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 6 digits and there are descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123456", descendantCount = 3)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "123456", descendantCount = 3))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2352,12 +2373,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 6 digits ending in 0 and there are descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "123450", descendantCount = 3)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "123450", descendantCount = 3))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2377,12 +2400,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             "when the answer is No Exemption for Category 2 and the commodity code is 6 digits padded to 10 and there are descendants" in {
 
-              val sixDigitsCategorisationInfo =
-                categorisationInfo.copy(commodityCode = "1234560000", descendantCount = 3)
+              val sixDigitsRecordCat =
+                RecordCategorisations(
+                  Map(recordId -> categorisationInfo.copy(commodityCode = "1234560000", descendantCount = 3))
+                )
 
               val answers =
                 emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), sixDigitsCategorisationInfo)
+                  .set(RecordCategorisationsQuery, sixDigitsRecordCat)
                   .success
                   .value
                   .set(AssessmentPage(recordId, indexAssessment1), AssessmentAnswer.Exemption("cert1"))
@@ -2494,7 +2519,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoSuppUnit)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit)))
               .success
               .value
 
@@ -2511,7 +2536,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
 
@@ -2528,7 +2553,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, recordCategorisations)
               .success
               .value
             navigator.nextPage(
@@ -2545,7 +2570,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false)
                 .success
                 .value
-                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .set(RecordCategorisationsQuery, recordCategorisations)
                 .success
                 .value
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), CheckMode, answers) mustBe
@@ -2558,7 +2583,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
               .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
               .success
               .value
               .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -2577,7 +2602,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to JourneyRecoveryPage when answer is not present" in {
             val answers =
-              UserAnswers(userAnswersId).set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+              UserAnswers(userAnswersId).set(RecordCategorisationsQuery, recordCategorisations).success.value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),

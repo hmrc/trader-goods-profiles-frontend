@@ -20,7 +20,7 @@ import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -29,8 +29,9 @@ object SupplementaryUnitSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
-      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
+      recordCategorisations <- answers.get(RecordCategorisationsQuery)
+      categorisationInfo    <- recordCategorisations.records.get(recordId)
+      supplementaryUnit     <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
       val measurementUnit = categorisationInfo.measurementUnit
       val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
@@ -47,10 +48,10 @@ object SupplementaryUnitSummary {
   def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
-      supplementaryUnit <- answers.get(SupplementaryUnitPage(recordId))
+      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
       val measurementUnit = categorisationInfo.measurementUnit
-      val value = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
+      val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),

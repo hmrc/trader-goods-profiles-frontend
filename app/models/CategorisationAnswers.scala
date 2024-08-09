@@ -24,6 +24,7 @@ import org.apache.pekko.Done
 import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.RecordCategorisationsQuery
 import utils.Constants.firstAssessmentIndex
 
 final case class CategorisationAnswers(
@@ -159,28 +160,26 @@ object CategorisationAnswers {
     recordId: String
   ): Either[NonEmptyChain[ValidationError], Seq[AssessmentAnswer]] =
     for {
-      categorisationInfo  <- getCategorisationInfoForThisRecord(userAnswers, recordId)
+      recordCategorisations <- userAnswers.getPageValue(RecordCategorisationsQuery)
+      categorisationInfo    <- getCategorisationInfoForThisRecord(recordCategorisations, recordId)
       answeredAssessments <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       _                   <- ensureNoExemptionIsOnlyFinalAnswer(answeredAssessments, recordId)
       _                   <- ensureNoNotAnsweredYetInAnswers(answeredAssessments, recordId)
       _                   <- ensureHaveAnsweredTheRightAmount(
                                answeredAssessments,
-                               countAssessmentsThatRequireAnswers(categorisationInfo),
-                               recordId
-                             )
+                               countAssessmentsThatRequireAnswers(categorisationInfo)
+      )
       justTheAnswers       = answeredAssessments.map(_.answer)
     } yield justTheAnswers
 
   private def countAssessmentsThatRequireAnswers(categorisationInfo: CategorisationInfo): Int =
     categorisationInfo.categoryAssessments.takeWhile(a => !(a.category == 2 && a.exemptions.isEmpty)).size
 
-  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
-    userAnswers
-      .getPageValue(CategorisationDetailsQuery(recordId))
+  private def getCategorisationInfoForThisRecord(recordCategorisations: RecordCategorisations, recordId: String) =
+    recordCategorisations.records
+      .get(recordId)
       .map(Right(_))
-      .getOrElse(
-        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
-      )
+      .getOrElse(Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(RecordCategorisationsQuery, recordId))))
 
   private def getAssessmentsFromUserAnswers(
     categorisationInfo: CategorisationInfo,
@@ -219,9 +218,7 @@ object CategorisationAnswers {
     } else {
       val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage(recordId, ass.index)))
       val nec    =
-        NonEmptyChain
-          .fromSeq(errors)
-          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(CategorisationDetailsQuery(recordId))))
+        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(UnexpectedNoExemption(RecordCategorisationsQuery)))
       Left(nec)
     }
 
@@ -238,17 +235,14 @@ object CategorisationAnswers {
     } else {
       val errors = notAnsweredYetAssessments.map(ass => MissingAssessmentAnswers(AssessmentPage(recordId, ass.index)))
       val nec    =
-        NonEmptyChain
-          .fromSeq(errors)
-          .getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery(recordId))))
+        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
       Left(nec)
     }
   }
 
   private def ensureHaveAnsweredTheRightAmount(
     answeredAssessments: Seq[CategorisationDetails],
-    assessmentCount: Int,
-    recordId: String
+    assessmentCount: Int
   ): Either[NonEmptyChain[ValidationError], Done] = {
 
     val lastAnswerIsExemption = answeredAssessments.last.answer.equals(NoExemption)
@@ -257,7 +251,7 @@ object CategorisationAnswers {
     if (lastAnswerIsExemption || amountAnswered == assessmentCount) {
       Right(Done)
     } else {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery(recordId))))
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(RecordCategorisationsQuery)))
     }
 
   }

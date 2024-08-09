@@ -29,6 +29,7 @@ import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
 import services.CategorisationService
 
 import scala.collection.immutable.Seq
+import queries.RecordCategorisationsQuery
 
 class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
   private val mockCategorisationService = mock[CategorisationService]
@@ -303,11 +304,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
     val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
     val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
 
-    val categorisationInfo               =
+    val categorisationInfo                  =
       CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"), 0)
-    val noCategory1CategorisationInfo    = CategorisationInfo("123", Seq(assessment3), Some("kg"), 0)
-    val noCategory1Or2CategorisationInfo = CategorisationInfo("123", Seq(), Some("kg"), 0)
-    val noCategory2CategorisationInfo    = CategorisationInfo("123", Seq(assessment1), Some("kg"), 0)
+    val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
+    val emptyRecordCategorisations          = RecordCategorisations(records = Map())
+    val noCategory1RecordCategorisations    =
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"), 0)))
+    val noCategory1Or2RecordCategorisations =
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"), 0)))
+    val noCategory2RecordCategorisations    =
+      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"), 0)))
 
     "must return a CategoryRecord when all mandatory questions are answered" - {
 
@@ -321,7 +327,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
 
@@ -344,7 +350,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
 
@@ -367,7 +373,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
@@ -393,7 +399,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -422,7 +428,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -454,7 +460,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -489,7 +495,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -523,7 +529,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
       "where recordCategorisations is missing category 1 assessments but completed category 2 so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(CategorisationDetailsQuery(testRecordId), noCategory1CategorisationInfo)
+          .set(RecordCategorisationsQuery, noCategory1RecordCategorisations)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -548,7 +554,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
       "when recordCategorisations is missing category 2 assessments but completed category 1 so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(CategorisationDetailsQuery(testRecordId), noCategory2CategorisationInfo)
+          .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
           .success
           .value
           .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
@@ -573,7 +579,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
       "when recordCategorisations is missing any assessments so is category 3" in {
 
         val answers = UserAnswers(userAnswersId)
-          .set(CategorisationDetailsQuery(testRecordId), noCategory1Or2CategorisationInfo)
+          .set(RecordCategorisationsQuery, noCategory1Or2RecordCategorisations)
           .success
           .value
 
@@ -596,6 +602,23 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
     "must return errors" - {
 
+      "when recordCategorisations is missing recordId" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(RecordCategorisationsQuery, emptyRecordCategorisations)
+          .success
+          .value
+
+        val result = CategoryRecord.build(answers, testEori, testRecordId)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            RecordIdMissing(RecordCategorisationsQuery),
+            RecordIdMissing(RecordCategorisationsQuery)
+          )
+        }
+      }
+
       "when all mandatory answers are missing" in {
 
         val answers = UserAnswers(userAnswersId)
@@ -604,9 +627,9 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(CategorisationDetailsQuery(testRecordId)),
-            PageMissing(CategorisationDetailsQuery(testRecordId))
-          ) // TODO Same error twice???
+            PageMissing(RecordCategorisationsQuery),
+            PageMissing(RecordCategorisationsQuery)
+          )
         }
       }
 
@@ -617,7 +640,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
 
@@ -638,7 +661,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(SupplementaryUnitPage(testRecordId), "1.0")
             .success
             .value
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(RecordCategorisationsQuery, recordCategorisations)
             .success
             .value
 

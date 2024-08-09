@@ -37,6 +37,8 @@ import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerC
 import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import models.{AssessmentAnswer, RecordCategorisations}
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -490,9 +492,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 //      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 //      val expectedCategorisationInfo =
 //        CategorisationInfo("1234567890", Seq(), Some("some measure unit"), 0, Some("comcode"))
-//
+//val expectedRecordCategorisations =
+    //        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 //      val result = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
-//      result.get(CategorisationDetailsQuery(testRecordId)).get mustBe expectedCategorisationInfo
+//           result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 //
 //      withClue("Should call the router to get the goods record") {
 //        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
@@ -510,19 +513,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 //    }
 
     "should not call for category assessments if they are already present, then return successful updated answers" in {
-      val expectedCategorisationInfo =
-        CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)
+      val expectedRecordCategorisations =
+        RecordCategorisations(Map("recordId" -> CategorisationInfo("comcode", Seq(), Some("some measure unit"), 0)))
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), expectedCategorisationInfo)
+      val userAnswers                   = emptyUserAnswers
+        .set(RecordCategorisationsQuery, expectedRecordCategorisations)
         .success
         .value
 
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 
-      val result = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
-      result.get(CategorisationDetailsQuery(testRecordId)).get mustBe expectedCategorisationInfo
+      val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
+      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 
       withClue("Should not call the router to get the goods record") {
         verify(mockGoodsRecordsConnector, never()).getRecord(any(), any())(any())
@@ -602,9 +605,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 //
 //      val expectedCategorisationInfo =
 //        CategorisationInfo("1234567890", Seq(), Some("some measure unit"), 0, Some("comcode"))
-//
+//val expectedRecordCategorisations =
+    //        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
 //      val result = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
-//      result.get(CategorisationDetailsQuery(testRecordId)).get mustBe expectedCategorisationInfo
+//            result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
 //
 //      withClue("Should not need to call the goods record connector") {
 //        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
@@ -622,19 +626,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 //    }
 
 //    "should replace existing category assessments if they are already present, then return successful updated answers" in {
-//      val initialCategorisationInfo =
-//        CategorisationInfo("initialComCode", Seq(), Some("some measure unit"), 0)
-//      val newCommodity              = testCommodity.copy(commodityCode = "newComCode")
-//
+//val initialRecordCategorisations =
+//  RecordCategorisations(
+//    Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit"), 0))
+//  )
+//    val newCommodity = testCommodity.copy(commodityCode = "newComCode")//
 //      when(mockOttConnector.getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(any()))
 //        .thenReturn(Future.successful(mockOttResponse("newComCode")))
 //
-//      val expectedCategorisationInfo =
-//        CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("comcode"))
-//
-//      val userAnswers = emptyUserAnswers
-//        .set(CategorisationDetailsQuery(testRecordId), initialCategorisationInfo)
-//        .success
+//val initialRecordCategorisations =
+//RecordCategorisations(
+//  Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit"), 0))
+//)
+//    val newCommodity = testCommodity.copy(commodityCode = "newComCode")//        .success
 //        .value
 //        .set(LongerCommodityQuery(testRecordId), newCommodity)
 //        .success
@@ -644,8 +648,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 //      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
 //
 //      val result = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
-//      result.get(CategorisationDetailsQuery(testRecordId)).get mustBe expectedCategorisationInfo
-//
+//    result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations//
 //      withClue("Should call OTT to get categorisation info") {
 //        verify(mockOttConnector).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
 //          any()
@@ -728,7 +731,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "remove old assessment answers for given recordId" in {
 
       val initialUserAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
         .set(
@@ -774,8 +777,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
-          categorisationInfo,
-          categorisationInfo
+          categoryQuery,
+          categoryQuery
         )
         .success
         .value
@@ -794,7 +797,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
-          categorisationInfo,
+          categoryQuery,
           newCommodityCategorisation
         )
         .success
@@ -821,7 +824,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
-          categorisationInfo,
+          categoryQuery,
           newCommodityCategorisation
         )
         .success
@@ -842,7 +845,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       val oldUserAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
         .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
@@ -890,7 +893,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       val oldUserAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, recordCategorisations)
         .success
         .value
         .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))

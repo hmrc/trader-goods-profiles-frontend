@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.LongerCommodityCodeFormProvider
-import models.{CheckMode, Commodity, NormalMode, UserAnswers}
+import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
@@ -33,7 +33,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.LongerCommodityCodeView
@@ -43,14 +43,20 @@ import scala.concurrent.Future
 
 class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
-  private val formProvider                     = new LongerCommodityCodeFormProvider()
-  private val form                             = formProvider()
-  private val shortCommodity                   = "654321"
-  private val categorisationInfoShortCommodity =
-    categorisationInfo.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
+  private val formProvider                = new LongerCommodityCodeFormProvider()
+  private val form                        = formProvider()
+  private val shortCommodity              = "654321"
+  private val categoryQueryShortCommodity =
+    categoryQuery.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
 
-  private val previouslyUpdatedCategoryInfo =
-    categorisationInfo.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+  private val recordCategorisationsShortCommodity = RecordCategorisations(
+    Map(testRecordId -> categoryQueryShortCommodity)
+  )
+  private val previouslyUpdatedCategoryInfo       =
+    categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
+  private val previouslyUpdatedCommodity          = RecordCategorisations(
+    Map(testRecordId -> previouslyUpdatedCategoryInfo)
+  )
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -66,7 +72,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       "must return OK and the correct view" in {
 
         val userAnswers =
-          emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfoShortCommodity).success.value
+          emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisationsShortCommodity).success.value
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
@@ -99,8 +105,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         }
 
         "if user's commodity code is 10 digits" in {
-          val userAnswers =
-            emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val userAnswers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
@@ -131,7 +136,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
         val userAnswers = emptyUserAnswers
-          .set(CategorisationDetailsQuery(testRecordId), previouslyUpdatedCategoryInfo)
+          .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
           .success
           .value
           .set(LongerCommodityCodePage(testRecordId, shouldRedirectToCya = true), "1234")
@@ -168,7 +173,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
         val mockOttConnector      = mock[OttConnector]
         val userAnswers           = emptyUserAnswers
-          .set(CategorisationDetailsQuery(testRecordId), previouslyUpdatedCategoryInfo)
+          .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
           .success
           .value
           .set(LongerCommodityCodePage(testRecordId), "1234")
@@ -224,7 +229,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
         val mockOttConnector      = mock[OttConnector]
         val userAnswers           = emptyUserAnswers
-          .set(CategorisationDetailsQuery(testRecordId), categorisationInfoShortCommodity)
+          .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
           .success
           .value
           .set(LongerCommodityCodePage(testRecordId), "answer")
@@ -275,7 +280,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         "when invalid is submitted" in {
           val userAnswers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoShortCommodity)
+            .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
             .success
             .value
             .set(LongerCommodityCodePage(testRecordId), "answer")
@@ -309,7 +314,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           val mockOttConnector = mock[OttConnector]
           val userAnswers      = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoShortCommodity)
+            .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
             .success
             .value
             .set(LongerCommodityCodePage(testRecordId), "answer")

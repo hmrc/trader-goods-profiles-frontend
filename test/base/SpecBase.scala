@@ -21,7 +21,7 @@ import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, AssessmentAnswer2, Commodity, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -33,6 +33,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, CommodityQuery}
+import queries.{CommodityQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -154,7 +155,7 @@ trait SpecBase
     )
   )
 
-  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
+  lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
@@ -169,7 +170,7 @@ trait SpecBase
     Some("Weight, in kilograms")
   )
 
-  lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
+  private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
     None,
@@ -183,8 +184,16 @@ trait SpecBase
     None
   )
 
+  lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQuery)
+  )
+
+  lazy val recordCategorisationsEmptyMeasurementUnit: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
+  )
+
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
-    .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+    .set(RecordCategorisationsQuery, recordCategorisations)
     .success
     .value
     .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
@@ -211,30 +220,38 @@ trait SpecBase
     .success
     .value
 
-  private lazy val categoryInfoNoAssessments: CategorisationInfo = CategorisationInfo(
+  private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(),
     Some("Weight, in kilograms"),
     0
   )
 
+  lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryNoAssessments)
+  )
+
   lazy val uaForCategorisationStandardNoAssessments: UserAnswers = emptyUserAnswers
-    .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+    .set(RecordCategorisationsQuery, recordCategorisationsNoAssessments)
     .success
     .value
 
-  private lazy val category1NoExemptions: CategoryAssessment =
+  lazy val category1NoExemptions: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
 
-  private lazy val categorisationInfoNoExemptions: CategorisationInfo = CategorisationInfo(
+  private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1NoExemptions),
     Some("Weight, in kilograms"),
     0
   )
 
+  lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
+    Map(testRecordId -> categoryQueryNoExemptions)
+  )
+
   lazy val uaForCategorisationCategory1NoExemptions: UserAnswers = emptyUserAnswers
-    .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoExemptions)
+    .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
     .success
     .value
 

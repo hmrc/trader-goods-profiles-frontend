@@ -29,7 +29,7 @@
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
-    @formHelper(action = routes.AssessmentController.onSubmit(mode, recordId, index), 'autoComplete -> "off") {
+    @formHelper(action = routes.AssessmentController.onSubmit2(mode, recordId, index), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))

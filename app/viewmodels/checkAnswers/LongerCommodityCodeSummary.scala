@@ -17,9 +17,9 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, RecordCategorisations, UserAnswers}
 import play.api.i18n.Messages
-import queries.CategorisationDetailsQuery
+import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -27,7 +27,8 @@ import viewmodels.implicits._
 object LongerCommodityCodeSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
-    val categorisationInfoOpt = answers.get(CategorisationDetailsQuery(recordId))
+    val recordCategorisations = answers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
+    val categorisationInfoOpt = recordCategorisations.records.get(recordId)
     val padLength             = 10
     val originalComcodeOpt    =
       categorisationInfoOpt.flatMap(_.originalCommodityCode.map(_.padTo(padLength, "0").mkString))

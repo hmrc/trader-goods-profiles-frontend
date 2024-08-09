@@ -21,7 +21,7 @@ import base.TestConstants.testRecordId
 import forms.HasCorrectGoodsFormProvider
 import models.AssessmentAnswer.Exemption
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.{Commodity, NormalMode, UserAnswers}
+import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -350,7 +350,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             when(mockNavigator.nextPage(pageCaptor.capture(), any(), any())).thenReturn(onwardRoute)
 
             val userAnswers = emptyUserAnswers
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNoSuppUnit)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit)))
               .success
               .value
               .set(AssessmentPage(testRecordId, 0), Exemption("Y322"))
@@ -414,8 +414,8 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
               val initialUserAnswers = emptyUserAnswers
                 .set(
-                  CategorisationDetailsQuery(testRecordId),
-                  categorisationInfoNoSuppUnit
+                  RecordCategorisationsQuery,
+                  RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit))
                 )
                 .success
                 .value
@@ -424,7 +424,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 .value
 
               val updatedUserAnswers = initialUserAnswers
-                .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNew)
+                .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNew)))
                 .success
                 .value
                 .set(RecategorisingQuery(testRecordId), true)
@@ -485,8 +485,8 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
               val initialUserAnswers = emptyUserAnswers
                 .set(
-                  CategorisationDetailsQuery(testRecordId),
-                  categorisationInfo
+                  RecordCategorisationsQuery,
+                  RecordCategorisations(Map(testRecordId -> categorisationInfo))
                 )
                 .success
                 .value
@@ -553,8 +553,8 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
             val initialUserAnswers = emptyUserAnswers
               .set(
-                CategorisationDetailsQuery(testRecordId),
-                categorisationInfo
+                RecordCategorisationsQuery,
+                RecordCategorisations(Map(testRecordId -> categorisationInfo))
               )
               .success
               .value
@@ -569,7 +569,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               .value
 
             val updatedUserAnswers = initialUserAnswers
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfoNew)
+              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNew)))
               .success
               .value
 

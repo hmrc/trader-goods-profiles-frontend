@@ -23,7 +23,7 @@ import navigation.Navigator
 import pages.SupplementaryUnitPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SupplementaryUnitView
@@ -55,7 +55,8 @@ class SupplementaryUnitController @Inject() (
       }
 
       val result = for {
-        categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery(recordId))
+        query              <- request.userAnswers.get(RecordCategorisationsQuery)
+        categorisationInfo <- query.records.get(recordId)
       } yield {
         val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
         Ok(view(preparedForm, mode, recordId, measurementUnit))
@@ -67,7 +68,7 @@ class SupplementaryUnitController @Inject() (
   def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -98,7 +99,7 @@ class SupplementaryUnitController @Inject() (
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))
-              _ <- sessionRepository.set(updatedAnswers)
+              _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(SupplementaryUnitPage(recordId), mode, updatedAnswers))
         )
     }
@@ -110,7 +111,8 @@ class SupplementaryUnitController @Inject() (
         .fold(
           formWithErrors => {
             val result = for {
-              categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery(recordId))
+              query              <- request.userAnswers.get(RecordCategorisationsQuery)
+              categorisationInfo <- query.records.get(recordId)
             } yield {
               val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
               Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))

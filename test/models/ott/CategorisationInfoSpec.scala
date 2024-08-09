@@ -18,11 +18,11 @@ package models.ott
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.AssessmentAnswer
+import models.{AssessmentAnswer, RecordCategorisations}
 import models.ott.response._
 import pages.AssessmentPage
 import queries.CategorisationDetailsQuery
-
+import queries.RecordCategorisationsQuery
 import java.time.Instant
 
 class CategorisationInfoSpec extends SpecBase {
@@ -921,7 +921,7 @@ class CategorisationInfoSpec extends SpecBase {
 
     "return true if non-answered questions" in {
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
         .success
         .value
         .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
@@ -942,7 +942,7 @@ class CategorisationInfoSpec extends SpecBase {
 
     "return false if all questions answered or do not need to be answered" in {
       val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfo)))
         .success
         .value
         .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("true"))
