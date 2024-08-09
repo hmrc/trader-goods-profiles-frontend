@@ -51,9 +51,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val requestingAdviceEnabled: Boolean =
     configuration.get[Boolean]("features.requesting-advice")
 
-  val userAllowListEnabled: Boolean =
-    configuration.get[Boolean]("features.user-allow-list-enabled")
-
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
     "cy" -> Lang("cy")

@@ -17,16 +17,14 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import base.TestConstants.userAnswersId
 import forms.HasSupplementaryUnitFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
+import pages.HasSupplementaryUnitPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -34,7 +32,6 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.HasSupplementaryUnitView
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
@@ -45,370 +42,185 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private val form         = formProvider()
   private val recordId     = "record id"
 
-  private lazy val hasSupplementaryUnitRoute =
+  private lazy val hasSupplementaryUnitRoute  =
     routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
-
-  private lazy val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(NormalMode, recordId)
-
-  private lazy val hasSupplementaryUnitUpdateRoute =
-    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
-
-  private lazy val onSubmitUpdateAction: Call =
-    routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
-
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
-  private val record = goodsRecordResponseWithSupplementaryUnit(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId)
-
-  private val recordWithoutSuppUnit = goodsRecordResponseWithOutSupplementaryUnit(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId)
+  private lazy val hasSupplementaryUnitRoute2 =
+    routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, recordId).url
 
   "HasSupplementaryUnit Controller" - {
-    ".create journey" - {
 
-      "must return OK and the correct view for a GET" in {
+    "for a GET 2" - {
+      "must return OK and the correct view" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitRoute)
+          val request = FakeRequest(GET, hasSupplementaryUnitRoute2)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode, recordId, onSubmitAction)(
-            request,
-            messages(application)
-          ).toString
+          contentAsString(result) mustEqual view(form, NormalMode, recordId)(request, messages(application)).toString
         }
       }
 
-      "must populate the view correctly on a GET when the question has previously been answered" in {
+      "must populate the view correctly when the question has previously been answered" in {
 
         val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(recordId), true).success.value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitRoute)
+          val request = FakeRequest(GET, hasSupplementaryUnitRoute2)
 
           val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId, onSubmitAction)(
+          contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId)(
             request,
             messages(application)
           ).toString
         }
       }
 
-      "must not populate the view on a GET when the question has previously been answered for another recordId" in {
+    }
 
-        val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(s"${recordId}2"), true).success.value
+    "must return OK and the correct view for a GET" in {
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-        running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitRoute)
+      running(application) {
+        val request = FakeRequest(GET, hasSupplementaryUnitRoute)
 
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
+        val result = route(application, request).value
 
-          val result = route(application, request).value
+        val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode, recordId, onSubmitAction)(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must redirect to the next page when valid data is submitted" in {
-
-        val mockSessionRepository = mock[SessionRepository]
-
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-            )
-            .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, hasSupplementaryUnitRoute)
-              .withFormUrlEncodedBody(("value", "true"))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url
-        }
-      }
-
-      "must return a Bad Request and errors when invalid data is submitted" in {
-
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, hasSupplementaryUnitRoute)
-              .withFormUrlEncodedBody(("value", ""))
-
-          val boundForm = form.bind(Map("value" -> ""))
-
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, onSubmitAction)(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-        val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitRoute)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
-      }
-
-      "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-        val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, hasSupplementaryUnitRoute)
-              .withFormUrlEncodedBody(("value", "true"))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, recordId)(request, messages(application)).toString
       }
     }
-    ".update journey" - {
-      "must return OK and the correct view for a GET" in {
 
-        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
-          .successful(record)
+    "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(recordId), true).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasSupplementaryUnitRoute)
+
+        val view = application.injector.instanceOf[HasSupplementaryUnitView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must not populate the view on a GET when the question has previously been answered for another recordId" in {
+
+      val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(s"${recordId}2"), true).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, hasSupplementaryUnitRoute)
+
+        val view = application.injector.instanceOf[HasSupplementaryUnitView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, recordId)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect to the next page when valid data is submitted" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
-        running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitUpdateRoute)
+      running(application) {
+        val request =
+          FakeRequest(POST, hasSupplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId, onSubmitUpdateAction)(
-            request,
-            messages(application)
-          ).toString
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
       }
+    }
 
-      "must return OK and the correct view for a GET - should set to false when supplementary value is 0" in {
+    "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
-          .successful(recordWithoutSuppUnit)
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
+      running(application) {
+        val request =
+          FakeRequest(POST, hasSupplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", ""))
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
-          .build()
+        val boundForm = form.bind(Map("value" -> ""))
 
-        running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitUpdateRoute)
+        val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(false), NormalMode, recordId, onSubmitUpdateAction)(
-            request,
-            messages(application)
-          ).toString
-        }
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, recordId)(request, messages(application)).toString
       }
+    }
 
-      "must populate the view correctly on a GET when the question has previously been answered" in {
-        val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(recordId), true).success.value
+    "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
-          .successful(record)
+      val application = applicationBuilder(userAnswers = None).build()
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+      running(application) {
+        val request = FakeRequest(GET, hasSupplementaryUnitRoute)
 
-        running(application) {
-          val request =
-            FakeRequest(GET, routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url)
+        val result = route(application, request).value
 
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            form.fill(true),
-            NormalMode,
-            recordId,
-            routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
-          )(
-            request,
-            messages(application)
-          ).toString
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
+    }
 
-      "must redirect to the next page when valid data is submitted" in {
-        val mockSessionRepository = mock[SessionRepository]
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      val application = applicationBuilder(userAnswers = None).build()
 
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-            )
-            .build()
+      running(application) {
+        val request =
+          FakeRequest(POST, hasSupplementaryUnitRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
-        running(application) {
-          val request =
-            FakeRequest(POST, routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url)
-              .withFormUrlEncodedBody(("value", "true"))
+        val result = route(application, request).value
 
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
-
-      "must return a Bad Request and errors when invalid data is submitted" in {
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url)
-              .withFormUrlEncodedBody(("value", ""))
-
-          val boundForm = form.bind(Map("value" -> ""))
-
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(
-            boundForm,
-            NormalMode,
-            recordId,
-            routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
-          )(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must redirect to Journey Recovery for a GET if no existing data is found" in {
-        val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request =
-            FakeRequest(GET, routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
-      }
-
-      "must redirect to Journey Recovery for a POST if no existing data is found" in {
-        val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url)
-              .withFormUrlEncodedBody(("value", "true"))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
-      }
-
     }
   }
-
 }

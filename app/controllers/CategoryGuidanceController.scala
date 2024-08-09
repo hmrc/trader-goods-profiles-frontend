@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
+import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
@@ -51,6 +51,11 @@ class CategoryGuidanceController @Inject() (
     with I18nSupport
     with Logging {
 
+  def onPageLoad2(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(recordId))
+    }
+
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       categorisationService
@@ -68,12 +73,12 @@ class CategoryGuidanceController @Inject() (
                     .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord)
                     .map { _ =>
                       Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
-                        .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+                        .removingFromSession(dataUpdated, pageUpdated)
                     }
                 }
                 .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
             case Some(NoRedirectScenario)                            =>
-              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
+              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated))
           }
         }
         .recover { e =>

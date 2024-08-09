@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions._
-import models.Scenario
+import models.{Scenario, Scenario2}
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecategorisingQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CategorisationResultView
+import views.html.{CategorisationResultView, CategorisationResultView2}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,6 +36,7 @@ class CategorisationResultController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CategorisationResultView,
+  view2: CategorisationResultView2,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -48,5 +49,10 @@ class CategorisationResultController @Inject() (
         _              <- sessionRepository.set(updatedAnswers)
       } yield updatedAnswers
       Ok(view(recordId, scenario))
+    }
+
+  def onPageLoad2(recordId: String, scenario: Scenario2): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      Ok(view2(recordId, scenario))
     }
 }

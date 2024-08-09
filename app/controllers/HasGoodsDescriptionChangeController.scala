@@ -29,7 +29,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasGoodsDescriptionChangeView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,7 +58,7 @@ class HasGoodsDescriptionChangeController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, recordId)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+      Ok(view(preparedForm, mode, recordId))
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =

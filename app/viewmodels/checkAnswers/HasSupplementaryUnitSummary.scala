@@ -17,8 +17,8 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, NormalMode, UserAnswers}
-import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
+import models.{CheckMode, UserAnswers}
+import pages.HasSupplementaryUnitPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
@@ -40,43 +40,35 @@ object HasSupplementaryUnitSummary {
       )
     }
 
-  def rowUpdate(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasSupplementaryUnitUpdatePage(recordId)).map { answer =>
+  def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(HasSupplementaryUnitPage(recordId)).map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
         key = "hasSupplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.HasSupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId).url
-          )
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
         )
       )
     }
 
-  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String)(implicit
+  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
       _ <- measureValue
     } yield {
-      val displayValue = suppValue match {
-        case Some(value) if value != 0 => "site.yes"
-        case _                         => "site.no"
-      }
+      val displayValue = if (suppValue.isDefined) "site.yes" else "site.no"
       SummaryListRowViewModel(
         key = "hasSupplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),
         actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
-          )
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
         )
       )
     }
+
 }

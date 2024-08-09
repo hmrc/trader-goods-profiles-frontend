@@ -21,6 +21,44 @@ import play.api.libs.json._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
+sealed trait AssessmentAnswer2
+
+object AssessmentAnswer2 {
+
+  case object NoExemption extends WithName("false") with AssessmentAnswer2
+  case object Exemption extends WithName("true") with AssessmentAnswer2
+
+  implicit val reads: Reads[AssessmentAnswer2] = Reads {
+    case JsString("false") => JsSuccess(NoExemption)
+    case JsString("true")  => JsSuccess(Exemption)
+    case _                 => JsError("unable to read assessment answer")
+  }
+
+  implicit val writes: Writes[AssessmentAnswer2] = Writes {
+    case Exemption => JsString("true")
+    case _         => JsString("false")
+  }
+
+  def fromString(input: String): AssessmentAnswer2 =
+    input match {
+      case NoExemption.toString => NoExemption
+      case _                    => Exemption
+    }
+
+  def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =
+    exemptions.distinct.zipWithIndex.map { case (exemption, index) =>
+      RadioItem(
+        content = Text(messages("assessment.exemption", exemption.code, exemption.description)),
+        value = Some(exemption.id),
+        id = Some(s"value_$index")
+      )
+    } :+ RadioItem(divider = Some(messages("site.or"))) :+ RadioItem(
+      content = Text(messages("assessment.exemption.none")),
+      value = Some(NoExemption.toString),
+      id = Some(s"value_${exemptions.size}")
+    )
+}
+
 sealed trait AssessmentAnswer
 
 object AssessmentAnswer {

@@ -18,7 +18,6 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.TraderProfileConnector
 import forms.HasCommodityCodeChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
@@ -49,15 +48,11 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
   private lazy val hasCommodityCodeChangeRoute =
     routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
 
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
   "HasCommodityCodeChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -77,7 +72,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
       val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -109,8 +103,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -139,7 +132,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -164,7 +156,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -180,7 +171,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {

@@ -13,7 +13,6 @@ site.signIn = Sign in
 site.govuk = GOV.UK
 site.or = or
 site.search = Search
-site.goToHomePage = Go to homepage
 
 date.day = Day
 date.month = Month
@@ -33,12 +32,9 @@ error.summary.title = There is a problem
 
 cyaCreateProfile.title = Check your answers
 cyaCreateProfile.h1 = Check your answers
-cyaCreateProfile.h2 = Schemes
-cyaCreateProfile.li1 = UK Internal Market Scheme (UKIMS)
-cyaCreateProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
-cyaCreateProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
+cyaCreateProfile.h2 = UKIMS, NIRMS and NIPHL
 cyaCreateProfile.warning = Warning
-cyaCreateProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
+cyaCreateProfile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
 
 cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
@@ -61,12 +57,12 @@ cyaCategorisation.categorisationQuestion = Do you meet any of the following cond
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
 
-journeyRecovery.continue.title = Something has gone wrong
-journeyRecovery.continue.heading = Something has gone wrong
-journeyRecovery.continue.guidance = Something has gone wrong and you'll need to start again. We have not saved any information you've entered.
-journeyRecovery.startAgain.title = Something has gone wrong
-journeyRecovery.startAgain.heading = Something has gone wrong
-journeyRecovery.startAgain.guidance = Something has gone wrong and you'll need to go to the Trader Goods Profile homepage. We have not saved any information you've entered.
+journeyRecovery.continue.title = Sorry, there is a problem with the service
+journeyRecovery.continue.heading = Sorry, there is a problem with the service
+journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
+journeyRecovery.startAgain.title = Sorry, there is a problem with the service
+journeyRecovery.startAgain.heading = Sorry, there is a problem with the service
+journeyRecovery.startAgain.guidance = [Add content to explain why the user needs to start again.]
 
 signedOut.title = You have now signed out
 signedOut.heading = You have now signed out
@@ -276,7 +272,7 @@ traderReference.change.hidden = Trader reference
 assessment.title = Categorisation question
 assessment.heading = Category assessment {0}
 assessment.guidance = You need to confirm which of these conditions you hold for {0}. We need this information to be able to categorise your goods.
-assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
+assessment.linkText = Review this code on the Online Tariff Tool (opens in a new tab)
 assessment.question = Do you meet any of the following conditions and can you supply the relevant document code on your movements?
 assessment.question.onlyOne = Do you meet the following condition and can you supply the relevant document code on your movement?
 assessment.hint = Select one answer.
@@ -286,7 +282,7 @@ assessment.error.required = Select yes if you meet any of the conditions
 assessment.error.required.onlyOne = Select yes if you meet the condition
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
-assessment.insetText = You could be asked up to 10 different category assessments for each good.
+assessment.insetText = You could be asked up to 25 different category assessments for each good.
 assessment.change.hidden = Category assessment {0}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -532,14 +528,9 @@ goodsRecordSearchResultEmptyView.h1 = There are no matching results
 goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
 goodsRecordSearchResultEmptyView.p2.linkText = Go back to goods records
 
-cyaSupplementaryUnit.title = Check your answers
-cyaSupplementaryUnit.heading = Check your answers
-cyaSupplementaryUnit.h2 = Check if the details on this record are correct.
-
 
 sucessBanner.title = Success
 sucessBanner.heading = You have changed the {0}
-sucessBannerRemove.heading = You have removed the {0}
 sucessBanner.p1 = Contact
 sucessBanner.email = example@department.gov.uk
 sucessBanner.p2 = if you think there’s a problem.

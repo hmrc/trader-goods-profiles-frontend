@@ -18,9 +18,9 @@ package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.{CategorisationInfo, CategoryAssessment}
+import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.requests.DataRequest
-import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, RecordCategorisations, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
 import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
@@ -38,6 +38,70 @@ class CategorisationService @Inject() (
   goodsRecordsConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext) {
 
+  def getCategorisationInfo(
+    request: DataRequest[_],
+    commodityCode: String,
+    country: String,
+    recordId: String
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo2] = {
+
+    val ottResponse = ottConnector.getCategorisationInfo(
+      commodityCode,
+      request.eori,
+      request.affinityGroup,
+      Some(recordId),
+      country,
+      LocalDate.now()
+    )
+
+    ottResponse.flatMap { response =>
+      CategorisationInfo2.build(response, commodityCode) match {
+        case Some(categorisationInfo) => Future.successful(categorisationInfo)
+        case _                        =>
+          Future.failed(new RuntimeException("Could not build categorisation info"))
+      }
+
+    }
+
+  }
+
+  //TODO cat info already in UA?
+  def calculateResult(
+    categorisationInfo: CategorisationInfo2,
+    userAnswers: UserAnswers,
+    recordId: String
+  ): Scenario2 =
+    if (categorisationInfo.categoryAssessments.isEmpty) {
+      StandardGoodsNoAssessmentsScenario
+    } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
+      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
+        Category1NoExemptionsScenario
+      } else {
+        Category2Scenario
+      }
+    } else {
+      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
+    }
+
+  private def calculateBasedOnAnswers(
+    categorisationInfo: CategorisationInfo2,
+    userAnswers: UserAnswers,
+    recordId: String
+  ) = {
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    val getFirstNo                                = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer2.NoExemption))
+    val areThereCategory2QuestionsWithNoExemption =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+
+    getFirstNo match {
+      case None if areThereCategory2QuestionsWithNoExemption => Category2Scenario
+      case None                                              => StandardGoodsScenario
+      case Some(details) if details.question.category == 2   => Category2Scenario
+      case _                                                 => Category1Scenario
+    }
+  }
+
   def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[UserAnswers] = {
@@ -49,22 +113,9 @@ class CategorisationService @Inject() (
       recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
 
     recordCategorisations.records.get(recordId) match {
-      case Some(record) =>
-        if (originalCommodityCodeOpt.isEmpty) {
-          val updatedRecord                = record.copy(originalCommodityCode = Some(record.commodityCode))
-          val updatedRecordsMap            = recordCategorisations.records + (recordId -> updatedRecord)
-          val updatedRecordCategorisations = RecordCategorisations(updatedRecordsMap)
-
-          for {
-            userAnswersWithOriginal <-
-              Future.fromTry(request.userAnswers.set(RecordCategorisationsQuery, updatedRecordCategorisations))
-            _                       <- sessionRepository.set(userAnswersWithOriginal)
-          } yield userAnswersWithOriginal
-        } else {
-          Future.successful(request.userAnswers)
-        }
-
-      case None =>
+      case Some(_) =>
+        Future.successful(request.userAnswers)
+      case None    =>
         for {
           getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
           goodsNomenclature                <- ottConnector.getCategorisationInfo(
@@ -78,7 +129,8 @@ class CategorisationService @Inject() (
           originalCommodityCode             = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
           categorisationInfo               <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
                                                 case Some(categorisationInfo) => Future.successful(categorisationInfo)
-                                                case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
+                                                case _                        =>
+                                                  Future.failed(new RuntimeException("Could not build categorisation info"))
                                               }
           updatedAnswers                   <-
             Future.fromTry(
@@ -140,7 +192,6 @@ class CategorisationService @Inject() (
   )(implicit
     hc: HeaderCarrier
   ): Future[UserAnswers] = {
-
     val recordCategorisations =
       request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
 

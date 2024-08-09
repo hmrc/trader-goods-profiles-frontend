@@ -19,15 +19,15 @@ package controllers
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-import models.{CheckMode, Mode}
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
+import models.{CheckMode, Mode}
 import navigation.Navigator
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -114,10 +114,7 @@ class LongerCommodityCodeController @Inject() (
     request.userAnswers
       .get(RecordCategorisationsQuery)
       .flatMap(_.records.get(recordId))
-      .flatMap(
-        _.originalCommodityCode
-          .map(_.reverse.dropWhile(char => char == '0' || char == "0").reverse.padTo(validLength, "0").mkString)
-      )
+      .flatMap(_.originalCommodityCode.map(_.reverse.dropWhile(_ == '0').reverse.padTo(validLength, "0").mkString))
 
   private def updateAnswersAndProceedWithJourney(
     mode: Mode,

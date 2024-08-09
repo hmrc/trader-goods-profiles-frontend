@@ -32,7 +32,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
+import queries._
 import repositories.SessionRepository
 import services.CategorisationService
 import views.html.HasCorrectGoodsView

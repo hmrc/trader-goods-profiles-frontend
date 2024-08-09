@@ -18,11 +18,8 @@ package controllers.actions
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.UserAllowListConnector
-import connectors.UserAllowListConnector.UserNotAllowedException
 import controllers.routes
 import models.requests.IdentifierRequest
-import org.apache.pekko.Done
 import play.api.Logging
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -40,7 +37,6 @@ trait IdentifierAction
 
 class AuthenticatedIdentifierAction @Inject() (
   override val authConnector: AuthConnector,
-  userAllowListConnector: UserAllowListConnector,
   config: FrontendAppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
@@ -62,40 +58,16 @@ class AuthenticatedIdentifierAction @Inject() (
             .getEnrolment(config.tgpEnrolmentIdentifier.key)
             .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
             case Some(enrolment) if !enrolment.value.isBlank =>
-              checkUserAllowList(enrolment.value)(hc).flatMap { _ =>
-                block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup))
-              }
-            case _                                           =>
-              throw InsufficientEnrolments("Unable to retrieve Enrolment")
+              block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup))
+            case _                                           => throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
       } recover {
-      case _: UserNotAllowedException =>
-        logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")
-        Redirect(routes.UnauthorisedServiceUserController.onPageLoad())
-      case _: NoActiveSession         =>
+      case _: NoActiveSession        =>
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-      case _: AuthorisationException  =>
+      case _: AuthorisationException =>
         logger.info("Authorisation failure: No enrolments found for TGP. Redirecting to UnauthorisedController")
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }
-
-  private def checkUserAllowList(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
-    if (config.userAllowListEnabled) {
-      userAllowListConnector
-        .check("private-beta", eori)
-        .map {
-          case false =>
-            logger.info("user not on allow list")
-            throw UserNotAllowedException()
-          case true  => Done
-        } recover { case _ =>
-        throw UserNotAllowedException()
-      }
-    } else {
-      logger.info("user allow list feature flag is disabled, always returning successfully")
-      Future.successful(Done)
-    }
-
 }

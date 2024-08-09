@@ -19,12 +19,7 @@ package controllers.actions
 import base.SpecBase
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.UserAllowListConnector
 import controllers.routes
-import models.EnrolmentConfig
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -37,13 +32,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class AuthActionSpec extends SpecBase with MockitoSugar {
+class AuthActionSpec extends SpecBase {
 
   class Harness(authAction: IdentifierAction) {
     def onPageLoad(): Action[AnyContent] = authAction(_ => Results.Ok)
   }
-
-  private val userAllowListConnector = mock[UserAllowListConnector]
 
   "Auth Action" - {
 
@@ -59,12 +52,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new MissingBearerToken),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -86,12 +76,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new BearerTokenExpired),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -113,12 +100,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new InsufficientEnrolments),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -140,12 +124,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new InsufficientConfidenceLevel),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -167,12 +148,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new UnsupportedAuthProvider),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -194,12 +172,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new UnsupportedAffinityGroup),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -221,12 +196,9 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeFailingAuthConnector(new UnsupportedCredentialRole),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
@@ -248,67 +220,15 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
 
           val authAction = new AuthenticatedIdentifierAction(
             new FakeSuccessfulAuthConnector(""),
-            userAllowListConnector,
             appConfig,
             bodyParsers
           )
-          when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
           val controller = new Harness(authAction)
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result).value mustBe routes.UnauthorisedController.onPageLoad.url
         }
-      }
-    }
-
-    "the user is on the user-allow-list" in {
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
-        val appConfig   = mock[FrontendAppConfig]
-
-        val authAction = new AuthenticatedIdentifierAction(
-          new FakeSuccessfulAuthConnector("GB"),
-          userAllowListConnector,
-          appConfig,
-          bodyParsers
-        )
-        when(appConfig.userAllowListEnabled).thenReturn(true)
-        when(appConfig.tgpEnrolmentIdentifier).thenReturn(EnrolmentConfig("HMRC-CUS-ORG", "EORINumber"))
-        when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(true))
-
-        val controller = new Harness(authAction)
-        val result     = controller.onPageLoad()(FakeRequest())
-
-        status(result) mustBe OK
-      }
-    }
-
-    "the user is not on the user-allow-list" in {
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
-        val appConfig   = mock[FrontendAppConfig]
-
-        val authAction = new AuthenticatedIdentifierAction(
-          new FakeSuccessfulAuthConnector("1234"),
-          userAllowListConnector,
-          appConfig,
-          bodyParsers
-        )
-        when(appConfig.userAllowListEnabled).thenReturn(true)
-        when(appConfig.tgpEnrolmentIdentifier).thenReturn(EnrolmentConfig("HMRC-CUS-ORG", "EORINumber"))
-        when(userAllowListConnector.check(any, any)(any)).thenReturn(Future.successful(false))
-
-        val controller = new Harness(authAction)
-        val result     = controller.onPageLoad()(FakeRequest())
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.UnauthorisedServiceUserController.onPageLoad().url
       }
     }
 

@@ -29,7 +29,7 @@
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
-    @formHelper(action = routes.AssessmentController.onSubmit(mode, recordId, index), 'autoComplete -> "off") {
+    @formHelper(action = routes.AssessmentController.onSubmit2(mode, recordId, index), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
@@ -43,7 +43,7 @@
         </div>
 
         <p class="govuk-body">
-            <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
+            <a href="https://www.trade-tariff.service.gov.uk/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
 
         <h2 class='govuk-heading-m'>

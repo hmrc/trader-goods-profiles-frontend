@@ -17,12 +17,13 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple3Parallel
+import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
 import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
+import services.CategorisationService
 
 final case class CategoryRecord(
   eori: String,
@@ -33,6 +34,53 @@ final case class CategoryRecord(
   supplementaryUnit: Option[String] = None,
   measurementUnit: Option[String] = None
 )
+
+final case class CategoryRecord2(
+  eori: String,
+  recordId: String,
+  comcode: String,
+  category: Scenario2,
+  categoryAssessmentsWithExemptions: Int,
+  measurementUnit: Option[String],
+  supplementaryUnit: Option[String] = None
+)
+
+object CategoryRecord2 {
+
+  def build(
+    userAnswers: UserAnswers,
+    eori: String,
+    recordId: String,
+    categorisationService: CategorisationService
+  ): EitherNec[ValidationError, CategoryRecord2] =
+    (
+      getCategorisationInfoForThisRecord(userAnswers, recordId),
+      userAnswers.getOptionalPageValueForOptionalBooleanPage(
+        userAnswers,
+        HasSupplementaryUnitPage(recordId),
+        SupplementaryUnitPage(recordId)
+      )
+    ).parMapN((categorisationInfo, supplementaryUnit) =>
+      CategoryRecord2(
+        eori,
+        recordId,
+        categorisationInfo.commodityCode,
+        //TODO cleanup
+        categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
+        categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
+        categorisationInfo.measurementUnit,
+        supplementaryUnit
+      )
+    )
+
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
+    userAnswers
+      .getPageValue(CategorisationDetailsQuery2(recordId))
+      .map(Right(_))
+      .getOrElse(
+        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
+      )
+}
 
 object CategoryRecord {
 

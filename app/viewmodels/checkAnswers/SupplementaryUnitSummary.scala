@@ -17,10 +17,10 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, NormalMode, UserAnswers}
-import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
+import models.{CheckMode, UserAnswers}
+import pages.SupplementaryUnitPage
 import play.api.i18n.Messages
-import queries.{MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -45,33 +45,28 @@ object SupplementaryUnitSummary {
       )
     }
 
-  def rowUpdate(answers: UserAnswers, recordId: String)(implicit
-    messages: Messages
-  ): Option[SummaryListRow] =
+  def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
-      supplementaryUnit <- answers.get(SupplementaryUnitUpdatePage(recordId))
-      measurementUnit   <- answers.get(MeasurementQuery(recordId))
+      categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
+      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
-      val value = if (!measurementUnit.isEmpty) s"$supplementaryUnit $measurementUnit" else supplementaryUnit
+      val measurementUnit = categorisationInfo.measurementUnit
+      val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId).url
-          )
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad2(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )
     }
 
-  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String)(implicit
+  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
       suppUnit <- suppValue
-      if suppUnit != 0
     } yield {
       val displayValue =
         if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString
@@ -79,12 +74,10 @@ object SupplementaryUnitSummary {
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),
         actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
-          )
+          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )
     }
+
 }

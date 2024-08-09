@@ -84,7 +84,7 @@ class TraderReferenceController @Inject() (
         )
 
       val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
-      Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+      Ok(view(preparedForm, onSubmitAction))
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =

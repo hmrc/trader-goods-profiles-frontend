@@ -16,16 +16,286 @@
 
 package models
 
+import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inside.inside
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
+import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import services.CategorisationService
+
+import scala.collection.immutable.Seq
 import queries.RecordCategorisationsQuery
 
-class CategoryRecordSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
+  private val mockCategorisationService = mock[CategorisationService]
+
+  override def beforeEach(): Unit = {
+    when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+    super.beforeEach()
+  }
+
+  ".build2" - {
+    val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")))
+    val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")))
+    val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
+    val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
+
+    val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
+    val categorisationInfo            =
+      CategorisationInfo2("1234567890", assessmentList, assessmentList, None)
+    val categorisationInfoMeasureUnit =
+      CategorisationInfo2("1234567890", assessmentList, assessmentList, Some("Weight"))
+
+    val noCategory1CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment3), Seq(assessment3), None)
+    val noCategory1Or2CategorisationInfo = CategorisationInfo2("1234567890", Seq(), Seq(), None)
+    val noCategory2CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment1), Seq(assessment1), None)
+
+    "must return a CategoryRecord" - {
+
+      "when all assessments are answered and no measurement unit" in {
+
+        val answers =
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .success
+            .value
+        val result  = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        result mustEqual Right(
+          CategoryRecord2(
+            testEori,
+            testRecordId,
+            "1234567890",
+            Category1Scenario,
+            4,
+            None
+          )
+        )
+
+        withClue("must have used the categorisation service to find the category") {
+          verify(mockCategorisationService).calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
+        }
+      }
+
+      "when all assessments are answered and measurement unit is set but not answered" in {
+
+        val answers =
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoMeasureUnit)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .success
+            .value
+        val result  = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        result mustEqual Right(
+          CategoryRecord2(
+            testEori,
+            testRecordId,
+            "1234567890",
+            Category1Scenario,
+            4,
+            Some("Weight")
+          )
+        )
+
+      }
+
+      "when has supplementary unit is no" in {
+
+        val answers =
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoMeasureUnit)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), false)
+            .success
+            .value
+        val result  = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        result mustEqual Right(
+          CategoryRecord2(
+            testEori,
+            testRecordId,
+            "1234567890",
+            Category1Scenario,
+            4,
+            Some("Weight"),
+            None
+          )
+        )
+
+      }
+
+      "when has supplementary unit is yes and unit is set" in {
+
+        val answers =
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoMeasureUnit)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1234")
+            .success
+            .value
+
+        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        result mustEqual Right(
+          CategoryRecord2(
+            testEori,
+            testRecordId,
+            "1234567890",
+            Category1Scenario,
+            4,
+            Some("Weight"),
+            Some("1234")
+          )
+        )
+
+      }
+
+      "where 1st question is No Exemption so the count of answered questions is different to the total count" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+
+        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        result mustEqual Right(
+          CategoryRecord2(
+            testEori,
+            testRecordId,
+            "1234567890",
+            Category1Scenario,
+            1,
+            None
+          )
+        )
+
+        withClue("must have used the categorisation service to find the category") {
+          verify(mockCategorisationService).calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
+        }
+      }
+
+    }
+
+    "must return errors" - {
+
+      "when record categorisation details are missing" in {
+
+        val answers = emptyUserAnswers
+
+        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(testRecordId), testRecordId)
+          )
+        }
+      }
+
+      "when the user said they have a SupplementaryUnit but it is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+
+        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
+        }
+      }
+
+      "when the user said they don't have supplementary unit but it is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), false)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1.0")
+            .success
+            .value
+
+        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
+        }
+      }
+
+    }
+
+  }
 
   ".build" - {
 

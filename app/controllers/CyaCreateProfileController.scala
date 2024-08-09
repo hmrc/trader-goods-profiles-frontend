@@ -75,7 +75,7 @@ class CyaCreateProfileController @Inject() (
         auditService.auditProfileSetUp(model, request.affinityGroup)
         traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-          Redirect(routes.CreateProfileSuccessController.onPageLoad())
+          Redirect(routes.HomePageController.onPageLoad())
         }
 
       case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))

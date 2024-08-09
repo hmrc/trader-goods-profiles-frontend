@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-package pages
+package controllers.actions
 
-case class ReviewReasonPage(recordId: String) extends Page
+import models.requests.IdentifierRequest
+import play.api.mvc.Result
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+
+class FakeProfileAuthenticateAction @Inject() extends ProfileAuthenticateAction {
+
+  override protected def executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
+
+  override protected def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = Future.successful(None)
+}

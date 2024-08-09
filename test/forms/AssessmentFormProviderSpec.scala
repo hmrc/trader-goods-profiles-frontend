@@ -17,7 +17,7 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
-import models.AssessmentAnswer
+import models.{AssessmentAnswer, AssessmentAnswer2}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.FormError
 
@@ -44,6 +44,31 @@ class AssessmentFormProviderSpec extends StringFieldBehaviours with ScalaCheckPr
 
     "must not bind invalid value" in {
       val result = form.bind(Map("value" -> ""))
+      result.errors must contain only FormError(fieldName, "assessment.error.required.onlyOne")
+    }
+  }
+
+  private val form2 = new AssessmentFormProvider2()(1)
+
+  ".value2" - {
+
+    val fieldName = "value"
+
+    "must bind `false`" in {
+
+      val result = form2.bind(Map("value" -> "false"))
+      result.errors mustBe empty
+      result.get mustEqual AssessmentAnswer2.NoExemption
+    }
+
+    "must bind `true`" in {
+      val result = form2.bind(Map("value" -> "true"))
+      result.errors mustBe empty
+      result.get mustEqual AssessmentAnswer2.Exemption
+    }
+
+    "must not bind invalid value" in {
+      val result = form2.bind(Map("value" -> ""))
       result.errors must contain only FormError(fieldName, "assessment.error.required.onlyOne")
     }
   }

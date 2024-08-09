@@ -23,6 +23,41 @@ import play.api.libs.json.{JsString, JsSuccess, Json}
 
 class AssessmentAnswerSpec extends SpecBase {
 
+  "AssessmentAnswer2" - {
+
+    "must serialise / deserialise to / from JSON for an exemption" in {
+
+      val exemption = AssessmentAnswer2.Exemption
+      val json      = Json.toJson[AssessmentAnswer2](exemption)
+
+      json mustEqual JsString("true")
+      json.validate[AssessmentAnswer2] mustEqual JsSuccess(exemption)
+    }
+
+    "must serialise / deserialise to / from JSON for no exemption" in {
+
+      val json = Json.toJson[AssessmentAnswer2](AssessmentAnswer2.NoExemption)
+
+      json mustEqual JsString("false")
+      json.validate[AssessmentAnswer2] mustEqual JsSuccess(AssessmentAnswer2.NoExemption)
+    }
+
+    "must remove duplicate exemptions from the radio list if we've been sent duplicates from OTT" in {
+
+      val exemption1 = Certificate("id1", "code1", "desc1")
+      val exemption2 = Certificate("id2", "code2", "desc2")
+      val exemptions = Seq(exemption1, exemption1, exemption2, exemption1)
+
+      implicit val testMessages: Messages = messages(applicationBuilder(None).build())
+
+      val result = AssessmentAnswer2.radioOptions(exemptions)
+
+      result.size mustBe 4
+      result.count(x => x.value.contains("id1")) mustBe 1
+
+    }
+  }
+
   "AssessmentAnswer" - {
 
     "must serialise / deserialise to / from JSON for an exemption" in {

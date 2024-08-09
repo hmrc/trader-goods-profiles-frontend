@@ -18,7 +18,6 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -37,16 +36,12 @@ import scala.concurrent.Future
 
 class CreateRecordStartControllerSpec extends SpecBase {
 
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
   "CreateRecordStart Controller" - {
 
     "for a GET" - {
       "must return OK and the correct view" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -77,8 +72,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
           .overrides(
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[AuditService].toInstance(mockAuditService),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 

@@ -18,17 +18,81 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.AssessmentAnswer.NotAnsweredYet
-import models.UserAnswers
 import models.ott.response.OttResponse
-import pages.AssessmentPage
+import models.{AnsweredQuestions, UserAnswers}
+import pages.{AssessmentPage, AssessmentPage2}
 import play.api.libs.json.{Json, OFormat}
+
+final case class CategorisationInfo2(
+  commodityCode: String,
+  categoryAssessments: Seq[CategoryAssessment],
+  categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
+  measurementUnit: Option[String]
+) {
+
+  def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
+    if (index + 1 > categoryAssessmentsThatNeedAnswers.size) {
+      None
+    } else {
+      Some(categoryAssessmentsThatNeedAnswers(index))
+    }
+
+  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
+    categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
+      AnsweredQuestions(
+        assessment._2,
+        assessment._1,
+        userAnswers.get(AssessmentPage2(recordId, assessment._2))
+      )
+    )
+
+}
+
+object CategorisationInfo2 {
+
+  def build(ott: OttResponse, commodityCodeUserEntered: String): Option[CategorisationInfo2] =
+    ott.categoryAssessmentRelationships
+      .map(x => CategoryAssessment.build(x.id, ott))
+      .sequence
+      .map { assessments =>
+        val assessmentsSorted = assessments.sorted
+
+        val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
+        val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
+
+        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers)
+        val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
+
+        val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
+        val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
+
+        val questionsToAnswers =
+          if (!areAllCategory1Answerable) {
+            Seq.empty
+          } else if (!areAllCategory2Answerable) {
+            category1ToAnswer
+          } else {
+            category1ToAnswer ++ category2ToAnswer
+          }
+
+        CategorisationInfo2(
+          commodityCodeUserEntered,
+          assessmentsSorted,
+          questionsToAnswers,
+          ott.goodsNomenclature.measurementUnit
+        )
+      }
+
+  implicit lazy val format: OFormat[CategorisationInfo2] = Json.format
+}
 
 final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   measurementUnit: Option[String],
   descendantCount: Int,
-  originalCommodityCode: Option[String] = None
+  originalCommodityCode: Option[String] = None //TODO hopefully dies?
+  //TODO needs country for comparisions??
 ) {
   def areThereAnyNonAnsweredQuestions(recordId: String, userAnswers: UserAnswers): Boolean =
     categoryAssessments.indices

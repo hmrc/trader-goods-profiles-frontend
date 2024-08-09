@@ -16,11 +16,38 @@
 
 package pages
 
-import models.{AssessmentAnswer, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.RecordCategorisationsQuery
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 
 import scala.util.{Failure, Success, Try}
+
+case class AssessmentPage2(
+  recordId: String,
+  index: Int
+) extends QuestionPage[AssessmentAnswer2] {
+  override def path: JsPath = JsPath \ "assessments2" \ recordId \ index
+
+  override def cleanup(
+    value: Option[AssessmentAnswer2],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
+    if (value.contains(AssessmentAnswer2.NoExemption)) {
+      (for {
+        categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery2(recordId))
+        count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        //Go backwards to avoid recursion issues
+        rangeToRemove       = ((index + 1) to count).reverse
+      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
+        acc.flatMap(_.remove(AssessmentPage2(recordId, currentIndexToRemove)))
+      }).getOrElse(
+        Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index"))
+      )
+    } else {
+      super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+    }
+}
 
 case class AssessmentPage(
   recordId: String,

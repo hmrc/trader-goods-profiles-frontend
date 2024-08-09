@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package queries
 
-import play.api.libs.json.{Json, OFormat}
+import models.ott.{CategorisationInfo, CategorisationInfo2}
+import play.api.libs.json.JsPath
 
-final case class CheckRequest(value: String)
+case class CategorisationDetailsQuery(recordId: String)
+    extends Gettable[CategorisationInfo]
+    with Settable[CategorisationInfo] {
 
-object CheckRequest {
+  override def path: JsPath = JsPath \ "categorisationDetails" \ recordId
+}
 
-  implicit lazy val format: OFormat[CheckRequest] = Json.format
+case class CategorisationDetailsQuery2(recordId: String)
+    extends Gettable[CategorisationInfo2]
+    with Settable[CategorisationInfo2] {
+
+  override def path: JsPath = JsPath \ "categorisationDetails2" \ recordId
 }

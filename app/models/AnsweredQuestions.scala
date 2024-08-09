@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import play.api.libs.json.JsPath
+import models.ott.CategoryAssessment
 
-case object WithdrawAdviceStartPage extends QuestionPage[Boolean] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "withdrawAdviceStart"
-}
+case class AnsweredQuestions(index: Int, question: CategoryAssessment, answer: Option[AssessmentAnswer2])

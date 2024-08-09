@@ -19,3 +19,5 @@ package pages
 import models.{CategoryRecord, Scenario}
 
 case class CyaCategorisationPage(recordId: String, categoryRecord: CategoryRecord, scenario: Scenario) extends Page
+
+case class CyaCategorisationPage2(recordId: String) extends Page
