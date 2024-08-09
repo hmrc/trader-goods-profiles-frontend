@@ -444,6 +444,7 @@ singleRecord.goodsProfile.link = Go to goods profile
 singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
+singleRecord.categoriseThisGood = Categorise this good
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin

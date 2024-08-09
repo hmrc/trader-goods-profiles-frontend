@@ -68,24 +68,29 @@ class SingleRecordController @Inject() (
           )
         _                                  <- sessionRepository.set(updatedAnswersWithAll)
       } yield {
-        val detailsList = SummaryListViewModel(
+        val isCategorised = record.category.isDefined
+        val detailsList   = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
             GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
-            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
+            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode, isCategorised),
             CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
             StatusSummary.row(record.declarable)
           )
         )
 
         val categoryValue         = record.category match {
-          case 1 => "Category 1"
-          case 2 => "Category 2"
-          case 3 => "Standard goods"
+          case None        => "Not yet categorised"
+          case Some(value) =>
+            value match {
+              case 1 => "Category 1"
+              case 2 => "Category 2"
+              case 3 => "Standard goods"
+            }
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId)
+            CategorySummary.row(categoryValue, record.recordId, isCategorised)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
@@ -119,5 +124,6 @@ class SingleRecordController @Inject() (
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
+
     }
 }

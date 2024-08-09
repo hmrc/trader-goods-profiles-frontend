@@ -55,21 +55,24 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
-        case Right(_)     =>
-          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
-          getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
-            val list = SummaryListViewModel(
-              Seq(
-                CountryOfOriginSummary.row(answer, recordId, CheckMode)
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
+        UpdateGoodsRecord
+          .buildCountryOfOrigin(request.userAnswers, request.eori, recordId, recordResponse.category.isDefined) match {
+          case Right(_)     =>
+            val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
+            getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
+              val list = SummaryListViewModel(
+                Seq(
+                  CountryOfOriginSummary.row(answer, recordId, CheckMode, recordIsCategorised = false)
+                )
               )
+              Ok(view(list, onSubmitAction))
+            }
+          case Left(errors) =>
+            Future.successful(
+              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
             )
-            Ok(view(list, onSubmitAction))
-          }
-        case Left(errors) =>
-          Future.successful(
-            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
-          )
+        }
       }
     }
 
@@ -167,20 +170,23 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.buildCountryOfOrigin(request.userAnswers, request.eori, recordId) match {
-        case Right(model) =>
-          auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
-          for {
-            _                        <- goodsRecordConnector.updateGoodsRecord(model)
-            updatedAnswersWithChange <-
-              Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-            updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-            _                        <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-        case Left(errors) =>
-          Future.successful(
-            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
-          )
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
+        UpdateGoodsRecord
+          .buildCountryOfOrigin(request.userAnswers, request.eori, recordId, recordResponse.category.isDefined) match {
+          case Right(model) =>
+            auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
+            for {
+              _                        <- goodsRecordConnector.updateGoodsRecord(model)
+              updatedAnswersWithChange <-
+                Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
+              updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+              _                        <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          case Left(errors) =>
+            Future.successful(
+              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
+            )
+        }
       }
     }
 

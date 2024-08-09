@@ -39,12 +39,13 @@ object UpdateGoodsRecord {
   def buildCountryOfOrigin(
     answers: UserAnswers,
     eori: String,
-    recordId: String
+    recordId: String,
+    isCategorised: Boolean
   ): EitherNec[ValidationError, UpdateGoodsRecord] =
     (
       Right(eori),
       Right(recordId),
-      getCountryOfOrigin(answers, recordId)
+      getCountryOfOrigin(answers, recordId, isCategorised)
     ).parMapN((eori, recordId, value) =>
       UpdateGoodsRecord(
         eori,
@@ -110,10 +111,18 @@ object UpdateGoodsRecord {
       case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodeUpdatePage(recordId))))
     }
 
-  private def getCountryOfOrigin(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
-    answers.getPageValue(HasCountryOfOriginChangePage(recordId)) match {
-      case Right(true)  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
-      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
-      case Left(errors) => Left(errors)
+  private def getCountryOfOrigin(
+    answers: UserAnswers,
+    recordId: String,
+    isCategorised: Boolean
+  ): EitherNec[ValidationError, String] =
+    if (isCategorised) {
+      answers.getPageValue(HasCountryOfOriginChangePage(recordId)) match {
+        case Right(true)  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+        case Right(false) => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+        case Left(errors) => Left(errors)
+      }
+    } else {
+      answers.getPageValue(CountryOfOriginUpdatePage(recordId))
     }
 }
