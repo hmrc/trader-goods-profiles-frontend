@@ -23,13 +23,14 @@
 
 @layout(pageTitle = titleNoForm(messages("pageNotFound.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("pageNotFound.h1")</h1>
+    <h1 class="govuk-heading-l">@messages("pageNotFound.h1")</h1>
     <p class="govuk-body">@messages("pageNotFound.p1")</p>
     <p class="govuk-body">@messages("pageNotFound.p2")</p>
     <p class="govuk-body">@messages("pageNotFound.p3")
-    <p class="govuk-body">
-    <a href=" @routes.HelpAndSupportController.onPageLoad()" target="_blank" class="govuk-link">@messages("pageNotFound.p3.linkText")</a>
+    <a href=" @routes.HelpAndSupportController.onPageLoad()" class="govuk-link">@messages("pageNotFound.p3.linkText")</a>
     @messages("pageNotFound.p3.1")</p>
+
+
 
 
 }
