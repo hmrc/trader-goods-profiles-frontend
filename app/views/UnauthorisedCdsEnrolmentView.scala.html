@@ -1,0 +1,47 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+    layout: templates.Layout
+)
+
+@()(implicit request: Request[_], messages: Messages)
+
+@layout(
+    pageTitle = titleNoForm(messages("unauthorisedCdsEnrolment.title")),
+    timeout   = false,
+    showBackLink = false,
+    signOutUrl = controllers.auth.routes.AuthController.signOutNoSession.url
+) {
+
+    <h1 class="govuk-heading-l">@messages("unauthorisedCdsEnrolment.heading")</h1>
+
+    <p class="govuk-body">@messages("unauthorisedCdsEnrolment.p1")</p>
+
+    <p class="govuk-body">
+        <a href="https://www.gov.uk/guidance/get-access-to-the-customs-declaration-service" rel="noreferrer noopener" target="_blank" class=govuk-link>
+            @messages("unauthorisedCdsEnrolment.cdsLink")
+        </a>
+    </p>
+
+    <p class="govuk-body">
+        @messages("unauthorisedCdsEnrolment.p2.part1")
+        <a href="@controllers.auth.routes.AuthController.signOutNoSession.url" class="govuk-link">
+            @messages("unauthorisedCdsEnrolment.p2.linkText")
+        </a>
+        @messages("unauthorisedCdsEnrolment.p2.part2")
+    </p>
+}

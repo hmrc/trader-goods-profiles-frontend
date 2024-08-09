@@ -22,6 +22,7 @@ GET         /signed-out                                                         
 
 GET         /problem/unauthorised-sign-in                                                   controllers.UnauthorisedController.onPageLoad
 GET         /problem/unauthorised-service-user                                              controllers.UnauthorisedServiceUserController.onPageLoad()
+GET         /problem/unauthorised-cds-enrolment                                             controllers.UnauthorisedCdsEnrolmentController.onPageLoad()
 
 GET         /create-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitCreate(mode: Mode = NormalMode)
