@@ -242,7 +242,7 @@ goodsDescription.change.hidden = Goods description
 hasCorrectGoods.title = Results for {0}
 hasCorrectGoods.heading = Results for {0}
 hasCorrectGoods.p1 = Classification:
-hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool (opens in a new tab)
+hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select if these are the correct goods
 
@@ -375,7 +375,7 @@ longerCommodityCode.p2 = We need you to provide a 8 or 10 digit commodity code s
 longerCommodityCode.insetText = As you are providing a longer commodity code, some of the category assessments may no longer be relevant to your goods. If that’s the case, any previous answers you provided for the category assessments will be removed.
 longerCommodityCode.h2 = What are the additional numbers in the commodity code?
 longerCommodityCode.hint = Enter 2 or 4 digits
-longerCommodityCode.linkText = If you do not know the next 2 or 4 digits, review this code on the Online Tariff Tool (opens in a new tab)
+longerCommodityCode.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
 longerCommodityCode.checkYourAnswersLabel = Longer commodity code
 longerCommodityCode.error.required = Enter 2 or 4 digits
 longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct format
