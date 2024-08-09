@@ -159,7 +159,7 @@ trait GetRecordsResponseUtil {
     "Not ready",
     "Organic bananas",
     "EC",
-    1,
+    Some(1),
     None,
     None,
     None,

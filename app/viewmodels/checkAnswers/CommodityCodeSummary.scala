@@ -40,9 +40,17 @@ object CommodityCodeSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+  def row(value: String, recordId: String, mode: Mode, recordIsCategorised: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow = {
     val changeLink = mode match {
-      case NormalMode => routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
+      case NormalMode =>
+        if (recordIsCategorised) {
+          routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
+        } else {
+          routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+        }
+      //routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
       case CheckMode  => routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     }
     SummaryListRowViewModel(

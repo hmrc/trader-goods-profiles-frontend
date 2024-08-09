@@ -65,7 +65,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "adviceStatus",
     "goodsDescription",
     "countryOfOrigin",
-    1,
+    Some(1),
     None,
     None,
     None,

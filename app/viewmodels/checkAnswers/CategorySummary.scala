@@ -18,7 +18,8 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
+import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -26,13 +27,20 @@ import viewmodels.implicits._
 object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, isCategorised: Boolean)(implicit messages: Messages): SummaryListRow = {
+
+    val actionItem = if (isCategorised) {
+      ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        .withVisuallyHiddenText(messages("singleRecord.category.row"))
+    } else {
+      ActionItemViewModel("singleRecord.categoriseThisGood", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        .withVisuallyHiddenText(messages("singleRecord.category.row"))
+    }
+
     SummaryListRowViewModel(
       key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
-          .withVisuallyHiddenText(messages("singleRecord.category.row"))
-      )
+      actions = Seq(actionItem)
     )
+  }
 }
