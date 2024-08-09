@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, Country, Mode, NormalMode, UserAnswers}
+import models.{CheckMode, Country, Mode, UserAnswers}
 import pages.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -42,7 +42,7 @@ object CountryOfOriginSummary {
     }
 
   def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-      val changeLink =  routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
+    val changeLink = routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
@@ -53,8 +53,10 @@ object CountryOfOriginSummary {
     )
   }
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = if (record.category != 1) { //TODO
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit
+    messages: Messages
+  ): SummaryListRow = {
+    val changeLink = if (record.category.isDefined) {
       routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
     } else {
       routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url

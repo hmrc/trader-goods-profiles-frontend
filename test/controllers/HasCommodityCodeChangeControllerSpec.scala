@@ -56,15 +56,15 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
   private val goodsRecord              = goodsRecordResponse()
   private val goodsRecordCatNoAdvice   = goodsRecord.copy(
-    category = 2,
+    category = Some(2),
     adviceStatus = "Not requested"
   )
   private val goodsRecordNoCatAdvice   = goodsRecord.copy(
-    category = 1, //TODO
+    category = None,
     adviceStatus = adviceProvided
   )
   private val goodsRecordCatAdvice     = goodsRecord.copy(
-    category = 2,
+    category = Some(2),
     adviceStatus = adviceProvided
   )
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
@@ -191,7 +191,13 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId, adviceWarning = false, categoryWarning = true)(
+        contentAsString(result) mustEqual view(
+          form.fill(true),
+          NormalMode,
+          testRecordId,
+          adviceWarning = false,
+          categoryWarning = true
+        )(
           request,
           messages(application)
         ).toString

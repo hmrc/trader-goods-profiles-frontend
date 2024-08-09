@@ -19,32 +19,29 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import controllers.routes
-import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, NormalMode}
+import models.NormalMode
 import play.api.i18n.Messages
 import utils.Constants.adviceProvided
-
-import java.time.Instant
 
 class CommodityCodeSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
-  private val getGoodsRecordResponse = goodsRecordResponse()
+  private val getGoodsRecordResponse   = goodsRecordResponse()
   private val goodsRecordNoCatNoAdvice = getGoodsRecordResponse.copy(
-    category = 1,
+    category = None,
     adviceStatus = "Not requested"
   )
-  private val goodsRecordCatNoAdvice = getGoodsRecordResponse.copy(
-    category = 2,
+  private val goodsRecordCatNoAdvice   = getGoodsRecordResponse.copy(
+    category = Some(2),
     adviceStatus = "Not requested"
   )
-  private val goodsRecordNoCatAdvice = getGoodsRecordResponse.copy(
-    category = 1,
+  private val goodsRecordNoCatAdvice   = getGoodsRecordResponse.copy(
+    category = None,
     adviceStatus = adviceProvided
   )
-  private val goodsRecordCatAdvice = getGoodsRecordResponse.copy(
-    category = 2,
+  private val goodsRecordCatAdvice     = getGoodsRecordResponse.copy(
+    category = Some(2),
     adviceStatus = adviceProvided
   )
 

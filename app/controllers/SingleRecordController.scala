@@ -78,7 +78,8 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val categoryValue         = record.category match {
+        //TODO do whatever Yohan has done here, not a get
+        val categoryValue         = record.category.get match {
           case 1 => "Category 1"
           case 2 => "Category 2"
           case 3 => "Standard goods"

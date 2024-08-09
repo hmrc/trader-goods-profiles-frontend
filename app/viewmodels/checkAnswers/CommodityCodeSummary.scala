@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, GoodsRecord, Mode, NormalMode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import pages.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -53,13 +53,14 @@ object CommodityCodeSummary {
     )
   }
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = if (record.category == 1 || record.adviceStatus == adviceProvided) {
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit
+    messages: Messages
+  ): SummaryListRow = {
+    val changeLink = if (record.category.isDefined || record.adviceStatus == adviceProvided) {
       routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
     } else {
       routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     }
-    //TODO when have opt category from Yohan
 
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",

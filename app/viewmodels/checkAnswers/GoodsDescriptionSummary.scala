@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, Mode, NormalMode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -51,7 +51,9 @@ object GoodsDescriptionSummary {
       )
     )
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit
+    messages: Messages
+  ): SummaryListRow = {
     val changeLink = if (record.adviceStatus == adviceProvided) {
       routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
     } else {

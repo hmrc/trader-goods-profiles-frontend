@@ -24,7 +24,7 @@ import models.{CheckMode, Commodity, NormalMode, RecordCategorisations, UserAnsw
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{atMostOnce, never, verify, when}
+import org.mockito.Mockito.{atMostOnce, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
@@ -140,7 +140,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
           .success
           .value
-          .set(LongerCommodityCodePage(testRecordId, true), "1234")
+          .set(LongerCommodityCodePage(testRecordId, shouldRedirectToCya = true), "1234")
           .success
           .value
 

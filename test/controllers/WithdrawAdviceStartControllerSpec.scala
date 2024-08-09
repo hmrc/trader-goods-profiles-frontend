@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.WithdrawAdviceStartFormProvider
-import models.{NormalMode, UserAnswers}
+import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -37,12 +37,12 @@ import scala.concurrent.Future
 
 class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new WithdrawAdviceStartFormProvider()
-  val form         = formProvider()
+  private val formProvider = new WithdrawAdviceStartFormProvider()
+  private val form         = formProvider()
 
-  lazy val withdrawAdviceStartRoute                      = routes.WithdrawAdviceStartController.onPageLoad(testRecordId).url
+  private lazy val withdrawAdviceStartRoute                      = routes.WithdrawAdviceStartController.onPageLoad(testRecordId).url
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 

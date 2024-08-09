@@ -19,23 +19,19 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import controllers.routes
-import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, NormalMode}
+import models.NormalMode
 import play.api.i18n.Messages
-import utils.Constants.adviceProvided
-
-import java.time.Instant
 
 class CountryOfOriginSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
   private val getGoodsRecordResponse = goodsRecordResponse()
-  private val goodsRecordNoCategory = getGoodsRecordResponse.copy(
-    category = 1
+  private val goodsRecordNoCategory  = getGoodsRecordResponse.copy(
+    category = None
   )
-  private val goodsRecordCategory = getGoodsRecordResponse.copy(
-    category = 2
+  private val goodsRecordCategory    = getGoodsRecordResponse.copy(
+    category = Some(2)
   )
 
   ".rowUpdate" - {
@@ -44,7 +40,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
 
       "when categorisation is not done" in {
 
-        val result = GoodsDescriptionSummary.rowUpdate(goodsRecordNoCategory, testRecordId, NormalMode)
+        val result = CountryOfOriginSummary.rowUpdate(goodsRecordNoCategory, testRecordId, NormalMode)
 
         result.actions.get.items.exists(p =>
           p.href == routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
@@ -57,7 +53,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
 
       "when category is set" in {
 
-        val result = GoodsDescriptionSummary.rowUpdate(goodsRecordCategory, testRecordId, NormalMode)
+        val result = CountryOfOriginSummary.rowUpdate(goodsRecordCategory, testRecordId, NormalMode)
 
         result.actions.get.items.exists(p =>
           p.href == routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
@@ -68,4 +64,3 @@ class CountryOfOriginSummarySpec extends SpecBase {
   }
 
 }
-

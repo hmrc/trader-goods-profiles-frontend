@@ -19,8 +19,6 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.HasCommodityCodeChangeFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
@@ -29,12 +27,12 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Constants.adviceProvided
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCommodityCodeChangeView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasCommodityCodeChangeController @Inject() (
@@ -57,60 +55,62 @@ class HasCommodityCodeChangeController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
-  (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-    val record = goodsRecordConnector.getRecord(request.eori, recordId)
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val record = goodsRecordConnector.getRecord(request.eori, recordId)
 
-    record.map {
-      goodsRecord =>
+      record
+        .map { goodsRecord =>
+          val preparedForm = request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
 
-        val preparedForm = request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
-          case None => form
-          case Some(value) => form.fill(value)
+          val needCategorisingWarning = goodsRecord.category.isDefined
+          val needAdviceWarning       = goodsRecord.adviceStatus == adviceProvided
+
+          Ok(view(preparedForm, mode, recordId, needAdviceWarning, needCategorisingWarning))
+            .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
         }
-
-        //TODO update yohan
-        val needCategorisingWarning = goodsRecord.category != 1
-        val needAdviceWarning = goodsRecord.adviceStatus == adviceProvided
-
-        Ok(view(preparedForm, mode, recordId, needAdviceWarning, needCategorisingWarning)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
-    }.recover { _ =>
-      Redirect(routes.JourneyRecoveryController.onPageLoad())
+        .recover { _ =>
+          Redirect(routes.JourneyRecoveryController.onPageLoad())
+        }
     }
-  }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val record = goodsRecordConnector.getRecord(request.eori, recordId)
 
-      record.flatMap {
-        goodsRecord =>
-
-          //TODO update yohan
-          val needCategorisingWarning = goodsRecord.category != 1
-          val needAdviceWarning = goodsRecord.adviceStatus == "Advice Provided"
+      record
+        .flatMap { goodsRecord =>
+          val needCategorisingWarning = goodsRecord.category.isDefined
+          val needAdviceWarning       = goodsRecord.adviceStatus == "Advice Provided"
 
           form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, needCategorisingWarning, needAdviceWarning))),
-          value => {
-            if (value) {
-              auditService
-                .auditStartUpdateGoodsRecord(
-                  request.eori,
-                  request.affinityGroup,
-                  GoodsDetailsUpdate,
-                  recordId
-                )
-            }
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
-          }
-        )
-    }.recover { _ =>
-        Redirect(routes.JourneyRecoveryController.onPageLoad())
-  }
-}
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(view(formWithErrors, mode, recordId, needCategorisingWarning, needAdviceWarning))
+                ),
+              value => {
+                if (value) {
+                  auditService
+                    .auditStartUpdateGoodsRecord(
+                      request.eori,
+                      request.affinityGroup,
+                      GoodsDetailsUpdate,
+                      recordId
+                    )
+                }
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
+              }
+            )
+        }
+        .recover { _ =>
+          Redirect(routes.JourneyRecoveryController.onPageLoad())
+        }
+    }
 }
