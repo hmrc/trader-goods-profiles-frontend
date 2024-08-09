@@ -71,9 +71,9 @@ class SingleRecordController @Inject() (
         val detailsList = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
-            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
-            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode),
-            CommodityCodeSummary.row(record.comcode, recordId, NormalMode),
+            GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode),
+            CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode),
+            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode),
             StatusSummary.row(record.declarable)
           )
         )

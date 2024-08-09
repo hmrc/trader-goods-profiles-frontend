@@ -99,9 +99,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
       val detailsList = SummaryListViewModel(
         rows = Seq(
           TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode),
-          GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode),
-          CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode),
-          CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode),
+          GoodsDescriptionSummary.rowUpdateCya(record.goodsDescription, testRecordId, NormalMode),
+          CountryOfOriginSummary.rowUpdateCya(record.countryOfOrigin, testRecordId, NormalMode),
+          CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode),
           StatusSummary.row(record.declarable)
         )
       )

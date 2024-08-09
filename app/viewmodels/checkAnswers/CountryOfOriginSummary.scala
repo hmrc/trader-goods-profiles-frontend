@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Country, Mode, NormalMode, UserAnswers}
 import pages.CountryOfOriginPage
 import play.api.i18n.Messages
@@ -40,12 +41,8 @@ object CountryOfOriginSummary {
       )
     }
 
-  //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = mode match {
-      case NormalMode => routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
-      case CheckMode  => routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
-    }
+  def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+      val changeLink =  routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
@@ -55,4 +52,21 @@ object CountryOfOriginSummary {
       )
     )
   }
+
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+    val changeLink = if (record.category != 1) { //TODO
+      routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
+    } else {
+      routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
+    }
+    SummaryListRowViewModel(
+      key = "countryOfOrigin.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(record.countryOfOrigin).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", changeLink)
+          .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
+      )
+    )
+  }
+
 }

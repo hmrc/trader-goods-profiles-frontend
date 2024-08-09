@@ -240,7 +240,10 @@ trait SpecBase
     .success
     .value
 
-  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant): GetGoodsRecordResponse =
+  def goodsRecordResponse(
+    createdDateTime: Instant = Instant.now,
+    updatedDateTime: Instant = Instant.now
+  ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       "1",
       "10410100",
