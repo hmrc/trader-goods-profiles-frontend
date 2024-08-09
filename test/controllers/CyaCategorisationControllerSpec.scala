@@ -381,7 +381,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "must update the goods record and redirect to the CategorisationResultController with correct view" - {
 
-          "when audit service works without longer commodity code" in {
+          "when audit service works" in {
 
             val userAnswers = UserAnswers(userAnswersId)
               .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
@@ -419,7 +419,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               "1234567890",
               Category1Scenario,
               0,
-              None
+              Some("Weight, in kilograms")
             )
 
             running(application) {
@@ -480,7 +480,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               "1234567890",
               Category1Scenario,
               0,
-              None
+              Some("Weight, in kilograms")
             )
 
             running(application) {
