@@ -137,7 +137,7 @@ object UpdateGoodsRecord {
     if (isCategorised) {
       answers.getPageValue(HasCountryOfOriginChangePage(recordId)) match {
         case Right(true)  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
-        case Right(false) => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+        case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
         case Left(errors) => Left(errors)
       }
     } else {

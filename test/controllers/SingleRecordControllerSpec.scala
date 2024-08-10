@@ -101,7 +101,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode),
           GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode),
           CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode, record.category.isDefined),
-          CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode),
+          CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode, record.category.isDefined),
           StatusSummary.row(record.declarable)
         )
       )
