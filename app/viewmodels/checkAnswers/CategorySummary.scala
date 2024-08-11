@@ -29,7 +29,7 @@ object CategorySummary {
   def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "singleRecord.category.row",
-      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
       actions = Seq(
         ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
           .withVisuallyHiddenText(messages("singleRecord.category.row"))

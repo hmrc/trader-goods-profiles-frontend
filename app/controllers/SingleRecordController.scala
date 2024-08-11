@@ -80,12 +80,12 @@ class SingleRecordController @Inject() (
         )
 
         val categoryValue         = record.category match {
-          case None        => "Not yet categorised"
+          case None        => "singleRecord.categoriseThisGood"
           case Some(value) =>
             value match {
-              case 1 => "Category 1"
-              case 2 => "Category 2"
-              case 3 => "Standard goods"
+              case 1 => "singleRecord.cat1"
+              case 2 => "singleRecord.cat2"
+              case 3 => "singleRecord.cat3"
             }
         }
         val categorisationList    = SummaryListViewModel(

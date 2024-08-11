@@ -445,6 +445,10 @@ singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
 singleRecord.categoriseThisGood = Categorise this good
+singleRecord.cat1 = Category 1
+singleRecord.cat2 = Category 2
+singleRecord.cat3 = Standard goods
+
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
