@@ -92,7 +92,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         result mustEqual Right("trader reference")
       }
 
-      "and all commodity code data is present" in {
+      "and all commodity code data is present when record is categorised" in {
         val effectiveFrom = Instant.now
         val effectiveTo   = effectiveFrom.plusSeconds(99)
         val commodity     =
@@ -123,6 +123,38 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .value
 
         val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = true)
+
+        result mustBe Right(commodity.copy(commodityCode = "170490"))
+      }
+
+      "and all commodity code data is present when record is not categorised" in {
+        val effectiveFrom = Instant.now
+        val effectiveTo   = effectiveFrom.plusSeconds(99)
+        val commodity     =
+          Commodity(
+            "1704900000",
+            List(
+              "Sea urchins",
+              "Live, fresh or chilled",
+              "Aquatic invertebrates other than crustaceans and molluscs "
+            ),
+            effectiveFrom,
+            Some(effectiveTo)
+          )
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(CommodityCodeUpdatePage(testRecordId), "170490")
+            .success
+            .value
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(CommodityUpdateQuery(testRecordId), commodity)
+            .success
+            .value
+
+        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = false)
 
         result mustBe Right(commodity.copy(commodityCode = "170490"))
       }
