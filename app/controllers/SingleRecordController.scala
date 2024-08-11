@@ -90,7 +90,7 @@ class SingleRecordController @Inject() (
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId, isCategorised)
+            CategorySummary.row(categoryValue, record.recordId)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(

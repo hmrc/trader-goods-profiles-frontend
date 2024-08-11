@@ -27,20 +27,13 @@ import viewmodels.implicits._
 object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, isCategorised: Boolean)(implicit messages: Messages): SummaryListRow = {
-
-    val actionItem = if (isCategorised) {
-      ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
-        .withVisuallyHiddenText(messages("singleRecord.category.row"))
-    } else {
-      ActionItemViewModel("singleRecord.categoriseThisGood", routes.CategoryGuidanceController.onPageLoad(recordId).url)
-        .withVisuallyHiddenText(messages("singleRecord.category.row"))
-    }
-
+  def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = Seq(actionItem)
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+          .withVisuallyHiddenText(messages("singleRecord.category.row"))
+      )
     )
-  }
 }

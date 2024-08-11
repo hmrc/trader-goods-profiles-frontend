@@ -41,17 +41,16 @@ object CountryOfOriginSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode, recordIsCategorised: Boolean)(implicit
+  def row(value: String, recordId: String, mode: Mode, isCategorised: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
     val changeLink = mode match {
       case NormalMode =>
-        if (recordIsCategorised) {
+        if (isCategorised) {
           routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
         } else {
           routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
         }
-      //routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
       case CheckMode  => routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     }
     SummaryListRowViewModel(
