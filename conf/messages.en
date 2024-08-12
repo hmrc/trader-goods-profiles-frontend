@@ -622,7 +622,7 @@ reasonForWithdrawAdvice.hint = This is optional and you can withdraw your reques
 reasonForWithdrawAdvice.continue = Withdraw request
 reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
 
-pageNotFound.title = Page not found - Trader Goods Profile
+pageNotFound.title = Page not found
 pageNotFound.h1 = Page not found
 pageNotFound.p1 = If you typed the web address, check it is correct.
 pageNotFound.p2 = If you pasted the web address, check you copied the entire address.
