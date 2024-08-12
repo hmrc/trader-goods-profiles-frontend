@@ -83,7 +83,7 @@ class HasCommodityCodeChangeController @Inject() (
       record
         .flatMap { goodsRecord =>
           val needCategorisingWarning = goodsRecord.category.isDefined
-          val needAdviceWarning       = goodsRecord.adviceStatus == "Advice Provided"
+          val needAdviceWarning       = goodsRecord.adviceStatus == adviceProvided
 
           form
             .bindFromRequest()

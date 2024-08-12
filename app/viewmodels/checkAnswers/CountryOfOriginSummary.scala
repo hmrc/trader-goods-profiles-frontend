@@ -57,9 +57,9 @@ object CountryOfOriginSummary {
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.category.isDefined) {
-    routes.HasCountryOfOriginChangeController.onPageLoad (mode, recordId).url
+      routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
     } else {
-    routes.CountryOfOriginController.onPageLoadUpdate (mode, recordId).url
+      routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     }
 
     SummaryListRowViewModel(

@@ -79,7 +79,7 @@ class SingleRecordController @Inject() (
 
       } yield {
         val isCategorised = record.category.isDefined
-        val detailsList = SummaryListViewModel(
+        val detailsList   = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
