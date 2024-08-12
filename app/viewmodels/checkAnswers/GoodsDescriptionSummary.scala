@@ -51,7 +51,6 @@ object GoodsDescriptionSummary {
       )
     )
 
-  //TBD - this will be updated to route to the update trader reference page
   def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
