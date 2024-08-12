@@ -125,12 +125,7 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit2(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request, validLength)
-      val currentlyCategorisedOpt =
-        request.userAnswers
-          .get(RecordCategorisationsQuery)
-          .flatMap(_.records.get(recordId))
-          .map(_.commodityCode.padTo(maxValidLength, "0").mkString)
+      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers, validLength)
 
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == validLength => //TODO unnecessary check?

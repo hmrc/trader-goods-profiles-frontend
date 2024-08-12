@@ -236,9 +236,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .set(CategorisationDetailsQuery2(testRecordId), categorisationDetailsShortCommodity)
             .success
             .value
-          //.set(LongerCommodityCodePage2(testRecordId), "1234")
-          // .success
-          // .value
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
@@ -268,9 +265,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val mockOttConnector = mock[OttConnector]
           val userAnswers      = emptyUserAnswers
             .set(CategorisationDetailsQuery2(testRecordId), categorisationDetailsShortCommodity)
-            .success
-            .value
-            .set(LongerCommodityCodePage2(testRecordId), "answer")
             .success
             .value
 
