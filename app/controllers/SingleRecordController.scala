@@ -78,6 +78,7 @@ class SingleRecordController @Inject() (
         _ <- sessionRepository.set(updatedAnswersWithAll)
 
       } yield {
+        val isCategorised = record.category.isDefined
         val detailsList = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),

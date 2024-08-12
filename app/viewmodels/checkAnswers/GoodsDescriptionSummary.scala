@@ -27,8 +27,6 @@ import utils.Constants.adviceProvided
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-import scala.collection.Seq
-
 object GoodsDescriptionSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
@@ -54,7 +52,7 @@ object GoodsDescriptionSummary {
     )
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.adviceStatus == adviceProvided) {
@@ -70,7 +68,7 @@ object GoodsDescriptionSummary {
         Seq.empty
       } else {
         Seq(
-          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+          ActionItemViewModel("site.change", changeLink)
             .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       }
