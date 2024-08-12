@@ -81,7 +81,8 @@ class CyaUpdateRecordController @Inject() (
               )
           }
         }
-        .recoverWith { case _: Exception =>
+        .recoverWith { case e: Exception =>
+          logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
             Redirect(
               routes.JourneyRecoveryController
@@ -123,25 +124,36 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
-        UpdateGoodsRecord
-          .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
-          case Right(commodity) =>
-            val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .flatMap { recordResponse =>
+          UpdateGoodsRecord
+            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            case Right(commodity) =>
+              val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
-            val list = SummaryListViewModel(
-              Seq(
-                CommodityCodeSummary
-                  .row(commodity.commodityCode, recordId, CheckMode, recordResponse.category.isDefined)
+              val list = SummaryListViewModel(
+                Seq(
+                  CommodityCodeSummary
+                    .row(commodity.commodityCode, recordId, CheckMode, recordResponse.category.isDefined)
+                )
               )
-            )
-            Future.successful(Ok(view(list, onSubmitAction)))
-          case Left(errors)     =>
-            Future.successful(
-              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
-            )
+              Future.successful(Ok(view(list, onSubmitAction)))
+            case Left(errors)     =>
+              Future.successful(
+                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+              )
+          }
         }
-      }
+        .recoverWith { case e: Exception =>
+          logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
+          Future.successful(
+            Redirect(
+              routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId).url)))
+            )
+          )
+        }
     }
 
   private def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
@@ -218,7 +230,8 @@ class CyaUpdateRecordController @Inject() (
               )
           }
         }
-        .recoverWith { case _: Exception =>
+        .recoverWith { case e: Exception =>
+          logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
             Redirect(
               routes.JourneyRecoveryController
