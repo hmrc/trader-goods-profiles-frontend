@@ -19,6 +19,7 @@ package viewmodels.checkAnswers
 import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -26,17 +27,38 @@ import viewmodels.implicits._
 object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, recordLocked: Boolean)(implicit messages: Messages): SummaryListRow =
-    SummaryListRowViewModel(
-      key = "singleRecord.category.row",
-      value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = if (recordLocked) {
-        Seq.empty
-      } else {
-        Seq(
-          ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
-            .withVisuallyHiddenText(messages("singleRecord.category.row"))
-        )
-      }
-    )
+  def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow =
+    if (isCategorised) {
+      val action =
+        if (recordLocked) Seq.empty
+        else {
+          Seq(
+            ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+              .withVisuallyHiddenText(messages("singleRecord.category.row"))
+          )
+        }
+      SummaryListRowViewModel(
+        key = "singleRecord.category.row",
+        value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
+        actions = action
+      )
+    } else {
+      val translatedValue = messages(value)
+      val viewModel       =
+        if (recordLocked) {
+          ValueViewModel(HtmlFormat.escape(value).toString)
+        } else {
+          ValueViewModel(
+            HtmlContent(
+              s"<a href=${routes.CategoryGuidanceController.onPageLoad(recordId).url} class='govuk-link'>$translatedValue</a>"
+            )
+          )
+        }
+      SummaryListRowViewModel(
+        key = "singleRecord.category.row",
+        value = viewModel
+      )
+    }
 }
