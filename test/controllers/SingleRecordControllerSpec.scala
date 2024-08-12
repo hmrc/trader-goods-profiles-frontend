@@ -108,7 +108,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           TraderReferenceSummary.row(record.traderRef, testRecordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary.row(record.goodsDescription, testRecordId, NormalMode, recordIsLocked),
-          CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode, recordIsLocked, record.category.isDefined),
+          CountryOfOriginSummary
+            .row(record.countryOfOrigin, testRecordId, NormalMode, recordIsLocked, record.category.isDefined),
           CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode, recordIsLocked, record.category.isDefined),
           StatusSummary.row(record.declarable)
         )
@@ -208,8 +209,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(notCategorisedRecord.traderRef, testRecordId, NormalMode,recordIsLocked),
-          GoodsDescriptionSummary.row(notCategorisedRecord.goodsDescription, testRecordId, NormalMode,recordIsLocked),
+          TraderReferenceSummary.row(notCategorisedRecord.traderRef, testRecordId, NormalMode, recordIsLocked),
+          GoodsDescriptionSummary.row(notCategorisedRecord.goodsDescription, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .row(
               notCategorisedRecord.countryOfOrigin,
@@ -232,22 +233,37 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val categorisationList = SummaryListViewModel(
         rows = Seq(
-          CategorySummary.row("singleRecord.categoriseThisGood", testRecordId, notCategorisedRecord.category.isDefined)
+          CategorySummary.row(
+            "singleRecord.categoriseThisGood",
+            testRecordId,
+            recordIsLocked,
+            notCategorisedRecord.category.isDefined
+          )
         )
       )
 
       val supplementaryUnitList = SummaryListViewModel(
         rows = Seq(
           HasSupplementaryUnitSummary
-            .row(notCategorisedRecord.supplementaryUnit, notCategorisedRecord.measurementUnit, testRecordId),
+            .row(
+              notCategorisedRecord.supplementaryUnit,
+              notCategorisedRecord.measurementUnit,
+              testRecordId,
+              recordIsLocked
+            ),
           SupplementaryUnitSummary
-            .row(notCategorisedRecord.supplementaryUnit, notCategorisedRecord.measurementUnit, testRecordId)
+            .row(
+              notCategorisedRecord.supplementaryUnit,
+              notCategorisedRecord.measurementUnit,
+              testRecordId,
+              recordIsLocked
+            )
         ).flatten
       )
 
       val adviceList = SummaryListViewModel(
         rows = Seq(
-          AdviceStatusSummary.row(notCategorisedRecord.adviceStatus, testRecordId)
+          AdviceStatusSummary.row(notCategorisedRecord.adviceStatus, testRecordId, recordIsLocked)
         )
       )
 
@@ -450,7 +466,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode, recordLocked)
+          val row = CountryOfOriginSummary.row(
+            record.countryOfOrigin,
+            testRecordId,
+            NormalMode,
+            recordLocked,
+            isCategorised = true
+          )
 
           row.actions mustBe Some(Actions("", List()))
         }
@@ -464,7 +486,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = CountryOfOriginSummary.row(record.countryOfOrigin, testRecordId, NormalMode, recordLocked)
+          val row = CountryOfOriginSummary.row(
+            record.countryOfOrigin,
+            testRecordId,
+            NormalMode,
+            recordLocked,
+            isCategorised = true
+          )
 
           row.actions mustBe defined
           row.actions.value.items.head.href mustEqual routes.HasCountryOfOriginChangeController
@@ -484,7 +512,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode, recordLocked)
+          val row =
+            CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode, recordLocked, isCategorised = true)
 
           row.actions mustBe Some(Actions("", List()))
         }
@@ -498,7 +527,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode, recordLocked)
+          val row =
+            CommodityCodeSummary.row(record.comcode, testRecordId, NormalMode, recordLocked, isCategorised = true)
 
           row.actions mustBe defined
           row.actions.value.items.head.href mustEqual routes.HasCommodityCodeChangeController
@@ -518,7 +548,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = CategorySummary.row(record.category.toString, testRecordId, recordLocked)
+          val row = CategorySummary.row(record.category.toString, testRecordId, recordLocked, isCategorised = true)
 
           row.actions mustBe Some(Actions("", List()))
         }
@@ -532,7 +562,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = CategorySummary.row(record.category.toString, testRecordId, recordLocked)
+          val row = CategorySummary.row(record.category.toString, testRecordId, recordLocked, isCategorised = true)
 
           row.actions mustBe defined
           row.actions.value.items.head.href mustEqual routes.CategoryGuidanceController
