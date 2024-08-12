@@ -66,7 +66,7 @@ object SupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String)(implicit
+  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
@@ -78,13 +78,17 @@ object SupplementaryUnitSummary {
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),
-        actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+        actions = if (recordLocked) {
+          Seq.empty
+        } else {
+          Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+            )
+              .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
           )
-            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
-        )
+        }
       )
     }
 }

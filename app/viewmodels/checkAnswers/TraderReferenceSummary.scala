@@ -39,13 +39,19 @@ object TraderReferenceSummary {
       )
     }
 
-  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow =
     SummaryListRowViewModel(
       key = "traderReference.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoadUpdate(mode, recordId).url)
-          .withVisuallyHiddenText(messages("traderReference.change.hidden"))
-      )
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", routes.TraderReferenceController.onPageLoadUpdate(mode, recordId).url)
+            .withVisuallyHiddenText(messages("traderReference.change.hidden"))
+        )
+      }
     )
 }

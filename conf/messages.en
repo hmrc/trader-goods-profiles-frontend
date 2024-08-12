@@ -445,6 +445,7 @@ singleRecord.goodsProfile.link = Go to goods profile
 singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
+singleRecord.withdrawAdvice = Withdraw request
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
@@ -621,3 +622,5 @@ pageNotFound.p2 = If you pasted the web address, check you copied the entire add
 pageNotFound.p3 = If the web address is correct or you selected a link or button,
 pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
 pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
+
+singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision.
