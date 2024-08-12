@@ -21,13 +21,13 @@ import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
-import models.{CheckMode, Mode}
+import models.{CheckMode, Mode, UserAnswers}
 import navigation.Navigator
-import pages.LongerCommodityCodePage
+import pages.{LongerCommodityCodePage, LongerCommodityCodePage2}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -55,6 +55,23 @@ class LongerCommodityCodeController @Inject() (
   private val form           = formProvider()
   private val validLength    = 6
   private val maxValidLength = 10
+
+  def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers, validLength)
+
+      val preparedForm = request.userAnswers.get(LongerCommodityCodePage2(recordId)) match {
+        case None => form
+        case Some(value) => form.fill(value)
+      }
+
+      shortComcodeOpt match {
+        case Some(shortComcode) if shortComcode.length == validLength =>
+          Ok(view(preparedForm, mode, shortComcode, recordId))
+        case _ =>
+          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
+  }
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -106,6 +123,39 @@ class LongerCommodityCodeController @Inject() (
       }
     }
 
+  def onSubmit2(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers, validLength)
+      val currentlyCategorisedOpt =
+        request.userAnswers
+          .get(RecordCategorisationsQuery)
+          .flatMap(_.records.get(recordId))
+          .map(_.commodityCode.padTo(maxValidLength, "0").mkString)
+
+      shortComcodeOpt match {
+        case Some(shortComcode) if shortComcode.length == validLength =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortComcode, recordId))),
+              value => {
+                val longCommodityCode = (shortComcode + value).padTo(maxValidLength, "0").mkString
+                val shouldRedirectToCya = currentlyCategorisedOpt.contains(longCommodityCode) && mode == CheckMode
+                updateAnswersAndProceedWithJourney(
+                  mode,
+                  recordId,
+                  value,
+                  longCommodityCode,
+                  shortComcode,
+                  shouldRedirectToCya
+                )
+              }
+            )
+        case _ =>
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+      }
+    }
+
   private def getShortCommodityCodeOpt(
     recordId: String,
     request: DataRequest[AnyContent],
@@ -117,6 +167,17 @@ class LongerCommodityCodeController @Inject() (
       .flatMap(
         _.originalCommodityCode
           .map(_.reverse.dropWhile(char => char == '0' || char == "0").reverse.padTo(validLength, "0").mkString)
+      )
+
+  private def getShortCommodityCodeOpt2(
+    recordId: String,
+    userAnswers: UserAnswers,
+    validLength: Int
+  ): Option[String] =
+    userAnswers
+      .get(CategorisationDetailsQuery2(recordId))
+      .map(
+        _.commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(validLength, "0").mkString
       )
 
   private def updateAnswersAndProceedWithJourney(

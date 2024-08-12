@@ -39,3 +39,13 @@ case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolea
   }
 
 }
+
+case class LongerCommodityCodePage2(recordId: String)
+  extends QuestionPage[String] {
+
+  override def path: JsPath = JsPath \ toString \ recordId
+
+  override def toString: String = "longerCommodityCode2"
+
+}
+

@@ -232,6 +232,9 @@ POST       /update-record/:recordId/categorisation/longer-commodity-code        
 GET        /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST       /update-record/:recordId/categorisation/longer-commodity-code/check              controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
+GET        /update-record/:recordId/categorisation2/longer-commodity-code                    controllers.LongerCommodityCodeController.onPageLoad2(mode: Mode = NormalMode, recordId: String)
+GET        /update-record/:recordId/categorisation2/longer-commodity-code/check              controllers.LongerCommodityCodeController.onPageLoad2(mode: Mode = CheckMode, recordId: String)
+
 GET         /goods-profile                                                                  controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                                                  controllers.GoodsRecordsController.onSearch(page: Int)
 
