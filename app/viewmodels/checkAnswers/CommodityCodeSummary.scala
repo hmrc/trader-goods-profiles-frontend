@@ -40,9 +40,7 @@ object CommodityCodeSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode, recordIsCategorised: Boolean)(implicit
-    messages: Messages
-  ): SummaryListRow = {
+  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean, recordIsCategorised: Boolean)(implicit messages: Messages): SummaryListRow = {
     val changeLink = mode match {
       case NormalMode =>
         if (recordIsCategorised) {
@@ -55,10 +53,14 @@ object CommodityCodeSummary {
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", changeLink)
-          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
-      )
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", changeLink)
+            .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+        )
+      }
     )
   }
 }

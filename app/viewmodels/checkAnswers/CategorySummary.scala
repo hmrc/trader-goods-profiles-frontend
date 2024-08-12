@@ -27,26 +27,34 @@ import viewmodels.implicits._
 object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, isCategorised: Boolean)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean)(implicit messages: Messages): SummaryListRow =
     if (isCategorised) {
-      SummaryListRowViewModel(
-        key = "singleRecord.category.row",
-        value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
-        actions = Seq(
+      val action = if(recordLocked) Seq.empty else {
+        Seq(
           ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
             .withVisuallyHiddenText(messages("singleRecord.category.row"))
         )
-      )
-
-    } else {
-      val translatedValue = messages(value)
+      }
       SummaryListRowViewModel(
         key = "singleRecord.category.row",
-        value = ValueViewModel(
-          HtmlContent(
-            s"<a href=${routes.CategoryGuidanceController.onPageLoad(recordId).url} class='govuk-link'>$translatedValue</a>"
+        value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
+        actions = action
+      )
+    } else {
+      val translatedValue = messages(value)
+      val viewModel =
+        if(recordLocked) {
+          ValueViewModel(HtmlFormat.escape(value).toString)
+        } else {
+          ValueViewModel(
+            HtmlContent(
+              s"<a href=${routes.CategoryGuidanceController.onPageLoad(recordId).url} class='govuk-link'>$translatedValue</a>"
+            )
           )
-        )
+        }
+      SummaryListRowViewModel(
+        key = "singleRecord.category.row",
+        value = viewModel
       )
     }
 }

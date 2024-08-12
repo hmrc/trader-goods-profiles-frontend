@@ -52,6 +52,14 @@ class SingleRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
+        recordIsLocked                      = record.adviceStatus match {
+                                                case status
+                                                    if status.equalsIgnoreCase("Requested") ||
+                                                      status.equalsIgnoreCase("In progress") ||
+                                                      status.equalsIgnoreCase("Information Requested") =>
+                                                  true
+                                                case _ => false
+                                              }
         updatedAnswersWithTraderReference  <-
           Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
@@ -66,15 +74,17 @@ class SingleRecordController @Inject() (
           Future.fromTry(
             updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
-        _                                  <- sessionRepository.set(updatedAnswersWithAll)
+
+        _ <- sessionRepository.set(updatedAnswersWithAll)
+
       } yield {
         val isCategorised = record.category.isDefined
         val detailsList   = SummaryListViewModel(
           rows = Seq(
-            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
-            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode),
-            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode, isCategorised),
-            CommodityCodeSummary.row(record.comcode, recordId, NormalMode, isCategorised),
+            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
+            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode, recordIsLocked),
+            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode, recordIsLocked, isCategorised),
+            CommodityCodeSummary.row(record.comcode, recordId, NormalMode, recordIsLocked, isCategorised),
             StatusSummary.row(record.declarable)
           )
         )
@@ -90,19 +100,19 @@ class SingleRecordController @Inject() (
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId, record.category.isDefined)
+            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
           rows = Seq(
-            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
+            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked),
             SupplementaryUnitSummary
-              .row(record.supplementaryUnit, record.measurementUnit, recordId)
+              .row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
           ).flatten
         )
         val adviceList            = SummaryListViewModel(
           rows = Seq(
-            AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+            AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked)
           )
         )
         val changesMade           = request.session.get(dataUpdated).contains("true")
@@ -120,10 +130,10 @@ class SingleRecordController @Inject() (
             adviceList,
             changesMade,
             changedPage,
-            pageRemoved
+            pageRemoved,
+            recordIsLocked
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
-
     }
 }

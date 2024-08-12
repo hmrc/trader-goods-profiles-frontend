@@ -41,7 +41,7 @@ object CountryOfOriginSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode, isCategorised: Boolean)(implicit
+  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean, isCategorised: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
     val changeLink = mode match {
@@ -56,10 +56,14 @@ object CountryOfOriginSummary {
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", changeLink)
-          .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
-      )
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", changeLink)
+            .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
+        )
+      }
     )
   }
 }
