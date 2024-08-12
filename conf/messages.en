@@ -449,7 +449,6 @@ singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2
 singleRecord.cat3 = Standard goods
 
-
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
 hasCountryOfOriginChange.p1 = You will need to recategorise this goods record if you change the country of origin
