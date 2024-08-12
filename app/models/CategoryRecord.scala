@@ -22,9 +22,8 @@ import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
 import services.CategorisationService
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
 
 final case class CategoryRecord(
   eori: String,

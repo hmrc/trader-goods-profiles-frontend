@@ -23,9 +23,8 @@ import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import org.apache.pekko.Done
 import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 import utils.Constants.firstAssessmentIndex
-import queries.RecordCategorisationsQuery
 
 final case class CategorisationAnswers(
   assessmentValues: Seq[AssessmentAnswer],

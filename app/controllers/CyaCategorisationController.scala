@@ -28,9 +28,7 @@ import navigation.Navigator
 import pages.{CyaCategorisationPage, CyaCategorisationPage2}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, RecategorisingQuery}
-import queries.{CategorisationDetailsQuery, RecategorisingQuery, CategorisationDetailsQuery2}
-import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl

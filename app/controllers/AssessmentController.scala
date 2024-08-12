@@ -20,13 +20,12 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import forms.{AssessmentFormProvider, AssessmentFormProvider2}
 import logging.Logging
 import models.AssessmentAnswer.NotAnsweredYet
-import models.{AssessmentAnswer, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.{AssessmentPage, AssessmentPage2}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, RecategorisingQuery}
-import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -156,7 +155,7 @@ class AssessmentController @Inject() (
         .flatMap { categorisationInfo =>
           categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
             val listItems = assessment.getExemptionListItems
-            val form = formProvider2(listItems.size)
+            val form      = formProvider2(listItems.size)
 
             form
               .bindFromRequest()
@@ -168,7 +167,7 @@ class AssessmentController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage2(recordId, index), value))
-                    _ <- sessionRepository.set(updatedAnswers)
+                    _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(AssessmentPage2(recordId, index), mode, updatedAnswers))
               )
           }

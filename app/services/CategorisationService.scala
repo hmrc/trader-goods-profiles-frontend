@@ -19,21 +19,10 @@ package services
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.{CategorisationInfo, CategorisationInfo2}
-import models.ott.{CategorisationInfo, CategoryAssessment}
-import models.ott.{CategorisationInfo, CategorisationInfo2}
-import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
-import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
-import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.requests.DataRequest
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
-import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, RecordCategorisations, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
 import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
-import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsScenario, UserAnswers}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
-import pages.{AssessmentPage, InconsistentUserAnswersException}
-import queries.{CategorisationDetailsQuery, CommodityUpdateQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.firstAssessmentIndex

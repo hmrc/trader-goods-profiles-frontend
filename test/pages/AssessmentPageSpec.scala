@@ -16,43 +16,37 @@
 
 package pages
 
-import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
-import models.{AssessmentAnswer, UserAnswers}
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
-import queries.CategorisationDetailsQuery
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.ott._
-import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import models.{AssessmentAnswer, AssessmentAnswer2, RecordCategorisations, UserAnswers}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 
 class AssessmentPageSpec extends SpecBase {
 
   ".cleanup2" - {
 
-    val assessment1 = CategoryAssessment(
+    val assessment1        = CategoryAssessment(
       "id1",
       1,
       Seq(Certificate("cert1", "code1", "description1"), Certificate("cert11", "code11", "description11"))
     )
-    val assessment2 = CategoryAssessment(
+    val assessment2        = CategoryAssessment(
       "id2",
       2,
       Seq(Certificate("cert2", "code2", "description2"), Certificate("cert22", "code22", "description222"))
     )
-    val assessment3 = CategoryAssessment(
+    val assessment3        = CategoryAssessment(
       "id3",
       3,
       Seq(Certificate("cert3", "code3", "description3"), Certificate("cert33", "code33", "description33"))
     )
-    val assessment4 = CategoryAssessment(
+    val assessment4        = CategoryAssessment(
       "id4",
       4,
       Seq(AdditionalCode("cert4", "code4", "description4"))
     )
-    val assessmentList = Seq(assessment1, assessment2, assessment3, assessment4)
+    val assessmentList     = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo =
       CategorisationInfo2("1234567890", assessmentList, assessmentList, None)
 

@@ -19,9 +19,9 @@ package controllers
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
-import models.{CheckMode, Mode}
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
+import models.{CheckMode, Mode}
 import navigation.Navigator
 import pages.LongerCommodityCodePage
 import play.api.data.FormError

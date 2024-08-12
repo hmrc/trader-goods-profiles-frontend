@@ -19,10 +19,9 @@ package base
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
-import models.ott.{AdditionalCode, CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
+import models.ott._
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, AssessmentAnswer2, Commodity, UserAnswers}
-import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Commodity, RecordCategorisations, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -33,8 +32,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, CommodityQuery}
+import queries.{CategorisationDetailsQuery2, CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 

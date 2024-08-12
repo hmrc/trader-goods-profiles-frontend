@@ -25,9 +25,7 @@ import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.{MeasurementQuery, RecordCategorisationsQuery}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.{CategorisationDetailsQuery2, MeasurementQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.OttService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -79,7 +77,7 @@ class SupplementaryUnitController @Inject() (
   def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -87,7 +85,8 @@ class SupplementaryUnitController @Inject() (
         categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery2(recordId))
       } yield {
         val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-        Ok(view(preparedForm, mode, recordId, measurementUnit))
+        val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+        Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
       }
 
       result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
@@ -103,14 +102,15 @@ class SupplementaryUnitController @Inject() (
               categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery2(recordId))
             } yield {
               val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit)))
+              val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
             }
             result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
           },
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))
-              _ <- sessionRepository.set(updatedAnswers)
+              _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(SupplementaryUnitPage(recordId), mode, updatedAnswers))
         )
     }

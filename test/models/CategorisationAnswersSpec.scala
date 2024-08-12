@@ -22,9 +22,7 @@ import models.AssessmentAnswer.{Exemption, NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, SupplementaryUnitPage}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
-import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
-import queries.RecordCategorisationsQuery
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 
 class CategorisationAnswersSpec extends SpecBase {
 

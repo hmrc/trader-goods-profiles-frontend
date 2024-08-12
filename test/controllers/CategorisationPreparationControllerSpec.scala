@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
-import models.ott.{CategorisationInfo2, CategoryAssessment}
+import models.ott.CategorisationInfo2
 import models.{CategoryRecord2, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done

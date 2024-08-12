@@ -85,7 +85,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode, recordId)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, NormalMode, recordId, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -103,7 +106,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId)(
+          contentAsString(result) mustEqual view(form.fill(true), NormalMode, recordId, onSubmitAction)(
             request,
             messages(application)
           ).toString
@@ -111,7 +114,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       }
 
     }
-
 
     ".create journey" - {
 

@@ -59,7 +59,9 @@ class HasSupplementaryUnitController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, recordId))
+      val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
+
+      Ok(view(preparedForm, mode, recordId, onSubmitAction))
   }
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {

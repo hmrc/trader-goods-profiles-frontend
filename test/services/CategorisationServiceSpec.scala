@@ -22,16 +22,9 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott._
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.ott.response._
-import models.ott.response._
-import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
-import models.{AssessmentAnswer, RecordCategorisations}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1Scenario, Category2Scenario, StandardGoodsScenario}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, RecordCategorisations, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -40,8 +33,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.{AssessmentPage, AssessmentPage2}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier

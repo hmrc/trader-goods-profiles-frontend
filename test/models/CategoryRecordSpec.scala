@@ -25,8 +25,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inside.inside
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import queries.RecordCategorisationsQuery
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 import services.CategorisationService
 
 import scala.collection.immutable.Seq

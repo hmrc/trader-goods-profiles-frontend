@@ -18,14 +18,12 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import connectors.TraderProfileConnector
 import forms.ReasonForWithdrawAdviceFormProvider
-import models.{NormalMode, UserAnswers}
+import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.ReasonForWithdrawAdvicePage
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -38,22 +36,18 @@ import scala.concurrent.Future
 
 class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new ReasonForWithdrawAdviceFormProvider()
-  val form         = formProvider()
+  private val formProvider = new ReasonForWithdrawAdviceFormProvider()
+  private val form         = formProvider()
 
-  lazy val reasonForWithdrawAdviceRoute = routes.ReasonForWithdrawAdviceController.onPageLoad(testRecordId).url
-
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  private lazy val reasonForWithdrawAdviceRoute = routes.ReasonForWithdrawAdviceController.onPageLoad(testRecordId).url
 
   "ReasonForWithdrawAdvice Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -73,7 +67,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val userAnswers = UserAnswers(userAnswersId).set(ReasonForWithdrawAdvicePage, "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -101,7 +94,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -126,7 +118,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
@@ -146,7 +137,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -162,7 +152,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {

@@ -413,8 +413,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           val row = CategorySummary.row(record.category.toString, testRecordId, recordLocked)
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual routes.CategoryGuidanceController
-            .onPageLoad(testRecordId)
+          row.actions.value.items.head.href mustEqual routes.CategorisationPreparationController
+            .startCategorisation(testRecordId)
             .url
         }
       }

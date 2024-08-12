@@ -20,10 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.{AssessmentFormProvider, AssessmentFormProvider2}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
-import models.{AssessmentAnswer, AssessmentAnswer2, NormalMode}
-import forms.AssessmentFormProvider
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
+import models.{AssessmentAnswer, AssessmentAnswer2, NormalMode, RecordCategorisations}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -33,8 +30,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{RecategorisingQuery, RecordCategorisationsQuery}
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, RecategorisingQuery}
+import queries.{CategorisationDetailsQuery2, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import views.html.AssessmentView
 
@@ -187,7 +183,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
+          val request = FakeRequest(POST, assessmentRoute2).withFormUrlEncodedBody(("value", "false"))
 
           val result = route(application, request).value
 
@@ -207,7 +203,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(answers)).build()
 
         running(application) {
-          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", ""))
+          val request = FakeRequest(POST, assessmentRoute2).withFormUrlEncodedBody(("value", ""))
 
           val result = route(application, request).value
 

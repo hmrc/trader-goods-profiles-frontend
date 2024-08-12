@@ -21,7 +21,6 @@ import models.GoodsRecordsPagination.firstPage
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.PreviousMovementRecordsView
 
 class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {

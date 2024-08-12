@@ -18,8 +18,7 @@ package pages
 
 import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2}
-import queries.RecordCategorisationsQuery
+import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
 
 import scala.util.{Failure, Success, Try}
 
@@ -37,9 +36,9 @@ case class AssessmentPage2(
     if (value.contains(AssessmentAnswer2.NoExemption)) {
       (for {
         categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery2(recordId))
-        count = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         //Go backwards to avoid recursion issues
-        rangeToRemove = ((index + 1) to count).reverse
+        rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
         acc.flatMap(_.remove(AssessmentPage2(recordId, currentIndexToRemove)))
       }).getOrElse(

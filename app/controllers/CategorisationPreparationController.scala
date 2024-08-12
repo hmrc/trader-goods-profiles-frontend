@@ -70,6 +70,10 @@ class CategorisationPreparationController @Inject() (
 
     }
 
+  final case class CategoryRecordBuildFailure(error: String) extends Exception {
+    override def getMessage: String = s"Failed to build category record: $error"
+  }
+
   private def updateCategory(updatedUserAnswers: UserAnswers, eori: String, recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
@@ -80,9 +84,5 @@ class CategorisationPreparationController @Inject() (
 
         Future.failed(CategoryRecordBuildFailure(errorMessages))
     }
-
-  final case class CategoryRecordBuildFailure(error: String) extends Exception {
-    override def getMessage: String = s"Failed to build category record: $error"
-  }
 
 }

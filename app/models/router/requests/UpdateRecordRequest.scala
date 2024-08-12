@@ -16,15 +16,13 @@
 
 package models.router.requests
 
-import models.{CategoryRecord, SupplementaryRequest, UpdateGoodsRecord}
-import models.{CategoryRecord, CategoryRecord2, UpdateGoodsRecord}
-import models.{CategoryRecord, CategoryRecord2, Scenario2, UpdateGoodsRecord}
+import models.{CategoryRecord, CategoryRecord2, Scenario2, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
-import scala.util.Try
 import play.api.libs.json.{JsPath, OWrites, Reads}
 
 import scala.Function.unlift
+import scala.util.Try
 
 case class UpdateRecordRequest(
   eori: String,
@@ -71,7 +69,7 @@ object UpdateRecordRequest {
       categoryRecord.eori,
       category = Some(Scenario2.getResultAsInt(categoryRecord.category)),
       comcode = Some(categoryRecord.comcode),
-      supplementaryUnit = convertToDouble(categoryRecord.supplementaryUnit),
+      supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
     )
 

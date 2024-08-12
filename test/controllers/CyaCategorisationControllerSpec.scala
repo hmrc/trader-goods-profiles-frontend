@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import models.AssessmentAnswer.NoExemption
 import models.helper.{CategorisationJourney, CategorisationJourney2}
-import models.{AssessmentAnswer, AssessmentAnswer2, Category1, Category1Scenario, CategoryRecord, CategoryRecord2, UserAnswers}
+import models.{AssessmentAnswer, AssessmentAnswer2, Category1, Category1Scenario, CategoryRecord, CategoryRecord2, RecordCategorisations, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -33,13 +33,11 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery, CategorisationDetailsQuery2, LongerCommodityQuery}
-import queries.LongerCommodityQuery
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import queries.RecordCategorisationsQuery
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
