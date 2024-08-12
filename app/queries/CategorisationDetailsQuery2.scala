@@ -19,13 +19,6 @@ package queries
 import models.ott.{CategorisationInfo, CategorisationInfo2}
 import play.api.libs.json.JsPath
 
-case class CategorisationDetailsQuery(recordId: String)
-    extends Gettable[CategorisationInfo]
-    with Settable[CategorisationInfo] {
-
-  override def path: JsPath = JsPath \ "categorisationDetails" \ recordId
-}
-
 case class CategorisationDetailsQuery2(recordId: String)
     extends Gettable[CategorisationInfo2]
     with Settable[CategorisationInfo2] {

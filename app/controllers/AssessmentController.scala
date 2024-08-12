@@ -22,10 +22,10 @@ import logging.Logging
 import models.AssessmentAnswer.NotAnsweredYet
 import models.{Mode, NormalMode}
 import navigation.Navigator
-import pages.{AssessmentPage, AssessmentPage2}
+import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery2, RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -64,6 +64,26 @@ class AssessmentController @Inject() (
             val preparedForm = request.userAnswers.get(AssessmentPage2(recordId, index)) match {
               case Some(value) => form.fill(value)
               case None        => form
+            }
+
+            Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+          }
+        }
+        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+    }
+
+  def onPageLoadReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      request.userAnswers
+        .get(LongerCategorisationDetailsQuery(recordId))
+        .flatMap { categorisationInfo =>
+          categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
+            val listItems = assessment.getExemptionListItems
+            val form = formProvider2(listItems.size)
+
+            val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
+              case Some(value) => form.fill(value)
+              case None => form
             }
 
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode))
@@ -169,6 +189,33 @@ class AssessmentController @Inject() (
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(AssessmentPage2(recordId, index), value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(AssessmentPage2(recordId, index), mode, updatedAnswers))
+              )
+          }
+        }
+        .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+    }
+
+  def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      request.userAnswers
+        .get(LongerCategorisationDetailsQuery(recordId))
+        .flatMap { categorisationInfo =>
+          categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
+            val listItems = assessment.getExemptionListItems
+            val form = formProvider2(listItems.size)
+
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+                  ),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(ReassessmentPage(recordId, index), value))
+                    _ <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(ReassessmentPage(recordId, index), mode, updatedAnswers))
               )
           }
         }

@@ -153,6 +153,11 @@ POST        /update-record/:recordId/categorisation/category-assessment2/:index 
 GET         /update-record/:recordId/categorisation/category-assessment2/:index/check        controllers.AssessmentController.onPageLoad2(mode: Mode = CheckMode, recordId: String, index: Int)
 POST        /update-record/:recordId/categorisation/category-assessment2/:index/check        controllers.AssessmentController.onSubmit2(mode: Mode = CheckMode, recordId: String, index: Int)
 
+GET         /update-record/:recordId/recategorise/category-assessment/:index              controllers.AssessmentController.onPageLoadReassessment(mode: Mode = NormalMode, recordId: String, index: Int)
+POST        /update-record/:recordId/recategorise/category-assessment/:index              controllers.AssessmentController.onSubmitReassessment(mode: Mode = NormalMode, recordId: String, index: Int)
+GET         /update-record/:recordId/recategorise/category-assessment/:index/check        controllers.AssessmentController.onPageLoadReassessment(mode: Mode = CheckMode, recordId: String, index: Int)
+POST        /update-record/:recordId/recategorise/category-assessment/:index/check        controllers.AssessmentController.onSubmitReassessment(mode: Mode = CheckMode, recordId: String, index: Int)
+
 
 GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
 
