@@ -240,7 +240,10 @@ trait SpecBase
     .success
     .value
 
-  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant): GetGoodsRecordResponse =
+  def goodsRecordResponse(
+    createdDateTime: Instant = Instant.now,
+    updatedDateTime: Instant = Instant.now
+  ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       "1",
       "10410100",
@@ -267,6 +270,11 @@ trait SpecBase
       createdDateTime,
       updatedDateTime
     )
+
+  val recordForTestingSummaryRows: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId)
 
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,

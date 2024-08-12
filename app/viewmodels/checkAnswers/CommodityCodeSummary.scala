@@ -17,11 +17,13 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, Mode, NormalMode, UserAnswers}
+import models.router.responses.GetGoodsRecordResponse
+import models.{CheckMode, Mode, UserAnswers}
 import pages.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import utils.Constants.adviceProvided
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -39,22 +41,30 @@ object CommodityCodeSummary {
       )
     }
 
-  //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean, isCategorised: Boolean)(implicit
-    messages: Messages
-  ): SummaryListRow = {
-    val changeLink = mode match {
-      case NormalMode =>
-        if (isCategorised) {
-          routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
-        } else {
-          routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
-        }
-      case CheckMode  => routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
-    }
+  def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
+    val changeLink = routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", changeLink)
+          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+      )
+    )
+  }
+
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow = {
+    val changeLink = if (record.category.isDefined || record.adviceStatus == adviceProvided) {
+      routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
+    } else {
+      routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+    }
+
+    SummaryListRowViewModel(
+      key = "commodityCode.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(record.comcode).toString),
       actions = if (recordLocked) {
         Seq.empty
       } else {

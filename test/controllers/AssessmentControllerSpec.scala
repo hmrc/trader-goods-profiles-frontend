@@ -210,9 +210,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
 
-            val view         = application.injector.instanceOf[AssessmentView]
-            val form         = formProvider(1)
-            val radioOptions = AssessmentAnswer.radioOptions(assessment.exemptions)(messages(application))
+            val view = application.injector.instanceOf[AssessmentView]
+            val form = formProvider(1)
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(

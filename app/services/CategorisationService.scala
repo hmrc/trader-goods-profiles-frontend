@@ -18,7 +18,7 @@ package services
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.{CategorisationInfo, CategoryAssessment}
+import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}

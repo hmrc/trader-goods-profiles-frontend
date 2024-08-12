@@ -25,7 +25,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.PreviousMovementRecordsView
 
 import scala.concurrent.Future
