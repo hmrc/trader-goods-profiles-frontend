@@ -187,6 +187,28 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
         }
 
+        "must redirect to Journey Recovery if no record is found" in {
+
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+            .failed(new RuntimeException("Something went very wrong"))
+
+          val application = applicationBuilder(Some(emptyUserAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, getUrl)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad().url
+
+          }
+        }
+
         "must redirect to Journey Recovery if no existing data is found" in {
 
           val application = applicationBuilder(userAnswers = None).build()

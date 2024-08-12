@@ -444,7 +444,6 @@ singleRecord.goodsProfile.link = Go to goods profile
 singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
-singleRecord.notYetCategorised = Not yet categorised
 singleRecord.categoriseThisGood = Categorise this good
 singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2

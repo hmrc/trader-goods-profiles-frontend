@@ -80,7 +80,7 @@ class SingleRecordController @Inject() (
         )
 
         val categoryValue         = record.category match {
-          case None        => "singleRecord.notYetCategorised"
+          case None        => "singleRecord.categoriseThisGood"
           case Some(value) =>
             value match {
               case 1 => "singleRecord.cat1"

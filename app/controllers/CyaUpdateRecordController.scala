@@ -55,25 +55,35 @@ class CyaUpdateRecordController @Inject() (
 
   def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
-        UpdateGoodsRecord
-          .buildCountryOfOrigin(request.userAnswers, request.eori, recordId, recordResponse.category.isDefined) match {
-          case Right(_)     =>
-            val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
-            getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
-              val list = SummaryListViewModel(
-                Seq(
-                  CountryOfOriginSummary.row(answer, recordId, CheckMode, isCategorised = false)
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .flatMap { recordResponse =>
+          UpdateGoodsRecord
+            .buildCountryOfOrigin(
+              request.userAnswers,
+              request.eori,
+              recordId,
+              recordResponse.category.isDefined
+            ) match {
+            case Right(_)     =>
+              val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
+              getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
+                val list = SummaryListViewModel(
+                  Seq(
+                    CountryOfOriginSummary.row(answer, recordId, CheckMode, isCategorised = false)
+                  )
                 )
+                Ok(view(list, onSubmitAction))
+              }
+            case Left(errors) =>
+              Future.successful(
+                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
               )
-              Ok(view(list, onSubmitAction))
-            }
-          case Left(errors) =>
-            Future.successful(
-              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
-            )
+          }
         }
-      }
+        .recoverWith { case _: Exception =>
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        }
     }
 
   def onPageLoadGoodsDescription(recordId: String): Action[AnyContent] =
