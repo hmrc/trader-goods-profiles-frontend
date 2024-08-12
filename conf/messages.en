@@ -473,6 +473,7 @@ profile.p1 = Check the details on your profile are correct. You can change your 
 profile.p2.linkText = Go to homepage
 profile.warning = Warning
 profile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+profile.backLink = Back to homepage
 
 removeNirms.title = Removing NIRMS details
 removeNirms.h1 = Removing NIRMS details

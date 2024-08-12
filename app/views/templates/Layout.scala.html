@@ -36,7 +36,7 @@
     fullWidthMainContent: fullWidthMainContent
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false, extraHead: Html = HtmlFormat.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, customBackUrlAndText: Option[(String, String)] = None, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false, extraHead: Html = HtmlFormat.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -87,8 +87,13 @@
     }
 
     @if(showBackLink) {
-        @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
+        @customBackUrlAndText.map { urlAndText =>
+            <a href="@urlAndText._1" class="govuk-back-link js-visible">@urlAndText._2</a>
+        }.getOrElse {
+            @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
+        }
     }
+
 }
 
 @content = {
