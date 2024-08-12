@@ -21,47 +21,48 @@ import base.TestConstants.testRecordId
 import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import utils.Constants.adviceProvided
 
 class GoodsDescriptionSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
-  private val getGoodsRecordResponse = goodsRecordResponse()
-  private val goodsRecordNoAdvice    = getGoodsRecordResponse.copy(
-    adviceStatus = "Not requested"
-  )
-  private val goodsRecordAdvice      = getGoodsRecordResponse.copy(
-    adviceStatus = adviceProvided
-  )
-
   ".rowUpdate" - {
 
-    "link to goods description update" - {
+    "must return a SummaryListRow without change link when record is locked" in {
 
-      "when advice is not provided" in {
+      val row =
+        GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = true)
 
-        val result = GoodsDescriptionSummary.rowUpdate(goodsRecordNoAdvice, testRecordId, NormalMode)
-
-        result.actions.get.items.exists(p =>
-          p.href == routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, testRecordId).url
-        ) mustBe true
-      }
-
+      row.actions mustBe Some(Actions("", List()))
     }
 
-    "link to warning page" - {
+    "must return a SummaryListRow with change link when record is not locked" - {
 
-      "when advice is provided" in {
+      "and advice has not been provided" in {
 
-        val result = GoodsDescriptionSummary.rowUpdate(goodsRecordAdvice, testRecordId, NormalMode)
+        val row =
+          GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
 
-        result.actions.get.items.exists(p =>
-          p.href == routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
-        ) mustBe true
+        row.actions mustBe defined
+        row.actions.value.items.head.href mustEqual routes.GoodsDescriptionController
+          .onPageLoadUpdate(NormalMode, testRecordId)
+          .url
       }
 
+      "and advice has been provided" in {
+
+        val recordWithAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = adviceProvided)
+
+        val row =
+          GoodsDescriptionSummary.rowUpdate(recordWithAdviceProvided, testRecordId, NormalMode, recordLocked = false)
+
+        row.actions mustBe defined
+        row.actions.value.items.head.href mustEqual routes.HasGoodsDescriptionChangeController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
+      }
     }
   }
-
 }

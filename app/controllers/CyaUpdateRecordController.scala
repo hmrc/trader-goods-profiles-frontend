@@ -71,7 +71,7 @@ class CyaUpdateRecordController @Inject() (
                 val list = SummaryListViewModel(
                   Seq(
                     CountryOfOriginSummary
-                      .rowUpdateCya(answer, recordId, CheckMode, recordLocked = false, recordResponse.category.isDefined)
+                      .rowUpdateCya(answer, recordId, CheckMode)
                   )
                 )
                 Ok(view(list, onSubmitAction))
@@ -100,7 +100,7 @@ class CyaUpdateRecordController @Inject() (
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
 
           val list = SummaryListViewModel(
-            Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode, recordLocked = false))
+            Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)            =>
@@ -139,8 +139,7 @@ class CyaUpdateRecordController @Inject() (
                     .rowUpdateCya(
                       commodity.commodityCode,
                       recordId,
-                      CheckMode,
-                      recordLocked = false
+                      CheckMode
                     )
                 )
               )

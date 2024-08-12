@@ -21,6 +21,7 @@ import base.TestConstants.testRecordId
 import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import utils.Constants.adviceProvided
 
 class CommodityCodeSummarySpec extends SpecBase {
@@ -45,50 +46,51 @@ class CommodityCodeSummarySpec extends SpecBase {
     adviceStatus = adviceProvided
   )
 
-  ".rowUpdate" - {
+  "must return a SummaryListRow without change links when record is locked" in {
 
-    "link to commodity code update" - {
+    val row =
+      CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = true)
 
-      "when category is not defined and advice has not been provided" in {
+    row.actions mustBe Some(Actions("", List()))
+  }
 
-        val result = CommodityCodeSummary.rowUpdate(goodsRecordNoCatNoAdvice, testRecordId, NormalMode)
+  "must return a SummaryListRow with change links when record is not locked" - {
 
-        result.actions.get.items.exists(p =>
-          p.href == routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
-        ) mustBe true
-      }
+    "and category is set" in {
 
+      val row =
+        CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
+
+      row.actions mustBe defined
+      row.actions.value.items.head.href mustEqual routes.HasCommodityCodeChangeController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
-    "link to warning page" - {
+    "and advice is provided" in {
 
-      "when category is defined but advice has not been provided" in {
+      val recordAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = adviceProvided)
 
-        val result = CommodityCodeSummary.rowUpdate(goodsRecordCatNoAdvice, testRecordId, NormalMode)
+      val row =
+        CommodityCodeSummary.rowUpdate(recordAdviceProvided, testRecordId, NormalMode, recordLocked = false)
 
-        result.actions.get.items.exists(p =>
-          p.href == routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
-        ) mustBe true
-      }
+      row.actions mustBe defined
+      row.actions.value.items.head.href mustEqual routes.HasCommodityCodeChangeController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
+    }
 
-      "when category is not defined but advice is provided" in {
+    "and neither category is set nor advice is provided" in {
 
-        val result = CommodityCodeSummary.rowUpdate(goodsRecordNoCatAdvice, testRecordId, NormalMode)
+      val recordNoCatNoAdvice = recordForTestingSummaryRows.copy(category = None)
 
-        result.actions.get.items.exists(p =>
-          p.href == routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
-        ) mustBe true
-      }
+      val row =
+        CommodityCodeSummary.rowUpdate(recordNoCatNoAdvice, testRecordId, NormalMode, recordLocked = false)
 
-      "when category is defined and advice is provided" in {
-
-        val result = CommodityCodeSummary.rowUpdate(goodsRecordCatAdvice, testRecordId, NormalMode)
-
-        result.actions.get.items.exists(p =>
-          p.href == routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
-        ) mustBe true
-      }
-
+      row.actions mustBe defined
+      row.actions.value.items.head.href mustEqual routes.CommodityCodeController
+        .onPageLoadUpdate(NormalMode, testRecordId)
+        .url
     }
   }
 

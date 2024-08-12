@@ -21,6 +21,7 @@ import base.TestConstants.testRecordId
 import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 
 class CountryOfOriginSummarySpec extends SpecBase {
 
@@ -34,32 +35,50 @@ class CountryOfOriginSummarySpec extends SpecBase {
     category = Some(2)
   )
 
-  ".rowUpdate" - {
+  "must return a SummaryListRow without change links when record is locked" in {
 
-    "link to country of origin update" - {
+    val row = CountryOfOriginSummary.rowUpdate(
+      recordForTestingSummaryRows,
+      testRecordId,
+      NormalMode,
+      recordLocked = true
+    )
 
-      "when categorisation is not done" in {
+    row.actions mustBe Some(Actions("", List()))
+  }
 
-        val result = CountryOfOriginSummary.rowUpdate(goodsRecordNoCategory, testRecordId, NormalMode)
+  "must return a SummaryListRow with change links when record is not locked" - {
 
-        result.actions.get.items.exists(p =>
-          p.href == routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
-        ) mustBe true
-      }
+    "and category is set" in {
 
+      val row = CountryOfOriginSummary.rowUpdate(
+        recordForTestingSummaryRows,
+        testRecordId,
+        NormalMode,
+        recordLocked = false
+      )
+
+      row.actions mustBe defined
+      row.actions.value.items.head.href mustEqual routes.HasCountryOfOriginChangeController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
-    "link to warning page" - {
+    "and category is not set" in {
 
-      "when category is set" in {
+      val recordNoCategory = recordForTestingSummaryRows.copy(category = None)
 
-        val result = CountryOfOriginSummary.rowUpdate(goodsRecordCategory, testRecordId, NormalMode)
+      val row = CountryOfOriginSummary.rowUpdate(
+        recordNoCategory,
+        testRecordId,
+        NormalMode,
+        recordLocked = false
+      )
 
-        result.actions.get.items.exists(p =>
-          p.href == routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
-        ) mustBe true
-      }
-
+      row.actions mustBe defined
+      row.actions.value.items.head.href mustEqual routes.CountryOfOriginController
+        .onPageLoadUpdate(NormalMode, testRecordId)
+        .url
     }
   }
 

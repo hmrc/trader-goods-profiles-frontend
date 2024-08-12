@@ -42,7 +42,7 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
   private val formProvider = new WithdrawAdviceStartFormProvider()
   private val form         = formProvider()
 
-  private lazy val withdrawAdviceStartRoute                      = routes.WithdrawAdviceStartController.onPageLoad(testRecordId).url
+  private lazy val withdrawAdviceStartRoute              = routes.WithdrawAdviceStartController.onPageLoad(testRecordId).url
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
