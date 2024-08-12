@@ -40,7 +40,9 @@ object CommodityCodeSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean, isCategorised: Boolean)(implicit messages: Messages): SummaryListRow = {
+  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean, isCategorised: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow = {
     val changeLink = mode match {
       case NormalMode =>
         if (isCategorised) {
