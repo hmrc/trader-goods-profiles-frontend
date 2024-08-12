@@ -204,8 +204,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad().url
-
+              routes.JourneyRecoveryController
+                .onPageLoad(continueUrl =
+                  Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url))
+                )
+                .url
           }
         }
 

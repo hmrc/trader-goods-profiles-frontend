@@ -82,7 +82,12 @@ class CyaUpdateRecordController @Inject() (
           }
         }
         .recoverWith { case _: Exception =>
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+          Future.successful(
+            Redirect(
+              routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId).url)))
+            )
+          )
         }
     }
 
