@@ -87,14 +87,11 @@ object UpdateGoodsRecord {
     recordId: String,
     isCategorised: Boolean
   ): EitherNec[ValidationError, Commodity] =
-    if (isCategorised) {
-      answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
-        case Right(true)  => validateAndGetCommodity(answers, recordId)
-        case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
-        case Left(errors) => Left(errors)
-      }
-    } else {
-      validateAndGetCommodity(answers, recordId)
+    (isCategorised, answers.getPageValue(HasCommodityCodeChangePage(recordId))) match {
+      case (true, Right(true))  => validateAndGetCommodity(answers, recordId)
+      case (true, Right(false)) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
+      case (true, Left(errors)) => Left(errors)
+      case (false, _)           => validateAndGetCommodity(answers, recordId)
     }
 
   private def validateAndGetCommodity(
@@ -127,13 +124,10 @@ object UpdateGoodsRecord {
     recordId: String,
     isCategorised: Boolean
   ): EitherNec[ValidationError, String] =
-    if (isCategorised) {
-      answers.getPageValue(HasCountryOfOriginChangePage(recordId)) match {
-        case Right(true)  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
-        case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
-        case Left(errors) => Left(errors)
-      }
-    } else {
-      answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+    (isCategorised, answers.getPageValue(HasCountryOfOriginChangePage(recordId))) match {
+      case (true, Right(true))  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+      case (true, Right(false)) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
+      case (true, Left(errors)) => Left(errors)
+      case (false, _)           => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
     }
 }
