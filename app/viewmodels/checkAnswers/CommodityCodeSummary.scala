@@ -50,7 +50,6 @@ object CommodityCodeSummary {
         } else {
           routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
         }
-      //routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
       case CheckMode  => routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     }
     SummaryListRowViewModel(
