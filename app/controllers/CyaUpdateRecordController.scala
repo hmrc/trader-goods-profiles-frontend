@@ -193,24 +193,39 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
-        UpdateGoodsRecord
-          .buildCountryOfOrigin(request.userAnswers, request.eori, recordId, recordResponse.category.isDefined) match {
-          case Right(model) =>
-            auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
-            for {
-              _                        <- goodsRecordConnector.updateGoodsRecord(model)
-              updatedAnswersWithChange <-
-                Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-              updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-              _                        <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-          case Left(errors) =>
-            Future.successful(
-              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
-            )
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .flatMap { recordResponse =>
+          UpdateGoodsRecord
+            .buildCountryOfOrigin(
+              request.userAnswers,
+              request.eori,
+              recordId,
+              recordResponse.category.isDefined
+            ) match {
+            case Right(model) =>
+              auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
+              for {
+                _                        <- goodsRecordConnector.updateGoodsRecord(model)
+                updatedAnswersWithChange <-
+                  Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
+                updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+                _                        <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            case Left(errors) =>
+              Future.successful(
+                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
+              )
+          }
         }
-      }
+        .recoverWith { case _: Exception =>
+          Future.successful(
+            Redirect(
+              routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId).url)))
+            )
+          )
+        }
     }
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
