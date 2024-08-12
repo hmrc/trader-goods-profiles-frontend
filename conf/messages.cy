@@ -18,7 +18,6 @@ homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
 homepage.p3.linkText = Creu cofnod nwyddau newydd
 homepage.h2.2 = Rheoli’ch proffil
-homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.3 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
