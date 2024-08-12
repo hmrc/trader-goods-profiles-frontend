@@ -53,22 +53,26 @@ object CountryOfOriginSummary {
     )
   }
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.category.isDefined) {
-      routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
+    routes.HasCountryOfOriginChangeController.onPageLoad (mode, recordId).url
     } else {
-      routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
+    routes.CountryOfOriginController.onPageLoadUpdate (mode, recordId).url
     }
+
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(record.countryOfOrigin).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", changeLink)
-          .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
-      )
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", changeLink)
+            .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
+        )
+      }
     )
   }
-
 }

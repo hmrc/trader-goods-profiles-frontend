@@ -52,6 +52,14 @@ class SingleRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
+        recordIsLocked                      = record.adviceStatus match {
+                                                case status
+                                                    if status.equalsIgnoreCase("Requested") ||
+                                                      status.equalsIgnoreCase("In progress") ||
+                                                      status.equalsIgnoreCase("Information Requested") =>
+                                                  true
+                                                case _ => false
+                                              }
         updatedAnswersWithTraderReference  <-
           Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
@@ -66,39 +74,44 @@ class SingleRecordController @Inject() (
           Future.fromTry(
             updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
-        _                                  <- sessionRepository.set(updatedAnswersWithAll)
+
+        _ <- sessionRepository.set(updatedAnswersWithAll)
+
       } yield {
         val detailsList = SummaryListViewModel(
           rows = Seq(
-            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode),
-            GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode),
-            CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode),
-            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode),
+            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
+            GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+            CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
             StatusSummary.row(record.declarable)
           )
         )
 
-        //TODO do whatever Yohan has done here, not a get
-        val categoryValue         = record.category.get match {
-          case 1 => "Category 1"
-          case 2 => "Category 2"
-          case 3 => "Standard goods"
+        val categoryValue         = record.category match {
+          case None        => "singleRecord.categoriseThisGood"
+          case Some(value) =>
+            value match {
+              case 1 => "singleRecord.cat1"
+              case 2 => "singleRecord.cat2"
+              case 3 => "singleRecord.standardGoods"
+            }
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId)
+            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
           rows = Seq(
-            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId),
+            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked),
             SupplementaryUnitSummary
-              .row(record.supplementaryUnit, record.measurementUnit, recordId)
+              .row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
           ).flatten
         )
         val adviceList            = SummaryListViewModel(
           rows = Seq(
-            AdviceStatusSummary.row(record.adviceStatus, record.recordId)
+            AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked)
           )
         )
         val changesMade           = request.session.get(dataUpdated).contains("true")
@@ -116,7 +129,8 @@ class SingleRecordController @Inject() (
             adviceList,
             changesMade,
             changedPage,
-            pageRemoved
+            pageRemoved,
+            recordIsLocked
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }

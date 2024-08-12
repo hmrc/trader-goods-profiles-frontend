@@ -53,7 +53,7 @@ object CommodityCodeSummary {
     )
   }
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode)(implicit
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.category.isDefined || record.adviceStatus == adviceProvided) {
@@ -65,11 +65,14 @@ object CommodityCodeSummary {
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(record.comcode).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", changeLink)
-          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
-      )
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", changeLink)
+            .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+        )
+      }
     )
   }
-
 }
