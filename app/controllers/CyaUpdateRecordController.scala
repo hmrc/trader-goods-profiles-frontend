@@ -266,31 +266,42 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { recordResponse =>
-        UpdateGoodsRecord
-          .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
-          case Right(commodity) =>
-            auditService.auditFinishUpdateGoodsRecord(
-              recordId,
-              request.affinityGroup,
-              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-            )
-            for {
-              _                        <- goodsRecordConnector.updateGoodsRecord(
-                                            UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-                                          )
-              updatedAnswersWithChange <-
-                Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-              updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-              _                        <- sessionRepository.set(updatedAnswers)
-              _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
-            } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
-          case Left(errors)     =>
-            Future.successful(
-              logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
-            )
+      goodsRecordConnector
+        .getRecord(request.eori, recordId)
+        .flatMap { recordResponse =>
+          UpdateGoodsRecord
+            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            case Right(commodity) =>
+              auditService.auditFinishUpdateGoodsRecord(
+                recordId,
+                request.affinityGroup,
+                UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+              )
+              for {
+                _                        <- goodsRecordConnector.updateGoodsRecord(
+                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+                                            )
+                updatedAnswersWithChange <-
+                  Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+                updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+                _                        <- sessionRepository.set(updatedAnswers)
+                _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
+              } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            case Left(errors)     =>
+              Future.successful(
+                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+              )
+          }
         }
-      }
+        .recoverWith { case e: Exception =>
+          logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
+          Future.successful(
+            Redirect(
+              routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId).url)))
+            )
+          )
+        }
     }
 
   def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], continueUrl: Call): Result = {

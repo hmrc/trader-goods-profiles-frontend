@@ -1106,6 +1106,28 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
             }
           }
+
+          "must not submit anything when record is not found, and redirect to Journey Recovery" in {
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              .failed(new RuntimeException("Something went very wrong"))
+
+            val application =
+              applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
+            }
+          }
         }
 
         "must let the play error handler deal with connector failure " in {
@@ -1143,9 +1165,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
-            intercept[RuntimeException] {
-              await(route(application, request).value)
-            }
+            val result  = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService)
