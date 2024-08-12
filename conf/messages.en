@@ -444,6 +444,7 @@ singleRecord.goodsProfile.link = Go to goods profile
 singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
+singleRecord.withdrawAdvice = Withdraw request
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
@@ -612,3 +613,5 @@ reasonForWithdrawAdvice.h1 = Can you tell us why you''re withdrawing your reques
 reasonForWithdrawAdvice.hint = This is optional and you can withdraw your request without giving us a reason. Telling us why can help us improve the service.
 reasonForWithdrawAdvice.continue = Withdraw request
 reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
+
+singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision.
