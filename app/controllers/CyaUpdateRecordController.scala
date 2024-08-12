@@ -86,7 +86,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             Redirect(
               routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId).url)))
+                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
             )
           )
         }
@@ -135,7 +135,13 @@ class CyaUpdateRecordController @Inject() (
               val list = SummaryListViewModel(
                 Seq(
                   CommodityCodeSummary
-                    .row(commodity.commodityCode, recordId, CheckMode, recordLocked = false, recordResponse.category.isDefined)
+                    .row(
+                      commodity.commodityCode,
+                      recordId,
+                      CheckMode,
+                      recordLocked = false,
+                      recordResponse.category.isDefined
+                    )
                 )
               )
               Future.successful(Ok(view(list, onSubmitAction)))
@@ -150,7 +156,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             Redirect(
               routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId).url)))
+                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
             )
           )
         }
@@ -235,7 +241,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             Redirect(
               routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId).url)))
+                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
             )
           )
         }
@@ -298,7 +304,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             Redirect(
               routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId).url)))
+                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
             )
           )
         }

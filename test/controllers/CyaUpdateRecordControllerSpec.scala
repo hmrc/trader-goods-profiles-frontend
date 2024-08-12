@@ -205,9 +205,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
               routes.JourneyRecoveryController
-                .onPageLoad(continueUrl =
-                  Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url))
-                )
+                .onPageLoad(continueUrl = Some(RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)))
                 .url
           }
         }
@@ -329,7 +327,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual
                 routes.JourneyRecoveryController
                   .onPageLoad(continueUrl =
-                    Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url))
+                    Some(RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url))
                   )
                   .url
             }
@@ -372,9 +370,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
               routes.JourneyRecoveryController
-                .onPageLoad(continueUrl =
-                  Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url))
-                )
+                .onPageLoad(continueUrl = Some(RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)))
                 .url
 
             withClue("must call the audit connector with the supplied details") {
@@ -992,9 +988,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
               routes.JourneyRecoveryController
-                .onPageLoad(continueUrl =
-                  Some(RedirectUrl(routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId).url))
-                )
+                .onPageLoad(continueUrl = Some(RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)))
                 .url
 
           }
@@ -1125,7 +1119,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
+                routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)))
+                  .url
             }
           }
         }
@@ -1169,7 +1165,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(getUrl))).url
+              routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)))
+                .url
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService)
