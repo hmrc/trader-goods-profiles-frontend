@@ -26,13 +26,16 @@ import viewmodels.implicits._
 object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String)(implicit messages: Messages): SummaryListRow =
+  def row(value: String, recordId: String, isCategorised: Boolean)(implicit messages: Messages): SummaryListRow = {
+
+    val linkText = if (isCategorised) "site.change" else "singleRecord.categoriseThisGood"
     SummaryListRowViewModel(
       key = "singleRecord.category.row",
       value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
+        ActionItemViewModel(linkText, routes.CategoryGuidanceController.onPageLoad(recordId).url)
           .withVisuallyHiddenText(messages("singleRecord.category.row"))
       )
     )
+  }
 }

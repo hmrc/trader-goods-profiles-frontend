@@ -80,7 +80,7 @@ class SingleRecordController @Inject() (
         )
 
         val categoryValue         = record.category match {
-          case None        => "singleRecord.categoriseThisGood"
+          case None        => "singleRecord.notYetCategorised"
           case Some(value) =>
             value match {
               case 1 => "singleRecord.cat1"
@@ -90,7 +90,7 @@ class SingleRecordController @Inject() (
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId)
+            CategorySummary.row(categoryValue, record.recordId, record.category.isDefined)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(

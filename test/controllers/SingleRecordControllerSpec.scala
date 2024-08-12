@@ -114,7 +114,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val categorisationList = SummaryListViewModel(
         rows = Seq(
-          CategorySummary.row("singleRecord.cat1", testRecordId)
+          CategorySummary.row("singleRecord.cat1", testRecordId, record.category.isDefined)
         )
       )
 
@@ -226,7 +226,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val categorisationList = SummaryListViewModel(
         rows = Seq(
-          CategorySummary.row("singleRecord.categoriseThisGood", testRecordId)
+          CategorySummary.row("singleRecord.notYetCategorised", testRecordId, notCategorisedRecord.category.isDefined)
         )
       )
 
