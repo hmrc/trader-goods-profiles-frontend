@@ -13,6 +13,7 @@ site.signIn = Sign in
 site.govuk = GOV.UK
 site.or = or
 site.search = Search
+site.goToHomePage = Go to homepage
 
 date.day = Day
 date.month = Month
@@ -60,12 +61,12 @@ cyaCategorisation.categorisationQuestion = Do you meet any of the following cond
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
 
-journeyRecovery.continue.title = Sorry, there is a problem with the service
-journeyRecovery.continue.heading = Sorry, there is a problem with the service
-journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
-journeyRecovery.startAgain.title = Sorry, there is a problem with the service
-journeyRecovery.startAgain.heading = Sorry, there is a problem with the service
-journeyRecovery.startAgain.guidance = [Add content to explain why the user needs to start again.]
+journeyRecovery.continue.title = Something has gone wrong
+journeyRecovery.continue.heading = Something has gone wrong
+journeyRecovery.continue.guidance = Something has gone wrong and you'll need to start again. We have not saved any information you've entered.
+journeyRecovery.startAgain.title = Something has gone wrong
+journeyRecovery.startAgain.heading = Something has gone wrong
+journeyRecovery.startAgain.guidance = Something has gone wrong and you'll need to go to the Trader Goods Profile homepage. We have not saved any information you've entered.
 
 signedOut.title = You have now signed out
 signedOut.heading = You have now signed out
@@ -241,7 +242,7 @@ goodsDescription.change.hidden = Goods description
 hasCorrectGoods.title = Results for {0}
 hasCorrectGoods.heading = Results for {0}
 hasCorrectGoods.p1 = Classification:
-hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool (opens in a new tab)
+hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select if these are the correct goods
 
@@ -275,7 +276,7 @@ traderReference.change.hidden = Trader reference
 assessment.title = Categorisation question
 assessment.heading = Category assessment {0}
 assessment.guidance = You need to confirm which of these conditions you hold for {0}. We need this information to be able to categorise your goods.
-assessment.linkText = Review this code on the Online Tariff Tool (opens in a new tab)
+assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
 assessment.question = Do you meet any of the following conditions and can you supply the relevant document code on your movements?
 assessment.question.onlyOne = Do you meet the following condition and can you supply the relevant document code on your movement?
 assessment.hint = Select one answer.
@@ -285,7 +286,7 @@ assessment.error.required = Select yes if you meet any of the conditions
 assessment.error.required.onlyOne = Select yes if you meet the condition
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
-assessment.insetText = You could be asked up to 25 different category assessments for each good.
+assessment.insetText = You could be asked up to 10 different category assessments for each good.
 assessment.change.hidden = Category assessment {0}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -374,7 +375,7 @@ longerCommodityCode.p2 = We need you to provide a 8 or 10 digit commodity code s
 longerCommodityCode.insetText = As you are providing a longer commodity code, some of the category assessments may no longer be relevant to your goods. If that’s the case, any previous answers you provided for the category assessments will be removed.
 longerCommodityCode.h2 = What are the additional numbers in the commodity code?
 longerCommodityCode.hint = Enter 2 or 4 digits
-longerCommodityCode.linkText = If you do not know the next 2 or 4 digits, review this code on the Online Tariff Tool (opens in a new tab)
+longerCommodityCode.linkText = Search for a commodity code on the Online Tariff Tool (opens in a new tab)
 longerCommodityCode.checkYourAnswersLabel = Longer commodity code
 longerCommodityCode.error.required = Enter 2 or 4 digits
 longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct format
@@ -613,5 +614,13 @@ reasonForWithdrawAdvice.h1 = Can you tell us why you''re withdrawing your reques
 reasonForWithdrawAdvice.hint = This is optional and you can withdraw your request without giving us a reason. Telling us why can help us improve the service.
 reasonForWithdrawAdvice.continue = Withdraw request
 reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
+
+pageNotFound.title = Page not found - Trader Goods Profile
+pageNotFound.h1 = Page not found
+pageNotFound.p1 = If you typed the web address, check it is correct.
+pageNotFound.p2 = If you pasted the web address, check you copied the entire address.
+pageNotFound.p3 = If the web address is correct or you selected a link or button,
+pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
+pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
 
 singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision.

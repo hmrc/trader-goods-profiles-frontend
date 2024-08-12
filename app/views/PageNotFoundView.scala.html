@@ -15,22 +15,22 @@
  *@
 
 @this(
-    layout: templates.Layout,
-    govukButton: GovukButton
+        layout: templates.Layout,
+        govukButton: GovukButton
 )
 
-@(continueUrl: String)(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("journeyRecovery.continue.title"))) {
+@layout(pageTitle = titleNoForm(messages("pageNotFound.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("journeyRecovery.continue.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("pageNotFound.h1")</h1>
+    <p class="govuk-body">@messages("pageNotFound.p1")</p>
+    <p class="govuk-body">@messages("pageNotFound.p2")</p>
+    <p class="govuk-body">@messages("pageNotFound.p3")
+    <a href=" @routes.HelpAndSupportController.onPageLoad()" class="govuk-link">@messages("pageNotFound.p3.linkText")</a>
+    @messages("pageNotFound.p3.1")</p>
 
-    <p class="govuk-body">@messages("journeyRecovery.continue.guidance")</p>
 
-    <p class="govuk-body">
-        @govukButton(
-            ButtonViewModel(messages("site.startAgain"))
-                .asLink(continueUrl)
-        )
-    </p>
+
+
 }
