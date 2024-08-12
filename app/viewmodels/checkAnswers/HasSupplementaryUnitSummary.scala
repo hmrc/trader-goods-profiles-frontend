@@ -54,20 +54,47 @@ object HasSupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
+  def rowUpdate(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(HasSupplementaryUnitUpdatePage(recordId)).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+
+      SummaryListRowViewModel(
+        key = "hasSupplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel(
+            "site.change",
+            routes.HasSupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId).url
+          )
+            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+        )
+      )
+    }
+
+  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
       _ <- measureValue
     } yield {
-      val displayValue = if (suppValue.isDefined) "site.yes" else "site.no"
+      val displayValue = suppValue match {
+        case Some(value) if value != 0 => "site.yes"
+        case _                         => "site.no"
+      }
       SummaryListRowViewModel(
         key = "hasSupplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
-        )
+        actions = if (recordLocked) {
+          Seq.empty
+        } else {
+          Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+            )
+              .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+          )
+        }
       )
     }
 

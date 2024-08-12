@@ -61,7 +61,7 @@ class CyaUpdateRecordController @Inject() (
           getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
             val list = SummaryListViewModel(
               Seq(
-                CountryOfOriginSummary.row(answer, recordId, CheckMode)
+                CountryOfOriginSummary.row(answer, recordId, CheckMode, recordLocked = false)
               )
             )
             Ok(view(list, onSubmitAction))
@@ -80,7 +80,7 @@ class CyaUpdateRecordController @Inject() (
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
 
           val list = SummaryListViewModel(
-            Seq(GoodsDescriptionSummary.row(goodsDescription, recordId, CheckMode))
+            Seq(GoodsDescriptionSummary.row(goodsDescription, recordId, CheckMode, recordLocked = false))
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)            =>
@@ -95,7 +95,7 @@ class CyaUpdateRecordController @Inject() (
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
 
           val list = SummaryListViewModel(
-            Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode))
+            Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode, recordLocked = false))
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)           =>
@@ -110,7 +110,7 @@ class CyaUpdateRecordController @Inject() (
           val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
           val list = SummaryListViewModel(
-            Seq(CommodityCodeSummary.row(commodity.commodityCode, recordId, CheckMode))
+            Seq(CommodityCodeSummary.row(commodity.commodityCode, recordId, CheckMode, recordLocked = false))
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)     =>

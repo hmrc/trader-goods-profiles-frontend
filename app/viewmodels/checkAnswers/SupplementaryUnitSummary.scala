@@ -48,10 +48,10 @@ object SupplementaryUnitSummary {
   def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery2(recordId))
-      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
+      supplementaryUnit <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
       val measurementUnit = categorisationInfo.measurementUnit
-      val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
+      val value = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
@@ -62,21 +62,50 @@ object SupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[Double], measureValue: Option[String], recordId: String)(implicit
+  def rowUpdate(answers: UserAnswers, recordId: String)(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
+    for {
+      supplementaryUnit <- answers.get(SupplementaryUnitUpdatePage(recordId))
+      measurementUnit   <- answers.get(MeasurementQuery(recordId))
+    } yield {
+      val value = if (!measurementUnit.isEmpty) s"$supplementaryUnit $measurementUnit" else supplementaryUnit
+      SummaryListRowViewModel(
+        key = "supplementaryUnit.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel(
+            "site.change",
+            routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId).url
+          )
+            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
+        )
+      )
+    }
+
+  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
     for {
       suppUnit <- suppValue
+      if suppUnit != 0
     } yield {
       val displayValue =
         if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(displayValue),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
-        )
+        actions = if (recordLocked) {
+          Seq.empty
+        } else {
+          Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+            )
+              .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
+          )
+        }
       )
     }
 

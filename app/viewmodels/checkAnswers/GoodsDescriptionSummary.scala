@@ -40,18 +40,20 @@ object GoodsDescriptionSummary {
     }
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = mode match {
-      case NormalMode => routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
-      case CheckMode  => routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
-    }
+  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow =
     SummaryListRowViewModel(
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", changeLink)
-          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
-      )
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+            .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+        )
+      }
     )
   }
 }
