@@ -446,6 +446,7 @@ singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
 singleRecord.withdrawAdvice = Withdraw request
+singleRecord.back = Back to Goods profile
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin

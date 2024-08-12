@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.WithdrawAdviceStartFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.NormalMode
 import navigation.Navigator
 import pages.WithdrawAdviceStartPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -46,7 +46,7 @@ class WithdrawAdviceStartController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  private val form = formProvider()
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
