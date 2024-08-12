@@ -33,7 +33,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, LongerCommodityQuery2, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.LongerCommodityCodeView
@@ -173,62 +173,6 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "POST" - {
 
-      "must redirect to CyaCategorisation when the same longer commodity code is submitted after clicking 'Change'" in {
-
-        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
-          .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
-
-        val mockSessionRepository = mock[SessionRepository]
-        val mockOttConnector      = mock[OttConnector]
-        val userAnswers           = emptyUserAnswers
-          .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
-          .success
-          .value
-          .set(LongerCommodityCodePage(testRecordId), "1234")
-          .success
-          .value
-
-        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
-
-        val testCommodity = Commodity("6543211234", List("Description"), Instant.now, None)
-        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
-          .successful(
-            testCommodity
-          )
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[OttConnector].toInstance(mockOttConnector),
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-            )
-            .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, longerCommodityCheckRoute)
-              .withFormUrlEncodedBody(("value", "1234"))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(testRecordId).url
-
-          withClue("ensure user answers are set, even in the redirect scenario") {
-            verify(mockOttConnector, atMostOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
-
-            val finalUserAnswers = uaCaptor.getValue
-
-            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
-            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
-          }
-
-        }
-      }
-
       "must redirect to the next page when valid data is submitted" in {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
@@ -238,10 +182,10 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
         val mockOttConnector      = mock[OttConnector]
         val userAnswers           = emptyUserAnswers
-          .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationDetailsShortCommodity)
           .success
           .value
-          .set(LongerCommodityCodePage(testRecordId), "answer")
+          .set(LongerCommodityCodePage2(testRecordId), "8930")
           .success
           .value
 
@@ -266,7 +210,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, longerCommodityCodeRoute)
+            FakeRequest(POST, longerCommodityCodeRoute2)
               .withFormUrlEncodedBody(("value", "12"))
 
           val result = route(application, request).value
@@ -279,8 +223,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           withClue("ensure user answers has set the new commodity query") {
             val finalUserAnswers = uaCaptor.getValue
 
-            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "12"
-            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+            finalUserAnswers.get(LongerCommodityCodePage2(testRecordId)).get mustBe "12"
+            finalUserAnswers.get(LongerCommodityQuery2(testRecordId)).get mustBe testCommodity
           }
         }
       }
@@ -289,17 +233,17 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         "when invalid is submitted" in {
           val userAnswers = emptyUserAnswers
-            .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationDetailsShortCommodity)
             .success
             .value
-            .set(LongerCommodityCodePage(testRecordId), "answer")
-            .success
-            .value
+          //.set(LongerCommodityCodePage2(testRecordId), "1234")
+          // .success
+          // .value
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
             val request =
-              FakeRequest(POST, longerCommodityCodeRoute)
+              FakeRequest(POST, longerCommodityCodeRoute2)
                 .withFormUrlEncodedBody(("value", ""))
 
             val boundForm = form.bind(Map("value" -> ""))
@@ -316,17 +260,17 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           }
         }
 
-        "when correct data format but wrong data is submitted" in {
+        "when correct data format but not valid commodity code" in {
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
             .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
 
           val mockOttConnector = mock[OttConnector]
           val userAnswers      = emptyUserAnswers
-            .set(RecordCategorisationsQuery, recordCategorisationsShortCommodity)
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationDetailsShortCommodity)
             .success
             .value
-            .set(LongerCommodityCodePage(testRecordId), "answer")
+            .set(LongerCommodityCodePage2(testRecordId), "answer")
             .success
             .value
 
@@ -346,7 +290,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           running(application) {
             val request =
-              FakeRequest(POST, longerCommodityCodeRoute)
+              FakeRequest(POST, longerCommodityCodeRoute2)
                 .withFormUrlEncodedBody(("value", "1234"))
 
             val boundForm = form.copy(errors = Seq(elems = FormError("value", "longerCommodityCode.error.invalid")))
@@ -371,7 +315,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, longerCommodityCodeRoute)
+            val request = FakeRequest(GET, longerCommodityCodeRoute2)
 
             val result = route(application, request).value
 
@@ -386,7 +330,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           running(application) {
             val request =
-              FakeRequest(POST, longerCommodityCodeRoute)
+              FakeRequest(POST, longerCommodityCodeRoute2)
                 .withFormUrlEncodedBody(("value", "answer"))
 
             val result = route(application, request).value

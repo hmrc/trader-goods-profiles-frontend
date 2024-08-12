@@ -27,7 +27,7 @@ import pages.{LongerCommodityCodePage, LongerCommodityCodePage2}
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery, LongerCommodityQuery2}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -125,7 +125,7 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit2(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers, validLength)
+      val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request, validLength)
       val currentlyCategorisedOpt =
         request.userAnswers
           .get(RecordCategorisationsQuery)
@@ -133,21 +133,17 @@ class LongerCommodityCodeController @Inject() (
           .map(_.commodityCode.padTo(maxValidLength, "0").mkString)
 
       shortComcodeOpt match {
-        case Some(shortComcode) if shortComcode.length == validLength =>
+        case Some(shortComcode) if shortComcode.length == validLength => //TODO unnecessary check?
           form
             .bindFromRequest()
             .fold(
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, shortComcode, recordId))),
               value => {
-                val longCommodityCode = (shortComcode + value).padTo(maxValidLength, "0").mkString
-                val shouldRedirectToCya = currentlyCategorisedOpt.contains(longCommodityCode) && mode == CheckMode
-                updateAnswersAndProceedWithJourney(
+                validateAndUpdateAnswer(
                   mode,
                   recordId,
                   value,
-                  longCommodityCode,
-                  shortComcode,
-                  shouldRedirectToCya
+                  shortComcode
                 )
               }
             )
@@ -204,6 +200,37 @@ class LongerCommodityCodeController @Inject() (
     } yield Redirect(
       navigator.nextPage(
         LongerCommodityCodePage(recordId, shouldRedirectToCya = shouldRedirect),
+        mode,
+        updatedAnswersWithQuery
+      )
+    )).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+      val formWithApiErrors =
+        form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
+      BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
+    }
+
+  private def validateAndUpdateAnswer(
+    mode: Mode,
+    recordId: String,
+    value: String,
+    shortCode: String
+  )(implicit request: DataRequest[AnyContent]) =
+    (for {
+      record <- goodsRecordConnector.getRecord(request.eori, recordId)
+      validCommodityCode <- ottConnector.getCommodityCode(
+        (shortCode + value).mkString,
+        request.eori,
+        request.affinityGroup,
+        UpdateRecordJourney,
+        record.countryOfOrigin,
+        Some(recordId)
+      )
+      updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage2(recordId), value))
+      updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery2(recordId), validCommodityCode))
+      _ <- sessionRepository.set(updatedAnswersWithQuery)
+    } yield Redirect(
+      navigator.nextPage(
+        LongerCommodityCodePage2(recordId),
         mode,
         updatedAnswersWithQuery
       )
