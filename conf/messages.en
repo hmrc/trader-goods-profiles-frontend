@@ -588,6 +588,13 @@ profileSuccess.h2 = What happens next
 profileSuccess.p1 = You can go to your TGP homepage and either view a list of any previous movement records or create a new record.
 profileSuccess.p2.linkText = Go to homepage
 
+unauthorisedCdsEnrolment.title = There is a problem
+unauthorisedCdsEnrolment.heading = There is a problem
+unauthorisedCdsEnrolment.p1 = The details signed in are not subscribed to the Customs Declaration Service (CDS).
+unauthorisedCdsEnrolment.cdsLink = You must be subscribed to CDS before you can use Trader Goods Profile (opens in a new tab).
+unauthorisedCdsEnrolment.p2.part1 = If you are subscribed to CDS,
+unauthorisedCdsEnrolment.p2.linkText = sign out
+unauthorisedCdsEnrolment.p2.part2 = and sign in with the correct details.
 
 unauthorisedServiceUser.title = There is a problem
 unauthorisedServiceUser.heading = There is a problem
