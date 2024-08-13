@@ -5,6 +5,7 @@ site.change = Newid
 site.startAgain = Dechrau eto
 site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
+site.save.continue = Cadw ac yn eich blaen
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
