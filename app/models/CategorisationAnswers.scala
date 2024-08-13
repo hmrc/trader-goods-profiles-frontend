@@ -21,9 +21,9 @@ import cats.implicits.catsSyntaxTuple2Parallel
 import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import org.apache.pekko.Done
-import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, SupplementaryUnitPage}
+import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 import utils.Constants.firstAssessmentIndex
 
 final case class CategorisationAnswers(

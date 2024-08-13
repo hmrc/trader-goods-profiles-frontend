@@ -46,13 +46,13 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
     val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo            =
-      CategorisationInfo2("1234567890", assessmentList, assessmentList, None)
+      CategorisationInfo2("1234567890", assessmentList, assessmentList, None, 1)
     val categorisationInfoMeasureUnit =
-      CategorisationInfo2("1234567890", assessmentList, assessmentList, Some("Weight"))
+      CategorisationInfo2("1234567890", assessmentList, assessmentList, Some("Weight"), 1)
 
-    val noCategory1CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment3), Seq(assessment3), None)
-    val noCategory1Or2CategorisationInfo = CategorisationInfo2("1234567890", Seq(), Seq(), None)
-    val noCategory2CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment1), Seq(assessment1), None)
+    val noCategory1CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment3), Seq(assessment3), None, 1)
+    val noCategory1Or2CategorisationInfo = CategorisationInfo2("1234567890", Seq(), Seq(), None, 1)
+    val noCategory2CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment1), Seq(assessment1), None, 1)
 
     "must return a CategoryRecord" - {
 

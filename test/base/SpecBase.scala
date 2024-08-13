@@ -195,7 +195,8 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
-    Some("Weight, in kilograms")
+    Some("Weight, in kilograms"),
+    1
   )
 
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
@@ -209,7 +210,7 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
-    None
+    None, 1
   )
 
   lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(

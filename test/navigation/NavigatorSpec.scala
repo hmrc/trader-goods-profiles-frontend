@@ -20,14 +20,14 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import models._
+import models.{AssessmentAnswer2, _}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
@@ -565,7 +565,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 "1234567890",
                 Seq.empty,
                 Seq.empty,
-                None
+                None,
+                1
               )
 
               val userAnswers = emptyUserAnswers
@@ -591,7 +592,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 "1234567890",
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
-                None
+                None,
+                1
               )
 
               val userAnswers = emptyUserAnswers
@@ -668,7 +670,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if the Assessment answer is no" in {
+            "if the Assessment answer is no for category 1 assessment" in {
               val userAnswers =
                 emptyUserAnswers
                   .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
@@ -683,7 +685,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if category 2 question has been answered no and there's not a measurement unit" in {
+            "if category 2 question has been answered no and 10 digits and there's not a measurement unit" in {
               val userAnswers =
                 emptyUserAnswers
                   .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2.copy(measurementUnit = None))
@@ -704,26 +706,203 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
+            "if category 2 question has been answered no and 8 digits and there's not a measurement unit" in {
+
+              val catInfo     = categorisationInfo2.copy(measurementUnit = None, commodityCode = "12345678")
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if category 2 question has been answered no and 6 digits with no descendants and there's not a measurement unit" in {
+
+              val catInfo = categorisationInfo2.copy(
+                commodityCode = "123456",
+                descendantCount = 0,
+                measurementUnit = None
+              )
+
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
           }
 
-          "to the has supplementary unit page when category 2 question has been answered no and there's a measurement unit" in {
-            val userAnswers =
-              emptyUserAnswers
-                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-                .success
-                .value
-                .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
-                .success
-                .value
-                .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
-                .success
-                .value
-                .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
-                .success
-                .value
+          "to the has supplementary unit page when category 2 question has been answered no and there's a measurement unit" - {
+            "and commodity code is 10 digits" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
 
-            navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
-              routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, testRecordId)
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, testRecordId)
+
+            }
+
+            "and commodity code is 8 digits" in {
+
+              val catInfo     = categorisationInfo2.copy(commodityCode = "12345678")
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, testRecordId)
+
+            }
+
+            "and commodity code is 6 digits with no descendants" in {
+
+              val catInfo     = categorisationInfo2.copy(commodityCode = "123456", descendantCount = 0)
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, testRecordId)
+
+            }
+
+          }
+
+          "to the longer commodity code page" - {
+
+            "when answer No to Category 2 assessment" - {
+
+              "and six digit commodity code and descendant count is not zero" in {
+                val catInfo6Digits = categorisationInfo2.copy(commodityCode = "123456")
+
+                val userAnswers =
+                  emptyUserAnswers
+                    .set(CategorisationDetailsQuery2(testRecordId), catInfo6Digits)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                    .success
+                    .value
+
+                navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                  routes.LongerCommodityCodeController.onPageLoad2(NormalMode, testRecordId)
+
+              }
+
+              "and six digit commodity code with four padded zeroes and descendant count is not zero" in {
+                val catInfo6Digits = categorisationInfo2.copy(commodityCode = "1234560000")
+
+                val userAnswers =
+                  emptyUserAnswers
+                    .set(CategorisationDetailsQuery2(testRecordId), catInfo6Digits)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                    .success
+                    .value
+
+                navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                  routes.LongerCommodityCodeController.onPageLoad2(NormalMode, testRecordId)
+
+              }
+
+              "and six digit commodity code with two padded zeroes and descendant count is not zero" in {
+                val catInfo6Digits = categorisationInfo2.copy(commodityCode = "12345600")
+
+                val userAnswers =
+                  emptyUserAnswers
+                    .set(CategorisationDetailsQuery2(testRecordId), catInfo6Digits)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                    .success
+                    .value
+
+                navigator.nextPage(AssessmentPage2(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                  routes.LongerCommodityCodeController.onPageLoad2(NormalMode, testRecordId)
+
+              }
+
+            }
 
           }
 
@@ -2014,7 +2193,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if the Assessment answer is no" in {
+            "if the Assessment answer is no for category 1 assessment" in {
               val userAnswers =
                 emptyUserAnswers
                   .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
@@ -2029,10 +2208,61 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if category 2 question has been answered no and there's not a measurement unit" in {
+            "if category 2 question has been answered no and 10 digits and there's not a measurement unit" in {
               val userAnswers =
                 emptyUserAnswers
                   .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2.copy(measurementUnit = None))
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if category 2 question has been answered no and 8 digits and there's not a measurement unit" in {
+
+              val catInfo = categorisationInfo2.copy(measurementUnit = None, commodityCode = "12345678")
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if category 2 question has been answered no and 6 digits with no descendants and there's not a measurement unit" in {
+
+              val catInfo = categorisationInfo2.copy(
+                commodityCode = "123456",
+                descendantCount = 0,
+                measurementUnit = None
+              )
+
+              val userAnswers =
+                emptyUserAnswers
+                  .set(CategorisationDetailsQuery2(testRecordId), catInfo)
                   .success
                   .value
                   .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
@@ -2077,24 +2307,74 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
 
           "to the has supplementary unit page" - {
-            "when category 2 question has been answered no and there's a measurement unit and that has not been answered already" in {
-              val userAnswers =
-                emptyUserAnswers
-                  .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-                  .success
-                  .value
-                  .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
-                  .success
-                  .value
-                  .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
-                  .success
-                  .value
-                  .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
-                  .success
-                  .value
+            "when category 2 question has been answered no and there's a measurement unit and that has not been answered already" - {
 
-              navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, testRecordId)
+              "and commodity code is 10 digits" in {
+                val userAnswers =
+                  emptyUserAnswers
+                    .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                    .success
+                    .value
+
+                navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
+                  routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, testRecordId)
+
+              }
+
+              "and commodity code is 8 digits" in {
+
+                val catInfo = categorisationInfo2.copy(commodityCode = "12345678")
+                val userAnswers =
+                  emptyUserAnswers
+                    .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                    .success
+                    .value
+
+                navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
+                  routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, testRecordId)
+
+              }
+
+              "and commodity code is 6 digits with no descendants" in {
+
+                val catInfo = categorisationInfo2.copy(commodityCode = "123456", descendantCount = 0)
+                val userAnswers =
+                  emptyUserAnswers
+                    .set(CategorisationDetailsQuery2(testRecordId), catInfo)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+                    .success
+                    .value
+                    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                    .success
+                    .value
+
+                navigator.nextPage(AssessmentPage2(testRecordId, 2), CheckMode, userAnswers) mustEqual
+                  routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, testRecordId)
+
+              }
 
             }
           }
@@ -2144,7 +2424,177 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         }
 
-        "must go from the has supplementary unit page" - {
+      "must go from longer commodity code to categorisation preparation page" in {
+        navigator.nextPage(LongerCommodityCodePage2(testRecordId), CheckMode, emptyUserAnswers) mustEqual
+          routes.CategorisationPreparationController.startLongerCategorisation(testRecordId) //TODO mode???
+      }
+
+      "must go from reassessment page" - {
+
+        "to the next reassessment if answer is yes and there are more unanswered assessments" in {
+          val userAnswers =
+            emptyUserAnswers
+              .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+              .success
+              .value
+              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+              .success
+              .value
+
+          navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
+            routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 1)
+
+        }
+
+        "to the check your answers page" - {
+          "if answer is yes and there are no more assessments" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
+              routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+          }
+
+          "if answer is yes and the next question is answered" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
+              routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+          }
+
+          "if the Assessment answer is no for category 1 assessment" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.NoExemption)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
+              routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+          }
+
+          "if category 2 question has been answered no and there's not a measurement unit" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2.copy(measurementUnit = None))
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
+              routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+          }
+
+        }
+
+        "to the has supplementary unit page when category 2 question has been answered no and there's a measurement unit" in {
+          val userAnswers =
+            emptyUserAnswers
+              .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+              .success
+              .value
+              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+              .success
+              .value
+              .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+              .success
+              .value
+              .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.NoExemption)
+              .success
+              .value
+
+          navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
+            routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, testRecordId)
+
+        }
+
+        "to journey recovery" - {
+
+          "if categorisation details are not defined" in {
+            navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, emptyUserAnswers) mustEqual
+              routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "if assessment answer is not defined" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
+              routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "if assessment question is not defined" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 3), AssessmentAnswer2.NoExemption)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 3), CheckMode, userAnswers) mustEqual
+              routes.JourneyRecoveryController.onPageLoad()
+          }
+
+        }
+
+      }
+
+
+      "must go from the has supplementary unit page" - {
 
           "to the supplementary unit question when answer is yes" in {
 

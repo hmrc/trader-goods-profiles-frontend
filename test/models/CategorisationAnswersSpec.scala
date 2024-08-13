@@ -68,7 +68,6 @@ class CategorisationAnswersSpec extends SpecBase {
           )
 
       }
-
     }
 
     "must return errors" - {

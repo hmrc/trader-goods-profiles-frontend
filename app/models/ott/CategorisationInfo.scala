@@ -20,14 +20,15 @@ import cats.implicits.toTraverseOps
 import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.response.OttResponse
 import models.{AnsweredQuestions, UserAnswers}
-import pages.{AssessmentPage, AssessmentPage2}
+import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
 
 final case class CategorisationInfo2(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
-  measurementUnit: Option[String]
+  measurementUnit: Option[String],
+  descendantCount: Int
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
@@ -79,7 +80,8 @@ object CategorisationInfo2 {
           commodityCodeUserEntered,
           assessmentsSorted,
           questionsToAnswers,
-          ott.goodsNomenclature.measurementUnit
+          ott.goodsNomenclature.measurementUnit,
+          ott.descendents.size
         )
       }
 

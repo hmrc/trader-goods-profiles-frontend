@@ -168,6 +168,7 @@ class LongerCommodityCodeController @Inject() (
     userAnswers
       .get(CategorisationDetailsQuery2(recordId))
       .map(
+        //TODO put this somewhere sensible
         _.commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(validLength, "0").mkString
       )
 

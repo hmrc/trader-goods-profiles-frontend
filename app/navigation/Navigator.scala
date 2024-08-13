@@ -83,6 +83,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       _ => routes.AssessmentController.onPageLoad2(NormalMode, p.recordId, firstAssessmentIndex)
     case p: AssessmentPage2                        => navigateFromAssessment2(p)
     case p: CyaCategorisationPage2                 => navigateFromCyaCategorisationPage(p)
+    case p: LongerCommodityCodePage2               =>
+      _ => routes.CategorisationPreparationController.startLongerCategorisation(p.recordId)
+    case p: ReassessmentPage                       => navigateFromReassessment(p)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -273,14 +276,27 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
-        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount                                           =>
+        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount                                             =>
           routes.AssessmentController.onPageLoad2(NormalMode, recordId, nextIndex)
-        case AssessmentAnswer2.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
+        case AssessmentAnswer2.NoExemption if shouldGoToLongerCommodityCode(categorisationInfo, assessmentQuestion) =>
+          routes.LongerCommodityCodeController.onPageLoad2(NormalMode, recordId)
+        case AssessmentAnswer2.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion)   =>
           routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, recordId)
-        case _                                                                                                    =>
+        case _                                                                                                      =>
           routes.CyaCategorisationController.onPageLoad2(recordId)
       }
     }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
+
+  private def shouldGoToLongerCommodityCode(
+    categorisationInfo: CategorisationInfo2,
+    assessmentQuestion: CategoryAssessment
+  ) = {
+    val commodityCodeShort =
+      categorisationInfo.commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(6, "0").mkString
+
+    commodityCodeShort.length == 6 && assessmentQuestion.category == Category2AsInt && categorisationInfo.descendantCount != 0
+
   }
 
   private def shouldGoToSupplementaryUnit(

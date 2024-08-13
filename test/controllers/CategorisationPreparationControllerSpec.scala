@@ -118,7 +118,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           "1234567890",
           Seq.empty,
           Seq.empty,
-          None
+          None,
+          1
         )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
@@ -238,7 +239,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           "1234567890",
           Seq.empty,
           Seq.empty,
-          None
+          None,
+          1
         )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
@@ -268,7 +270,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           "1234567890",
           Seq.empty,
           Seq.empty,
-          None
+          None,
+          1
         )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(

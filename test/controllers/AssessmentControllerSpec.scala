@@ -150,7 +150,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           "when this assessment index cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None)
+              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
             val answers            =
               emptyUserAnswers.set(CategorisationDetailsQuery2(testRecordId), categorisationInfo).success.value
 
@@ -254,7 +254,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           "when this assessment cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None)
+              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
             val answers            =
               emptyUserAnswers.set(CategorisationDetailsQuery2(testRecordId), categorisationInfo).success.value
 
@@ -374,7 +374,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           "when this assessment index cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None)
+              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
             val answers            =
               emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
@@ -478,7 +478,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           "when this assessment cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None)
+              CategorisationInfo2("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
             val answers            =
               emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 

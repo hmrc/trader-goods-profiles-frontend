@@ -79,7 +79,8 @@ class CategorisationInfoSpec extends SpecBase {
           commodityCode = "1234567890",
           categoryAssessments = assessments,
           categoryAssessmentsThatNeedAnswers = assessments,
-          Some("some measure unit")
+          Some("some measure unit"),
+          1
         )
 
         val result = CategorisationInfo2.build(ottResponse, "1234567890")
@@ -173,7 +174,8 @@ class CategorisationInfoSpec extends SpecBase {
           commodityCode = "1234567890",
           categoryAssessments = expectedAssessments,
           categoryAssessmentsThatNeedAnswers = expectedAssessments,
-          Some("some measure unit")
+          Some("some measure unit"),
+          1
         )
 
         val result = CategorisationInfo2.build(ottResponse, "1234567890")
@@ -228,7 +230,8 @@ class CategorisationInfoSpec extends SpecBase {
           commodityCode = "123456",
           categoryAssessments = assessments,
           categoryAssessmentsThatNeedAnswers = assessments,
-          None
+          None,
+          1
         )
 
         val result = CategorisationInfo2.build(ottResponse, "123456")
@@ -251,7 +254,7 @@ class CategorisationInfoSpec extends SpecBase {
           Seq[Descendant]()
         )
 
-        val expectedResult = CategorisationInfo2("1234567890", Seq.empty, Seq.empty, None)
+        val expectedResult = CategorisationInfo2("1234567890", Seq.empty, Seq.empty, None, 1)
 
         val result = CategorisationInfo2.build(ottResponseNoAssessments, "1234567890")
         result.value mustEqual expectedResult
@@ -322,7 +325,7 @@ class CategorisationInfoSpec extends SpecBase {
           )
         )
 
-        val expectedResult = CategorisationInfo2("1234567890", expectedAssessments, Seq.empty, None)
+        val expectedResult = CategorisationInfo2("1234567890", expectedAssessments, Seq.empty, None, 1)
 
         val result = CategorisationInfo2.build(mockOttResponse, "1234567890")
         result.value mustEqual expectedResult
@@ -394,7 +397,7 @@ class CategorisationInfoSpec extends SpecBase {
           )
         )
 
-        val expectedResult = CategorisationInfo2("1234567890", expectedAssessments, Seq.empty, None)
+        val expectedResult = CategorisationInfo2("1234567890", expectedAssessments, Seq.empty, None, 1)
 
         val result = CategorisationInfo2.build(mockOttResponse, "1234567890")
         result.value mustEqual expectedResult
@@ -473,7 +476,7 @@ class CategorisationInfoSpec extends SpecBase {
         val expectedAssessmentsThatNeedAnswers = Seq(expectedAssessmentId3, expectedAssesmentId2)
 
         val expectedResult =
-          CategorisationInfo2("1234567890", expectedAssessments, expectedAssessmentsThatNeedAnswers, None)
+          CategorisationInfo2("1234567890", expectedAssessments, expectedAssessmentsThatNeedAnswers, None, 1)
 
         val result = CategorisationInfo2.build(mockOttResponse, "1234567890")
         result.value mustEqual expectedResult

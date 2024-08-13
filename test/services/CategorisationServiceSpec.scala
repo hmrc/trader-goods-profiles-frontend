@@ -30,7 +30,7 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.{AssessmentPage, AssessmentPage2}
+import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
@@ -142,7 +142,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
-        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"))
+        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"), 1)
 
       withClue("should ask for details for this commodity and country from OTT") {
         verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
@@ -285,7 +285,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             assessment3
           ),
           Seq(assessment1, assessment2),
-          None
+          None,
+          1
         )
 
         val userAnswers = emptyUserAnswers
@@ -325,7 +326,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           )
         ),
         Seq.empty,
-        None
+        None,
+        1
       )
 
       val userAnswers = emptyUserAnswers
@@ -381,7 +383,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             )
           ),
           Seq.empty,
-          None
+          None,
+          1
         )
 
         val userAnswers = emptyUserAnswers
@@ -437,7 +440,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             assessment3
           ),
           Seq(assessment1, assessment2),
-          None
+          None,
+          1
         )
 
         val userAnswers = emptyUserAnswers
@@ -466,7 +470,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         "1234567890",
         Seq.empty,
         Seq.empty,
-        None
+        None,
+        1
       )
 
       val userAnswers = emptyUserAnswers
@@ -939,5 +944,163 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
   }
+
+//  "updatingAnswersForRecategorisation2" - {
+//
+//    "should return the same user answers if old and new category assessments are the same" in {
+//      val result = categorisationService
+//        .updatingAnswersForRecategorisation2(
+//          userAnswersForCategorisation2,
+//          testRecordId,
+//          categorisationInfo2,
+//          categorisationInfo2
+//        )
+//        .success
+//        .value
+//      result shouldBe userAnswersForCategorisation2
+//    }
+//
+//    "should not copy across old answers if all the assessments are different" in {
+//      val newCommodityCategorisation = CategorisationInfo2(
+//        "12345",
+//        Seq(CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))),
+//        Seq(CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))),
+//        None
+//      )
+//      val result                     = categorisationService
+//        .updatingAnswersForRecategorisation2(
+//          userAnswersForCategorisation2,
+//          testRecordId,
+//          categorisationInfo2,
+//          newCommodityCategorisation
+//        )
+//        .success
+//        .value
+//      //TODO test still valid??
+//      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(NotAnsweredYet)
+//      result.get(ReassessmentPage(testRecordId, 1)) shouldBe None
+//      result.get(ReassessmentPage(testRecordId, 2)) shouldBe None
+//    }
+//
+//    "should copy across old answers when new category info has same assessment" in {
+//      val assessments = Seq(
+//        category1,
+//        category2,
+//        category3,
+//        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+//      )
+//
+//      val newCommodityCategorisation = CategorisationInfo2(
+//        "1234567890",
+//        assessments,
+//        assessments,
+//        Some("Weight, in kilograms")
+//      )
+//      val result                     = categorisationService
+//        .updatingAnswersForRecategorisation2(
+//          userAnswersForCategorisation2,
+//          testRecordId,
+//          categorisationInfo2,
+//          newCommodityCategorisation
+//        )
+//        .success
+//        .value
+//      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer2.Exemption)
+//      result.get(ReassessmentPage(testRecordId, 1)) shouldBe Some(AssessmentAnswer2.Exemption)
+//      result.get(ReassessmentPage(testRecordId, 2)) shouldBe Some(AssessmentAnswer2.Exemption)
+//    }
+//
+//    "should move the old answers to the right position if they are in different order in the new categorisation" in {
+//
+//      val oldCommodityCategorisation = CategorisationInfo2(
+//        "1234567890",
+//        Seq(category1, category2, category3),
+//        Seq(category1, category2, category3),
+//        Some("Weight, in kilograms")
+//      )
+//
+//      val oldUserAnswers = emptyUserAnswers
+//        .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+//        .success
+//        .value
+//        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+//        .success
+//        .value
+//        .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+//        .success
+//        .value
+//        .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+//        .success
+//        .value
+//
+//      val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+//      val newCommodityCategorisation = CategorisationInfo2(
+//        "1234567890",
+//        Seq(category3, category1, category4, category2),
+//        Seq(category3, category1, category4, category2),
+//        Some("Weight, in kilograms")
+//      )
+//
+//      val newUserAnswers = categorisationService
+//        .updatingAnswersForRecategorisation2(
+//          oldUserAnswers,
+//          testRecordId,
+//          oldCommodityCategorisation,
+//          newCommodityCategorisation
+//        )
+//        .success
+//        .value
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer2.Exemption)
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer2.Exemption)
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe Some(NotAnsweredYet)
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 3)) mustBe Some(AssessmentAnswer2.Exemption)
+//    }
+//
+//    "should move the old answers to the right position if only some are in the new categorisation" in {
+//
+//      val oldCommodityCategorisation = CategorisationInfo2(
+//        "1234567890",
+//        Seq(category1, category2, category3),
+//        Seq(category1, category2, category3),
+//        Some("Weight, in kilograms")
+//      )
+//
+//      val oldUserAnswers = emptyUserAnswers
+//        .set(CategorisationDetailsQuery2(testRecordId), oldCommodityCategorisation)
+//        .success
+//        .value
+//        .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+//        .success
+//        .value
+//        .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+//        .success
+//        .value
+//        .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+//        .success
+//        .value
+//
+//      val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+//      val newCommodityCategorisation = CategorisationInfo2(
+//        "1234567890",
+//        Seq(category1, category4),
+//        Seq(category1, category4),
+//        Some("Weight, in kilograms")
+//      )
+//
+//      val newUserAnswers = categorisationService
+//        .updatingAnswersForRecategorisation2(
+//          oldUserAnswers,
+//          testRecordId,
+//          oldCommodityCategorisation,
+//          newCommodityCategorisation
+//        )
+//        .success
+//        .value
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer2.Exemption)
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe Some(NotAnsweredYet)
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
+//    }
+//
+//  }
 
 }
