@@ -23,5 +23,5 @@ case class LongerCategorisationDetailsQuery(recordId: String)
     extends Gettable[CategorisationInfo2]
     with Settable[CategorisationInfo2] {
 
-  override def path: JsPath = JsPath \ "LongerCategorisationDetails" \ recordId
+  override def path: JsPath = JsPath \ "longerCategorisationDetails" \ recordId
 }
