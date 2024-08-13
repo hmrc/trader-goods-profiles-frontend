@@ -56,11 +56,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
   private val recordWithSupplementaryUnit = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId)
-
-  private val recordWithSupplementaryUnitWithCategory2 = goodsRecordResponseWithSupplementaryUnit(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId).copy(category = Some(2))
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -336,14 +331,14 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
     }
 
-    "must show hasSupplementaryUnit two when measurement unit is not empty and supplementary unit is No" in {
+    "must show hasSupplementaryUnit when measurement unit is not empty and supplementary unit is No" in {
 
       val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
       implicit val localMessages: Messages = messages(application)
 
-      val record = recordWithSupplementaryUnitWithCategory2.copy(supplementaryUnit = None)
+      val record = recordWithSupplementaryUnit.copy(supplementaryUnit = None)
 
       running(application) {
         val row                  = HasSupplementaryUnitSummary
