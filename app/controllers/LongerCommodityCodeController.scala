@@ -209,11 +209,12 @@ class LongerCommodityCodeController @Inject() (
     recordId: String,
     value: String,
     shortCode: String
-  )(implicit request: DataRequest[AnyContent]) =
+  )(implicit request: DataRequest[AnyContent]) = {
+    val longerCode = (shortCode + value).mkString
     (for {
       record <- goodsRecordConnector.getRecord(request.eori, recordId)
-      validCommodityCode <- ottConnector.getCommodityCode(
-        (shortCode + value).mkString,
+      _ <- ottConnector.getCommodityCode(
+        longerCode,
         request.eori,
         request.affinityGroup,
         UpdateRecordJourney,
@@ -221,7 +222,7 @@ class LongerCommodityCodeController @Inject() (
         Some(recordId)
       )
       updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage2(recordId), value))
-      updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery2(recordId), validCommodityCode))
+      updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(LongerCommodityQuery2(recordId), longerCode))
       _ <- sessionRepository.set(updatedAnswersWithQuery)
     } yield Redirect(
       navigator.nextPage(
@@ -234,6 +235,7 @@ class LongerCommodityCodeController @Inject() (
         form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
       BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
     }
+  }
 
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 

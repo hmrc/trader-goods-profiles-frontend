@@ -32,7 +32,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.CategorisationDetailsQuery2
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery2}
 import repositories.SessionRepository
 import services.CategorisationService
 
@@ -45,14 +45,15 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
   private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
   private val mockSessionRepository     = mock[SessionRepository]
 
-  private def application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-    .overrides(
-      bind[CategorisationService].toInstance(mockCategorisationService),
-      bind[SessionRepository].toInstance(mockSessionRepository),
-      bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-      bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-    )
-    .build()
+  private def application(userAnswers: UserAnswers = emptyUserAnswers) =
+    applicationBuilder(userAnswers = Some(userAnswers))
+      .overrides(
+        bind[CategorisationService].toInstance(mockCategorisationService),
+        bind[SessionRepository].toInstance(mockSessionRepository),
+        bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+        bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+      )
+      .build()
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
@@ -74,11 +75,13 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       "and not update the record if there are questions to answer" in {
 
-        running(application) {
+        val app = application()
+
+        running(app) {
 
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
@@ -128,11 +131,13 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
-        running(application) {
+        val app = application()
+
+        running(app) {
 
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
@@ -182,10 +187,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("error")))
 
-        running(application) {
+        val app = application()
+
+        running(app) {
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
@@ -197,10 +204,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("error")))
 
-        running(application) {
+        val app = application()
+
+        running(app) {
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
@@ -211,10 +220,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         when(mockSessionRepository.set(any())).thenReturn(Future.failed(new RuntimeException("error")))
 
-        running(application) {
+        val app = application()
+
+        running(app) {
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
@@ -240,10 +251,11 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException(":(")))
 
-        running(application) {
+        val app = application()
+        running(app) {
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
@@ -263,12 +275,59 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        running(application) {
+        val app = application()
+        running(app) {
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
-          val result  = route(application, request).value
+          val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+    }
+
+  }
+
+  "startLongerCategorisation" - {
+
+    "call the categorisation service to get the categorisation info" - {
+
+      "and save the category information" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(LongerCommodityQuery2(testRecordId), "1234567890")
+          .success
+          .value
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(GET, routes.CategorisationPreparationController.startLongerCategorisation(testRecordId).url)
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must get category details from categorisation service") {
+            verify(mockCategorisationService)
+              .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId))(any())
+          }
+
+          withClue("must update User Answers with Categorisation Info") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockSessionRepository).set(uaArgCaptor.capture())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)).get mustBe categorisationInfo2
+          }
+
         }
 
       }

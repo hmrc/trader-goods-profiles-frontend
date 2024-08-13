@@ -486,7 +486,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val finalUserAnswers = uaCaptor.getValue
 
             finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
-            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
+            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity.commodityCode
           }
 
         }

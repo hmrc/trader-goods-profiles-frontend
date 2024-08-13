@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class CategorisationPreparationController @Inject() (
   override val messagesApi: MessagesApi,
@@ -69,6 +70,28 @@ class CategorisationPreparationController @Inject() (
         }
 
     }
+
+  def startLongerCategorisation(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      (for {
+        goodsRecord <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        longerComCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
+        categorisationInfo <-
+          categorisationService
+            .getCategorisationInfo(request, longerComCode, goodsRecord.countryOfOrigin, recordId)
+        updatedUserAnswers <-
+          Future.fromTry(request.userAnswers.set(LongerCategorisationDetailsQuery(recordId), categorisationInfo))
+        _                      <- sessionRepository.set(updatedUserAnswers)
+      } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
+        .recover { e =>
+          logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
+          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        }
+    }
+
+  //TODO startRecategorisation
+  //Needs to save longer commodity code to the LongerCategorisationDetailsQuery
+  //Needs to do Marcy's thing from before where it copies across old answers
 
   final case class CategoryRecordBuildFailure(error: String) extends Exception {
     override def getMessage: String = s"Failed to build category record: $error"

@@ -141,8 +141,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
           Future.successful(goodsRecordCatAdvice)
         )
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
           .build()
@@ -328,7 +326,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AuditService].toInstance(mockAuditService),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
           .build()
@@ -352,7 +349,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
