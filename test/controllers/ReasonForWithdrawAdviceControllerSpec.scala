@@ -148,6 +148,45 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must return a Bad Request and errors when invalid data is submitted" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+      val mockConnector = mock[AccreditationConnector]
+      when(mockConnector.withDrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AccreditationConnector].toInstance(mockConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val invalidValue = "a" * 513
+        val request      =
+          FakeRequest(POST, routes.ReasonForWithdrawAdviceController.onSubmit(testRecordId).url)
+            .withFormUrlEncodedBody(("value", invalidValue))
+
+        val boundForm = form.bind(Map("value" -> invalidValue))
+
+        val view = application.injector.instanceOf[ReasonForWithdrawAdviceView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+
+        contentAsString(result) mustEqual view(
+          boundForm,
+          testRecordId
+        )(request, messages(application)).toString
+      }
+    }
+
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)

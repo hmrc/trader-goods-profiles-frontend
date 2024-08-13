@@ -19,7 +19,7 @@ package repositories
 import base.TestConstants.userAnswersId
 import config.FrontendAppConfig
 import models.UserAnswers
-import models.helper.{CategorisationJourney, CreateProfileJourney, CreateRecordJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney}
+import models.helper.{CategorisationJourney, CreateProfileJourney, CreateRecordJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import org.mockito.Mockito.when
 import org.mongodb.scala.model.Filters
 import org.scalatest.OptionValues
@@ -154,6 +154,18 @@ class SessionRepositorySpec
 
     "must clear data for RequestAdviceJourney" in {
       val journey = RequestAdviceJourney
+      insert(userAnswers).futureValue
+
+      val result = repository.clearData(userAnswers.id, journey).futureValue
+
+      result mustEqual true
+      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
+      val expectedJson  = Json.obj("foo" -> "bar")
+      updatedRecord.data mustEqual expectedJson
+    }
+
+    "must clear data for WithdrawAdviceJourney" in {
+      val journey = WithdrawAdviceJourney
       insert(userAnswers).futureValue
 
       val result = repository.clearData(userAnswers.id, journey).futureValue

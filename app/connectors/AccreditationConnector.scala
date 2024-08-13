@@ -31,12 +31,12 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
   ec: ExecutionContext
 ) {
 
-  private val routerBaseUrl: Service                           = config.get[Service]("microservice.services.trader-goods-profiles-router")
+  private val dataStoreBaseUrl: Service                        = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdAndAcceptHeaders                         =
     Seq("X-Client-ID" -> "tgp-frontend", "Accept" -> "application/vnd.hmrc.1.0+json")
 
   private def accreditationUrl(eori: String, recordId: String) =
-    url"$routerBaseUrl/trader-goods-profiles-router/traders/$eori/records/$recordId/advice"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId/advice"
 
   def submitRequestAccreditation(adviceRequest: AdviceRequest)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
@@ -46,13 +46,13 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def withDrawRequestAccreditation(eori: String, recordId: String, withDrawReason: Option[String])(implicit
+  def withDrawRequestAccreditation(eori: String, recordId: String, withdrawReason: Option[String])(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
       .put(accreditationUrl(eori, recordId))
       .setHeader(clientIdAndAcceptHeaders: _*)
-      .withBody(Json.obj("withdrawReason" -> withDrawReason))
+      .withBody(Json.obj("withdrawReason" -> withdrawReason))
       .execute[HttpResponse]
       .map(_ => Done)
 }

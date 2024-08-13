@@ -37,7 +37,7 @@ class AccreditationConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+      .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
       .build()
 
   private lazy val connector = app.injector.instanceOf[AccreditationConnector]
@@ -54,7 +54,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -71,7 +71,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -84,20 +84,20 @@ class AccreditationConnectorSpec
     }
   }
 
-  ".submitWithdrawAdviceRequest" - {
+  ".withdrawAdviceRequest" - {
 
     "must submit a withdraw advice request" in {
 
       wireMockServer.stubFor(
         put(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId/advice"
+            s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
           .withRequestBody(equalToJson(s"""{"withdrawReason": "$withDrawReason"}"""))
-          .willReturn(ok())
+          .willReturn(noContent())
       )
 
       connector.withDrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).futureValue
@@ -108,7 +108,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         put(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/$testEori/records/$testRecordId/advice"
+            s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))

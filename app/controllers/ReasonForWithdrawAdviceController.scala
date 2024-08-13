@@ -23,9 +23,9 @@ import models.NormalMode
 import models.helper.WithdrawAdviceJourney
 import navigation.Navigator
 import pages.ReasonForWithdrawAdvicePage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ReasonForWithdrawAdviceView
@@ -49,7 +49,7 @@ class ReasonForWithdrawAdviceController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[String] = formProvider()
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>

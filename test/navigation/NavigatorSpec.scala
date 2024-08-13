@@ -101,6 +101,16 @@ class NavigatorSpec extends SpecBase {
               testRecordId
             )
         }
+
+        "must go to JourneyRecoveryController when there is no answer for WithdrawAdviceStartPage" in {
+          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
+          navigator.nextPage(
+            WithdrawAdviceStartPage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.JourneyRecoveryController
+            .onPageLoad(Some(continueUrl))
+        }
       }
 
       "in Create Profile Journey" - {
