@@ -1052,6 +1052,154 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         }
 
+        "must go from longer commodity code to categorisation preparation page" in {
+          navigator.nextPage(LongerCommodityCodePage2(testRecordId), NormalMode, emptyUserAnswers) mustEqual
+            routes.CategorisationPreparationController.startLongerCategorisation(testRecordId)
+        }
+
+        "must go from reassessment page" - {
+
+          "to the next reassessment if answer is yes and there are more assessments" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                .success
+                .value
+
+            navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
+              routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 1)
+
+          }
+
+          "to the check your answers page" - {
+            "if answer is yes and there are no more assessments" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if the Assessment answer is no for category 1 assessment" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+            "if category 2 question has been answered no and there's not a measurement unit" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2.copy(measurementUnit = None))
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.CyaCategorisationController.onPageLoad2(testRecordId)
+
+            }
+
+          }
+
+          "to the has supplementary unit page when category 2 question has been answered no and there's a measurement unit" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
+                routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, testRecordId)
+
+            }
+
+          "to journey recovery" - {
+
+            "if categorisation details are not defined" in {
+              navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, emptyUserAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+            "if assessment answer is not defined" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+            "if assessment question is not defined" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 3), AssessmentAnswer2.NoExemption)
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 3), NormalMode, userAnswers) mustEqual
+                routes.JourneyRecoveryController.onPageLoad()
+            }
+
+          }
+
+        }
+
       }
 
       "in Categorisation Journey" - {

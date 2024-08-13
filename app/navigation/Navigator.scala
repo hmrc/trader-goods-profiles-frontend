@@ -89,6 +89,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
+
   private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
     val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
     answers
