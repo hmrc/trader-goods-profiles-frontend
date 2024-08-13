@@ -22,7 +22,7 @@ import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.CategorisationInfo
 import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.libs.json.{Json, OFormat}
-import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import services.CategorisationService
 
 final case class CategoryRecord(
@@ -67,19 +67,25 @@ object CategoryRecord2 {
         categorisationInfo.commodityCode,
         //TODO cleanup
         categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
+        //TODO this is looking at the wrong answers so audit will be wrong.
         categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
         categorisationInfo.measurementUnit,
         supplementaryUnit
       )
     )
 
-  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
-    userAnswers
-      .getPageValue(CategorisationDetailsQuery2(recordId))
-      .map(Right(_))
-      .getOrElse(
-        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
-      )
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) = {
+    userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+      case Some(catInfo) => Right(catInfo)
+      case _ => userAnswers
+        .getPageValue(CategorisationDetailsQuery2(recordId))
+        .map(Right(_))
+        .getOrElse(
+          Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
+        )
+    }
+
+  }
 }
 
 object CategoryRecord {

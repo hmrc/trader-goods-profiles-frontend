@@ -36,7 +36,7 @@
 
     <h2 class="govuk-heading-m">@messages("longerCommodityCode.h2")</h2>
 
-    @formHelper(action = routes.LongerCommodityCodeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.LongerCommodityCodeController.onSubmit2(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

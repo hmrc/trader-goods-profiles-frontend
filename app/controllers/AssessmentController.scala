@@ -29,7 +29,7 @@ import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, R
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.AssessmentView
+import views.html.{AssessmentView, AssessmentView2}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,7 +46,8 @@ class AssessmentController @Inject() (
   formProvider2: AssessmentFormProvider2,
   categorisationService: CategorisationService,
   val controllerComponents: MessagesControllerComponents,
-  view: AssessmentView
+  view: AssessmentView,
+  view2: AssessmentView2
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -66,7 +67,8 @@ class AssessmentController @Inject() (
               case None        => form
             }
 
-            Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+            val submitAction = routes.AssessmentController.onSubmit2(mode, recordId, index)
+            Ok(view2(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
         .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
@@ -86,7 +88,9 @@ class AssessmentController @Inject() (
               case None => form
             }
 
-            Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+            val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, index)
+
+            Ok(view2(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
         .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
@@ -176,13 +180,14 @@ class AssessmentController @Inject() (
           categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
             val listItems = assessment.getExemptionListItems
             val form      = formProvider2(listItems.size)
+            val submitAction = routes.AssessmentController.onSubmit2(mode, recordId, index)
 
             form
               .bindFromRequest()
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+                    BadRequest(view2(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
                   ),
                 value =>
                   for {
@@ -203,13 +208,14 @@ class AssessmentController @Inject() (
           categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
             val listItems = assessment.getExemptionListItems
             val form = formProvider2(listItems.size)
+            val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, index)
 
             form
               .bindFromRequest()
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode))
+                    BadRequest(view2(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
                   ),
                 value =>
                   for {

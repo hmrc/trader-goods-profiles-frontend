@@ -22,7 +22,7 @@ import models.ott.{CategorisationInfo, CategorisationInfo2}
 import models.requests.DataRequest
 import models.{AssessmentAnswer, AssessmentAnswer2, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, RecordCategorisations, Scenario2, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, UserAnswers}
 import pages.{AssessmentPage, InconsistentUserAnswersException}
-import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CommodityUpdateQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.firstAssessmentIndex
@@ -42,7 +42,8 @@ class CategorisationService @Inject() (
     request: DataRequest[_],
     commodityCode: String,
     country: String,
-    recordId: String
+    recordId: String,
+    longerCode: Boolean = false
   )(implicit hc: HeaderCarrier): Future[CategorisationInfo2] = {
 
     val ottResponse = ottConnector.getCategorisationInfo(
@@ -55,7 +56,7 @@ class CategorisationService @Inject() (
     )
 
     ottResponse.flatMap { response =>
-      CategorisationInfo2.build(response, commodityCode) match {
+      CategorisationInfo2.build(response, commodityCode, longerCode) match {
         case Some(categorisationInfo) => Future.successful(categorisationInfo)
         case _                        =>
           Future.failed(new RuntimeException("Could not build categorisation info"))

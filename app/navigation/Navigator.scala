@@ -86,6 +86,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: LongerCommodityCodePage2               =>
       _ => routes.CategorisationPreparationController.startLongerCategorisation(p.recordId)
     case p: ReassessmentPage                       => navigateFromReassessment(p)
+    //TODO unit test below line
+    case p: RecategorisationPreparationPage => _ => routes.AssessmentController.onPageLoadReassessment(NormalMode, p.recordId, firstAssessmentIndex)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -365,13 +367,23 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
   private def navigateFromCyaCategorisationPage(page: CyaCategorisationPage2)(answers: UserAnswers): Call =
     (for {
-      categorisationInfo <- answers.get(CategorisationDetailsQuery2(page.recordId))
+      //TODO test longer code
+      categorisationInfo <- getCategorisationInfoFromUA(answers, page.recordId)
       scenario            = categorisationService.calculateResult(categorisationInfo, answers, page.recordId)
     } yield routes.CategorisationResultController.onPageLoad2(page.recordId, scenario)).getOrElse(
       routes.JourneyRecoveryController.onPageLoad(
         Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(page.recordId).url))
       )
     )
+
+  //TODO move somewhere sensible
+  private def getCategorisationInfoFromUA(userAnswers: UserAnswers, recordId: String) = {
+    val longerDetails = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+     longerDetails match {
+      case Some(_) => longerDetails
+      case _ => userAnswers.get(CategorisationDetailsQuery2(recordId))
+    }
+  }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad

@@ -19,7 +19,7 @@ package viewmodels.checkAnswers
 import controllers.routes
 import models.{CheckMode, RecordCategorisations, UserAnswers}
 import play.api.i18n.Messages
-import queries.RecordCategorisationsQuery
+import queries.{LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -52,6 +52,25 @@ object LongerCommodityCodeSummary {
       case _                                                     =>
         None
     }
+  }
+
+  //TODO test
+  def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
+    answers.get(LongerCategorisationDetailsQuery(recordId)).map(info =>
+        SummaryListRowViewModel(
+          key = "longerCommodityCode.checkYourAnswersLabel",
+          value = ValueViewModel(info.commodityCode),
+          actions = Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url
+            )
+              .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
+          )
+        )
+    )
+
+
   }
 
 }

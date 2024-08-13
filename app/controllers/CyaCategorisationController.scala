@@ -23,12 +23,12 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.helper.{CategorisationJourney, CategorisationJourney2}
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, Scenario, Scenario2, ValidationError}
+import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, ReCategorisationAnswers2, Scenario, Scenario2, ValidationError}
 import navigation.Navigator
 import pages.{CyaCategorisationPage, CyaCategorisationPage2}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.{CategorisationDetailsQuery2, RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -112,42 +112,86 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
 
-      categorisationInfo
-        .map { info =>
-          CategorisationAnswers2.build(request.userAnswers, recordId) match {
-            case Right(_) =>
-              val categorisationRows = info.categoryAssessments
-                .flatMap(assessment =>
-                  AssessmentsSummary.row2(
-                    recordId,
-                    request.userAnswers,
-                    assessment,
-                    info.categoryAssessments.indexOf(assessment)
-                  )
-                )
+      val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
-              val categorisationList = SummaryListViewModel(
-                rows = categorisationRows
-              )
+longerCategorisationInfo match {
+  case Some(categorisationInfo) => {
+    //TODO UNIT TEST LONGER CATEGORY IN UA
+    //TODO cleanup
+    ReCategorisationAnswers2.build(request.userAnswers, recordId) match {
+      case Right(_) =>
+        val categorisationRows = categorisationInfo.categoryAssessments
+          .flatMap(assessment =>
+            AssessmentsSummary.rowReassessment(
+              recordId,
+              request.userAnswers,
+              assessment,
+              categorisationInfo.categoryAssessments.indexOf(assessment)
+            )
+          )
 
-              val supplementaryUnitList = SummaryListViewModel(
-                rows = Seq(
-                  HasSupplementaryUnitSummary.row2(request.userAnswers, recordId),
-                  SupplementaryUnitSummary.row2(request.userAnswers, recordId)
-                ).flatten
-              )
-
-              Ok(view(recordId, categorisationList, supplementaryUnitList, SummaryListViewModel(Seq.empty)))
-
-            case Left(errors) =>
-              logErrorsAndContinue2(errors, recordId, request)
-          }
-        }
-        .getOrElse(
-          logErrorsAndContinue2("Failed to get categorisation details", recordId, request)
+        val categorisationList = SummaryListViewModel(
+          rows = categorisationRows
         )
+
+        val supplementaryUnitList = SummaryListViewModel(
+          rows = Seq(
+            HasSupplementaryUnitSummary.row2(request.userAnswers, recordId),
+            SupplementaryUnitSummary.row2(request.userAnswers, recordId)
+          ).flatten
+        )
+
+        val longerCommodityCodeList = SummaryListViewModel(
+          rows = Seq(
+            LongerCommodityCodeSummary.row(request.userAnswers, recordId)
+          ).flatten
+        )
+
+        Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
+
+      case Left(errors) =>
+        logErrorsAndContinue2(errors, recordId, request)
+    }
+  }
+  case _ =>
+  val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+
+  categorisationInfo
+    .map { info =>
+      CategorisationAnswers2.build(request.userAnswers, recordId) match {
+        case Right(_) =>
+          val categorisationRows = info.categoryAssessments
+            .flatMap(assessment =>
+              AssessmentsSummary.row2(
+                recordId,
+                request.userAnswers,
+                assessment,
+                info.categoryAssessments.indexOf(assessment)
+              )
+            )
+
+          val categorisationList = SummaryListViewModel(
+            rows = categorisationRows
+          )
+
+          val supplementaryUnitList = SummaryListViewModel(
+            rows = Seq(
+              HasSupplementaryUnitSummary.row2(request.userAnswers, recordId),
+              SupplementaryUnitSummary.row2(request.userAnswers, recordId)
+            ).flatten
+          )
+
+          Ok(view(recordId, categorisationList, supplementaryUnitList, SummaryListViewModel(Seq.empty)))
+
+        case Left(errors) =>
+          logErrorsAndContinue2(errors, recordId, request)
+      }
+    }
+    .getOrElse(
+      logErrorsAndContinue2("Failed to get categorisation details", recordId, request)
+    )
+}
 
   }
 

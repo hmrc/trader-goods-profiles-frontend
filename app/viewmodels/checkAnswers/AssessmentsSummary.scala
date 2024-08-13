@@ -19,7 +19,7 @@ package viewmodels.checkAnswers
 import controllers.routes
 import models.ott.CategoryAssessment
 import models.{AssessmentAnswer2, CheckMode, UserAnswers}
-import pages.{AssessmentPage, AssessmentPage2}
+import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
@@ -51,6 +51,35 @@ object AssessmentsSummary {
           ActionItemViewModel(
             "site.change",
             routes.AssessmentController.onPageLoad2(CheckMode, recordId, indexOfThisAssessment).url
+          ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
+        )
+      )
+    }
+
+  def rowReassessment(
+    recordId: String,
+    answers: UserAnswers,
+    assessment: CategoryAssessment,
+    indexOfThisAssessment: Int
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(ReassessmentPage(recordId, indexOfThisAssessment)).map { answer =>
+      val codes = assessment.exemptions.map(_.code)
+      val descriptions = assessment.exemptions.map(_.description)
+
+      SummaryListRowViewModel(
+        key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
+          .withCssClass("govuk-!-width-one-half"),
+        value = ValueViewModel(
+          if (answer == AssessmentAnswer2.Exemption) {
+            messages("site.yes")
+          } else {
+            messages("site.no")
+          }
+        ),
+        actions = Seq(
+          ActionItemViewModel(
+            "site.change",
+            routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
           ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
         )
       )

@@ -22,7 +22,7 @@ import logging.Logging
 import models.{CategoryRecord2, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
-import pages.CategorisationPreparationPage
+import pages.{CategorisationPreparationPage, RecategorisationPreparationPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery2}
@@ -78,11 +78,11 @@ class CategorisationPreparationController @Inject() (
         longerComCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
         categorisationInfo <-
           categorisationService
-            .getCategorisationInfo(request, longerComCode, goodsRecord.countryOfOrigin, recordId)
+            .getCategorisationInfo(request, longerComCode, goodsRecord.countryOfOrigin, recordId, longerCode = true)
         updatedUserAnswers <-
           Future.fromTry(request.userAnswers.set(LongerCategorisationDetailsQuery(recordId), categorisationInfo))
         _                      <- sessionRepository.set(updatedUserAnswers)
-      } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
+      } yield Redirect(navigator.nextPage(RecategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)

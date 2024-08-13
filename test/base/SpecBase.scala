@@ -210,7 +210,8 @@ trait SpecBase
     "1234567890",
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
-    None, 1
+    None,
+    1
   )
 
   lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(

@@ -36,6 +36,12 @@ final case class CategorisationAnswers2(
   //supplementaryUnit: Option[String]
 )
 
+final case class ReCategorisationAnswers2(
+  assessmentValues: Seq[Option[AssessmentAnswer2]]
+)
+//TODO why are we returning anything in these
+//TODO merge these two things??
+
 object CategorisationAnswers2 {
 
   def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers2] =
@@ -125,6 +131,101 @@ object CategorisationAnswers2 {
       Right(Done)
     } else {
       Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery2(recordId))))
+    }
+
+  }
+}
+
+//TODO once written tests, merge this into the other one???
+object ReCategorisationAnswers2 {
+
+  def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, ReCategorisationAnswers2] =
+    buildAssessmentDetails(userAnswers, recordId)
+      .map(ReCategorisationAnswers2(_))
+
+  private def buildAssessmentDetails(
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[ValidationError, Seq[Option[AssessmentAnswer2]]] =
+    for {
+      categorisationInfo       <- getCategorisationInfoForThisRecord(userAnswers, recordId)
+      answeredQuestionsOptions <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
+      answeredQuestionsOnly    <- getAnsweredQuestionsOnly(answeredQuestionsOptions, recordId)
+      _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId)
+      _                        <- ensureHaveAnsweredTheRightAmount(
+        answeredQuestionsOnly,
+        answeredQuestionsOptions.size,
+        recordId
+      )
+    } yield answeredQuestionsOptions.map(_.answer)
+
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String): EitherNec[NoCategorisationDetailsForRecordId, CategorisationInfo2] =
+    userAnswers
+      .getPageValue(LongerCategorisationDetailsQuery(recordId))
+      .map(Right(_))
+      .getOrElse(
+        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(LongerCategorisationDetailsQuery(recordId), recordId)))
+      )
+
+  private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
+    val answeredQuestionsOnly = answeredQuestionsOptions.filter(_.answer.isDefined)
+
+    if (answeredQuestionsOnly.isEmpty) {
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(ReassessmentPage(recordId, firstAssessmentIndex))))
+    } else {
+      Right(answeredQuestionsOnly)
+    }
+
+  }
+
+  private def getAssessmentsFromUserAnswers(
+    categorisationInfo: CategorisationInfo2,
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[ValidationError, Seq[AnsweredQuestions]] = {
+    val answers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    if (answers.isEmpty) {
+      Left(NonEmptyChain(PageMissing(ReassessmentPage(recordId, firstAssessmentIndex))))
+    } else {
+      Right(answers)
+    }
+  }
+
+  private def ensureNoExemptionIsOnlyFinalAnswer(
+    answeredQuestionsOnly: Seq[AnsweredQuestions],
+    recordId: String
+  ): EitherNec[ValidationError, Done] = {
+
+    //Last answer can be a NoExemption. Others can't
+    val allExceptLastAnswer          = answeredQuestionsOnly.reverse.tail
+    val noExemptionsBeforeLastAnswer =
+      allExceptLastAnswer.filter(ass => ass.answer.contains(AssessmentAnswer2.NoExemption))
+
+    if (noExemptionsBeforeLastAnswer.isEmpty) {
+      Right(Done)
+    } else {
+      val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage2(recordId, ass.index)))
+      val nec    =
+        NonEmptyChain
+          .fromSeq(errors)
+          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(LongerCategorisationDetailsQuery(recordId))))
+      Left(nec)
+    }
+  }
+
+  private def ensureHaveAnsweredTheRightAmount(
+    answeredQuestionsOnly: Seq[AnsweredQuestions],
+    totalQuestions: Int,
+    recordId: String
+  ): Either[NonEmptyChain[ValidationError], Done] = {
+
+    val lastAnswerIsExemption = answeredQuestionsOnly.last.answer.contains(AssessmentAnswer2.NoExemption)
+
+    if (lastAnswerIsExemption || totalQuestions == answeredQuestionsOnly.size) {
+      Right(Done)
+    } else {
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(LongerCategorisationDetailsQuery(recordId))))
     }
 
   }

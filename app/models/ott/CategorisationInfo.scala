@@ -28,7 +28,8 @@ final case class CategorisationInfo2(
   categoryAssessments: Seq[CategoryAssessment],
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
   measurementUnit: Option[String],
-  descendantCount: Int
+  descendantCount: Int,
+  longerCode: Boolean = false
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
@@ -38,12 +39,26 @@ final case class CategorisationInfo2(
       Some(categoryAssessmentsThatNeedAnswers(index))
     }
 
-  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
+  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] = {
+    if (longerCode) {
+      getAnswersForReassessmentQuestions(userAnswers, recordId)
+    } else {
+      categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
+        AnsweredQuestions(
+          assessment._2,
+          assessment._1,
+          userAnswers.get(AssessmentPage2(recordId, assessment._2))
+        )
+      )
+    }
+  }
+
+  private def getAnswersForReassessmentQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
     categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
       AnsweredQuestions(
         assessment._2,
         assessment._1,
-        userAnswers.get(AssessmentPage2(recordId, assessment._2))
+        userAnswers.get(ReassessmentPage(recordId, assessment._2))
       )
     )
 
@@ -51,7 +66,7 @@ final case class CategorisationInfo2(
 
 object CategorisationInfo2 {
 
-  def build(ott: OttResponse, commodityCodeUserEntered: String): Option[CategorisationInfo2] =
+  def build(ott: OttResponse, commodityCodeUserEntered: String, longerCode: Boolean = false): Option[CategorisationInfo2] =
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
@@ -81,7 +96,8 @@ object CategorisationInfo2 {
           assessmentsSorted,
           questionsToAnswers,
           ott.goodsNomenclature.measurementUnit,
-          ott.descendents.size
+          ott.descendents.size,
+          longerCode
         )
       }
 
