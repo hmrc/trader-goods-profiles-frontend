@@ -58,6 +58,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
 
+  private val recordWithSupplementaryUnitWithCategory2 = goodsRecordResponseWithSupplementaryUnit(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId).copy(category = Some(2))
+
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
@@ -338,7 +343,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         .build()
       implicit val localMessages: Messages = messages(application)
 
-      val record = recordWithSupplementaryUnit.copy(supplementaryUnit = None)
+      val record = recordWithSupplementaryUnitWithCategory2.copy(supplementaryUnit = None)
 
       running(application) {
         val row                  = HasSupplementaryUnitSummary
