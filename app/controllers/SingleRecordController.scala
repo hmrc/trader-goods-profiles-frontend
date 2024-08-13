@@ -19,7 +19,8 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.NormalMode
-import models.helper.SupplementaryUnitUpdateJourney
+import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
+import models.requests.DataRequest
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -118,8 +119,8 @@ class SingleRecordController @Inject() (
         val changesMade           = request.session.get(dataUpdated).contains("true")
         val pageRemoved           = request.session.get(dataRemoved).contains("true")
         val changedPage           = request.session.get(pageUpdated).getOrElse("")
-        //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
-        dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+
+        dataCleansing(request)
 
         Ok(
           view(
@@ -136,4 +137,13 @@ class SingleRecordController @Inject() (
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
     }
+
+  private def dataCleansing(request: DataRequest[AnyContent]) = {
+    //at this point we should delete all journey data as the user might comeback using backlink & click change link again
+    dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+  }
+
 }

@@ -68,6 +68,41 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "in Withdraw Advice Journey" - {
+
+        "must go from WithdrawAdviceStartPage to ReasonForWithdrawAdvicePage when answer is Yes" in {
+          val answers = UserAnswers(userAnswersId).set(WithdrawAdviceStartPage(testRecordId), true).success.value
+          navigator.nextPage(
+            WithdrawAdviceStartPage(testRecordId),
+            NormalMode,
+            answers
+          ) mustBe routes.ReasonForWithdrawAdviceController
+            .onPageLoad(testRecordId)
+        }
+
+        "must go from WithdrawAdviceStartPage to SingleRecordPage when answer is No" in {
+          val answers = UserAnswers(userAnswersId).set(WithdrawAdviceStartPage(testRecordId), false).success.value
+          navigator.nextPage(
+            WithdrawAdviceStartPage(testRecordId),
+            NormalMode,
+            answers
+          ) mustBe routes.SingleRecordController
+            .onPageLoad(testRecordId)
+        }
+
+        "must go from ReasonForWithdrawAdvicePage to WithdrawAdviceSuccessPage" in {
+
+          navigator.nextPage(
+            ReasonForWithdrawAdvicePage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.WithdrawAdviceSuccessController
+            .onPageLoad(
+              testRecordId
+            )
+        }
+      }
+
       "in Create Profile Journey" - {
 
         "must go from ProfileSetupPage to UkimsNumberPage" in {

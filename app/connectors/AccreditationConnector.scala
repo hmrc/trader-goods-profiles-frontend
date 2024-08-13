@@ -45,4 +45,14 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
       .withBody(Json.toJson(adviceRequest))
       .execute[HttpResponse]
       .map(_ => Done)
+
+  def withDrawRequestAccreditation(eori: String, recordId: String, withDrawReason: Option[String])(implicit
+    hc: HeaderCarrier
+  ): Future[Done] =
+    httpClient
+      .put(accreditationUrl(eori, recordId))
+      .setHeader(clientIdAndAcceptHeaders: _*)
+      .withBody(Json.obj("withdrawReason" -> withDrawReason))
+      .execute[HttpResponse]
+      .map(_ => Done)
 }
