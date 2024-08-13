@@ -17,11 +17,13 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
 import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import utils.Constants.adviceProvided
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -39,20 +41,36 @@ object GoodsDescriptionSummary {
       )
     }
 
-  //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
-    messages: Messages
-  ): SummaryListRow =
+  def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
+      )
+    )
+
+  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow = {
+    val changeLink = if (record.adviceStatus == adviceProvided) {
+      routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
+    } else {
+      routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+    }
+
+    SummaryListRowViewModel(
+      key = "goodsDescription.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(record.goodsDescription).toString),
       actions = if (recordLocked) {
         Seq.empty
       } else {
         Seq(
-          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+          ActionItemViewModel("site.change", changeLink)
             .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       }
     )
+  }
 }

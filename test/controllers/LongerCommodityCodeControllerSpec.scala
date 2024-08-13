@@ -411,7 +411,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
           .success
           .value
-          .set(LongerCommodityCodePage(testRecordId, true), "1234")
+          .set(LongerCommodityCodePage(testRecordId, shouldRedirectToCya = true), "1234")
           .success
           .value
 
