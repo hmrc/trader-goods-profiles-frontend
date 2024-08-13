@@ -59,15 +59,15 @@ object HasSupplementaryUnitSummary {
     }
 
   def row(record: GetGoodsRecordResponse, recordId: String, recordLocked: Boolean)(implicit
-                                                                                                                 messages: Messages
-  ): Option[SummaryListRow] = {
+    messages: Messages
+  ): Option[SummaryListRow] =
     if (record.category.contains(2)) {
       for {
         _ <- record.measurementUnit
       } yield {
         val displayValue = record.supplementaryUnit match {
           case Some(value) if value != 0 => "site.yes"
-          case _ => "site.no"
+          case _                         => "site.no"
         }
         SummaryListRowViewModel(
           key = "hasSupplementaryUnit.checkYourAnswersLabel",
@@ -88,5 +88,4 @@ object HasSupplementaryUnitSummary {
     } else {
       None
     }
-  }
 }
