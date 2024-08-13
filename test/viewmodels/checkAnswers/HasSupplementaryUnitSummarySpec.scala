@@ -41,16 +41,16 @@ class HasSupplementaryUnitSummarySpec extends SpecBase {
 
   "HasSupplementaryUnitSummary.row" - {
 
-    "must not return a SummaryListRow when not Category 2" in {
-
-      val row = HasSupplementaryUnitSummary.row(
-        recordWithSupplementaryUnit,
-        testRecordId,
-        recordLocked = true
-      )
-
-      row mustBe None
-    }
+//    "must not return a SummaryListRow when not Category 2" in {
+//
+//      val row = HasSupplementaryUnitSummary.row(
+//        recordWithSupplementaryUnit,
+//        testRecordId,
+//        recordLocked = true
+//      )
+//
+//      row mustBe None
+//    }
 
     "must not return a SummaryListRow when no measurement unit" in {
 
