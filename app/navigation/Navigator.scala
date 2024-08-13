@@ -22,7 +22,7 @@ import models._
 import models.ott.{CategorisationInfo2, CategoryAssessment}
 import pages._
 import play.api.mvc.Call
-import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{Category2AsInt, firstAssessmentIndex}
@@ -305,6 +305,27 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     assessmentQuestion: CategoryAssessment
   ) =
     assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined
+
+  private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
+    val recordId = assessmentPage.recordId
+    val nextIndex = assessmentPage.index + 1
+
+    {
+      for {
+        categorisationInfo <- answers.get(LongerCategorisationDetailsQuery(recordId))
+        assessmentCount = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+        assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
+        assessmentAnswer <- answers.get(assessmentPage)
+      } yield assessmentAnswer match {
+        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount =>
+          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextIndex)
+        case AssessmentAnswer2.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
+          routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, recordId)
+        case _ =>
+          routes.CyaCategorisationController.onPageLoad2(recordId)
+      }
+    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     if (!assessmentPage.shouldRedirectToCya) {

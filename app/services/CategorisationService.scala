@@ -292,4 +292,48 @@ class CategorisationService @Inject() (
           }
       }
     }
+
+//  def updatingAnswersForRecategorisation2(
+//    userAnswers: UserAnswers,
+//    recordId: String,
+//    oldCommodityCategorisation: CategorisationInfo2,
+//    newCommodityCategorisation: CategorisationInfo2
+//  ): Try[UserAnswers] =
+//    if (oldCommodityCategorisation == newCommodityCategorisation) {
+//      Success(userAnswers)
+//    } else {
+//      val oldAssessments = oldCommodityCategorisation.categoryAssessments
+//      val newAssessments = newCommodityCategorisation.categoryAssessments
+//
+//      val listOfAnswersToKeep = oldAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer]]) {
+//        (currentMap, assessment) =>
+//          val newAssessmentsTheAnswerAppliesTo =
+//            newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
+//          newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
+//            current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
+//              AssessmentPage(recordId, assessment._2)
+//            ))
+//          }
+//      }
+//
+//      val cleanedUserAnswers = cleanupOldAssessmentAnswers(userAnswers, recordId).get
+//      // Avoid it getting upset if answers have moved too far
+//      val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(cleanedUserAnswers)) {
+//        (currentAnswers, newAssessment) =>
+//          currentAnswers.flatMap(_.set(AssessmentPage(recordId, newAssessment._2), NotAnsweredYet))
+//      }
+//
+//      val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
+//      // Apply them backwards
+//      // That way, a NoExemption being set will do the automatic cleanup required by CYA and delete any answers afterwards
+//      answersToKeepSortedByNewIndex.reverse.foldLeft[Try[UserAnswers]](uaWithPlaceholders) {
+//        (currentAnswers, answerToKeep) =>
+//          val assessmentIndex = answerToKeep._1
+//          val assessmentAnswerOpt = answerToKeep._2
+//          assessmentAnswerOpt match {
+//            case Some(answer) => currentAnswers.flatMap(_.set(AssessmentPage(recordId, assessmentIndex), answer))
+//            case None => currentAnswers
+//          }
+//      }
+//    }
 }
