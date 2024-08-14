@@ -28,24 +28,6 @@ class CommodityCodeSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
-  private val getGoodsRecordResponse   = goodsRecordResponse()
-  private val goodsRecordNoCatNoAdvice = getGoodsRecordResponse.copy(
-    category = None,
-    adviceStatus = "Not requested"
-  )
-  private val goodsRecordCatNoAdvice   = getGoodsRecordResponse.copy(
-    category = Some(2),
-    adviceStatus = "Not requested"
-  )
-  private val goodsRecordNoCatAdvice   = getGoodsRecordResponse.copy(
-    category = None,
-    adviceStatus = adviceProvided
-  )
-  private val goodsRecordCatAdvice     = getGoodsRecordResponse.copy(
-    category = Some(2),
-    adviceStatus = adviceProvided
-  )
-
   "must return a SummaryListRow without change links when record is locked" in {
 
     val row =
