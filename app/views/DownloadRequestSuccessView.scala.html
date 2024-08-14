@@ -1,0 +1,25 @@
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton,
+        govukPanel : GovukPanel,
+        feedbackSection: components.feedback_section
+)
+
+@()(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("downloadRequestSuccess.title"))) {
+
+    @govukPanel(Panel(
+        title = messages("downloadRequestSuccess.h1")
+    )
+    )
+    <h2 class="govuk-heading-m">@messages("downloadRequestSuccess.h2")</h2>
+    <p class="govuk-body">@messages("downloadRequestSuccess.p1")</p>
+    <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
+    <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>
+
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("downloadRequestSuccess.p4.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("downloadRequestSuccess.p5.linkText")</a></p>
+
+    @feedbackSection()
+}
