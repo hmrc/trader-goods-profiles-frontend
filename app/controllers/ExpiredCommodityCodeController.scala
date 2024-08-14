@@ -17,13 +17,14 @@
 package controllers
 
 import controllers.actions._
-import models.{CheckMode, Mode, NormalMode}
-
-import javax.inject.Inject
+import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.fromExpiredCommodityCodePage
 import views.html.ExpiredCommodityCodeView
+
+import javax.inject.Inject
 
 class ExpiredCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
@@ -38,6 +39,6 @@ class ExpiredCommodityCodeController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(NormalMode, recordId))
+      Ok(view(NormalMode, recordId)).addingToSession(fromExpiredCommodityCodePage -> "true")
     }
 }

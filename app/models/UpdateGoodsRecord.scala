@@ -50,7 +50,8 @@ object UpdateGoodsRecord {
       UpdateGoodsRecord(
         eori,
         recordId,
-        countryOfOrigin = Some(value)
+        countryOfOrigin = Some(value),
+        category = Some(1)
       )
     )
 
@@ -66,11 +67,12 @@ object UpdateGoodsRecord {
   def validateCommodityCode(
     answers: UserAnswers,
     recordId: String,
-    isCategorised: Boolean
+    isCategorised: Boolean,
+    navigatingFromExpiredCommCode: Boolean
   ): EitherNec[ValidationError, Commodity] =
     (
       Right(recordId),
-      getCommodityCode(answers, recordId, isCategorised)
+      getCommodityCode(answers, recordId, isCategorised, navigatingFromExpiredCommCode)
     ).parMapN((_, value) => value)
 
   def validateTraderReference(
@@ -85,9 +87,13 @@ object UpdateGoodsRecord {
   private def getCommodityCode(
     answers: UserAnswers,
     recordId: String,
-    isCategorised: Boolean
+    isCategorised: Boolean,
+    navigatingFromExpiredCommCode: Boolean
   ): EitherNec[ValidationError, Commodity] =
-    (isCategorised, answers.getPageValue(HasCommodityCodeChangePage(recordId))) match {
+    (
+      isCategorised && !navigatingFromExpiredCommCode,
+      answers.getPageValue(HasCommodityCodeChangePage(recordId))
+    ) match {
       case (true, Right(true))  => validateAndGetCommodity(answers, recordId)
       case (true, Right(false)) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
       case (true, Left(errors)) => Left(errors)

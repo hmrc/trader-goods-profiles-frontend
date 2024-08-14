@@ -11,6 +11,17 @@ error.summary.title = Nodwch eich cyfeiriad e-bost
 signedOut.title = Rydych bellach wedi allgofnodi
 signedOut.heading = Rydych bellach wedi allgofnodi
 
+homepage.title = Hafan Proffil Nwyddau Masnachwyr
+homepage.h1 = Hafan Proffil Nwyddau Masnachwyr
+homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gofnod nwyddau neu ddiweddaru manylion eich proffil.
+homepage.h2.1 = Cofnodion nwyddau
+homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
+homepage.p3.linkText = Creu cofnod nwyddau newydd
+homepage.h2.2 = Rheoli''ch proffil
+homepage.p5.linkText = Rheoli manylion eich proffil
+homepage.h2.3 = Help a chysylltu
+homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
+
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
 unauthorised.p1 = Nid yw''r manylion sydd wedi''u mewngofnodi i GOV.UK wedi''u cysylltu â Phroffil Nwyddau Masnachwyr.

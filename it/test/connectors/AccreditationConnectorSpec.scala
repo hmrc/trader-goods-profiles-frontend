@@ -16,7 +16,7 @@
 
 package connectors
 
-import base.TestConstants.testRecordId
+import base.TestConstants.{testEori, testRecordId, withDrawReason}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.AdviceRequest
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -37,7 +37,7 @@ class AccreditationConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+      .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
       .build()
 
   private lazy val connector = app.injector.instanceOf[AccreditationConnector]
@@ -54,7 +54,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -71,7 +71,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -81,6 +81,43 @@ class AccreditationConnectorSpec
       )
 
       connector.submitRequestAccreditation(adviceRequest).failed.futureValue
+    }
+  }
+
+  ".withdrawAdviceRequest" - {
+
+    "must submit a withdraw advice request" in {
+
+      wireMockServer.stubFor(
+        put(
+          urlEqualTo(
+            s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId/advice"
+          )
+        )
+          .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
+          .withRequestBody(equalToJson(s"""{"withdrawReason": "$withDrawReason"}"""))
+          .willReturn(noContent())
+      )
+
+      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).futureValue
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        put(
+          urlEqualTo(
+            s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId/advice"
+          )
+        )
+          .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
+          .withRequestBody(equalToJson(s"""{"withdrawReason": "$withDrawReason"}"""))
+          .willReturn(serverError())
+      )
+
+      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).failed.futureValue
     }
   }
 }

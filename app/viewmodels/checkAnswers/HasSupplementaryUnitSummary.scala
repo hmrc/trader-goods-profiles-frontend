@@ -61,7 +61,7 @@ object HasSupplementaryUnitSummary {
   def row(record: GetGoodsRecordResponse, recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
-    if (record.category.contains(2)) {
+    if (true) { //TODO should be record.category.contains(2)
       for {
         _ <- record.measurementUnit
       } yield {

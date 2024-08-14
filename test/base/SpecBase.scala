@@ -16,7 +16,7 @@
 
 package base
 
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{requested, testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
@@ -34,7 +34,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, ZoneId}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -275,6 +275,18 @@ trait SpecBase
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
+
+  val lockedRecord: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(adviceStatus = requested)
+
+  val today: Instant = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
+
+  val recordWithExpiredCommodityCode: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(comcodeEffectiveToDate = Some(today))
 
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,

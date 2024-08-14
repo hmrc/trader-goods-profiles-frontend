@@ -16,41 +16,43 @@
 
 package controllers
 
+import connectors.AccreditationConnector
 import controllers.actions._
 import forms.ReasonForWithdrawAdviceFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.NormalMode
+import models.helper.WithdrawAdviceJourney
 import navigation.Navigator
 import pages.ReasonForWithdrawAdvicePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
+import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ReasonForWithdrawAdviceView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReasonForWithdrawAdviceController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: ReasonForWithdrawAdviceFormProvider,
+  accreditationConnector: AccreditationConnector,
+  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: ReasonForWithdrawAdviceView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  private val form = formProvider()
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(ReasonForWithdrawAdvicePage) match {
+      val preparedForm = request.userAnswers.get(ReasonForWithdrawAdvicePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -64,11 +66,14 @@ class ReasonForWithdrawAdviceController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
-          value =>
+          value => {
+            val withdrawReason: Option[String] = if (value.trim.nonEmpty) Some(value) else None
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(ReasonForWithdrawAdvicePage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ReasonForWithdrawAdvicePage, NormalMode, updatedAnswers))
+              _ <- accreditationConnector.withdrawRequestAccreditation(request.eori, recordId, withdrawReason)
+              _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
+
+            } yield Redirect(navigator.nextPage(ReasonForWithdrawAdvicePage(recordId), NormalMode, request.userAnswers))
+          }
         )
     }
 }

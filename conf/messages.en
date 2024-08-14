@@ -450,6 +450,7 @@ singleRecord.categoriseThisGood = Categorise this good
 singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2
 singleRecord.standardGoods = Standard goods
+singleRecord.back = Back to goods profile
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
@@ -477,6 +478,7 @@ profile.p1 = Check the details on your profile are correct. You can change your 
 profile.p2.linkText = Go to homepage
 profile.warning = Warning
 profile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+profile.back = Back to homepage
 
 removeNirms.title = Removing NIRMS details
 removeNirms.h1 = Removing NIRMS details

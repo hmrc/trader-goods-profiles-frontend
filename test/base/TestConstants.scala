@@ -22,7 +22,9 @@ object TestConstants {
   val testEori: String        = "eori"
   val userAnswersId: String   = "id"
   val testRecordId: String    = "b0082f50-f13b-416a-8071-3bd95107d44d"
+  val requested: String       = "Requested"
   val lastUpdatedDate: String = Instant.now().toString
   val recordSize              = 20
   val page                    = 1
+  val withDrawReason          = "issue resolved"
 }

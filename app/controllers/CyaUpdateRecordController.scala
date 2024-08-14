@@ -30,6 +30,7 @@ import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.fromExpiredCommodityCodePage
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaUpdateRecordView
@@ -128,8 +129,14 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
+          val navigatingFromExpiredCommCode = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
-            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            .validateCommodityCode(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined,
+              navigatingFromExpiredCommCode
+            ) match {
             case Right(commodity) =>
               val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
@@ -274,17 +281,23 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
+          val navigatingFromExpiredCommCode = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
-            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            .validateCommodityCode(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined,
+              navigatingFromExpiredCommCode
+            ) match {
             case Right(commodity) =>
               auditService.auditFinishUpdateGoodsRecord(
                 recordId,
                 request.affinityGroup,
-                UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+                UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
               )
               for {
                 _                        <- goodsRecordConnector.updateGoodsRecord(
-                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
                                             )
                 updatedAnswersWithChange <-
                   Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))

@@ -19,7 +19,8 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.NormalMode
-import models.helper.SupplementaryUnitUpdateJourney
+import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
+import models.requests.DataRequest
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,9 +32,8 @@ import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
-import java.time.temporal.ChronoUnit
-import java.time.{Instant, ZoneId, ZonedDateTime}
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
@@ -46,7 +46,7 @@ class SingleRecordController @Inject() (
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
@@ -80,9 +80,8 @@ class SingleRecordController @Inject() (
         _ <- sessionRepository.set(updatedAnswersWithAll)
 
       } yield {
-        val isCategorised          = record.category.isDefined
-        val isCommodityCodeExpired = checkIfCommCodeExpired(record.comcodeEffectiveToDate)
-        val detailsList            = SummaryListViewModel(
+
+        val detailsList = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
@@ -92,18 +91,9 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val categoryValue         = record.category match {
-          case None        => "singleRecord.categoriseThisGood"
-          case Some(value) =>
-            value match {
-              case 1 => "singleRecord.cat1"
-              case 2 => "singleRecord.cat2"
-              case 3 => "singleRecord.standardGoods"
-            }
-        }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised, isCommodityCodeExpired)
+            CategorySummary.row(record, recordIsLocked)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
@@ -121,8 +111,8 @@ class SingleRecordController @Inject() (
         val changesMade           = request.session.get(dataUpdated).contains("true")
         val pageRemoved           = request.session.get(dataRemoved).contains("true")
         val changedPage           = request.session.get(pageUpdated).getOrElse("")
-        //at this point we should delete supplementaryunit journey data as the user might comeback using backlink from suppunit pages & click change link again
-        dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+
+        dataCleansing(request)
 
         Ok(
           view(
@@ -136,16 +126,15 @@ class SingleRecordController @Inject() (
             pageRemoved,
             recordIsLocked
           )
-        ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
+        ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit, fromExpiredCommodityCodePage)
       }
     }
 
-  private def checkIfCommCodeExpired(commcodeEffectiveToDate: Option[Instant]): Boolean = {
-    val today: ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
-    commcodeEffectiveToDate.exists { effectiveToDate =>
-      val effectiveDate: ZonedDateTime = effectiveToDate.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
-      effectiveDate.isEqual(today)
-    }
-
+  private def dataCleansing(request: DataRequest[AnyContent]): Unit = {
+    dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
   }
+
 }
