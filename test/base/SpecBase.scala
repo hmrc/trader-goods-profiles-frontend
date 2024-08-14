@@ -240,7 +240,10 @@ trait SpecBase
     .success
     .value
 
-  def goodsRecordResponse(createdDateTime: Instant, updatedDateTime: Instant): GetGoodsRecordResponse =
+  def goodsRecordResponse(
+    createdDateTime: Instant = Instant.now,
+    updatedDateTime: Instant = Instant.now
+  ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       "1",
       "10410100",
@@ -250,7 +253,7 @@ trait SpecBase
       "Not requested",
       "Organic bananas",
       "UK",
-      1,
+      Some(1),
       None,
       None,
       None,
@@ -268,6 +271,11 @@ trait SpecBase
       updatedDateTime
     )
 
+  val recordForTestingSummaryRows: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId)
+
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
     updatedDateTime: Instant,
@@ -282,7 +290,7 @@ trait SpecBase
       "Not requested",
       "Organic bananas",
       "UK",
-      1,
+      Some(1),
       None,
       None,
       None,
@@ -313,7 +321,7 @@ trait SpecBase
       "Not requested",
       "Organic bananas",
       "UK",
-      1,
+      Some(1),
       None,
       Some(1234567890.123456),
       Some("grams"),
@@ -344,7 +352,7 @@ trait SpecBase
       "Not requested",
       "Organic bananas",
       "UK",
-      1,
+      Some(1),
       None,
       Some(0.0),
       Some("grams"),

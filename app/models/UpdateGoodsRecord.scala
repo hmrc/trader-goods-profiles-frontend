@@ -39,12 +39,13 @@ object UpdateGoodsRecord {
   def buildCountryOfOrigin(
     answers: UserAnswers,
     eori: String,
-    recordId: String
+    recordId: String,
+    isCategorised: Boolean
   ): EitherNec[ValidationError, UpdateGoodsRecord] =
     (
       Right(eori),
       Right(recordId),
-      getCountryOfOrigin(answers, recordId)
+      getCountryOfOrigin(answers, recordId, isCategorised)
     ).parMapN((eori, recordId, value) =>
       UpdateGoodsRecord(
         eori,
@@ -65,11 +66,12 @@ object UpdateGoodsRecord {
 
   def validateCommodityCode(
     answers: UserAnswers,
-    recordId: String
+    recordId: String,
+    isCategorised: Boolean
   ): EitherNec[ValidationError, Commodity] =
     (
       Right(recordId),
-      getCommodityCode(answers, recordId)
+      getCommodityCode(answers, recordId, isCategorised)
     ).parMapN((_, value) => value)
 
   def validateTraderReference(
@@ -81,20 +83,29 @@ object UpdateGoodsRecord {
       answers.getPageValue(TraderReferenceUpdatePage(recordId))
     ).parMapN((_, value) => value)
 
-  private def getCommodityCode(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Commodity] =
-    answers.getPageValue(HasCommodityCodeChangePage(recordId)) match {
-      case Right(true)  =>
-        answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
-          case Right(code)  =>
-            answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
-              case Right(true)  => getCommodityUpdateQuery(answers, code, recordId)
-              case Right(false) =>
-                Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
-              case Left(errors) => Left(errors)
-            }
+  private def getCommodityCode(
+    answers: UserAnswers,
+    recordId: String,
+    isCategorised: Boolean
+  ): EitherNec[ValidationError, Commodity] =
+    (isCategorised, answers.getPageValue(HasCommodityCodeChangePage(recordId))) match {
+      case (true, Right(true))  => validateAndGetCommodity(answers, recordId)
+      case (true, Right(false)) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
+      case (true, Left(errors)) => Left(errors)
+      case (false, _)           => validateAndGetCommodity(answers, recordId)
+    }
+
+  private def validateAndGetCommodity(
+    answers: UserAnswers,
+    recordId: String
+  ): EitherNec[ValidationError, Commodity] =
+    answers.getPageValue(CommodityCodeUpdatePage(recordId)) match {
+      case Right(code)  =>
+        answers.getPageValue(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
+          case Right(true)  => getCommodityUpdateQuery(answers, code, recordId)
+          case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId))))
           case Left(errors) => Left(errors)
         }
-      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
       case Left(errors) => Left(errors)
     }
 
@@ -104,16 +115,20 @@ object UpdateGoodsRecord {
     recordId: String
   ): EitherNec[ValidationError, Commodity] =
     answers.getPageValue(CommodityUpdateQuery(recordId)) match {
-      case Right(commodity) if commodity.commodityCode.startsWith(code) =>
-        Right(commodity.copy(commodityCode = code))
+      case Right(commodity) if commodity.commodityCode.startsWith(code) => Right(commodity.copy(commodityCode = code))
       case Left(errors)                                                 => Left(errors)
       case _                                                            => Left(NonEmptyChain.one(MismatchedPage(CommodityCodeUpdatePage(recordId))))
     }
 
-  private def getCountryOfOrigin(answers: UserAnswers, recordId: String): EitherNec[ValidationError, String] =
-    answers.getPageValue(HasCountryOfOriginChangePage(recordId)) match {
-      case Right(true)  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
-      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
-      case Left(errors) => Left(errors)
+  private def getCountryOfOrigin(
+    answers: UserAnswers,
+    recordId: String,
+    isCategorised: Boolean
+  ): EitherNec[ValidationError, String] =
+    (isCategorised, answers.getPageValue(HasCountryOfOriginChangePage(recordId))) match {
+      case (true, Right(true))  => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
+      case (true, Right(false)) => Left(NonEmptyChain.one(UnexpectedPage(HasCountryOfOriginChangePage(recordId))))
+      case (true, Left(errors)) => Left(errors)
+      case (false, _)           => answers.getPageValue(CountryOfOriginUpdatePage(recordId))
     }
 }

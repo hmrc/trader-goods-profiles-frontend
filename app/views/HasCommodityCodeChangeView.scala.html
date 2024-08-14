@@ -22,15 +22,19 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, adviceWarning: Boolean, categoryWarning: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasCommodityCodeChange.title"))) {
 
     <h1 class="govuk-heading-l">@messages("hasCommodityCodeChange.h1")</h1>
 
-    <p class="govuk-body">@messages("hasCommodityCodeChange.p1")</p>
+    @if(adviceWarning){
+        <p class="govuk-body">@messages("hasCommodityCodeChange.advice")</p>
+    }
 
-    <p class="govuk-body">@messages("hasCommodityCodeChange.p2")</p>
+    @if(categoryWarning){
+        <p class="govuk-body">@messages("hasCommodityCodeChange.category")</p>
+    }
 
     <h2 class="govuk-heading-m">@messages("hasCommodityCodeChange.h2")</h2>
 

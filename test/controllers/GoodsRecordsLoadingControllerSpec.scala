@@ -94,8 +94,6 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[GoodsRecordsLoadingView]
-
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual continueUrl
       }

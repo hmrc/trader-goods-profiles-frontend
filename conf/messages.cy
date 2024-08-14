@@ -25,6 +25,14 @@ journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o''i le
 journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o''i le
 journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o''i le – ewch i hafan y Proffil Nwyddau Masnachwyr. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
 
+pageNotFound.title = Heb ddod o hyd i''r dudalen
+pageNotFound.h1 = Heb ddod o hyd i''r dudalen
+pageNotFound.p1 = Os gwnaethoch deipio''r cyfeiriad gwe, gwiriwch ei fod yn gywir.
+pageNotFound.p2 = Os gwnaethoch ludo''r cyfeiriad gwe, gwiriwch eich bod wedi copïo''r cyfeiriad yn llawn.
+pageNotFound.p3 = Os yw''r cyfeiriad gwe yn gywir, neu os dewisoch gysylltiad neu fotwm
+pageNotFound.p3.linkText = cysylltwch â llinell gymorth y Proffil Nwyddau Masnachwyr
+pageNotFound.p3.1 = os oes angen i chi siarad â rhywun am eich proffil.
+
 profileSetup.title = Sefydlu eich proffil
 profileSetup.h1 = Sefydlu eich proffil
 profileSetup.intro = Rydym am ofyn rhai cwestiynau i chi, yna byddwn yn gofyn am beth o wybodaeth gennych yn dibynnu ar eich atebion.

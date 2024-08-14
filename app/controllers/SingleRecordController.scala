@@ -78,29 +78,34 @@ class SingleRecordController @Inject() (
         _ <- sessionRepository.set(updatedAnswersWithAll)
 
       } yield {
-        val detailsList = SummaryListViewModel(
+        val isCategorised = record.category.isDefined
+        val detailsList   = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
-            GoodsDescriptionSummary.row(record.goodsDescription, recordId, NormalMode, recordIsLocked),
-            CountryOfOriginSummary.row(record.countryOfOrigin, recordId, NormalMode, recordIsLocked),
-            CommodityCodeSummary.row(record.comcode, recordId, NormalMode, recordIsLocked),
+            GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+            CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
             StatusSummary.row(record.declarable)
           )
         )
 
         val categoryValue         = record.category match {
-          case 1 => "Category 1"
-          case 2 => "Category 2"
-          case 3 => "Standard goods"
+          case None        => "singleRecord.categoriseThisGood"
+          case Some(value) =>
+            value match {
+              case 1 => "singleRecord.cat1"
+              case 2 => "singleRecord.cat2"
+              case 3 => "singleRecord.standardGoods"
+            }
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId, recordIsLocked)
+            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
           rows = Seq(
-            HasSupplementaryUnitSummary.row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked),
+            HasSupplementaryUnitSummary.row(record, recordId, recordIsLocked),
             SupplementaryUnitSummary
               .row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
           ).flatten

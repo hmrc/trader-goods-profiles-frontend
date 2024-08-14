@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, NormalMode, UserAnswers}
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
@@ -57,30 +58,34 @@ object HasSupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String, recordLocked: Boolean)(implicit
+  def row(record: GetGoodsRecordResponse, recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
-    for {
-      _ <- measureValue
-    } yield {
-      val displayValue = suppValue match {
-        case Some(value) if value != 0 => "site.yes"
-        case _                         => "site.no"
-      }
-      SummaryListRowViewModel(
-        key = "hasSupplementaryUnit.checkYourAnswersLabel",
-        value = ValueViewModel(displayValue),
-        actions = if (recordLocked) {
-          Seq.empty
-        } else {
-          Seq(
-            ActionItemViewModel(
-              "site.change",
-              routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
-            )
-              .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
-          )
+    if (true) { //TODO should be record.category.contains(2)
+      for {
+        _ <- record.measurementUnit
+      } yield {
+        val displayValue = record.supplementaryUnit match {
+          case Some(value) if value != 0 => "site.yes"
+          case _                         => "site.no"
         }
-      )
+        SummaryListRowViewModel(
+          key = "hasSupplementaryUnit.checkYourAnswersLabel",
+          value = ValueViewModel(displayValue),
+          actions = if (recordLocked) {
+            Seq.empty
+          } else {
+            Seq(
+              ActionItemViewModel(
+                "site.change",
+                routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+              )
+                .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
+            )
+          }
+        )
+      }
+    } else {
+      None
     }
 }

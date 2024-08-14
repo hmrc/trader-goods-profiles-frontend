@@ -446,19 +446,23 @@ singleRecord.removeRecord.link = Remove this record
 singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
 singleRecord.withdrawAdvice = Withdraw request
+singleRecord.categoriseThisGood = Categorise this good
+singleRecord.cat1 = Category 1
+singleRecord.cat2 = Category 2
+singleRecord.standardGoods = Standard goods
 singleRecord.back = Back to goods profile
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Changing the country of origin
-hasCountryOfOriginChange.p1 = You will need to recategorise this goods record if you change the country of origin
+hasCountryOfOriginChange.p1 = You''ll need to categorise this goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin?
 hasCountryOfOriginChange.error.required = Select if you want to change the country of origin
 
 hasCommodityCodeChange.title = Change record information
 hasCommodityCodeChange.h1 = Changing the commodity code
 hasCommodityCodeChange.h2 = Do you want to change the commodity code?
-hasCommodityCodeChange.p1 = Changing the data item(commodity code) on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
-hasCommodityCodeChange.p2 = You will need to recategorise this goods record if you change the commodity code.
+hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
+hasCommodityCodeChange.category = You''ll need to categorise this goods record if you change the commodity code.
 hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 
 hasGoodsDescriptionChange.title = Change record information
@@ -624,7 +628,7 @@ reasonForWithdrawAdvice.hint = This is optional and you can withdraw your reques
 reasonForWithdrawAdvice.continue = Withdraw request
 reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
 
-pageNotFound.title = Page not found - Trader Goods Profile
+pageNotFound.title = Page not found
 pageNotFound.h1 = Page not found
 pageNotFound.p1 = If you typed the web address, check it is correct.
 pageNotFound.p2 = If you pasted the web address, check you copied the entire address.
@@ -632,4 +636,4 @@ pageNotFound.p3 = If the web address is correct or you selected a link or button
 pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
 pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
 
-singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision.
+singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision, or you withdraw your request.
