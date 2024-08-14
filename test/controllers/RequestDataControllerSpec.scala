@@ -17,9 +17,16 @@
 package controllers
 
 import base.SpecBase
+import connectors.TraderProfileConnector
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.RequestDataView
+
+import scala.concurrent.Future
 
 class RequestDataControllerSpec extends SpecBase {
 
@@ -27,7 +34,12 @@ class RequestDataControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, routes.RequestDataController.onPageLoad().url)
