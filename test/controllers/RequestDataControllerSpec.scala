@@ -78,7 +78,7 @@ class RequestDataControllerSpec extends SpecBase {
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.RequestDataController.onSubmit().url)
+        val request = FakeRequest(POST, routes.RequestDataController.onSubmit(email).url)
 
         val result = route(application, request).value
 

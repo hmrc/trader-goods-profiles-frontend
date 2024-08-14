@@ -41,11 +41,14 @@ class RequestDataController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      //TODO get this email from the user
       Ok(view("placeholder@email.com"))
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onSubmit(email: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      //TODO send an email to the user
+      //TODO redirect to the correct page
       Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
   }
 }
