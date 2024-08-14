@@ -17,6 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
+import models.CheckMode
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
@@ -27,13 +28,21 @@ import viewmodels.implicits._
 object CategorySummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean)(implicit
-    messages: Messages
+  def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean, isCommCodeExpired: Boolean)(
+    implicit messages: Messages
   ): SummaryListRow =
     if (isCategorised) {
       val action =
-        if (recordLocked) Seq.empty
-        else {
+        if (recordLocked) { Seq.empty }
+        else if (isCommCodeExpired) {
+          Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.ExpiredCommodityCodeController.onPageLoad(recordId).url
+            )
+              .withVisuallyHiddenText(messages("singleRecord.category.row"))
+          )
+        } else {
           Seq(
             ActionItemViewModel("site.change", routes.CategoryGuidanceController.onPageLoad(recordId).url)
               .withVisuallyHiddenText(messages("singleRecord.category.row"))
@@ -49,6 +58,12 @@ object CategorySummary {
       val viewModel       =
         if (recordLocked) {
           ValueViewModel(HtmlFormat.escape(value).toString)
+        } else if (isCommCodeExpired) {
+          ValueViewModel(
+            HtmlContent(
+              s"<a href=${routes.ExpiredCommodityCodeController.onPageLoad(recordId).url} class='govuk-link'>$translatedValue</a>"
+            )
+          )
         } else {
           ValueViewModel(
             HtmlContent(

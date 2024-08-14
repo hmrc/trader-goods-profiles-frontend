@@ -31,6 +31,8 @@ import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
+import java.time.temporal.ChronoUnit
+import java.time.{Instant, ZoneId, ZonedDateTime}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
@@ -78,8 +80,9 @@ class SingleRecordController @Inject() (
         _ <- sessionRepository.set(updatedAnswersWithAll)
 
       } yield {
-        val isCategorised = record.category.isDefined
-        val detailsList   = SummaryListViewModel(
+        val isCategorised          = record.category.isDefined
+        val isCommodityCodeExpired = checkIfCommCodeExpired(record.comcodeEffectiveToDate)
+        val detailsList            = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
@@ -100,7 +103,7 @@ class SingleRecordController @Inject() (
         }
         val categorisationList    = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
+            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised, isCommodityCodeExpired)
           )
         )
         val supplementaryUnitList = SummaryListViewModel(
@@ -136,4 +139,13 @@ class SingleRecordController @Inject() (
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
     }
+
+  private def checkIfCommCodeExpired(commcodeEffectiveToDate: Option[Instant]): Boolean = {
+    val today: ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+    commcodeEffectiveToDate.exists { effectiveToDate =>
+      val effectiveDate: ZonedDateTime = effectiveToDate.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+      effectiveDate.isEqual(today)
+    }
+
+  }
 }
