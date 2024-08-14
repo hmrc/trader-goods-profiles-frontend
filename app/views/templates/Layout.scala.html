@@ -36,7 +36,17 @@
     fullWidthMainContent: fullWidthMainContent
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url, isFullWidth: Boolean = false, extraHead: Html = HtmlFormat.empty)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(
+    pageTitle: String,
+    backLinkUrl: String = "#",
+    backLinkMessageKey: String = "site.back",
+    showBackLink: Boolean = true,
+    timeout: Boolean = true,
+    showSignOut: Boolean = true,
+    signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url,
+    isFullWidth: Boolean = false,
+    extraHead: Html = HtmlFormat.empty
+    )(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 
@@ -87,8 +97,9 @@
     }
 
     @if(showBackLink) {
-        @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
+        @govukBackLink(BackLinkViewModel(href = backLinkUrl, text = messages(backLinkMessageKey)).withCssClass("js-visible"))
     }
+
 }
 
 @content = {

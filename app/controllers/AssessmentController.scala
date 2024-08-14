@@ -20,7 +20,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import forms.AssessmentFormProvider
 import logging.Logging
 import models.AssessmentAnswer.NotAnsweredYet
-import models.{AssessmentAnswer, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.AssessmentPage
 import play.api.i18n.{I18nSupport, MessagesApi}
