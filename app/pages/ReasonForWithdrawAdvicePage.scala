@@ -18,9 +18,9 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case object ReasonForWithdrawAdvicePage extends QuestionPage[String] {
+case class ReasonForWithdrawAdvicePage(recordId: String) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ toString \ recordId
 
   override def toString: String = "reasonForWithdrawAdvice"
 }

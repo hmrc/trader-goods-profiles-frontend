@@ -89,6 +89,19 @@ class JourneySpec extends AnyFreeSpec with Matchers {
     }
   }
 
+  "WithdrawAdviceJourney" - {
+    "must have the correct pages" in {
+      WithdrawAdviceJourney.pages mustBe Seq(
+        withDrawAdviceStartPage,
+        reasonForWithdrawAdvicePage
+      )
+    }
+
+    "must have the correct string representation" in {
+      WithdrawAdviceJourney.toString mustBe "WithdrawAdvice"
+    }
+  }
+
   "SupplementaryUnitUpdateJourney" - {
     "must have the correct pages" in {
       SupplementaryUnitUpdateJourney.pages mustBe Seq(
