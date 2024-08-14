@@ -18,17 +18,23 @@ package controllers
 
 import base.SpecBase
 import connectors.TraderProfileConnector
+import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import views.html.RequestDataView
 
 import scala.concurrent.Future
 
 class RequestDataControllerSpec extends SpecBase {
+
+  private val email       = "placeholder@email.com"
+  private def onwardRoute = Call("GET", "/foo")
 
   "RequestData Controller" - {
 
@@ -49,8 +55,37 @@ class RequestDataControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[RequestDataView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(email)(request, messages(application)).toString
       }
     }
+
+    "must redirect to the next page when button clicked" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.RequestDataController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
   }
 }

@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-        layout: templates.Layout,
-        govukButton: GovukButton,
-        formHelper: FormWithCSRF
-)
+package pages
 
-@(email: String)(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = titleNoForm(messages("requestData.title"))) {
-
-    <h1 class="govuk-heading-xl">@messages("requestData.heading")</h1>
-    <p class="govuk-body">@messages("requestData.p1", email)</p>
-
-        @formHelper(action = routes.RequestDataController.onSubmit()) {
-            @govukButton(ButtonViewModel(messages("requestData.button")))
-        }
-}
+case object RequestDataPage extends Page

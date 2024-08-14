@@ -17,6 +17,10 @@
 package controllers
 
 import controllers.actions._
+import models.NormalMode
+import navigation.Navigator
+import pages.RequestDataPage
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,12 +34,18 @@ class RequestDataController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: RequestDataView
+  view: RequestDataView,
+  navigator: Navigator
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      Ok(view())
+      Ok(view("placeholder@email.com"))
+  }
+
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
   }
 }
