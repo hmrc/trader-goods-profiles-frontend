@@ -56,7 +56,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
   private val recordWithSupplementaryUnit = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId)
+  ).copy(recordId = testRecordId).copy(category = Some(2))
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
@@ -121,8 +121,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           HasSupplementaryUnitSummary
             .row(
-              recordForTestingSummaryRows.supplementaryUnit,
-              recordForTestingSummaryRows.measurementUnit,
+              recordForTestingSummaryRows,
               testRecordId,
               recordIsLocked
             ),
@@ -250,8 +249,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           HasSupplementaryUnitSummary
             .row(
-              notCategorisedRecord.supplementaryUnit,
-              notCategorisedRecord.measurementUnit,
+              notCategorisedRecord,
               testRecordId,
               recordIsLocked
             ),
@@ -330,33 +328,21 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         supplementaryValue must equal("1234567890.123456 grams")
 
       }
+
     }
 
-    "must return none when measurement unit is empty" in {
+    "must show hasSupplementaryUnit when measurement unit is not empty and supplementary unit is No" in {
 
       val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
       implicit val localMessages: Messages = messages(application)
 
-      running(application) {
-        val row = HasSupplementaryUnitSummary
-          .row(None, None, testRecordId, recordIsLocked)
-        row mustBe None
-
-      }
-    }
-
-    "must show hasSupplementaryUnit two when measurement unit is not empty and supplementary unit is No" in {
-
-      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-        .build()
-      implicit val localMessages: Messages = messages(application)
+      val record = recordWithSupplementaryUnit.copy(supplementaryUnit = None)
 
       running(application) {
         val row                  = HasSupplementaryUnitSummary
-          .row(None, recordWithSupplementaryUnit.measurementUnit, testRecordId, recordIsLocked)
+          .row(record, testRecordId, recordIsLocked)
           .value
         val hasSupplementaryUnit = row.value.content match {
           case Text(innerContent) => innerContent
@@ -429,50 +415,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           row.actions mustBe defined
           row.actions.value.items.head.href mustEqual routes.CategoryGuidanceController
             .onPageLoad(testRecordId)
-            .url
-        }
-      }
-    }
-
-    "HasSupplementaryUnitSummary.row" - {
-
-      "must return a SummaryListRow without change links when record is locked" in {
-
-        val recordLocked = true
-
-        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .build()
-        implicit val localMessages: Messages = messages(application)
-        running(application) {
-          val row = HasSupplementaryUnitSummary.row(
-            recordWithSupplementaryUnit.supplementaryUnit,
-            recordWithSupplementaryUnit.measurementUnit,
-            testRecordId,
-            recordLocked
-          )
-
-          row.get.actions mustBe Some(Actions("", List()))
-        }
-      }
-
-      "must return a SummaryListRow with change links when record is not locked" in {
-
-        val recordLocked = false
-
-        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .build()
-        implicit val localMessages: Messages = messages(application)
-        running(application) {
-          val row = HasSupplementaryUnitSummary.row(
-            recordWithSupplementaryUnit.supplementaryUnit,
-            recordWithSupplementaryUnit.measurementUnit,
-            testRecordId,
-            recordLocked
-          )
-
-          row.get.actions mustBe defined
-          row.get.actions.value.items.head.href mustEqual routes.HasSupplementaryUnitController
-            .onPageLoadUpdate(NormalMode, testRecordId)
             .url
         }
       }

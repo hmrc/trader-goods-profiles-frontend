@@ -19,7 +19,7 @@ package connectors
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
-import models.router.responses.{CreateGoodsRecordResponse, GetGoodsRecordResponse, GetRecordsResponse}
+import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -251,13 +251,10 @@ class GoodsRecordConnectorSpec
       "3",
       "4",
       instant,
-      None,
       None
     )
 
     "must submit a goods record" in {
-
-      val createGoodsRecordResponse = CreateGoodsRecordResponse(testRecordId)
 
       wireMockServer.stubFor(
         post(urlEqualTo(routerGoodsRecordsUrl))

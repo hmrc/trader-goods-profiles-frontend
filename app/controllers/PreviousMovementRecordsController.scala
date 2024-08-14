@@ -24,7 +24,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.PreviousMovementRecordsView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -32,8 +31,7 @@ class PreviousMovementRecordsController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
