@@ -67,7 +67,7 @@ object CategoryRecord2 {
         categorisationInfo.commodityCode,
         //TODO cleanup
         categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
-        //TODO this is looking at the wrong answers so audit will be wrong.
+        //TODO make sure the number is correct for recategorising.
         categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
         categorisationInfo.measurementUnit,
         supplementaryUnit

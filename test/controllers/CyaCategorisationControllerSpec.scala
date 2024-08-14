@@ -33,7 +33,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -263,6 +263,70 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               expectedAssessmentList,
               expectedSupplementaryUnitList,
               emptySummaryList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "when longer commodity code, show reassessment answers and longer commodity code" in {
+
+          val longerCat   = categorisationInfo2.copy("9876543210", longerCode = true)
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2.copy(commodityCode = "987654"))
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
+            .success
+            .value
+            .set(LongerCommodityCodePage2(testRecordId), "3210")
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad2(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .rowReassessment(testRecordId, userAnswers, category1, 0)
+                  .get
+              )
+            )
+
+            val expectedLongerCommodityList = SummaryListViewModel(
+              rows = Seq(
+                LongerCommodityCodeSummary.row2(userAnswers, testRecordId)
+              ).flatten
+            )
+
+            expectedLongerCommodityList.rows.size mustEqual 1
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              expectedLongerCommodityList
             )(
               request,
               messages(application)

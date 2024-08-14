@@ -58,7 +58,8 @@ final case class CategorisationInfo2(
       AnsweredQuestions(
         assessment._2,
         assessment._1,
-        userAnswers.get(ReassessmentPage(recordId, assessment._2))
+        userAnswers.get(ReassessmentPage(recordId, assessment._2)),
+        reassessmentQuestion = true
       )
     )
 

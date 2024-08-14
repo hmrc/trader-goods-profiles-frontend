@@ -25,7 +25,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inside.inside
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 import services.CategorisationService
 
 import scala.collection.immutable.Seq
@@ -233,6 +233,53 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         withClue("must have used the categorisation service to find the category") {
           verify(mockCategorisationService).calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
+        }
+      }
+
+      "when longer commodity reassessment questions have been answered" in {
+
+        val shorterCat = categorisationInfo.copy(commodityCode = "123456")
+        val longerCat  =
+          categorisationInfo2.copy(commodityCode = "9999999999", longerCode = true, measurementUnit = None)
+        val answers    =
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), shorterCat)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+
+        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+
+        result mustEqual Right(
+          CategoryRecord2(
+            testEori,
+            testRecordId,
+            "9999999999",
+            Category1Scenario,
+            1,
+            None
+          )
+        )
+
+        withClue("must have used the categorisation service to find the category") {
+          verify(mockCategorisationService).calculateResult(eqTo(longerCat), eqTo(answers), eqTo(testRecordId))
         }
       }
 

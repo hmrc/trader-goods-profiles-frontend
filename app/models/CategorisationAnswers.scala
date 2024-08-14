@@ -21,7 +21,7 @@ import cats.implicits.catsSyntaxTuple2Parallel
 import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
 import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment}
 import org.apache.pekko.Done
-import pages.{AssessmentPage, AssessmentPage2, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
+import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 import utils.Constants.firstAssessmentIndex
@@ -64,19 +64,34 @@ object CategorisationAnswers2 {
                                   )
     } yield answeredQuestionsOptions.map(_.answer)
 
-  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
-    userAnswers
-      .getPageValue(CategorisationDetailsQuery2(recordId))
-      .map(Right(_))
-      .getOrElse(
-        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
-      )
+  private def getCategorisationInfoForThisRecord(
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[NoCategorisationDetailsForRecordId, CategorisationInfo2] = {
+    val longerComCodeOpt = userAnswers
+      .get(LongerCategorisationDetailsQuery(recordId))
+    longerComCodeOpt match {
+      case Some(longerComCode) => Right(longerComCode)
+      case None                =>
+        userAnswers
+          .getPageValue(CategorisationDetailsQuery2(recordId))
+          .map(Right(_))
+          .getOrElse(
+            Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(recordId), recordId)))
+          )
+    }
+  }
 
   private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
     val answeredQuestionsOnly = answeredQuestionsOptions.filter(_.answer.isDefined)
 
     if (answeredQuestionsOnly.isEmpty) {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(AssessmentPage2(recordId, firstAssessmentIndex))))
+      val errorPage = if (answeredQuestionsOptions.exists(x => x.reassessmentQuestion)){
+        ReassessmentPage(recordId, firstAssessmentIndex)
+      } else {
+        AssessmentPage2(recordId, firstAssessmentIndex)
+      }
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(errorPage)))
     } else {
       Right(answeredQuestionsOnly)
     }
@@ -91,7 +106,13 @@ object CategorisationAnswers2 {
     val answers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
     if (answers.isEmpty) {
-      Left(NonEmptyChain(PageMissing(AssessmentPage2(recordId, firstAssessmentIndex))))
+      val errorPage = if (categorisationInfo.longerCode){
+        ReassessmentPage(recordId, firstAssessmentIndex)
+      } else {
+        AssessmentPage2(recordId, firstAssessmentIndex)
+      }
+
+      Left(NonEmptyChain(PageMissing(errorPage)))
     } else {
       Right(answers)
     }
@@ -110,11 +131,24 @@ object CategorisationAnswers2 {
     if (noExemptionsBeforeLastAnswer.isEmpty) {
       Right(Done)
     } else {
-      val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage2(recordId, ass.index)))
+      val errors = noExemptionsBeforeLastAnswer.map(ass => {
+        val errorPage = if (ass.reassessmentQuestion) {
+          ReassessmentPage(recordId, ass.index)
+        } else {
+          AssessmentPage2(recordId, ass.index)
+        }
+        UnexpectedNoExemption(errorPage)
+      })
+
+      val defaultErrorPage = if (answeredQuestionsOnly.exists(_.reassessmentQuestion)){
+        LongerCategorisationDetailsQuery(recordId)
+      } else {
+        CategorisationDetailsQuery2(recordId)
+      }
       val nec    =
         NonEmptyChain
           .fromSeq(errors)
-          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(CategorisationDetailsQuery2(recordId))))
+          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(defaultErrorPage)))
       Left(nec)
     }
   }
@@ -130,13 +164,17 @@ object CategorisationAnswers2 {
     if (lastAnswerIsExemption || totalQuestions == answeredQuestionsOnly.size) {
       Right(Done)
     } else {
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(CategorisationDetailsQuery2(recordId))))
+      val errorPage = if (answeredQuestionsOnly.exists(_.reassessmentQuestion)){
+        LongerCategorisationDetailsQuery(recordId)
+      } else {
+        CategorisationDetailsQuery2(recordId)
+      }
+      Left(NonEmptyChain.one(MissingAssessmentAnswers(errorPage)))
     }
 
   }
 }
 
-//TODO once written tests, merge this into the other one???
 object ReCategorisationAnswers2 {
 
   def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, ReCategorisationAnswers2] =
@@ -153,18 +191,23 @@ object ReCategorisationAnswers2 {
       answeredQuestionsOnly    <- getAnsweredQuestionsOnly(answeredQuestionsOptions, recordId)
       _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId)
       _                        <- ensureHaveAnsweredTheRightAmount(
-        answeredQuestionsOnly,
-        answeredQuestionsOptions.size,
-        recordId
-      )
+                                    answeredQuestionsOnly,
+                                    answeredQuestionsOptions.size,
+                                    recordId
+                                  )
     } yield answeredQuestionsOptions.map(_.answer)
 
-  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String): EitherNec[NoCategorisationDetailsForRecordId, CategorisationInfo2] =
+  private def getCategorisationInfoForThisRecord(
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[NoCategorisationDetailsForRecordId, CategorisationInfo2] =
     userAnswers
       .getPageValue(LongerCategorisationDetailsQuery(recordId))
       .map(Right(_))
       .getOrElse(
-        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(LongerCategorisationDetailsQuery(recordId), recordId)))
+        Left(
+          NonEmptyChain.one(NoCategorisationDetailsForRecordId(LongerCategorisationDetailsQuery(recordId), recordId))
+        )
       )
 
   private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
@@ -205,7 +248,7 @@ object ReCategorisationAnswers2 {
     if (noExemptionsBeforeLastAnswer.isEmpty) {
       Right(Done)
     } else {
-      val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(AssessmentPage2(recordId, ass.index)))
+      val errors = noExemptionsBeforeLastAnswer.map(ass => UnexpectedNoExemption(ReassessmentPage(recordId, ass.index)))
       val nec    =
         NonEmptyChain
           .fromSeq(errors)

@@ -52,6 +52,7 @@ case object CategorisationJourney extends Journey {
   override def toString: String = "Categorisation"
 }
 
+//TODO test this in sessionRepo IT
 case object CategorisationJourney2 extends Journey {
   val pages: Seq[String]        =
     Seq(

@@ -22,11 +22,12 @@ import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.helper.{CategorisationJourney, CategorisationJourney2}
+import models.ott.CategorisationInfo2
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, ReCategorisationAnswers2, Scenario, Scenario2, ValidationError}
+import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, ReCategorisationAnswers2, Scenario, Scenario2, UserAnswers, ValidationError}
 import navigation.Navigator
 import pages.{CyaCategorisationPage, CyaCategorisationPage2}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
@@ -113,22 +114,49 @@ class CyaCategorisationController @Inject() (
   def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
+
       val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
-longerCategorisationInfo match {
-  case Some(categorisationInfo) => {
-    //TODO UNIT TEST LONGER CATEGORY IN UA
-    //TODO cleanup
-    ReCategorisationAnswers2.build(request.userAnswers, recordId) match {
-      case Right(_) =>
-        val categorisationRows = categorisationInfo.categoryAssessments
-          .flatMap(assessment =>
-            AssessmentsSummary.rowReassessment(
-              recordId,
-              request.userAnswers,
-              assessment,
-              categorisationInfo.categoryAssessments.indexOf(assessment)
+      longerCategorisationInfo match {
+        case Some(categorisationInfo) =>
+          buildCyaAnswers(request, recordId, categorisationInfo)
+        case _                        =>
+          val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+
+          categorisationInfo
+            .map { info =>
+              buildCyaAnswers(request, recordId, info)
+            }
+            .getOrElse(
+              logErrorsAndContinue2("Failed to get categorisation details", recordId, request.userAnswers)
             )
+      }
+
+  }
+
+  private def buildCyaAnswers(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo2)
+                             (implicit messages: Messages) = {
+    val userAnswers = request.userAnswers
+
+    CategorisationAnswers2.build(userAnswers, recordId) match {
+      case Right(_) =>
+        val categorisationRows = categoryInfo.categoryAssessments
+          .flatMap(assessment =>
+            if (categoryInfo.longerCode) {
+              AssessmentsSummary.rowReassessment(
+                recordId,
+                userAnswers,
+                assessment,
+                categoryInfo.categoryAssessments.indexOf(assessment)
+              )
+            } else {
+              AssessmentsSummary.row2(
+                recordId,
+                userAnswers,
+                assessment,
+                categoryInfo.categoryAssessments.indexOf(assessment)
+              )
+            }
           )
 
         val categorisationList = SummaryListViewModel(
@@ -137,62 +165,22 @@ longerCategorisationInfo match {
 
         val supplementaryUnitList = SummaryListViewModel(
           rows = Seq(
-            HasSupplementaryUnitSummary.row2(request.userAnswers, recordId),
-            SupplementaryUnitSummary.row2(request.userAnswers, recordId)
+            HasSupplementaryUnitSummary.row2(userAnswers, recordId),
+            SupplementaryUnitSummary.row2(userAnswers, recordId)
           ).flatten
         )
 
         val longerCommodityCodeList = SummaryListViewModel(
           rows = Seq(
-            LongerCommodityCodeSummary.row(request.userAnswers, recordId)
+            LongerCommodityCodeSummary.row2(userAnswers, recordId)
           ).flatten
         )
 
-        Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
+        Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList)(request, messages))
 
       case Left(errors) =>
-        logErrorsAndContinue2(errors, recordId, request)
+        logErrorsAndContinue2(errors, recordId, userAnswers)
     }
-  }
-  case _ =>
-  val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
-
-  categorisationInfo
-    .map { info =>
-      CategorisationAnswers2.build(request.userAnswers, recordId) match {
-        case Right(_) =>
-          val categorisationRows = info.categoryAssessments
-            .flatMap(assessment =>
-              AssessmentsSummary.row2(
-                recordId,
-                request.userAnswers,
-                assessment,
-                info.categoryAssessments.indexOf(assessment)
-              )
-            )
-
-          val categorisationList = SummaryListViewModel(
-            rows = categorisationRows
-          )
-
-          val supplementaryUnitList = SummaryListViewModel(
-            rows = Seq(
-              HasSupplementaryUnitSummary.row2(request.userAnswers, recordId),
-              SupplementaryUnitSummary.row2(request.userAnswers, recordId)
-            ).flatten
-          )
-
-          Ok(view(recordId, categorisationList, supplementaryUnitList, SummaryListViewModel(Seq.empty)))
-
-        case Left(errors) =>
-          logErrorsAndContinue2(errors, recordId, request)
-      }
-    }
-    .getOrElse(
-      logErrorsAndContinue2("Failed to get categorisation details", recordId, request)
-    )
-}
-
   }
 
   def onSubmit2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -220,7 +208,7 @@ longerCategorisationInfo match {
               )
           }
 
-        case Left(error) => Future.successful(logErrorsAndContinue2(error, recordId, request))
+        case Left(error) => Future.successful(logErrorsAndContinue2(error, recordId, request.userAnswers))
 
       }
 
@@ -269,23 +257,23 @@ longerCategorisationInfo match {
   private def logErrorsAndContinue2(
     errors: data.NonEmptyChain[ValidationError],
     recordId: String,
-    request: DataRequest[AnyContent]
+    userAnswers: UserAnswers
   ): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    logErrorsAndContinue2(errorMessages, recordId, request)
+    logErrorsAndContinue2(errorMessages, recordId, userAnswers)
   }
 
   private def logErrorsAndContinue2(
     errorMessage: String,
     recordId: String,
-    request: DataRequest[AnyContent]
+    userAnswers: UserAnswers
   ): Result = {
 
     val continueUrl = RedirectUrl(routes.CategorisationPreparationController.startCategorisation(recordId).url)
 
     logger.error(s"Unable to update Goods Profile: $errorMessage")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney2)
+    dataCleansingService.deleteMongoData(userAnswers.id, CategorisationJourney2)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 

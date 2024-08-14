@@ -17,9 +17,10 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
+import models.ott.CategorisationInfo2
 import pages.QuestionPage
 import play.api.libs.json._
-import queries.{Gettable, Settable}
+import queries.{Gettable, LongerCategorisationDetailsQuery, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -125,6 +126,7 @@ final case class UserAnswers(
       .reads(data)
       .map(_.isDefined)
       .getOrElse(false)
+
 }
 
 object UserAnswers {
