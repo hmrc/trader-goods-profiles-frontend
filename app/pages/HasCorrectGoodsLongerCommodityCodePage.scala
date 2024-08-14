@@ -18,6 +18,14 @@ package pages
 
 import play.api.libs.json.JsPath
 
+case class HasCorrectGoodsLongerCommodityCodePage2(recordId: String, needToRecategorise: Boolean = false)
+  extends QuestionPage[Boolean] {
+
+  override def path: JsPath = JsPath \ toString \ recordId
+
+  override def toString: String = "hasCorrectGoodsLongerCommodityCode2"
+}
+
 case class HasCorrectGoodsLongerCommodityCodePage(recordId: String, needToRecategorise: Boolean = false)
     extends QuestionPage[Boolean] {
 

@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
 import models.ott.CategorisationInfo2
-import models.{CategoryRecord2, StandardGoodsNoAssessmentsScenario, UserAnswers}
+import models.{CategoryRecord2, Commodity, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
@@ -36,6 +36,7 @@ import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, L
 import repositories.SessionRepository
 import services.CategorisationService
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAfterEach {
@@ -304,7 +305,15 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         )
 
         val userAnswers = emptyUserAnswers
-          .set(LongerCommodityQuery2(testRecordId), "1234567890")
+          .set(
+            LongerCommodityQuery2(testRecordId),
+            Commodity(
+              "1234567890",
+              List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+              Instant.now,
+              None
+            )
+          )
           .success
           .value
 

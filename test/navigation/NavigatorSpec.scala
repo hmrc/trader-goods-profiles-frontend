@@ -1052,9 +1052,44 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         }
 
-        "must go from longer commodity code to categorisation preparation page" in {
+        "must go from longer commodity code to longer commodity code result page" in {
           navigator.nextPage(LongerCommodityCodePage2(testRecordId), NormalMode, emptyUserAnswers) mustEqual
-            routes.CategorisationPreparationController.startLongerCategorisation(testRecordId)
+            routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode2(NormalMode, testRecordId)
+        }
+
+        "must go from longer commodity result page to" - {
+          "to categorisation preparation page when answer is yes" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(HasCorrectGoodsLongerCommodityCodePage2(testRecordId), true)
+                .success
+                .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage2(testRecordId),
+              NormalMode,
+              userAnswers
+            ) mustEqual
+              routes.CategorisationPreparationController.startLongerCategorisation(testRecordId)
+
+          }
+
+          "to longer commodity page when answer is no" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(HasCorrectGoodsLongerCommodityCodePage2(testRecordId), false)
+                .success
+                .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage2(testRecordId),
+              NormalMode,
+              userAnswers
+            ) mustEqual
+              routes.LongerCommodityCodeController.onPageLoad2(NormalMode, testRecordId)
+
+          }
+
         }
 
         "must go from reassessment page" - {

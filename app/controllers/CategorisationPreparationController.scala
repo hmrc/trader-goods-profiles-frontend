@@ -78,7 +78,7 @@ class CategorisationPreparationController @Inject() (
         longerComCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
         categorisationInfo <-
           categorisationService
-            .getCategorisationInfo(request, longerComCode, goodsRecord.countryOfOrigin, recordId, longerCode = true)
+            .getCategorisationInfo(request, longerComCode.commodityCode, goodsRecord.countryOfOrigin, recordId, longerCode = true)
         updatedUserAnswers <-
           Future.fromTry(request.userAnswers.set(LongerCategorisationDetailsQuery(recordId), categorisationInfo))
         _                      <- sessionRepository.set(updatedUserAnswers)

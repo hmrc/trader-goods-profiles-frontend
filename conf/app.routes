@@ -120,6 +120,11 @@ POST        /update-record/:recordId/commodity-code-result                      
 GET         /update-record/:recordId/commodity-code-result/check                            controllers.HasCorrectGoodsController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/commodity-code-result/check                            controllers.HasCorrectGoodsController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
+GET         /update-record/:recordId/categorisation/longer-commodity-code-result2                                  controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode2(mode: Mode = NormalMode,recordId: String)
+POST        /update-record/:recordId/categorisation/longer-commodity-code-result2                                  controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode2(mode: Mode = NormalMode,recordId: String)
+GET         /update-record/:recordId/categorisation/longer-commodity-code-result2/check                            controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode2(mode: Mode = CheckMode,recordId: String)
+POST        /update-record/:recordId/categorisation/longer-commodity-code-result2/check                            controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode2(mode: Mode = CheckMode,recordId: String)
+
 GET         /update-record/:recordId/categorisation/longer-commodity-code-result                                  controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
 POST        /update-record/:recordId/categorisation/longer-commodity-code-result                                  controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
 GET         /update-record/:recordId/categorisation/longer-commodity-code-result/check                            controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = CheckMode,recordId: String)

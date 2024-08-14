@@ -84,11 +84,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: AssessmentPage2                        => navigateFromAssessment2(p)
     case p: CyaCategorisationPage2                 => navigateFromCyaCategorisationPage(p)
     case p: LongerCommodityCodePage2               =>
-      _ => routes.CategorisationPreparationController.startLongerCategorisation(p.recordId)
+      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode2(NormalMode, p.recordId)
     case p: ReassessmentPage                       => navigateFromReassessment(p)
     //TODO unit test below line
     case p: RecategorisationPreparationPage        =>
       _ => routes.AssessmentController.onPageLoadReassessment(NormalMode, p.recordId, firstAssessmentIndex)
+    case p: HasCorrectGoodsLongerCommodityCodePage2 => answers => navigateFromHasCorrectGoodsLongerCommodityCode2(p.recordId, answers)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -178,6 +179,15 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsLongerCommodityCode2(recordId: String, answers: UserAnswers): Call =
+    answers
+      .get(HasCorrectGoodsLongerCommodityCodePage2(recordId))
+      .map {
+        case true => routes.CategorisationPreparationController.startLongerCategorisation(recordId)
+        case false => routes.LongerCommodityCodeController.onPageLoad2(NormalMode, recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromLongerCommodityCode(
     recordId: String,

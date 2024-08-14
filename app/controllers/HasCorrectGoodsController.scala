@@ -20,18 +20,19 @@ import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{Mode, UserAnswers}
+import models.{Commodity, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, LongerCommodityQuery2, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
 
+import java.time.Instant
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
@@ -95,7 +96,24 @@ class HasCorrectGoodsController @Inject() (
       }
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent]                                = (identify andThen getData andThen requireData).async {
+  def onPageLoadLongerCommodityCode2(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(HasCorrectGoodsLongerCommodityCodePage2(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode2(mode, recordId)
+      request.userAnswers.get(LongerCommodityQuery2(recordId)) match {
+        case Some(commodity) =>
+          Ok(
+            view(preparedForm, commodity, submitAction)
+          )
+        case None            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+      }
+    }
+
+  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       form
@@ -113,6 +131,7 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
         )
   }
+
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
@@ -137,6 +156,34 @@ class HasCorrectGoodsController @Inject() (
                 navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers)
               )
             }
+        )
+    }
+
+  def onSubmitLongerCommodityCode2(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode2(mode, recordId)
+
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            request.userAnswers.get(LongerCommodityQuery2(recordId)) match {
+              case Some(commodity) =>
+                Future.successful(
+                  BadRequest(
+                    view(formWithErrors, commodity, submitAction)
+                  )
+                )
+              case None            => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+            },
+          value =>
+            for {
+              updatedAnswers <-
+                Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage2(recordId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(
+              navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage2(recordId), mode, updatedAnswers)
+            )
         )
     }
 
