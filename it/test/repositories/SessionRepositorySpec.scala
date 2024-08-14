@@ -29,6 +29,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
+import utils.SessionData.{assessmentsPage, commodityCodePage, countryOfOriginPage, emailPage, goodsDescriptionPage, hasCorrectGoodsPage, hasNiphlPage, hasNirmsPage, hasSupplementaryUnitPage, hasSupplementaryUnitUpdatePage, longerCommodityCodePage, measurementUnitQuery, namePage, niphlNumberPage, nirmsNumberPage, reasonForWithdrawAdvicePage, supplementaryUnitPage, supplementaryUnitUpdatePage, traderReferencePage, ukimsNumberPage, useTraderReferencePage, withDrawAdviceStartPage}
 
 import java.time.{Clock, Instant, ZoneId}
 import java.time.temporal.ChronoUnit
@@ -46,7 +47,31 @@ class SessionRepositorySpec
   private val instant          = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
-  private val userAnswers = UserAnswers(userAnswersId, Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
+  private val userAnswers = UserAnswers(
+    userAnswersId,
+    Json.obj(
+      traderReferencePage            -> "GB - Reason: unclear - In bottles",
+      useTraderReferencePage         -> "true",
+      goodsDescriptionPage           -> "In bottles",
+      countryOfOriginPage            -> "US",
+      commodityCodePage              -> "22030001",
+      hasCorrectGoodsPage            -> "true",
+      ukimsNumberPage                -> "XIUKIM47699357400020231115081800",
+      hasNirmsPage                   -> "true",
+      hasNiphlPage                   -> "true",
+      nirmsNumberPage                -> "RMS-GB-123456",
+      niphlNumberPage                -> "612345",
+      namePage                       -> "test",
+      emailPage                      -> "test",
+      withDrawAdviceStartPage        -> "true",
+      reasonForWithdrawAdvicePage    -> "not applicable",
+      assessmentsPage                -> "assessment",
+      hasSupplementaryUnitUpdatePage -> "true",
+      supplementaryUnitUpdatePage    -> "100.0",
+      measurementUnitQuery           -> "squares"
+    ),
+    Instant.ofEpochSecond(1)
+  )
 
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1
@@ -124,8 +149,12 @@ class SessionRepositorySpec
 
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-      val expectedJson  = Json.obj("foo" -> "bar")
-      updatedRecord.data mustEqual expectedJson
+      val keysToCheck   =
+        Seq(ukimsNumberPage, hasNirmsPage, hasNiphlPage, nirmsNumberPage, niphlNumberPage)
+
+      keysToCheck.foreach { key =>
+        updatedRecord.data.keys must not contain key
+      }
     }
 
     "must clear data for CreateRecordJourney" in {
@@ -136,8 +165,20 @@ class SessionRepositorySpec
 
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-      val expectedJson  = Json.obj("foo" -> "bar")
-      updatedRecord.data mustEqual expectedJson
+
+      val keysToCheck =
+        Seq(
+          traderReferencePage,
+          useTraderReferencePage,
+          goodsDescriptionPage,
+          countryOfOriginPage,
+          commodityCodePage,
+          hasCorrectGoodsPage
+        )
+
+      keysToCheck.foreach { key =>
+        updatedRecord.data.keys must not contain key
+      }
     }
 
     "must clear data for CategorisationJourney" in {
@@ -148,8 +189,19 @@ class SessionRepositorySpec
 
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-      val expectedJson  = Json.obj("foo" -> "bar")
-      updatedRecord.data mustEqual expectedJson
+
+      val keysToCheck =
+        Seq(
+          assessmentsPage,
+          hasSupplementaryUnitPage,
+          supplementaryUnitPage,
+          longerCommodityCodePage
+        )
+
+      keysToCheck.foreach { key =>
+        updatedRecord.data.keys must not contain key
+      }
+
     }
 
     "must clear data for RequestAdviceJourney" in {
@@ -160,20 +212,44 @@ class SessionRepositorySpec
 
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-      val expectedJson  = Json.obj("foo" -> "bar")
-      updatedRecord.data mustEqual expectedJson
+
+      val keysToCheck =
+        Seq(
+          namePage,
+          emailPage
+        )
+
+      keysToCheck.foreach { key =>
+        updatedRecord.data.keys must not contain key
+      }
     }
 
     "must clear data for WithdrawAdviceJourney" in {
-      val journey = WithdrawAdviceJourney
+      val userAnswers = UserAnswers(
+        userAnswersId,
+        Json.obj(
+          "withDrawAdviceStartPage"     -> "withdrawadvice",
+          "reasonForWithdrawAdvicePage" -> "reason"
+        ),
+        Instant.ofEpochSecond(1)
+      )
+      val journey     = WithdrawAdviceJourney
       insert(userAnswers).futureValue
 
       val result = repository.clearData(userAnswers.id, journey).futureValue
 
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-      val expectedJson  = Json.obj("foo" -> "bar")
-      updatedRecord.data mustEqual expectedJson
+
+      val keysToCheck =
+        Seq(
+          withDrawAdviceStartPage,
+          reasonForWithdrawAdvicePage
+        )
+
+      keysToCheck.foreach { key =>
+        updatedRecord.data.keys must not contain key
+      }
     }
 
     "must clear data for SupplementaryUnitUpdateJourney" in {
@@ -184,8 +260,17 @@ class SessionRepositorySpec
 
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-      val expectedJson  = Json.obj("foo" -> "bar")
-      updatedRecord.data mustEqual expectedJson
+
+      val keysToCheck =
+        Seq(
+          hasSupplementaryUnitUpdatePage,
+          supplementaryUnitUpdatePage,
+          measurementUnitQuery
+        )
+
+      keysToCheck.foreach { key =>
+        updatedRecord.data.keys must not contain key
+      }
     }
 
     "must return true when there is no data to clear for any journey" in {

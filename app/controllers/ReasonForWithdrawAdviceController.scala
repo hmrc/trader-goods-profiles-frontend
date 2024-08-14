@@ -70,7 +70,7 @@ class ReasonForWithdrawAdviceController @Inject() (
           value => {
             val withdrawReason: Option[String] = if (value.trim.nonEmpty) Some(value) else None
             for {
-              _ <- accreditationConnector.withDrawRequestAccreditation(request.eori, recordId, withdrawReason)
+              _ <- accreditationConnector.withdrawRequestAccreditation(request.eori, recordId, withdrawReason)
               _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
 
             } yield Redirect(navigator.nextPage(ReasonForWithdrawAdvicePage(recordId), NormalMode, request.userAnswers))

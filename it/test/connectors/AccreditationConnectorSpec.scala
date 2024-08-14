@@ -100,7 +100,7 @@ class AccreditationConnectorSpec
           .willReturn(noContent())
       )
 
-      connector.withDrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).futureValue
+      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -117,7 +117,7 @@ class AccreditationConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.withDrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).failed.futureValue
+      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).failed.futureValue
     }
   }
 }

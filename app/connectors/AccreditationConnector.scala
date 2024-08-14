@@ -46,7 +46,7 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def withDrawRequestAccreditation(eori: String, recordId: String, withdrawReason: Option[String])(implicit
+  def withdrawRequestAccreditation(eori: String, recordId: String, withdrawReason: Option[String])(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient

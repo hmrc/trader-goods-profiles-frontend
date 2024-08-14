@@ -93,7 +93,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withDrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -126,7 +126,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withDrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -156,7 +156,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withDrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
