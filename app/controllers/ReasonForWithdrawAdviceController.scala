@@ -48,7 +48,6 @@ class ReasonForWithdrawAdviceController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-
   private val form = formProvider()
 
   def onPageLoad(recordId: String): Action[AnyContent] =
