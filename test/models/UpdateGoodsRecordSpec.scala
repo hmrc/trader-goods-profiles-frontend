@@ -45,7 +45,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId, isCategorised = true)
 
-        result mustEqual Right(UpdateGoodsRecord(testEori, testRecordId, Some("CN")))
+        result mustEqual Right(UpdateGoodsRecord(testEori, testRecordId, Some("CN"), category = Some(1)))
       }
 
       "and all country of origin data is present when record is not categorised" in {
@@ -58,7 +58,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId, isCategorised = false)
 
-        result mustEqual Right(UpdateGoodsRecord(testEori, testRecordId, Some("CN")))
+        result mustEqual Right(UpdateGoodsRecord(testEori, testRecordId, Some("CN"), category = Some(1)))
       }
 
       "and all goods description data is present" in {
