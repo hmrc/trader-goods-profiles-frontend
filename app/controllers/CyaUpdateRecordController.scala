@@ -280,11 +280,11 @@ class CyaUpdateRecordController @Inject() (
               auditService.auditFinishUpdateGoodsRecord(
                 recordId,
                 request.affinityGroup,
-                UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+                UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
               )
               for {
                 _                        <- goodsRecordConnector.updateGoodsRecord(
-                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
                                             )
                 updatedAnswersWithChange <-
                   Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
