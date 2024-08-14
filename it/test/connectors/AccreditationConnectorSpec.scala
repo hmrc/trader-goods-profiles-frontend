@@ -37,7 +37,7 @@ class AccreditationConnectorSpec
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
-      .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+      .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
       .build()
 
   private lazy val connector = app.injector.instanceOf[AccreditationConnector]
@@ -54,7 +54,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -71,7 +71,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-router/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))

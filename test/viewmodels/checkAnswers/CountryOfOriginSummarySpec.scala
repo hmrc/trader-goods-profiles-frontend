@@ -28,12 +28,6 @@ class CountryOfOriginSummarySpec extends SpecBase {
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
   private val getGoodsRecordResponse = goodsRecordResponse()
-  private val goodsRecordNoCategory  = getGoodsRecordResponse.copy(
-    category = None
-  )
-  private val goodsRecordCategory    = getGoodsRecordResponse.copy(
-    category = Some(2)
-  )
 
   "must return a SummaryListRow without change links when record is locked" in {
 
