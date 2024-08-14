@@ -270,3 +270,5 @@ POST       /update-record/:recordId/withdraw-request/reason                     
 GET        /*path                                                                           controllers.PageNotFoundController.onPageLoad(path: String)
 
 
+
+GET        /requestData                       controllers.RequestDataController.onPageLoad()
