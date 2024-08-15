@@ -16,36 +16,33 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
 import controllers.actions._
-import models.NormalMode
-import navigation.Navigator
-import pages.ReviewReasonPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ReviewReasonView
+import views.html.FileReadyView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
-class FileReadyController @Inject()(
+class FileReadyController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: FileReadyView,
-) extends FrontendBaseController with I18nSupport {
+  view: FileReadyView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request => {
-      // TODO: Get file size to pass in to view
-      // TODO: Get file download link to pass in to view
-      val fileSizeKilobytes = 1024
-      val fileDownloadLink = "www.example.com"
-      Ok(view(fileSizeKilobytes, fileDownloadLink))
-    }
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    // TODO: Get file size to pass in to view
+    // TODO: Get file download link to pass in to view
+    // TODO: Get file created date and available until date
+    val fileSizeKilobytes = 1024
+    val fileDownloadLink  = "www.example.com"
+    val createdDate       = "19 July 2024"
+    val availableUntil    = "18 August 2024"
+    Ok(view(fileSizeKilobytes, fileDownloadLink, createdDate, availableUntil))
   }
 
 }
