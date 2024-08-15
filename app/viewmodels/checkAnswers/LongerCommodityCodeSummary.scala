@@ -54,7 +54,6 @@ object LongerCommodityCodeSummary {
     }
   }
 
-  //TODO test
   def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] = {
     answers.get(LongerCategorisationDetailsQuery(recordId)).map(info =>
         SummaryListRowViewModel(

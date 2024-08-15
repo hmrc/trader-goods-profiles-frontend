@@ -142,7 +142,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
-        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"), 1)
+        CategorisationInfo2("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"), 0)
 
       withClue("should ask for details for this commodity and country from OTT") {
         verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(

@@ -32,7 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import views.html.AssessmentView
+import views.html.{AssessmentView, AssessmentView2}
 
 import scala.concurrent.Future
 
@@ -68,7 +68,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(application, request).value
 
-              val view              = application.injector.instanceOf[AssessmentView]
+              val onSubmitAction = routes.AssessmentController.onSubmit2(NormalMode, testRecordId, 0)
+              val view              = application.injector.instanceOf[AssessmentView2]
               val form              = formProvider2(1)
               val expectedListItems = categorisationInfo2.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
                 exemption =>
@@ -82,7 +83,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
                 testRecordId,
                 0,
                 expectedListItems,
-                categorisationInfo2.commodityCode
+                categorisationInfo2.commodityCode,
+                onSubmitAction
               )(
                 request,
                 messages(application)
@@ -108,7 +110,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(application, request).value
 
-              val view              = application.injector.instanceOf[AssessmentView]
+              val onSubmitAction = routes.AssessmentController.onSubmit2(NormalMode, testRecordId, 0)
+              val view              = application.injector.instanceOf[AssessmentView2]
               val form              = formProvider2(1).fill(AssessmentAnswer2.NoExemption)
               val expectedListItems = categorisationInfo2.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
                 exemption =>
@@ -122,7 +125,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
                 testRecordId,
                 0,
                 expectedListItems,
-                categorisationInfo2.commodityCode
+                categorisationInfo2.commodityCode,
+                onSubmitAction
               )(
                 request,
                 messages(application)
@@ -212,7 +216,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
 
-            val view              = application.injector.instanceOf[AssessmentView]
+            val onSubmitAction = routes.AssessmentController.onSubmit2(NormalMode, testRecordId, 0)
+            val view              = application.injector.instanceOf[AssessmentView2]
             val form              = formProvider2(1).fill(AssessmentAnswer2.NoExemption)
             val boundForm         = form.bind(Map("value" -> ""))
             val expectedListItems = categorisationInfo2.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
@@ -227,7 +232,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
               testRecordId,
               0,
               expectedListItems,
-              categorisationInfo2.commodityCode
+              categorisationInfo2.commodityCode,
+              onSubmitAction
             )(
               request,
               messages(application)
@@ -292,7 +298,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(application, request).value
 
-              val view              = application.injector.instanceOf[AssessmentView]
+              val onSubmitAction = routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, 0)
+              val view              = application.injector.instanceOf[AssessmentView2]
               val form              = formProvider2(1)
               val expectedListItems = categorisationInfo2.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
                 exemption =>
@@ -306,7 +313,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
                 testRecordId,
                 0,
                 expectedListItems,
-                categorisationInfo2.commodityCode
+                categorisationInfo2.commodityCode,
+                onSubmitAction
               )(
                 request,
                 messages(application)
@@ -326,13 +334,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
                 .value
 
             val application = applicationBuilder(userAnswers = Some(answers)).build()
+            val onSubmitAction = routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, 0)
 
             running(application) {
               val request = FakeRequest(GET, reassessmentRoute)
 
               val result = route(application, request).value
 
-              val view              = application.injector.instanceOf[AssessmentView]
+              val view              = application.injector.instanceOf[AssessmentView2]
               val form              = formProvider2(1).fill(AssessmentAnswer2.NoExemption)
               val expectedListItems = categorisationInfo2.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
                 exemption =>
@@ -346,7 +355,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
                 testRecordId,
                 0,
                 expectedListItems,
-                categorisationInfo2.commodityCode
+                categorisationInfo2.commodityCode,
+                onSubmitAction
               )(
                 request,
                 messages(application)
@@ -436,7 +446,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
 
-            val view              = application.injector.instanceOf[AssessmentView]
+            val onSubmitAction = routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, 0)
+            val view              = application.injector.instanceOf[AssessmentView2]
             val form              = formProvider2(1).fill(AssessmentAnswer2.NoExemption)
             val boundForm         = form.bind(Map("value" -> ""))
             val expectedListItems = categorisationInfo2.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
@@ -451,7 +462,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
               testRecordId,
               0,
               expectedListItems,
-              categorisationInfo2.commodityCode
+              categorisationInfo2.commodityCode,
+              onSubmitAction
             )(
               request,
               messages(application)

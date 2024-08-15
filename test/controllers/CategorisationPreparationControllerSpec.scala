@@ -61,9 +61,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
     reset(mockCategorisationService, mockGoodsRecordConnector, mockSessionRepository)
 
-    when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
-      Future.successful(categorisationInfo2)
-    )
     when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(goodsRecordResponse()))
 
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -76,6 +73,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       "and not update the record if there are questions to answer" in {
 
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
+
         val app = application()
 
         running(app) {
@@ -87,7 +88,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           redirectLocation(result).value mustEqual onwardRoute.url
 
           verify(mockCategorisationService)
-            .getCategorisationInfo(any(), eqTo("12345678"), eqTo("GB"), eqTo(testRecordId))(any())
+            .getCategorisationInfo(any(), eqTo("12345678"), eqTo("GB"), eqTo(testRecordId), eqTo(false))(any())
 
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -123,7 +124,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           1
         )
 
-        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categoryInfoNoAssessments)
         )
 
@@ -145,7 +146,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must get category details from categorisation service") {
             verify(mockCategorisationService)
-              .getCategorisationInfo(any(), eqTo("12345678"), eqTo("GB"), eqTo(testRecordId))(any())
+              .getCategorisationInfo(any(), eqTo("12345678"), eqTo("GB"), eqTo(testRecordId), eqTo(false))(any())
           }
 
           withClue("must get category result from categorisation service") {
@@ -203,7 +204,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       "when categorisation service fails" in {
 
-        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any()))
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("error")))
 
         val app = application()
@@ -244,7 +245,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           1
         )
 
-        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categoryInfoNoAssessments)
         )
 
@@ -275,7 +276,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           1
         )
 
-        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categoryInfoNoAssessments)
         )
 
@@ -300,7 +301,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       "and save the category information" in {
 
-        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any())(any())).thenReturn(
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categorisationInfo2)
         )
 
@@ -328,7 +329,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must get category details from categorisation service") {
             verify(mockCategorisationService)
-              .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId))(any())
+              .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId), eqTo(true))(any())
           }
 
           withClue("must update User Answers with Categorisation Info") {

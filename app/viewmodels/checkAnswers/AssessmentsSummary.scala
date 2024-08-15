@@ -31,9 +31,23 @@ object AssessmentsSummary {
     recordId: String,
     answers: UserAnswers,
     assessment: CategoryAssessment,
-    indexOfThisAssessment: Int
-  )(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(AssessmentPage2(recordId, indexOfThisAssessment)).map{ answer =>
+    indexOfThisAssessment: Int,
+    reassessmentAnswer: Boolean
+  )(implicit messages: Messages): Option[SummaryListRow] = {
+
+    val pageToUse = if (reassessmentAnswer){
+      ReassessmentPage(recordId, indexOfThisAssessment)
+    } else {
+      AssessmentPage2(recordId, indexOfThisAssessment)
+    }
+
+    val changeLink = if (reassessmentAnswer) {
+      routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
+    } else {
+      routes.AssessmentController.onPageLoad2(CheckMode, recordId, indexOfThisAssessment).url
+    }
+
+    answers.get(pageToUse).map{ answer =>
       val codes = assessment.exemptions.map(_.code)
       val descriptions = assessment.exemptions.map(_.description)
 
@@ -50,40 +64,12 @@ object AssessmentsSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            routes.AssessmentController.onPageLoad2(CheckMode, recordId, indexOfThisAssessment).url
+            changeLink
           ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
         )
       )
     }
-
-  def rowReassessment(
-    recordId: String,
-    answers: UserAnswers,
-    assessment: CategoryAssessment,
-    indexOfThisAssessment: Int
-  )(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(ReassessmentPage(recordId, indexOfThisAssessment)).map { answer =>
-      val codes = assessment.exemptions.map(_.code)
-      val descriptions = assessment.exemptions.map(_.description)
-
-      SummaryListRowViewModel(
-        key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
-          .withCssClass("govuk-!-width-one-half"),
-        value = ValueViewModel(
-          if (answer == AssessmentAnswer2.Exemption) {
-            messages("site.yes")
-          } else {
-            messages("site.no")
-          }
-        ),
-        actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
-          ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
-        )
-      )
-    }
+  }
 
   def row(
     recordId: String,

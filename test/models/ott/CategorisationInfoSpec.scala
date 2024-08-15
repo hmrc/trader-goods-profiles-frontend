@@ -19,9 +19,9 @@ package models.ott
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.ott.response._
-import models.{AssessmentAnswer, RecordCategorisations}
-import pages.AssessmentPage
-import queries.RecordCategorisationsQuery
+import models.{AnsweredQuestions, AssessmentAnswer, AssessmentAnswer2, RecordCategorisations}
+import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
 
 import java.time.Instant
 
@@ -653,6 +653,77 @@ class CategorisationInfoSpec extends SpecBase {
     }
   }
 
+  "getAnswersForQuestions" - {
+
+    "return answered and unanswered questions" - {
+
+      "for an assessment" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+
+        categorisationInfo2.getAnswersForQuestions(userAnswers, testRecordId) mustBe
+          Seq(
+            AnsweredQuestions(0, category1, Some(AssessmentAnswer2.Exemption)),
+            AnsweredQuestions(1, category2, Some(AssessmentAnswer2.NoExemption)),
+            AnsweredQuestions(2, category3, None)
+          )
+
+      }
+
+      "for a longer commodity code reassessment" in {
+
+        val longerCommodity = categorisationInfo2.copy(
+          longerCode = true,
+          categoryAssessments = Seq(category1, category1, category2, category3),
+          categoryAssessmentsThatNeedAnswers = Seq(category1, category1, category2, category3)
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+          .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.NoExemption)
+          .success
+          .value
+
+        longerCommodity.getAnswersForQuestions(userAnswers, testRecordId) mustBe
+          Seq(
+            AnsweredQuestions(0, category1, Some(AssessmentAnswer2.Exemption), reassessmentQuestion = true),
+            AnsweredQuestions(1, category1, Some(AssessmentAnswer2.Exemption), reassessmentQuestion = true),
+            AnsweredQuestions(2, category2, Some(AssessmentAnswer2.NoExemption), reassessmentQuestion = true),
+            AnsweredQuestions(3, category3, None, reassessmentQuestion = true)
+          )
+
+      }
+
+    }
+
+  }
+
   ".build" - {
 
     "must return a model from a simple OTT response (one assessment, no exemptions)" in {
@@ -1019,5 +1090,4 @@ class CategorisationInfoSpec extends SpecBase {
     }
   }
 
-  //TODO test getAnswers
 }

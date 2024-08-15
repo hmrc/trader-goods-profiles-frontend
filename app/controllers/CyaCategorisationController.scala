@@ -24,7 +24,7 @@ import logging.Logging
 import models.helper.{CategorisationJourney, CategorisationJourney2}
 import models.ott.CategorisationInfo2
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, ReCategorisationAnswers2, Scenario, Scenario2, UserAnswers, ValidationError}
+import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, Scenario, Scenario2, UserAnswers, ValidationError}
 import navigation.Navigator
 import pages.{CyaCategorisationPage, CyaCategorisationPage2}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -114,18 +114,17 @@ class CyaCategorisationController @Inject() (
   def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-
       val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
       longerCategorisationInfo match {
         case Some(categorisationInfo) =>
-          buildCyaAnswers(request, recordId, categorisationInfo)
+          showCyaPage(request, recordId, categorisationInfo)
         case _                        =>
           val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
 
           categorisationInfo
             .map { info =>
-              buildCyaAnswers(request, recordId, info)
+              showCyaPage(request, recordId, info)
             }
             .getOrElse(
               logErrorsAndContinue2("Failed to get categorisation details", recordId, request.userAnswers)
@@ -134,29 +133,22 @@ class CyaCategorisationController @Inject() (
 
   }
 
-  private def buildCyaAnswers(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo2)
+  private def showCyaPage(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo2)
                              (implicit messages: Messages) = {
     val userAnswers = request.userAnswers
 
     CategorisationAnswers2.build(userAnswers, recordId) match {
       case Right(_) =>
+
         val categorisationRows = categoryInfo.categoryAssessments
           .flatMap(assessment =>
-            if (categoryInfo.longerCode) {
-              AssessmentsSummary.rowReassessment(
-                recordId,
-                userAnswers,
-                assessment,
-                categoryInfo.categoryAssessments.indexOf(assessment)
-              )
-            } else {
               AssessmentsSummary.row2(
                 recordId,
                 userAnswers,
                 assessment,
-                categoryInfo.categoryAssessments.indexOf(assessment)
+                categoryInfo.categoryAssessments.indexOf(assessment),
+                categoryInfo.longerCode
               )
-            }
           )
 
         val categorisationList = SummaryListViewModel(

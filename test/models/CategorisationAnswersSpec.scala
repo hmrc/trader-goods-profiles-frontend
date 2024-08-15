@@ -47,7 +47,10 @@ class CategorisationAnswersSpec extends SpecBase {
           val result = CategorisationAnswers2.build(answers, testRecordId)
 
           result mustBe Right(
-            CategorisationAnswers2(Seq(Some(AssessmentAnswer2.Exemption), Some(AssessmentAnswer2.NoExemption), None))
+            CategorisationAnswers2(
+              Seq(Some(AssessmentAnswer2.Exemption), Some(AssessmentAnswer2.NoExemption), None),
+              None
+            )
           )
         }
 
@@ -65,7 +68,8 @@ class CategorisationAnswersSpec extends SpecBase {
                   Some(AssessmentAnswer2.Exemption),
                   Some(AssessmentAnswer2.Exemption),
                   Some(AssessmentAnswer2.Exemption)
-                )
+                ),
+                None
               )
             )
 
@@ -188,7 +192,7 @@ class CategorisationAnswersSpec extends SpecBase {
           val result = CategorisationAnswers2.build(answers, testRecordId)
 
           result mustBe Right(
-            CategorisationAnswers2(Seq(Some(AssessmentAnswer2.NoExemption), None, None))
+            CategorisationAnswers2(Seq(Some(AssessmentAnswer2.NoExemption), None, None), None)
           )
         }
 
@@ -232,7 +236,8 @@ class CategorisationAnswersSpec extends SpecBase {
                   Some(AssessmentAnswer2.Exemption),
                   Some(AssessmentAnswer2.Exemption),
                   Some(AssessmentAnswer2.Exemption)
-                )
+                ),
+                None
               )
             )
 
@@ -336,7 +341,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = ReCategorisationAnswers2.build(answers, testRecordId)
+          val result = CategorisationAnswers2.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only MissingAssessmentAnswers(
@@ -387,6 +392,120 @@ class CategorisationAnswersSpec extends SpecBase {
         }
 
       }
+    }
+
+    "with supplementary unit set" - {
+
+      "must return a CategorisationAnswer when" - {
+
+        "and supplementary unit was asked for and the answer was no" in {
+
+          val answers = emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), false)
+            .success
+            .value
+
+          val result = CategorisationAnswers2.build(answers, testRecordId)
+
+          result mustBe Right(
+            CategorisationAnswers2(
+              Seq(Some(AssessmentAnswer2.Exemption), Some(AssessmentAnswer2.NoExemption), None),
+              None
+            )
+          )
+        }
+
+        "and supplementary unit was asked for and the answer was yes and it was supplied" in {
+
+          val answers = emptyUserAnswers
+            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .success
+            .value
+            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "42.0123")
+            .success
+            .value
+
+          val result = CategorisationAnswers2.build(answers, testRecordId)
+
+          result mustBe Right(
+            CategorisationAnswers2(
+              Seq(Some(AssessmentAnswer2.Exemption), Some(AssessmentAnswer2.NoExemption), None),
+              Some("42.0123")
+            )
+          )
+        }
+
+      }
+
+      "must return errors" - {
+        "when the user said they have a supplementary unit but it is missing" in {
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+              .success
+              .value
+              .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+              .success
+              .value
+              .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+              .success
+              .value
+              .set(HasSupplementaryUnitPage(testRecordId), true)
+              .success
+              .value
+
+          val result = CategorisationAnswers2.build(answers, testRecordId)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
+          }
+        }
+
+        "when the user has a supplementary unit without being asked about it " in {
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+              .success
+              .value
+              .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+              .success
+              .value
+              .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.NoExemption)
+              .success
+              .value
+              .set(SupplementaryUnitPage(testRecordId), "42.0")
+              .success
+              .value
+
+          val result = CategorisationAnswers2.build(answers, testRecordId)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
+          }
+        }
+
+      }
+
     }
   }
 
