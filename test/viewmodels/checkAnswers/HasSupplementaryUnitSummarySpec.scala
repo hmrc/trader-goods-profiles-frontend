@@ -29,28 +29,12 @@ class HasSupplementaryUnitSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
-  private val recordWithSupplementaryUnit = goodsRecordResponseWithSupplementaryUnit(
-    Instant.parse("2022-11-18T23:20:19Z"),
-    Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId, category = Some(1))
-
   private val recordWithSupplementaryUnitCat2 = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId, category = Some(2))
 
   "HasSupplementaryUnitSummary.row" - {
-
-//    "must not return a SummaryListRow when not Category 2" in {
-//
-//      val row = HasSupplementaryUnitSummary.row(
-//        recordWithSupplementaryUnit,
-//        testRecordId,
-//        recordLocked = true
-//      )
-//
-//      row mustBe None
-//    }
 
     "must not return a SummaryListRow when no measurement unit" in {
 
