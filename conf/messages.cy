@@ -256,7 +256,7 @@ hasCorrectGoods.title = Canlyniadau ar gyfer
 hasCorrectGoods.heading = Canlyniadau ar gyfer
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma'r nwyddau cywir?
-hasCorrectGoods.error.required = Dewiswch ai dyma'r nwyddau cywir
+hasCorrectGoods.error.required = Dewiswch ai dyma''r nwyddau cywir
 hasCorrectGoods.p2.linkText = Chwiliwch am god nwydd ar yr Offeryn Tariff Ar-lein (yn agor mewn tab newydd)
 
 
