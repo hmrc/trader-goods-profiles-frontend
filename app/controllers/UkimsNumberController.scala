@@ -59,7 +59,7 @@ class UkimsNumberController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, routes.UkimsNumberController.onSubmitCreate(mode)))
+      Ok(view(preparedForm, routes.UkimsNumberController.onSubmitCreate(mode), isCreateJourney = true))
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {

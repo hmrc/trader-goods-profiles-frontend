@@ -74,7 +74,11 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[UkimsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.UkimsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form,
+            routes.UkimsNumberController.onSubmitCreate(NormalMode),
+            isCreateJourney = true
+          )(
             request,
             messages(application)
           ).toString
@@ -102,7 +106,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            routes.UkimsNumberController.onSubmitCreate(NormalMode)
+            routes.UkimsNumberController.onSubmitCreate(NormalMode),
+            isCreateJourney = true
           )(
             request,
             messages(application)
