@@ -257,6 +257,7 @@ hasCorrectGoods.heading = Canlyniadau ar gyfer
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma'r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ai dyma'r nwyddau cywir
+hasCorrectGoods.p2.linkText = Chwiliwch am god nwydd ar yr Offeryn Tariff Ar-lein (yn agor mewn tab newydd)
 
 
 singleRecord.title = Cofnod nwyddau
@@ -279,3 +280,8 @@ countryOfOrigin.error.required = Ewch i mewn i'r wlad wreiddiol
 countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad wreiddiol
 countryOfOrigin.change.hidden = Gwlad wreiddiol
+
+feedback.header = Dywedwch wrthym beth yw eich barn
+feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
+feedback.line.2 = {0}. Bydd eich meddyliau a'ch syniadau yn ein helpu i wneud gwelliannau.
+feedback.link = Anfonwch eich adborth atom
