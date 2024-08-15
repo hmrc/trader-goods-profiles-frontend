@@ -15,9 +15,7 @@
  *@
 
 @this(
-    layout: templates.Layout,
-    govukButton: GovukButton,
-    formHelper: FormWithCSRF
+    layout: templates.Layout
 )
 
 @(fileSizeKilobytes: Int, fileDownloadLink: String, createdDate: String, availableUntil: String)(implicit request: Request[_], messages: Messages)

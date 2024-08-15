@@ -17,10 +17,16 @@
 package controllers
 
 import base.SpecBase
+import connectors.TraderProfileConnector
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.FileReadyView
+
+import scala.concurrent.Future
 
 class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
@@ -28,11 +34,16 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
   "FileReadyController" - {
 
+    val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+    when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
     "onPageLoad" - {
 
       "must OK and display correct view" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .build()
 
         // TODO: Update these with mocks.
         val fileSizeKilobytes = 1024

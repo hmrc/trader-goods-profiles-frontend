@@ -29,20 +29,22 @@ class FileReadyController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: FileReadyView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    // TODO: Get file size to pass in to view
-    // TODO: Get file download link to pass in to view
-    // TODO: Get file created date and available until date
-    val fileSizeKilobytes = 1024
-    val fileDownloadLink  = "www.example.com"
-    val createdDate       = "19 July 2024"
-    val availableUntil    = "18 August 2024"
-    Ok(view(fileSizeKilobytes, fileDownloadLink, createdDate, availableUntil))
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      // TODO: Get file size to pass in to view
+      // TODO: Get file download link to pass in to view
+      // TODO: Get file created date and available until date
+      val fileSizeKilobytes = 1024
+      val fileDownloadLink  = "www.example.com"
+      val createdDate       = "19 July 2024"
+      val availableUntil    = "18 August 2024"
+      Ok(view(fileSizeKilobytes, fileDownloadLink, createdDate, availableUntil))
   }
 
 }
