@@ -17,15 +17,15 @@
     </p>
 
     <p class="govuk-body">
-        @messages("fileReady.p3") <a href="#" class="govuk-link">@messages("fileReady.p3.linkText")</a>
+        @messages("fileReady.p3") <a href="@fileDownloadLink" class="govuk-link">@messages("fileReady.p3.linkText", fileSizeKilobytes)</a>
     </p>
 
     <p class="govuk-body">
-        <a href="#" class="govuk-link">messages("fileReady.p4.linkText")</a>
+        <a href="@routes.ProfileController.onPageLoad.url" class="govuk-link">messages("fileReady.p4.linkText")</a>
     </p>
 
     <p class="govuk-body">
-        <a href="#" class="govuk-link">messages("fileReady.p5.linkText")</a>
+        <a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">messages("fileReady.p5.linkText")</a>
     </p>
 
 }
