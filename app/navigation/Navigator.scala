@@ -16,16 +16,16 @@
 
 package navigation
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.Call
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import pages._
 import models._
+import pages._
+import play.api.mvc.Call
 import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
 
+import javax.inject.{Inject, Singleton}
 import scala.util.Try
 
 @Singleton
@@ -77,9 +77,22 @@ class Navigator @Inject() () {
     case p: HasSupplementaryUnitUpdatePage         => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
     case p: SupplementaryUnitUpdatePage            => _ => routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
+    case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
+  private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
+
+    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    answers
+      .get(WithdrawAdviceStartPage(recordId))
+      .map {
+        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case true  => routes.ReasonForWithdrawAdviceController.onPageLoad(recordId)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
   private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
     val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
     answers

@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF
+)
 
-import play.api.libs.json.JsPath
+@(email: String)(implicit request: Request[_], messages: Messages)
 
-case class ReasonForWithdrawAdvicePage(recordId: String) extends QuestionPage[String] {
+@layout(pageTitle = titleNoForm(messages("requestData.title"))) {
 
-  override def path: JsPath = JsPath \ toString \ recordId
+    <h1 class="govuk-heading-xl">@messages("requestData.heading")</h1>
+    <p class="govuk-body">@messages("requestData.p1", email)</p>
 
-  override def toString: String = "reasonForWithdrawAdvice"
+        @formHelper(action = routes.RequestDataController.onSubmit(email)) {
+            @govukButton(ButtonViewModel(messages("requestData.button")))
+        }
 }

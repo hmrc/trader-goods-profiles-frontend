@@ -267,9 +267,8 @@ GET        /update-record/:recordId/withdraw-request/reason                     
 POST       /update-record/:recordId/withdraw-request/reason                                 controllers.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
 GET        /download-data/request-received                                                  controllers.DownloadRequestSuccessController.onPageLoad()
 
-# this url must be last to use it
+GET        /download-data/request-file                                                      controllers.RequestDataController.onPageLoad()
+POST       /download-data/request-file                                                      controllers.RequestDataController.onSubmit(email: String)
+
+# this url must be the last url on this page so it becomes the default if no other urls match
 GET        /*path                                                                           controllers.PageNotFoundController.onPageLoad(path: String)
-
-
-
-

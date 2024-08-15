@@ -38,7 +38,7 @@ class DateMappingsSpec
 
   private implicit val messages: Messages = stubMessages()
 
-  val form = Form(
+  val form: Form[LocalDate] = Form(
     "value" -> localDate(
       requiredKey = "error.required",
       allRequiredKey = "error.required.all",
@@ -47,7 +47,7 @@ class DateMappingsSpec
     )
   )
 
-  val validData = datesBetween(
+  val validData: Gen[LocalDate] = datesBetween(
     min = LocalDate.of(2000, 1, 1),
     max = LocalDate.of(3000, 1, 1)
   )

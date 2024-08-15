@@ -47,5 +47,7 @@ case object SessionData {
   val emailPage: String                      = "email"
   val initialValueOfHasSuppUnit: String      = "initialValueOfHasSuppUnit"
   val initialValueOfSuppUnit: String         = "initialValueOfSuppUnit"
+  val withDrawAdviceStartPage: String        = "withdrawAdviceStart"
+  val reasonForWithdrawAdvicePage: String    = "reasonForWithdrawAdvice"
 
 }

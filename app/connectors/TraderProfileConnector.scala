@@ -52,7 +52,7 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
           case OK => true
         }
       }
-      .recover { case e: NotFoundException =>
+      .recover { case _: NotFoundException =>
         false
       }
 
