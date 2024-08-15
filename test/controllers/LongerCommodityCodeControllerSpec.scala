@@ -192,7 +192,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
 
-        val testCommodity = Commodity("654321", List("Description"), Instant.now, None)
+        val testCommodity = Commodity("6543211200", List("Description"), Instant.now, None)
         when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
           .successful(
             testCommodity
@@ -486,7 +486,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val finalUserAnswers = uaCaptor.getValue
 
             finalUserAnswers.get(LongerCommodityCodePage(testRecordId)).get mustBe "1234"
-            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity.commodityCode
+            finalUserAnswers.get(LongerCommodityQuery(testRecordId)).get mustBe testCommodity
           }
 
         }
