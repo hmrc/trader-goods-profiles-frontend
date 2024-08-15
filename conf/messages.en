@@ -648,7 +648,7 @@ fileReady.heading = Your file is ready to download
 fileReady.p1 = This is a comma separated value file with all of your TGP information. We created the file on {0} and it will be available until {1}
 fileReady.p2.linkText = Download your TGP data (csv, {0}kb)
 fileReady.p3 = If you need a new file of your TGP data, you can
-fileReady.p3.linkText = request another file.
+fileReady.p3.linkText = request another file
 fileReady.p4.linkText = Go to goods profile
 fileReady.p5.linkText = Go to homepage
 
