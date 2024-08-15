@@ -89,11 +89,7 @@ class CategorisationPreparationController @Inject() (
         }
     }
 
-  //TODO startRecategorisation
-  //Needs to save longer commodity code to the LongerCategorisationDetailsQuery
-  //Needs to do Marcy's thing from before where it copies across old answers
-
-  final case class CategoryRecordBuildFailure(error: String) extends Exception {
+  private final case class CategoryRecordBuildFailure(error: String) extends Exception {
     override def getMessage: String = s"Failed to build category record: $error"
   }
 

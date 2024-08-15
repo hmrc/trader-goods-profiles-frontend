@@ -65,9 +65,7 @@ object CategoryRecord2 {
         eori,
         recordId,
         categorisationInfo.commodityCode,
-        //TODO cleanup
         categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
-        //TODO make sure the number is correct for recategorising.
         categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
         categorisationInfo.measurementUnit,
         supplementaryUnit

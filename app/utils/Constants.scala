@@ -24,4 +24,6 @@ case object Constants {
   val Category1AsInt: Int = 1
   val Category2AsInt: Int = 2
   val StandardGoodsAsInt: Int = 3
+
+  val minimumLengthOfCommodityCode: Int = 6
 }

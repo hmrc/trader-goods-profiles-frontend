@@ -306,7 +306,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     assessmentQuestion: CategoryAssessment
   ) = {
     val commodityCodeShort =
-      categorisationInfo.commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(6, "0").mkString
+      categorisationInfo.getMinimalCommodityCode
 
     commodityCodeShort.length == 6 && assessmentQuestion.category == Category2AsInt && categorisationInfo.descendantCount != 0
 

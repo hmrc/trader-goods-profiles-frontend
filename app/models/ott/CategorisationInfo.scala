@@ -22,6 +22,7 @@ import models.ott.response.OttResponse
 import models.{AnsweredQuestions, UserAnswers}
 import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
+import utils.Constants.minimumLengthOfCommodityCode
 
 final case class CategorisationInfo2(
   commodityCode: String,
@@ -62,6 +63,8 @@ final case class CategorisationInfo2(
         reassessmentQuestion = true
       )
     )
+
+  def getMinimalCommodityCode: String = commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
 }
 

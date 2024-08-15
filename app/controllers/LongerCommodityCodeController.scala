@@ -31,6 +31,7 @@ import queries.{CategorisationDetailsQuery2, LongerCommodityQuery, LongerCommodi
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.Constants.minimumLengthOfCommodityCode
 import views.html.LongerCommodityCodeView
 
 import javax.inject.Inject
@@ -58,7 +59,7 @@ class LongerCommodityCodeController @Inject() (
 
   def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers, validLength)
+      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers)
 
       val preparedForm = request.userAnswers.get(LongerCommodityCodePage2(recordId)) match {
         case None        => form
@@ -66,7 +67,7 @@ class LongerCommodityCodeController @Inject() (
       }
 
       shortComcodeOpt match {
-        case Some(shortComcode) if shortComcode.length == validLength =>
+        case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           Ok(view(preparedForm, mode, shortComcode, recordId))
         case _                                                        =>
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
@@ -125,10 +126,10 @@ class LongerCommodityCodeController @Inject() (
 
   def onSubmit2(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers, validLength)
+      val shortComcodeOpt = getShortCommodityCodeOpt2(recordId, request.userAnswers)
 
       shortComcodeOpt match {
-        case Some(shortComcode) if shortComcode.length == validLength => //TODO unnecessary check?
+        case Some(shortComcode) if shortComcode.length == validLength =>
           form
             .bindFromRequest()
             .fold(
@@ -162,14 +163,10 @@ class LongerCommodityCodeController @Inject() (
   private def getShortCommodityCodeOpt2(
     recordId: String,
     userAnswers: UserAnswers,
-    validLength: Int
   ): Option[String] =
     userAnswers
       .get(CategorisationDetailsQuery2(recordId))
-      .map(
-        //TODO put this somewhere sensible
-        _.commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(validLength, "0").mkString
-      )
+      .map(_.getMinimalCommodityCode)
 
   private def updateAnswersAndProceedWithJourney(
     mode: Mode,

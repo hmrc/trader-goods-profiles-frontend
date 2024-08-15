@@ -66,7 +66,6 @@ class CategorisationService @Inject() (
 
   }
 
-  //TODO cat info already in UA?
   def calculateResult(
     categorisationInfo: CategorisationInfo2,
     userAnswers: UserAnswers,
