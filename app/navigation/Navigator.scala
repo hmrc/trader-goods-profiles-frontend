@@ -85,10 +85,10 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: CyaCategorisationPage2                 => navigateFromCyaCategorisationPage(p)
     case p: LongerCommodityCodePage2               =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode2(NormalMode, p.recordId)
+    //TODO reassessment check mode
     case p: ReassessmentPage                       => navigateFromReassessment(p)
     //TODO unit test below line
-    case p: RecategorisationPreparationPage        =>
-      _ => routes.AssessmentController.onPageLoadReassessment(NormalMode, p.recordId, firstAssessmentIndex)
+    case p: RecategorisationPreparationPage        =>navigateFromReassessmentPrep(p)
     case p: HasCorrectGoodsLongerCommodityCodePage2 => answers => navigateFromHasCorrectGoodsLongerCommodityCode2(p.recordId, answers)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
@@ -318,19 +318,44 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   ) =
     assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined
 
+  private def navigateFromReassessmentPrep(reasessmentPrep: RecategorisationPreparationPage)(answers: UserAnswers): Call = {
+    //TODO tests
+    //TODO check mode
+
+    val recordId = reasessmentPrep.recordId
+    answers.get(LongerCategorisationDetailsQuery(recordId)) match {
+      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
+        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
+        if (firstAnswer.isEmpty || firstAnswer.contains(AssessmentAnswer2.NotAnsweredYet)) {
+          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentIndex)
+        } else {
+          navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
+        }
+      case Some(catInfo) =>
+        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
+        routes.CategorisationResultController.onPageLoad2(recordId, scenario)
+
+      case None => routes.JourneyRecoveryController.onPageLoad()
+
+    }
+  }
+
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
     val recordId  = assessmentPage.recordId
     val nextIndex = assessmentPage.index + 1
 
     {
-      for {
+      for { //TODO test it
         categorisationInfo <- answers.get(LongerCategorisationDetailsQuery(recordId))
         assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
+        nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
-        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount                                           =>
+        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount && (nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer2.NotAnsweredYet))                                        =>
           routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextIndex)
+        case AssessmentAnswer2.Exemption if nextIndex < assessmentCount =>
+          navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
         case AssessmentAnswer2.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
           routes.HasSupplementaryUnitController.onPageLoad2(NormalMode, recordId)
         case _                                                                                                    =>
@@ -577,7 +602,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       case _                                                                                =>
         routes.CyaCategorisationController.onPageLoad2(recordId)
     }
-  } getOrElse (routes.JourneyRecoveryController.onPageLoad())
+  } getOrElse routes.JourneyRecoveryController.onPageLoad()
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     val recordId = assessmentPage.recordId

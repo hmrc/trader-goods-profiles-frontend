@@ -28,21 +28,28 @@ object AssessmentAnswer2 {
   case object NoExemption extends WithName("false") with AssessmentAnswer2
   case object Exemption extends WithName("true") with AssessmentAnswer2
 
+  //TODO update places to check this
+  // Unideal but need it as a placeholder when doing longer commodity code - because it stores answers in a JSON array
+  case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer2
+
   implicit val reads: Reads[AssessmentAnswer2] = Reads {
     case JsString("false") => JsSuccess(NoExemption)
     case JsString("true")  => JsSuccess(Exemption)
+    case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
     case _                 => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer2] = Writes {
     case Exemption => JsString("true")
-    case _         => JsString("false")
+    case NotAnsweredYet => JsString("notAnswered")
+    case NoExemption         => JsString("false")
   }
 
   def fromString(input: String): AssessmentAnswer2 =
     input match {
-      case NoExemption.toString => NoExemption
-      case _                    => Exemption
+      case Exemption.toString => Exemption
+      case NotAnsweredYet.toString => NotAnsweredYet
+      case NoExemption.toString                    => NoExemption
     }
 
   def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =

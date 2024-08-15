@@ -73,16 +73,21 @@ class CategorisationPreparationController @Inject() (
 
   def startLongerCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
+      (for { //TODO update tests to copy answers and to handle update cases
         goodsRecord <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        shorterCategorisationInfo <- Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery2(recordId)).get))
         longerComCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
-        categorisationInfo <-
+        longerCategorisationInfo <-
           categorisationService
             .getCategorisationInfo(request, longerComCode.commodityCode, goodsRecord.countryOfOrigin, recordId, longerCode = true)
-        updatedUserAnswers <-
-          Future.fromTry(request.userAnswers.set(LongerCategorisationDetailsQuery(recordId), categorisationInfo))
-        _                      <- sessionRepository.set(updatedUserAnswers)
-      } yield Redirect(navigator.nextPage(RecategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
+        updatedUACatInfo <-
+          Future.fromTry(request.userAnswers.set(LongerCategorisationDetailsQuery(recordId), longerCategorisationInfo))
+        updatedUAReassessmentAnswers <- Future.fromTry(categorisationService.updatingAnswersForRecategorisation2(updatedUACatInfo, recordId, shorterCategorisationInfo, longerCategorisationInfo ))
+        needToUpdateGoodsRecord = longerCategorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty
+        _ <- if (needToUpdateGoodsRecord) updateCategory(updatedUAReassessmentAnswers, request.eori, recordId)
+        else Future.successful(Done)
+        _                      <- sessionRepository.set(updatedUAReassessmentAnswers)
+      } yield Redirect(navigator.nextPage(RecategorisationPreparationPage(recordId), NormalMode, updatedUAReassessmentAnswers)))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
