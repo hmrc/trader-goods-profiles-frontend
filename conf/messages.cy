@@ -6,6 +6,7 @@ site.startAgain = Dechrau eto
 site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
+site.back = yn ol
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -196,6 +197,11 @@ useTraderReference.h3 = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich d
 useTraderReference.radio1 = Iawn, defnyddiwch fy nghyfeirnod masnachwr fel fy nisgrifiad o’r nwyddau
 useTraderReference.radio2 = Na, rwyf am nodi disgrifiad o’r nwyddau gwahanol
 
+useTraderReference.checkYourAnswersLabel = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
+useTraderReference.error.required = Cadarnhewch a ydych am ddefnyddio’ch cyfeirnod masnachwr fel disgrifiad y nwyddau
+useTraderReference.change.hidden = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
+
+
 goodsDescription.title = Disgrifiad o’r nwyddau
 goodsDescription.h1 = Disgrifiad o’r nwyddau
 goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach. Dylai awdurdodau allu adnabod eich nwyddau o’r disgrifiad.
@@ -213,6 +219,10 @@ commodityCode.p3 = Os nad ydych yn siŵr beth yw cod nwyddau eich nwyddau, gallw
 commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon
 commodityCode.heading = Beth yw’r cod nwyddau ar gyfer eich nwyddau?
 commodityCode.hint = Gallwch ddefnyddio 6, 8 neu 10 digid, er enghraifft, 654321, 87654321, 9876543211
+
+commodityCode.error.required = Rhowch god nwydd
+commodityCode.checkYourAnswersLabel = Cod nwyddau
+commodityCode.change.hidden = Cod nwyddau
 
 cyaCreateRecord.title = Gwiriwch eich atebion
 cyaCreateRecord.h1 = Gwiriwch eich atebion
@@ -242,3 +252,30 @@ countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
 
+hasCorrectGoods.title = Canlyniadau ar gyfer
+hasCorrectGoods.heading = Canlyniadau ar gyfer
+hasCorrectGoods.p1 = Dynodiad:
+hasCorrectGoods.h2 = Ai dyma'r nwyddau cywir?
+hasCorrectGoods.error.required = Dewiswch ai dyma'r nwyddau cywir
+
+
+singleRecord.title = Cofnod nwyddau
+singleRecord.h1 = Cofnod nwyddau
+singleRecord.p1 = Gwiriwch a yw manylion y cofnod hwn yn gywir.
+singleRecord.p2 = Os oes angen i chi gategoreiddio'r daioni hwn, byddwn yn dweud mwy wrthych am sut i wneud hyn yn y camau nesaf.
+singleRecord.h2.goodsDetails = Manylion nwyddau
+singleRecord.warning = Rhybudd
+singleRecord.warningText = Rydych yn agored am y wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
+
+
+
+countryOfOrigin.title = Gwlad wreiddiol
+countryOfOrigin.h1 = Gwlad wreiddiol
+countryOfOrigin.p1 = Mae ‘gwlad wreiddiol’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei defnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
+countryOfOrigin.p2 =  Pan fydd y nwyddau’n cael eu datgan wrth y ffin, os yw’r wlad wreiddiol yn wahanol i’r wlad ymadael, efallai y bydd y rheoliadau, y dreth a’r tollau yn wahanol i’r arweiniad sydd ar y gwasanaeth hwn. Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd).
+countryOfOrigin.p2.linkText = Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd).
+countryOfOrigin.heading = Beth yw gwlad tarddiad y nwyddau?
+countryOfOrigin.error.required = Ewch i mewn i'r wlad wreiddiol
+countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
+countryOfOrigin.checkYourAnswersLabel = Gwlad wreiddiol
+countryOfOrigin.change.hidden = Gwlad wreiddiol
