@@ -35,7 +35,7 @@ class FileReadyController @Inject()(
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: ReviewReasonView,
+  view: FileReadyView,
 ) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {

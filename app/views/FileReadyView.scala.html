@@ -1,0 +1,31 @@
+@this(
+    layout: templates.Layout,
+    govukButton: GovukButton,
+    formHelper: FormWithCSRF
+)
+
+@(fileSizeKilobytes: Int, fileDownloadLink: String)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("fileReady.title"))) {
+
+    <h1 class="govuk-heading-l">@messages("fileReady.heading")</h1>
+
+    <p class="govuk-body">@messages("fileReady.p1")</p>
+
+    <p class="govuk-body">
+        <a href="#" class="govuk-link">messages("fileReady.p2.linkText")</a>
+    </p>
+
+    <p class="govuk-body">
+        @messages("fileReady.p3") <a href="#" class="govuk-link">@messages("fileReady.p3.linkText")</a>
+    </p>
+
+    <p class="govuk-body">
+        <a href="#" class="govuk-link">messages("fileReady.p4.linkText")</a>
+    </p>
+
+    <p class="govuk-body">
+        <a href="#" class="govuk-link">messages("fileReady.p5.linkText")</a>
+    </p>
+
+}
