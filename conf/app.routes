@@ -269,5 +269,7 @@ POST       /update-record/:recordId/withdraw-request/reason                     
 GET        /download-data/request-file                                                      controllers.RequestDataController.onPageLoad()
 POST       /download-data/request-file                                                      controllers.RequestDataController.onSubmit(email: String)
 
+GET        /download-data/file-in-progress                                                  controllers.FileInProgressController.onPageLoad()
+
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET        /*path                                                                           controllers.PageNotFoundController.onPageLoad(path: String)
