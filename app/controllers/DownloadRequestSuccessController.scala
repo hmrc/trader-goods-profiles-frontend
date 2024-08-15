@@ -37,7 +37,7 @@ class DownloadRequestSuccessController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
       // TODO : should be replaced with actual email & date
-      val email             = "sombody@email.com"
+      val email             = "somebody@email.com"
       val downloadUntilDate = "18 August 2024"
       Ok(view(email, downloadUntilDate))
   }
