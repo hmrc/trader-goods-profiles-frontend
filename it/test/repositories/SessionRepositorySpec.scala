@@ -19,7 +19,7 @@ package repositories
 import base.TestConstants.userAnswersId
 import config.FrontendAppConfig
 import models.UserAnswers
-import models.helper.{CategorisationJourney, CreateProfileJourney, CreateRecordJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
+import models.helper._
 import org.mockito.Mockito.when
 import org.mongodb.scala.model.Filters
 import org.scalatest.OptionValues
@@ -29,7 +29,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
-import utils.SessionData.{assessmentsPage, commodityCodePage, countryOfOriginPage, emailPage, goodsDescriptionPage, hasCorrectGoodsPage, hasNiphlPage, hasNirmsPage, hasSupplementaryUnitPage, hasSupplementaryUnitUpdatePage, longerCommodityCodePage, measurementUnitQuery, namePage, niphlNumberPage, nirmsNumberPage, reasonForWithdrawAdvicePage, supplementaryUnitPage, supplementaryUnitUpdatePage, traderReferencePage, ukimsNumberPage, useTraderReferencePage, withDrawAdviceStartPage}
+import utils.SessionData._
 
 import java.time.{Clock, Instant, ZoneId}
 import java.time.temporal.ChronoUnit

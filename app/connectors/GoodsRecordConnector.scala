@@ -87,7 +87,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           case NO_CONTENT => true
         }
       }
-      .recover { case e: NotFoundException =>
+      .recover { case _: NotFoundException =>
         false
       }
 
