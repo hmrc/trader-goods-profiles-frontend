@@ -267,7 +267,6 @@ GET        /update-record/:recordId/withdraw-request/reason                     
 POST       /update-record/:recordId/withdraw-request/reason                                 controllers.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
 
 GET        /download-data/request-received                                                  controllers.DownloadRequestSuccessController.onPageLoad()
-
 GET        /download-data/request-file                                                      controllers.RequestDataController.onPageLoad()
 POST       /download-data/request-file                                                      controllers.RequestDataController.onSubmit(email: String)
 
