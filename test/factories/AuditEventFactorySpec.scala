@@ -17,9 +17,9 @@
 package factories
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.{testEori, testRecordId, withdrawReason}
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
-import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
+import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, WithdrawAdviceJourney}
 import models.ott.response._
 import models.{AdviceRequest, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.{NOT_FOUND, OK}
@@ -328,6 +328,50 @@ class AuditEventFactorySpec extends SpecBase {
       auditDetails("recordId") mustBe testRecordId
       auditDetails("requestorName") mustBe "Firstname Lastname"
       auditDetails("requestorEmail") mustBe "test@test.com"
+    }
+
+    "create event when journey is withdraw request - without reason" in {
+
+      val result =
+        AuditEventFactory()
+          .createWithdrawAdviceEvent(AffinityGroup.Individual, testEori, WithdrawAdviceJourney, testRecordId, "")
+
+      result.auditSource mustBe "trader-goods-profiles-frontend"
+      result.auditType mustBe "AdviceRequestUpdate"
+      result.tags.isEmpty mustBe false
+
+      val auditDetails = result.detail
+      auditDetails.size mustBe 5
+      auditDetails("journey") mustBe "WithdrawAdvice"
+      auditDetails("affinityGroup") mustBe "Individual"
+      auditDetails("eori") mustBe testEori
+      auditDetails("recordId") mustBe testRecordId
+      auditDetails("withdrawReason") mustBe ""
+    }
+
+    "create event when journey is withdraw request - with reason" in {
+
+      val result =
+        AuditEventFactory()
+          .createWithdrawAdviceEvent(
+            AffinityGroup.Individual,
+            testEori,
+            WithdrawAdviceJourney,
+            testRecordId,
+            withdrawReason
+          )
+
+      result.auditSource mustBe "trader-goods-profiles-frontend"
+      result.auditType mustBe "AdviceRequestUpdate"
+      result.tags.isEmpty mustBe false
+
+      val auditDetails = result.detail
+      auditDetails.size mustBe 5
+      auditDetails("journey") mustBe "WithdrawAdvice"
+      auditDetails("affinityGroup") mustBe "Individual"
+      auditDetails("eori") mustBe testEori
+      auditDetails("recordId") mustBe testRecordId
+      auditDetails("withdrawReason") mustBe withdrawReason
     }
 
     "create validate commodity code event" - {

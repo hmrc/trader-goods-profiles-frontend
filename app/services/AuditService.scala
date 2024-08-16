@@ -20,12 +20,14 @@ import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection}
+import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection, WithdrawAdviceJourney}
 import models.ott.response.OttResponse
+import models.requests.DataRequest
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -129,6 +131,24 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"RequestAdvice audit event status: $auditResult")
+      Done
+    }
+  }
+
+  def auditWithdrawAdvice(affinityGroup: AffinityGroup, eori: String, recordId: String, withdrawReason: Option[String])(
+    implicit hc: HeaderCarrier
+  ): Future[Done] = {
+    val event =
+      auditEventFactory.createWithdrawAdviceEvent(
+        affinityGroup,
+        eori,
+        WithdrawAdviceJourney,
+        recordId,
+        withdrawReason.getOrElse("")
+      )
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"WithdrawAdvice audit event status: $auditResult")
       Done
     }
   }
