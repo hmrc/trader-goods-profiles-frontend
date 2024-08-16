@@ -271,5 +271,7 @@ GET        /download-data/request-received                                      
 GET        /download-data/request-file                                                      controllers.RequestDataController.onPageLoad()
 POST       /download-data/request-file                                                      controllers.RequestDataController.onSubmit(email: String)
 
+GET        /download-data/file-ready                                                        controllers.FileReadyController.onPageLoad()
+
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET        /*path                                                                           controllers.PageNotFoundController.onPageLoad(path: String)
