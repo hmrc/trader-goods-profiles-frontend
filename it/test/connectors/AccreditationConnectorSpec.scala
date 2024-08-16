@@ -16,7 +16,7 @@
 
 package connectors
 
-import base.TestConstants.{testEori, testRecordId, withDrawReason}
+import base.TestConstants.{testEori, testRecordId, withdrawReason}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.AdviceRequest
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -96,11 +96,11 @@ class AccreditationConnectorSpec
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
-          .withRequestBody(equalToJson(s"""{"withdrawReason": "$withDrawReason"}"""))
+          .withRequestBody(equalToJson(s"""{"withdrawReason": "$withdrawReason"}"""))
           .willReturn(noContent())
       )
 
-      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).futureValue
+      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withdrawReason)).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -113,11 +113,11 @@ class AccreditationConnectorSpec
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
           .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
-          .withRequestBody(equalToJson(s"""{"withdrawReason": "$withDrawReason"}"""))
+          .withRequestBody(equalToJson(s"""{"withdrawReason": "$withdrawReason"}"""))
           .willReturn(serverError())
       )
 
-      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withDrawReason)).failed.futureValue
+      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withdrawReason)).failed.futureValue
     }
   }
 }
