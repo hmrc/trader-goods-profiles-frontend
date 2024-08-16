@@ -20,7 +20,7 @@ import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection}
+import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection, WithdrawAdviceJourney}
 import models.ott.response.OttResponse
 import models.requests.DataRequest
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
@@ -142,7 +142,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       auditEventFactory.createWithdrawAdviceEvent(
         affinityGroup,
         eori,
-        RequestAdviceJourney,
+        WithdrawAdviceJourney,
         recordId,
         withdrawReason.getOrElse("")
       )

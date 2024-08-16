@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, withdrawReason}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
+import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, WithdrawAdviceJourney}
 import models.ott.response._
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
@@ -971,7 +971,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           .createWithdrawAdviceEvent(
             eqTo(AffinityGroup.Individual),
             eqTo(testEori),
-            eqTo(RequestAdviceJourney),
+            eqTo(WithdrawAdviceJourney),
             eqTo(testRecordId),
             eqTo(withdrawReason)
           )(
@@ -1003,7 +1003,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           .createWithdrawAdviceEvent(
             eqTo(AffinityGroup.Individual),
             eqTo(testEori),
-            eqTo(RequestAdviceJourney),
+            eqTo(WithdrawAdviceJourney),
             eqTo(testRecordId),
             eqTo(withdrawReason)
           )(
