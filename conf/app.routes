@@ -184,7 +184,7 @@ GET         /update-record/:recordId/categorisation2/check-your-answers         
 POST         /update-record/:recordId/categorisation2/check-your-answers                      controllers.CyaCategorisationController.onSubmit2(recordId:String)
 
 GET        /update-record/:recordId/categorisation/categorisationPreparation                controllers.CategorisationPreparationController.startCategorisation(recordId:String)
-GET        /update-record/:recordId/categorisation/recategorisationPreparation                controllers.CategorisationPreparationController.startLongerCategorisation(recordId:String)
+GET        /update-record/:recordId/categorisation/recategorisationPreparation                controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = NormalMode, recordId:String)
 GET        /update-record/:recordId/categorisation/recategorisationPreparation/check                controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = CheckMode, recordId:String)
 
 GET         /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onPageLoad(recordId:String)
