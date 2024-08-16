@@ -22,7 +22,7 @@
 
 @(email:String, downloadUntilDate:String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("downloadRequestSuccess.title"))) {
+@layout(pageTitle = titleNoForm(messages("downloadRequestSuccess.title")),showBackLink = false) {
 
     @govukPanel(Panel(
         title = messages("downloadRequestSuccess.h1")
