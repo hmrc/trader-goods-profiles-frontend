@@ -197,6 +197,8 @@ homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is corre
 homepage.p5.linkText = Manage your profile details
 homepage.h2.3 = Help and contact
 homepage.p6.linkText = Find additional support and contacts to help you
+homepage.downloadBanner.content = The file you requested with your TGP records is ready for you to download.
+homepage.downloadBanner.linkText = Go to the download page to get your file
 
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
