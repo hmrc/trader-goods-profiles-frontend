@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
 import models.ott.CategorisationInfo2
-import models.{CategoryRecord2, Commodity, StandardGoodsNoAssessmentsScenario, UserAnswers}
+import models.{CategoryRecord2, Commodity, NormalMode, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
@@ -322,7 +322,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         running(app) {
 
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startLongerCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
