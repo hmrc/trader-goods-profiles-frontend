@@ -34,7 +34,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Try, Success}
+import scala.util.{Success, Try}
 
 class CategorisationPreparationController @Inject() (
   override val messagesApi: MessagesApi,
@@ -54,16 +54,14 @@ class CategorisationPreparationController @Inject() (
   def startCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        goodsRecord            <- goodsRecordsConnector.getRecord(request.eori, recordId)
-        categorisationInfo     <-
+        goodsRecord        <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        categorisationInfo <-
           categorisationService
             .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
-        updatedUserAnswers     <-
+        updatedUserAnswers <-
           Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery2(recordId), categorisationInfo))
-        _                      <- sessionRepository.set(updatedUserAnswers)
-        needToUpdateGoodsRecord = categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty
-        _                      <- if (needToUpdateGoodsRecord) updateCategory(updatedUserAnswers, request.eori, recordId)
-                                  else Future.successful(Done)
+        _                  <- sessionRepository.set(updatedUserAnswers)
+        _                  <- updateCategory(updatedUserAnswers, request.eori, recordId, categorisationInfo)
       } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
@@ -74,31 +72,58 @@ class CategorisationPreparationController @Inject() (
 
   def startLongerCategorisation(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for { //TODO update tests to copy answers and to handle update cases
-        goodsRecord <- goodsRecordsConnector.getRecord(request.eori, recordId)
-        shorterCategorisationInfo <- Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery2(recordId)).get))
-        longerComCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
+      (for {
+        goodsRecord               <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        shorterCategorisationInfo <-
+          Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery2(recordId)).get))
+
+        longerComCode            <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
         longerCategorisationInfo <-
           categorisationService
-            .getCategorisationInfo(request, longerComCode.commodityCode, goodsRecord.countryOfOrigin, recordId, longerCode = true)
-        updatedUASuppUnit <- Future.fromTry(cleanupSupplementaryUnit(request.userAnswers, recordId, shorterCategorisationInfo, longerCategorisationInfo))
+            .getCategorisationInfo(
+              request,
+              longerComCode.commodityCode,
+              goodsRecord.countryOfOrigin,
+              recordId,
+              longerCode = true
+            )
+
+        updatedUASuppUnit <-
+          Future.fromTry(
+            cleanupSupplementaryUnit(request.userAnswers, recordId, shorterCategorisationInfo, longerCategorisationInfo)
+          )
+
         updatedUACatInfo <-
           Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), longerCategorisationInfo))
-        updatedUAReassessmentAnswers <- Future.fromTry(categorisationService.updatingAnswersForRecategorisation2(updatedUACatInfo, recordId, shorterCategorisationInfo, longerCategorisationInfo ))
-        needToUpdateGoodsRecord = longerCategorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty
-        _ <- if (needToUpdateGoodsRecord) updateCategory(updatedUAReassessmentAnswers, request.eori, recordId)
-        else Future.successful(Done)
-        _                      <- sessionRepository.set(updatedUAReassessmentAnswers)
-      } yield Redirect(navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)))
+
+        updatedUAReassessmentAnswers <- Future.fromTry(
+                                          categorisationService.updatingAnswersForRecategorisation2(
+                                            updatedUACatInfo,
+                                            recordId,
+                                            shorterCategorisationInfo,
+                                            longerCategorisationInfo
+                                          )
+                                        )
+
+        _ <- updateCategory(updatedUAReassessmentAnswers, request.eori, recordId, longerCategorisationInfo)
+        _ <- sessionRepository.set(updatedUAReassessmentAnswers)
+      } yield Redirect(
+        navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)
+      ))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
     }
 
-  private def cleanupSupplementaryUnit(userAnswers: UserAnswers,  recordId: String, shorterCatInfo: CategorisationInfo2, longerCatInfo: CategorisationInfo2) = {
+  private def cleanupSupplementaryUnit(
+    userAnswers: UserAnswers,
+    recordId: String,
+    shorterCatInfo: CategorisationInfo2,
+    longerCatInfo: CategorisationInfo2
+  ) = {
 
-    val oldLongerCatInfo = userAnswers.get((LongerCategorisationDetailsQuery(recordId)))
+    val oldLongerCatInfo = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
     val currentMeasureUnit = oldLongerCatInfo.map(_.measurementUnit).getOrElse(shorterCatInfo.measurementUnit)
 
@@ -113,15 +138,24 @@ class CategorisationPreparationController @Inject() (
     override def getMessage: String = s"Failed to build category record: $error"
   }
 
-  private def updateCategory(updatedUserAnswers: UserAnswers, eori: String, recordId: String)(implicit
+  private def updateCategory(
+    updatedUserAnswers: UserAnswers,
+    eori: String,
+    recordId: String,
+    categorisationInfo: CategorisationInfo2
+  )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    CategoryRecord2.build(updatedUserAnswers, eori, recordId, categorisationService) match {
-      case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord2(eori, recordId, record)
-      case Left(errors)  =>
-        val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+    if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
+      CategoryRecord2.build(updatedUserAnswers, eori, recordId, categorisationService) match {
+        case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord2(eori, recordId, record)
+        case Left(errors)  =>
+          val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-        Future.failed(CategoryRecordBuildFailure(errorMessages))
+          Future.failed(CategoryRecordBuildFailure(errorMessages))
+      }
+    } else {
+      Future.successful(Done)
     }
 
 }

@@ -28,6 +28,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -38,7 +39,7 @@ import services.CategorisationService
 
 import java.time.Instant
 import scala.concurrent.Future
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAfterEach {
   private def onwardRoute = Call("GET", "/foo")
@@ -46,6 +47,21 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
   private val mockCategorisationService = mock[CategorisationService]
   private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
   private val mockSessionRepository     = mock[SessionRepository]
+
+  private val longerCommodity = Commodity(
+    "1234567890",
+    List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+    Instant.now,
+    None
+  )
+
+  private val categoryInfoNoAssessments = CategorisationInfo2(
+    "1234567890",
+    Seq.empty,
+    Seq.empty,
+    None,
+    1
+  )
 
   private def application(userAnswers: UserAnswers = emptyUserAnswers) =
     applicationBuilder(userAnswers = Some(userAnswers))
@@ -116,14 +132,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
       }
 
       "and update the record if there are no questions to answer" in {
-
-        val categoryInfoNoAssessments = CategorisationInfo2(
-          "1234567890",
-          Seq.empty,
-          Seq.empty,
-          None,
-          1
-        )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categoryInfoNoAssessments)
@@ -222,6 +230,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       "when session repository fails" in {
 
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
         when(mockSessionRepository.set(any())).thenReturn(Future.failed(new RuntimeException("error")))
 
         val app = application()
@@ -237,14 +248,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
       }
 
       "when goods record connector update fails" in {
-
-        val categoryInfoNoAssessments = CategorisationInfo2(
-          "1234567890",
-          Seq.empty,
-          Seq.empty,
-          None,
-          1
-        )
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categoryInfoNoAssessments)
@@ -269,19 +272,16 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       "when category record fails to build" in {
 
-        val categoryInfoNoAssessments = CategorisationInfo2(
-          "1234567890",
-          Seq.empty,
-          Seq.empty,
-          None,
-          1
-        )
-
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
           Future.successful(categoryInfoNoAssessments)
         )
 
-        val app = application()
+        val userAnswersThatWontBuild = emptyUserAnswers
+          .set(SupplementaryUnitPage(testRecordId), "1234")
+          .success
+          .value
+
+        val app = application(userAnswersThatWontBuild)
         running(app) {
           val request =
             FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
@@ -306,22 +306,16 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categorisationInfo2)
         )
 
+        val shorterCommodity = categorisationInfo2.copy(commodityCode = "123456")
+
         val userAnswers = emptyUserAnswers
-          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .set(CategorisationDetailsQuery2(testRecordId), shorterCommodity)
           .success
           .value
           .set(
             LongerCommodityQuery2(testRecordId),
-            Commodity(
-              "1234567890",
-              List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
-              Instant.now,
-              None
-            )
+            longerCommodity
           )
-          .success
-          .value
-          .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
           .success
           .value
 
@@ -345,15 +339,593 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
               .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId), eqTo(true))(any())
           }
 
+          withClue("must set up the reassessment answers") {
+            verify(mockCategorisationService).updatingAnswersForRecategorisation2(
+              any(),
+              eqTo(testRecordId),
+              eqTo(shorterCommodity),
+              eqTo(categorisationInfo2)
+            )
+          }
+
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            verify(mockSessionRepository).set(uaArgCaptor.capture())
+            //Capture from here because this routine is mocked and returns stubbed data
+            verify(mockCategorisationService)
+              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
             finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)).get mustBe categorisationInfo2
           }
 
+          withClue("must not get category result from categorisation service as not needed") {
+            verify(mockCategorisationService, times(0))
+              .calculateResult(any(), any(), any())
+          }
+
+          withClue("must not have updated goods record") {
+            verify(mockGoodsRecordConnector, times(0)).updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(
+              any()
+            )
+          }
+
+        }
+
+      }
+
+      "and update the goods record if nothing to answer" in {
+
+        val longerCode = categoryInfoNoAssessments.copy(longerCode = true)
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(longerCode)
+        )
+
+        val shorterCommodity = categorisationInfo2.copy(commodityCode = "123456")
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery2(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
+
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
+          .thenReturn(StandardGoodsNoAssessmentsScenario)
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must get category details from categorisation service") {
+            verify(mockCategorisationService)
+              .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId), eqTo(true))(any())
+          }
+
+          withClue("must set up the reassessment answers") {
+            verify(mockCategorisationService).updatingAnswersForRecategorisation2(
+              any(),
+              eqTo(testRecordId),
+              eqTo(shorterCommodity),
+              eqTo(longerCode)
+            )
+          }
+
+          withClue("must get category result from categorisation service") {
+            verify(mockCategorisationService)
+              .calculateResult(any(), any(), any())
+          }
+
+          withClue("must have updated goods record") {
+            val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord2] =
+              ArgumentCaptor.forClass(classOf[CategoryRecord2])
+
+            verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord2(
+              any(),
+              eqTo(testRecordId),
+              categoryRecordArgCaptor.capture()
+            )(any())
+
+            val categoryRecord = categoryRecordArgCaptor.getValue
+            categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
+            categoryRecord.categoryAssessmentsWithExemptions mustBe 0
+          }
+
+          withClue("must update User Answers with Categorisation Info") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            //Capture from here because this routine is mocked and returns stubbed data
+            verify(mockCategorisationService)
+              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)).get mustBe longerCode
+          }
+
+        }
+
+      }
+
+      "and preserve the supplementary unit if it has not changed between short and long code" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
+
+        val shorterCommodity = categorisationInfo2.copy(commodityCode = "123456")
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery2(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+          .set(HasSupplementaryUnitPage(testRecordId), true)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), "1234")
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must keep supplementary unit in answers") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockCategorisationService)
+              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(HasSupplementaryUnitPage(testRecordId)) mustBe Some(true)
+            finalUserAnswers.get(SupplementaryUnitPage(testRecordId)) mustBe Some("1234")
+
+          }
+
+        }
+
+      }
+
+      "and preserve the supplementary unit if it has changed between previous longer code and current longer code" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
+
+        val shorterCommodity     = categorisationInfo2.copy(commodityCode = "123456")
+        val firstLongerCommodity =
+          categorisationInfo2.copy(commodityCode = "1234566666")
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(LongerCategorisationDetailsQuery(testRecordId), firstLongerCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery2(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+          .set(HasSupplementaryUnitPage(testRecordId), true)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), "1234")
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must keep supplementary unit in answers") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockCategorisationService)
+              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(HasSupplementaryUnitPage(testRecordId)) mustBe Some(true)
+            finalUserAnswers.get(SupplementaryUnitPage(testRecordId)) mustBe Some("1234")
+
+          }
+
+        }
+
+      }
+
+      "and remove the supplementary unit if it has changed between short and long code" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
+
+        val shorterCommodity = categorisationInfo2.copy(commodityCode = "123456", measurementUnit = Some("kg"))
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery2(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+          .set(HasSupplementaryUnitPage(testRecordId), true)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), "1234")
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must remove supplementary unit from answer") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            //Capture from here because this routine is mocked and returns stubbed data
+            verify(mockCategorisationService)
+              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(HasSupplementaryUnitPage(testRecordId)) mustBe None
+            finalUserAnswers.get(SupplementaryUnitPage(testRecordId)) mustBe None
+
+          }
+
+        }
+
+      }
+
+      "and remove the supplementary unit if it has changed between previous longer and current long code" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo2)
+        )
+
+        val shorterCommodity     = categorisationInfo2.copy(commodityCode = "123456", measurementUnit = Some("kg"))
+        val firstLongerCommodity =
+          categorisationInfo2.copy(commodityCode = "1234566666", measurementUnit = Some("litres"))
+        val userAnswers          = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(LongerCategorisationDetailsQuery(testRecordId), firstLongerCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery2(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+          .set(HasSupplementaryUnitPage(testRecordId), true)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), "1234")
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must remove supplementary unit from answer") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            //Capture from here because this routine is mocked and returns stubbed data
+            verify(mockCategorisationService)
+              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)) mustBe Some(categorisationInfo2)
+            finalUserAnswers.get(HasSupplementaryUnitPage(testRecordId)) mustBe None
+            finalUserAnswers.get(SupplementaryUnitPage(testRecordId)) mustBe None
+
+          }
+
+        }
+
+      }
+
+    }
+
+    "must redirect to Journey Recovery" - {
+
+      "when goods record connector fails" in {
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("error")))
+
+        val app = application()
+
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when categorisation service get info fails" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("error")))
+
+        val app = application()
+
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when categorisation details query is not set" in {
+
+        val app = application()
+
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when longer commodity query is not set" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        val app = application(userAnswers)
+
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when updating answers for reassessment call fails" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+          Failure(new Exception(":("))
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(LongerCommodityQuery2(testRecordId), longerCommodity)
+          .success
+          .value
+
+        val app = application(userAnswers)
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when goods record connector update fails" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(LongerCommodityQuery2(testRecordId), longerCommodity)
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+          Success(userAnswers)
+        )
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
+          .thenReturn(StandardGoodsNoAssessmentsScenario)
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException(":(")))
+
+        val app = application(userAnswers)
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when category record fails to build" in {
+
+        when(mockSessionRepository.set(any())).thenReturn(Future.failed(new RuntimeException("error")))
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(LongerCommodityQuery2(testRecordId), longerCommodity)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), "543")
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+          Success(userAnswers)
+        )
+
+        val app = application(userAnswers)
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+      }
+
+      "when session repository fails" in {
+
+        when(mockSessionRepository.set(any())).thenReturn(Future.failed(new RuntimeException("error")))
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categoryInfoNoAssessments)
+        )
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
+          .set(LongerCommodityQuery2(testRecordId), longerCommodity)
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+          Success(userAnswers)
+        )
+
+        val app = application(userAnswers)
+
+        running(app) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
