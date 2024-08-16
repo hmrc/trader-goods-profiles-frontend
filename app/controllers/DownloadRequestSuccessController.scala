@@ -17,28 +17,28 @@
 package controllers
 
 import controllers.actions._
-import models.GoodsRecordsPagination.firstPage
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.PreviousMovementRecordsView
+import views.html.DownloadRequestSuccessView
 
-import javax.inject.Inject
-
-class PreviousMovementRecordsController @Inject() (
+class DownloadRequestSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView
+  view: DownloadRequestSuccessView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Ok(view())
-  }
-
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      // TODO : should be replaced with actual email & date
+      val email             = "somebody@email.com"
+      val downloadUntilDate = "18 August 2024"
+      Ok(view(email, downloadUntilDate))
   }
 }

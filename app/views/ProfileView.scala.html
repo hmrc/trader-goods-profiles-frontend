@@ -24,7 +24,7 @@
 
 @(detailsList: SummaryList)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("profile.title"))) {
+@layout(backLinkUrl = controllers.routes.HomePageController.onPageLoad.url, backLinkMessageKey = "profile.back", pageTitle = titleNoForm(messages("profile.title"))) {
 
     <h1 class="govuk-heading-l">@messages("profile.h1")</h1>
 

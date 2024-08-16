@@ -38,9 +38,7 @@
         <p class="govuk-body">@messages("sucessBanner.p1") <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> @messages("sucessBanner.p2")</p>
     }
 
-@layout(pageTitle = titleNoForm(messages("singleRecord.title"))) {
-
-
+@layout(backLinkUrl = controllers.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(

@@ -53,4 +53,7 @@ case object SessionData {
   val categorisationDetailsQuery = "categorisationDetails2"
     val longerCategorisationDetailsQuery = "longerCategorisationDetails"
   val longerCommodityQuery = "longerCommodity2"
+  val withDrawAdviceStartPage: String        = "withdrawAdviceStart"
+  val reasonForWithdrawAdvicePage: String    = "reasonForWithdrawAdvice"
+
 }

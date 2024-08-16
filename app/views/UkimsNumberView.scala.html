@@ -27,7 +27,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call, isCreateJourney: Boolean = false)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("ukimsNumber.title"))) {
 
@@ -55,8 +55,10 @@
         )
     }
 
-    <p class="govuk-body">
-        <a href="@routes.UkimsKickOutController.onPageLoad.url" class="govuk-link">@messages("ukimsNumber.linkText")</a>
-    </p>
+    @if(isCreateJourney) {
+        <p class="govuk-body">
+            <a href="@routes.UkimsKickOutController.onPageLoad.url" class="govuk-link">@messages("ukimsNumber.linkText")</a>
+        </p>
+    }
 
 }

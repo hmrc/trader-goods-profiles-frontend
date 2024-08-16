@@ -17,28 +17,38 @@
 package controllers
 
 import controllers.actions._
-import models.GoodsRecordsPagination.firstPage
+import models.NormalMode
+import navigation.Navigator
+import pages.RequestDataPage
+
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.PreviousMovementRecordsView
+import views.html.RequestDataView
 
-import javax.inject.Inject
-
-class PreviousMovementRecordsController @Inject() (
+class RequestDataController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView
+  view: RequestDataView,
+  navigator: Navigator
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Ok(view())
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      //TODO get this email from the user
+      Ok(view("placeholder@email.com"))
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
+  def onSubmit(email: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      //TODO send an email to the user
+      //TODO redirect to the correct page
+      Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
   }
 }

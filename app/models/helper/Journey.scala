@@ -76,6 +76,15 @@ case object RequestAdviceJourney extends Journey {
   override def toString: String = "RequestAdvice"
 }
 
+case object WithdrawAdviceJourney extends Journey {
+  val pages: Seq[String]        =
+    Seq(
+      withDrawAdviceStartPage,
+      reasonForWithdrawAdvicePage
+    )
+  override def toString: String = "WithdrawAdvice"
+}
+
 case object SupplementaryUnitUpdateJourney extends Journey {
   val pages: Seq[String]        =
     Seq(

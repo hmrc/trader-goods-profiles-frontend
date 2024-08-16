@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
   // handle back click
   var backLink = document.querySelector('.govuk-back-link');
-  if (backLink !== null) {
+  if (backLink !== null && backLink.getAttribute("href") === "#") {
     backLink.addEventListener('click', function(e){
       e.preventDefault();
       e.stopPropagation();

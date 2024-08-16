@@ -32,8 +32,9 @@ object CategorySummary {
   ): SummaryListRow =
     if (isCategorised) {
       val action =
-        if (recordLocked) Seq.empty
-        else {
+        if (recordLocked) {
+          Seq.empty
+        } else {
           Seq(
             ActionItemViewModel("site.change", routes.CategorisationPreparationController.startCategorisation(recordId).url)
               .withVisuallyHiddenText(messages("singleRecord.category.row"))

@@ -49,7 +49,7 @@ class WithdrawAdviceStartController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(WithdrawAdviceStartPage) match {
+      val preparedForm = request.userAnswers.get(WithdrawAdviceStartPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -65,9 +65,9 @@ class WithdrawAdviceStartController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(WithdrawAdviceStartPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(WithdrawAdviceStartPage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(WithdrawAdviceStartPage, NormalMode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(WithdrawAdviceStartPage(recordId), NormalMode, updatedAnswers))
         )
     }
 }

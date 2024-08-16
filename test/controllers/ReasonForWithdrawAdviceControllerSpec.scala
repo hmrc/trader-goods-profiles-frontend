@@ -18,19 +18,21 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
+import connectors.AccreditationConnector
 import forms.ReasonForWithdrawAdviceFormProvider
 import models.UserAnswers
-import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReasonForWithdrawAdvicePage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.ReasonForWithdrawAdviceView
+import navigation.{FakeNavigator, Navigator}
+import play.api.mvc.Call
 
 import scala.concurrent.Future
 
@@ -64,7 +66,8 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ReasonForWithdrawAdvicePage, "answer").success.value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(ReasonForWithdrawAdvicePage(testRecordId), "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .build()
@@ -88,25 +91,30 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
 
       val mockSessionRepository = mock[SessionRepository]
 
+      val mockConnector = mock[AccreditationConnector]
+      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[AccreditationConnector].toInstance(mockConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, reasonForWithdrawAdviceRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+          FakeRequest(POST, routes.ReasonForWithdrawAdviceController.onSubmit(testRecordId).url)
+            .withFormUrlEncodedBody(("value", "test"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.WithdrawAdviceSuccessController.onPageLoad(testRecordId).url
       }
     }
 
@@ -114,23 +122,66 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+      val mockConnector = mock[AccreditationConnector]
+      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[AccreditationConnector].toInstance(mockConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, reasonForWithdrawAdviceRoute)
+          FakeRequest(POST, routes.ReasonForWithdrawAdviceController.onSubmit(testRecordId).url)
             .withFormUrlEncodedBody(("value", ""))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.WithdrawAdviceSuccessController.onPageLoad(testRecordId).url
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+      val mockConnector = mock[AccreditationConnector]
+      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AccreditationConnector].toInstance(mockConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val invalidValue = "a" * 513
+        val request      =
+          FakeRequest(POST, routes.ReasonForWithdrawAdviceController.onSubmit(testRecordId).url)
+            .withFormUrlEncodedBody(("value", invalidValue))
+
+        val boundForm = form.bind(Map("value" -> invalidValue))
+
+        val view = application.injector.instanceOf[ReasonForWithdrawAdviceView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+
+        contentAsString(result) mustEqual view(
+          boundForm,
+          testRecordId
+        )(request, messages(application)).toString
       }
     }
 

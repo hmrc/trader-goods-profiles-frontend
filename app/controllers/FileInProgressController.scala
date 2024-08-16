@@ -17,28 +17,26 @@
 package controllers
 
 import controllers.actions._
-import models.GoodsRecordsPagination.firstPage
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.PreviousMovementRecordsView
+import views.html.FileInProgressView
 
-import javax.inject.Inject
-
-class PreviousMovementRecordsController @Inject() (
+class FileInProgressController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView
+  view: FileInProgressView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Ok(view())
-  }
-
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      //TODO get this email from the user
+      Ok(view("placeholder@email.com"))
   }
 }
