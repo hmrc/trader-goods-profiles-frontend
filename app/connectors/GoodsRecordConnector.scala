@@ -101,6 +101,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(_ => Done)
 
+  //TODO deletable
   def updateCategoryAndComcodeForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =

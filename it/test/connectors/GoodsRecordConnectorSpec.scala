@@ -18,7 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.router.requests.UpdateRecordRequest
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Category1Scenario, CategoryRecord, CategoryRecord2, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
@@ -338,38 +338,61 @@ class GoodsRecordConnectorSpec
       comcode = Some("1234567890")
     )
 
-    "must update a goods record with a category" in {
+    "must update a goods record" - {
+      "with a category" in {
 
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
+        wireMockServer.stubFor(
+          patch(urlEqualTo(goodsRecordUrl))
+            .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok())
+        )
 
-      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).futureValue
-    }
+        connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).futureValue
+      }
 
-    "must update a goods record with a category and supplementary unit" in {
+      "with a category and supplementary unit" in {
 
-      val categoryRecordWithSupp = categoryRecord.copy(
-        measurementUnit = Some("weight"),
-        supplementaryUnit = Some("123")
-      )
+        val categoryRecordWithSupp = categoryRecord.copy(
+          measurementUnit = Some("weight"),
+          supplementaryUnit = Some("123")
+        )
 
-      val updateRecordRequestWithSupp = updateRecordRequest.copy(
-        measurementUnit = Some("weight"),
-        supplementaryUnit = Some(123)
-      )
+        val updateRecordRequestWithSupp = updateRecordRequest.copy(
+          measurementUnit = Some("weight"),
+          supplementaryUnit = Some(123)
+        )
 
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequestWithSupp).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
+        wireMockServer.stubFor(
+          patch(urlEqualTo(goodsRecordUrl))
+            .withRequestBody(equalTo(Json.toJson(updateRecordRequestWithSupp).toString))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok())
+        )
 
-      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecordWithSupp).futureValue
+        connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecordWithSupp).futureValue
+      }
+
+      "with a category and longer commodity code" in {
+
+        val categoryRecordWithLongerComCode = categoryRecord.copy(
+          comcode = "9988776655"
+        )
+
+        val updateRecordWithLongerComCode = updateRecordRequest.copy(
+          comcode = Some("9988776655")
+        )
+
+        wireMockServer.stubFor(
+          patch(urlEqualTo(goodsRecordUrl))
+            .withRequestBody(equalTo(Json.toJson(updateRecordWithLongerComCode).toString))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok())
+        )
+
+        connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecordWithLongerComCode).futureValue
+      }
+
     }
 
     "must return a failed future when the server returns an error" in {
@@ -382,69 +405,6 @@ class GoodsRecordConnectorSpec
       )
 
       connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).failed.futureValue
-    }
-  }
-
-  ".updateCategoryAndComcodeForGoodsRecord" - {
-
-    def goodsRecord(longerCommodityCode: Option[String] = None) = CategoryRecord(
-      eori = testEori,
-      recordId = testRecordId,
-      category = 1,
-      categoryAssessmentsWithExemptions = 3,
-      measurementUnit = Some("1"),
-      supplementaryUnit = Some("123"),
-      comcode = longerCommodityCode
-    )
-
-    def updateRecordRequest(longerCommodityCode: Option[String] = None) = UpdateRecordRequest(
-      testEori,
-      testRecordId,
-      testEori,
-      category = Some(1),
-      supplementaryUnit = Some(123),
-      measurementUnit = Some("1"),
-      comcode = longerCommodityCode
-    )
-
-    "must update a goods record with a category" in {
-
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest()).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
-
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord()).futureValue
-    }
-
-    "must update a goods record with a category and a longer commodity code" in {
-
-      val longerCommodityCode = Some("1234567890")
-
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest(longerCommodityCode)).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
-
-      connector
-        .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord(longerCommodityCode))
-        .futureValue
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest()).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(serverError())
-      )
-
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord()).failed.futureValue
     }
   }
 

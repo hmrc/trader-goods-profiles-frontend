@@ -81,11 +81,11 @@ class AssessmentController @Inject() (
         .flatMap { categorisationInfo =>
           categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
             val listItems = assessment.getExemptionListItems
-            val form = formProvider2(listItems.size)
+            val form      = formProvider2(listItems.size)
 
             val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
               case Some(value) => form.fill(value)
-              case None => form
+              case None        => form
             }
 
             val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, index)
@@ -96,6 +96,7 @@ class AssessmentController @Inject() (
         .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
+  //TODO delete
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       val categorisationResult = for {
@@ -148,6 +149,7 @@ class AssessmentController @Inject() (
       }
     }
 
+  //TODO delete
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       {
@@ -170,6 +172,7 @@ class AssessmentController @Inject() (
               } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
           )
       }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+
     }
 
   def onSubmit2(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -178,8 +181,8 @@ class AssessmentController @Inject() (
         .get(CategorisationDetailsQuery2(recordId))
         .flatMap { categorisationInfo =>
           categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-            val listItems = assessment.getExemptionListItems
-            val form      = formProvider2(listItems.size)
+            val listItems    = assessment.getExemptionListItems
+            val form         = formProvider2(listItems.size)
             val submitAction = routes.AssessmentController.onSubmit2(mode, recordId, index)
 
             form
@@ -187,7 +190,17 @@ class AssessmentController @Inject() (
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view2(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
+                    BadRequest(
+                      view2(
+                        formWithErrors,
+                        mode,
+                        recordId,
+                        index,
+                        listItems,
+                        categorisationInfo.commodityCode,
+                        submitAction
+                      )
+                    )
                   ),
                 value =>
                   for {
@@ -198,16 +211,18 @@ class AssessmentController @Inject() (
           }
         }
         .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+        .recover(_ => Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
+
       request.userAnswers
         .get(LongerCategorisationDetailsQuery(recordId))
         .flatMap { categorisationInfo =>
           categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-            val listItems = assessment.getExemptionListItems
-            val form = formProvider2(listItems.size)
+            val listItems    = assessment.getExemptionListItems
+            val form         = formProvider2(listItems.size)
             val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, index)
 
             form
@@ -215,17 +230,28 @@ class AssessmentController @Inject() (
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view2(formWithErrors, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
+                    BadRequest(
+                      view2(
+                        formWithErrors,
+                        mode,
+                        recordId,
+                        index,
+                        listItems,
+                        categorisationInfo.commodityCode,
+                        submitAction
+                      )
+                    )
                   ),
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(ReassessmentPage(recordId, index), value))
-                    _ <- sessionRepository.set(updatedAnswers)
+                    _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(ReassessmentPage(recordId, index), mode, updatedAnswers))
               )
           }
         }
         .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+        .recover(_ => Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
 }
