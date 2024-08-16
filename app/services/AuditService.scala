@@ -22,10 +22,12 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection}
 import models.ott.response.OttResponse
+import models.requests.DataRequest
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -126,6 +128,17 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     hc: HeaderCarrier
   ): Future[Done] = {
     val event = auditEventFactory.createRequestAdviceEvent(affinityGroup, RequestAdviceJourney, adviceRequest)
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"RequestAdvice audit event status: $auditResult")
+      Done
+    }
+  }
+
+  def auditWithdrawAdvice(request: DataRequest[AnyContent], recordId: String, withdrawReason: String)(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
+    val event = auditEventFactory.createWithdrawAdviceEvent(request, RequestAdviceJourney, recordId,withdrawReason)
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"RequestAdvice audit event status: $auditResult")

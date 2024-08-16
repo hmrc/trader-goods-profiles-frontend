@@ -19,9 +19,11 @@ package factories
 import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
 import models.ott.response.OttResponse
+import models.requests.DataRequest
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
@@ -182,6 +184,28 @@ case class AuditEventFactory() {
       "recordId"       -> adviceRequest.recordId,
       "requestorName"  -> adviceRequest.requestorName,
       "requestorEmail" -> adviceRequest.requestorEmail
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "AdviceRequestUpdate",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
+  def createWithdrawAdviceEvent(
+    request: DataRequest[AnyContent],
+    journey: Journey,
+    recordId: String,
+    withdrawReason: String
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "journey"        -> journey.toString,
+      "eori"           -> request.eori,
+      "affinityGroup"  -> request.affinityGroup.toString,
+      "recordId"       -> recordId,
+      "withdrawReason" -> withdrawReason
     )
 
     DataEvent(
