@@ -184,7 +184,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HasCorrectGoodsLongerCommodityCodePage2(recordId))
       .map {
-        case true => routes.CategorisationPreparationController.startLongerCategorisation(recordId)
+        case true => routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, recordId)
         case false => routes.LongerCommodityCodeController.onPageLoad2(NormalMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
@@ -715,7 +715,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
   private def commodityCodeSansTrailingZeros(commodityCode: String): String =
     commodityCode.reverse.dropWhile(x => x == '0').reverse
-}
 
-private def answerIsEmpty(nextAnswer: Option[AssessmentAnswer2]) = nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer2.NotAnsweredYet)
+  private def answerIsEmpty(nextAnswer: Option[AssessmentAnswer2]) = nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer2.NotAnsweredYet)
+
+}
 
