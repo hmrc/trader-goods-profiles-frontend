@@ -25,7 +25,7 @@ import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery2, MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, MeasurementQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.OttService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -81,12 +81,18 @@ class SupplementaryUnitController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      val result = for {
-        categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery2(recordId))
-      } yield {
-        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-        val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
-        Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+      val result = {
+
+        val catInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+          case Some(catInfo) => Some(catInfo)
+          case _ => request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+        }
+        catInfo.map(categorisationInfo => {
+          val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+          val submitAction = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+          Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+        }
+        )
       }
 
       result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))

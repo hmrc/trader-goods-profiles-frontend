@@ -62,7 +62,7 @@ object LongerCommodityCodeSummary {
           actions = Seq(
             ActionItemViewModel(
               "site.change",
-              routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId).url
+              routes.LongerCommodityCodeController.onPageLoad2(CheckMode, recordId).url
             )
               .withVisuallyHiddenText(messages("longerCommodityCode.change.hidden"))
           )

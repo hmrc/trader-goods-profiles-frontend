@@ -19,10 +19,11 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import logging.Logging
+import models.ott.CategorisationInfo2
 import models.{CategoryRecord2, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
-import pages.{CategorisationPreparationPage, RecategorisationPreparationPage}
+import pages.{CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery2}
@@ -33,7 +34,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
+import scala.util.{Try, Success}
 
 class CategorisationPreparationController @Inject() (
   override val messagesApi: MessagesApi,
@@ -80,8 +81,9 @@ class CategorisationPreparationController @Inject() (
         longerCategorisationInfo <-
           categorisationService
             .getCategorisationInfo(request, longerComCode.commodityCode, goodsRecord.countryOfOrigin, recordId, longerCode = true)
+        updatedUASuppUnit <- Future.fromTry(cleanupSupplementaryUnit(request.userAnswers, recordId, shorterCategorisationInfo, longerCategorisationInfo))
         updatedUACatInfo <-
-          Future.fromTry(request.userAnswers.set(LongerCategorisationDetailsQuery(recordId), longerCategorisationInfo))
+          Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), longerCategorisationInfo))
         updatedUAReassessmentAnswers <- Future.fromTry(categorisationService.updatingAnswersForRecategorisation2(updatedUACatInfo, recordId, shorterCategorisationInfo, longerCategorisationInfo ))
         needToUpdateGoodsRecord = longerCategorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty
         _ <- if (needToUpdateGoodsRecord) updateCategory(updatedUAReassessmentAnswers, request.eori, recordId)
@@ -93,6 +95,19 @@ class CategorisationPreparationController @Inject() (
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
     }
+
+  private def cleanupSupplementaryUnit(userAnswers: UserAnswers,  recordId: String, shorterCatInfo: CategorisationInfo2, longerCatInfo: CategorisationInfo2) = {
+
+    val oldLongerCatInfo = userAnswers.get((LongerCategorisationDetailsQuery(recordId)))
+
+    val currentMeasureUnit = oldLongerCatInfo.map(_.measurementUnit).getOrElse(shorterCatInfo.measurementUnit)
+
+    if (currentMeasureUnit != longerCatInfo.measurementUnit) {
+      userAnswers.remove(HasSupplementaryUnitPage(recordId))
+    } else {
+      Success(userAnswers)
+    }
+  }
 
   private final case class CategoryRecordBuildFailure(error: String) extends Exception {
     override def getMessage: String = s"Failed to build category record: $error"
