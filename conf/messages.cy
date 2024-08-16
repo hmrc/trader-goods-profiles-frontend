@@ -5,6 +5,8 @@ site.change = Newid
 site.startAgain = Dechrau eto
 site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
+site.save.continue = Cadw ac yn eich blaen
+site.back = yn ol
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -174,3 +176,131 @@ adviceSuccess.p3 = Gallwch anfon rhagor o wybodaeth am eich nwyddau at CThEF yn 
 adviceSuccess.p4 = Nid yw e-bost yn ddull diogel o gyfathrebu, felly peidiwch â chynnwys unrhyw fanylion personol yn eich e-bost at CThEF.
 adviceSuccess.p5 = Dylech gael ymateb i''ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
 adviceSuccess.p7.linkText = Ewch i''r hafan
+
+createRecordStart.title = Creu cofnod nwyddau
+createRecordStart.h1 = Creu cofnod nwyddau
+createRecordStart.p1 = I greu cofnod nwyddau, byddwn yn gofyn i chi am ychydig o wybodaeth am y nwyddau.
+createRecordStart.p2 = Bydd angen y canlynol arnoch:
+createRecordStart.p2.1 = cyfeirnod masnachwr
+createRecordStart.p2.2 = disgrifiad o’r nwyddau
+createRecordStart.p2.3 = gwlad wreiddiol
+createRecordStart.p2.4 = cod nwyddau
+createRecordStart.h2 = Cyfeirnod masnachwr
+createRecordStart.p3 = Mae cyfeirnod masnachwr yn enw personol y gallwch ei roi ar gofnod nwyddau i’ch helpu i’w adnabod a dod o hyd iddo.
+createRecordStart.p4 = Byddwch hefyd yn gallu defnyddio cyfeirnod y masnachwr wrth greu ffurflen Gwybodaeth Symud Marchnad Fewnol (IMMI). Bydd hyn yn ychwanegu’r wybodaeth o’ch cofnod nwyddau at y ffurflen.
+createRecordStart.h3 = Categoreiddio
+createRecordStart.p5 = Unwaith y byddwch wedi creu’r cofnod nwyddau, byddwch yn gallu ei gategoreiddio.
+createRecordStart.p6 = Bydd categoreiddio yn rhoi gwybod i chi a yw’ch nwyddau’n gymwys i’w symud gyda’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+createRecordStart.p7 =  I gwblhau’r categoreiddio, efallai y bydd angen i chi wybod beth yw’r amodau y bydd eich nwyddau’n symud o dan.
+createRecordStart.p8 =  Bydd angen i chi gwblhau’r categoreiddio cyn y gallwch ddefnyddio’r cofnod nwyddau ar symudiadau.
+
+
+traderReference.title = Cyfeirnod masnachwr
+traderReference.h1 = Cyfeirnod masnachwr
+traderReference.p1 = Mae cyfeirnod masnachwr yn enw wedi’i deilwra y gallwch ei roi ar gofnod nwyddau i’ch helpu i adnabod y cofnod. Gallwch hefyd ddefnyddio’r cyfeirnod masnachwr i ychwanegu gwybodaeth y cofnod at ddatganiad.
+traderReference.p2 = Mae angen i’r cyfeirnod masnachwr fod yn unigryw i’ch Proffil Nwyddau Masnachwr.
+traderReference.p3 = Efallai y byddwch am ddefnyddio’r uned cadw stoc (SKU).
+traderReference.inputHeading = Beth yw’r cyfeirnod masnachwr?
+traderReference.hint = Mae gennych 512 o gymeriadau yn weddill
+traderReference.checkYourAnswersLabel = Cyfeirnod masnachwr
+traderReference.change.hidden = Cyfeirnod masnachwr
+
+useTraderReference.title = Disgrifiad o’r nwyddau
+useTraderReference.h1 = Disgrifiad o’r nwyddau
+useTraderReference.p1 = Bydd disgrifiad o’r nwyddau yn mynd ar y ffurflen Gwybodaeth Symud Marchnad Fewnol (IMMI) pan fyddwch yn symud y nwyddau.
+useTraderReference.p2 = Nid oes rhain i’r disgrifiad o’r nwyddau fod yn unigryw i’ch Proffil Nwyddau Masnachwr.
+useTraderReference.h2 = Os nad ydych yn ychwanegu disgrifiad o’r nwyddau.
+useTraderReference.p3 = Byddwn yn defnyddio’ch cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau.
+useTraderReference.p4 = Y cyfeirnod masnachwr y gwnaethoch ei nodi oedd:
+useTraderReference.h3 = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
+useTraderReference.radio1 = Iawn, defnyddiwch fy nghyfeirnod masnachwr fel fy nisgrifiad o’r nwyddau
+useTraderReference.radio2 = Na, rwyf am nodi disgrifiad o’r nwyddau gwahanol
+
+useTraderReference.checkYourAnswersLabel = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
+useTraderReference.error.required = Cadarnhewch a ydych am ddefnyddio’ch cyfeirnod masnachwr fel disgrifiad y nwyddau
+useTraderReference.change.hidden = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
+
+
+goodsDescription.title = Disgrifiad o’r nwyddau
+goodsDescription.h1 = Disgrifiad o’r nwyddau
+goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach. Dylai awdurdodau allu adnabod eich nwyddau o’r disgrifiad.
+goodsDescription.p2 =  Ni allwch ddefnyddio termau cyffredinol megis ‘cyfunol’ neu ‘cargo cyffredinol’. Ni fydd telerau cyffredinol yn caniatáu i Lu’r Ffiniau gyflawni rheolaethau tollau.
+goodsDescription.p3 =  Os na fydd eich nwyddau yn becyn llawn, cynhwysydd llawn neu drelar llawn dylech gadarnhau hyn yn y disgrifiad o’r nwyddau. Gallwch ychwanegu termau megis ‘wedi’i llenwi’n rhannol’ at becyn, cynhwysedd neu drelar ar ddiwedd disgrifiad y nwyddau.
+goodsDescription.inputHeading = Beth yw’r disgrifiad o’r nwyddau?
+goodsDescription.hint = Gall hyn fod hyd at 512 o gymeriadau.
+goodsDescription.checkYourAnswersLabel = Disgrifiad o’r nwyddau
+
+commodityCode.title = Cod nwyddau
+commodityCode.h1 = Cod nwyddau
+commodityCode.p1 = Mae codau nwyddau yn gyfeirnodau sy’n cael eu cydnabod yn rhyngwladol. Mae cod nwyddau yn disgrifio cynnyrch penodol wrth fewnforio neu allforio nwyddau. Byddwch yn defnyddio’r cod hwn ar unrhyw ddatganiadau tollau.
+commodityCode.p2 = Gallwch ychwanegu codau nwyddau i Broffil Nwyddau Masnachwr mewn 6, 8 neu 10 digid.
+commodityCode.p3 = Os nad ydych yn siŵr beth yw cod nwyddau eich nwyddau, gallwch ddefnyddio
+commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon
+commodityCode.heading = Beth yw’r cod nwyddau ar gyfer eich nwyddau?
+commodityCode.hint = Gallwch ddefnyddio 6, 8 neu 10 digid, er enghraifft, 654321, 87654321, 9876543211
+
+commodityCode.error.required = Rhowch god nwydd
+commodityCode.checkYourAnswersLabel = Cod nwyddau
+commodityCode.change.hidden = Cod nwyddau
+
+cyaCreateRecord.title = Gwiriwch eich atebion
+cyaCreateRecord.h1 = Gwiriwch eich atebion
+cyaCreateRecord.h2 = Gwiriwch fod y manylion yn y cofnod hwn yn gywir.
+cyaCreateRecord.warning = Rhybudd
+cyaCreateRecord.warningText = Rydych yn agored am y wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
+
+
+createRecordSuccess.title = Rydych wedi creu cofnod nwyddau
+createRecordSuccess.h1 = Rydych wedi creu cofnod nwyddau
+createRecordSuccess.h2 = Yr hyn sy’n digwydd nesaf
+createRecordSuccess.p2 = Mae dal angen i chi categoreiddio’r nwyddau cyn i chi ei defnyddio ar symudiadau.
+createRecordSuccess.p3 = Nid oes rhaid i chi gategoreiddio’r cofnod hwn nawr. Gallwch adolygu’r cofnod o’ch rhestro nwyddau a dechrau categoreiddio yn ddiweddarach.
+createRecordSuccess.p4.linkText = Categoreiddio nwyddau nawr
+createRecordSuccess.p5.linkText = Ewch i’r hafan
+createRecordSuccess.h2.1 = Rhowch eich barn
+createRecordSuccess.p6 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
+createRecordSuccess.p7.linkText = Anfonwch eich adborth atom.
+createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
+
+traderReference.error.required = Nodwch y cyfeirnod masnachwr
+traderReference.error.traderRefNotUnique = Mae’r cyfeirnod masnachwr hwn eisoes yn eich Proffil Nwyddau Masnachwyr. Nodwch gyfeirnod masnachwr unigryw.
+useTraderReference.error.required = Cadarnhewch a ydych am ddefnyddio’ch cyfeirnod masnachwr fel disgrifiad y nwyddau
+goodsDescription.error.required = Nodwch ddisgrifiad o’r nwyddau
+goodsDescription.error.length = Mae’n rhaid i ddisgrifiad y nwyddau fod yn 512 o gymeriadau neu lai
+countryOfOrigin.error.required = Nodwch y wlad wreiddiol
+commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
+commodityCode.error.invalid = Nodwch god nwyddau go iawn
+
+hasCorrectGoods.title = Canlyniadau ar gyfer
+hasCorrectGoods.heading = Canlyniadau ar gyfer
+hasCorrectGoods.p1 = Dynodiad:
+hasCorrectGoods.h2 = Ai dyma''r nwyddau cywir?
+hasCorrectGoods.error.required = Dewiswch ai dyma''r nwyddau cywir
+hasCorrectGoods.p2.linkText = Chwiliwch am god nwydd ar yr Offeryn Tariff Ar-lein (yn agor mewn tab newydd)
+
+
+singleRecord.title = Cofnod nwyddau
+singleRecord.h1 = Cofnod nwyddau
+singleRecord.p1 = Gwiriwch a yw manylion y cofnod hwn yn gywir.
+singleRecord.p2 = Os oes angen i chi gategoreiddio''r daioni hwn, byddwn yn dweud mwy wrthych am sut i wneud hyn yn y camau nesaf.
+singleRecord.h2.goodsDetails = Manylion nwyddau
+singleRecord.warning = Rhybudd
+singleRecord.warningText = Rydych yn agored am y wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
+
+
+
+countryOfOrigin.title = Gwlad wreiddiol
+countryOfOrigin.h1 = Gwlad wreiddiol
+countryOfOrigin.p1 = Mae ‘gwlad wreiddiol’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei defnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
+countryOfOrigin.p2 =  Pan fydd y nwyddau’n cael eu datgan wrth y ffin, os yw’r wlad wreiddiol yn wahanol i’r wlad ymadael, efallai y bydd y rheoliadau, y dreth a’r tollau yn wahanol i’r arweiniad sydd ar y gwasanaeth hwn. Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd).
+countryOfOrigin.p2.linkText = Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd).
+countryOfOrigin.heading = Beth yw gwlad tarddiad y nwyddau?
+countryOfOrigin.error.required = Ewch i mewn i''r wlad wreiddiol
+countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
+countryOfOrigin.checkYourAnswersLabel = Gwlad wreiddiol
+countryOfOrigin.change.hidden = Gwlad wreiddiol
+
+feedback.header = Dywedwch wrthym beth yw eich barn
+feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
+feedback.line.2 = {0}. Bydd eich meddyliau a''ch syniadau yn ein helpu i wneud gwelliannau.
+feedback.link = Anfonwch eich adborth atom
