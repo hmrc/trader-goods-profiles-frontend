@@ -2654,7 +2654,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from longer commodity code to categorisation preparation page" in {
           navigator.nextPage(LongerCommodityCodePage2(testRecordId), CheckMode, emptyUserAnswers) mustEqual
-            routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId)
+            routes.CategorisationPreparationController.startLongerCategorisation(CheckMode, testRecordId)
         }
 
         "must go from reassessment page" - {

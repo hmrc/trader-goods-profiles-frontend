@@ -38,6 +38,7 @@ import services.CategorisationService
 
 import java.time.Instant
 import scala.concurrent.Future
+import scala.util.Success
 
 class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAfterEach {
   private def onwardRoute = Call("GET", "/foo")
@@ -306,6 +307,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         )
 
         val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+          .success
+          .value
           .set(
             LongerCommodityQuery2(testRecordId),
             Commodity(
@@ -317,6 +321,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           )
           .success
           .value
+          .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo2)
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
 
         val app = application(userAnswers)
         running(app) {

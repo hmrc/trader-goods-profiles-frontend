@@ -947,7 +947,18 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   "updatingAnswersForRecategorisation2" - {
 
-    "should return the same user answers if old and new category assessments are the same" in {
+    "should return the same user answers with the reassessment answers if old and new category assessments are the same" in {
+      val expectedUserAnswers = userAnswersForCategorisation2
+        .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+        .success
+        .value
+
       val result = categorisationService
         .updatingAnswersForRecategorisation2(
           userAnswersForCategorisation2,
@@ -957,7 +968,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         )
         .success
         .value
-      result shouldBe userAnswersForCategorisation2
+      result shouldBe expectedUserAnswers
     }
 
     "should only copy the new answers if all the assessments are different" in {

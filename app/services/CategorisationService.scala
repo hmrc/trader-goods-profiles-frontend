@@ -302,23 +302,23 @@ class CategorisationService @Inject() (
     val oldAssessments = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
     val newAssessments = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
 
-    val listOfAnswersToKeep = oldAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer2]]) {
-      (currentMap, assessment) =>
-        val newAssessmentsTheAnswerAppliesTo =
-          newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
-        newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
-          current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
-            AssessmentPage2(recordId, assessment._2)
-          ))
-        }
-    }
+      val listOfAnswersToKeep = oldAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer2]]) {
+        (currentMap, assessment) =>
+          val newAssessmentsTheAnswerAppliesTo =
+            newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
+          newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
+            current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
+              AssessmentPage2(recordId, assessment._2)
+            ))
+          }
+      }
 
-    // Avoid it getting upset if answers have moved too far
-    // This is needed as stored as Json array
-    val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(userAnswers)) {
-      (currentAnswers, newAssessment) =>
-        currentAnswers.flatMap(_.set(ReassessmentPage(recordId, newAssessment._2), AssessmentAnswer2.NotAnsweredYet))
-    }
+      // Avoid it getting upset if answers have moved too far
+      // This is needed as stored as Json array
+      val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(userAnswers)) {
+        (currentAnswers, newAssessment) =>
+          currentAnswers.flatMap(_.set(ReassessmentPage(recordId, newAssessment._2), AssessmentAnswer2.NotAnsweredYet))
+      }
 
     val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
     // Apply them backwards
