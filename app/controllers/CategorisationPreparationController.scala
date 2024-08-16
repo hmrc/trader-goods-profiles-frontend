@@ -19,7 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import logging.Logging
-import models.{CategoryRecord2, NormalMode, UserAnswers}
+import models.{CategoryRecord2, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages.{CategorisationPreparationPage, RecategorisationPreparationPage}
@@ -71,7 +71,7 @@ class CategorisationPreparationController @Inject() (
 
     }
 
-  def startLongerCategorisation(recordId: String): Action[AnyContent] =
+  def startLongerCategorisation(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for { //TODO update tests to copy answers and to handle update cases
         goodsRecord <- goodsRecordsConnector.getRecord(request.eori, recordId)
@@ -87,7 +87,7 @@ class CategorisationPreparationController @Inject() (
         _ <- if (needToUpdateGoodsRecord) updateCategory(updatedUAReassessmentAnswers, request.eori, recordId)
         else Future.successful(Done)
         _                      <- sessionRepository.set(updatedUAReassessmentAnswers)
-      } yield Redirect(navigator.nextPage(RecategorisationPreparationPage(recordId), NormalMode, updatedUAReassessmentAnswers)))
+      } yield Redirect(navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
