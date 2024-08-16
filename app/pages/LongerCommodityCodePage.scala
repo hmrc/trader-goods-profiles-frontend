@@ -40,12 +40,16 @@ case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolea
 
 }
 
-case class LongerCommodityCodePage2(recordId: String)
-  extends QuestionPage[String] {
+case class LongerCommodityCodePage2(recordId: String) extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString \ recordId
 
   override def toString: String = "longerCommodityCode2"
 
+  override def cleanup(
+    value: Option[String],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
+    updatedUserAnswers.remove(HasCorrectGoodsLongerCommodityCodePage2(recordId))
 }
-

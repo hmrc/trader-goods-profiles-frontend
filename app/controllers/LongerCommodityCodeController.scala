@@ -69,7 +69,7 @@ class LongerCommodityCodeController @Inject() (
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           Ok(view(preparedForm, mode, shortComcode, recordId))
-        case _                                                        =>
+        case _                                                                         =>
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
@@ -162,7 +162,7 @@ class LongerCommodityCodeController @Inject() (
 
   private def getShortCommodityCodeOpt2(
     recordId: String,
-    userAnswers: UserAnswers,
+    userAnswers: UserAnswers
   ): Option[String] =
     userAnswers
       .get(CategorisationDetailsQuery2(recordId))

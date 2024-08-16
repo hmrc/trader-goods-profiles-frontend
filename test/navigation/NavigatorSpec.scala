@@ -27,10 +27,12 @@ import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery2, RecordCategorisationsQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
+
+import java.time.Instant
 
 class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
@@ -1109,6 +1111,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .set(HasCorrectGoodsLongerCommodityCodePage2(testRecordId), true)
                 .success
                 .value
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2.copy(commodityCode = "123456"))
+                .success
+                .value
+                .set(
+                  LongerCommodityQuery2(testRecordId),
+                  Commodity("123456012", List("Description", "Other"), Instant.now, None)
+                )
+                .success
+                .value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage2(testRecordId),
@@ -1125,6 +1136,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .set(HasCorrectGoodsLongerCommodityCodePage2(testRecordId), false)
                 .success
                 .value
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2.copy(commodityCode = "123456"))
+                .success
+                .value
+                .set(
+                  LongerCommodityQuery2(testRecordId),
+                  Commodity("123456012", List("Description", "Other"), Instant.now, None)
+                )
+                .success
+                .value
 
             navigator.nextPage(
               HasCorrectGoodsLongerCommodityCodePage2(testRecordId),
@@ -1135,6 +1155,30 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           }
 
+          "to longer commodity code page when the longer commodity code is same as short commodity code" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(HasCorrectGoodsLongerCommodityCodePage2(testRecordId), true)
+                .success
+                .value
+                .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2.copy(commodityCode = "123456"))
+                .success
+                .value
+                .set(
+                  LongerCommodityQuery2(testRecordId),
+                  Commodity("1234560", List("Description", "Other"), Instant.now, None)
+                )
+                .success
+                .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage2(testRecordId),
+              NormalMode,
+              userAnswers
+            ) mustEqual
+              routes.LongerCommodityCodeController.onPageLoad2(NormalMode, testRecordId)
+
+          }
         }
 
         "must go from reassessment page" - {
