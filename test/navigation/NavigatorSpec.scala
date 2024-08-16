@@ -1115,7 +1115,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               NormalMode,
               userAnswers
             ) mustEqual
-              routes.CategorisationPreparationController.startLongerCategorisation(testRecordId)
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId)
 
           }
 
@@ -2654,7 +2654,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from longer commodity code to categorisation preparation page" in {
           navigator.nextPage(LongerCommodityCodePage2(testRecordId), CheckMode, emptyUserAnswers) mustEqual
-            routes.CategorisationPreparationController.startLongerCategorisation(testRecordId) //TODO mode???
+            routes.CategorisationPreparationController.startLongerCategorisation(CheckMode, testRecordId) //TODO mode???
         }
 
         "must go from reassessment page" - {
