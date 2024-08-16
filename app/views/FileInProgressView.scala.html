@@ -28,7 +28,7 @@
     <p class="govuk-body">@messages("fileInProgress.p2")</p>
     <!--    //TODO send link to correct place -->
 
-    <p class="govuk-body"><a href="#" class="govuk-link" >@messages("fileInProgress.linkText1")</a></p>
+    <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad.url" class="govuk-link" >@messages("fileInProgress.linkText1")</a></p>
     <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("fileInProgress.linkText2")</a></p>
 
 }
