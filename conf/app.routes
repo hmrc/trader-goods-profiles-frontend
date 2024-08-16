@@ -230,10 +230,10 @@ POST        /update-record/:recordId/categorisation/supplementary-unit-amount/up
 GET         /update-record/:recordId/categorisation/check-your-answers/supplementary-unit          controllers.CyaSupplementaryUnitController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/check-your-answers/supplementary-unit          controllers.CyaSupplementaryUnitController.onSubmit(recordId: String)
 
-GET         /update-record/:recordId/categorisation2/supplementary-unit-amount              controllers.SupplementaryUnitController.onPageLoad2(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation2/supplementary-unit-amount              controllers.SupplementaryUnitController.onSubmit2(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation2/supplementary-unit-amount/check        controllers.SupplementaryUnitController.onPageLoad2(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation2/supplementary-unit-amount/check        controllers.SupplementaryUnitController.onSubmit2(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/categorisation2/supplementary-unit-amount/create              controllers.SupplementaryUnitController.onPageLoad2(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/categorisation2/supplementary-unit-amount/create              controllers.SupplementaryUnitController.onSubmit2(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/categorisation2/supplementary-unit-amount/create/check        controllers.SupplementaryUnitController.onPageLoad2(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/categorisation2/supplementary-unit-amount/create/check        controllers.SupplementaryUnitController.onSubmit2(mode: Mode = CheckMode, recordId: String)
 
 GET        /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onPageLoad()
 POST       /previous-movement-records                                                       controllers.PreviousMovementRecordsController.onSubmit()
