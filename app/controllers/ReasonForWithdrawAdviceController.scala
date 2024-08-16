@@ -69,7 +69,7 @@ class ReasonForWithdrawAdviceController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
           value => {
             val withdrawReason: Option[String] = if (value.trim.nonEmpty) Some(value) else None
-            auditService.auditWithdrawAdvice(request,recordId,withdrawReason)
+            auditService.auditWithdrawAdvice(request.affinityGroup, request.eori, recordId, withdrawReason)
             for {
               _ <- accreditationConnector.withdrawRequestAccreditation(request.eori, recordId, withdrawReason)
               _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)

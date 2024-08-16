@@ -195,15 +195,16 @@ case class AuditEventFactory() {
   }
 
   def createWithdrawAdviceEvent(
-    request: DataRequest[AnyContent],
+    affinityGroup: AffinityGroup,
+    eori: String,
     journey: Journey,
     recordId: String,
     withdrawReason: String
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "journey"        -> journey.toString,
-      "eori"           -> request.eori,
-      "affinityGroup"  -> request.affinityGroup.toString,
+      "eori"           -> eori,
+      "affinityGroup"  -> affinityGroup.toString,
       "recordId"       -> recordId,
       "withdrawReason" -> withdrawReason
     )

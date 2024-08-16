@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.{testEori, testRecordId, withdrawReason}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
@@ -857,6 +857,81 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       intercept[RuntimeException] {
         val adviceRequest = AdviceRequest(testEori, "Firstname Lastname", "actorId", testRecordId, "test@test.com")
         await(auditService.auditRequestAdvice(AffinityGroup.Individual, adviceRequest))
+      }
+    }
+  }
+
+  "auditWithdrawAdviceRequest" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createWithdrawAdviceEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val result =
+        await(auditService.auditWithdrawAdvice(AffinityGroup.Individual, testEori, testRecordId, Some(withdrawReason)))
+
+      result mustBe Done
+
+      withClue("Should have supplied the affinity group and withdraw advice to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createWithdrawAdviceEvent(
+            eqTo(AffinityGroup.Individual),
+            eqTo(testEori),
+            eqTo(RequestAdviceJourney),
+            eqTo(testRecordId),
+            eqTo(withdrawReason)
+          )(
+            any()
+          )
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createWithdrawAdviceEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val result =
+        await(auditService.auditWithdrawAdvice(AffinityGroup.Individual, testEori, testRecordId, Some(withdrawReason)))
+
+      result mustBe Done
+
+      withClue("Should have supplied the request advice to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createWithdrawAdviceEvent(
+            eqTo(AffinityGroup.Individual),
+            eqTo(testEori),
+            eqTo(RequestAdviceJourney),
+            eqTo(testRecordId),
+            eqTo(withdrawReason)
+          )(
+            any()
+          )
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "must let the play error handler deal with an future failure" in {
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        await(auditService.auditWithdrawAdvice(AffinityGroup.Individual, testEori, testRecordId, Some(withdrawReason)))
       }
     }
   }

@@ -135,13 +135,20 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
-  def auditWithdrawAdvice(request: DataRequest[AnyContent], recordId: String, withdrawReason: String)(implicit
-    hc: HeaderCarrier
+  def auditWithdrawAdvice(affinityGroup: AffinityGroup, eori: String, recordId: String, withdrawReason: Option[String])(
+    implicit hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createWithdrawAdviceEvent(request, RequestAdviceJourney, recordId,withdrawReason)
+    val event =
+      auditEventFactory.createWithdrawAdviceEvent(
+        affinityGroup,
+        eori,
+        RequestAdviceJourney,
+        recordId,
+        withdrawReason.getOrElse("")
+      )
 
     auditConnector.sendEvent(event).map { auditResult =>
-      logger.info(s"RequestAdvice audit event status: $auditResult")
+      logger.info(s"WithdrawAdvice audit event status: $auditResult")
       Done
     }
   }
