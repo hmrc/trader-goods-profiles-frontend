@@ -207,7 +207,7 @@ class LongerCommodityCodeController @Inject() (
     value: String,
     shortCode: String
   )(implicit request: DataRequest[AnyContent]) = {
-    val longerCode = (shortCode + value).padTo(maxValidLength, "0").mkString
+    val longerCode = (shortCode + value)
     (for {
       record                  <- goodsRecordConnector.getRecord(request.eori, recordId)
       commodity               <- ottConnector.getCommodityCode(
