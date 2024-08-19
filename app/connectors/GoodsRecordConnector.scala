@@ -102,7 +102,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .map(_ => Done)
 
   def updateCategoryAndComcodeForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
-                                                                                                             hc: HeaderCarrier
+    hc: HeaderCarrier
   ): Future[Done] =
     httpClient
       .patch(goodsRecordUrl(eori, recordId))

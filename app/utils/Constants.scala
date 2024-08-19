@@ -21,8 +21,8 @@ case object Constants {
 
   val adviceProvided: String = "Advice Provided"
 
-  val Category1AsInt: Int = 1
-  val Category2AsInt: Int = 2
+  val Category1AsInt: Int     = 1
+  val Category2AsInt: Int     = 2
   val StandardGoodsAsInt: Int = 3
 
   val minimumLengthOfCommodityCode: Int = 6

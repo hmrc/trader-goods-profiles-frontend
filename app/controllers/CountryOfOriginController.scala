@@ -75,7 +75,7 @@ class CountryOfOriginController @Inject() (
     }
 
   private def displayViewCreate(countries: Seq[Country], action: Call, userAnswers: UserAnswers)(implicit
-                                                                                                 request: Request[_]
+    request: Request[_]
   ): Result = {
     val form         = formProvider(countries)
     val preparedForm = userAnswers.get(CountryOfOriginPage) match {
@@ -86,7 +86,7 @@ class CountryOfOriginController @Inject() (
   }
 
   private def submitForm(countries: Seq[Country], mode: Mode, userAnswers: UserAnswers)(implicit
-                                                                                        request: Request[_]
+    request: Request[_]
   ): Future[Result] = {
     val form = formProvider(countries)
     form
@@ -159,8 +159,8 @@ class CountryOfOriginController @Inject() (
       }
     }
 
-  private def displayViewUpdate(countries: Seq[Country], action: Call, userAnswers: UserAnswers, recordId: String)(implicit
-                                                                                                                   request: Request[_]
+  private def displayViewUpdate(countries: Seq[Country], action: Call, userAnswers: UserAnswers, recordId: String)(
+    implicit request: Request[_]
   ): Result = {
     val form         = formProvider(countries)
     val preparedForm = userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {

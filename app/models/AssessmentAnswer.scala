@@ -48,7 +48,7 @@ object AssessmentAnswer {
     input match {
       case Exemption.toString      => Exemption
       case NotAnsweredYet.toString => NotAnsweredYet
-      case _    => NoExemption
+      case _                       => NoExemption
     }
 
   def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =

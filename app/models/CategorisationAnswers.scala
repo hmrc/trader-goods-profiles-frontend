@@ -162,7 +162,9 @@ object CategorisationAnswers {
     } else {
       val errors = notAnsweredYetAssessments.map(ass => MissingAssessmentAnswers(ReassessmentPage(recordId, ass.index)))
       val nec    =
-        NonEmptyChain.fromSeq(errors).getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(LongerCategorisationDetailsQuery(recordId))))
+        NonEmptyChain
+          .fromSeq(errors)
+          .getOrElse(NonEmptyChain.one(MissingAssessmentAnswers(LongerCategorisationDetailsQuery(recordId))))
       Left(nec)
     }
   }

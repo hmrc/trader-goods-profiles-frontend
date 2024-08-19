@@ -78,7 +78,7 @@ class CyaCategorisationController @Inject() (
   }
 
   private def showCyaPage(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo)(implicit
-                                                                                                       messages: Messages
+    messages: Messages
   ) = {
     val userAnswers = request.userAnswers
 
@@ -131,17 +131,16 @@ class CyaCategorisationController @Inject() (
             Scenario.getResultAsInt(categoryRecord.category)
           )
 
-          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord).map {
-            _ =>
-              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord).map { _ =>
+            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
 
-              Redirect(
-                navigator.nextPage(
-                  CyaCategorisationPage(recordId),
-                  NormalMode,
-                  request.userAnswers
-                )
+            Redirect(
+              navigator.nextPage(
+                CyaCategorisationPage(recordId),
+                NormalMode,
+                request.userAnswers
               )
+            )
           }
 
         case Left(error) => Future.successful(logErrorsAndContinue(error, recordId, request.userAnswers))

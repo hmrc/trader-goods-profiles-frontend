@@ -53,7 +53,7 @@ class LongerCommodityCodeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private val form           = formProvider()
+  private val form = formProvider()
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -90,7 +90,7 @@ class LongerCommodityCodeController @Inject() (
                   shortComcode
                 )
             )
-        case _                                                        =>
+        case _                                                                         =>
           Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
       }
     }

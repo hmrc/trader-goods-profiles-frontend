@@ -87,7 +87,10 @@ final case class UserAnswers(
     }
   }
 
-  private def setIfEmpty[A](page: QuestionPage[A], value: A)(implicit writes: Writes[A], reads: Reads[A]): Try[UserAnswers] =
+  private def setIfEmpty[A](page: QuestionPage[A], value: A)(implicit
+    writes: Writes[A],
+    reads: Reads[A]
+  ): Try[UserAnswers] =
     if (get(page).isEmpty) {
       set(page, value)
     } else {
