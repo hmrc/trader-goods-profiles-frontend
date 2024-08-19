@@ -23,5 +23,5 @@ case class HasCorrectGoodsLongerCommodityCodePage(recordId: String, needToRecate
 
   override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = "hasCorrectGoodsLongerCommodityCode2"
+  override def toString: String = "hasCorrectGoodsLongerCommodityCode"
 }

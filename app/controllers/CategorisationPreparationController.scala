@@ -97,7 +97,7 @@ class CategorisationPreparationController @Inject() (
           Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), longerCategorisationInfo))
 
         updatedUAReassessmentAnswers <- Future.fromTry(
-                                          categorisationService.updatingAnswersForRecategorisation2(
+                                          categorisationService.updatingAnswersForRecategorisation(
                                             updatedUACatInfo,
                                             recordId,
                                             shorterCategorisationInfo,

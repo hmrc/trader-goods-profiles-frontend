@@ -96,7 +96,7 @@ class CategorisationService @Inject() (
     }
   }
 
-  def updatingAnswersForRecategorisation2(
+  def updatingAnswersForRecategorisation(
     userAnswers: UserAnswers,
     recordId: String,
     oldCommodityCategorisation: CategorisationInfo,

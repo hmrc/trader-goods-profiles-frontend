@@ -317,7 +317,7 @@ class GoodsRecordConnectorSpec
     }
   }
 
-  ".updateCategoryAndComcodeForGoodsRecord2" - {
+  ".updateCategoryAndComcodeForGoodsRecord" - {
 
     val categoryRecord = CategoryRecord(
       eori = testEori,

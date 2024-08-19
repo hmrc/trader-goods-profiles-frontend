@@ -27,7 +27,7 @@ import viewmodels.implicits._
 
 object SupplementaryUnitSummary {
 
-  def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
       supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))

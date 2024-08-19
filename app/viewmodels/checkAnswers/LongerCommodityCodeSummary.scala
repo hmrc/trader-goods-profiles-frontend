@@ -26,7 +26,7 @@ import viewmodels.implicits._
 
 object LongerCommodityCodeSummary {
 
-  def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     answers
       .get(LongerCategorisationDetailsQuery(recordId))
       .map(info =>

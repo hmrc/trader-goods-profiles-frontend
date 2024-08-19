@@ -321,7 +321,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         val app = application(userAnswers)
@@ -342,7 +342,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must set up the reassessment answers") {
-            verify(mockCategorisationService).updatingAnswersForRecategorisation2(
+            verify(mockCategorisationService).updatingAnswersForRecategorisation(
               any(),
               eqTo(testRecordId),
               eqTo(shorterCommodity),
@@ -354,7 +354,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -396,7 +396,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.calculateResult(any(), any(), any()))
@@ -423,7 +423,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must set up the reassessment answers") {
-            verify(mockCategorisationService).updatingAnswersForRecategorisation2(
+            verify(mockCategorisationService).updatingAnswersForRecategorisation(
               any(),
               eqTo(testRecordId),
               eqTo(shorterCommodity),
@@ -455,7 +455,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -491,7 +491,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         val app = application(userAnswers)
@@ -509,7 +509,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           withClue("must keep supplementary unit in answers") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -552,7 +552,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         val app = application(userAnswers)
@@ -570,7 +570,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           withClue("must keep supplementary unit in answers") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -608,7 +608,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         val app = application(userAnswers)
@@ -627,7 +627,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -669,7 +669,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         val app = application(userAnswers)
@@ -688,7 +688,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation2(uaArgCaptor.capture(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -791,7 +791,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
           Failure(new Exception(":("))
         )
 
@@ -831,7 +831,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
           Success(userAnswers)
         )
         when(mockCategorisationService.calculateResult(any(), any(), any()))
@@ -876,7 +876,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
           Success(userAnswers)
         )
 
@@ -913,7 +913,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation2(any(), any(), any(), any())).thenReturn(
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
           Success(userAnswers)
         )
 

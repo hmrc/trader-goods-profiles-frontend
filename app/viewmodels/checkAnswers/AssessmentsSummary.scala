@@ -27,7 +27,7 @@ import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 object AssessmentsSummary {
 
-  def row2(
+  def row(
     recordId: String,
     answers: UserAnswers,
     assessment: CategoryAssessment,

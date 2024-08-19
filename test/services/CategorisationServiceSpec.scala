@@ -502,7 +502,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .value
 
       val result = categorisationService
-        .updatingAnswersForRecategorisation2(
+        .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
           categorisationInfo,
@@ -523,7 +523,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         1
       )
       val result                     = categorisationService
-        .updatingAnswersForRecategorisation2(
+        .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
           categorisationInfo,
@@ -552,7 +552,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         0
       )
       val result                     = categorisationService
-        .updatingAnswersForRecategorisation2(
+        .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
           categorisationInfo,
@@ -594,7 +594,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .value
 
       val newUserAnswers = categorisationService
-        .updatingAnswersForRecategorisation2(
+        .updatingAnswersForRecategorisation(
           oldUserAnswers,
           testRecordId,
           categorisationInfo,
@@ -634,7 +634,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       val newUserAnswers = categorisationService
-        .updatingAnswersForRecategorisation2(
+        .updatingAnswersForRecategorisation(
           oldUserAnswers,
           testRecordId,
           categorisationInfo,

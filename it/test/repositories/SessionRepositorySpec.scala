@@ -203,29 +203,6 @@ class SessionRepositorySpec
           assessmentsPage,
           hasSupplementaryUnitPage,
           supplementaryUnitPage,
-          longerCommodityCodePage
-        )
-
-      keysToCheck.foreach { key =>
-        updatedRecord.data.keys must not contain key
-      }
-
-    }
-
-    "must clear data for CategorisationJourney2" in {
-      val journey = CategorisationJourney
-      insert(userAnswers).futureValue
-
-      val result = repository.clearData(userAnswers.id, journey).futureValue
-
-      result mustEqual true
-      val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
-
-      val keysToCheck =
-        Seq(
-          assessmentsPage,
-          hasSupplementaryUnitPage,
-          supplementaryUnitPage,
           longerCommodityCodePage,
           reassessmentPage,
           categorisationDetailsQuery,

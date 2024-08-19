@@ -86,7 +86,7 @@ class CyaCategorisationController @Inject() (
       case Right(_) =>
         val categorisationRows = categoryInfo.categoryAssessments
           .flatMap(assessment =>
-            AssessmentsSummary.row2(
+            AssessmentsSummary.row(
               recordId,
               userAnswers,
               assessment,
@@ -101,14 +101,14 @@ class CyaCategorisationController @Inject() (
 
         val supplementaryUnitList = SummaryListViewModel(
           rows = Seq(
-            HasSupplementaryUnitSummary.row2(userAnswers, recordId),
-            SupplementaryUnitSummary.row2(userAnswers, recordId)
+            HasSupplementaryUnitSummary.row(userAnswers, recordId),
+            SupplementaryUnitSummary.row(userAnswers, recordId)
           ).flatten
         )
 
         val longerCommodityCodeList = SummaryListViewModel(
           rows = Seq(
-            LongerCommodityCodeSummary.row2(userAnswers, recordId)
+            LongerCommodityCodeSummary.row(userAnswers, recordId)
           ).flatten
         )
 
