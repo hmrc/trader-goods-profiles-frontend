@@ -18,7 +18,6 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import connectors.TraderProfileConnector
 import forms.WithdrawAdviceStartFormProvider
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}

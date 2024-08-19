@@ -16,24 +16,24 @@
 
 package pages
 
-import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
+import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
+import queries.LongerCategorisationDetailsQuery
 
 import scala.util.{Failure, Success, Try}
 
 case class ReassessmentPage(
   recordId: String,
   index: Int
-) extends QuestionPage[AssessmentAnswer2] {
+) extends QuestionPage[AssessmentAnswer] {
   override def path: JsPath = JsPath \ "reassessments" \ recordId \ index
 
   override def cleanup(
-    value: Option[AssessmentAnswer2],
+    value: Option[AssessmentAnswer],
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if (value.contains(AssessmentAnswer2.NoExemption)) {
+    if (value.contains(AssessmentAnswer.NoExemption)) {
       (for {
         categorisationInfo <- updatedUserAnswers.get(LongerCategorisationDetailsQuery(recordId))
         count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size

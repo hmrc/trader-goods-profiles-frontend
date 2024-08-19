@@ -27,20 +27,6 @@ import viewmodels.implicits._
 
 object HasSupplementaryUnitSummary {
 
-  def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasSupplementaryUnitPage(recordId)).map { answer =>
-      val value = if (answer) "site.yes" else "site.no"
-
-      SummaryListRowViewModel(
-        key = "hasSupplementaryUnit.checkYourAnswersLabel",
-        value = ValueViewModel(value),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
-            .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
-        )
-      )
-    }
-
   def row2(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(HasSupplementaryUnitPage(recordId)).map { answer =>
       val value = if (answer) "site.yes" else "site.no"
@@ -49,7 +35,7 @@ object HasSupplementaryUnitSummary {
         key = "hasSupplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad2(CheckMode, recordId).url)
+          ActionItemViewModel("site.change", routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
         )
       )

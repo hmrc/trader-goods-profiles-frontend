@@ -18,10 +18,10 @@ package base
 
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.actions._
-import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.ott._
+import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, AssessmentAnswer2, Commodity, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -32,7 +32,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CategorisationDetailsQuery2, CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, CommodityQuery, MeasurementQuery}
 
 import java.time.Instant
 
@@ -168,30 +168,7 @@ trait SpecBase
     )
   )
 
-  lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(category1, category2, category3),
-    Some("Weight, in kilograms"),
-    0,
-    Some("1234567890")
-  )
-
   lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(category1, category2, category3),
-    Some("Weight, in kilograms"),
-    0,
-    Some("1234567890")
-  )
-
-  private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(category1, category2, category3),
-    None,
-    0
-  )
-
-  lazy val categorisationInfo2: CategorisationInfo2 = CategorisationInfo2(
     "1234567890",
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
@@ -202,88 +179,27 @@ trait SpecBase
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),
-    None,
-    0
-  )
-
-  lazy val categorisationInfoWithEmptyMeasurementUnit2: CategorisationInfo2 = CategorisationInfo2(
-    "1234567890",
-    Seq(category1, category2, category3),
     Seq(category1, category2, category3),
     None,
     1
   )
 
-  lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQuery)
-  )
-
-  lazy val recordCategorisationsEmptyMeasurementUnit: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
-  )
-
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisations)
+    .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
-    .success
-    .value
-
-  lazy val userAnswersForCategorisation2: UserAnswers = emptyUserAnswers
-    .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
-    .success
-    .value
-    .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
-    .success
-    .value
-    .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
-    .success
-    .value
-    .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
-    .success
-    .value
-
-  private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(),
-    Some("Weight, in kilograms"),
-    0
-  )
-
-  lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryNoAssessments)
-  )
-
-  lazy val uaForCategorisationStandardNoAssessments: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisationsNoAssessments)
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
     .success
     .value
 
   lazy val category1NoExemptions: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
-
-  private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(category1NoExemptions),
-    Some("Weight, in kilograms"),
-    0
-  )
-
-  lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryNoExemptions)
-  )
-
-  lazy val uaForCategorisationCategory1NoExemptions: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
-    .success
-    .value
 
   def goodsRecordResponse(
     createdDateTime: Instant = Instant.now,

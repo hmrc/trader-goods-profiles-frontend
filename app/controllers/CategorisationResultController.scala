@@ -17,17 +17,15 @@
 package controllers
 
 import controllers.actions._
-import models.{Scenario, Scenario2}
-
-import javax.inject.Inject
+import models.Scenario
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecategorisingQuery
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{CategorisationResultView, CategorisationResultView2}
+import views.html.CategorisationResultView
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
+import scala.annotation.unused
+import scala.concurrent.ExecutionContext
 
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,24 +33,13 @@ class CategorisationResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView,
-  view2: CategorisationResultView2,
-  sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext)
+  view: CategorisationResultView
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      for {
-        updatedAnswers <- Future.fromTry(request.userAnswers.remove(RecategorisingQuery(recordId)))
-        _              <- sessionRepository.set(updatedAnswers)
-      } yield updatedAnswers
       Ok(view(recordId, scenario))
-    }
-
-  def onPageLoad2(recordId: String, scenario: Scenario2): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      Ok(view2(recordId, scenario))
     }
 }

@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.GoodsDescriptionView
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsDescriptionController @Inject() (
@@ -43,7 +44,7 @@ class GoodsDescriptionController @Inject() (
   formProvider: GoodsDescriptionFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsDescriptionView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

@@ -47,25 +47,13 @@ case object CategorisationJourney extends Journey {
       assessmentsPage,
       hasSupplementaryUnitPage,
       supplementaryUnitPage,
-      longerCommodityCodePage
-    )
-  override def toString: String = "Categorisation"
-}
-
-//TODO test this in sessionRepo IT
-case object CategorisationJourney2 extends Journey {
-  val pages: Seq[String]        =
-    Seq(
-      assessmentsPage2,
-      hasSupplementaryUnitPage,
-      supplementaryUnitPage,
-      longerCommodityCodePage2,
+      longerCommodityCodePage,
       reassessmentPage,
       categorisationDetailsQuery,
       longerCommodityQuery,
       longerCategorisationDetailsQuery
     )
-  override def toString: String = "Categorisation2"
+  override def toString: String = "Categorisation"
 }
 case object RequestAdviceJourney extends Journey {
   val pages: Seq[String]        =

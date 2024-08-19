@@ -26,7 +26,6 @@ import viewmodels.implicits._
 
 object CategorySummary {
 
-  //TBD - this will be updated to route to the update trader reference page
   def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean)(implicit
     messages: Messages
   ): SummaryListRow =
@@ -53,7 +52,7 @@ object CategorySummary {
         } else {
           ValueViewModel(
             HtmlContent(
-              s"<a href=${routes.CategoryGuidanceController.onPageLoad(recordId).url} class='govuk-link'>$translatedValue</a>"
+              s"<a href=${routes.CategorisationPreparationController.startCategorisation(recordId).url} class='govuk-link'>$translatedValue</a>"
             )
           )
         }

@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ReasonForWithdrawAdviceView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReasonForWithdrawAdviceController @Inject() (
@@ -44,7 +45,7 @@ class ReasonForWithdrawAdviceController @Inject() (
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: ReasonForWithdrawAdviceView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

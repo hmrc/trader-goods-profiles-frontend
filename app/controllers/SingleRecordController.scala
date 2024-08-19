@@ -33,6 +33,7 @@ import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
@@ -45,7 +46,7 @@ class SingleRecordController @Inject() (
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

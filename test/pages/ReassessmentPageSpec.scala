@@ -18,13 +18,13 @@ package pages
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import models.AssessmentAnswer
 import models.ott._
-import models.{AssessmentAnswer, AssessmentAnswer2, RecordCategorisations, UserAnswers}
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
+import queries.LongerCategorisationDetailsQuery
 
 class ReassessmentPageSpec extends SpecBase {
 
-  ".cleanup2" - {
+  ".cleanup" - {
 
     val assessment1        = CategoryAssessment(
       "id1",
@@ -48,7 +48,7 @@ class ReassessmentPageSpec extends SpecBase {
     )
     val assessmentList     = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo =
-      CategorisationInfo2("1234567890", assessmentList, assessmentList, None, 1)
+      CategorisationInfo("1234567890", assessmentList, assessmentList, None, 1)
 
     "must not remove any assessments" - {
       "when an assessment is answered with an exemption" in {
@@ -58,17 +58,17 @@ class ReassessmentPageSpec extends SpecBase {
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
 
-        val result = answers.set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption).success.value
+        val result = answers.set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption).success.value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
@@ -85,20 +85,20 @@ class ReassessmentPageSpec extends SpecBase {
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .set(ReassessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
 
-        val result = answers.set(ReassessmentPage(testRecordId, 1), AssessmentAnswer2.NoExemption).success.value
+        val result = answers.set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true

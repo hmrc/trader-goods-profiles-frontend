@@ -25,7 +25,7 @@ import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, MeasurementQuery}
 import repositories.SessionRepository
 import services.OttService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -61,81 +61,37 @@ class SupplementaryUnitController @Inject() (
         case None        => form
         case Some(value) => form.fill(value)
       }
-
-      val result = for {
-        query              <- request.userAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- query.records.get(recordId)
-      } yield {
-        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-        val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
-        Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+      val catInfo      = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+        case Some(catInfo) => Some(catInfo)
+        case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))
       }
-
-      result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-    }
-
-  def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-      val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
-      val result = {
-
-        val catInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
-          case Some(catInfo) => Some(catInfo)
-          case _ => request.userAnswers.get(CategorisationDetailsQuery2(recordId))
-        }
-        catInfo.map(categorisationInfo => {
+      catInfo
+        .map { categorisationInfo =>
           val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-          val submitAction = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+          val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
           Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
         }
-        )
-      }
-
-      result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
-  }
-
-  def onSubmit2(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => {
-            val result = for {
-              categorisationInfo <- request.userAnswers.get(CategorisationDetailsQuery2(recordId))
-            } yield {
-              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-              val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
-              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
-            }
-            result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
-          },
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(SupplementaryUnitPage(recordId), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(SupplementaryUnitPage(recordId), mode, updatedAnswers))
-        )
+        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(
           formWithErrors => {
-            val result = for {
-              query              <- request.userAnswers.get(RecordCategorisationsQuery)
-              categorisationInfo <- query.records.get(recordId)
-            } yield {
-              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction)))
+            val catInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+              case Some(catInfo) => Some(catInfo)
+              case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))
             }
-            result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+
+            catInfo
+              .map { categorisationInfo =>
+                val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+                val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
+              }
+              .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
           },
           value =>
             for {

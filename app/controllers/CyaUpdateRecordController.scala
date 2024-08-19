@@ -24,10 +24,10 @@ import logging.Logging
 import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers, ValidationError}
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, CategorisationService}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
@@ -46,8 +46,7 @@ class CyaUpdateRecordController @Inject() (
   view: CyaUpdateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  sessionRepository: SessionRepository,
-  categorisationService: CategorisationService
+  sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -290,7 +289,6 @@ class CyaUpdateRecordController @Inject() (
                   Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
                 updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
                 _                        <- sessionRepository.set(updatedAnswers)
-                _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
               } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
             case Left(errors)     =>
               Future.successful(

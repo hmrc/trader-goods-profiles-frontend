@@ -16,7 +16,7 @@
 
 package models.router.requests
 
-import models.{CategoryRecord, CategoryRecord2, Scenario2, SupplementaryRequest, UpdateGoodsRecord}
+import models.{CategoryRecord, Scenario, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
@@ -56,18 +56,7 @@ object UpdateRecordRequest {
       categoryRecord.eori,
       categoryRecord.recordId,
       categoryRecord.eori,
-      category = Some(categoryRecord.category),
-      comcode = categoryRecord.comcode,
-      supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
-      measurementUnit = categoryRecord.measurementUnit
-    )
-
-  def mapFromCategoryAndComcode2(categoryRecord: CategoryRecord2): UpdateRecordRequest =
-    UpdateRecordRequest(
-      categoryRecord.eori,
-      categoryRecord.recordId,
-      categoryRecord.eori,
-      category = Some(Scenario2.getResultAsInt(categoryRecord.category)),
+      category = Some(Scenario.getResultAsInt(categoryRecord.category)),
       comcode = Some(categoryRecord.comcode),
       supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit

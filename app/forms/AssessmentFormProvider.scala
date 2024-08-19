@@ -17,7 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import models.{AssessmentAnswer, AssessmentAnswer2}
+import models.AssessmentAnswer
 import play.api.data.Form
 
 import javax.inject.Inject
@@ -35,23 +35,6 @@ class AssessmentFormProvider @Inject() extends Mappings {
             value => Set("true", "false").contains(value)
           )
           .transform[AssessmentAnswer](answer => AssessmentAnswer.fromString(answer), _.toString)
-    )
-  }
-}
-
-class AssessmentFormProvider2 @Inject() extends Mappings {
-
-  def apply(exemptionCount: Int): Form[AssessmentAnswer2] = {
-    val messagesKey = if (exemptionCount == 1) { "assessment.error.required.onlyOne" }
-    else { "assessment.error.required" }
-    Form(
-      "value" ->
-        text(messagesKey)
-          .verifying(
-            messagesKey,
-            value => Set("true", "false").contains(value)
-          )
-          .transform[AssessmentAnswer2](answer => AssessmentAnswer2.fromString(answer), _.toString)
     )
   }
 }

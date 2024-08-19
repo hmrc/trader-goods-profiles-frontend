@@ -16,6 +16,4 @@
 
 package pages
 
-import models.Mode
-
 case class RecategorisationPreparationPage(recordId: String) extends Page

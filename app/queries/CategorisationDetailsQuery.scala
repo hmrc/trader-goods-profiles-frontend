@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package models.router.responses
+package queries
 
-import play.api.libs.json.{Json, OFormat}
+import models.ott.CategorisationInfo
+import play.api.libs.json.JsPath
 
-final case class CreateGoodsRecordResponse(
-  recordId: String
-)
+case class CategorisationDetailsQuery(recordId: String)
+    extends Gettable[CategorisationInfo]
+    with Settable[CategorisationInfo] {
 
-object CreateGoodsRecordResponse {
-
-  implicit lazy val format: OFormat[CreateGoodsRecordResponse] = Json.format
-
+  override def path: JsPath = JsPath \ "categorisationDetails" \ recordId
 }

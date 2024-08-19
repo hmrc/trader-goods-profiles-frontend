@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasGoodsDescriptionChangeView
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasGoodsDescriptionChangeController @Inject() (
@@ -46,7 +47,7 @@ class HasGoodsDescriptionChangeController @Inject() (
   formProvider: HasGoodsDescriptionChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasGoodsDescriptionChangeView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

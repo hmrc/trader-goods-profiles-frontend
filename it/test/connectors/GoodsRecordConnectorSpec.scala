@@ -20,7 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{Category1Scenario, CategoryRecord, CategoryRecord2, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
+import models.{Category1Scenario, CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -319,7 +319,7 @@ class GoodsRecordConnectorSpec
 
   ".updateCategoryAndComcodeForGoodsRecord2" - {
 
-    val categoryRecord = CategoryRecord2(
+    val categoryRecord = CategoryRecord(
       eori = testEori,
       recordId = testRecordId,
       category = Category1Scenario,
@@ -348,7 +348,7 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).futureValue
+        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord).futureValue
       }
 
       "with a category and supplementary unit" in {
@@ -370,7 +370,7 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecordWithSupp).futureValue
+        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp).futureValue
       }
 
       "with a category and longer commodity code" in {
@@ -390,7 +390,9 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecordWithLongerComCode).futureValue
+        connector
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithLongerComCode)
+          .futureValue
       }
 
     }
@@ -404,7 +406,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord2(testEori, testRecordId, categoryRecord).failed.futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord).failed.futureValue
     }
   }
 

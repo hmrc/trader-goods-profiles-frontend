@@ -27,6 +27,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RequestDataView
 
+import scala.annotation.unused
+
 class RequestDataController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
@@ -45,7 +47,7 @@ class RequestDataController @Inject() (
       Ok(view("placeholder@email.com"))
   }
 
-  def onSubmit(email: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onSubmit(@unused email: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
       //TODO send an email to the user
       //TODO redirect to the correct page

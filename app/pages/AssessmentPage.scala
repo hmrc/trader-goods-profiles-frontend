@@ -16,46 +16,16 @@
 
 package pages
 
-import models.{AssessmentAnswer, AssessmentAnswer2, UserAnswers}
+import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.{CategorisationDetailsQuery2, RecordCategorisationsQuery}
+import queries.CategorisationDetailsQuery
 
 import scala.util.{Failure, Success, Try}
 
-case class AssessmentPage2(
-  recordId: String,
-  index: Int
-) extends QuestionPage[AssessmentAnswer2] {
-  override def path: JsPath = JsPath \ "assessments2" \ recordId \ index
-
-  override def cleanup(
-    value: Option[AssessmentAnswer2],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    if (value.contains(AssessmentAnswer2.NoExemption)) {
-      (for {
-        categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery2(recordId))
-        count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
-        //Go backwards to avoid recursion issues
-        rangeToRemove       = ((index + 1) to count).reverse
-      } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
-        acc.flatMap(_.remove(AssessmentPage2(recordId, currentIndexToRemove)))
-      }).getOrElse(
-        Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index"))
-      )
-    } else {
-      super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-    }
-}
-
 case class AssessmentPage(
   recordId: String,
-  index: Int,
-  shouldRedirectToCya: Boolean = false,
-  cleanupAll: Boolean = false
+  index: Int
 ) extends QuestionPage[AssessmentAnswer] {
-
   override def path: JsPath = JsPath \ "assessments" \ recordId \ index
 
   override def cleanup(
@@ -63,13 +33,12 @@ case class AssessmentPage(
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if ((value.contains(AssessmentAnswer.NoExemption) && !shouldRedirectToCya) || cleanupAll) {
+    if (value.contains(AssessmentAnswer.NoExemption)) {
       (for {
-        recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- recordQuery.records.get(recordId)
-        count               = categorisationInfo.categoryAssessments.size
+        categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery(recordId))
+        count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         //Go backwards to avoid recursion issues
-        rangeToRemove       = if (cleanupAll) (index to count).reverse else ((index + 1) to count).reverse
+        rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
         acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
       }).getOrElse(

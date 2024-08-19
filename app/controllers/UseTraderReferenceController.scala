@@ -29,6 +29,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UseTraderReferenceView
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class UseTraderReferenceController @Inject() (
@@ -42,7 +43,7 @@ class UseTraderReferenceController @Inject() (
   formProvider: UseTraderReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UseTraderReferenceView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

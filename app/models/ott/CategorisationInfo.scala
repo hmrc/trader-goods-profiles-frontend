@@ -17,14 +17,13 @@
 package models.ott
 
 import cats.implicits.toTraverseOps
-import models.AssessmentAnswer.NotAnsweredYet
 import models.ott.response.OttResponse
 import models.{AnsweredQuestions, UserAnswers}
-import pages.{AssessmentPage, AssessmentPage2, ReassessmentPage}
+import pages.{AssessmentPage, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
 import utils.Constants.minimumLengthOfCommodityCode
 
-final case class CategorisationInfo2(
+final case class CategorisationInfo(
   commodityCode: String,
   categoryAssessments: Seq[CategoryAssessment],
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
@@ -40,7 +39,7 @@ final case class CategorisationInfo2(
       Some(categoryAssessmentsThatNeedAnswers(index))
     }
 
-  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] = {
+  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
     if (longerCode) {
       getAnswersForReassessmentQuestions(userAnswers, recordId)
     } else {
@@ -48,11 +47,10 @@ final case class CategorisationInfo2(
         AnsweredQuestions(
           assessment._2,
           assessment._1,
-          userAnswers.get(AssessmentPage2(recordId, assessment._2))
+          userAnswers.get(AssessmentPage(recordId, assessment._2))
         )
       )
     }
-  }
 
   private def getAnswersForReassessmentQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
     categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
@@ -64,13 +62,18 @@ final case class CategorisationInfo2(
       )
     )
 
-  def getMinimalCommodityCode: String = commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
+  def getMinimalCommodityCode: String =
+    commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
 }
 
-object CategorisationInfo2 {
+object CategorisationInfo {
 
-  def build(ott: OttResponse, commodityCodeUserEntered: String, longerCode: Boolean = false): Option[CategorisationInfo2] =
+  def build(
+    ott: OttResponse,
+    commodityCodeUserEntered: String,
+    longerCode: Boolean = false
+  ): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
       .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
@@ -95,47 +98,13 @@ object CategorisationInfo2 {
             category1ToAnswer ++ category2ToAnswer
           }
 
-        CategorisationInfo2(
+        CategorisationInfo(
           commodityCodeUserEntered,
           assessmentsSorted,
           questionsToAnswers,
           ott.goodsNomenclature.measurementUnit,
           ott.descendents.size,
           longerCode
-        )
-      }
-
-  implicit lazy val format: OFormat[CategorisationInfo2] = Json.format
-}
-
-final case class CategorisationInfo(
-  commodityCode: String,
-  categoryAssessments: Seq[CategoryAssessment],
-  measurementUnit: Option[String],
-  descendantCount: Int,
-  originalCommodityCode: Option[String] = None //TODO hopefully dies?
-  //TODO needs country for comparisions??
-) {
-  def areThereAnyNonAnsweredQuestions(recordId: String, userAnswers: UserAnswers): Boolean =
-    categoryAssessments.indices
-      .map(index => userAnswers.get(AssessmentPage(recordId, index)))
-      .count(x => x.contains(NotAnsweredYet)) > 0
-
-}
-
-object CategorisationInfo {
-
-  def build(ott: OttResponse, originalCommodityCode: Option[String] = None): Option[CategorisationInfo] =
-    ott.categoryAssessmentRelationships
-      .map(x => CategoryAssessment.build(x.id, ott))
-      .sequence
-      .map { assessments =>
-        CategorisationInfo(
-          ott.goodsNomenclature.commodityCode,
-          assessments.sorted,
-          ott.goodsNomenclature.measurementUnit,
-          ott.descendents.size,
-          originalCommodityCode
         )
       }
 

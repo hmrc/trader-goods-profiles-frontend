@@ -21,16 +21,15 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.helper.{CategorisationJourney, CategorisationJourney2}
-import models.ott.CategorisationInfo2
+import models.helper.CategorisationJourney
+import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategorisationAnswers2, CategoryRecord, CategoryRecord2, NormalMode, Scenario, Scenario2, UserAnswers, ValidationError}
+import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario, UserAnswers, ValidationError}
 import navigation.Navigator
-import pages.{CyaCategorisationPage, CyaCategorisationPage2}
+import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecategorisingQuery, RecordCategorisationsQuery}
-import repositories.SessionRepository
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.{AuditService, CategorisationService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -51,7 +50,6 @@ class CyaCategorisationController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
   navigator: Navigator,
-  sessionRepository: SessionRepository,
   categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -60,95 +58,41 @@ class CyaCategorisationController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val categorisationAnswers = for {
-        recordCategorisations <- request.userAnswers.get(RecordCategorisationsQuery)
-        categorisationAnswers <- recordCategorisations.records.get(recordId)
-      } yield categorisationAnswers
-
-      val categorisationRows = categorisationAnswers match {
-        case Some(categorisationInfo) =>
-          categorisationInfo.categoryAssessments
-            .flatMap(assessment =>
-              AssessmentsSummary.row(
-                recordId,
-                request.userAnswers,
-                assessment,
-                categorisationInfo.categoryAssessments.indexOf(assessment)
-              )
-            )
-        case None                     => Seq.empty
-      }
-
-      CategorisationAnswers.build(request.userAnswers, recordId) match {
-        case Right(_) =>
-          val categorisationList = SummaryListViewModel(
-            rows = categorisationRows
-          )
-
-          val supplementaryUnitList = SummaryListViewModel(
-            rows = Seq(
-              HasSupplementaryUnitSummary.row(request.userAnswers, recordId),
-              SupplementaryUnitSummary.row(request.userAnswers, recordId)
-            ).flatten
-          )
-
-          val longerCommodityCodeList = SummaryListViewModel(
-            rows = Seq(
-              LongerCommodityCodeSummary.row(request.userAnswers, recordId)
-            ).flatten
-          )
-
-          for {
-            updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
-            _         <- sessionRepository.set(updatedUA)
-          } yield updatedUA
-
-          Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
-
-        case Left(errors) =>
-          logErrorsAndContinue(errors, recordId, request)
-
-      }
-  }
-
-  def onPageLoad2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-
       val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
       longerCategorisationInfo match {
         case Some(categorisationInfo) =>
           showCyaPage(request, recordId, categorisationInfo)
         case _                        =>
-          val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery2(recordId))
+          val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
 
           categorisationInfo
             .map { info =>
               showCyaPage(request, recordId, info)
             }
             .getOrElse(
-              logErrorsAndContinue2("Failed to get categorisation details", recordId, request.userAnswers)
+              logErrorsAndContinue("Failed to get categorisation details", recordId, request.userAnswers)
             )
       }
 
   }
 
-  private def showCyaPage(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo2)
-                             (implicit messages: Messages) = {
+  private def showCyaPage(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo)(implicit
+                                                                                                       messages: Messages
+  ) = {
     val userAnswers = request.userAnswers
 
-    CategorisationAnswers2.build(userAnswers, recordId) match {
+    CategorisationAnswers.build(userAnswers, recordId) match {
       case Right(_) =>
-
         val categorisationRows = categoryInfo.categoryAssessments
           .flatMap(assessment =>
-              AssessmentsSummary.row2(
-                recordId,
-                userAnswers,
-                assessment,
-                categoryInfo.categoryAssessments.indexOf(assessment),
-                categoryInfo.longerCode
-              )
+            AssessmentsSummary.row2(
+              recordId,
+              userAnswers,
+              assessment,
+              categoryInfo.categoryAssessments.indexOf(assessment),
+              categoryInfo.longerCode
+            )
           )
 
         val categorisationList = SummaryListViewModel(
@@ -171,92 +115,52 @@ class CyaCategorisationController @Inject() (
         Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList)(request, messages))
 
       case Left(errors) =>
-        logErrorsAndContinue2(errors, recordId, userAnswers)
+        logErrorsAndContinue(errors, recordId, userAnswers)
     }
   }
 
-  def onSubmit2(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      CategoryRecord2.build(request.userAnswers, request.eori, recordId, categorisationService) match {
+      CategoryRecord.build(request.userAnswers, request.eori, recordId, categorisationService) match {
         case Right(categoryRecord) =>
           auditService.auditFinishCategorisation(
             request.eori,
             request.affinityGroup,
             recordId,
             categoryRecord.categoryAssessmentsWithExemptions,
-            Scenario2.getResultAsInt(categoryRecord.category)
+            Scenario.getResultAsInt(categoryRecord.category)
           )
 
-          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord2(request.eori, recordId, categoryRecord).map {
+          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord).map {
             _ =>
-              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney2)
+              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
 
               Redirect(
                 navigator.nextPage(
-                  CyaCategorisationPage2(recordId),
+                  CyaCategorisationPage(recordId),
                   NormalMode,
                   request.userAnswers
                 )
               )
           }
 
-        case Left(error) => Future.successful(logErrorsAndContinue2(error, recordId, request.userAnswers))
+        case Left(error) => Future.successful(logErrorsAndContinue(error, recordId, request.userAnswers))
 
       }
 
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      CategoryRecord.build(request.userAnswers, request.eori, recordId) match {
-        case Right(model) =>
-          auditService.auditFinishCategorisation(
-            request.eori,
-            request.affinityGroup,
-            recordId,
-            model.categoryAssessmentsWithExemptions,
-            model.category
-          )
-
-          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, model).map { _ =>
-            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-            Redirect(
-              navigator.nextPage(
-                CyaCategorisationPage(recordId, model, Scenario.getScenario(model)),
-                NormalMode,
-                request.userAnswers
-              )
-            )
-          }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
-      }
-  }
-
-  def logErrorsAndContinue(
-    errors: data.NonEmptyChain[ValidationError],
-    recordId: String,
-    request: DataRequest[AnyContent]
-  ): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)
-
-    logger.error(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
-
-  private def logErrorsAndContinue2(
+  private def logErrorsAndContinue(
     errors: data.NonEmptyChain[ValidationError],
     recordId: String,
     userAnswers: UserAnswers
   ): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
-    logErrorsAndContinue2(errorMessages, recordId, userAnswers)
+    logErrorsAndContinue(errorMessages, recordId, userAnswers)
   }
 
-  private def logErrorsAndContinue2(
+  private def logErrorsAndContinue(
     errorMessage: String,
     recordId: String,
     userAnswers: UserAnswers
@@ -265,7 +169,7 @@ class CyaCategorisationController @Inject() (
     val continueUrl = RedirectUrl(routes.CategorisationPreparationController.startCategorisation(recordId).url)
 
     logger.error(s"Unable to update Goods Profile: $errorMessage")
-    dataCleansingService.deleteMongoData(userAnswers.id, CategorisationJourney2)
+    dataCleansingService.deleteMongoData(userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 

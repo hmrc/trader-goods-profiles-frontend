@@ -19,14 +19,14 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import logging.Logging
-import models.ott.CategorisationInfo2
-import models.{CategoryRecord2, Mode, NormalMode, UserAnswers}
+import models.ott.CategorisationInfo
+import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages.{CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, LongerCommodityQuery2}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -59,7 +59,7 @@ class CategorisationPreparationController @Inject() (
           categorisationService
             .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
         updatedUserAnswers <-
-          Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery2(recordId), categorisationInfo))
+          Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
         _                  <- sessionRepository.set(updatedUserAnswers)
         _                  <- updateCategory(updatedUserAnswers, request.eori, recordId, categorisationInfo)
       } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
@@ -75,9 +75,9 @@ class CategorisationPreparationController @Inject() (
       (for {
         goodsRecord               <- goodsRecordsConnector.getRecord(request.eori, recordId)
         shorterCategorisationInfo <-
-          Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery2(recordId)).get))
+          Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery(recordId)).get))
 
-        longerComCode            <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery2(recordId)).get))
+        longerComCode            <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
         longerCategorisationInfo <-
           categorisationService
             .getCategorisationInfo(
@@ -119,8 +119,8 @@ class CategorisationPreparationController @Inject() (
   private def cleanupSupplementaryUnit(
     userAnswers: UserAnswers,
     recordId: String,
-    shorterCatInfo: CategorisationInfo2,
-    longerCatInfo: CategorisationInfo2
+    shorterCatInfo: CategorisationInfo,
+    longerCatInfo: CategorisationInfo
   ) = {
 
     val oldLongerCatInfo = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
@@ -134,7 +134,7 @@ class CategorisationPreparationController @Inject() (
     }
   }
 
-  private final case class CategoryRecordBuildFailure(error: String) extends Exception {
+  private case class CategoryRecordBuildFailure(error: String) extends Exception {
     override def getMessage: String = s"Failed to build category record: $error"
   }
 
@@ -142,13 +142,13 @@ class CategorisationPreparationController @Inject() (
     updatedUserAnswers: UserAnswers,
     eori: String,
     recordId: String,
-    categorisationInfo: CategorisationInfo2
+    categorisationInfo: CategorisationInfo
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-      CategoryRecord2.build(updatedUserAnswers, eori, recordId, categorisationService) match {
-        case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord2(eori, recordId, record)
+      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
+        case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record)
         case Left(errors)  =>
           val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 

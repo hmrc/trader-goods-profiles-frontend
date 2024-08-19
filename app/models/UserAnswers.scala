@@ -17,10 +17,9 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import models.ott.CategorisationInfo2
 import pages.QuestionPage
 import play.api.libs.json._
-import queries.{Gettable, LongerCategorisationDetailsQuery, Settable}
+import queries.{Gettable, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -88,21 +87,11 @@ final case class UserAnswers(
     }
   }
 
-  def setIfEmpty[A](page: QuestionPage[A], value: A)(implicit writes: Writes[A], reads: Reads[A]): Try[UserAnswers] =
+  private def setIfEmpty[A](page: QuestionPage[A], value: A)(implicit writes: Writes[A], reads: Reads[A]): Try[UserAnswers] =
     if (get(page).isEmpty) {
       set(page, value)
     } else {
       Success(this)
-    }
-
-  def setIfAllowed[A](page: QuestionPage[A], booleanPage: QuestionPage[Boolean], value: A)(implicit
-    writes: Writes[A],
-    reads: Reads[A]
-  ): Try[UserAnswers] =
-    get(booleanPage) match {
-      case Some(true)  => setIfEmpty(page, value)
-      case Some(false) => Success(this)
-      case _           => Failure(new Exception("Boolean page not set"))
     }
 
   def remove[A](page: Settable[A]): Try[UserAnswers] = {

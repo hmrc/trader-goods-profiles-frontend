@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCountryOfOriginChangeView
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasCountryOfOriginChangeController @Inject() (
@@ -46,7 +47,7 @@ class HasCountryOfOriginChangeController @Inject() (
   formProvider: HasCountryOfOriginChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasCountryOfOriginChangeView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

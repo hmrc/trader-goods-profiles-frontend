@@ -21,79 +21,34 @@ import play.api.libs.json._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait AssessmentAnswer2
-
-object AssessmentAnswer2 {
-
-  case object NoExemption extends WithName("false") with AssessmentAnswer2
-  case object Exemption extends WithName("true") with AssessmentAnswer2
-
-  //TODO update places to check this
-  // Unideal but need it as a placeholder when doing longer commodity code - because it stores answers in a JSON array
-  case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer2
-
-  implicit val reads: Reads[AssessmentAnswer2] = Reads {
-    case JsString("false") => JsSuccess(NoExemption)
-    case JsString("true")  => JsSuccess(Exemption)
-    case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
-    case _                 => JsError("unable to read assessment answer")
-  }
-
-  implicit val writes: Writes[AssessmentAnswer2] = Writes {
-    case Exemption => JsString("true")
-    case NotAnsweredYet => JsString("notAnswered")
-    case NoExemption         => JsString("false")
-  }
-
-  def fromString(input: String): AssessmentAnswer2 =
-    input match {
-      case Exemption.toString => Exemption
-      case NotAnsweredYet.toString => NotAnsweredYet
-      case NoExemption.toString                    => NoExemption
-    }
-
-  def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =
-    exemptions.distinct.zipWithIndex.map { case (exemption, index) =>
-      RadioItem(
-        content = Text(messages("assessment.exemption", exemption.code, exemption.description)),
-        value = Some(exemption.id),
-        id = Some(s"value_$index")
-      )
-    } :+ RadioItem(divider = Some(messages("site.or"))) :+ RadioItem(
-      content = Text(messages("assessment.exemption.none")),
-      value = Some(NoExemption.toString),
-      id = Some(s"value_${exemptions.size}")
-    )
-}
-
 sealed trait AssessmentAnswer
 
 object AssessmentAnswer {
 
   case object NoExemption extends WithName("false") with AssessmentAnswer
-  final case class Exemption(value: String) extends AssessmentAnswer { override val toString: String = value }
+  case object Exemption extends WithName("true") with AssessmentAnswer
 
   // Unideal but need it as a placeholder when recategorising - because it stores answers in a JSON array
   case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
     case JsString("false")       => JsSuccess(NoExemption)
+    case JsString("true")        => JsSuccess(Exemption)
     case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
-    case JsString(s)             => JsSuccess(Exemption(s))
     case _                       => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {
-    case NoExemption    => JsString("false")
-    case Exemption(s)   => JsString(s)
+    case Exemption      => JsString("true")
     case NotAnsweredYet => JsString("notAnswered")
+    case NoExemption    => JsString("false")
   }
 
   def fromString(input: String): AssessmentAnswer =
     input match {
-      case NoExemption.toString    => NoExemption
+      case Exemption.toString      => Exemption
       case NotAnsweredYet.toString => NotAnsweredYet
-      case s                       => Exemption(s)
+      case _    => NoExemption
     }
 
   def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =

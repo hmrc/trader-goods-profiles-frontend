@@ -323,6 +323,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
 
         val supplementaryValue = row.value.content match {
           case Text(innerContent) => innerContent
+          case _                  => ""
         }
 
         supplementaryValue must equal("1234567890.123456 grams")
@@ -346,6 +347,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           .value
         val hasSupplementaryUnit = row.value.content match {
           case Text(innerContent) => innerContent
+          case _                  => ""
         }
 
         hasSupplementaryUnit contains "Do you want to add the supplementary unit?"

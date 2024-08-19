@@ -18,7 +18,7 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, GetCategorisationAssessmentDetailsEvent, OttAuditData, ValidateCommodityCodeEvent}
+import models.audits._
 import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response._
 import models.{AdviceRequest, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}

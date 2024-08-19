@@ -18,14 +18,14 @@ package models
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import models.ott.{CategorisationInfo, CategorisationInfo2, CategoryAssessment, Certificate}
+import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inside.inside
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import queries.{CategorisationDetailsQuery2, LongerCategorisationDetailsQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService
 
 import scala.collection.immutable.Seq
@@ -46,13 +46,9 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
     val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo            =
-      CategorisationInfo2("1234567890", assessmentList, assessmentList, None, 1)
+      CategorisationInfo("1234567890", assessmentList, assessmentList, None, 1)
     val categorisationInfoMeasureUnit =
-      CategorisationInfo2("1234567890", assessmentList, assessmentList, Some("Weight"), 1)
-
-    val noCategory1CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment3), Seq(assessment3), None, 1)
-    val noCategory1Or2CategorisationInfo = CategorisationInfo2("1234567890", Seq(), Seq(), None, 1)
-    val noCategory2CategorisationInfo    = CategorisationInfo2("1234567890", Seq(assessment1), Seq(assessment1), None, 1)
+      CategorisationInfo("1234567890", assessmentList, assessmentList, Some("Weight"), 1)
 
     "must return a CategoryRecord" - {
 
@@ -60,25 +56,25 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
-        val result  = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
-          CategoryRecord2(
+          CategoryRecord(
             testEori,
             testRecordId,
             "1234567890",
@@ -97,25 +93,25 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoMeasureUnit)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
-        val result  = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
-          CategoryRecord2(
+          CategoryRecord(
             testEori,
             testRecordId,
             "1234567890",
@@ -131,28 +127,28 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoMeasureUnit)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
-        val result  = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
-          CategoryRecord2(
+          CategoryRecord(
             testEori,
             testRecordId,
             "1234567890",
@@ -169,19 +165,19 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfoMeasureUnit)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -191,10 +187,10 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
 
-        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
-          CategoryRecord2(
+          CategoryRecord(
             testEori,
             testRecordId,
             "1234567890",
@@ -211,17 +207,17 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.NoExemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
-        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
-          CategoryRecord2(
+          CategoryRecord(
             testEori,
             testRecordId,
             "1234567890",
@@ -240,35 +236,35 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val shorterCat = categorisationInfo.copy(commodityCode = "123456")
         val longerCat  =
-          categorisationInfo2.copy(commodityCode = "9999999999", longerCode = true, measurementUnit = None)
+          categorisationInfo.copy(commodityCode = "9999999999", longerCode = true, measurementUnit = None)
         val answers    =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery2(testRecordId), shorterCat)
+            .set(CategorisationDetailsQuery(testRecordId), shorterCat)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 0), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 1), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 2), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage2(testRecordId, 3), AssessmentAnswer2.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
             .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer2.NoExemption)
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
-        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
-          CategoryRecord2(
+          CategoryRecord(
             testEori,
             testRecordId,
             "9999999999",
@@ -291,11 +287,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers = emptyUserAnswers
 
-        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            NoCategorisationDetailsForRecordId(CategorisationDetailsQuery2(testRecordId), testRecordId)
+            NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(testRecordId), testRecordId)
           )
         }
       }
@@ -304,14 +300,14 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
 
-        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
@@ -322,7 +318,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(CategorisationDetailsQuery2(testRecordId), categorisationInfo2)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), false)
@@ -332,7 +328,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
 
-        val result = CategoryRecord2.build(answers, testEori, testRecordId, mockCategorisationService)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
@@ -341,382 +337,5 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
-  }
-
-  ".build" - {
-
-    val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")))
-    val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")))
-    val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
-    val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
-
-    val categorisationInfo                  =
-      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("kg"), 0)
-    val recordCategorisations               = RecordCategorisations(records = Map(testRecordId -> categorisationInfo))
-    val emptyRecordCategorisations          = RecordCategorisations(records = Map())
-    val noCategory1RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment3), Some("kg"), 0)))
-    val noCategory1Or2RecordCategorisations =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(), Some("kg"), 0)))
-    val noCategory2RecordCategorisations    =
-      RecordCategorisations(records = Map(testRecordId -> CategorisationInfo("123", Seq(assessment1), Some("kg"), 0)))
-
-    "must return a CategoryRecord when all mandatory questions are answered" - {
-
-      "and all optional data is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasSupplementaryUnitPage(testRecordId), true)
-            .success
-            .value
-            .set(SupplementaryUnitPage(testRecordId), "1.0")
-            .success
-            .value
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            1,
-            0,
-            Some("1.0"),
-            Some("kg")
-          )
-        )
-      }
-
-      "and all optional data is missing" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            1,
-            0,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "where 1st question is No Exemption so its category 1" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            1,
-            0,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "where last cat 1 question is No Exemption so its category 1" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            1,
-            1,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "where first cat 2 question is No Exemption so its category 2" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("cert2"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            2,
-            2,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "where last cat 2 question is No Exemption so its category 2" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("cert2"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("cert3"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            2,
-            3,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "where last cat 2 question is completed so its category 3" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("cert2"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("cert3"))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption("cert4"))
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            3,
-            4,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "where recordCategorisations is missing category 1 assessments but completed category 2 so is category 3" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, noCategory1RecordCategorisations)
-          .success
-          .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            3,
-            1,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "when recordCategorisations is missing category 2 assessments but completed category 1 so is category 3" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, noCategory2RecordCategorisations)
-          .success
-          .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("cert1"))
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            3,
-            1,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-      "when recordCategorisations is missing any assessments so is category 3" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, noCategory1Or2RecordCategorisations)
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        result mustEqual Right(
-          CategoryRecord(
-            testEori,
-            testRecordId,
-            None,
-            3,
-            0,
-            None,
-            Some("kg")
-          )
-        )
-      }
-
-    }
-
-    "must return errors" - {
-
-      "when recordCategorisations is missing recordId" in {
-
-        val answers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, emptyRecordCategorisations)
-          .success
-          .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            RecordIdMissing(RecordCategorisationsQuery),
-            RecordIdMissing(RecordCategorisationsQuery)
-          )
-        }
-      }
-
-      "when all mandatory answers are missing" in {
-
-        val answers = UserAnswers(userAnswersId)
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(RecordCategorisationsQuery),
-            PageMissing(RecordCategorisationsQuery)
-          )
-        }
-      }
-
-      "when the user said they have a SupplementaryUnit but it is missing" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasSupplementaryUnitPage(testRecordId), true)
-            .success
-            .value
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
-        }
-      }
-
-      "when the user said they don't have optional data but it is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasSupplementaryUnitPage(testRecordId), false)
-            .success
-            .value
-            .set(SupplementaryUnitPage(testRecordId), "1.0")
-            .success
-            .value
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-
-        val result = CategoryRecord.build(answers, testEori, testRecordId)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
-        }
-      }
-    }
   }
 }

@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.EmailView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailController @Inject() (
@@ -41,7 +42,7 @@ class EmailController @Inject() (
   formProvider: EmailFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: EmailView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 

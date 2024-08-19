@@ -35,6 +35,7 @@ import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class CyaCreateRecordController @Inject() (
@@ -49,7 +50,7 @@ class CyaCreateRecordController @Inject() (
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   auditService: AuditService
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
@@ -70,7 +71,7 @@ class CyaCreateRecordController @Inject() (
     }
   }
 
-  def displayView(userAnswers: UserAnswers, countries: Seq[Country])(implicit request: Request[_]): Result = {
+  private def displayView(userAnswers: UserAnswers, countries: Seq[Country])(implicit request: Request[_]): Result = {
     val list = SummaryListViewModel(
       rows = Seq(
         TraderReferenceSummary.row(userAnswers),

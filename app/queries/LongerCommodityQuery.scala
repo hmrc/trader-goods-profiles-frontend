@@ -23,8 +23,3 @@ case class LongerCommodityQuery(recordId: String) extends Gettable[Commodity] wi
 
   override def path: JsPath = JsPath \ "longerCommodity" \ recordId
 }
-
-case class LongerCommodityQuery2(recordId: String) extends Gettable[Commodity] with Settable[Commodity] {
-
-  override def path: JsPath = JsPath \ "longerCommodity2" \ recordId
-}

@@ -24,6 +24,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.PageNotFoundView
 
+import scala.annotation.unused
+
 class PageNotFoundController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
@@ -34,7 +36,7 @@ class PageNotFoundController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(path: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(@unused path: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       Ok(view())
   }

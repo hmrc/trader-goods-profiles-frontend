@@ -24,10 +24,9 @@ import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.RecategorisingQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
+import utils.SessionData._
 import views.html.HasSupplementaryUnitView
 
 import javax.inject.Inject
@@ -51,26 +50,8 @@ class HasSupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad2(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
-
-      Ok(view(preparedForm, mode, recordId, onSubmitAction))
-  }
-
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      for {
-        updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
-        _         <- sessionRepository.set(updatedUA)
-      } yield updatedUA
-
       val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -79,7 +60,7 @@ class HasSupplementaryUnitController @Inject() (
       val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, mode, recordId, onSubmitAction))
-    }
+  }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>

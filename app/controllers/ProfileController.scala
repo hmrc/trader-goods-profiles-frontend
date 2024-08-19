@@ -64,7 +64,7 @@ class ProfileController @Inject() (
       }
     }
 
-  def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
+  private def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
     for {
       updatedAnswersRemovedUkims       <-
         Future.fromTry(answers.remove(UkimsNumberUpdatePage))

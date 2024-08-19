@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import connectors.GoodsRecordConnector
 import forms.HasCommodityCodeChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
