@@ -60,9 +60,6 @@ if (typeof accessibleAutocomplete != 'undefined' && document.querySelector('.aut
     selectEl.parentNode.insertBefore(label, selectEl);
   }
 
-
-
-
   // =====================================================
   // Polyfill autocomplete once loaded
   // =====================================================
