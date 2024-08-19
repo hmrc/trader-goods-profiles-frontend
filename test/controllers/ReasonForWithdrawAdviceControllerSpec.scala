@@ -28,20 +28,17 @@ import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReasonForWithdrawAdvicePage
 import play.api.inject.bind
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.ReasonForWithdrawAdviceView
-import navigation.{FakeNavigator, Navigator}
-import play.api.mvc.Call
 
 import scala.concurrent.Future
 
 class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
-
-  private def onwardRoute = Call("GET", "/foo")
 
   private val formProvider = new ReasonForWithdrawAdviceFormProvider()
   private val form         = formProvider()
