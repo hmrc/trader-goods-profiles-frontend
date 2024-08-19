@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId, withdrawReason}
-import connectors.{AccreditationConnector, TraderProfileConnector}
+import connectors.AccreditationConnector
 import forms.ReasonForWithdrawAdviceFormProvider
 import models.UserAnswers
 import models.helper.WithdrawAdviceJourney
@@ -28,7 +28,6 @@ import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReasonForWithdrawAdvicePage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
@@ -45,9 +44,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val reasonForWithdrawAdviceRoute = routes.ReasonForWithdrawAdviceController.onPageLoad(testRecordId).url
 
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
   "ReasonForWithdrawAdvice Controller" - {
 
     "must return OK and the correct view for a GET" in {
@@ -55,7 +51,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val mockAuditService = mock[AuditService]
       val application      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[AuditService].toInstance(mockAuditService))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -79,7 +74,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         UserAnswers(userAnswersId).set(ReasonForWithdrawAdvicePage(testRecordId), "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -115,7 +109,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[AccreditationConnector].toInstance(mockConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[AuditService].toInstance(mockAuditService),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
@@ -157,7 +150,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[AccreditationConnector].toInstance(mockConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
@@ -187,7 +179,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[AccreditationConnector].toInstance(mockConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
@@ -216,7 +207,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -232,7 +222,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -266,7 +255,6 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[AccreditationConnector].toInstance(mockConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[AuditService].toInstance(mockAuditService),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
