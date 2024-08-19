@@ -35,6 +35,8 @@ class HomePageController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate) { implicit request =>
-    Ok(view())
+    // TODO: Actually check whether the file is ready or not by calling something
+    val isDownloadReady = false
+    Ok(view(downloadReady = isDownloadReady))
   }
 }

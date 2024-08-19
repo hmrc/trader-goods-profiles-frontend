@@ -15,12 +15,26 @@
  *@
 
 @this(
-        layout: templates.Layout
+        layout: templates.Layout,
+        govukNotificationBanner: GovukNotificationBanner
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false) {
+
+    @if(downloadReady) {
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("sucessBanner.title")),
+            content = HtmlContent(f"""
+                <h3 class='govuk-notification-banner__heading'>
+                    ${messages("homepage.downloadBanner.content")}
+                    <a href='#' class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+                </h3>"""),
+            bannerType = Some("success"),
+            role=Some("alert"))
+        )
+    }
 
     <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
     <p class="govuk-body">@messages("homepage.p1")</p>

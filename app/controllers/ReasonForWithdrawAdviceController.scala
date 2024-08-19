@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages.ReasonForWithdrawAdvicePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.DataCleansingService
+import services.{AuditService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ReasonForWithdrawAdviceView
 
@@ -41,6 +41,7 @@ class ReasonForWithdrawAdviceController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: ReasonForWithdrawAdviceFormProvider,
+  auditService: AuditService,
   accreditationConnector: AccreditationConnector,
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
@@ -69,6 +70,7 @@ class ReasonForWithdrawAdviceController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId))),
           value => {
             val withdrawReason: Option[String] = if (value.trim.nonEmpty) Some(value) else None
+            auditService.auditWithdrawAdvice(request.affinityGroup, request.eori, recordId, withdrawReason)
             for {
               _ <- accreditationConnector.withdrawRequestAccreditation(request.eori, recordId, withdrawReason)
               _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
