@@ -77,13 +77,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -126,10 +126,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -169,13 +169,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -229,13 +229,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, reassessmentAnswer = false)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -299,10 +299,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, reassessmentAnswer = true)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = true)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, reassessmentAnswer = true)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = true)
                   .get
               )
             )

@@ -17,9 +17,9 @@
 package services
 
 import connectors.OttConnector
+import models._
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models._
 import pages.{AssessmentPage, ReassessmentPage}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -38,27 +38,23 @@ class CategorisationService @Inject() (
     country: String,
     recordId: String,
     longerCode: Boolean = false
-  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] = {
-
-    val ottResponse = ottConnector.getCategorisationInfo(
-      commodityCode,
-      request.eori,
-      request.affinityGroup,
-      Some(recordId),
-      country,
-      LocalDate.now()
-    )
-
-    ottResponse.flatMap { response =>
-      CategorisationInfo.build(response, commodityCode, longerCode) match {
-        case Some(categorisationInfo) => Future.successful(categorisationInfo)
-        case _                        =>
-          Future.failed(new RuntimeException("Could not build categorisation info"))
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
+    ottConnector
+      .getCategorisationInfo(
+        commodityCode,
+        request.eori,
+        request.affinityGroup,
+        Some(recordId),
+        country,
+        LocalDate.now()
+      )
+      .flatMap { response =>
+        CategorisationInfo.build(response, commodityCode, longerCode) match {
+          case Some(categorisationInfo) => Future.successful(categorisationInfo)
+          case _                        =>
+            Future.failed(new RuntimeException("Could not build categorisation info"))
+        }
       }
-
-    }
-
-  }
 
   def calculateResult(
     categorisationInfo: CategorisationInfo,
@@ -82,16 +78,18 @@ class CategorisationService @Inject() (
     userAnswers: UserAnswers,
     recordId: String
   ) = {
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
-    val getFirstNo                                = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer.NoExemption))
+    val getFirstNo = categorisationInfo
+      .getAnswersForQuestions(userAnswers, recordId)
+      .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
+
     val areThereCategory2QuestionsWithNoExemption =
       categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
     getFirstNo match {
       case None if areThereCategory2QuestionsWithNoExemption => Category2Scenario
       case None                                              => StandardGoodsScenario
-      case Some(details) if details.question.category == 2   => Category2Scenario
+      case Some(details) if details.question.isCategory2     => Category2Scenario
       case _                                                 => Category1Scenario
     }
   }

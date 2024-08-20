@@ -163,9 +163,9 @@ GET         /update-record/:recordId/categorisation/result/standard-no-assessmen
 GET         /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/categorisation/check-your-answers                      controllers.CyaCategorisationController.onSubmit(recordId:String)
 
-GET         /update-record/:recordId/categorisation/categorisationPreparation               controllers.CategorisationPreparationController.startCategorisation(recordId:String)
-GET         /update-record/:recordId/categorisation/recategorisationPreparation             controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = NormalMode, recordId:String)
-GET         /update-record/:recordId/categorisation/recategorisationPreparation/check       controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = CheckMode, recordId:String)
+GET         /update-record/:recordId/categorisation/categorisation-preparation               controllers.CategorisationPreparationController.startCategorisation(recordId:String)
+GET         /update-record/:recordId/categorisation/recategorisation-preparation             controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = NormalMode, recordId:String)
+GET         /update-record/:recordId/categorisation/recategorisation-preparation/check       controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = CheckMode, recordId:String)
 
 GET         /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/create-advice/start                                    controllers.AdviceStartController.onSubmit(recordId:String)

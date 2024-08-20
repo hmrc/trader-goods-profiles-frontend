@@ -29,8 +29,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
-import scala.annotation.unused
-import scala.concurrent.ExecutionContext
 
 class CategoryGuidanceController @Inject() (
   override val messagesApi: MessagesApi,
@@ -42,8 +40,7 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   auditService: AuditService,
   navigator: Navigator
-)(implicit @unused ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport
     with Logging {
 

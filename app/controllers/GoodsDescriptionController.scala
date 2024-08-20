@@ -18,8 +18,6 @@ package controllers
 
 import controllers.actions._
 import forms.GoodsDescriptionFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
@@ -30,6 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.GoodsDescriptionView
 
+import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
