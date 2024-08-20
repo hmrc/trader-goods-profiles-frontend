@@ -24,7 +24,13 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String, measurementUnit: String,action: Call)(implicit request: Request[_], messages: Messages)
+@(
+    form: Form[_],
+    mode: Mode,
+    recordId: String,
+    measurementUnit: Option[String],
+    action: Call
+)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("supplementaryUnit.title"))) {
 
@@ -43,7 +49,7 @@
             )
             .asNumeric()
             .withWidth(Fixed10)
-            .withHint(Hint(content = Text(measurementUnit)))
+            .withHint(Hint(content = Text(measurementUnit.getOrElse(""))))
         )
 
         @govukButton(

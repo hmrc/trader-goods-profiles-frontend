@@ -87,7 +87,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 form,
                 NormalMode,
                 testRecordId,
-                "Weight, in kilograms",
+                Some("Weight, in kilograms"),
                 submitAction
               )(
                 request,
@@ -113,7 +113,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
               val view = application.injector.instanceOf[SupplementaryUnitView]
 
               status(result) mustEqual OK
-              contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "", submitAction)(
+              contentAsString(result) mustEqual view(form, NormalMode, testRecordId, None, submitAction)(
                 request,
                 messages(application)
               ).toString
@@ -144,7 +144,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 form.fill(validAnswer),
                 NormalMode,
                 testRecordId,
-                "Weight, in kilograms",
+                Some("Weight, in kilograms"),
                 submitAction
               )(request, messages(application)).toString
             }
@@ -238,7 +238,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 boundForm,
                 NormalMode,
                 testRecordId,
-                "Weight, in kilograms",
+                Some("Weight, in kilograms"),
                 submitAction
               )(
                 request,
@@ -268,7 +268,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
               val result = route(application, request).value
 
               status(result) mustEqual BAD_REQUEST
-              contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "", submitAction)(
+              contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, None, submitAction)(
                 request,
                 messages(application)
               ).toString
@@ -335,7 +335,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 form,
                 NormalMode,
                 testRecordId,
-                "Weight, in kilograms",
+                Some("Weight, in kilograms"),
                 submitAction
               )(
                 request,
@@ -361,7 +361,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
               val view = application.injector.instanceOf[SupplementaryUnitView]
 
               status(result) mustEqual OK
-              contentAsString(result) mustEqual view(form, NormalMode, testRecordId, "", submitAction)(
+              contentAsString(result) mustEqual view(form, NormalMode, testRecordId, None, submitAction)(
                 request,
                 messages(application)
               ).toString
@@ -392,7 +392,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 form.fill(validAnswer),
                 NormalMode,
                 testRecordId,
-                "Weight, in kilograms",
+                Some("Weight, in kilograms"),
                 submitAction
               )(request, messages(application)).toString
             }
@@ -458,7 +458,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 boundForm,
                 NormalMode,
                 testRecordId,
-                "Weight, in kilograms",
+                Some("Weight, in kilograms"),
                 submitAction
               )(
                 request,
@@ -488,7 +488,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
               val result = route(application, request).value
 
               status(result) mustEqual BAD_REQUEST
-              contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, "", submitAction)(
+              contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId, None, submitAction)(
                 request,
                 messages(application)
               ).toString
@@ -529,7 +529,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             form.fill("1234567890.123456"),
             NormalMode,
             testRecordId,
-            "grams",
+            Some("grams"),
             routes.SupplementaryUnitController.onSubmitUpdate(NormalMode, testRecordId)
           )(
             request,
@@ -568,7 +568,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             form.fill(validAnswer),
             NormalMode,
             testRecordId,
-            "grams",
+            Some("grams"),
             routes.SupplementaryUnitController.onSubmitUpdate(NormalMode, testRecordId)
           )(
             request,
@@ -635,7 +635,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             boundForm,
             NormalMode,
             testRecordId,
-            "",
+            None,
             routes.SupplementaryUnitController.onSubmitUpdate(NormalMode, testRecordId)
           )(
             request,

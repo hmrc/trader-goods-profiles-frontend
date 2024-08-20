@@ -67,7 +67,7 @@ class SupplementaryUnitController @Inject() (
       }
       catInfo
         .map { categorisationInfo =>
-          val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+          val measurementUnit = categorisationInfo.measurementUnit
           val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
           Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
         }
@@ -87,7 +87,7 @@ class SupplementaryUnitController @Inject() (
 
             catInfo
               .map { categorisationInfo =>
-                val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
+                val measurementUnit = categorisationInfo.measurementUnit
                 val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
                 Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
               }
@@ -112,7 +112,7 @@ class SupplementaryUnitController @Inject() (
             case Some(value) if value != 0 => value.toString
             case _                         => ""
           }
-          val measurementUnit      = record.measurementUnit.getOrElse("")
+          val measurementUnit      = record.measurementUnit
 
           val preparedFormFuture = userAnswerValue match {
             case Some(value) =>
@@ -146,7 +146,7 @@ class SupplementaryUnitController @Inject() (
             val result = for {
               value <- ottService.getMeasurementUnit(request, recordId)
             } yield {
-              val measurementUnit = value.getOrElse("")
+              val measurementUnit = value
               BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction))
             }
             result.recover { case ex: Exception =>
