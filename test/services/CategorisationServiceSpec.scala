@@ -129,6 +129,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     reset(mockSessionRepository)
     reset(mockGoodsRecordsConnector)
     reset(mockOttConnector)
+    reset(mockTraderProfileConnector)
   }
 
   "getCategorisationInfo" - {
