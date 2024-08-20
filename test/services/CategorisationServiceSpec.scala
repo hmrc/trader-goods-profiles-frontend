@@ -101,7 +101,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     Instant.now()
   )
 
-  val testTraderProfileResponseWithoutNiphl = TraderProfile("actorId", "ukims number", None, None)
+  private val testTraderProfileResponseWithoutNiphl = TraderProfile("actorId", "ukims number", None, None)
 
   private val categorisationService =
     new CategorisationService(mockOttConnector, mockTraderProfileConnector)
@@ -312,7 +312,51 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
-      //"if "
+      "if NIPHL is not authorised and has NIPHL assessments" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("WFE012", "cert1code", "cert1desc")
+          )
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("WFE012", "cert2code", "cert2desc")
+          )
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2
+          ),
+          Seq(assessment1, assessment2),
+          None,
+          1
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category1Scenario
+      }
     }
 
     "return Category 1 No Exemptions if a category 1 question has no exemptions" in {
@@ -468,6 +512,99 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
+      "if NIPHL is authorised and has only NIPHL assessments" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("WFE012", "cert1code", "cert1desc")
+          )
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("WFE012", "cert2code", "cert2desc")
+          )
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2
+          ),
+          Seq(assessment1, assessment2),
+          None,
+          1,
+          isNiphlAuthorised = true
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+      }
+
+      "if NIPHL is authorised and has NIPHL assessments when all category 1 are answered" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("cert1", "cert1code", "cert1desc")
+          )
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("WFE012", "cert2code", "cert2desc")
+          )
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2
+          ),
+          Seq(assessment1, assessment2),
+          None,
+          1,
+          isNiphlAuthorised = true
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+      }
     }
 
     "return StandardNoAssessments if no assessments" in {
