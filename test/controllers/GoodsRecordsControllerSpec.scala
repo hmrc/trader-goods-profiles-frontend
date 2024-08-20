@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
@@ -124,6 +124,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
+  private val downloadLinkRoute = routes.RequestDataController.onPageLoad().url
+  private val downloadLinkText  = "goodsRecord.downloadLinkText.requestFile"
+
   "GoodsRecords Controller" - {
 
     "must return OK and the correct view for a GET with records and latest records are stored" in {
@@ -132,6 +135,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(Some(response))
+
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -142,7 +148,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[OttConnector].toInstance(mockOttConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
         )
         .build()
 
@@ -162,7 +169,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          currentPage
+          currentPage,
+          downloadLinkText,
+          downloadLinkRoute
         )(
           request,
           messages(application)
@@ -207,6 +216,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val middlePage = 2
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
+
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
       val response                 = GetRecordsResponse(
         records,
@@ -224,7 +236,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[OttConnector].toInstance(mockOttConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
         )
         .build()
 
@@ -276,7 +289,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          middlePage
+          middlePage,
+          downloadLinkText,
+          downloadLinkRoute
         )(
           request,
           messages(application)
@@ -354,6 +369,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
+
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
@@ -369,7 +387,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
 
@@ -393,7 +412,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          currentPage
+          currentPage,
+          downloadLinkText,
+          downloadLinkRoute
         )(
           request,
           messages(application)
