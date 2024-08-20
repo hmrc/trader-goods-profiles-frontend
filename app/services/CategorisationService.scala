@@ -16,12 +16,14 @@
 
 package services
 
-import connectors.OttConnector
+import connectors.{OttConnector, TraderProfileConnector}
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models._
 import pages.{AssessmentPage, ReassessmentPage}
 import uk.gov.hmrc.http.HeaderCarrier
+import logging.Logging
+import play.api.mvc.Results.Redirect
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -29,8 +31,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class CategorisationService @Inject() (
-  ottConnector: OttConnector
-)(implicit ec: ExecutionContext) {
+  ottConnector: OttConnector,
+  profileConnector: TraderProfileConnector
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   def getCategorisationInfo(
     request: DataRequest[_],
@@ -38,33 +42,81 @@ class CategorisationService @Inject() (
     country: String,
     recordId: String,
     longerCode: Boolean = false
-  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] = {
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
+    profileConnector.getTraderProfile(request.eori).flatMap { profile =>
+      ottConnector
+        .getCategorisationInfo(
+          commodityCode,
+          request.eori,
+          request.affinityGroup,
+          Some(recordId),
+          country,
+          LocalDate.now()
+        )
+        .flatMap { response =>
+          CategorisationInfo.build(response, commodityCode, profile, longerCode) match {
+            case Some(categorisationInfo) =>
+              Future.successful(categorisationInfo)
 
-    val ottResponse = ottConnector.getCategorisationInfo(
-      commodityCode,
-      request.eori,
-      request.affinityGroup,
-      Some(recordId),
-      country,
-      LocalDate.now()
-    )
-
-    ottResponse.flatMap { response =>
-      CategorisationInfo.build(response, commodityCode, longerCode) match {
-        case Some(categorisationInfo) => Future.successful(categorisationInfo)
-        case _                        =>
-          Future.failed(new RuntimeException("Could not build categorisation info"))
-      }
-
+            case None =>
+              logger.error("Could not build categorisation info")
+              Future.failed(new RuntimeException("Could not build categorisation info"))
+          }
+        }
     }
-
-  }
 
   def calculateResult(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ): Scenario =
+  ): Scenario = {
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
+    //val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlsAnswer)
+    // val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
+
+    val hasNiphlAssessments = category1Assessments.exists(ass => ass.isNiphlsAnswer)
+
+    val category1AssessmentsWithoutNiphl = category1Assessments.filter(ass => !ass.isNiphlsAnswer)
+
+    val areThereCategory1QuestionsWithNoExemption = category1Assessments.exists(ass => ass.hasNoAnswers)
+
+    // Let's write unit tests and come back to this later :)
+    if (categorisationInfo.isNiphlAuthorised) {
+      if (hasNiphlAssessments) {
+        if (category1AssessmentsWithoutNiphl.isEmpty) {
+          Category2Scenario //scenario 2
+        } else if (!areThereCategory1QuestionsWithNoExemption) {
+          Category2Scenario //scenario 1
+        } else {
+          calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+        }
+      } else {
+        calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+      }
+    } else if (hasNiphlAssessments) {
+      Category1Scenario //scenario 3
+    } else {
+      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+    }
+
+//    if (categorisationInfo.categoryAssessments.isEmpty) {
+//      StandardGoodsNoAssessmentsScenario
+//    } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
+//      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
+//        Category1NoExemptionsScenario
+//      } else {
+//        Category2Scenario
+//      }
+//    } else {
+//      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
+//    }
+  }
+
+  private def calculateResultWithoutNiphl(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ) =
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {

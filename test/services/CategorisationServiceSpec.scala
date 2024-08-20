@@ -18,12 +18,12 @@ package services
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.ott._
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
+import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -45,9 +45,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  private val mockSessionRepository     = mock[SessionRepository]
-  private val mockOttConnector          = mock[OttConnector]
-  private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
+  private val mockSessionRepository      = mock[SessionRepository]
+  private val mockOttConnector           = mock[OttConnector]
+  private val mockGoodsRecordsConnector  = mock[GoodsRecordConnector]
+  private val mockTraderProfileConnector = mock[TraderProfileConnector]
 
   private def mockOttResponse(comCode: String = "1234567890") = OttResponse(
     GoodsNomenclatureResponse("some id", comCode, Some("Weight, in kilograms"), Instant.EPOCH, None, List("test")),
@@ -100,8 +101,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     Instant.now()
   )
 
+  val testTraderProfileResponseWithoutNiphl = TraderProfile("actorId", "ukims number", None, None)
+
   private val categorisationService =
-    new CategorisationService(mockOttConnector)
+    new CategorisationService(mockOttConnector, mockTraderProfileConnector)
 
   private val mockDataRequest = mock[DataRequest[AnyContent]]
 
@@ -113,6 +116,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       .thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
+    when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+      .thenReturn(Future.successful(testTraderProfileResponseWithoutNiphl))
 
     when(mockDataRequest.eori).thenReturn("eori")
     when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
@@ -307,6 +312,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
+      //"if "
     }
 
     "return Category 1 No Exemptions if a category 1 question has no exemptions" in {
