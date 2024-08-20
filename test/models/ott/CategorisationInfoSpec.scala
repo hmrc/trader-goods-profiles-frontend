@@ -17,7 +17,7 @@
 package models.ott
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{recordSize, testRecordId}
 import models.ott.response._
 import models.{AnsweredQuestions, AssessmentAnswer, TraderProfile}
 import pages.{AssessmentPage, ReassessmentPage}
@@ -27,7 +27,7 @@ import java.time.Instant
 
 class CategorisationInfoSpec extends SpecBase {
 
-  val testTraderProfileResponseWithoutNiphl = TraderProfile("actorId", "ukims number", None, None)
+  val testTraderProfileResponseWithoutNiphl: TraderProfile = TraderProfile("actorId", "ukims number", None, None)
 
   ".build" - {
 
@@ -483,7 +483,6 @@ class CategorisationInfoSpec extends SpecBase {
 
         val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
         result.value mustEqual expectedResult
-
       }
 
       "when flagged as longer code" in {
@@ -544,6 +543,84 @@ class CategorisationInfoSpec extends SpecBase {
         result.value mustEqual expectedResult
       }
 
+      ".NIPHL is authorised" - {
+
+        "when there are Category 1 that need answers but there are Category 2 assessment with no exemptions" in {
+          val mockOttResponse = OttResponse(
+            GoodsNomenclatureResponse(
+              "some id",
+              "1234567890",
+              None,
+              Instant.EPOCH,
+              None,
+              List("test")
+            ),
+            categoryAssessmentRelationships = Seq(
+              CategoryAssessmentRelationship("assessmentId2"),
+              CategoryAssessmentRelationship("assessmentId1")
+            ),
+            includedElements = Seq(
+              ThemeResponse("themeId1", 1),
+              CategoryAssessmentResponse(
+                "assessmentId2",
+                "themeId1",
+                Seq(
+                  ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                  ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+                )
+              ),
+              ThemeResponse("themeId2", 2),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+              ThemeResponse("ignoredTheme", 3),
+              CertificateResponse("ignoredExemption", "code3", "description3"),
+              CategoryAssessmentResponse(
+                "assessmentId1",
+                "themeId2",
+                Seq.empty
+              )
+            ),
+            descendents = Seq.empty[Descendant]
+          )
+
+          val expectedAssessmentId1 = CategoryAssessment(
+            "assessmentId1",
+            2,
+            Seq.empty
+          )
+          val expectedAssesmentId2  = CategoryAssessment(
+            "assessmentId2",
+            1,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+
+          val expectedAssessments = Seq(
+            expectedAssesmentId2,
+            expectedAssessmentId1
+          )
+
+          val expectedAssessmentsThatNeedAnswers = Seq(expectedAssesmentId2)
+
+          val expectedResult =
+            CategorisationInfo(
+              "1234567890",
+              expectedAssessments,
+              expectedAssessmentsThatNeedAnswers,
+              None,
+              0,
+              isNiphlAuthorised = true
+            )
+
+          val testTraderProfileResponseWithNiphl =
+            TraderProfile("actorId", "ukims number", Some("nirms number"), Some("niphl number"))
+
+          val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)
+          result.value mustEqual expectedResult
+        }
+      }
     }
 
     "must return None" - {
