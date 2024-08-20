@@ -22,6 +22,8 @@ import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
 
+import java.time.Instant
+
 final case class UpdateGoodsRecord(
   eori: String,
   recordId: String,
@@ -29,7 +31,9 @@ final case class UpdateGoodsRecord(
   goodsDescription: Option[String] = None,
   traderReference: Option[String] = None,
   commodityCode: Option[Commodity] = None,
-  category: Option[Int] = None
+  category: Option[Int] = None,
+  commodityCodeStartDate: Option[Instant] = None,
+  commodityCodeEndDate: Option[Instant] = None
 )
 
 object UpdateGoodsRecord {

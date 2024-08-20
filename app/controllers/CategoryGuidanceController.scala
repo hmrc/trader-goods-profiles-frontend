@@ -31,6 +31,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.CategoryGuidanceView
 
+import java.time.temporal.ChronoUnit
+import java.time.{Instant, ZoneId, ZonedDateTime}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,8 +46,8 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   auditService: AuditService,
   categorisationService: CategorisationService,
-  navigator: Navigator,
-  goodsRecordConnector: GoodsRecordConnector
+  goodsRecordsConnector: GoodsRecordConnector,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -53,31 +55,40 @@ class CategoryGuidanceController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      categorisationService
-        .requireCategorisation(request, recordId)
-        .flatMap { userAnswers =>
-          val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
-          val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
-          val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
-          scenario match {
-            case Some(Category1NoExemptions | StandardNoAssessments) =>
-              CategoryRecord
-                .build(userAnswers, request.eori, recordId)
-                .map { categoryRecord =>
-                  goodsRecordConnector
-                    .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord)
-                    .map { _ =>
-                      Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
-                        .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
-                    }
+      // Check if the commodity code is expired
+      goodsRecordsConnector
+        .getRecord(eori = request.eori, recordId = recordId)
+        .flatMap { record =>
+          if (isCommCodeExpired(record.comcodeEffectiveToDate)) {
+            Future.successful(Redirect(routes.ExpiredCommodityCodeController.onPageLoad(recordId).url))
+          } else {
+            categorisationService
+              .requireCategorisation(request, recordId)
+              .flatMap { userAnswers =>
+                val recordCategorisations = userAnswers.get(RecordCategorisationsQuery)
+                val categorisationInfo    = recordCategorisations.flatMap(_.records.get(recordId))
+                val scenario              = categorisationInfo.map(Scenario.getRedirectScenarios)
+                scenario match {
+                  case Some(Category1NoExemptions | StandardNoAssessments) =>
+                    CategoryRecord
+                      .build(userAnswers, request.eori, recordId)
+                      .map { categoryRecord =>
+                        goodsRecordsConnector
+                          .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord)
+                          .map { _ =>
+                            Redirect(routes.CategorisationResultController.onPageLoad(recordId, scenario.get).url)
+                              .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+                          }
+                      }
+                      .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+                  case Some(NoRedirectScenario)                            =>
+                    Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
                 }
-                .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
-            case Some(NoRedirectScenario)                            =>
-              Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
+              }
           }
         }
         .recover { e =>
-          logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
+          logger.error(s"Unable to retrieve goods record or start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
         }
     }
@@ -94,4 +105,12 @@ class CategoryGuidanceController @Inject() (
 
       Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
     }
+
+  private def isCommCodeExpired(commcodeEffectiveToDate: Option[Instant]): Boolean = {
+    val today: ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+    commcodeEffectiveToDate.exists { effectiveToDate =>
+      val effectiveDate: ZonedDateTime = effectiveToDate.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+      effectiveDate.isEqual(today)
+    }
+  }
 }

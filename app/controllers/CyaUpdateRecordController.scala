@@ -293,11 +293,25 @@ class CyaUpdateRecordController @Inject() (
               auditService.auditFinishUpdateGoodsRecord(
                 recordId,
                 request.affinityGroup,
-                UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
+                UpdateGoodsRecord(
+                  request.eori,
+                  recordId,
+                  commodityCode = Some(commodity),
+                  category = Some(1),
+                  commodityCodeStartDate = Some(commodity.validityStartDate),
+                  commodityCodeEndDate = commodity.validityEndDate
+                )
               )
               for {
                 _                        <- goodsRecordConnector.updateGoodsRecord(
-                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity), category = Some(1))
+                                              UpdateGoodsRecord(
+                                                request.eori,
+                                                recordId,
+                                                commodityCode = Some(commodity),
+                                                category = Some(1),
+                                                commodityCodeStartDate = Some(commodity.validityStartDate),
+                                                commodityCodeEndDate = commodity.validityEndDate
+                                              )
                                             )
                 updatedAnswersWithChange <-
                   Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))

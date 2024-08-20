@@ -20,13 +20,14 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.helper.CategorisationUpdate
+import models.router.responses.GetGoodsRecordResponse
 import models.{Category1NoExemptions, NormalMode, StandardNoAssessments}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.inject._
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
@@ -34,12 +35,22 @@ import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val categorisationService     = mock[CategorisationService]
-  private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
+  private val categorisationService          = mock[CategorisationService]
+  private val mockGoodsRecordsConnector      = mock[GoodsRecordConnector]
+  private val record: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId)
+
+  private val recordWithExpiredCommCode: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(comcodeEffectiveToDate = Some(today))
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -48,6 +59,9 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
     )
     when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
       .thenReturn(Future.successful(Done))
+
+    when(mockGoodsRecordsConnector.getRecord(any(), any())(any())) thenReturn Future
+      .successful(record)
   }
 
   override def afterEach(): Unit = {
@@ -70,7 +84,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         .overrides(
           bind[CategorisationService].toInstance(categorisationService),
           bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
         )
         .build()
 
@@ -106,7 +121,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to JourneyRecovery when call to connector fails in a redirect scenario" in {
+    "must redirect to JourneyRecovery when call to update category connector fails in a redirect scenario" in {
 
       when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
         Future.successful(uaForCategorisationStandardNoAssessments)
@@ -128,6 +143,56 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to JourneyRecovery when call to get records connector fails in a redirect scenario" in {
+
+      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+        Future.successful(uaForCategorisationStandardNoAssessments)
+      )
+
+      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+        .thenReturn(Future.failed(new RuntimeException("Something went very wrong")))
+
+      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
+        .overrides(
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+        val result  = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to ExpiredCommodityCode when commodity has been expired on the same day" in {
+
+      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
+        Future.successful(uaForCategorisationStandardNoAssessments)
+      )
+
+      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+        .thenReturn(Future.successful(recordWithExpiredCommCode))
+
+      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
+        .overrides(
+          bind[CategorisationService].toInstance(categorisationService),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+        val result  = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).get mustEqual routes.ExpiredCommodityCodeController.onPageLoad(testRecordId).url
       }
     }
 
