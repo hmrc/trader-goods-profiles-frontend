@@ -670,7 +670,6 @@ fileInProgress.p2 = You can request a new file. Doing this will cancel your exis
 fileInProgress.linkText1 = Request a new file
 fileInProgress.linkText2 = Go back to goods profile
 
-
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem
 expiredCommodityCode.p1 = The commodity code on this goods record has expired so you can not categorise this record.
