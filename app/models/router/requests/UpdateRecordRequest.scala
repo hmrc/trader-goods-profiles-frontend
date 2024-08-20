@@ -19,10 +19,8 @@ package models.router.requests
 import models.{CategoryRecord, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
-
 import scala.util.Try
 import play.api.libs.json.{JsPath, OWrites, Reads}
-
 import java.time.Instant
 import scala.Function.unlift
 
