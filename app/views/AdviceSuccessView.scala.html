@@ -14,11 +14,8 @@
  * limitations under the License.
  *@
 
-@import views.html.components._
-
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton,
         govukPanel: GovukPanel,
         feedbackSection: components.feedback_section
 )
@@ -47,6 +44,6 @@
 
     @feedbackSection()
 
-    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("adviceSuccess.p6.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("adviceSuccess.p6.linkText")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("adviceSuccess.p7.linkText")</a></p>
 }

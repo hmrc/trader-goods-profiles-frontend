@@ -38,6 +38,11 @@ function upTo(el, tagName) {
 if (typeof accessibleAutocomplete != 'undefined' && document.querySelector('.autocomplete') != null) {
   // load autocomplete
   var selectEl = document.querySelector('.autocomplete');
+
+  // Clone a hidden copy of the label to insert later
+  let label = document.querySelector("label[for=" + selectEl.id + "]").cloneNode(true);
+  label.setAttribute("style", "display: none;");
+
   if (selectEl && selectEl.style.display !== "none") {
     accessibleAutocomplete.enhanceSelectElement({
       autoselect: true,
@@ -47,6 +52,12 @@ if (typeof accessibleAutocomplete != 'undefined' && document.querySelector('.aut
       selectElement: selectEl,
       showAllValues: true
     });
+
+    // Overwrite 'for' attribute of the hidden label after autocomplete changes are applied
+    label.setAttribute("for", document.querySelector('.autocomplete').id);
+
+    // Insert the hidden label immediately before the selectEl
+    selectEl.parentNode.insertBefore(label, selectEl);
   }
 
   // =====================================================

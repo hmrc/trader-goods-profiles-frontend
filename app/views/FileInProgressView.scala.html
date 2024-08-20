@@ -16,18 +16,18 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton,
-        formHelper: FormWithCSRF
+        govukButton: GovukButton
 )
 
 @(email: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("requestData.title"))) {
+@layout(pageTitle = titleNoForm(messages("fileInProgress.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("requestData.heading")</h1>
-    <p class="govuk-body">@messages("requestData.p1", email)</p>
+    <h1 class="govuk-heading-l">@messages("fileInProgress.heading")</h1>
+    <p class="govuk-body">@messages("fileInProgress.p1", email)</p>
+    <p class="govuk-body">@messages("fileInProgress.p2")</p>
 
-        @formHelper(action = routes.RequestDataController.onSubmit(email)) {
-            @govukButton(ButtonViewModel(messages("requestData.button")))
-        }
+    <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad.url" class="govuk-link" >@messages("fileInProgress.linkText1")</a></p>
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("fileInProgress.linkText2")</a></p>
+
 }

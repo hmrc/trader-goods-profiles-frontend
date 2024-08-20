@@ -20,23 +20,31 @@ import controllers.actions._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.HomePageView
+import views.html.FileReadyView
 
 import javax.inject.Inject
 
-class HomePageController @Inject() (
+class FileReadyController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getOrCreate: DataRetrievalOrCreateAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: HomePageView
+  view: FileReadyView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate) { implicit request =>
-    // TODO: Actually check whether the file is ready or not by calling something
-    val isDownloadReady = false
-    Ok(view(downloadReady = isDownloadReady))
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      // TODO: Get file size to pass in to view
+      // TODO: Get file download link to pass in to view
+      // TODO: Get file created date and available until date
+      val fileSizeKilobytes = 1024
+      val fileDownloadLink  = "www.example.com"
+      val createdDate       = "19 July 2024"
+      val availableUntil    = "18 August 2024"
+      Ok(view(fileSizeKilobytes, fileDownloadLink, createdDate, availableUntil))
   }
+
 }

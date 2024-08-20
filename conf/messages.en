@@ -197,6 +197,8 @@ homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is corre
 homepage.p5.linkText = Manage your profile details
 homepage.h2.3 = Help and contact
 homepage.p6.linkText = Find additional support and contacts to help you
+homepage.downloadBanner.content = The file you requested with your TGP records is ready for you to download.
+homepage.downloadBanner.linkText = Go to the download page to get your file
 
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
@@ -642,6 +644,32 @@ requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
 requestData.p1 = Once you request the file, we''ll email {0} to let you know when it is ready to download. This is usually ready within five minutes but it could take up to 24 hours.
 requestData.button = Request TGP data
+
+fileReady.title = Your file is ready to download
+fileReady.heading = Your file is ready to download
+fileReady.p1 = This is a comma separated value file with all of your TGP information. We created the file on {0} and it will be available until {1}
+fileReady.p2.linkText = Download your TGP data (csv, {0}kb)
+fileReady.p3 = If you need a new file of your TGP data, you can
+fileReady.p3.linkText = request another file
+fileReady.p4.linkText = Go to goods profile
+fileReady.p5.linkText = Go to homepage
+
+downloadRequestSuccess.title = We''ve received your request for a file of your TGP data
+downloadRequestSuccess.h1 = We''ve received your request for a file of your TGP data
+downloadRequestSuccess.h2 = What happens next
+downloadRequestSuccess.p1 = We''ll send an email to {0} to let you know when the file is ready.
+downloadRequestSuccess.p2 = You will have a notification when you log in to your TGP with a link to the file download page. The file is in a comma separated value format.
+downloadRequestSuccess.p3 = The file will be available to download until {0}.
+downloadRequestSuccess.goToGoodsProfile = Go to goods profile
+downloadRequestSuccess.goToHome = Go to homepage
+
+fileInProgress.title = We''re still preparing your file
+fileInProgress.heading = We''re still preparing your file
+fileInProgress.p1 = We''ll email {0} when your file is ready.
+fileInProgress.p2 = You can request a new file. Doing this will cancel your existing request and you''ll have to wait for the new file to be ready.
+fileInProgress.linkText1 = Request a new file
+fileInProgress.linkText2 = Go back to goods profile
+
 
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem

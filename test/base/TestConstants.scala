@@ -26,5 +26,5 @@ object TestConstants {
   val lastUpdatedDate: String = Instant.now().toString
   val recordSize              = 20
   val page                    = 1
-  val withDrawReason          = "issue resolved"
+  val withdrawReason          = "issue resolved"
 }
