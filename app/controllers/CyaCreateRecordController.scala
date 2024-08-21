@@ -16,20 +16,17 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.helper.CreateRecordJourney
-import models.requests.DataRequest
-import models.{Country, GoodsRecord, UserAnswers, ValidationError}
+import models.{Country, GoodsRecord, UserAnswers}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, DataCleansingService}
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -45,14 +42,17 @@ class CyaCreateRecordController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
-  dataCleansingService: DataCleansingService,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with Logging
+    with BaseController {
+
+  private val errorMessage: String = "Unable to create Goods Record."
+  private val continueUrl: Call = routes.CreateRecordStartController.onPageLoad()
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     GoodsRecord.build(request.userAnswers, request.eori) match {
@@ -66,7 +66,7 @@ class CyaCreateRecordController @Inject() (
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield displayView(updatedAnswersWithQuery, countries)
         }
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateRecordJourney))
     }
   }
 
@@ -91,16 +91,8 @@ class CyaCreateRecordController @Inject() (
           recordId <- goodsRecordConnector.submitGoodsRecord(model)
           _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(recordId))
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateRecordJourney))
     }
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], request: DataRequest[AnyContent]): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
-    dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-    logger.error(s"Unable to create Goods Record.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
 }
