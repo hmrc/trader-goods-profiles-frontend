@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions._
-import models.GoodsRecordsPagination.firstPage
 import models.NormalMode
 import navigation.Navigator
 import pages.PreviousMovementRecordsPage

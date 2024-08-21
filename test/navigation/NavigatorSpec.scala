@@ -23,6 +23,7 @@ import models.GoodsRecordsPagination.firstPage
 import pages._
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
+import play.api.http.Status.SEE_OTHER
 import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
@@ -2215,6 +2216,25 @@ class NavigatorSpec extends SpecBase {
 
       }
 
+    }
+
+    ".journeyRecovery" - {
+
+      "redirect to JourneyRecovery" - {
+
+        "with no ContinueUrl if none supplied" in {
+          val result = navigator.journeyRecovery()
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers("Location") mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+
+        "with ContinueUrl if one supplied" in {
+          val redirectUrl = Some(RedirectUrl("/redirectUrl"))
+          val result      = navigator.journeyRecovery(redirectUrl)
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers("Location") mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+        }
+      }
     }
   }
 }
