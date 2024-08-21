@@ -25,7 +25,7 @@ import models.helper.RequestAdviceJourney
 import models.requests.DataRequest
 import models.{AdviceRequest, ValidationError}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import services.AuditService
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -51,8 +51,8 @@ class CyaRequestAdviceController @Inject() (
     with Logging
     with BaseController {
 
-  private val errorMessage = "Unable to create Request Advice."
-  private def continueUrl(recordId: String) = routes.AdviceStartController.onPageLoad(recordId)
+  private val errorMessage: String = "Unable to create Request Advice."
+  private def continueUrl(recordId: String): Call = routes.AdviceStartController.onPageLoad(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

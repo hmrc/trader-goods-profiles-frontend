@@ -25,10 +25,10 @@ import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import services.{AuditService, DataCleansingService}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
@@ -53,8 +53,8 @@ class CyaCategorisationController @Inject() (
     with Logging
     with BaseController {
 
-  private val errorMessage = "Unable to update Goods Profile."
-  private def continueUrl(recordId: String) = routes.CategoryGuidanceController.onPageLoad(recordId)
+  private val errorMessage: String = "Unable to update Goods Profile."
+  private def continueUrl(recordId: String): Call = routes.CategoryGuidanceController.onPageLoad(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
