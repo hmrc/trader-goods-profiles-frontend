@@ -46,8 +46,7 @@ class AssessmentController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
-    extends BaseController
-    with Logging {
+    extends BaseController {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
