@@ -16,18 +16,15 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
 import logging.Logging
 import models.helper.CreateProfileJourney
-import models.requests.DataRequest
-import models.{TraderProfile, ValidationError}
+import models.TraderProfile
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -49,7 +46,11 @@ class CyaCreateProfileController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with Logging
+    with BaseController {
+
+  private val errorMessage = "Unable to create Trader profile."
+  private val continueUrl = routes.ProfileSetupController.onPageLoad()
 
   def onPageLoad(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
     implicit request =>
@@ -65,7 +66,7 @@ class CyaCreateProfileController @Inject() (
             ).flatten
           )
           Ok(view(list))
-        case Left(errors) => logErrorsAndContinue(errors, request)
+        case Left(errors) => logErrorsAndContinue(errorMessage, continueUrl, errors, CreateProfileJourney)
       }
   }
 
@@ -78,18 +79,9 @@ class CyaCreateProfileController @Inject() (
           Redirect(routes.CreateProfileSuccessController.onPageLoad())
         }
 
-      case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
+      case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateProfileJourney))
     }
 
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], request: DataRequest[AnyContent]): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
-
-    logger.error(s"Unable to create Trader profile.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
 }
