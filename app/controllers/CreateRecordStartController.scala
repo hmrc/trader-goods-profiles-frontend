@@ -20,10 +20,9 @@ import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
 import pages.CreateRecordStartPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CreateRecordStartView
 
 import javax.inject.Inject
@@ -38,9 +37,7 @@ class CreateRecordStartController @Inject() (
   view: CreateRecordStartView,
   navigator: Navigator,
   auditService: AuditService
-) extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>

@@ -24,10 +24,9 @@ import javax.inject.Inject
 import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.{HasNirmsPage, HasNirmsUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasNirmsView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,9 +44,7 @@ class HasNirmsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HasNirmsView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private val form = formProvider()
 

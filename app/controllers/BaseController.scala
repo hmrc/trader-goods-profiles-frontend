@@ -18,16 +18,17 @@ package controllers
 
 import cats.data
 import com.google.inject.Inject
+import logging.Logging
 import models.ValidationError
 import models.helper.Journey
 import models.requests.DataRequest
-import play.api.i18n.Lang.logger
-import play.api.mvc.Results.Redirect
+import play.api.i18n.I18nSupport
 import play.api.mvc.{AnyContent, Call, Result}
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-trait BaseController {
+trait BaseController extends FrontendBaseController with I18nSupport with Logging {
 
   @Inject var dataCleansingService: DataCleansingService = _
 

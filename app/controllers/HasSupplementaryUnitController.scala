@@ -22,11 +22,10 @@ import forms.HasSupplementaryUnitFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.RecategorisingQuery
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
 import views.html.HasSupplementaryUnitView
 
@@ -46,9 +45,7 @@ class HasSupplementaryUnitController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HasSupplementaryUnitView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private val form = formProvider()
 

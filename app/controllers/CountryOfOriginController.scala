@@ -23,12 +23,11 @@ import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
 import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.CountryOfOriginView
 
@@ -48,9 +47,7 @@ class CountryOfOriginController @Inject() (
   ottConnector: OttConnector,
   view: CountryOfOriginView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private def retrieveAndStoreCountryData(implicit
     hc: HeaderCarrier,

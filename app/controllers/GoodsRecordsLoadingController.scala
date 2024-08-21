@@ -19,11 +19,10 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import play.api.Configuration
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl._
 import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.GoodsRecordsLoadingView
 
 import javax.inject.Inject
@@ -37,9 +36,7 @@ class GoodsRecordsLoadingController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   configuration: Configuration
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private val refreshRate = configuration.get[Int]("goods-records-loading-page.refresh-rate")
 

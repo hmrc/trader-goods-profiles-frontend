@@ -19,16 +19,14 @@ package controllers
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers}
 import pages._
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaUpdateRecordView
@@ -48,10 +46,7 @@ class CyaUpdateRecordController @Inject() (
   sessionRepository: SessionRepository,
   categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging
-    with BaseController {
+    extends BaseController {
 
   private val errorMessage: String = "Unable to update Goods Record."
 

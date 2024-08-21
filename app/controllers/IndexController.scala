@@ -18,9 +18,7 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions.IdentifierAction
-import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -30,9 +28,7 @@ class IndexController @Inject() (
   identify: IdentifierAction,
   traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
     traderProfileConnector.checkTraderProfile(request.eori).map {

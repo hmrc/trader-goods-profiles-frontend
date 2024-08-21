@@ -19,15 +19,13 @@ package controllers
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
@@ -46,10 +44,7 @@ class CyaCreateRecordController @Inject() (
   sessionRepository: SessionRepository,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging
-    with BaseController {
+    extends BaseController {
 
   private val errorMessage: String = "Unable to create Goods Record."
   private val continueUrl: Call    = routes.CreateRecordStartController.onPageLoad()

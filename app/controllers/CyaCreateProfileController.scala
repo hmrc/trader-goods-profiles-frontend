@@ -19,13 +19,11 @@ package controllers
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
-import logging.Logging
 import models.helper.CreateProfileJourney
 import models.TraderProfile
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateProfileView
@@ -43,10 +41,7 @@ class CyaCreateProfileController @Inject() (
   traderProfileConnector: TraderProfileConnector,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging
-    with BaseController {
+    extends BaseController {
 
   private val errorMessage: String = "Unable to create Trader profile."
   private val continueUrl: Call    = routes.ProfileSetupController.onPageLoad()

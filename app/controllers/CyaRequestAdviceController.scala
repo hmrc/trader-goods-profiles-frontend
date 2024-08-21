@@ -16,20 +16,14 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.helper.RequestAdviceJourney
-import models.requests.DataRequest
-import models.{AdviceRequest, ValidationError}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import models.{AdviceRequest}
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
-import services.DataCleansingService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaRequestAdviceView
@@ -46,10 +40,7 @@ class CyaRequestAdviceController @Inject() (
   view: CyaRequestAdviceView,
   accreditationConnector: AccreditationConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging
-    with BaseController {
+    extends BaseController {
 
   private val errorMessage: String                = "Unable to create Request Advice."
   private def continueUrl(recordId: String): Call = routes.AdviceStartController.onPageLoad(recordId)

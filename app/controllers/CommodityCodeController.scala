@@ -24,12 +24,11 @@ import models.helper.CreateRecordJourney
 import navigation.Navigator
 import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage}
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.CommodityCodeView
 
@@ -49,9 +48,7 @@ class CommodityCodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CommodityCodeView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private val form = formProvider()
 

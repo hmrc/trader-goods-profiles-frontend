@@ -24,11 +24,10 @@ import javax.inject.Inject
 import models.{Mode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NiphlNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,9 +47,7 @@ class NiphlNumberController @Inject() (
   view: NiphlNumberView,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private val form = formProvider()
 

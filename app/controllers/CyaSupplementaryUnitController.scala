@@ -19,12 +19,10 @@ package controllers
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated, supplementaryUnit}
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
@@ -42,10 +40,7 @@ class CyaSupplementaryUnitController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging
-    with BaseController {
+    extends BaseController {
 
   private val errorMessage: String                = "Unable to create Supplementary Unit."
   private def continueUrl(recordId: String): Call =

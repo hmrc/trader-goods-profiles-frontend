@@ -24,12 +24,11 @@ import models.helper.CategorisationJourney
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario}
 import navigation.Navigator
 import pages.CyaCategorisationPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
@@ -48,10 +47,7 @@ class CyaCategorisationController @Inject() (
   navigator: Navigator,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging
-    with BaseController {
+    extends BaseController {
 
   private val errorMessage: String                = "Unable to update Goods Profile."
   private def continueUrl(recordId: String): Call = routes.CategoryGuidanceController.onPageLoad(recordId)

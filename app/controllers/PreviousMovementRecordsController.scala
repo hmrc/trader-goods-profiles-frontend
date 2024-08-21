@@ -18,9 +18,8 @@ package controllers
 
 import controllers.actions._
 import models.GoodsRecordsPagination.firstPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.PreviousMovementRecordsView
 
 import javax.inject.Inject
@@ -31,9 +30,7 @@ class PreviousMovementRecordsController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView
-) extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
     Ok(view())

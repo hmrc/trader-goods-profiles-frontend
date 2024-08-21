@@ -17,9 +17,8 @@
 package controllers
 
 import controllers.actions._
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomePageView
 
 import javax.inject.Inject
@@ -31,9 +30,7 @@ class HomePageController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
-) extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate) { implicit request =>
     // TODO: Actually check whether the file is ready or not by calling something

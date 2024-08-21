@@ -25,10 +25,9 @@ import javax.inject.Inject
 import models.{Location, NormalMode}
 import navigation.Navigator
 import pages.RemoveGoodsRecordPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RemoveGoodsRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,9 +44,7 @@ class RemoveGoodsRecordController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: RemoveGoodsRecordView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with BaseController {
+    extends BaseController {
 
   private val form = formProvider()
 
