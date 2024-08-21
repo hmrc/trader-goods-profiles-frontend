@@ -19,7 +19,7 @@ package connectors
 import config.Service
 import models.DownloadDataSummary
 import play.api.Configuration
-import play.api.http.Status.OK
+import play.api.http.Status.{ACCEPTED, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -37,12 +37,12 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .head(downloadDataSummaryUrl(eori))
+      .post(downloadDataSummaryUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK => true
+          case ACCEPTED => true
         }
       }
       .recover { case _: NotFoundException =>

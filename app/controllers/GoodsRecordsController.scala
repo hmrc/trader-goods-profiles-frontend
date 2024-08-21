@@ -19,10 +19,11 @@ package controllers
 import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
+import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
+import models.DownloadDataSummary
 import models.GoodsRecordsPagination._
-import models.{DownloadDataSummary, FileInProgress, FileReady, RequestFile}
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -101,25 +102,25 @@ class GoodsRecordsController @Inject() (
 
   def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
     opt match {
-      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile.toString    =>
+      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
         "goodsRecord.downloadLinkText.requestFile"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress.toString =>
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
         "goodsRecord.downloadLinkText.fileInProgress"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady.toString      =>
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
         "goodsRecord.downloadLinkText.fileReady"
-      case _                                                                                  =>
+      case _                                                                         =>
         "goodsRecord.downloadLinkText.requestFile"
     }
 
   def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
     opt match {
-      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile.toString    =>
+      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
         routes.RequestDataController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress.toString =>
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
         routes.FileInProgressController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady.toString      =>
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
         routes.FileReadyController.onPageLoad().url
-      case _                                                                                  => routes.RequestDataController.onPageLoad().url
+      case _                                                                         => routes.RequestDataController.onPageLoad().url
     }
 
   def onSearch(page: Int): Action[AnyContent] =

@@ -17,13 +17,15 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock.{head, _}
-import models.{DownloadDataSummary, FileReady}
+import com.github.tomakehurst.wiremock.client.WireMock._
+import models.DownloadDataStatus.FileReady
+import models.DownloadDataSummary
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
+import play.api.http.Status.ACCEPTED
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
@@ -58,9 +60,9 @@ class DownloadDataConnectorSpec
     "must request to download data and return true if successful" in {
 
       wireMockServer.stubFor(
-        head(urlEqualTo(downloadDataSummaryUrl))
+        post(urlEqualTo(downloadDataSummaryUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
+          .willReturn(aResponse().withStatus(ACCEPTED))
       )
 
       connector.requestDownloadData(testEori).futureValue mustEqual true
@@ -69,7 +71,7 @@ class DownloadDataConnectorSpec
     "must request to download data and return false if not successful" in {
 
       wireMockServer.stubFor(
-        head(urlEqualTo(downloadDataSummaryUrl))
+        post(urlEqualTo(downloadDataSummaryUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(notFound())
       )
@@ -80,7 +82,7 @@ class DownloadDataConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        head(urlEqualTo(downloadDataSummaryUrl))
+        post(urlEqualTo(downloadDataSummaryUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
@@ -92,7 +94,7 @@ class DownloadDataConnectorSpec
 
   ".getDownloadDataSummary" - {
 
-    val downloadDataSummary = DownloadDataSummary(testEori, FileReady.toString)
+    val downloadDataSummary = DownloadDataSummary(testEori, FileReady)
 
     "must get download data summary" in {
 
