@@ -122,7 +122,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = true,
-          navigatingFromExpiredCommCode = true
+          isCommCodeExpired = true
         )
 
         result mustBe Right(commodity.copy(commodityCode = "170490"))
@@ -159,7 +159,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = false,
-          navigatingFromExpiredCommCode = false
+          isCommCodeExpired = false
         )
 
         result mustBe Right(commodity.copy(commodityCode = "170490"))
@@ -229,7 +229,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = true,
-          navigatingFromExpiredCommCode = true
+          isCommCodeExpired = true
         )
 
         inside(result) { case Left(errors) =>
@@ -248,7 +248,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = false,
-          navigatingFromExpiredCommCode = true
+          isCommCodeExpired = true
         )
 
         inside(result) { case Left(errors) =>
@@ -270,7 +270,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = true,
-          navigatingFromExpiredCommCode = false
+          isCommCodeExpired = false
         )
 
         inside(result) { case Left(errors) =>
@@ -295,7 +295,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = true,
-          navigatingFromExpiredCommCode = false
+          isCommCodeExpired = false
         )
 
         inside(result) { case Left(errors) =>
@@ -314,7 +314,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           answers,
           testRecordId,
           isCategorised = true,
-          navigatingFromExpiredCommCode = false
+          isCommCodeExpired = false
         )
 
         inside(result) { case Left(errors) =>
