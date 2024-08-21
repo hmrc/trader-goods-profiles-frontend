@@ -52,7 +52,8 @@ class RemoveNirmsController @Inject() (
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val form = formProvider()
 
@@ -80,7 +81,11 @@ class RemoveNirmsController @Inject() (
                           for {
                             _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
                           } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
-                        case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                        case Left(errors) => {
+                          val errorMessage = "Unable to update Trader profile."
+                          val continueUrl = routes.HasNirmsController.onPageLoadUpdate
+                          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+                        }
                       }
                     }
                   } else {
@@ -91,11 +96,4 @@ class RemoveNirmsController @Inject() (
         )
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
-    logger.error(s"Unable to update Trader profile.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
 }
