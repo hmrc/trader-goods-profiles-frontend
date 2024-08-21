@@ -71,22 +71,22 @@ class CategorisationService @Inject() (
     recordId: String
   ): Scenario = {
     val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
-    //val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlsAnswer)
-    // val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
 
     val hasNiphlAssessments = category1Assessments.exists(ass => ass.isNiphlsAnswer)
 
     val category1AssessmentsWithoutNiphl = category1Assessments.filter(ass => !ass.isNiphlsAnswer)
 
-    val areThereCategory1QuestionsWithNoExemption = category1Assessments.exists(ass => ass.hasNoAnswers)
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
-    // Let's write unit tests and come back to this later :)
+    val areThereCategory1QuestionsWithNoExemption =
+      listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
+
     if (categorisationInfo.isNiphlAuthorised) {
       if (hasNiphlAssessments) {
         if (category1AssessmentsWithoutNiphl.isEmpty) {
-          Category2Scenario //scenario 2
+          Category2Scenario // Scenario 2
         } else if (!areThereCategory1QuestionsWithNoExemption) {
-          Category2Scenario //scenario 1
+          Category2Scenario // Scenario 1
         } else {
           calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
         }
@@ -94,22 +94,10 @@ class CategorisationService @Inject() (
         calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
       }
     } else if (hasNiphlAssessments) {
-      Category1Scenario //scenario 3
+      Category1Scenario // Scenario 3
     } else {
       calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
     }
-
-//    if (categorisationInfo.categoryAssessments.isEmpty) {
-//      StandardGoodsNoAssessmentsScenario
-//    } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-//      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
-//        Category1NoExemptionsScenario
-//      } else {
-//        Category2Scenario
-//      }
-//    } else {
-//      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
-//    }
   }
 
   private def calculateResultWithoutNiphl(
