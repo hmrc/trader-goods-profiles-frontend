@@ -16,21 +16,18 @@
 
 package controllers
 
-import cats.data
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNirmsFormProvider
 
 import javax.inject.Inject
-import models.{NormalMode, TraderProfile, ValidationError}
+import models.{NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.RemoveNirmsPage
-import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RemoveNirmsView
 
