@@ -610,7 +610,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
                 Seq(category1Niphl, category1),
-                Seq(category1Niphl, category1),
+                Seq(category1),
                 None,
                 1,
                 isNiphlAuthorised = true
@@ -713,12 +713,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "NIPHL is authorised and has only NIPHL assesments" in {
+            "NIPHL is authorised and has one NIPHL assessments and category 2 assessment with no exemptions" in {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
-                Seq(category1Niphl),
-                Seq(category1Niphl),
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
                 None,
                 1,
                 isNiphlAuthorised = true

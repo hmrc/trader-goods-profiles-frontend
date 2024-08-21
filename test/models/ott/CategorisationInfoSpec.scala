@@ -620,6 +620,98 @@ class CategorisationInfoSpec extends SpecBase {
           val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)
           result.value mustEqual expectedResult
         }
+
+        "when there are Category 1 that needed answer and there is a NIPHL assessment but there is a Category 2 assessment with no exemptions" in {
+          val mockOttResponse = OttResponse(
+            GoodsNomenclatureResponse(
+              "some id",
+              "1234567890",
+              None,
+              Instant.EPOCH,
+              None,
+              List("test")
+            ),
+            categoryAssessmentRelationships = Seq(
+              CategoryAssessmentRelationship("assessmentId1"),
+              CategoryAssessmentRelationship("assessmentId2"),
+              CategoryAssessmentRelationship("assessmentId3")
+            ),
+            includedElements = Seq(
+              ThemeResponse("themeId1", 1),
+              CategoryAssessmentResponse(
+                "assessmentId1",
+                "themeId1",
+                Seq(
+                  ExemptionResponse("exemptionId1", ExemptionType.Certificate),
+                  ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
+                )
+              ),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+              ThemeResponse("themeId2", 1),
+              CategoryAssessmentResponse(
+                "assessmentId2",
+                "themeId2",
+                Seq(
+                  ExemptionResponse("WFE012", ExemptionType.Certificate)
+                )
+              ),
+              CertificateResponse("WFE012", "WFE-code", "WFE-description"),
+              ThemeResponse("themeId3", 2),
+              CategoryAssessmentResponse(
+                "assessmentId3",
+                "themeId3",
+                Seq.empty
+              )
+            ),
+            descendents = Seq.empty[Descendant]
+          )
+
+          val expectedAssessmentId1     = CategoryAssessment(
+            "assessmentId1",
+            1,
+            Seq(
+              Certificate("exemptionId1", "code1", "description1"),
+              AdditionalCode("exemptionId2", "code2", "description2")
+            )
+          )
+          val expectedNiphlAssesmentId2 = CategoryAssessment(
+            "assessmentId2",
+            1,
+            Seq(
+              Certificate("WFE012", "WFE-code", "WFE-description")
+            )
+          )
+          val expectedAssessmentId3     = CategoryAssessment(
+            "assessmentId3",
+            2,
+            Seq.empty
+          )
+
+          val expectedAssessments = Seq(
+            expectedNiphlAssesmentId2,
+            expectedAssessmentId1,
+            expectedAssessmentId3
+          )
+
+          val testTraderProfileResponseWithNiphl =
+            TraderProfile("actorId", "ukims number", Some("nirms number"), Some("niphl number"))
+
+          val expectedAssessmentsThatNeedAnswers = Seq(expectedAssessmentId1)
+
+          val expectedResult =
+            CategorisationInfo(
+              "1234567890",
+              expectedAssessments,
+              expectedAssessmentsThatNeedAnswers,
+              None,
+              0,
+              isNiphlAuthorised = true
+            )
+
+          val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)
+          result.value mustEqual expectedResult
+        }
       }
     }
 

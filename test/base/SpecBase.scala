@@ -204,6 +204,9 @@ trait SpecBase
   lazy val category1NoExemptions: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
 
+  lazy val category2NoExemptions: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 2, Seq())
+
   def goodsRecordResponse(
     createdDateTime: Instant = Instant.now,
     updatedDateTime: Instant = Instant.now
