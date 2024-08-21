@@ -84,8 +84,8 @@ class Navigator @Inject() () {
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case CyaCreateProfilePage                      => _ => routes.CreateProfileSuccessController.onPageLoad()
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case p: CyaSupplementaryUnitPage => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case PreviousMovementRecordsPage => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
+    case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -497,5 +497,7 @@ class Navigator @Inject() () {
   private def commodityCodeSansTrailingZeros(commodityCode: String): String =
     commodityCode.reverse.dropWhile(x => x == '0').reverse
 
-  def journeyRecovery(continueUrl: Option[RedirectUrl] = None): Result = Redirect(routes.JourneyRecoveryController.onPageLoad(continueUrl))
+  def journeyRecovery(continueUrl: Option[RedirectUrl] = None): Result = Redirect(
+    routes.JourneyRecoveryController.onPageLoad(continueUrl)
+  )
 }

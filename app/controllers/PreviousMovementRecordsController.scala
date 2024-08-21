@@ -44,7 +44,8 @@ class PreviousMovementRecordsController @Inject() (
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-    Redirect(navigator.nextPage(PreviousMovementRecordsPage, NormalMode, request.userAnswers))
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      Redirect(navigator.nextPage(PreviousMovementRecordsPage, NormalMode, request.userAnswers))
   }
 }

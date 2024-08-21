@@ -87,7 +87,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-              navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -303,7 +303,6 @@ class CyaUpdateRecordController @Inject() (
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     logger.error(s"Unable to update Goods Record.  Missing pages: $errorMessages")
-      navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url))
-    )
+    navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
   }
 }
