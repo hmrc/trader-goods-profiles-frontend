@@ -20,7 +20,6 @@ site.goBackToGoodsProfile = Go back to goods profile
 site.goBackToHomePage = Go back to homepage
 site.removeThisGoodsRecord = Remove this goods record
 
-
 date.day = Day
 date.month = Month
 date.year = Year
