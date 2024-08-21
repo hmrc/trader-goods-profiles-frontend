@@ -51,7 +51,8 @@ class TraderReferenceController @Inject() (
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val form                                                         = formProvider()
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)

@@ -41,7 +41,8 @@ class GoodsRecordsSearchResultController @Inject() (
   emptyView: GoodsRecordsSearchResultEmptyView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val pageSize = 10
 

@@ -38,7 +38,8 @@ class GoodsRecordsLoadingController @Inject() (
   configuration: Configuration
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val refreshRate = configuration.get[Int]("goods-records-loading-page.refresh-rate")
 

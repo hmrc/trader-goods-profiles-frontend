@@ -32,7 +32,8 @@ class PageNotFoundController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: PageNotFoundView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad(path: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

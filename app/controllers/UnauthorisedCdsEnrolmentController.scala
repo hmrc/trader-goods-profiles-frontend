@@ -28,7 +28,8 @@ class UnauthorisedCdsEnrolmentController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: UnauthorisedCdsEnrolmentView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(view())

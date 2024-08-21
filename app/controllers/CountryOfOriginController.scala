@@ -49,7 +49,8 @@ class CountryOfOriginController @Inject() (
   view: CountryOfOriginView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private def retrieveAndStoreCountryData(implicit
     hc: HeaderCarrier,

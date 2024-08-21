@@ -32,7 +32,8 @@ class HomePageController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate) { implicit request =>
     // TODO: Actually check whether the file is ready or not by calling something

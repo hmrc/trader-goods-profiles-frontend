@@ -49,7 +49,8 @@ class AssessmentController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with Logging
+    with BaseController {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

@@ -39,7 +39,8 @@ class CategorisationResultController @Inject() (
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>

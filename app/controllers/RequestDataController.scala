@@ -37,7 +37,8 @@ class RequestDataController @Inject() (
   view: RequestDataView,
   navigator: Navigator
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>

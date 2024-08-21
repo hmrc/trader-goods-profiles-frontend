@@ -50,7 +50,8 @@ class LongerCommodityCodeController @Inject() (
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val form           = formProvider()
   private val validLength    = 6

@@ -38,7 +38,8 @@ class ProfileSetupController @Inject() (
   getOrCreate: DataRetrievalOrCreateAction,
   checkProfile: ProfileCheckAction
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen checkProfile andThen getOrCreate) { implicit request =>
     Ok(view())

@@ -32,7 +32,8 @@ class AdviceSuccessController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AdviceSuccessView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>

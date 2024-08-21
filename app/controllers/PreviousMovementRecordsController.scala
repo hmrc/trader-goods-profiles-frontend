@@ -32,7 +32,8 @@ class PreviousMovementRecordsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
     Ok(view())

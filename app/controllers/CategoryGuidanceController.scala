@@ -49,7 +49,8 @@ class CategoryGuidanceController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with Logging
+    with BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>

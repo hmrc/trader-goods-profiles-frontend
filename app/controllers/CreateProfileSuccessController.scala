@@ -33,7 +33,8 @@ class CreateProfileSuccessController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CreateProfileSuccessView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>

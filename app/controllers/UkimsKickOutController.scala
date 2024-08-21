@@ -32,7 +32,8 @@ class UkimsKickOutController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: UkimsKickOutView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
     implicit request =>

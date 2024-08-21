@@ -47,7 +47,8 @@ class ReasonForWithdrawAdviceController @Inject() (
   view: ReasonForWithdrawAdviceView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val form = formProvider()
 

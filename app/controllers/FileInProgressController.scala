@@ -32,7 +32,8 @@ class FileInProgressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: FileInProgressView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>

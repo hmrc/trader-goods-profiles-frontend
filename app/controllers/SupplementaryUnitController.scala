@@ -51,7 +51,8 @@ class SupplementaryUnitController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with Logging
+    with BaseController {
 
   private val form = formProvider()
 

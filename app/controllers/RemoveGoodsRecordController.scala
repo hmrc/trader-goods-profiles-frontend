@@ -46,7 +46,8 @@ class RemoveGoodsRecordController @Inject() (
   view: RemoveGoodsRecordView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val form = formProvider()
 

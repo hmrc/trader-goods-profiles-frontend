@@ -43,7 +43,8 @@ class WithdrawAdviceStartController @Inject() (
   view: WithdrawAdviceStartView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   private val form = formProvider()
 

@@ -31,7 +31,8 @@ class IndexController @Inject() (
   traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
     traderProfileConnector.checkTraderProfile(request.eori).map {
