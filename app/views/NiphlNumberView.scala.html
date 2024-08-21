@@ -29,6 +29,10 @@
 
 @layout(pageTitle = title(form, messages("niphlNumber.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("niphlNumber.heading")</h1>
     <p class="govuk-body">@messages("niphlNumber.p1")</p>
 
@@ -41,10 +45,6 @@
     <h2 class="govuk-heading-m">@messages("niphlNumber.h2")</h2>
 
     @formHelper(action = action) {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukInput(
             InputViewModel(
