@@ -51,7 +51,7 @@ class CyaRequestAdviceController @Inject() (
     with Logging
     with BaseController {
 
-  private val errorMessage: String = "Unable to create Request Advice."
+  private val errorMessage: String                = "Unable to create Request Advice."
   private def continueUrl(recordId: String): Call = routes.AdviceStartController.onPageLoad(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
@@ -80,7 +80,8 @@ class CyaRequestAdviceController @Inject() (
               dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
               Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
             }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, RequestAdviceJourney))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, RequestAdviceJourney))
       }
   }
 }

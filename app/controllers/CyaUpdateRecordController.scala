@@ -80,7 +80,11 @@ class CyaUpdateRecordController @Inject() (
               }
             case Left(errors) =>
               Future.successful(
-                logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId), errors)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId),
+                  errors
+                )
               )
           }
         }
@@ -106,7 +110,11 @@ class CyaUpdateRecordController @Inject() (
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)            =>
-          logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId), errors)
+          logErrorsAndContinue(
+            errorMessage,
+            routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId),
+            errors
+          )
       }
     }
 
@@ -121,7 +129,11 @@ class CyaUpdateRecordController @Inject() (
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)           =>
-          logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId), errors)
+          logErrorsAndContinue(
+            errorMessage,
+            routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId),
+            errors
+          )
       }
     }
 
@@ -148,7 +160,11 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(Ok(view(list, onSubmitAction)))
             case Left(errors)     =>
               Future.successful(
-                logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId), errors)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId),
+                  errors
+                )
               )
           }
         }
@@ -205,7 +221,11 @@ class CyaUpdateRecordController @Inject() (
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors)           =>
           Future.successful(
-            logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId), errors)
+            logErrorsAndContinue(
+              errorMessage,
+              routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId),
+              errors
+            )
           )
       }
     }
@@ -233,7 +253,11 @@ class CyaUpdateRecordController @Inject() (
               } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
             case Left(errors) =>
               Future.successful(
-                logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId), errors)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId),
+                  errors
+                )
               )
           }
         }
@@ -266,7 +290,11 @@ class CyaUpdateRecordController @Inject() (
           } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
         case Left(errors)            =>
           Future.successful(
-            logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId), errors)
+            logErrorsAndContinue(
+              errorMessage,
+              routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId),
+              errors
+            )
           )
       }
     }
@@ -296,7 +324,11 @@ class CyaUpdateRecordController @Inject() (
               } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
             case Left(errors)     =>
               Future.successful(
-                logErrorsAndContinue(errorMessage, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId), errors)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId),
+                  errors
+                )
               )
           }
         }

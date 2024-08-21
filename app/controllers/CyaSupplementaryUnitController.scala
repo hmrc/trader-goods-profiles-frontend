@@ -47,9 +47,9 @@ class CyaSupplementaryUnitController @Inject() (
     with Logging
     with BaseController {
 
-
-  private val errorMessage: String = "Unable to create Supplementary Unit."
-  private def continueUrl(recordId: String): Call = routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
+  private val errorMessage: String                = "Unable to create Supplementary Unit."
+  private def continueUrl(recordId: String): Call =
+    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -62,7 +62,8 @@ class CyaSupplementaryUnitController @Inject() (
             ).flatten
           )
           Ok(view(list, recordId))
-        case Left(errors) => logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, SupplementaryUnitUpdateJourney)
+        case Left(errors) =>
+          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, SupplementaryUnitUpdateJourney)
       }
   }
 
@@ -97,7 +98,10 @@ class CyaSupplementaryUnitController @Inject() (
               .addingToSession(pageUpdated -> supplementaryUnit)
 
           }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, SupplementaryUnitUpdateJourney))
+        case Left(errors) =>
+          Future.successful(
+            logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, SupplementaryUnitUpdateJourney)
+          )
       }
   }
 

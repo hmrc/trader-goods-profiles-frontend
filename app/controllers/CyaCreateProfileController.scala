@@ -49,7 +49,7 @@ class CyaCreateProfileController @Inject() (
     with BaseController {
 
   private val errorMessage: String = "Unable to create Trader profile."
-  private val continueUrl: Call = routes.ProfileSetupController.onPageLoad()
+  private val continueUrl: Call    = routes.ProfileSetupController.onPageLoad()
 
   def onPageLoad(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
     implicit request =>
@@ -78,7 +78,8 @@ class CyaCreateProfileController @Inject() (
           Redirect(routes.CreateProfileSuccessController.onPageLoad())
         }
 
-      case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateProfileJourney))
+      case Left(errors) =>
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateProfileJourney))
     }
 
   }

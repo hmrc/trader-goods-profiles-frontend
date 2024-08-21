@@ -53,7 +53,7 @@ class CyaCategorisationController @Inject() (
     with Logging
     with BaseController {
 
-  private val errorMessage: String = "Unable to update Goods Profile."
+  private val errorMessage: String                = "Unable to update Goods Profile."
   private def continueUrl(recordId: String): Call = routes.CategoryGuidanceController.onPageLoad(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
@@ -131,7 +131,8 @@ class CyaCategorisationController @Inject() (
               )
             )
           }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, CategorisationJourney))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, CategorisationJourney))
       }
   }
 

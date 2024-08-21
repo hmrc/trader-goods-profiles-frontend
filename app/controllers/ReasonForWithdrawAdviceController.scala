@@ -42,7 +42,6 @@ class ReasonForWithdrawAdviceController @Inject() (
   formProvider: ReasonForWithdrawAdviceFormProvider,
   auditService: AuditService,
   accreditationConnector: AccreditationConnector,
-  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: ReasonForWithdrawAdviceView
 )(implicit ec: ExecutionContext)

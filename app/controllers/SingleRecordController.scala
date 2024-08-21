@@ -42,7 +42,6 @@ class SingleRecordController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
 )(implicit ec: ExecutionContext)
