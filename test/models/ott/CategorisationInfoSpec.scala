@@ -17,7 +17,7 @@
 package models.ott
 
 import base.SpecBase
-import base.TestConstants.{recordSize, testRecordId}
+import base.TestConstants.testRecordId
 import models.ott.response._
 import models.{AnsweredQuestions, AssessmentAnswer, TraderProfile}
 import pages.{AssessmentPage, ReassessmentPage}
