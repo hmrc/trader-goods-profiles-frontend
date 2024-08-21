@@ -23,7 +23,9 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.helper.CreateProfileJourney
 import models.requests.DataRequest
-import models.{TraderProfile, ValidationError}
+import models.{NormalMode, TraderProfile, ValidationError}
+import navigation.Navigator
+import pages.CyaCreateProfilePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{AuditService, DataCleansingService}
@@ -45,7 +47,8 @@ class CyaCreateProfileController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
-  auditService: AuditService
+  auditService: AuditService,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -75,7 +78,7 @@ class CyaCreateProfileController @Inject() (
         auditService.auditProfileSetUp(model, request.affinityGroup)
         traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-          Redirect(routes.CreateProfileSuccessController.onPageLoad())
+          Redirect(navigator.nextPage(CyaCreateProfilePage, NormalMode, request.userAnswers))
         }
 
       case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
@@ -90,6 +93,6 @@ class CyaCreateProfileController @Inject() (
 
     logger.error(s"Unable to create Trader profile.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    navigator.journeyRecovery(Some(continueUrl))
   }
 }

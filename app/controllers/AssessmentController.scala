@@ -99,7 +99,7 @@ class AssessmentController @Inject() (
       }
 
       categorisationResult.flatMap(identity).recover { case _ =>
-        Redirect(routes.JourneyRecoveryController.onPageLoad())
+        navigator.journeyRecovery()
       }
     }
 
@@ -124,6 +124,6 @@ class AssessmentController @Inject() (
                 _              <- sessionRepository.set(updatedAnswers)
               } yield Redirect(navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers))
           )
-      }.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+      }.getOrElse(Future.successful(navigator.journeyRecovery()))
     }
 }

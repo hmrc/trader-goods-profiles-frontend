@@ -328,6 +328,7 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.ProfileController.onPageLoad
         }
+
       }
 
       "in Create Record Journey" - {
@@ -1171,11 +1172,26 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
-      "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
-        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, emptyUserAnswers) mustEqual routes.GoodsRecordsController
-          .onPageLoad(firstPage)
-      }
+      "in Viewing Goods Record Journey" - {
+        "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
+          navigator.nextPage(
+            RemoveGoodsRecordPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.GoodsRecordsController
+            .onPageLoad(firstPage)
+        }
 
+        "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
+          navigator.nextPage(
+            PreviousMovementRecordsPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustEqual routes.GoodsRecordsController
+            .onPageLoad(firstPage)
+        }
+
+      }
       "in Supplementary Unit Update Journey" - {
 
         "must go from HasSupplementaryUnitUpdatePage" - {
@@ -1229,6 +1245,16 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.CyaSupplementaryUnitController.onPageLoad(
             testRecordId
           )
+        }
+
+        "must go from CyaSupplementaryUnitController to SingleRecordController" in {
+
+          navigator.nextPage(
+            CyaSupplementaryUnitPage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.SingleRecordController
+            .onPageLoad(testRecordId)
         }
 
       }

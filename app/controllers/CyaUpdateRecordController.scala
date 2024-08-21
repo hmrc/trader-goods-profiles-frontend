@@ -87,10 +87,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+              navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -155,10 +152,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -240,10 +234,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -303,10 +294,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -315,10 +303,7 @@ class CyaUpdateRecordController @Inject() (
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     logger.error(s"Unable to update Goods Record.  Missing pages: $errorMessages")
-    Redirect(
-      routes.JourneyRecoveryController.onPageLoad(
-        Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url))
-      )
+      navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url))
     )
   }
 }

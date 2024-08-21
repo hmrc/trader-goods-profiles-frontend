@@ -146,6 +146,6 @@ class CyaCategorisationController @Inject() (
 
     logger.error(s"Unable to update Goods Profile.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    navigator.journeyRecovery(Some(continueUrl))
   }
 }

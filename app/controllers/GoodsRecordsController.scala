@@ -20,6 +20,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
+import navigation.Navigator
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -44,7 +45,8 @@ class GoodsRecordsController @Inject() (
   view: GoodsRecordsView,
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
-  ottConnector: OttConnector
+  ottConnector: OttConnector,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -55,7 +57,7 @@ class GoodsRecordsController @Inject() (
   def onPageLoad(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       if (page < 1) {
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        Future.successful(navigator.journeyRecovery())
       } else {
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
           case Some(goodsRecordResponse) =>

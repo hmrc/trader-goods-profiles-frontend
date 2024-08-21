@@ -24,6 +24,8 @@ import logging.Logging
 import models.helper.SupplementaryUnitUpdateJourney
 import models.requests.DataRequest
 import models.{NormalMode, SupplementaryRequest, ValidationError}
+import navigation.Navigator
+import pages.CyaSupplementaryUnitPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.DataCleansingService
@@ -45,7 +47,8 @@ class CyaSupplementaryUnitController @Inject() (
   dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaSupplementaryUnitView
+  view: CyaSupplementaryUnitView,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -77,7 +80,7 @@ class CyaSupplementaryUnitController @Inject() (
 
     logger.error(s"Unable to create Supplementary Unit.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    navigator.journeyRecovery(Some(continueUrl))
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -105,7 +108,7 @@ class CyaSupplementaryUnitController @Inject() (
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-            Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))
               .addingToSession(dataUpdated -> isValueChanged.toString)
               .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
               .addingToSession(pageUpdated -> supplementaryUnit)

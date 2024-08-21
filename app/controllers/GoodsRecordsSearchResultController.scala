@@ -19,6 +19,7 @@ package controllers
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
+import navigation.Navigator
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,7 +39,8 @@ class GoodsRecordsSearchResultController @Inject() (
   identify: IdentifierAction,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
-  emptyView: GoodsRecordsSearchResultEmptyView
+  emptyView: GoodsRecordsSearchResultEmptyView,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -50,7 +52,7 @@ class GoodsRecordsSearchResultController @Inject() (
       request.userAnswers.get(GoodsRecordsPage) match {
         case Some(searchText) =>
           if (page < 1) {
-            Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+            Future.successful(navigator.journeyRecovery())
           } else {
             goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize).flatMap {
               case Some(searchResponse) =>
@@ -77,7 +79,7 @@ class GoodsRecordsSearchResultController @Inject() (
                 } else {
                   request.userAnswers.get(GoodsRecordsPage) match {
                     case Some(searchText) => Future.successful(Ok(emptyView(searchText)))
-                    case None             => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+                    case None             => Future.successful(navigator.journeyRecovery())
                   }
                 }
               case None                 =>
@@ -90,7 +92,7 @@ class GoodsRecordsSearchResultController @Inject() (
 
             }
           }
-        case None             => Future(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+        case None             => Future(navigator.journeyRecovery())
       }
   }
 }

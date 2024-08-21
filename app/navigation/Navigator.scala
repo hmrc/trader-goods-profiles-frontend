@@ -20,7 +20,8 @@ import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models._
 import pages._
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
+import play.api.mvc.Results.Redirect
 import queries.RecordCategorisationsQuery
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.firstAssessmentIndex
@@ -83,6 +84,8 @@ class Navigator @Inject() () {
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case CyaCreateProfilePage                      => _ => routes.CreateProfileSuccessController.onPageLoad()
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case p: CyaSupplementaryUnitPage => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case PreviousMovementRecordsPage => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -493,4 +496,6 @@ class Navigator @Inject() () {
 
   private def commodityCodeSansTrailingZeros(commodityCode: String): String =
     commodityCode.reverse.dropWhile(x => x == '0').reverse
+
+  def journeyRecovery(continueUrl: Option[RedirectUrl] = None): Result = Redirect(routes.JourneyRecoveryController.onPageLoad(continueUrl))
 }

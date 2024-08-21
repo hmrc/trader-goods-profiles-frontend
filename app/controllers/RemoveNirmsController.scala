@@ -96,6 +96,6 @@ class RemoveNirmsController @Inject() (
 
     val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
     logger.error(s"Unable to update Trader profile.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    navigator.journeyRecovery(Some(continueUrl))
   }
 }

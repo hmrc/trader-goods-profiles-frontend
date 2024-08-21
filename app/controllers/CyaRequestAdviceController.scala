@@ -80,7 +80,7 @@ class CyaRequestAdviceController @Inject() (
 
     logger.error(s"Unable to create Request Advice.  Missing pages: $errorMessages")
     dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    navigator.journeyRecovery(Some(continueUrl))
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {

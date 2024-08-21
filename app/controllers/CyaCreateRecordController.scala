@@ -104,6 +104,6 @@ class CyaCreateRecordController @Inject() (
     val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
     dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
     logger.error(s"Unable to create Goods Record.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+    navigator.journeyRecovery(Some(continueUrl))
   }
 }

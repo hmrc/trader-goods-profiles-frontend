@@ -71,14 +71,14 @@ class CategoryGuidanceController @Inject() (
                         .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
                     }
                 }
-                .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+                .getOrElse(Future.successful(navigator.journeyRecovery()))
             case Some(NoRedirectScenario)                            =>
               Future.successful(Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
           }
         }
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          navigator.journeyRecovery()
         }
     }
 
