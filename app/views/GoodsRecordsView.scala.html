@@ -35,6 +35,10 @@
     pageTitle = title(form, messages("goodsRecords.title")), isFullWidth = true
   ) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
 <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1>
 
@@ -50,9 +54,7 @@
     <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
         @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
-            @if(form.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummaryViewModel(form))
-            }
+
             <div style="display: flex; align-items: flex-end;">
                 @govukInput(
                     InputViewModel(

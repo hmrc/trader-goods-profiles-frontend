@@ -30,16 +30,16 @@
 
 @layout(pageTitle = title(form, messages("goodsDescription.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     @formHelper(action = action) {
 
         <h1 class="govuk-heading-l">@messages("goodsDescription.h1")</h1>
         <p class="govuk-body">@messages("goodsDescription.p1")</p>
         <p class="govuk-body">@messages("goodsDescription.p2")</p>
         <p class="govuk-body">@messages("goodsDescription.p3")</p>
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @textArea(
             CharacterCountViewModel(
