@@ -18,7 +18,8 @@ package models.router.responses
 
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 
-import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.time.{Instant, ZoneId, ZonedDateTime}
 
 case class GetGoodsRecordResponse(
   recordId: String,
@@ -45,7 +46,16 @@ case class GetGoodsRecordResponse(
   niphlNumber: Option[String] = None,
   createdDateTime: Instant,
   updatedDateTime: Instant
-)
+) {
+  def isCommCodeExpired(): Boolean = {
+    val today: ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+    comcodeEffectiveToDate.exists { effectiveToDate =>
+      val effectiveDate: ZonedDateTime = effectiveToDate.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+      effectiveDate.isEqual(today)
+    }
+  }
+
+}
 
 object GetGoodsRecordResponse {
   implicit val reads: Reads[GetGoodsRecordResponse] = (json: JsValue) =>

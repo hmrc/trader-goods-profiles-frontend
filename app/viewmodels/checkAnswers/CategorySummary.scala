@@ -24,8 +24,6 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-import java.time.temporal.ChronoUnit
-import java.time.{Instant, ZoneId, ZonedDateTime}
 
 object CategorySummary {
 
@@ -37,7 +35,7 @@ object CategorySummary {
     if (record.category.isDefined) {
       val action =
         if (recordLocked) { Seq.empty }
-        else if (isCommCodeExpired(record.comcodeEffectiveToDate)) {
+        else if (record.isCommCodeExpired()) {
           Seq(
             ActionItemViewModel(
               "site.change",
@@ -61,7 +59,7 @@ object CategorySummary {
       val viewModel       =
         if (recordLocked) {
           ValueViewModel(HtmlFormat.escape(categoryValue).toString)
-        } else if (isCommCodeExpired(record.comcodeEffectiveToDate)) {
+        } else if (record.isCommCodeExpired()) {
           ValueViewModel(
             HtmlContent(
               s"<a href=${routes.ExpiredCommodityCodeController.onPageLoad(record.recordId).url} class='govuk-link'>$translatedValue</a>"
@@ -78,14 +76,6 @@ object CategorySummary {
         key = "singleRecord.category.row",
         value = viewModel
       )
-    }
-  }
-
-  private def isCommCodeExpired(commcodeEffectiveToDate: Option[Instant]): Boolean = {
-    val today: ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
-    commcodeEffectiveToDate.exists { effectiveToDate =>
-      val effectiveDate: ZonedDateTime = effectiveToDate.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
-      effectiveDate.isEqual(today)
     }
   }
 

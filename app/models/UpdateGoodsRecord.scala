@@ -72,11 +72,11 @@ object UpdateGoodsRecord {
     answers: UserAnswers,
     recordId: String,
     isCategorised: Boolean,
-    navigatingFromExpiredCommCode: Boolean
+    isCommCodeExpired: Boolean
   ): EitherNec[ValidationError, Commodity] =
     (
       Right(recordId),
-      getCommodityCode(answers, recordId, isCategorised, navigatingFromExpiredCommCode)
+      getCommodityCode(answers, recordId, isCategorised, isCommCodeExpired)
     ).parMapN((_, value) => value)
 
   def validateTraderReference(
@@ -92,10 +92,10 @@ object UpdateGoodsRecord {
     answers: UserAnswers,
     recordId: String,
     isCategorised: Boolean,
-    navigatingFromExpiredCommCode: Boolean
+    isCommCodeExpired: Boolean
   ): EitherNec[ValidationError, Commodity] =
     (
-      isCategorised && !navigatingFromExpiredCommCode,
+      isCategorised && !isCommCodeExpired,
       answers.getPageValue(HasCommodityCodeChangePage(recordId))
     ) match {
       case (true, Right(true))  => validateAndGetCommodity(answers, recordId)

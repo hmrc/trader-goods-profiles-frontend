@@ -281,13 +281,12 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
-          val navigatingFromExpiredCommCode = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
             .validateCommodityCode(
               request.userAnswers,
               recordId,
               recordResponse.category.isDefined,
-              navigatingFromExpiredCommCode
+              recordResponse.isCommCodeExpired()
             ) match {
             case Right(commodity) =>
               auditService.auditFinishUpdateGoodsRecord(
