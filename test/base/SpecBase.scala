@@ -168,6 +168,9 @@ trait SpecBase
     )
   )
 
+  lazy val category1Niphl: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(Certificate("WFE012", "Y994", "Goods are not from warzone")))
+
   lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Seq(category1, category2, category3),

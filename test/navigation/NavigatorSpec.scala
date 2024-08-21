@@ -660,6 +660,60 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
+            "NIPHL is not authorised and has NIPHL assesments" in {
+
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Niphl),
+                Seq(category1Niphl),
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category1Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1Scenario)
+
+            }
+
+            "NIPHL is authorised and has only NIPHL assesments" in {
+
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Niphl),
+                Seq(category1Niphl),
+                None,
+                1,
+                isNiphlAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category2Scenario)
+
+            }
           }
 
           "to journey recovery page when there's no categorisation info" in {

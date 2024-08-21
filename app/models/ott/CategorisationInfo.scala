@@ -91,8 +91,6 @@ object CategorisationInfo {
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
-//        val hasNiphlAssessments = category1Assessments.exists(ass => ass.isNiphlsAnswer)
-
         val questionsToAnswers =
           if (!areAllCategory1Answerable) {
             Seq.empty
