@@ -43,7 +43,6 @@ class CyaCategorisationController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
-  dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
   navigator: Navigator,

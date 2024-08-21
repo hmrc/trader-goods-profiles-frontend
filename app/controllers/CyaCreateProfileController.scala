@@ -38,7 +38,6 @@ class CyaCreateProfileController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
-  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,

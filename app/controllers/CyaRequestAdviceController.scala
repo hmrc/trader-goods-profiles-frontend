@@ -41,7 +41,6 @@ class CyaRequestAdviceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  dataCleansingService: DataCleansingService,
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
@@ -49,7 +48,11 @@ class CyaRequestAdviceController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with Logging
+    with BaseController {
+
+  private val errorMessage = "Unable to create Request Advice."
+  private def continueUrl(recordId: String) = routes.AdviceStartController.onPageLoad(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -62,22 +65,8 @@ class CyaRequestAdviceController @Inject() (
             ).flatten
           )
           Ok(view(list, recordId))
-        case Left(errors) => logErrorsAndContinue(errors, recordId, request)
+        case Left(errors) => logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, RequestAdviceJourney)
       }
-  }
-
-  def logErrorsAndContinue(
-    errors: data.NonEmptyChain[ValidationError],
-    recordId: String,
-    request: DataRequest[AnyContent]
-  ): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(recordId).url)
-
-    logger.error(s"Unable to create Request Advice.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -91,7 +80,7 @@ class CyaRequestAdviceController @Inject() (
               dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
               Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
             }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
+        case Left(errors) => Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, RequestAdviceJourney))
       }
   }
 }
