@@ -34,12 +34,12 @@
     showBackLink = true
 ) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("nirmsNumber.heading")</h1>
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukInput(
             InputViewModel(

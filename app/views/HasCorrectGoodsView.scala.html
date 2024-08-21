@@ -28,6 +28,10 @@
 
 @layout(pageTitle = title(form, messages("hasCorrectGoods.title", commodity.commodityCode))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("hasCorrectGoods.heading", commodity.commodityCode)</h1>
 
 
@@ -47,10 +51,6 @@
     <h2 class="govuk-heading-m">@messages("hasCorrectGoods.h2")</h2>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukRadios(
             RadiosViewModel.yesNo(
