@@ -23,7 +23,9 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.helper.CreateRecordJourney
 import models.requests.DataRequest
-import models.{Country, GoodsRecord, UserAnswers, ValidationError}
+import models.{Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
+import navigation.Navigator
+import pages.CyaCreateRecordPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
@@ -48,7 +50,8 @@ class CyaCreateRecordController @Inject() (
   dataCleansingService: DataCleansingService,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  auditService: AuditService
+  auditService: AuditService,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -90,7 +93,7 @@ class CyaCreateRecordController @Inject() (
         for {
           recordId <- goodsRecordConnector.submitGoodsRecord(model)
           _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(recordId))
+        } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
       case Left(errors) => Future.successful(logErrorsAndContinue(errors, request))
     }
   }

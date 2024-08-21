@@ -21,10 +21,11 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
-import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers, ValidationError}
+import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
+import navigation.Navigator
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
@@ -47,7 +48,8 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  categorisationService: CategorisationService
+  categorisationService: CategorisationService,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -78,7 +80,7 @@ class CyaUpdateRecordController @Inject() (
               }
             case Left(errors) =>
               Future.successful(
-                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
+                logErrorsAndContinue(errors, recordId)
               )
           }
         }
@@ -104,7 +106,7 @@ class CyaUpdateRecordController @Inject() (
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)            =>
-          logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId))
+          logErrorsAndContinue(errors, recordId)
       }
     }
 
@@ -119,7 +121,7 @@ class CyaUpdateRecordController @Inject() (
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)           =>
-          logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId))
+          logErrorsAndContinue(errors, recordId)
       }
     }
 
@@ -146,7 +148,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(Ok(view(list, onSubmitAction)))
             case Left(errors)     =>
               Future.successful(
-                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+                logErrorsAndContinue(errors, recordId)
               )
           }
         }
@@ -200,10 +202,10 @@ class CyaUpdateRecordController @Inject() (
                               )
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
         case Left(errors)           =>
           Future.successful(
-            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId))
+            logErrorsAndContinue(errors, recordId)
           )
       }
     }
@@ -228,10 +230,10 @@ class CyaUpdateRecordController @Inject() (
                   Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
                 updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
                 _                        <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+              } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
             case Left(errors) =>
               Future.successful(
-                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId))
+                logErrorsAndContinue(errors, recordId)
               )
           }
         }
@@ -261,10 +263,10 @@ class CyaUpdateRecordController @Inject() (
                               )
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
         case Left(errors)            =>
           Future.successful(
-            logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId))
+            logErrorsAndContinue(errors, recordId)
           )
       }
     }
@@ -291,10 +293,10 @@ class CyaUpdateRecordController @Inject() (
                 updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
                 _                        <- sessionRepository.set(updatedAnswers)
                 _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
-              } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+              } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
             case Left(errors)     =>
               Future.successful(
-                logErrorsAndContinue(errors, routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId))
+                logErrorsAndContinue(errors, recordId)
               )
           }
         }
@@ -309,10 +311,14 @@ class CyaUpdateRecordController @Inject() (
         }
     }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], continueUrl: Call): Result = {
+  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
     val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 
     logger.error(s"Unable to update Goods Record.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueUrl.url))))
+    Redirect(
+      routes.JourneyRecoveryController.onPageLoad(
+        Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url))
+      )
+    )
   }
 }

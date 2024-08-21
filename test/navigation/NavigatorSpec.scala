@@ -66,6 +66,17 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
+
+        "must go from CyaRequestAdviceController to AdviceSuccess" in {
+
+          navigator.nextPage(
+            CyaRequestAdvicePage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.AdviceSuccessController
+            .onPageLoad(testRecordId)
+        }
+
       }
 
       "in Withdraw Advice Journey" - {
@@ -200,6 +211,15 @@ class NavigatorSpec extends SpecBase {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateProfileController.onPageLoad
+        }
+
+        "must go from CyaCreateProfile to CreateProfileSuccess" in {
+
+          navigator.nextPage(
+            CyaCreateProfilePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CreateProfileSuccessController.onPageLoad
         }
       }
 
@@ -417,6 +437,17 @@ class NavigatorSpec extends SpecBase {
               .onPageLoad()
           }
         }
+
+        "must go from CyaCreateRecord to CreateRecordSuccess" in {
+
+          navigator.nextPage(
+            CyaCreateRecordPage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CreateRecordSuccessController
+            .onPageLoad(testRecordId)
+        }
+
       }
 
       "in Update Record Journey" - {
@@ -572,6 +603,16 @@ class NavigatorSpec extends SpecBase {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad()
           }
+        }
+
+        "must go from CyaUpdateRecord to SingleRecordController" in {
+
+          navigator.nextPage(
+            CyaUpdateRecordPage(testRecordId),
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.SingleRecordController
+            .onPageLoad(testRecordId)
         }
 
       }

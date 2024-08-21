@@ -23,7 +23,9 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import logging.Logging
 import models.helper.RequestAdviceJourney
 import models.requests.DataRequest
-import models.{AdviceRequest, ValidationError}
+import models.{AdviceRequest, NormalMode, ValidationError}
+import navigation.Navigator
+import pages.CyaRequestAdvicePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
@@ -45,7 +47,8 @@ class CyaRequestAdviceController @Inject() (
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
-  accreditationConnector: AccreditationConnector
+  accreditationConnector: AccreditationConnector,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -89,7 +92,7 @@ class CyaRequestAdviceController @Inject() (
             .submitRequestAccreditation(model)
             .map { _ =>
               dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-              Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
+              Redirect(navigator.nextPage(CyaRequestAdvicePage(recordId), NormalMode, request.userAnswers))
             }
         case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
       }

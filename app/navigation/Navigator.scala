@@ -79,6 +79,10 @@ class Navigator @Inject() () {
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
+    case p: CyaCreateRecordPage                    => _ => routes.CreateRecordSuccessController.onPageLoad(p.recordId)
+    case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
+    case CyaCreateProfilePage                      => _ => routes.CreateProfileSuccessController.onPageLoad()
+    case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
