@@ -27,6 +27,10 @@
 
 @layout(pageTitle = title(form, messages("removeGoodsRecord.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
       <h1 class="govuk-heading-l">@messages("removeGoodsRecord.heading")</h1>
 
     @govukWarningText(WarningText(
@@ -36,10 +40,6 @@
       <h2 class="govuk-heading-m">@messages("removeGoodsRecord.question")</h2>
 
     @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId, location), Symbol("autoComplete") -> "off") {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukRadios(
             RadiosViewModel.apply(

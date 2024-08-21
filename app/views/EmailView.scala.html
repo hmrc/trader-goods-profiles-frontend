@@ -29,13 +29,13 @@
 
 @layout(pageTitle = title(form, messages("email.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("email.heading")</h1>
 
     @formHelper(action = routes.EmailController.onSubmit(mode, recordId)) {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukInput(
             InputViewModel(
