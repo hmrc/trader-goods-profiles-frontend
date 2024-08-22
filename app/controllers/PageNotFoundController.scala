@@ -19,9 +19,8 @@ package controllers
 import controllers.actions._
 
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.PageNotFoundView
 
 import scala.annotation.unused
@@ -33,8 +32,7 @@ class PageNotFoundController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PageNotFoundView
-) extends FrontendBaseController
-    with I18nSupport {
+) extends BaseController {
 
   def onPageLoad(@unused path: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

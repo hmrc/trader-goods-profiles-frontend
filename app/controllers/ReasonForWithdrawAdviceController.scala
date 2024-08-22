@@ -23,10 +23,9 @@ import models.NormalMode
 import models.helper.WithdrawAdviceJourney
 import navigation.Navigator
 import pages.ReasonForWithdrawAdvicePage
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ReasonForWithdrawAdviceView
 
 import javax.inject.Inject
@@ -47,8 +46,7 @@ class ReasonForWithdrawAdviceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: ReasonForWithdrawAdviceView
 )(implicit @unused ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

@@ -24,12 +24,11 @@ import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.TraderReferenceView
 
@@ -50,8 +49,7 @@ class TraderReferenceController @Inject() (
   view: TraderReferenceView,
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form                                                         = formProvider()
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)

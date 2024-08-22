@@ -22,11 +22,10 @@ import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasCountryOfOriginChangePage
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCountryOfOriginChangeView
 
@@ -47,8 +46,7 @@ class HasCountryOfOriginChangeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HasCountryOfOriginChangeView
 )(implicit @unused ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 
