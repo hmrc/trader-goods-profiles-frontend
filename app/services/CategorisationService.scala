@@ -74,41 +74,30 @@ class CategorisationService @Inject() (
 
     val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
 
-    val hasNiphlAssessments = category1Assessments.exists(ass => ass.isNiphlsAnswer)
-
-    //val hasNirmsAssessments = ???
-
-    val category1AssessmentsWithoutNiphl = category1Assessments.filter(ass => !ass.isNiphlsAnswer)
-
     val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
     val areThereCategory1QuestionsWithNoExemption =
       listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
 
-    if (categorisationInfo.isNiphlAuthorised) {
-      if (hasNiphlAssessments) {
-        if (category1AssessmentsWithoutNiphl.isEmpty) {
-          Category2Scenario // Scenario 2
-        } else if (!areThereCategory1QuestionsWithNoExemption) {
-          Category2Scenario // Scenario 1
-        } else {
-          calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
-        }
+    val isNiphlsAssessment =
+      category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+
+    if (isNiphlsAssessment) {
+      if (!categorisationInfo.isNiphlAuthorised || areThereCategory1QuestionsWithNoExemption) {
+        Category1Scenario
       } else {
-        calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
+        Category2Scenario
       }
-    } else if (hasNiphlAssessments) {
-      Category1Scenario // Scenario 3
     } else {
-      calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
+      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
     }
   }
 
   private def calculateResultWithNirms(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String
-  ) = {
+                                        categorisationInfo: CategorisationInfo,
+                                        userAnswers: UserAnswers,
+                                        recordId: String
+                                      ) = {
     val hasNirmsAssessments   = true
     val hasAllAnswersExempted = true
     if (hasNirmsAssessments && hasAllAnswersExempted) {
@@ -118,11 +107,11 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
+      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
     }
   }
 
-  private def calculateResultWithoutNiphlandNirms(
+  private def calculateResultWithoutNiphl(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
