@@ -42,7 +42,7 @@ class CyaCategorisationController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
   goodsRecordConnector: GoodsRecordConnector,
-  implicit val dataCleansingService: DataCleansingService,
+  dataCleansingService: DataCleansingService,
   auditService: AuditService,
   navigator: Navigator,
   sessionRepository: SessionRepository
@@ -128,7 +128,8 @@ class CyaCategorisationController @Inject() (
             )
           }
         case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, CategorisationJourney))
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors))
       }
   }
 

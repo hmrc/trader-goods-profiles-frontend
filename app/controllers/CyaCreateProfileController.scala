@@ -39,7 +39,7 @@ class CyaCreateProfileController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
-  implicit val dataCleansingService: DataCleansingService,
+  dataCleansingService: DataCleansingService,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -75,7 +75,8 @@ class CyaCreateProfileController @Inject() (
         }
 
       case Left(errors) =>
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateProfileJourney))
+        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
 
   }

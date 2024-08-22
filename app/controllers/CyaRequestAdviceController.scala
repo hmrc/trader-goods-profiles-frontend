@@ -38,7 +38,7 @@ class CyaRequestAdviceController @Inject() (
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
-  implicit val dataCleansingService: DataCleansingService,
+  dataCleansingService: DataCleansingService,
   accreditationConnector: AccreditationConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -73,7 +73,8 @@ class CyaRequestAdviceController @Inject() (
               Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
             }
         case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, RequestAdviceJourney))
+          dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors))
       }
   }
 }

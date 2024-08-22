@@ -41,7 +41,7 @@ class CyaCreateRecordController @Inject() (
   view: CyaCreateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  implicit val dataCleansingService: DataCleansingService,
+  dataCleansingService: DataCleansingService,
   sessionRepository: SessionRepository,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
@@ -89,7 +89,8 @@ class CyaCreateRecordController @Inject() (
           _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(recordId))
       case Left(errors) =>
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateRecordJourney))
+        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
   }
 

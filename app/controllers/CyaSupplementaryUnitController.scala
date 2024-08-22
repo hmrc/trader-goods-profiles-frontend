@@ -38,7 +38,7 @@ class CyaSupplementaryUnitController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   goodsRecordConnector: GoodsRecordConnector,
-  implicit val dataCleansingService: DataCleansingService,
+  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView
 )(implicit ec: ExecutionContext)
@@ -96,8 +96,9 @@ class CyaSupplementaryUnitController @Inject() (
 
           }
         case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
           Future.successful(
-            logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, SupplementaryUnitUpdateJourney)
+            logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
           )
       }
   }

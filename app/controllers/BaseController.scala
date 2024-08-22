@@ -19,33 +19,12 @@ package controllers
 import cats.data
 import logging.Logging
 import models.ValidationError
-import models.helper.Journey
-import models.requests.DataRequest
 import play.api.i18n.I18nSupport
-import play.api.mvc.{AnyContent, Call, Result}
-import services.DataCleansingService
+import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 trait BaseController extends FrontendBaseController with I18nSupport with Logging {
-
-  def logErrorsAndContinue(
-    errorMessage: String,
-    continueUrl: Call,
-    errors: data.NonEmptyChain[ValidationError],
-    journeyToCleanse: Journey
-  )(implicit
-    request: DataRequest[AnyContent],
-    dataCleansingService: DataCleansingService
-  ): Result = {
-
-    val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
-    logger.error(s"$errorMessage Missing pages: $errorsAsString")
-
-    dataCleansingService.deleteMongoData(request.userAnswers.id, journeyToCleanse)
-
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueUrl.url))))
-  }
 
   def logErrorsAndContinue(
     errorMessage: String,
