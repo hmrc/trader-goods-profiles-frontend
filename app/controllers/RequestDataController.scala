@@ -50,9 +50,8 @@ class RequestDataController @Inject() (
       Ok(view("placeholder@email.com"))
   }
 
-  def onSubmit(email: String): Action[AnyContent] =
+  def onSubmit: Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      //TODO send an email to the user
       downloadDataConnector.requestDownloadData(request.eori).map { _ =>
         Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
       }
