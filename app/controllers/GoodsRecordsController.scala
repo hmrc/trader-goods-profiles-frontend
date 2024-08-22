@@ -103,13 +103,13 @@ class GoodsRecordsController @Inject() (
   def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
     opt match {
       case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
-        "goodsRecord.downloadLinkText.requestFile"
+        "goodsRecords.downloadLinkText.requestFile"
       case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
-        "goodsRecord.downloadLinkText.fileInProgress"
+        "goodsRecords.downloadLinkText.fileInProgress"
       case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
-        "goodsRecord.downloadLinkText.fileReady"
+        "goodsRecords.downloadLinkText.fileReady"
       case _                                                                         =>
-        "goodsRecord.downloadLinkText.requestFile"
+        "goodsRecords.downloadLinkText.requestFile"
     }
 
   def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
