@@ -211,14 +211,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Option[GetRecordsResponse]] = {
 
-    var queryParams = Map(
+    val queryParams = Map(
       "searchTerm" -> searchTerm,
       "page" -> page.toString,
       "size" -> size.toString
-    )
-
-//    adviceStatus.foreach(status => queryParams += "adviceStatus" -> status)
-//    countryOfOrigin.foreach(country => queryParams += "countryOfOrigin" -> country)
+    ) ++ adviceStatus.map("adviceStatus" -> _) ++ countryOfOrigin.map("countryOfOrigin" -> _)
 
     httpClient
       .get(searchRecordsUrl(eori, queryParams))
