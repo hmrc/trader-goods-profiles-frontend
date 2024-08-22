@@ -21,10 +21,9 @@ import forms.UseTraderReferenceFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{TraderReferencePage, UseTraderReferencePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UseTraderReferenceView
 
 import javax.inject.Inject
@@ -43,8 +42,7 @@ class UseTraderReferenceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: UseTraderReferenceView
 )(implicit @unused ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

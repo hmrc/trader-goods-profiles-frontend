@@ -29,11 +29,26 @@
     govukPagination: GovukPagination
 )
 
-@(form: Form[_], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int)(implicit request: Request[_], messages: Messages)
+@(
+    form: Form[_],
+    goodsRecordsItems: Seq[GetGoodsRecordResponse],
+    totalRecords: Int,
+    firstRecord: Int,
+    lastRecord: Int,
+    countries: Seq[Country],
+    pagination: Pagination,
+    page: Int,
+    downloadLinkMessagesKey: String,
+    downloadLinkRoute: String
+)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(form, messages("goodsRecords.title")), isFullWidth = true
   ) {
+
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
 
 <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1>
@@ -50,9 +65,6 @@
     <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
         @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
-            @if(form.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummaryViewModel(form))
-            }
             <div style="display: flex; align-items: flex-end;">
                 @govukInput(
                     InputViewModel(
@@ -134,8 +146,8 @@
 
         @govukPagination(pagination)
 
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link2")</a></p>
+        <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
 
-        <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link3", "600")</a></p>
+        <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
 </div>
 }

@@ -22,10 +22,9 @@ import forms.HasSupplementaryUnitFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.HasSupplementaryUnitView
 
@@ -45,8 +44,7 @@ class HasSupplementaryUnitController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HasSupplementaryUnitView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

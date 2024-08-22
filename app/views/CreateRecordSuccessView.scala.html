@@ -18,7 +18,6 @@
 
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton,
         govukPanel : GovukPanel,
         feedbackSection: components.feedback_section
 )
@@ -36,7 +35,8 @@
     <p class="govuk-body">@messages("createRecordSuccess.p3")</p>
 
     <p class="govuk-body"><a href="@routes.CategorisationPreparationController.startCategorisation(recordId).url" class="govuk-link" >@messages("createRecordSuccess.p4.linkText")</a></p>
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("createRecordSuccess.p5.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 
     @feedbackSection()
 

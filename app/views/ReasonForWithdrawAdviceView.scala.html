@@ -28,15 +28,13 @@
 
 @layout(pageTitle = title(form, messages("reasonForWithdrawAdvice.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("reasonForWithdrawAdvice.h1")</h1>
 
     @formHelper(action = routes.ReasonForWithdrawAdviceController.onSubmit(recordId)) {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
-
-
 
         @textArea(
             CharacterCountViewModel(

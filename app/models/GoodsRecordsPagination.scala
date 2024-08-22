@@ -35,8 +35,9 @@ object GoodsRecordsPagination {
   val firstPage                                                                   = 1
   def getFirstRecordIndex(pagination: GoodsRecordsPagination, pageSize: Int): Int =
     if (
-      pagination.totalRecords == 0 || pagination.currentPage > pagination.totalPages ||
-      (pagination.currentPage > firstPage && pageSize >= pagination.totalRecords)
+      pagination.totalRecords == 0
+      || pagination.currentPage > pagination.totalPages
+      || (pagination.currentPage > firstPage && pageSize >= pagination.totalRecords)
     ) {
       defaultRecord
     } else {

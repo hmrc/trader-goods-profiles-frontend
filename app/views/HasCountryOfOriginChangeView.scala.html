@@ -26,6 +26,10 @@
 
 @layout(pageTitle = title(form, messages("hasCountryOfOriginChange.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("hasCountryOfOriginChange.h1")</h1>
 
     <p class="govuk-body">@messages("hasCountryOfOriginChange.p1")</p>
@@ -33,10 +37,6 @@
     <h2 class="govuk-heading-m">@messages("hasCountryOfOriginChange.h2")</h2>
 
     @formHelper(action = routes.HasCountryOfOriginChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukRadios(
             RadiosViewModel.yesNo(

@@ -18,11 +18,12 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
+import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination}
+import models.{Country, DownloadDataSummary, GoodsRecordsPagination}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -121,48 +122,219 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
 
+  private val downloadLinkRoute = routes.RequestDataController.onPageLoad().url
+  private val downloadLinkText  = "goodsRecords.downloadLinkText.requestFile"
+
   "GoodsRecords Controller" - {
 
-    "must return OK and the correct view for a GET with records and latest records are stored" in {
+    "must return OK and the correct view for a GET with records and latest records are stored" - {
 
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+      "when file is not requested" in {
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
-        .successful(Some(response))
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
+        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+          .successful(Some(response))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
+
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          Seq(Country("EC", "Ecuador"))
         )
-        .build()
 
-      running(application) {
-        val request = FakeRequest(GET, goodsRecordsRoute)
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, goodsRecordsRoute)
 
-        val view = application.injector.instanceOf[GoodsRecordsView]
+          val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form,
-          response.goodsItemRecords,
-          totalRecords,
-          firstRecord,
-          lastRecord,
-          Seq(Country("EC", "Ecuador")),
-          pagination,
-          currentPage
-        )(
-          request,
-          messages(application)
-        ).toString
+          val view = application.injector.instanceOf[GoodsRecordsView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form,
+            response.goodsItemRecords,
+            totalRecords,
+            firstRecord,
+            lastRecord,
+            Seq(Country("EC", "Ecuador")),
+            pagination,
+            currentPage,
+            downloadLinkText,
+            downloadLinkRoute
+          )(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "when file is not requested but has been requested historically" in {
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+          .successful(Some(response))
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(DownloadDataSummary(testEori, RequestFile))
+        )
+
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          Seq(Country("EC", "Ecuador"))
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsRecordsRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[GoodsRecordsView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form,
+            response.goodsItemRecords,
+            totalRecords,
+            firstRecord,
+            lastRecord,
+            Seq(Country("EC", "Ecuador")),
+            pagination,
+            currentPage,
+            downloadLinkText,
+            downloadLinkRoute
+          )(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "when file is in progress" in {
+
+        val downloadLinkRoute = routes.FileInProgressController.onPageLoad().url
+        val downloadLinkText  = "goodsRecords.downloadLinkText.fileInProgress"
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+          .successful(Some(response))
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(DownloadDataSummary(testEori, FileInProgress))
+        )
+
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          Seq(Country("EC", "Ecuador"))
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsRecordsRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[GoodsRecordsView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form,
+            response.goodsItemRecords,
+            totalRecords,
+            firstRecord,
+            lastRecord,
+            Seq(Country("EC", "Ecuador")),
+            pagination,
+            currentPage,
+            downloadLinkText,
+            downloadLinkRoute
+          )(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "when file is ready" in {
+
+        val downloadLinkRoute = routes.FileReadyController.onPageLoad().url
+        val downloadLinkText  = "goodsRecords.downloadLinkText.fileReady"
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+          .successful(Some(response))
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(DownloadDataSummary(testEori, FileReady))
+        )
+
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          Seq(Country("EC", "Ecuador"))
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsRecordsRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[GoodsRecordsView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form,
+            response.goodsItemRecords,
+            totalRecords,
+            firstRecord,
+            lastRecord,
+            Seq(Country("EC", "Ecuador")),
+            pagination,
+            currentPage,
+            downloadLinkText,
+            downloadLinkRoute
+          )(
+            request,
+            messages(application)
+          ).toString
+        }
       }
     }
 
@@ -201,6 +373,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val middlePage = 2
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
+
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
       val response                 = GetRecordsResponse(
         records,
@@ -217,7 +392,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
         )
         .build()
 
@@ -269,7 +445,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          middlePage
+          middlePage,
+          downloadLinkText,
+          downloadLinkRoute
         )(
           request,
           messages(application)
@@ -344,6 +522,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
+
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
@@ -358,7 +539,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[OttConnector].toInstance(mockOttConnector)
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
 
@@ -382,7 +564,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          currentPage
+          currentPage,
+          downloadLinkText,
+          downloadLinkRoute
         )(
           request,
           messages(application)
