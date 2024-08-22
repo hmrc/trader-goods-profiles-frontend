@@ -36,9 +36,9 @@ final case class CategoryAssessment(
     exemption.code + " - " + exemption.description
   }
 
-  def isCategory1: Boolean  = category == Category1AsInt
-  def isCategory2: Boolean  = category == Category2AsInt
-  def hasNoAnswers: Boolean = exemptions.isEmpty
+  def isCategory1: Boolean    = category == Category1AsInt
+  def isCategory2: Boolean    = category == Category2AsInt
+  def hasNoAnswers: Boolean   = exemptions.isEmpty
   def isNiphlsAnswer: Boolean = isCategory1 && exemptions.exists(exemption => exemption.id == "WFE012")
 
 }
