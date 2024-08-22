@@ -28,14 +28,14 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
 
   def logErrorsAndContinue(
     errorMessage: String,
-    continueUrl: Call,
+    continueCall: Call,
     errors: data.NonEmptyChain[ValidationError]
   ): Result = {
 
     val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
     logger.error(s"$errorMessage Missing pages: $errorsAsString")
 
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueUrl.url))))
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
 
 }
