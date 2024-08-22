@@ -48,12 +48,12 @@ class GoodsRecordsSearchResultController @Inject() (
   def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       request.userAnswers.get(GoodsRecordsPage) match {
-        case Some(searchText) =>
+        case Some(data) =>
           if (page < 1) {
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
             goodsRecordConnector
-              .searchRecords(request.eori, searchText, Some("Not Requested"), Some("DE"), page, pageSize)
+              .searchRecords(request.eori, data.searchText, Some("Not Requested"), Some("DE"), page, pageSize)
               .flatMap {
                 case Some(searchResponse) =>
                   if (searchResponse.pagination.totalRecords != 0) {
@@ -71,14 +71,14 @@ class GoodsRecordsSearchResultController @Inject() (
                             searchResponse.pagination.totalPages
                           ),
                           page,
-                          searchText,
+                          data.searchText,
                           searchResponse.pagination.totalPages
                         )
                       )
                     }
                   } else {
                     request.userAnswers.get(GoodsRecordsPage) match {
-                      case Some(searchText) => Future.successful(Ok(emptyView(searchText)))
+                      case Some(searchText) => Future.successful(Ok(emptyView(data.searchText)))
                       case None             => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
                     }
                   }

@@ -16,9 +16,10 @@
 
 package pages
 
+import forms.GoodsRecordsFormData
 import play.api.libs.json.JsPath
 
-case object GoodsRecordsPage extends QuestionPage[String] {
+case object GoodsRecordsPage extends QuestionPage[GoodsRecordsFormData] {
 
   override def path: JsPath = JsPath \ toString
 

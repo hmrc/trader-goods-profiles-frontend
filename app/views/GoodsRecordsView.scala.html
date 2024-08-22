@@ -57,13 +57,36 @@
             <div style="display: flex; align-items: flex-end;">
                 @govukInput(
                     InputViewModel(
-                        field = form("value"),
+                        field = form("searchText"),
                         label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
                     )
                 )
+                @govukButton(
+                ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+                )
+            </div>
+            <h2 class="govuk-heading-m">Filters</h2>
+
+            <div>
+                <div style="display: flex; align-items: flex-end;">
+                    @govukInput(
+                        InputViewModel(
+                            field = form("countryOfOrigin"),
+                            label = LabelViewModel("Country").withCssClass("govuk-!-font-weight-bold")
+                        )
+                    )
+
+                    @govukInput(
+                    InputViewModel(
+                            field = form("adviceStatus"),
+                            label = LabelViewModel("Advice Status").withCssClass("govuk-!-font-weight-bold")
+                        )
+                    )
+
+                </div>
 
                 @govukButton(
-                    ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+                    ButtonViewModel("Apply filters").withAttribute("flex-wrap:", "wrap")
                 )
             </div>
         }

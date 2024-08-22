@@ -18,7 +18,7 @@ package controllers
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
-import forms.GoodsRecordsFormProvider
+import forms.{GoodsRecordsFormProvider, GoodsRecordsFormProvider2}
 import models.GoodsRecordsPagination._
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -39,7 +39,7 @@ class GoodsRecordsController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
-  formProvider: GoodsRecordsFormProvider,
+  formProvider: GoodsRecordsFormProvider2,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsView,
   emptyView: GoodsRecordsEmptyView,
