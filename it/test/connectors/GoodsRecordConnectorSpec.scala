@@ -20,7 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
+import models.{CategoryRecord, Commodity, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -58,7 +58,8 @@ class GoodsRecordConnectorSpec
   private val xClientId: String     = "tgp-frontend"
   private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
-  private val goodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records-summary"
 
   private lazy val getRecordResponse = Json
     .parse(s"""
@@ -656,6 +657,33 @@ class GoodsRecordConnectorSpec
       )
 
       connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
+    }
+  }
+
+  ".getRecordsSummary" - {
+
+    val recordsSummary = RecordsSummary(testEori, None, instant)
+
+    "must get a records summary" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(recordsSummaryUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(Json.toJson(recordsSummary).toString))
+      )
+
+      connector.getRecordsSummary(testEori).futureValue.eori mustBe recordsSummary.eori
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(recordsSummaryUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.getRecordsSummary(testEori).failed.futureValue
     }
   }
 }
