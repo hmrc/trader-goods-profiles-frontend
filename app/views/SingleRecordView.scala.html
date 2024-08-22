@@ -29,19 +29,19 @@
     @bannerContentForUpdate(page: String,dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
         @if(dataRemoved) {
-            @messages("sucessBannerRemove.heading", page)
+            @messages("successBannerRemove.heading", page)
         } else {
-            @messages("sucessBanner.heading", page)
+            @messages("successBanner.heading", page)
         }
         </h3>
-        <p class="govuk-body">@messages("sucessBanner.p1") <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> @messages("sucessBanner.p2")</p>
+        <p class="govuk-body">@messages("successBanner.p1") <a class="govuk-notification-banner__link" href="#"> @messages("successBanner.email")</a> @messages("successBanner.p2")</p>
     }
 
 @layout(backLinkUrl = controllers.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(
-            title = Text(messages("sucessBanner.title")),
+            title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage,dataRemoved)),
             bannerType = Some("success"),
             role=Some("alert"))

@@ -79,6 +79,7 @@ class Navigator @Inject() () {
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
+    case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 

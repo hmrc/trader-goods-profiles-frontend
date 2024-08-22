@@ -1192,6 +1192,17 @@ class NavigatorSpec extends SpecBase {
 
       }
 
+      "in Data Download Journey" - {
+
+        "must go from RequestDataPage to DownloadRequestSuccessController" in {
+
+          navigator.nextPage(
+            RequestDataPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.DownloadRequestSuccessController.onPageLoad()
+        }
+      }
     }
     "in Check mode" - {
 

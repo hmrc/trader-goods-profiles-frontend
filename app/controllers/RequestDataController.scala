@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.DownloadDataConnector
 import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
@@ -27,6 +28,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RequestDataView
 
+import scala.concurrent.ExecutionContext
+
 class RequestDataController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
@@ -35,8 +38,10 @@ class RequestDataController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: RequestDataView,
-  navigator: Navigator
-) extends FrontendBaseController
+  navigator: Navigator,
+  downloadDataConnector: DownloadDataConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
@@ -45,10 +50,13 @@ class RequestDataController @Inject() (
       Ok(view("placeholder@email.com"))
   }
 
-  def onSubmit(email: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
+  def onSubmit(email: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       //TODO send an email to the user
-      //TODO redirect to the correct page
-      Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
-  }
+      downloadDataConnector.requestDownloadData(request.eori).map {
+        case true  => Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
+        //TODO implement behaviour if request fails
+        case false => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      }
+    }
 }

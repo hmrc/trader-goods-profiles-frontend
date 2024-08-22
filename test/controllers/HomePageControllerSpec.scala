@@ -17,7 +17,10 @@
 package controllers
 
 import base.SpecBase
-import connectors.TraderProfileConnector
+import base.TestConstants.testEori
+import connectors.{DownloadDataConnector, TraderProfileConnector}
+import models.DownloadDataStatus.FileReady
+import models.DownloadDataSummary
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -32,13 +35,21 @@ class HomePageControllerSpec extends SpecBase {
 
   "HomePage Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET with banner" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        Some(DownloadDataSummary(testEori, FileReady))
+      )
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+        )
         .build()
 
       running(application) {
@@ -49,8 +60,38 @@ class HomePageControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[HomePageView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(true)(request, messages(application)).toString
       }
     }
+
+    "must return OK and the correct view for a GET without banner" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        None
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[HomePageView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(false)(request, messages(application)).toString
+      }
+    }
+
   }
 }

@@ -16,27 +16,33 @@
 
 package controllers
 
+import connectors.DownloadDataConnector
 import controllers.actions._
+import models.DownloadDataStatus.FileReady
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomePageView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class HomePageController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getOrCreate: DataRetrievalOrCreateAction,
   profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate) { implicit request =>
-    // TODO: Actually check whether the file is ready or not by calling something
-    val isDownloadReady = false
-    Ok(view(downloadReady = isDownloadReady))
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
+    downloadDataConnector.getDownloadDataSummary(request.eori).map {
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady => Ok(view(downloadReady = true))
+      case _                                                                    => Ok(view(downloadReady = false))
+    }
   }
 }
