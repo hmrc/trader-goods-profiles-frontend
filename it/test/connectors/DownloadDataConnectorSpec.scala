@@ -63,7 +63,7 @@ class DownloadDataConnectorSpec
       wireMockServer.stubFor(
         post(urlEqualTo(downloadDataSummaryUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(aResponse().withStatus(ACCEPTED))
+          .willReturn(status(ACCEPTED))
       )
 
       connector.requestDownloadData(testEori).futureValue mustEqual Done
