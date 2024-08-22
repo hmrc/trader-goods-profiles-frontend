@@ -30,7 +30,8 @@ final case class CategorisationInfo(
   measurementUnit: Option[String],
   descendantCount: Int,
   longerCode: Boolean = false,
-  isNiphlAuthorised: Boolean = false
+  isNiphlAuthorised: Boolean = false,
+  isNirmsAuthorised: Boolean = false
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
@@ -112,7 +113,8 @@ object CategorisationInfo {
           ott.goodsNomenclature.measurementUnit,
           ott.descendents.size,
           longerCode,
-          traderProfile.niphlNumber.isDefined
+          traderProfile.niphlNumber.isDefined,
+          traderProfile.nirmsNumber.isDefined
         )
       }
 

@@ -72,7 +72,11 @@ class CategorisationService @Inject() (
   ): Scenario = {
     val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
 
+    val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
+
     val hasNiphlAssessments = category1Assessments.exists(ass => ass.isNiphlsAnswer)
+
+    //val hasNirmsAssessments = ???
 
     val category1AssessmentsWithoutNiphl = category1Assessments.filter(ass => !ass.isNiphlsAnswer)
 
@@ -88,19 +92,37 @@ class CategorisationService @Inject() (
         } else if (!areThereCategory1QuestionsWithNoExemption) {
           Category2Scenario // Scenario 1
         } else {
-          calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+          calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
         }
       } else {
-        calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+        calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
       }
     } else if (hasNiphlAssessments) {
       Category1Scenario // Scenario 3
     } else {
-      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+      calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
     }
   }
 
-  private def calculateResultWithoutNiphl(
+  private def calculateResultWithNirms(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ) = {
+    val hasNirmsAssessments   = true
+    val hasAllAnswersExempted = true
+    if (hasNirmsAssessments && hasAllAnswersExempted) {
+      if (categorisationInfo.isNiphlAuthorised) {
+        StandardGoodsScenario
+      } else {
+        Category2Scenario
+      }
+    } else {
+      calculateResultWithoutNiphlandNirms(categorisationInfo, userAnswers, recordId)
+    }
+  }
+
+  private def calculateResultWithoutNiphlandNirms(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
