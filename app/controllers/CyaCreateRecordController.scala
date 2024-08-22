@@ -23,10 +23,6 @@ import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
-import models.requests.DataRequest
-import models.{Country, GoodsRecord, UserAnswers, ValidationError}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}

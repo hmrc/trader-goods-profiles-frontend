@@ -24,7 +24,7 @@ import models.helper.WithdrawAdviceJourney
 import navigation.Navigator
 import pages.ReasonForWithdrawAdvicePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
 import views.html.ReasonForWithdrawAdviceView
 

@@ -22,7 +22,7 @@ import models.NormalMode
 import navigation.Navigator
 import pages.WithdrawAdviceStartPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.WithdrawAdviceStartView
 

@@ -22,7 +22,7 @@ import models.Mode
 import navigation.Navigator
 import pages.{TraderReferencePage, UseTraderReferencePage}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.UseTraderReferenceView
 

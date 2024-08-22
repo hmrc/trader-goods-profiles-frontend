@@ -23,7 +23,7 @@ import play.api.libs.json.{JsString, JsSuccess, Json}
 
 class AssessmentAnswerSpec extends SpecBase {
 
-  "AssessmentAnswer2" - {
+  "AssessmentAnswer" - {
 
     "must serialise / deserialise to / from JSON" - {
       "for an exemption" in {

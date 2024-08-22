@@ -23,8 +23,6 @@ import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers}
 import pages._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService

@@ -26,14 +26,14 @@ import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.{AuditService, CategorisationService, DataCleansingService}
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class CyaCategorisationController @Inject() (
   override val messagesApi: MessagesApi,
@@ -51,7 +51,8 @@ class CyaCategorisationController @Inject() (
     extends BaseController {
 
   private val errorMessage: String                = "Unable to update Goods Profile."
-  private def continueUrl(recordId: String): Call = routes.CategoryGuidanceController.onPageLoad(recordId)
+  private def continueUrl(recordId: String): Call =
+    routes.CategorisationPreparationController.startCategorisation(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -69,7 +70,7 @@ class CyaCategorisationController @Inject() (
             }
             .getOrElse {
               dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-              logErrorsAndContinue("Failed to get categorisation details", recordId, request.userAnswers)
+              logErrorsAndContinue("Failed to get categorisation details", continueUrl(recordId))
             }
       }
 
@@ -144,7 +145,7 @@ class CyaCategorisationController @Inject() (
           }
         case Left(errors)          =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors))
 
       }
   }

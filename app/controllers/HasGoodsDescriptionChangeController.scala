@@ -23,7 +23,7 @@ import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasGoodsDescriptionChangePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}

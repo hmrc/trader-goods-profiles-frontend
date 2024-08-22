@@ -42,7 +42,7 @@ class EmailController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: EmailView
 )(implicit @unused ec: ExecutionContext)
-  extends BaseController {
+    extends BaseController {
 
   private val form = formProvider()
 

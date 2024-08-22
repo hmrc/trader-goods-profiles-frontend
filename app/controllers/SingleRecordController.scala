@@ -23,7 +23,7 @@ import models.helper.{CategorisationJourney, RequestAdviceJourney, Supplementary
 import models.requests.DataRequest
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, BaseController, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.DataCleansingService
 import utils.SessionData._

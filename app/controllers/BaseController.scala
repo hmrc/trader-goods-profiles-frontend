@@ -33,7 +33,17 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
   ): Result = {
 
     val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
-    logger.error(s"$errorMessage Missing pages: $errorsAsString")
+    val completeError  = s"$errorMessage Missing pages: $errorsAsString"
+
+    logErrorsAndContinue(completeError, continueCall)
+  }
+
+  def logErrorsAndContinue(
+    errorMessage: String,
+    continueCall: Call
+  ): Result = {
+
+    logger.error(s"$errorMessage")
 
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
