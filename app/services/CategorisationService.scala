@@ -94,14 +94,21 @@ class CategorisationService @Inject() (
   }
 
   private def calculateResultWithNirms(
-                                        categorisationInfo: CategorisationInfo,
-                                        userAnswers: UserAnswers,
-                                        recordId: String
-                                      ) = {
-    val hasNirmsAssessments   = true
-    val hasAllAnswersExempted = true
-    if (hasNirmsAssessments && hasAllAnswersExempted) {
-      if (categorisationInfo.isNiphlAuthorised) {
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ): Scenario = {
+
+    val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
+
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    val areThereQuestionsWithNoExemption = listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption))
+
+    val isNirmsAssessment = category2Assessments.exists(ass => ass.isNirmsAnswer)
+
+    if (isNirmsAssessment && !areThereQuestionsWithNoExemption) {
+      if (categorisationInfo.isNirmsAuthorised) {
         StandardGoodsScenario
       } else {
         Category2Scenario
@@ -115,7 +122,7 @@ class CategorisationService @Inject() (
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ) =
+  ): Scenario =
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
@@ -132,7 +139,7 @@ class CategorisationService @Inject() (
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ) = {
+  ): Scenario = {
 
     val getFirstNo = categorisationInfo
       .getAnswersForQuestions(userAnswers, recordId)
