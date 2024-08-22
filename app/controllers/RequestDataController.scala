@@ -53,10 +53,8 @@ class RequestDataController @Inject() (
   def onSubmit(email: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       //TODO send an email to the user
-      downloadDataConnector.requestDownloadData(request.eori).map {
-        case true  => Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
-        //TODO implement behaviour if request fails
-        case false => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      downloadDataConnector.requestDownloadData(request.eori).map { _ =>
+        Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
       }
     }
 }

@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -65,7 +66,7 @@ class RequestDataControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.requestDownloadData(any())(any())) thenReturn Future.successful(true)
+      when(mockDownloadDataConnector.requestDownloadData(any())(any())) thenReturn Future.successful(Done)
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -90,37 +91,5 @@ class RequestDataControllerSpec extends SpecBase {
         redirectLocation(result).value mustEqual onwardRoute.url
       }
     }
-
-    "must redirect to Journey Recovery when button clicked and data requested and fails" in {
-
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
-      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.requestDownloadData(any())(any())) thenReturn Future.successful(false)
-
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
-          .build()
-
-      running(application) {
-        val request = FakeRequest(POST, routes.RequestDataController.onSubmit(email).url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
   }
 }
