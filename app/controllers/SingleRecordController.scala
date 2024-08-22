@@ -25,6 +25,7 @@ import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescripti
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.DataCleansingService
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -36,6 +37,7 @@ class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
+  dataCleansingService: DataCleansingService,
   identify: IdentifierAction,
   profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,

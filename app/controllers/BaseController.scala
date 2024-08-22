@@ -17,7 +17,6 @@
 package controllers
 
 import cats.data
-import com.google.inject.Inject
 import logging.Logging
 import models.ValidationError
 import models.helper.Journey
@@ -30,14 +29,15 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 trait BaseController extends FrontendBaseController with I18nSupport with Logging {
 
-  @Inject var dataCleansingService: DataCleansingService = _
-
   def logErrorsAndContinue(
     errorMessage: String,
     continueUrl: Call,
     errors: data.NonEmptyChain[ValidationError],
     journeyToCleanse: Journey
-  )(implicit request: DataRequest[AnyContent]): Result = {
+  )(implicit
+    request: DataRequest[AnyContent],
+    dataCleansingService: DataCleansingService
+  ): Result = {
 
     val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
     logger.error(s"$errorMessage Missing pages: $errorsAsString")

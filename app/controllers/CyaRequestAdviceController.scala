@@ -20,10 +20,10 @@ import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.RequestAdviceJourney
-import models.{AdviceRequest}
+import models.AdviceRequest
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaRequestAdviceView
@@ -38,6 +38,7 @@ class CyaRequestAdviceController @Inject() (
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
+  implicit val dataCleansingService: DataCleansingService,
   accreditationConnector: AccreditationConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {

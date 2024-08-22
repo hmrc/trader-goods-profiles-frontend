@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import logging.Logging
 import models.AssessmentAnswer.NotAnsweredYet
 import models.{Mode, NormalMode}
 import navigation.Navigator

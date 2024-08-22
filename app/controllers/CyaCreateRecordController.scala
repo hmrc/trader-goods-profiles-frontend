@@ -25,7 +25,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
@@ -41,6 +41,7 @@ class CyaCreateRecordController @Inject() (
   view: CyaCreateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
+  implicit val dataCleansingService: DataCleansingService,
   sessionRepository: SessionRepository,
   auditService: AuditService
 )(implicit ec: ExecutionContext)

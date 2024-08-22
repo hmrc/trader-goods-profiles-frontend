@@ -19,7 +19,6 @@ package controllers
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.helper.CategorisationJourney
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario}
 import navigation.Navigator
@@ -28,7 +27,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
@@ -43,6 +42,7 @@ class CyaCategorisationController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
   goodsRecordConnector: GoodsRecordConnector,
+  implicit val dataCleansingService: DataCleansingService,
   auditService: AuditService,
   navigator: Navigator,
   sessionRepository: SessionRepository

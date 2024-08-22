@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages.ReasonForWithdrawAdvicePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import views.html.ReasonForWithdrawAdviceView
 
 import javax.inject.Inject
@@ -41,6 +41,7 @@ class ReasonForWithdrawAdviceController @Inject() (
   formProvider: ReasonForWithdrawAdviceFormProvider,
   auditService: AuditService,
   accreditationConnector: AccreditationConnector,
+  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: ReasonForWithdrawAdviceView
 )(implicit ec: ExecutionContext)

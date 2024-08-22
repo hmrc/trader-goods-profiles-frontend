@@ -23,7 +23,7 @@ import models.helper.CreateProfileJourney
 import models.TraderProfile
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateProfileView
@@ -39,6 +39,7 @@ class CyaCreateProfileController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
+  implicit val dataCleansingService: DataCleansingService,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {

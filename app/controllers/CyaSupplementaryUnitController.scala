@@ -23,6 +23,7 @@ import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import services.DataCleansingService
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated, supplementaryUnit}
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
@@ -37,6 +38,7 @@ class CyaSupplementaryUnitController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   goodsRecordConnector: GoodsRecordConnector,
+  implicit val dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView
 )(implicit ec: ExecutionContext)
