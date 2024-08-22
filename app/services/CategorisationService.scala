@@ -72,29 +72,22 @@ class CategorisationService @Inject() (
   ): Scenario = {
     val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
 
-    val hasNiphlAssessments = category1Assessments.exists(ass => ass.isNiphlsAnswer)
-
-    val category1AssessmentsWithoutNiphl = category1Assessments.filter(ass => !ass.isNiphlsAnswer)
+    val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
 
     val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
     val areThereCategory1QuestionsWithNoExemption =
       listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
 
-    if (categorisationInfo.isNiphlAuthorised) {
-      if (hasNiphlAssessments) {
-        if (category1AssessmentsWithoutNiphl.isEmpty) {
-          Category2Scenario // Scenario 2
-        } else if (!areThereCategory1QuestionsWithNoExemption) {
-          Category2Scenario // Scenario 1
-        } else {
-          calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
-        }
+    val isNiphlsAssessment =
+      category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+
+    if (isNiphlsAssessment) {
+      if (!categorisationInfo.isNiphlAuthorised || areThereCategory1QuestionsWithNoExemption) {
+        Category1Scenario
       } else {
-        calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+        Category2Scenario
       }
-    } else if (hasNiphlAssessments) {
-      Category1Scenario // Scenario 3
     } else {
       calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
     }

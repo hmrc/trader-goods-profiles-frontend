@@ -691,7 +691,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
                 Seq(category1Niphl),
-                Seq(category1Niphl),
+                Seq.empty,
                 None,
                 1
               )

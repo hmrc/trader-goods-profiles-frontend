@@ -245,19 +245,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
   private def navigateFromCategorisationPreparationPage(answers: UserAnswers, recordId: String): Call =
     answers.get(CategorisationDetailsQuery(recordId)) match {
-      case Some(catInfo)
-          if !catInfo.isNiphlAuthorised && catInfo.categoryAssessments.exists(ass => ass.isNiphlsAnswer) =>
-        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-        routes.CategorisationResultController.onPageLoad(recordId, scenario)
-      case Some(catInfo)
-          if catInfo.isNiphlAuthorised && !catInfo.categoryAssessments
-            .filter(ass => ass.isCategory1)
-            .exists(ass => !ass.isNiphlsAnswer) =>
-        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-        routes.CategorisationResultController.onPageLoad(recordId, scenario)
-      case Some(catInfo)
-          if catInfo.isNiphlAuthorised && catInfo.categoryAssessments.exists(ass => ass.isNiphlsAnswer) =>
-        routes.CategoryGuidanceController.onPageLoad(recordId)
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         routes.CategoryGuidanceController.onPageLoad(recordId)
       case Some(catInfo)                                                        =>

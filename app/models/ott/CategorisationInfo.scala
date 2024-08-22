@@ -82,26 +82,29 @@ object CategorisationInfo {
       .map { assessments =>
         val assessmentsSorted = assessments.sorted
 
-        val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1).filter(ass => !ass.isNiphlsAnswer)
+        val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
         val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
-        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers)
+        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlsAnswer)
         val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
 
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
+        val isNiphlsAssessment =
+          category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+
         val questionsToAnswer = {
-          if (!areAllCategory1Answerable) {
+          if (isNiphlsAssessment && traderProfile.niphlNumber.isDefined) {
+            category1ToAnswer
+          } else if (isNiphlsAssessment) {
+            Seq.empty
+          } else if (!areAllCategory1Answerable) {
             Seq.empty
           } else if (!areAllCategory2Answerable) {
             category1ToAnswer
           } else {
-            if (traderProfile.niphlNumber.isDefined) {
-              category1ToAnswer
-            } else {
-              category1ToAnswer ++ category2ToAnswer
-            }
+            category1ToAnswer ++ category2ToAnswer
           }
         }
 
