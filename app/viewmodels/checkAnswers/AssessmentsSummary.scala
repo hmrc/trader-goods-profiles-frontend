@@ -32,19 +32,19 @@ object AssessmentsSummary {
     answers: UserAnswers,
     assessment: CategoryAssessment,
     indexOfThisAssessment: Int,
-    reassessmentAnswer: Boolean
+    isReassessmentAnswer: Boolean
   )(implicit messages: Messages): Option[SummaryListRow] = {
 
-    val pageToUse = if (reassessmentAnswer) {
-      ReassessmentPage(recordId, indexOfThisAssessment)
+    val (pageToUse, changeLink) = if (isReassessmentAnswer) {
+      (
+        ReassessmentPage(recordId, indexOfThisAssessment),
+        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
+      )
     } else {
-      AssessmentPage(recordId, indexOfThisAssessment)
-    }
-
-    val changeLink = if (reassessmentAnswer) {
-      routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
-    } else {
-      routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+      (
+        AssessmentPage(recordId, indexOfThisAssessment),
+        routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+      )
     }
 
     answers.get(pageToUse).map { answer =>

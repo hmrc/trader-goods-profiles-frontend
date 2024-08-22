@@ -122,16 +122,18 @@ class CategorisationService @Inject() (
     userAnswers: UserAnswers,
     recordId: String
   ) = {
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
-    val getFirstNo                                = listOfAnswers.find(x => x.answer.contains(AssessmentAnswer.NoExemption))
+    val getFirstNo = categorisationInfo
+      .getAnswersForQuestions(userAnswers, recordId)
+      .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
+
     val areThereCategory2QuestionsWithNoExemption =
       categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
     getFirstNo match {
       case None if areThereCategory2QuestionsWithNoExemption => Category2Scenario
       case None                                              => StandardGoodsScenario
-      case Some(details) if details.question.category == 2   => Category2Scenario
+      case Some(details) if details.question.isCategory2     => Category2Scenario
       case _                                                 => Category1Scenario
     }
   }

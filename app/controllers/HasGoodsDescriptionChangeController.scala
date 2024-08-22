@@ -18,8 +18,6 @@ package controllers
 
 import controllers.actions._
 import forms.HasGoodsDescriptionChangeFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
@@ -32,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasGoodsDescriptionChangeView
 
+import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 

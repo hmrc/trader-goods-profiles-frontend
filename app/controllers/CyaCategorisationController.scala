@@ -167,7 +167,7 @@ class CyaCategorisationController @Inject() (
 
     val continueUrl = RedirectUrl(routes.CategorisationPreparationController.startCategorisation(recordId).url)
 
-    logger.error(s"Unable to update Goods Profile: $errorMessage")
+    logger.error(s"Unable to update Goods Profile for record $recordId: $errorMessage")
     dataCleansingService.deleteMongoData(userAnswers.id, CategorisationJourney)
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

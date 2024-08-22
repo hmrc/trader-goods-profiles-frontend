@@ -50,7 +50,7 @@ class HasSupplementaryUnitController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
       val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
         case None        => form

@@ -91,7 +91,7 @@ object CategorisationInfo {
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
-        val questionsToAnswers = {
+        val questionsToAnswer = {
           if (!areAllCategory1Answerable) {
             Seq.empty
           } else if (!areAllCategory2Answerable) {
@@ -108,7 +108,7 @@ object CategorisationInfo {
         CategorisationInfo(
           commodityCodeUserEntered,
           assessmentsSorted,
-          questionsToAnswers,
+          questionsToAnswer,
           ott.goodsNomenclature.measurementUnit,
           ott.descendents.size,
           longerCode,

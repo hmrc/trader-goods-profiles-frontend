@@ -24,22 +24,20 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategorisationResultView
 
 import javax.inject.Inject
-import scala.annotation.unused
-import scala.concurrent.ExecutionContext
 
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CategorisationResultView
-)(implicit @unused ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       Ok(view(recordId, scenario))
     }
 }
