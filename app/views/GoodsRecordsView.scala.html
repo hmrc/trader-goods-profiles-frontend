@@ -26,7 +26,9 @@
     govukTable: GovukTable,
     tableRowActionList: components.TableRowActionList,
     boldWrapper: components.BoldWrapper,
-    govukPagination: GovukPagination
+    govukPagination: GovukPagination,
+    govukCheckboxes: GovukCheckboxes,
+
 )
 
 @(form: Form[_], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int)(implicit request: Request[_], messages: Messages)
@@ -68,22 +70,48 @@
             <h2 class="govuk-heading-m">Filters</h2>
 
             <div>
-                <div style="display: flex; align-items: flex-end;">
-                    @govukInput(
-                        InputViewModel(
-                            field = form("countryOfOrigin"),
-                            label = LabelViewModel("Country").withCssClass("govuk-!-font-weight-bold")
+                @govukCheckboxes(
+                CheckboxesViewModel(
+                    form: Form[_],
+                    name: String,
+                    items: Seq[CheckboxItem],
+                    legend: Legend
+                )
+                    Checkboxes(
+                        fieldset = Some(Fieldset(html=Html("hello"))),
+                        name = "images-check",
+                        items = Seq(
+                            CheckboxItem(
+                                id = Some("adviceStatus-1"),
+                                name = Some("adviceStatus"),
+                                value = "something",
+                                checked = false,
+                                content = Text("IMMI ready"),
+                            ),
+                            CheckboxItem(
+                                id = Some("adviceStatus-1"),
+                                name = Some("adviceStatus"),
+                                value = "something",
+                                checked = false,
+                                content = Text("Not IMMI ready"),
+                            ),
+                            CheckboxItem(
+                                id = Some("adviceStatus-1"),
+                                name = Some("adviceStatus"),
+                                value = "Not Requested",
+                                checked = false,
+                                content = Text("Action needed"),
+                            )
                         )
                     )
+                )
 
-                    @govukInput(
+                @govukInput(
                     InputViewModel(
-                            field = form("adviceStatus"),
-                            label = LabelViewModel("Advice Status").withCssClass("govuk-!-font-weight-bold")
-                        )
-                    )
-
-                </div>
+                        field = form("countryOfOrigin"),
+                        label = LabelViewModel("Country of origin").withCssClass("govuk-!-font-weight-bold")
+                    ).withAttribute("display", "block")
+                )
 
                 @govukButton(
                     ButtonViewModel("Apply filters").withAttribute("flex-wrap:", "wrap")
