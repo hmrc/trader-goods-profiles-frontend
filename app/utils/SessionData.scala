@@ -53,5 +53,6 @@ case object SessionData {
   val longerCommodityQuery                   = "longerCommodity"
   val withDrawAdviceStartPage: String        = "withdrawAdviceStart"
   val reasonForWithdrawAdvicePage: String    = "reasonForWithdrawAdvice"
+  val fromExpiredCommodityCodePage: String   = "fromExpiredCommodityCodePage"
 
 }

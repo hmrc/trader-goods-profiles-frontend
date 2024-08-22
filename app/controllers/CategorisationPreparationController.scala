@@ -143,7 +143,7 @@ class CategorisationPreparationController @Inject() (
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
+    if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired) {
       CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
         case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record)
         case Left(errors)  =>

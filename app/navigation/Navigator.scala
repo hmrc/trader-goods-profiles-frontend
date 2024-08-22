@@ -245,6 +245,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
   private def navigateFromCategorisationPreparationPage(answers: UserAnswers, recordId: String): Call =
     answers.get(CategorisationDetailsQuery(recordId)) match {
+      case Some(catInfo) if catInfo.isCommCodeExpired                           =>
+        routes.ExpiredCommodityCodeController.onPageLoad(recordId)
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         routes.CategoryGuidanceController.onPageLoad(recordId)
       case Some(catInfo)                                                        =>
