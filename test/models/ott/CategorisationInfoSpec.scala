@@ -804,9 +804,6 @@ class CategorisationInfoSpec extends SpecBase {
 
             val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
 
-            println("expect:" + expectedResult)
-            println("actual:" + result.value)
-
             result.value mustEqual expectedResult
           }
         }
