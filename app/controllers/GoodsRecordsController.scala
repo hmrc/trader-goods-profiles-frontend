@@ -61,25 +61,25 @@ class GoodsRecordsController @Inject() (
         Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       } else {
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-          case Some(goodsRecordResponse) if goodsRecordResponse.pagination.totalRecords != 0 =>
+          case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords != 0 =>
             for {
               countries              <- ottConnector.getCountries
               updatedAnswers         <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
               _                      <- sessionRepository.set(updatedAnswers)
               downloadDataSummaryOpt <- downloadDataConnector.getDownloadDataSummary(request.eori)
             } yield {
-              val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+              val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
               Ok(
                 view(
                   form,
-                  goodsRecordResponse.goodsItemRecords,
-                  goodsRecordResponse.pagination.totalRecords,
+                  goodsRecordsResponse.goodsItemRecords,
+                  goodsRecordsResponse.pagination.totalRecords,
                   firstRecord,
-                  getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
+                  getLastRecordIndex(firstRecord, goodsRecordsResponse.goodsItemRecords.size),
                   countries,
                   getPagination(
-                    goodsRecordResponse.pagination.currentPage,
-                    goodsRecordResponse.pagination.totalPages
+                    goodsRecordsResponse.pagination.currentPage,
+                    goodsRecordsResponse.pagination.totalPages
                   ),
                   page,
                   getDownloadLinkMessagesKey(downloadDataSummaryOpt),
@@ -87,9 +87,9 @@ class GoodsRecordsController @Inject() (
                 )
               ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
-          case Some(_)                                                                       =>
+          case Some(_)                                                                         =>
             Future.successful(Ok(emptyView()).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
-          case None                                                                          =>
+          case None                                                                            =>
             Future.successful(
               Redirect(
                 routes.GoodsRecordsLoadingController
@@ -103,13 +103,13 @@ class GoodsRecordsController @Inject() (
   def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
     opt match {
       case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
-        "goodsRecord.downloadLinkText.requestFile"
+        "goodsRecords.downloadLinkText.requestFile"
       case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
-        "goodsRecord.downloadLinkText.fileInProgress"
+        "goodsRecords.downloadLinkText.fileInProgress"
       case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
-        "goodsRecord.downloadLinkText.fileReady"
+        "goodsRecords.downloadLinkText.fileReady"
       case _                                                                         =>
-        "goodsRecord.downloadLinkText.requestFile"
+        "goodsRecords.downloadLinkText.requestFile"
     }
 
   def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
@@ -130,23 +130,23 @@ class GoodsRecordsController @Inject() (
         .fold(
           formWithErrors =>
             goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-              case Some(goodsRecordResponse) =>
+              case Some(goodsRecordsResponse) =>
                 for {
                   countries              <- ottConnector.getCountries
                   downloadDataSummaryOpt <- downloadDataConnector.getDownloadDataSummary(request.eori)
                 } yield {
-                  val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+                  val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
                   BadRequest(
                     view(
                       formWithErrors,
-                      goodsRecordResponse.goodsItemRecords,
-                      goodsRecordResponse.pagination.totalRecords,
-                      getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                      goodsRecordsResponse.goodsItemRecords,
+                      goodsRecordsResponse.pagination.totalRecords,
+                      getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize),
                       getLastRecordIndex(firstRecord, pageSize),
                       countries,
                       getPagination(
-                        goodsRecordResponse.pagination.currentPage,
-                        goodsRecordResponse.pagination.totalPages
+                        goodsRecordsResponse.pagination.currentPage,
+                        goodsRecordsResponse.pagination.totalPages
                       ),
                       page,
                       getDownloadLinkMessagesKey(downloadDataSummaryOpt),
@@ -154,7 +154,7 @@ class GoodsRecordsController @Inject() (
                     )
                   )
                 }
-              case None                      =>
+              case None                       =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController

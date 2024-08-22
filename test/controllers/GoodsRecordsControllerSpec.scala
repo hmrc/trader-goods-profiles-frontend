@@ -125,7 +125,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   private val downloadLinkRoute = routes.RequestDataController.onPageLoad().url
-  private val downloadLinkText  = "goodsRecord.downloadLinkText.requestFile"
+  private val downloadLinkText  = "goodsRecords.downloadLinkText.requestFile"
 
   "GoodsRecords Controller" - {
 
