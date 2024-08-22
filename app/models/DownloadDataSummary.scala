@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-        layout: templates.Layout
+package models
+
+import play.api.libs.json.{Json, OFormat}
+
+final case class DownloadDataSummary(
+  eori: String,
+  status: DownloadDataStatus
 )
 
-@()(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = titleNoForm(messages("pageNotFound.title"))) {
-
-    <h1 class="govuk-heading-l">@messages("pageNotFound.h1")</h1>
-    <p class="govuk-body">@messages("pageNotFound.p1")</p>
-    <p class="govuk-body">@messages("pageNotFound.p2")</p>
-    <p class="govuk-body">@messages("pageNotFound.p3")
-    <a href=" @routes.HelpAndSupportController.onPageLoad()" class="govuk-link">@messages("pageNotFound.p3.linkText")</a>
-    @messages("pageNotFound.p3.1")</p>
-
-
-
-
+object DownloadDataSummary {
+  implicit val format: OFormat[DownloadDataSummary] = Json.format[DownloadDataSummary]
 }
