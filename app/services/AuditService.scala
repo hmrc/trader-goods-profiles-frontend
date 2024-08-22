@@ -20,7 +20,7 @@ import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, UpdateSection, WithdrawAdviceJourney}
+import models.helper._
 import models.ott.response.OttResponse
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done

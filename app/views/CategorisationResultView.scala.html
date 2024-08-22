@@ -27,22 +27,20 @@
 
 @panel = @{
     val panelContent = scenario match {
-        case Category1NoExemptions => messages("categorisationResult.Category1NoExemptions.panelBody")
-        case StandardNoAssessments => messages("categorisationResult.StandardNoAssessments.panelBody")
-        case Standard => messages("categorisationResult.Standard.panelBody")
-        case Category1 => messages("categorisationResult.Category1.panelBody")
-        case Category2 => messages("categorisationResult.Category2.panelBody")
+        case Category1NoExemptionsScenario => messages("categorisationResult.Category1NoExemptions.panelBody")
+        case StandardGoodsScenario => messages("categorisationResult.Standard.panelBody")
+        case Category1Scenario => messages("categorisationResult.Category1.panelBody")
+        case Category2Scenario => messages("categorisationResult.Category2.panelBody")
+        case StandardGoodsNoAssessmentsScenario => messages("categorisationResult.StandardNoAssessments.panelBody")
     }
     govukPanel(Panel(title = messages("categorisationResult.heading"), content = HtmlContent("<p class=\"govuk-body\" style=\"color:#FFFFFF\">" + panelContent + "</p>")))
 }
 
 @paragraphContent = @{
     scenario match {
-        case Category1NoExemptions => Some(messages("categorisationResult.Category1NoExemptions.p1"))
-        case StandardNoAssessments => Some(messages("categorisationResult.StandardNoAssessments.p1"))
-        case Standard => None
-        case Category1 => None
-        case Category2 => None
+        case Category1NoExemptionsScenario => Some(messages("categorisationResult.Category1NoExemptions.p1"))
+        case StandardGoodsNoAssessmentsScenario => Some(messages("categorisationResult.StandardNoAssessments.p1"))
+        case _ => None
     }
 }
 

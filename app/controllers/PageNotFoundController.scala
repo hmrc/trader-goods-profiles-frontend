@@ -23,6 +23,8 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.PageNotFoundView
 
+import scala.annotation.unused
+
 class PageNotFoundController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
@@ -32,7 +34,7 @@ class PageNotFoundController @Inject() (
   view: PageNotFoundView
 ) extends BaseController {
 
-  def onPageLoad(path: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(@unused path: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       Ok(view())
   }

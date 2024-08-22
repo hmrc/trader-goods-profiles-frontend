@@ -27,6 +27,7 @@ import repositories.SessionRepository
 import views.html.WithdrawAdviceStartView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class WithdrawAdviceStartController @Inject() (
@@ -40,7 +41,7 @@ class WithdrawAdviceStartController @Inject() (
   formProvider: WithdrawAdviceStartFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: WithdrawAdviceStartView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()

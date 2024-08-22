@@ -24,9 +24,8 @@ import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.RecategorisingQuery
 import repositories.SessionRepository
-import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
+import utils.SessionData._
 import views.html.HasSupplementaryUnitView
 
 import javax.inject.Inject
@@ -51,11 +50,6 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      for {
-        updatedUA <- Future.fromTry(request.userAnswers.set(RecategorisingQuery(recordId), false))
-        _         <- sessionRepository.set(updatedUA)
-      } yield updatedUA
-
       val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)

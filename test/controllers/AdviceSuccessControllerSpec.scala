@@ -18,16 +18,9 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import connectors.TraderProfileConnector
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.AdviceSuccessView
-
-import scala.concurrent.Future
 
 class AdviceSuccessControllerSpec extends SpecBase {
 
@@ -35,11 +28,7 @@ class AdviceSuccessControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {

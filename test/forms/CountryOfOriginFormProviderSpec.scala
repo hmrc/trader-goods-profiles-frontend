@@ -22,10 +22,10 @@ import play.api.data.FormError
 
 class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "countryOfOrigin.error.required"
-  val invalidKey  = "countryOfOrigin.error.invalid"
-  val countries   = Seq(Country("CN", "China"))
-  val form        = new CountryOfOriginFormProvider()(countries)
+  private val requiredKey = "countryOfOrigin.error.required"
+  private val invalidKey  = "countryOfOrigin.error.invalid"
+  private val countries   = Seq(Country("CN", "China"))
+  private val form        = new CountryOfOriginFormProvider()(countries)
 
   ".value" - {
 

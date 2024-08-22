@@ -37,6 +37,7 @@ case object SessionData {
   val commodityCodePage: String              = "commodityCode"
   val hasCorrectGoodsPage: String            = "hasCorrectGoods"
   val assessmentsPage: String                = "assessments"
+  val reassessmentPage: String               = "reassessments"
   val hasSupplementaryUnitPage: String       = "hasSupplementaryUnit"
   val supplementaryUnitPage: String          = "supplementaryUnit"
   val hasSupplementaryUnitUpdatePage: String = "hasSupplementaryUnitUpdate"
@@ -47,6 +48,9 @@ case object SessionData {
   val emailPage: String                      = "email"
   val initialValueOfHasSuppUnit: String      = "initialValueOfHasSuppUnit"
   val initialValueOfSuppUnit: String         = "initialValueOfSuppUnit"
+  val categorisationDetailsQuery             = "categorisationDetails"
+  val longerCategorisationDetailsQuery       = "longerCategorisationDetails"
+  val longerCommodityQuery                   = "longerCommodity"
   val withDrawAdviceStartPage: String        = "withdrawAdviceStart"
   val reasonForWithdrawAdvicePage: String    = "reasonForWithdrawAdvice"
 

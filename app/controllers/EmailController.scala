@@ -27,6 +27,7 @@ import repositories.SessionRepository
 import views.html.EmailView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailController @Inject() (
@@ -40,7 +41,7 @@ class EmailController @Inject() (
   formProvider: EmailFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: EmailView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()

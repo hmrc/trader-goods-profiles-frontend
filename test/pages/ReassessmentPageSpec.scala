@@ -20,9 +20,9 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import models.AssessmentAnswer
 import models.ott._
-import queries.CategorisationDetailsQuery
+import queries.LongerCategorisationDetailsQuery
 
-class AssessmentPageSpec extends SpecBase {
+class ReassessmentPageSpec extends SpecBase {
 
   ".cleanup" - {
 
@@ -55,25 +55,26 @@ class AssessmentPageSpec extends SpecBase {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
 
-        val result = answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption).success.value
+        val result = answers.set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption).success.value
 
-        result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 2)) mustBe true
+        result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
+        result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
+        result.isDefined(ReassessmentPage(testRecordId, 2)) mustBe true
       }
+
     }
 
     "must remove all assessments later in the list" - {
@@ -81,29 +82,31 @@ class AssessmentPageSpec extends SpecBase {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
 
-        val result = answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
+        val result = answers.set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
 
-        result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 2)) mustBe false
-        result.isDefined(AssessmentPage(testRecordId, 3)) mustBe false
+        result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
+        result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
+        result.isDefined(ReassessmentPage(testRecordId, 2)) mustBe false
+        result.isDefined(ReassessmentPage(testRecordId, 3)) mustBe false
       }
+
     }
   }
+
 }

@@ -18,15 +18,15 @@ package pages
 
 import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.CategorisationDetailsQuery
+import queries.LongerCategorisationDetailsQuery
 
 import scala.util.{Failure, Success, Try}
 
-case class AssessmentPage(
+case class ReassessmentPage(
   recordId: String,
   index: Int
 ) extends QuestionPage[AssessmentAnswer] {
-  override def path: JsPath = JsPath \ "assessments" \ recordId \ index
+  override def path: JsPath = JsPath \ "reassessments" \ recordId \ index
 
   override def cleanup(
     value: Option[AssessmentAnswer],
@@ -35,12 +35,12 @@ case class AssessmentPage(
   ): Try[UserAnswers] =
     if (value.contains(AssessmentAnswer.NoExemption)) {
       (for {
-        categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery(recordId))
+        categorisationInfo <- updatedUserAnswers.get(LongerCategorisationDetailsQuery(recordId))
         count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         //Go backwards to avoid recursion issues
         rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
-        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
+        acc.flatMap(_.remove(ReassessmentPage(recordId, currentIndexToRemove)))
       }).getOrElse(
         Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index"))
       )

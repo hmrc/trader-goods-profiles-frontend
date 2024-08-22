@@ -24,7 +24,7 @@ import navigation.Navigator
 import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.{MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, MeasurementQuery}
 import repositories.SessionRepository
 import services.OttService
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
@@ -57,34 +57,37 @@ class SupplementaryUnitController @Inject() (
         case None        => form
         case Some(value) => form.fill(value)
       }
-
-      val result = for {
-        query              <- request.userAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- query.records.get(recordId)
-      } yield {
-        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-        val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
-        Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+      val catInfo      = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+        case Some(catInfo) => Some(catInfo)
+        case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))
       }
-
-      result.getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+      catInfo
+        .map { categorisationInfo =>
+          val measurementUnit = categorisationInfo.measurementUnit
+          val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+          Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+        }
+        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(
           formWithErrors => {
-            val result = for {
-              query              <- request.userAnswers.get(RecordCategorisationsQuery)
-              categorisationInfo <- query.records.get(recordId)
-            } yield {
-              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction)))
+            val catInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+              case Some(catInfo) => Some(catInfo)
+              case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))
             }
-            result.getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+
+            catInfo
+              .map { categorisationInfo =>
+                val measurementUnit = categorisationInfo.measurementUnit
+                val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
+              }
+              .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
           },
           value =>
             for {
@@ -105,7 +108,7 @@ class SupplementaryUnitController @Inject() (
             case Some(value) if value != 0 => value.toString
             case _                         => ""
           }
-          val measurementUnit      = record.measurementUnit.getOrElse("")
+          val measurementUnit      = record.measurementUnit
 
           val preparedFormFuture = userAnswerValue match {
             case Some(value) =>
@@ -139,7 +142,7 @@ class SupplementaryUnitController @Inject() (
             val result = for {
               value <- ottService.getMeasurementUnit(request, recordId)
             } yield {
-              val measurementUnit = value.getOrElse("")
+              val measurementUnit = value
               BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction))
             }
             result.recover { case ex: Exception =>

@@ -24,7 +24,7 @@ import models.{NormalMode, SupplementaryRequest}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.DataCleansingService
-import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated, supplementaryUnit}
+import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaSupplementaryUnitView
@@ -86,7 +86,7 @@ class CyaSupplementaryUnitController @Inject() (
           //if supplementary unit is zero, we consider it removed. This needs to be re-factored when API starts supporting null for removing objects
           val isSuppUnitRemoved =
             (initialHasSuppUnitOpt
-              .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(0)
+              .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(BigDecimal(0))
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)

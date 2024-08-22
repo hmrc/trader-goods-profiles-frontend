@@ -32,6 +32,7 @@ import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
@@ -44,7 +45,7 @@ class SingleRecordController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =

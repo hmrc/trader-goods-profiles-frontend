@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package queries
+package controllers.actions
 
-import play.api.libs.json.JsPath
+import models.requests.IdentifierRequest
+import play.api.mvc.Result
 
-case class RecategorisingQuery(recordId: String) extends Gettable[Boolean] with Settable[Boolean] {
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-  override def path: JsPath = JsPath \ "recategorising" \ recordId
+class FakeProfileAuthenticateAction @Inject() extends ProfileAuthenticateAction {
+
+  override protected def executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
+
+  override protected def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = Future.successful(None)
 }

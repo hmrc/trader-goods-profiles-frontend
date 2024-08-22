@@ -18,33 +18,24 @@ package controllers
 
 import controllers.actions._
 import models.Scenario
-
-import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.RecategorisingQuery
-import repositories.SessionRepository
 import views.html.CategorisationResultView
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
 
 class CategorisationResultController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategorisationResultView,
-  sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+  view: CategorisationResultView
+) extends BaseController {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      for {
-        updatedAnswers <- Future.fromTry(request.userAnswers.remove(RecategorisingQuery(recordId)))
-        _              <- sessionRepository.set(updatedAnswers)
-      } yield updatedAnswers
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       Ok(view(recordId, scenario))
     }
 }

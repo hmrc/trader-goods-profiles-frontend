@@ -25,23 +25,32 @@ class AssessmentAnswerSpec extends SpecBase {
 
   "AssessmentAnswer" - {
 
-    "must serialise / deserialise to / from JSON for an exemption" in {
+    "must serialise / deserialise to / from JSON" - {
+      "for an exemption" in {
 
-      val exemption = AssessmentAnswer.Exemption("foo")
-      val json      = Json.toJson[AssessmentAnswer](exemption)
+        val exemption = AssessmentAnswer.Exemption
+        val json      = Json.toJson[AssessmentAnswer](exemption)
 
-      json mustEqual JsString("foo")
-      json.validate[AssessmentAnswer] mustEqual JsSuccess(exemption)
+        json mustEqual JsString("true")
+        json.validate[AssessmentAnswer] mustEqual JsSuccess(exemption)
+      }
+
+      "for no exemption" in {
+
+        val json = Json.toJson[AssessmentAnswer](AssessmentAnswer.NoExemption)
+
+        json mustEqual JsString("false")
+        json.validate[AssessmentAnswer] mustEqual JsSuccess(AssessmentAnswer.NoExemption)
+      }
+
+      "for unanswered reassessment questions" in {
+
+        val json = Json.toJson[AssessmentAnswer](AssessmentAnswer.NotAnsweredYet)
+
+        json mustEqual JsString("notAnswered")
+        json.validate[AssessmentAnswer] mustEqual JsSuccess(AssessmentAnswer.NotAnsweredYet)
+      }
     }
-
-    "must serialise / deserialise to / from JSON for no exemption" in {
-
-      val json = Json.toJson[AssessmentAnswer](AssessmentAnswer.NoExemption)
-
-      json mustEqual JsString("false")
-      json.validate[AssessmentAnswer] mustEqual JsSuccess(AssessmentAnswer.NoExemption)
-    }
-
     "must remove duplicate exemptions from the radio list if we've been sent duplicates from OTT" in {
 
       val exemption1 = Certificate("id1", "code1", "desc1")
@@ -57,4 +66,5 @@ class AssessmentAnswerSpec extends SpecBase {
 
     }
   }
+
 }

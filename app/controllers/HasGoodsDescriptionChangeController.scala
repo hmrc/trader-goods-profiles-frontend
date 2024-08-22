@@ -18,8 +18,6 @@ package controllers
 
 import controllers.actions._
 import forms.HasGoodsDescriptionChangeFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
@@ -31,6 +29,8 @@ import services.AuditService
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasGoodsDescriptionChangeView
 
+import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasGoodsDescriptionChangeController @Inject() (
@@ -45,7 +45,7 @@ class HasGoodsDescriptionChangeController @Inject() (
   formProvider: HasGoodsDescriptionChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasGoodsDescriptionChangeView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()

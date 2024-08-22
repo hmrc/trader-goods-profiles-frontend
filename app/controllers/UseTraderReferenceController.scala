@@ -18,8 +18,6 @@ package controllers
 
 import controllers.actions._
 import forms.UseTraderReferenceFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{TraderReferencePage, UseTraderReferencePage}
@@ -28,6 +26,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.UseTraderReferenceView
 
+import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class UseTraderReferenceController @Inject() (
@@ -41,7 +41,7 @@ class UseTraderReferenceController @Inject() (
   formProvider: UseTraderReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UseTraderReferenceView
-)(implicit ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()
