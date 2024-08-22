@@ -17,7 +17,7 @@
 package models.ott
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{NiphlsCode, testRecordId}
 import models.ott.response._
 import models.{AnsweredQuestions, AssessmentAnswer, TraderProfile}
 import pages.{AssessmentPage, ReassessmentPage}
@@ -655,10 +655,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "assessmentId2",
                   "themeId2",
                   Seq(
-                    ExemptionResponse("WFE012", ExemptionType.Certificate)
+                    ExemptionResponse(NiphlsCode, ExemptionType.Certificate)
                   )
                 ),
-                CertificateResponse("WFE012", "WFE-code", "WFE-description"),
+                CertificateResponse(NiphlsCode, "WFE-code", "WFE-description"),
                 ThemeResponse("themeId3", 2),
                 CategoryAssessmentResponse(
                   "assessmentId3",
@@ -681,7 +681,7 @@ class CategorisationInfoSpec extends SpecBase {
               "assessmentId2",
               1,
               Seq(
-                Certificate("WFE012", "WFE-code", "WFE-description")
+                Certificate(NiphlsCode, "WFE-code", "WFE-description")
               )
             )
             val expectedAssessmentId3     = CategoryAssessment(
@@ -750,10 +750,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "assessmentId2",
                   "themeId2",
                   Seq(
-                    ExemptionResponse("WFE012", ExemptionType.Certificate)
+                    ExemptionResponse(NiphlsCode, ExemptionType.Certificate)
                   )
                 ),
-                CertificateResponse("WFE012", "WFE-code", "WFE-description"),
+                CertificateResponse(NiphlsCode, "WFE-code", "WFE-description"),
                 ThemeResponse("themeId3", 2),
                 CategoryAssessmentResponse(
                   "assessmentId3",
@@ -776,7 +776,7 @@ class CategorisationInfoSpec extends SpecBase {
               "assessmentId2",
               1,
               Seq(
-                Certificate("WFE012", "WFE-code", "WFE-description")
+                Certificate(NiphlsCode, "WFE-code", "WFE-description")
               )
             )
             val expectedAssessmentId3     = CategoryAssessment(

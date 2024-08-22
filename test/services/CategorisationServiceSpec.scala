@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{NiphlsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.ott._
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
@@ -318,7 +318,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass1",
           1,
           Seq(
-            Certificate("WFE012", "cert1code", "cert1desc")
+            Certificate(NiphlsCode, "cert1code", "cert1desc")
           )
         )
 
@@ -326,7 +326,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass2",
           1,
           Seq(
-            Certificate("WFE012", "cert2code", "cert2desc")
+            Certificate(NiphlsCode, "cert2code", "cert2desc")
           )
         )
 
@@ -519,7 +519,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass1",
           1,
           Seq(
-            Certificate("WFE012", "cert1code", "cert1desc")
+            Certificate(NiphlsCode, "cert1code", "cert1desc")
           )
         )
 
@@ -527,7 +527,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass2",
           1,
           Seq(
-            Certificate("WFE012", "cert2code", "cert2desc")
+            Certificate(NiphlsCode, "cert2code", "cert2desc")
           )
         )
 
@@ -575,7 +575,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass2",
           1,
           Seq(
-            Certificate("WFE012", "cert2code", "cert2desc")
+            Certificate(NiphlsCode, "cert2code", "cert2desc")
           )
         )
 
@@ -626,7 +626,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass2",
           1,
           Seq(
-            Certificate("WFE012", "cert2code", "cert2desc")
+            Certificate(NiphlsCode, "cert2code", "cert2desc")
           )
         )
 
