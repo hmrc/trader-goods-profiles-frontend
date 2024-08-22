@@ -18,8 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
 import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
 import models.GoodsRecordsPagination.firstPage
@@ -200,7 +199,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
@@ -255,7 +253,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
@@ -310,7 +307,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
