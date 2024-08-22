@@ -613,7 +613,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq(category1),
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -721,7 +721,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -989,7 +989,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq(category1Niphl, category1),
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers =
@@ -1376,7 +1376,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq(category1Niphl, category1),
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers =

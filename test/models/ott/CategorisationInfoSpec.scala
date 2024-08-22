@@ -616,7 +616,7 @@ class CategorisationInfoSpec extends SpecBase {
                 expectedAssessmentsThatNeedAnswers,
                 None,
                 0,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
             val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)
@@ -708,7 +708,7 @@ class CategorisationInfoSpec extends SpecBase {
                 expectedAssessmentsThatNeedAnswers,
                 None,
                 0,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
             val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)

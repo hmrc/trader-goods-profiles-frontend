@@ -83,7 +83,7 @@ class CategorisationService @Inject() (
       category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
 
     if (isNiphlsAssessment) {
-      if (!categorisationInfo.isNiphlAuthorised || areThereCategory1QuestionsWithNoExemption) {
+      if (!categorisationInfo.isTraderNiphlsAuthorised || areThereCategory1QuestionsWithNoExemption) {
         Category1Scenario
       } else {
         Category2Scenario
