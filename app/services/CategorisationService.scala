@@ -89,7 +89,7 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+      calculateResultWithNirms(categorisationInfo, userAnswers, recordId)
     }
   }
 
@@ -107,11 +107,11 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
     }
   }
 
-  private def calculateResultWithoutNiphl(
+  private def calculateResultWithoutNiphlAndNirms(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
