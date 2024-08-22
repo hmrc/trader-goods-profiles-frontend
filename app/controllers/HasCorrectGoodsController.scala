@@ -23,13 +23,12 @@ import models.requests.DataRequest
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages._
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
@@ -48,8 +47,7 @@ class HasCorrectGoodsController @Inject() (
   view: HasCorrectGoodsView,
   categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

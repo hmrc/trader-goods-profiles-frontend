@@ -18,9 +18,8 @@ package controllers
 
 import controllers.actions._
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.UkimsKickOutView
 
 class UkimsKickOutController @Inject() (
@@ -31,8 +30,7 @@ class UkimsKickOutController @Inject() (
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
   view: UkimsKickOutView
-) extends FrontendBaseController
-    with I18nSupport {
+) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
     implicit request =>

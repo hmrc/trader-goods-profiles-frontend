@@ -18,16 +18,14 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
-import logging.Logging
 import models.helper.CategorisationUpdate
 import models.{Category1NoExemptions, CategoryRecord, NoRedirectScenario, NormalMode, Scenario, StandardNoAssessments}
 import navigation.Navigator
 import pages.CategoryGuidancePage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecordCategorisationsQuery
 import services.{AuditService, CategorisationService}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.CategoryGuidanceView
 
@@ -47,9 +45,7 @@ class CategoryGuidanceController @Inject() (
   navigator: Navigator,
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>

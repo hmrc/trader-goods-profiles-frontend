@@ -18,17 +18,15 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import logging.Logging
 import models.AssessmentAnswer.NotAnsweredYet
 import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.AssessmentPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{RecategorisingQuery, RecordCategorisationsQuery}
 import repositories.SessionRepository
 import services.CategorisationService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.AssessmentView
 
 import javax.inject.Inject
@@ -47,9 +45,7 @@ class AssessmentController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseController {
 
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

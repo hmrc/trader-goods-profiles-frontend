@@ -18,9 +18,8 @@ package controllers
 
 import controllers.actions._
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CreateRecordSuccessView
 
 class CreateRecordSuccessController @Inject() (
@@ -31,8 +30,7 @@ class CreateRecordSuccessController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordSuccessView
-) extends FrontendBaseController
-    with I18nSupport {
+) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>

@@ -23,11 +23,10 @@ import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
 import models.DownloadDataSummary
 import models.GoodsRecordsPagination._
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
@@ -49,8 +48,7 @@ class GoodsRecordsController @Inject() (
   downloadDataConnector: DownloadDataConnector,
   ottConnector: OttConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form     = formProvider()
   private val pageSize = 10

@@ -20,11 +20,10 @@ import controllers.actions._
 import models.Scenario
 
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.RecategorisingQuery
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategorisationResultView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,8 +37,7 @@ class CategorisationResultController @Inject() (
   view: CategorisationResultView,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   def onPageLoad(recordId: String, scenario: Scenario): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
