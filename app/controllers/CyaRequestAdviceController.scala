@@ -57,7 +57,9 @@ class CyaRequestAdviceController @Inject() (
             ).flatten
           )
           Ok(view(list, recordId))
-        case Left(errors) => logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, RequestAdviceJourney)
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
       }
   }
 

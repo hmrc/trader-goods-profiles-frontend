@@ -61,7 +61,9 @@ class CyaCreateProfileController @Inject() (
             ).flatten
           )
           Ok(view(list))
-        case Left(errors) => logErrorsAndContinue(errorMessage, continueUrl, errors, CreateProfileJourney)
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
+          logErrorsAndContinue(errorMessage, continueUrl, errors)
       }
   }
 

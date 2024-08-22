@@ -63,7 +63,8 @@ class CyaCreateRecordController @Inject() (
             } yield displayView(updatedAnswersWithQuery, countries)
         }
       case Left(errors) =>
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors, CreateRecordJourney))
+        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
   }
 

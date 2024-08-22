@@ -100,7 +100,8 @@ class CyaCategorisationController @Inject() (
           Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList))
 
         case Left(errors) =>
-          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, CategorisationJourney)
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
 
       }
   }

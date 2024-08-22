@@ -60,7 +60,8 @@ class CyaSupplementaryUnitController @Inject() (
           )
           Ok(view(list, recordId))
         case Left(errors) =>
-          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors, SupplementaryUnitUpdateJourney)
+          dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
       }
   }
 
