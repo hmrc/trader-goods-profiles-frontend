@@ -17,13 +17,12 @@
 package services
 
 import connectors.{OttConnector, TraderProfileConnector}
+import logging.Logging
+import models._
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models._
 import pages.{AssessmentPage, ReassessmentPage}
 import uk.gov.hmrc.http.HeaderCarrier
-import logging.Logging
-import play.api.mvc.Results.Redirect
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -72,19 +71,18 @@ class CategorisationService @Inject() (
   ): Scenario = {
     val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
 
-    val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
-
     val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
     val areThereCategory1QuestionsWithNoExemption =
       listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
 
-    val isNiphlsAssessment =
-      category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+    val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
 
-    if (isNiphlsAssessment) {
+    if (categorisationInfo.isNiphlsAssessment) {
       if (!categorisationInfo.isTraderNiphlsAuthorised || areThereCategory1QuestionsWithNoExemption) {
         Category1Scenario
+      } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
+        Category1NoExemptionsScenario
       } else {
         Category2Scenario
       }

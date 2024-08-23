@@ -20,8 +20,8 @@ import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import models.ott.{CategorisationInfo, CategoryAssessment}
 import models._
+import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -609,7 +609,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
-                Seq(category1Niphl, category1),
+                Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
                 None,
                 1,
@@ -767,6 +767,33 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .onPageLoad(testRecordId, Category1Scenario)
 
             }
+          }
+
+          "to longer commodity code page" - {
+
+            "when Niphls assessment and has Niphls and is six-digit code with descendants" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234560000",
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                None,
+                1,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
           }
 
           "to journey recovery page when there's no categorisation info" in {

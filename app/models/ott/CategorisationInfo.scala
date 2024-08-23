@@ -66,6 +66,8 @@ final case class CategorisationInfo(
   def getMinimalCommodityCode: String =
     commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
+  def isNiphlsAssessment: Boolean = categoryAssessments.exists(ass => ass.isCategory1 && ass.isNiphlsAnswer) &&
+    categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 }
 
 object CategorisationInfo {
