@@ -157,6 +157,22 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
+    "should return future failed when the call to trader profile connector fails" in {
+      val expectedException = new RuntimeException("Failed communicating with Trader profile connector")
+      when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE", testRecordId)
+        await(result)
+      }
+
+      actualException mustBe expectedException
+    }
+
     "should return future failed when the call to OTT fails" in {
       val expectedException = new RuntimeException("Failed communicating with OTT")
       when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
