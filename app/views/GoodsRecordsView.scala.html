@@ -37,6 +37,69 @@
     pageTitle = title(form, messages("goodsRecords.title")), isFullWidth = true
   ) {
 
+    <style>
+        .filters-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid grey;
+            padding: 30px;
+            margin: 0 0 30px 15px;
+            width: 97%;
+        }
+
+        .header-row {
+            display: flex;
+            gap: 33px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            flex: 1;
+            min-width: 243.811px;
+            flex-shrink: 0;
+        }
+
+        .spacer {
+            flex-basis: 100%;
+            height: 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .govuk-input {
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        #countryOfOrigin,
+        #status {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .status-container {
+            margin-bottom: 10px;
+        }
+
+        @@media (max-width: 740px) {
+            .checkbox-group {
+                display: block;
+            }
+            .header-row {
+                display: block;
+            }
+            .status-container {
+                margin-top: 30px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
@@ -54,71 +117,74 @@
     </ul>
 
     <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
-
-        @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
-            <div style="display: flex; align-items: flex-end;">
-                @govukInput(
-                    InputViewModel(
-                        field = form("searchText"),
-                        label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
-                    )
-                )
-                @govukButton(
-                ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
-                )
-            </div>
-            <h2 class="govuk-heading-m">Filters</h2>
-
-            <div>
-                @govukCheckboxes(
-                CheckboxesViewModel(
-                    form: Form[_],
-                    name: String,
-                    items: Seq[CheckboxItem],
-                    legend: Legend
-                )
-                    Checkboxes(
-                        fieldset = Some(Fieldset(html=Html("hello"))),
-                        name = "images-check",
-                        items = Seq(
-                            CheckboxItem(
-                                id = Some("adviceStatus-1"),
-                                name = Some("adviceStatus"),
-                                value = "something",
-                                checked = false,
-                                content = Text("IMMI ready"),
-                            ),
-                            CheckboxItem(
-                                id = Some("adviceStatus-1"),
-                                name = Some("adviceStatus"),
-                                value = "something",
-                                checked = false,
-                                content = Text("Not IMMI ready"),
-                            ),
-                            CheckboxItem(
-                                id = Some("adviceStatus-1"),
-                                name = Some("adviceStatus"),
-                                value = "Not Requested",
-                                checked = false,
-                                content = Text("Action needed"),
-                            )
-                        )
-                    )
-                )
-
-                @govukInput(
-                    InputViewModel(
-                        field = form("countryOfOrigin"),
-                        label = LabelViewModel("Country of origin").withCssClass("govuk-!-font-weight-bold")
-                    ).withAttribute("display", "block")
-                )
-
-                @govukButton(
-                    ButtonViewModel("Apply filters").withAttribute("flex-wrap:", "wrap")
-                )
-            </div>
-        }
 </div>
+
+@formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
+<div class="govuk-grid-column-two-thirds">
+    <div style="display: flex; align-items: flex-end;">
+        @govukInput(
+        InputViewModel(
+        field = form("searchText"),
+        label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
+        )
+        )
+        @govukButton(
+        ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+        )
+    </div>
+</div>
+
+<div class="filters-container govuk-grid-column-full">
+    <label class="govuk-label govuk-!-font-weight-bold">Filters</label>
+    <!-- Header Row -->
+    <div class="header-row">
+        <div class="filter-item">
+            <label class="govuk-label govuk-!-font-weight-bold" for="countryOfOrigin">
+                Country of origin
+            </label>
+            <div class="spacer"></div>
+            <div>
+                <input class="govuk-input" id="countryOfOrigin" name="countryOfOrigin" type="text">
+            </div>
+        </div>
+        <div class="status-container">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-label govuk-!-font-weight-bold">
+                    Status
+                </legend>
+                <div class="spacer"></div>
+                <div class="checkbox-group">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="status-ready" name="adviceStatus" type="checkbox" value="immi-ready">
+                        <label class="govuk-label govuk-checkboxes__label" for="status-ready">
+                            IMMI ready
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="status-not-ready" name="adviceStatus" type="checkbox" value="not-immi-ready">
+                        <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
+                            Not IMMI ready
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="status-action-needed" name="adviceStatus" type="checkbox" value="Not Requested">
+                        <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
+                            Action needed
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+    </div>
+    <div>
+        @govukButton(
+            ButtonViewModel("Apply filters").withAttribute("style", "margin-bottom: 0;")
+        )
+    </div>
+</div>
+
+}
 
 <div class="govuk-grid-column-full">
 
