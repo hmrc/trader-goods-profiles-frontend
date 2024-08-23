@@ -543,9 +543,6 @@ cyaSupplementaryUnit.h2 = Check if the details on this record are correct.
 sucessBanner.title = Success
 sucessBanner.heading = You have changed the {0}
 sucessBannerRemove.heading = You have removed the {0}
-sucessBanner.p1 = Contact
-sucessBanner.email = example@department.gov.uk
-sucessBanner.p2 = if you think there’s a problem.
 
 feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.
