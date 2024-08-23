@@ -51,6 +51,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val requestingAdviceEnabled: Boolean =
     configuration.get[Boolean]("features.requesting-advice")
 
+  val downloadFileEnabled: Boolean =
+    configuration.get[Boolean]("features.download-file-enabled")
+
   val userAllowListEnabled: Boolean =
     configuration.get[Boolean]("features.user-allow-list-enabled")
 
