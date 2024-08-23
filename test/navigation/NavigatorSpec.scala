@@ -605,7 +605,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if NIPHL is authorised and has NIPHL assessment and category 1 assessment need answering" in {
+            "if NIPHL is authorised and has a NIPHL assessment and a category 1 assessment" in {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
@@ -618,6 +618,100 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val userAnswers = emptyUserAnswers
                 .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Nirms, category1, category2),
+                Seq(category1, category2),
+                None,
+                1,
+                isTraderNirmsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment with no exemptions" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Nirms, category1, category2NoExemptions),
+                Seq(category1),
+                None,
+                1,
+                isTraderNirmsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Nirms, category1, category2),
+                Seq(category1, category2),
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment with no exemptions" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Nirms, category1, category2NoExemptions),
+                Seq(category1),
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
                 .success
                 .value
 
