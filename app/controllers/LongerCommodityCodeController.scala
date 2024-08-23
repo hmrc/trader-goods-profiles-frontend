@@ -25,12 +25,11 @@ import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Constants.minimumLengthOfCommodityCode
 import views.html.LongerCommodityCodeView
 
@@ -50,8 +49,7 @@ class LongerCommodityCodeController @Inject() (
   view: LongerCommodityCodeView,
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

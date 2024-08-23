@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.UnauthorisedServiceUserView
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.Inject
+final case class DownloadDataSummary(
+  eori: String,
+  status: DownloadDataStatus
+)
 
-class UnauthorisedServiceUserController @Inject() (
-  override val messagesApi: MessagesApi,
-  val controllerComponents: MessagesControllerComponents,
-  view: UnauthorisedServiceUserView
-) extends BaseController {
-
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view())
-  }
+object DownloadDataSummary {
+  implicit val format: OFormat[DownloadDataSummary] = Json.format[DownloadDataSummary]
 }

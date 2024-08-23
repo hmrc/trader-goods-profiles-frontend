@@ -594,7 +594,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "must go from categorisation preparation" - {
 
           "to category guidance page" - {
-            "if NIPHL is not  authorised and assessments need answering" in {
+            "if assessments need answering" in {
               val userAnswers = emptyUserAnswers
                 .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
@@ -613,7 +613,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq(category1),
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -690,7 +690,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
-                Seq(category1Niphl),
+                Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
                 1
@@ -721,7 +721,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -738,6 +738,33 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 userAnswers
               ) mustBe routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category2Scenario)
+
+            }
+
+            "Niphl is not authorised and has one Niphl assessment and category 2 no exemptions and other category 1 questions" in {
+
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234567890",
+                Seq(category1Niphl, category2NoExemptions, category1),
+                Seq.empty,
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category1Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1Scenario)
 
             }
           }
@@ -981,15 +1008,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if NIPHL is authorised and has NIPHL assessment and the answers are yes for all category 1 assessments" - {
+            "if NIPHL is authorised and has NIPHL assessment and the answers are yes for all category 1 assessments" in {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
-                Seq(category1Niphl, category1),
-                Seq(category1Niphl, category1),
+                Seq(category1Niphl, category1, category2NoExemptions),
+                Seq(category1),
                 None,
                 1,
-                isNiphlAuthorised = true
+                isTraderNiphlsAuthorised = true
               )
 
               val userAnswers =
@@ -1000,13 +1027,9 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
                   .success
                   .value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
-                  .success
-                  .value
 
-              navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
+              navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
                 routes.CyaCategorisationController.onPageLoad(testRecordId)
-
             }
           }
 
@@ -1365,31 +1388,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
               routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario)
-          }
-
-          ".NIPHL assesments" - {
-
-            "to category 2 result page when categorisation result is so" in {
-              val categoryInfoWithNiphlAssessments = CategorisationInfo(
-                "1234567890",
-                Seq(category1Niphl, category1),
-                Seq(category1Niphl, category1),
-                None,
-                1,
-                isNiphlAuthorised = true
-              )
-
-              val userAnswers =
-                emptyUserAnswers
-                  .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
-                  .success
-                  .value
-
-              when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
-
-              navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
-                routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario)
-            }
           }
         }
 

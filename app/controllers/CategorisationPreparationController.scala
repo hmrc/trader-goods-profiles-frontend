@@ -18,7 +18,6 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import logging.Logging
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
@@ -30,7 +29,6 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, Lo
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,8 +46,7 @@ class CategorisationPreparationController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with Logging {
+    extends BaseController {
 
   def startCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>

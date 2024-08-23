@@ -34,13 +34,13 @@
 
 @layout(pageTitle = title(form, messages("supplementaryUnit.title"))) {
 
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-heading-l">@messages("supplementaryUnit.h1")</h1>
 
     @formHelper(action = action) {
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukInput(
             InputViewModel(

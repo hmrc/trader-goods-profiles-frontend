@@ -17,15 +17,13 @@
 package controllers
 
 import controllers.actions._
-import logging.Logging
 import models.NormalMode
 import models.helper.CategorisationUpdate
 import navigation.Navigator
 import pages.CategoryGuidancePage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
@@ -40,9 +38,7 @@ class CategoryGuidanceController @Inject() (
   view: CategoryGuidanceView,
   auditService: AuditService,
   navigator: Navigator
-) extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>

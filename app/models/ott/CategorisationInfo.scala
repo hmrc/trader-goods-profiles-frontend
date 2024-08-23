@@ -30,7 +30,7 @@ final case class CategorisationInfo(
   measurementUnit: Option[String],
   descendantCount: Int,
   longerCode: Boolean = false,
-  isNiphlAuthorised: Boolean = false,
+  isTraderNiphlsAuthorised: Boolean = false,
   isNirmsAuthorised: Boolean = false
 ) {
 

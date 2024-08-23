@@ -21,10 +21,9 @@ import forms.GoodsDescriptionFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import views.html.GoodsDescriptionView
 
@@ -44,8 +43,7 @@ class GoodsDescriptionController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: GoodsDescriptionView
 )(implicit @unused ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 
