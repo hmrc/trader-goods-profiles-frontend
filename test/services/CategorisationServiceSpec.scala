@@ -794,7 +794,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(assessment2, assessment3),
             None,
             1,
-            isNirmsAuthorised = true
+            isTraderNirmsAuthorised = true
           )
 
           val userAnswers = emptyUserAnswers

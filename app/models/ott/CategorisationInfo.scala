@@ -31,7 +31,7 @@ final case class CategorisationInfo(
   descendantCount: Int,
   longerCode: Boolean = false,
   isTraderNiphlsAuthorised: Boolean = false,
-  isNirmsAuthorised: Boolean = false
+  isTraderNirmsAuthorised: Boolean = false
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
