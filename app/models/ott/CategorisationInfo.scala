@@ -87,13 +87,15 @@ object CategorisationInfo {
         val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
         val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlsAnswer)
-        val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
+        val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNirmsAnswer)
 
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
         val isNiphlsAssessment =
           category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+
+        val isNirmsAssessment = category2Assessments.exists(ass => ass.isNirmsAnswer)
 
         val questionsToAnswer = {
           if (isNiphlsAssessment && traderProfile.niphlNumber.isDefined) {
@@ -102,7 +104,7 @@ object CategorisationInfo {
             Seq.empty
           } else if (!areAllCategory1Answerable) {
             Seq.empty
-          } else if (!areAllCategory2Answerable) {
+          } else if (!isNirmsAssessment && !areAllCategory2Answerable) {
             category1ToAnswer
           } else {
             category1ToAnswer ++ category2ToAnswer
