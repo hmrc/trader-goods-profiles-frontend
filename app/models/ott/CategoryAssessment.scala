@@ -40,7 +40,7 @@ final case class CategoryAssessment(
   def isCategory2: Boolean    = category == Category2AsInt
   def hasNoAnswers: Boolean   = exemptions.isEmpty
   def isNiphlsAnswer: Boolean = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlsCode)
-  def isNirmsAnswer: Boolean = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
+  def isNirmsAnswer: Boolean  = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
 
 }
 
