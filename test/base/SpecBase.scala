@@ -192,6 +192,16 @@ trait SpecBase
     1
   )
 
+  lazy val categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode: CategorisationInfo =
+    CategorisationInfo(
+      "1234567890",
+      Some(today),
+      Seq(category1, category2, category3),
+      Seq.empty,
+      None,
+      1
+    )
+
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     Some(validityEndDate),

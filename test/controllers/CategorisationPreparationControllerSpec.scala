@@ -134,6 +134,51 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       }
 
+      "and not update the record if no assessments that need answers and commodity is expired" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode)
+        )
+
+        val app = application()
+
+        running(app) {
+
+          val request =
+            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockCategorisationService)
+            .getCategorisationInfo(any(), eqTo("12345678"), eqTo("GB"), eqTo(testRecordId), eqTo(false))(any())
+
+          withClue("must update User Answers with Categorisation Info") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockSessionRepository).set(uaArgCaptor.capture())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers
+              .get(CategorisationDetailsQuery(testRecordId))
+              .get mustBe categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode
+          }
+
+          withClue("must not get category result from categorisation service as not needed") {
+            verify(mockCategorisationService, times(0))
+              .calculateResult(any(), any(), any())
+          }
+
+          withClue("must not have updated goods record") {
+            verify(mockGoodsRecordConnector, times(0)).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
+              any()
+            )
+          }
+
+        }
+
+      }
+
       "and update the record if there are no questions to answer" in {
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
