@@ -550,7 +550,7 @@ class CategorisationInfoSpec extends SpecBase {
           val testTraderProfileResponseWithNiphl =
             TraderProfile("actorId", "ukims number", Some("nirms number"), Some("niphl number"))
 
-          "when there are Category 1 that need answers but there are Category 2 assessment with no exemptions" in {
+          "when there is a Category 1 assessment that need answers and there are Category 2 assessment with no exemptions" in {
             val mockOttResponse = OttResponse(
               GoodsNomenclatureResponse(
                 "some id",
@@ -623,7 +623,7 @@ class CategorisationInfoSpec extends SpecBase {
             result.value mustEqual expectedResult
           }
 
-          "when there are Category 1 that needed answer and there is a NIPHL assessment but there is a Category 2 assessment with no exemptions" in {
+          "when there is a Category 1 assessment that need answers and there is a Category 2 assessment with no exemptions but there is a NIPHL assessment" in {
             val mockOttResponse = OttResponse(
               GoodsNomenclatureResponse(
                 "some id",
@@ -718,7 +718,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         ".is unauthorised" - {
 
-          "when there are Category 1 and there is a NIPHL assessment but there is a Category 2 assessment with no exemptions" in {
+          "when there is a Category 1 assessment and there is a Category 2 assessment with no exemptions but there is a NIPHL assessment" in {
             val mockOttResponse = OttResponse(
               GoodsNomenclatureResponse(
                 "some id",
