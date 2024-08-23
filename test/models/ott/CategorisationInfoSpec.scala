@@ -547,8 +547,8 @@ class CategorisationInfoSpec extends SpecBase {
 
         ".is authorised" - {
 
-          val testTraderProfileResponseWithNiphl =
-            TraderProfile("actorId", "ukims number", None, Some("niphl number"))
+          val testTraderProfileResponseWithNiphlAndNirms =
+            TraderProfile("actorId", "ukims number", Some("nirms number"), Some("niphl number"))
 
           "when there is a Category 1 assessment that need answers and there are Category 2 assessment with no exemptions" in {
             val mockOttResponse = OttResponse(
@@ -616,10 +616,12 @@ class CategorisationInfoSpec extends SpecBase {
                 expectedAssessmentsThatNeedAnswers,
                 None,
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlsAuthorised = true,
+                isTraderNirmsAuthorised = true
               )
 
-            val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)
+            val result =
+              CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphlAndNirms)
             result.value mustEqual expectedResult
           }
 
@@ -705,10 +707,12 @@ class CategorisationInfoSpec extends SpecBase {
                 expectedAssessmentsThatNeedAnswers,
                 None,
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlsAuthorised = true,
+                isTraderNirmsAuthorised = true
               )
 
-            val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphl)
+            val result =
+              CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithNiphlAndNirms)
             result.value mustEqual expectedResult
           }
         }
