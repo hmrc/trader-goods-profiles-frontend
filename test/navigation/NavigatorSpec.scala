@@ -1008,12 +1008,12 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if NIPHL is authorised and has NIPHL assessment and the answers are yes for all category 1 assessments" - {
+            "if NIPHL is authorised and has NIPHL assessment and the answers are yes for all category 1 assessments" in {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
-                Seq(category1Niphl, category1),
-                Seq(category1Niphl, category1),
+                Seq(category1Niphl, category1, category2NoExemptions),
+                Seq(category1),
                 None,
                 1,
                 isTraderNiphlsAuthorised = true
@@ -1027,13 +1027,9 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
                   .success
                   .value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
-                  .success
-                  .value
 
-              navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
+              navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
                 routes.CyaCategorisationController.onPageLoad(testRecordId)
-
             }
           }
 
