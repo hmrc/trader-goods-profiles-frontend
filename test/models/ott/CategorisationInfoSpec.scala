@@ -27,7 +27,8 @@ import java.time.Instant
 
 class CategorisationInfoSpec extends SpecBase {
 
-  val testTraderProfileResponseWithoutNiphl: TraderProfile = TraderProfile("actorId", "ukims number", None, None)
+  val testTraderProfileResponseWithoutNiphlAndNirms: TraderProfile =
+    TraderProfile("actorId", "ukims number", None, None)
 
   ".build" - {
 
@@ -85,7 +86,7 @@ class CategorisationInfoSpec extends SpecBase {
           0
         )
 
-        val result = CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+        val result = CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
         result.value mustEqual expectedResult
       }
 
@@ -180,7 +181,7 @@ class CategorisationInfoSpec extends SpecBase {
           2
         )
 
-        val result = CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+        val result = CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
         result.value mustEqual expectedResult
       }
 
@@ -236,7 +237,7 @@ class CategorisationInfoSpec extends SpecBase {
           0
         )
 
-        val result = CategorisationInfo.build(ottResponse, "123456", testTraderProfileResponseWithoutNiphl)
+        val result = CategorisationInfo.build(ottResponse, "123456", testTraderProfileResponseWithoutNiphlAndNirms)
         result.value mustEqual expectedResult
       }
 
@@ -259,7 +260,11 @@ class CategorisationInfoSpec extends SpecBase {
         val expectedResult = CategorisationInfo("1234567890", Seq.empty, Seq.empty, None, 0)
 
         val result =
-          CategorisationInfo.build(ottResponseNoAssessments, "1234567890", testTraderProfileResponseWithoutNiphl)
+          CategorisationInfo.build(
+            ottResponseNoAssessments,
+            "1234567890",
+            testTraderProfileResponseWithoutNiphlAndNirms
+          )
         result.value mustEqual expectedResult
       }
 
@@ -330,7 +335,8 @@ class CategorisationInfoSpec extends SpecBase {
 
         val expectedResult = CategorisationInfo("1234567890", expectedAssessments, Seq.empty, None, 0)
 
-        val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+        val result =
+          CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
         result.value mustEqual expectedResult
 
       }
@@ -402,7 +408,8 @@ class CategorisationInfoSpec extends SpecBase {
 
         val expectedResult = CategorisationInfo("1234567890", expectedAssessments, Seq.empty, None, 0)
 
-        val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+        val result =
+          CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
         result.value mustEqual expectedResult
 
       }
@@ -481,7 +488,8 @@ class CategorisationInfoSpec extends SpecBase {
         val expectedResult =
           CategorisationInfo("1234567890", expectedAssessments, expectedAssessmentsThatNeedAnswers, None, 0)
 
-        val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+        val result =
+          CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
         result.value mustEqual expectedResult
       }
 
@@ -539,7 +547,12 @@ class CategorisationInfoSpec extends SpecBase {
         )
 
         val result =
-          CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphl, longerCode = true)
+          CategorisationInfo.build(
+            ottResponse,
+            "1234567890",
+            testTraderProfileResponseWithoutNiphlAndNirms,
+            longerCode = true
+          )
         result.value mustEqual expectedResult
       }
 
@@ -803,7 +816,8 @@ class CategorisationInfoSpec extends SpecBase {
                 0
               )
 
-            val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+            val result =
+              CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
 
             result.value mustEqual expectedResult
           }
@@ -906,7 +920,8 @@ class CategorisationInfoSpec extends SpecBase {
                 0
               )
 
-            val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+            val result =
+              CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
             result.value mustEqual expectedResult
           }
 
@@ -995,7 +1010,8 @@ class CategorisationInfoSpec extends SpecBase {
                 0
               )
 
-            val result = CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphl)
+            val result =
+              CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
             result.value mustEqual expectedResult
           }
         }
@@ -1216,7 +1232,7 @@ class CategorisationInfoSpec extends SpecBase {
           descendents = Seq.empty[Descendant]
         )
 
-        CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphl) mustBe None
+        CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms) mustBe None
       }
 
       "when the correct theme cannot be found" in {
@@ -1238,7 +1254,7 @@ class CategorisationInfoSpec extends SpecBase {
           descendents = Seq.empty[Descendant]
         )
 
-        CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphl) mustBe None
+        CategorisationInfo.build(ottResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms) mustBe None
       }
 
       "when a certificate cannot be found" in {
@@ -1270,7 +1286,11 @@ class CategorisationInfoSpec extends SpecBase {
           descendents = Seq.empty[Descendant]
         )
 
-        CategorisationInfo.build(ottResponse, "commodity code", testTraderProfileResponseWithoutNiphl) mustBe None
+        CategorisationInfo.build(
+          ottResponse,
+          "commodity code",
+          testTraderProfileResponseWithoutNiphlAndNirms
+        ) mustBe None
       }
 
       "when an additional code cannot be found" in {
@@ -1302,7 +1322,11 @@ class CategorisationInfoSpec extends SpecBase {
           descendents = Seq.empty[Descendant]
         )
 
-        CategorisationInfo.build(ottResponse, "commodity code", testTraderProfileResponseWithoutNiphl) mustBe None
+        CategorisationInfo.build(
+          ottResponse,
+          "commodity code",
+          testTraderProfileResponseWithoutNiphlAndNirms
+        ) mustBe None
       }
 
     }
