@@ -21,7 +21,7 @@ import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.fromExpiredCommodityCodePage
+import utils.SessionData.{dataRemoved, dataUpdated, fromExpiredCommodityCodePage, pageUpdated}
 import views.html.ExpiredCommodityCodeView
 
 import javax.inject.Inject
@@ -39,6 +39,8 @@ class ExpiredCommodityCodeController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(NormalMode, recordId)).addingToSession(fromExpiredCommodityCodePage -> "true")
+      Ok(view(NormalMode, recordId))
+        .addingToSession(fromExpiredCommodityCodePage -> "true")
+        .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
     }
 }

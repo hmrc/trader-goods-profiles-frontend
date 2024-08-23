@@ -29,6 +29,7 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, Lo
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,7 +60,8 @@ class CategorisationPreparationController @Inject() (
           Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
         _                  <- sessionRepository.set(updatedUserAnswers)
         _                  <- updateCategory(updatedUserAnswers, request.eori, recordId, categorisationInfo)
-      } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers)))
+      } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers))
+        .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)
