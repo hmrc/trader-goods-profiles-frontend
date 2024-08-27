@@ -18,7 +18,7 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.ott.response.OttResponse
-import models.{AnsweredQuestions, UserAnswers}
+import models.{AnsweredQuestions, TraderProfile, UserAnswers}
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
 import utils.Constants.minimumLengthOfCommodityCode
@@ -29,7 +29,8 @@ final case class CategorisationInfo(
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
   measurementUnit: Option[String],
   descendantCount: Int,
-  longerCode: Boolean = false
+  longerCode: Boolean = false,
+  isTraderNiphlsAuthorised: Boolean = false
 ) {
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
@@ -65,6 +66,8 @@ final case class CategorisationInfo(
   def getMinimalCommodityCode: String =
     commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
+  def isNiphlsAssessment: Boolean = categoryAssessments.exists(ass => ass.isCategory1 && ass.isNiphlsAnswer) &&
+    categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 }
 
 object CategorisationInfo {
@@ -72,6 +75,7 @@ object CategorisationInfo {
   def build(
     ott: OttResponse,
     commodityCodeUserEntered: String,
+    traderProfile: TraderProfile,
     longerCode: Boolean = false
   ): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
@@ -83,20 +87,28 @@ object CategorisationInfo {
         val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
         val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
-        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers)
+        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlsAnswer)
         val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers)
 
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
-        val questionsToAnswer =
-          if (!areAllCategory1Answerable) {
+        val isNiphlsAssessment =
+          category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+
+        val questionsToAnswer = {
+          if (isNiphlsAssessment && traderProfile.niphlNumber.isDefined) {
+            category1ToAnswer
+          } else if (isNiphlsAssessment) {
+            Seq.empty
+          } else if (!areAllCategory1Answerable) {
             Seq.empty
           } else if (!areAllCategory2Answerable) {
             category1ToAnswer
           } else {
             category1ToAnswer ++ category2ToAnswer
           }
+        }
 
         CategorisationInfo(
           commodityCodeUserEntered,
@@ -104,7 +116,8 @@ object CategorisationInfo {
           questionsToAnswer,
           ott.goodsNomenclature.measurementUnit,
           ott.descendents.size,
-          longerCode
+          longerCode,
+          traderProfile.niphlNumber.isDefined
         )
       }
 

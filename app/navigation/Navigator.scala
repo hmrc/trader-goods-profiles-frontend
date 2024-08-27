@@ -247,12 +247,18 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers.get(CategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         routes.CategoryGuidanceController.onPageLoad(recordId)
+      case Some(catInfo) if shouldGoToLongerCommodityCodeNiphls(catInfo)        =>
+        routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
       case Some(catInfo)                                                        =>
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
         routes.CategorisationResultController.onPageLoad(recordId, scenario)
 
       case None => routes.JourneyRecoveryController.onPageLoad()
     }
+
+  private def shouldGoToLongerCommodityCodeNiphls(catInfo: CategorisationInfo) =
+    catInfo.isNiphlsAssessment && catInfo.isTraderNiphlsAuthorised &&
+      catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0
 
   private def navigateFromReassessmentPrep(
     reasessmentPrep: RecategorisationPreparationPage

@@ -16,7 +16,8 @@
 
 package services
 
-import connectors.OttConnector
+import connectors.{OttConnector, TraderProfileConnector}
+import logging.Logging
 import models._
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
@@ -29,8 +30,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class CategorisationService @Inject() (
-  ottConnector: OttConnector
-)(implicit ec: ExecutionContext) {
+  ottConnector: OttConnector,
+  profileConnector: TraderProfileConnector
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   def getCategorisationInfo(
     request: DataRequest[_],
@@ -39,28 +42,60 @@ class CategorisationService @Inject() (
     recordId: String,
     longerCode: Boolean = false
   )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
-    ottConnector
-      .getCategorisationInfo(
-        commodityCode,
-        request.eori,
-        request.affinityGroup,
-        Some(recordId),
-        country,
-        LocalDate.now()
-      )
-      .flatMap { response =>
-        CategorisationInfo.build(response, commodityCode, longerCode) match {
-          case Some(categorisationInfo) => Future.successful(categorisationInfo)
-          case _                        =>
-            Future.failed(new RuntimeException("Could not build categorisation info"))
+    profileConnector.getTraderProfile(request.eori).flatMap { profile =>
+      ottConnector
+        .getCategorisationInfo(
+          commodityCode,
+          request.eori,
+          request.affinityGroup,
+          Some(recordId),
+          country,
+          LocalDate.now()
+        )
+        .flatMap { response =>
+          CategorisationInfo.build(response, commodityCode, profile, longerCode) match {
+            case Some(categorisationInfo) =>
+              Future.successful(categorisationInfo)
+
+            case None =>
+              logger.error("Could not build categorisation info")
+              Future.failed(new RuntimeException("Could not build categorisation info"))
+          }
         }
-      }
+    }
 
   def calculateResult(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ): Scenario =
+  ): Scenario = {
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
+
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    val areThereCategory1QuestionsWithNoExemption =
+      listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
+
+    val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
+
+    if (categorisationInfo.isNiphlsAssessment) {
+      if (!categorisationInfo.isTraderNiphlsAuthorised || areThereCategory1QuestionsWithNoExemption) {
+        Category1Scenario
+      } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
+        Category1NoExemptionsScenario
+      } else {
+        Category2Scenario
+      }
+    } else {
+      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+    }
+  }
+
+  private def calculateResultWithoutNiphl(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ) =
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
