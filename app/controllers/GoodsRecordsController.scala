@@ -139,7 +139,9 @@ class GoodsRecordsController @Inject() (
             },
           value => {
             println(value.searchText)
-            println(value.adviceStatus)
+            println(value.immiReady)
+            println(value.notImmiReady)
+            println(value.actionNeeded)
             println(value.countryOfOrigin)
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))

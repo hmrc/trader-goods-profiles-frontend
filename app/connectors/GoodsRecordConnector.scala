@@ -203,7 +203,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   def searchRecords(
     eori: String,
     searchTerm: String,
-    adviceStatus: Option[String],
+    immiReady: Option[String],
+    notImmiReady: Option[String],
+    actionNeeded: Option[String],
     countryOfOrigin: Option[String],
     page: Int,
     size: Int
@@ -215,7 +217,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       "searchTerm" -> searchTerm,
       "page" -> page.toString,
       "size" -> size.toString
-    ) ++ adviceStatus.map("adviceStatus" -> _) ++ countryOfOrigin.map("countryOfOrigin" -> _)
+    ) ++ immiReady.map("immiReady" -> _) ++
+      notImmiReady.map("notImmiReady" -> _) ++
+      actionNeeded.map("actionNeeded" -> _) ++
+      countryOfOrigin.map("countryOfOrigin" -> _)
 
     httpClient
       .get(searchRecordsUrl(eori, queryParams))

@@ -20,7 +20,9 @@ import play.api.libs.json.{Json, OFormat}
 
 case class GoodsRecordsFormData(
   searchText: Option[String] = None,
-  adviceStatus: Option[String] = None,
+  immiReady: Option[String] = None,
+  notImmiReady: Option[String] = None,
+  actionNeeded: Option[String] = None,
   countryOfOrigin: Option[String] = None
 )
 

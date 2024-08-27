@@ -53,7 +53,7 @@ class GoodsRecordsSearchResultController @Inject() (
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
             goodsRecordConnector
-              .searchRecords(request.eori, data.searchText.getOrElse(""), data.adviceStatus, data.countryOfOrigin, page, pageSize)
+              .searchRecords(request.eori, data.searchText.getOrElse(""), data.immiReady, data.notImmiReady, data.actionNeeded, data.countryOfOrigin, page, pageSize)
               .flatMap {
                 case Some(searchResponse) =>
                   if (searchResponse.pagination.totalRecords != 0) {

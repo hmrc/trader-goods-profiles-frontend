@@ -26,7 +26,9 @@ class GoodsRecordsFormProvider2 {
     Form(
       mapping(
         "searchText" -> optional(text),
-        "adviceStatus" -> optional(text),
+        "immiReady" -> optional(text),
+        "notImmiReady" -> optional(text),
+        "actionNeeded" -> optional(text),
         "countryOfOrigin" -> optional(text)
       )(GoodsRecordsFormData.apply)(GoodsRecordsFormData.unapply)
     )
