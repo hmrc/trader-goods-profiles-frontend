@@ -67,7 +67,11 @@ class JourneySpec extends AnyFreeSpec with Matchers {
         assessmentsPage,
         hasSupplementaryUnitPage,
         supplementaryUnitPage,
-        longerCommodityCodePage
+        longerCommodityCodePage,
+        reassessmentPage,
+        categorisationDetailsQuery,
+        longerCommodityQuery,
+        longerCategorisationDetailsQuery
       )
     }
 

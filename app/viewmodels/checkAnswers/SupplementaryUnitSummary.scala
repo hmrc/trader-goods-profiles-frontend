@@ -20,7 +20,7 @@ import controllers.routes
 import models.{CheckMode, NormalMode, UserAnswers}
 import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
-import queries.{MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, MeasurementQuery}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -29,9 +29,8 @@ object SupplementaryUnitSummary {
 
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
-      recordCategorisations <- answers.get(RecordCategorisationsQuery)
-      categorisationInfo    <- recordCategorisations.records.get(recordId)
-      supplementaryUnit     <- answers.get(SupplementaryUnitPage(recordId))
+      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
+      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
       val measurementUnit = categorisationInfo.measurementUnit
       val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit

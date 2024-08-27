@@ -19,9 +19,8 @@ package controllers
 import connectors.DownloadDataConnector
 import controllers.actions._
 import models.DownloadDataStatus.FileReady
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HomePageView
 
 import javax.inject.Inject
@@ -36,8 +35,7 @@ class HomePageController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     downloadDataConnector.getDownloadDataSummary(request.eori).map {

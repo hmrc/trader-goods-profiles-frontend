@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import connectors.GoodsRecordConnector
 import forms.HasCommodityCodeChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
@@ -50,9 +50,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
   private lazy val hasCommodityCodeChangeRoute =
     routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
-
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   private val goodsRecord              = goodsRecordResponse()
   private val goodsRecordCatNoAdvice   = goodsRecord.copy(
@@ -89,7 +86,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
           .build()
 
@@ -118,7 +114,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
           .build()
 
@@ -147,7 +142,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
           .build()
 
@@ -179,7 +173,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
@@ -219,7 +212,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AuditService].toInstance(mockAuditService),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
           .build()
@@ -253,7 +245,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
@@ -285,7 +276,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
@@ -302,7 +292,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
@@ -337,7 +326,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AuditService].toInstance(mockAuditService),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
           .build()
@@ -361,7 +349,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 

@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector, TraderProfileConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
 import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
 import models.GoodsRecordsPagination.firstPage
@@ -122,9 +122,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
 
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
   private val downloadLinkRoute = routes.RequestDataController.onPageLoad().url
   private val downloadLinkText  = "goodsRecords.downloadLinkText.requestFile"
 
@@ -151,7 +148,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
@@ -203,7 +199,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
@@ -258,7 +253,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
@@ -313,7 +307,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()
@@ -351,7 +344,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
         .successful(None)
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
       val mockOttConnector = mock[OttConnector]
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -361,8 +353,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[OttConnector].toInstance(mockOttConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[OttConnector].toInstance(mockOttConnector)
         )
         .build()
 
@@ -402,7 +393,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[OttConnector].toInstance(mockOttConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
         )
         .build()
@@ -474,8 +464,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )
         .build()
       val view        = application.injector.instanceOf[GoodsRecordsEmptyView]
@@ -494,7 +483,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val badPageRoute = routes.GoodsRecordsController.onPageLoad(0).url
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -516,8 +504,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -553,7 +540,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
           )
           .build()

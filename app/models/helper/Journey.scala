@@ -47,7 +47,11 @@ case object CategorisationJourney extends Journey {
       assessmentsPage,
       hasSupplementaryUnitPage,
       supplementaryUnitPage,
-      longerCommodityCodePage
+      longerCommodityCodePage,
+      reassessmentPage,
+      categorisationDetailsQuery,
+      longerCommodityQuery,
+      longerCategorisationDetailsQuery
     )
   override def toString: String = "Categorisation"
 }

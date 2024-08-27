@@ -18,22 +18,36 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.ott.CategoryAssessment
-import models.{CheckMode, UserAnswers}
-import pages.AssessmentPage
+import models.{AssessmentAnswer, CheckMode, UserAnswers}
+import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import viewmodels.AssessmentCyaKey
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-import viewmodels.AssessmentCyaKey
 object AssessmentsSummary {
 
   def row(
     recordId: String,
     answers: UserAnswers,
     assessment: CategoryAssessment,
-    indexOfThisAssessment: Int
-  )(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
+    indexOfThisAssessment: Int,
+    isReassessmentAnswer: Boolean
+  )(implicit messages: Messages): Option[SummaryListRow] = {
+
+    val (pageToUse, changeLink) = if (isReassessmentAnswer) {
+      (
+        ReassessmentPage(recordId, indexOfThisAssessment),
+        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
+      )
+    } else {
+      (
+        AssessmentPage(recordId, indexOfThisAssessment),
+        routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+      )
+    }
+
+    answers.get(pageToUse).map { answer =>
       val codes        = assessment.exemptions.map(_.code)
       val descriptions = assessment.exemptions.map(_.description)
 
@@ -41,7 +55,7 @@ object AssessmentsSummary {
         key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
           .withCssClass("govuk-!-width-one-half"),
         value = ValueViewModel(
-          if (answer.toString == "true") {
+          if (answer == AssessmentAnswer.Exemption) {
             messages("site.yes")
           } else {
             messages("site.no")
@@ -50,9 +64,11 @@ object AssessmentsSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+            changeLink
           ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
         )
       )
     }
+  }
+
 }

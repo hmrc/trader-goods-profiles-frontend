@@ -19,27 +19,22 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.HasCorrectGoodsFormProvider
-import models.AssessmentAnswer.Exemption
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.{Commodity, NormalMode, RecordCategorisations, UserAnswers}
+import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery, RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery}
 import repositories.SessionRepository
-import services.CategorisationService
 import views.html.HasCorrectGoodsView
 
 import java.time.Instant
 import scala.concurrent.Future
-import scala.util.Success
 
 class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
@@ -48,7 +43,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasCorrectGoodsFormProvider()
   private val form = formProvider()
 
-  "HasCorrectGoodsController" - {
+  "HasCorrectGoodsController2" - {
 
     "For create journey" - {
       lazy val hasCorrectGoodsCreateRoute = routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode).url
@@ -237,7 +232,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
       "for a GET" - {
 
-        "must return OK and the correct view for a GET" in {
+        "must return OK and the correct view" in {
 
           val userAnswers =
             emptyUserAnswers
@@ -270,7 +265,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           }
         }
 
-        "must redirect on GET to JourneyRecovery Page if user doesn't have commodity answer" in {
+        "must redirect to JourneyRecovery Page if user doesn't have commodity answer" in {
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -284,7 +279,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           }
         }
 
-        "must populate the view correctly on a GET when the question has previously been answered" in {
+        "must populate the view correctly when the question has previously been answered" in {
 
           val commodity   = Commodity("654321", List("Description"), Instant.now, None)
           val userAnswers = emptyUserAnswers
@@ -312,7 +307,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           }
         }
 
-        "must redirect to Journey Recovery for a GET if no existing data is found" in {
+        "must redirect to Journey Recovery if no existing data is found" in {
 
           val application = applicationBuilder(userAnswers = None).build()
 
@@ -329,288 +324,43 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "for a POST" - {
-        "must redirect to the next page when valid data is submitted" - {
+        "must redirect to the next page when valid data is submitted" in {
 
-          val assessment1        = CategoryAssessment("id1", 1, Seq(Certificate("cert1", "code1", "description1")))
-          val assessment2        = CategoryAssessment("id2", 2, Seq(Certificate("cert2", "code2", "description2")))
-          val categorisationInfo =
-            CategorisationInfo("1234567890", Seq(assessment1, assessment2), Some("some measure unit"), 0)
-
-          "and do not need to recategorise because the assessments are the same and there are no supplementary units" in {
-
-            val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-
-            val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            val mockSessionRepository                 = mock[SessionRepository]
-            when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
-
-            val pageCaptor: ArgumentCaptor[HasCorrectGoodsLongerCommodityCodePage] =
-              ArgumentCaptor.forClass(classOf[HasCorrectGoodsLongerCommodityCodePage])
-            val mockNavigator                                                      = mock[Navigator]
-            when(mockNavigator.nextPage(pageCaptor.capture(), any(), any())).thenReturn(onwardRoute)
-
-            val userAnswers = emptyUserAnswers
-              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit)))
-              .success
-              .value
-              .set(AssessmentPage(testRecordId, 0), Exemption("Y322"))
-              .success
-              .value
-
-            val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
-              .thenReturn(Future.successful(userAnswers))
-
-            val application =
-              applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(
-                  bind[Navigator].toInstance(mockNavigator),
-                  bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[CategorisationService].toInstance(mockCategorisationService)
-                )
-                .build()
-
-            running(application) {
-              val request =
-                FakeRequest(POST, hasCorrectGoodsRoute)
-                  .withFormUrlEncodedBody(("value", "true"))
-
-              val result = route(application, request).value
-
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual onwardRoute.url
-
-              withClue("must have told the navigator not to recategorise the goods") {
-                val pageSentToNavigator = pageCaptor.getValue
-                pageSentToNavigator.needToRecategorise mustBe false
-              }
-
-              withClue("must have kept the old assessment answers") {
-                val finalUserAnswers = uaCaptor.getValue
-                finalUserAnswers.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
-              }
-
-              withClue("must not have reset the user answers") {
-                verify(mockCategorisationService, times(0)).cleanupOldAssessmentAnswers(any(), any())
-              }
-
-            }
-          }
-
-          "and need to recategorise" - {
-
-            "because the assessments are different" in {
-
-              val categorisationInfoNoSuppUnit = categorisationInfo.copy(measurementUnit = None)
-              val categorisationInfoNew        = CategorisationInfo("12345678", Seq(assessment2), None, 0)
-
-              val mockSessionRepository = mock[SessionRepository]
-              when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-              val pageCaptor: ArgumentCaptor[HasCorrectGoodsLongerCommodityCodePage] =
-                ArgumentCaptor.forClass(classOf[HasCorrectGoodsLongerCommodityCodePage])
-              val mockNavigator                                                      = mock[Navigator]
-              when(mockNavigator.nextPage(pageCaptor.capture(), any(), any())).thenReturn(onwardRoute)
-
-              val initialUserAnswers = emptyUserAnswers
-                .set(
-                  RecordCategorisationsQuery,
-                  RecordCategorisations(Map(testRecordId -> categorisationInfoNoSuppUnit))
-                )
-                .success
-                .value
-                .set(AssessmentPage(testRecordId, 0), Exemption("Y322"))
-                .success
-                .value
-
-              val updatedUserAnswers = initialUserAnswers
-                .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNew)))
-                .success
-                .value
-                .set(RecategorisingQuery(testRecordId), true)
-                .success
-                .value
-
-              val mockCategorisationService = mock[CategorisationService]
-              when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
-                .thenReturn(Future.successful(updatedUserAnswers))
-              when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
-                .thenReturn(Success(updatedUserAnswers))
-
-              val application =
-                applicationBuilder(userAnswers = Some(initialUserAnswers))
-                  .overrides(
-                    bind[Navigator].toInstance(mockNavigator),
-                    bind[SessionRepository].toInstance(mockSessionRepository),
-                    bind[CategorisationService].toInstance(mockCategorisationService)
-                  )
-                  .build()
-
-              running(application) {
-                val request =
-                  FakeRequest(POST, hasCorrectGoodsRoute)
-                    .withFormUrlEncodedBody(("value", "true"))
-
-                val result = route(application, request).value
-
-                status(result) mustEqual SEE_OTHER
-                redirectLocation(result).value mustEqual onwardRoute.url
-
-                withClue("must have told the navigator to recategorise the goods") {
-                  val pageSentToNavigator = pageCaptor.getValue
-                  pageSentToNavigator.needToRecategorise mustBe true
-                }
-
-                withClue("must update user answers for recategorisation") {
-                  verify(mockCategorisationService)
-                    .updatingAnswersForRecategorisation(any(), any(), any(), any())
-                }
-
-                withClue("must save user answers to session repository") {
-                  verify(mockSessionRepository).set(any())
-                }
-
-              }
-            }
-
-            "because we are halfway through the recategorisation process and they have gone back to this page through the back button" in {
-
-              val mockSessionRepository = mock[SessionRepository]
-              when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-              val pageCaptor: ArgumentCaptor[HasCorrectGoodsLongerCommodityCodePage] =
-                ArgumentCaptor.forClass(classOf[HasCorrectGoodsLongerCommodityCodePage])
-              val mockNavigator                                                      = mock[Navigator]
-              when(mockNavigator.nextPage(pageCaptor.capture(), any(), any())).thenReturn(onwardRoute)
-
-              val initialUserAnswers = emptyUserAnswers
-                .set(
-                  RecordCategorisationsQuery,
-                  RecordCategorisations(Map(testRecordId -> categorisationInfo))
-                )
-                .success
-                .value
-                .set(AssessmentPage(testRecordId, 0), Exemption("Y322"))
-                .success
-                .value
-                .set(RecategorisingQuery(testRecordId), true)
-                .success
-                .value
-
-              val mockCategorisationService = mock[CategorisationService]
-              when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
-                .thenReturn(Future.successful(initialUserAnswers))
-              when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
-                .thenReturn(Success(initialUserAnswers))
-
-              val application =
-                applicationBuilder(userAnswers = Some(initialUserAnswers))
-                  .overrides(
-                    bind[Navigator].toInstance(mockNavigator),
-                    bind[SessionRepository].toInstance(mockSessionRepository),
-                    bind[CategorisationService].toInstance(mockCategorisationService)
-                  )
-                  .build()
-
-              running(application) {
-                val request =
-                  FakeRequest(POST, hasCorrectGoodsRoute)
-                    .withFormUrlEncodedBody(("value", "true"))
-
-                val result = route(application, request).value
-
-                status(result) mustEqual SEE_OTHER
-                redirectLocation(result).value mustEqual onwardRoute.url
-
-                withClue("must have told the navigator to recategorise the goods") {
-                  val pageSentToNavigator = pageCaptor.getValue
-                  pageSentToNavigator.needToRecategorise mustBe true
-                }
-
-                withClue("must update user answers for recategorisation") {
-                  verify(mockCategorisationService)
-                    .updatingAnswersForRecategorisation(any(), any(), any(), any())
-                }
-
-                withClue("must save user answers to session repository") {
-                  verify(mockSessionRepository).set(any())
-                }
-
-              }
-            }
-
-          }
-
-          "remove old supplementary unit answer if unit is different" in {
-            val categorisationInfoNew = categorisationInfo.copy(measurementUnit = Some("another measurement unit"))
-
-            val mockSessionRepository                          = mock[SessionRepository]
-            val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            when(mockSessionRepository.set(userAnswersCaptor.capture())) thenReturn Future.successful(true)
-
-            val mockNavigator = mock[Navigator]
-            when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
-
-            val initialUserAnswers = emptyUserAnswers
+          val userAnswers =
+            emptyUserAnswers
               .set(
-                RecordCategorisationsQuery,
-                RecordCategorisations(Map(testRecordId -> categorisationInfo))
+                LongerCommodityQuery(testRecordId),
+                Commodity("654321", List("Description", "Other"), Instant.now, None)
               )
               .success
               .value
-              .set(AssessmentPage(testRecordId, 0), Exemption("Y322"))
-              .success
-              .value
-              .set(HasSupplementaryUnitPage(testRecordId), true)
-              .success
-              .value
-              .set(SupplementaryUnitPage(testRecordId), "123")
-              .success
-              .value
 
-            val updatedUserAnswers = initialUserAnswers
-              .set(RecordCategorisationsQuery, RecordCategorisations(Map(testRecordId -> categorisationInfoNew)))
-              .success
-              .value
+          val mockSessionRepository = mock[SessionRepository]
 
-            val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.updateCategorisationWithNewCommodityCode(any(), any())(any()))
-              .thenReturn(Future.successful(updatedUserAnswers))
-            when(mockCategorisationService.cleanupOldAssessmentAnswers(any(), any()))
-              .thenReturn(Success(updatedUserAnswers))
+          when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-            val application =
-              applicationBuilder(userAnswers = Some(initialUserAnswers))
-                .overrides(
-                  bind[Navigator].toInstance(mockNavigator),
-                  bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[CategorisationService].toInstance(mockCategorisationService)
-                )
-                .build()
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                bind[SessionRepository].toInstance(mockSessionRepository)
+              )
+              .build()
 
-            running(application) {
-              val request =
-                FakeRequest(POST, hasCorrectGoodsRoute)
-                  .withFormUrlEncodedBody(("value", "true"))
+          running(application) {
+            val request =
+              FakeRequest(POST, hasCorrectGoodsRoute)
+                .withFormUrlEncodedBody(("value", "true"))
 
-              val result = route(application, request).value
+            val result = route(application, request).value
 
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual onwardRoute.url
-
-              withClue("must have removed the supplementary unit answer") {
-                val finalUserAnswers = userAnswersCaptor.getValue
-
-                finalUserAnswers.get(HasSupplementaryUnitPage(testRecordId)) mustBe None
-                finalUserAnswers.get(SupplementaryUnitPage(testRecordId)) mustBe None
-              }
-
-            }
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual onwardRoute.url
           }
 
         }
 
-        "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {
+        "must redirect to JourneyRecovery Page if user doesn't have commodity answer" in {
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -633,7 +383,16 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           val userAnswers =
             emptyUserAnswers.set(LongerCommodityQuery(testRecordId), commodity).success.value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val mockSessionRepository = mock[SessionRepository]
+
+          when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -651,22 +410,6 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               request,
               messages(application)
             ).toString
-          }
-        }
-
-        "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-          val application = applicationBuilder(userAnswers = None).build()
-
-          running(application) {
-            val request =
-              FakeRequest(POST, hasCorrectGoodsRoute)
-                .withFormUrlEncodedBody(("value", "true"))
-
-            val result = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
           }
         }
 
@@ -853,4 +596,5 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     }
   }
+
 }

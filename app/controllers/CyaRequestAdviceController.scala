@@ -16,20 +16,14 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.helper.RequestAdviceJourney
-import models.requests.DataRequest
-import models.{AdviceRequest, ValidationError}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.AuditService
-import services.DataCleansingService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import models.AdviceRequest
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaRequestAdviceView
@@ -41,15 +35,16 @@ class CyaRequestAdviceController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  dataCleansingService: DataCleansingService,
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
+  dataCleansingService: DataCleansingService,
   accreditationConnector: AccreditationConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseController {
+
+  private val errorMessage: String                = "Unable to create Request Advice."
+  private def continueUrl(recordId: String): Call = routes.AdviceStartController.onPageLoad(recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -62,22 +57,10 @@ class CyaRequestAdviceController @Inject() (
             ).flatten
           )
           Ok(view(list, recordId))
-        case Left(errors) => logErrorsAndContinue(errors, recordId, request)
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
       }
-  }
-
-  def logErrorsAndContinue(
-    errors: data.NonEmptyChain[ValidationError],
-    recordId: String,
-    request: DataRequest[AnyContent]
-  ): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.AdviceStartController.onPageLoad(recordId).url)
-
-    logger.error(s"Unable to create Request Advice.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -91,7 +74,9 @@ class CyaRequestAdviceController @Inject() (
               dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
               Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
             }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors))
       }
   }
 }

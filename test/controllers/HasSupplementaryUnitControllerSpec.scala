@@ -70,13 +70,12 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   ).copy(recordId = testRecordId)
 
   "HasSupplementaryUnit Controller" - {
+
     ".create journey" - {
 
-      "must return OK and the correct view for a GET" in {
+      "must return OK and the correct view" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, hasSupplementaryUnitRoute)
@@ -93,13 +92,11 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must populate the view correctly on a GET when the question has previously been answered" in {
+      "must populate the view correctly when the question has previously been answered" in {
 
         val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(recordId), true).success.value
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, hasSupplementaryUnitRoute)
@@ -116,29 +113,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must not populate the view on a GET when the question has previously been answered for another recordId" in {
-
-        val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(s"${recordId}2"), true).success.value
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, hasSupplementaryUnitRoute)
-
-          val view = application.injector.instanceOf[HasSupplementaryUnitView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode, recordId, onSubmitAction)(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
       "must redirect to the next page when valid data is submitted" in {
 
         val mockSessionRepository = mock[SessionRepository]
@@ -149,8 +123,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
 
@@ -169,7 +142,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       "must return a Bad Request and errors when invalid data is submitted" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -194,7 +166,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -210,7 +181,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
-          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
           .build()
 
         running(application) {
@@ -225,6 +195,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         }
       }
     }
+
     ".update journey" - {
       "must return OK and the correct view for a GET" in {
 

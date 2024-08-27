@@ -16,51 +16,34 @@
 
 package models
 
-import models.ott.CategorisationInfo
 import play.api.mvc.JavascriptLiteral
+import utils.Constants._
 
 sealed trait Scenario
 
-case object NoRedirectScenario extends Scenario
-case object Category1NoExemptions extends Scenario
-case object StandardNoAssessments extends Scenario
-case object Standard extends Scenario
-case object Category1 extends Scenario
-case object Category2 extends Scenario
+case object StandardGoodsScenario extends Scenario
+case object Category1Scenario extends Scenario
+case object Category2Scenario extends Scenario
+case object StandardGoodsNoAssessmentsScenario extends Scenario
+case object Category1NoExemptionsScenario extends Scenario
 
 object Scenario {
 
-  def getRedirectScenarios(categorisationInfo: CategorisationInfo): Scenario = {
-    val hasCategoryAssessments: Boolean =
-      categorisationInfo.categoryAssessments.nonEmpty
-
-    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.category == 1)
-
-    val hasCategory1Assessments: Boolean = category1Assessments.nonEmpty
-
-    val hasEveryCategory1AssessmentGotExemptions: Boolean =
-      category1Assessments.count(assessment => assessment.exemptions.nonEmpty) == category1Assessments.size
-
-    (hasCategoryAssessments, hasCategory1Assessments, hasEveryCategory1AssessmentGotExemptions) match {
-      case (true, true, false) => Category1NoExemptions
-      case (false, _, _)       => StandardNoAssessments
-      case (_, _, _)           => NoRedirectScenario
-    }
-  }
-
-  def getScenario(goodsRecord: CategoryRecord): Scenario =
-    goodsRecord.category match {
-      case 1 => Category1
-      case 2 => Category2
-      case 3 => Standard
+  def getResultAsInt(scenario: Scenario): Int =
+    scenario match {
+      case StandardGoodsScenario              => StandardGoodsAsInt
+      case StandardGoodsNoAssessmentsScenario => StandardGoodsAsInt
+      case Category1Scenario                  => Category1AsInt
+      case Category2Scenario                  => Category2AsInt
+      case Category1NoExemptionsScenario      => Category1AsInt
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
-    case NoRedirectScenario    => "NoRedirectScenario"
-    case Category1NoExemptions => "Category1NoExemptions"
-    case StandardNoAssessments => "StandardNoAssessments"
-    case Standard              => "Standard"
-    case Category1             => "Category1"
-    case Category2             => "Category2"
+    case StandardGoodsScenario              => "Standard"
+    case Category1Scenario                  => "Category1"
+    case Category2Scenario                  => "Category2"
+    case StandardGoodsNoAssessmentsScenario => "StandardNoAssessments"
+    case Category1NoExemptionsScenario      => "Category1NoExemptions"
   }
+
 }

@@ -19,22 +19,22 @@ package services
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.AssessmentAnswer.NotAnsweredYet
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.ott.response._
+import models.ott._
+import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, RecordCategorisations}
+import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.AssessmentPage
+import pages.{AssessmentPage, ReassessmentPage}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.Instant
@@ -49,11 +49,28 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockOttConnector          = mock[OttConnector]
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
 
-  private def mockOttResponse(comCode: String = "some comcode") = OttResponse(
-    GoodsNomenclatureResponse("some id", comCode, Some("some measure unit"), Instant.EPOCH, None, List("test")),
-    Seq[CategoryAssessmentRelationship](),
-    Seq[IncludedElement](),
-    Seq[Descendant]()
+  private def mockOttResponse(comCode: String = "1234567890") = OttResponse(
+    GoodsNomenclatureResponse("some id", comCode, Some("Weight, in kilograms"), Instant.EPOCH, None, List("test")),
+    categoryAssessmentRelationships = Seq(
+      CategoryAssessmentRelationship("assessmentId2")
+    ),
+    includedElements = Seq(
+      ThemeResponse("themeId1", 1),
+      CategoryAssessmentResponse(
+        "assessmentId2",
+        "themeId2",
+        Seq(
+          ExemptionResponse("exemptionId1", ResponseExemptionType.Certificate),
+          ExemptionResponse("exemptionId2", ResponseExemptionType.AdditionalCode)
+        )
+      ),
+      ThemeResponse("themeId2", 2),
+      CertificateResponse("exemptionId1", "code1", "description1"),
+      AdditionalCodeResponse("exemptionId2", "code2", "description2"),
+      ThemeResponse("ignoredTheme", 3),
+      CertificateResponse("ignoredExemption", "code3", "description3")
+    ),
+    descendents = Seq.empty[Descendant]
   )
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
@@ -84,15 +101,22 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
   )
 
   private val categorisationService =
-    new CategorisationService(mockSessionRepository, mockOttConnector, mockGoodsRecordsConnector)
+    new CategorisationService(mockOttConnector)
+
+  private val mockDataRequest = mock[DataRequest[AnyContent]]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
+
+    when(mockDataRequest.eori).thenReturn("eori")
+    when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
+
   }
 
   override def afterEach(): Unit = {
@@ -102,435 +126,501 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     reset(mockOttConnector)
   }
 
-  "requireCategorisation" - {
+  "getCategorisationInfo" - {
 
-    "should store category assessments if they are not present, then return successful updated answers" in {
-      val mockDataRequest               = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-      val expectedCategorisationInfo    =
-        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
-      val expectedRecordCategorisations =
-        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
+    "create a categorisation info record for the given commodity code" in {
+      val expectedAssessments = Seq(
+        CategoryAssessment(
+          "assessmentId2",
+          2,
+          Seq(
+            Certificate("exemptionId1", "code1", "description1"),
+            AdditionalCode("exemptionId2", "code2", "description2")
+          )
+        )
+      )
 
-      val result                        = await(categorisationService.requireCategorisation(mockDataRequest, testRecordId))
-      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
+      await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
+        CategorisationInfo("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"), 0)
 
-      withClue("Should call the router to get the goods record") {
-        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
-      }
-
-      withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
+      withClue("should ask for details for this commodity and country from OTT") {
+        verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
           any()
         )
       }
 
-      withClue("Should call session repository to update user answers") {
-        verify(mockSessionRepository).set(any())
-      }
     }
 
-    "should not call for category assessments if they are already present, then return successful updated answers" in {
-      val expectedRecordCategorisations =
-        RecordCategorisations(
-          Map(
-            "recordId" -> CategorisationInfo("test-comcode", Seq(), Some("some measure unit"), 0, Some("test-comcode"))
+    "should return future failed when the call to OTT fails" in {
+      val expectedException = new RuntimeException("Failed communicating with OTT")
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.failed(expectedException))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE", testRecordId)
+        await(result)
+      }
+
+      actualException mustBe expectedException
+    }
+
+    "should return future failed when categorisation info does not build" in {
+
+      val mockOttResponseThatIsBroken = OttResponse(
+        GoodsNomenclatureResponse(
+          "some id",
+          "brokenComCode",
+          Some("Weight, in kilograms"),
+          Instant.EPOCH,
+          None,
+          List("test")
+        ),
+        categoryAssessmentRelationships = Seq(
+          CategoryAssessmentRelationship("assessmentId1")
+        ),
+        Seq[IncludedElement](),
+        Seq[Descendant]()
+      )
+      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(mockOttResponseThatIsBroken))
+
+      val mockDataRequest = mock[DataRequest[AnyContent]]
+      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+
+      val actualException = intercept[RuntimeException] {
+        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE", testRecordId)
+        await(result)
+      }
+
+      actualException.getMessage mustEqual "Could not build categorisation info"
+    }
+
+  }
+
+  "calculateResult" - {
+
+    "return Standard Goods if all answers are Yes" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .success
+        .value
+
+      categorisationService.calculateResult(
+        categorisationInfo,
+        userAnswers,
+        testRecordId
+      ) mustEqual StandardGoodsScenario
+
+    }
+
+    "return Category 1" - {
+      "if a category 1 question is No" in {
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category1Scenario
+
+      }
+
+      "if some category 1 are answered No and there are category 2 with no exemptions" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("cert1", "cert1code", "cert1desc")
           )
         )
 
-      val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, expectedRecordCategorisations)
-        .success
-        .value
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
-
-      val result = await(categorisationService.requireCategorisation(mockDataRequest, "recordId"))
-      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
-
-      withClue("Should not call the router to get the goods record") {
-        verify(mockGoodsRecordsConnector, never()).getRecord(any(), any())(any())
-      }
-
-      withClue("Should not call OTT to get categorisation info") {
-        verify(mockOttConnector, never()).getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())
-      }
-
-      withClue("Should not call session repository to update user answers") {
-        verify(mockSessionRepository, never()).set(any())
-      }
-    }
-
-    "should return future failed when the call to session repository fails" in {
-      reset(mockSessionRepository)
-      val expectedException = new RuntimeException("Failed communicating with session repository")
-      when(mockSessionRepository.set(any()))
-        .thenReturn(Future.failed(expectedException))
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.requireCategorisation(mockDataRequest, "recordId")
-        await(result)
-      }
-
-      actualException mustBe expectedException
-    }
-
-    "should return future failed when the call to the router fails" in {
-      reset(mockGoodsRecordsConnector)
-      val expectedException = new RuntimeException("Failed communicating with the router")
-      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.failed(expectedException))
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.requireCategorisation(mockDataRequest, "recordId")
-        await(result)
-      }
-
-      actualException mustBe expectedException
-    }
-
-    "should return future failed when the call to OTT fails" in {
-      reset(mockOttConnector)
-      val expectedException = new RuntimeException("Failed communicating with OTT")
-      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.failed(expectedException))
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.requireCategorisation(mockDataRequest, "recordId")
-        await(result)
-      }
-
-      actualException mustBe expectedException
-    }
-
-  }
-
-  "updateCategorisationWithNewCommodityCode" - {
-
-    "should store category assessments if they are not present, then return successful updated answers" in {
-
-      val newCommodity = testCommodity.copy(commodityCode = "newComCode")
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), newCommodity).success.value
-      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
-
-      val expectedCategorisationInfo    =
-        CategorisationInfo("some comcode", Seq(), Some("some measure unit"), 0, Some("comcode"))
-      val expectedRecordCategorisations =
-        RecordCategorisations(records = Map(testRecordId -> expectedCategorisationInfo))
-
-      val result                        = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
-      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
-
-      withClue("Should not need to call the goods record connector") {
-        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
-      }
-
-      withClue("Should call OTT to get categorisation info for new commodity code") {
-        verify(mockOttConnector).getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(
-          any()
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("cert2", "cert2code", "cert2desc")
+          )
         )
+
+        val assessment3 = CategoryAssessment(
+          "ass3",
+          2,
+          Seq(
+            Certificate("cert3", "cert3code", "cert3desc")
+          )
+        )
+
+        val assessment4 = CategoryAssessment(
+          "ass4",
+          2,
+          Seq.empty
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2,
+            assessment4,
+            assessment3
+          ),
+          Seq(assessment1, assessment2),
+          None,
+          1
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category1Scenario
+
       }
 
-      withClue("Should call session repository to update user answers") {
-        verify(mockSessionRepository).set(any())
-      }
     }
 
-    "should replace existing category assessments if they are already present, then return successful updated answers" in {
-      val initialRecordCategorisations =
-        RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("initialComCode", Seq(), Some("some measure unit"), 0))
-        )
-      val newCommodity                 = testCommodity.copy(commodityCode = "newComCode")
-
-      when(mockOttConnector.getCategorisationInfo(eqTo("newComCode"), any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(mockOttResponse("newComCode")))
-
-      val expectedRecordCategorisations =
-        RecordCategorisations(
-          Map(testRecordId -> CategorisationInfo("newComCode", Seq(), Some("some measure unit"), 0, Some("comcode")))
-        )
+    "return Category 1 No Exemptions if a category 1 question has no exemptions" in {
+      val categorisationInfo = CategorisationInfo(
+        "1234567890",
+        Seq(
+          CategoryAssessment(
+            "ass1",
+            1,
+            Seq.empty
+          ),
+          CategoryAssessment(
+            "ass2",
+            1,
+            Seq(Certificate("cert1", "cert1c", "cert1desc"))
+          )
+        ),
+        Seq.empty,
+        None,
+        1
+      )
 
       val userAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, initialRecordCategorisations)
-        .success
-        .value
-        .set(LongerCommodityQuery(testRecordId), newCommodity)
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
         .success
         .value
 
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
+      categorisationService.calculateResult(
+        categorisationInfo,
+        userAnswers,
+        testRecordId
+      ) mustEqual Category1NoExemptionsScenario
 
-      val result = await(categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId))
-      result.get(RecordCategorisationsQuery).get mustBe expectedRecordCategorisations
+    }
 
-      withClue("Should call OTT to get categorisation info") {
-        verify(mockOttConnector).getCategorisationInfo(any(), any(), any(), any(), any(), any())(
-          any()
+    "return Category 2" - {
+      "if a category 2 question is No" in {
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+
+      }
+
+      "if no category 1 assessments and category 2 question has no exemptions" in {
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            CategoryAssessment(
+              "ass1",
+              2,
+              Seq.empty
+            ),
+            CategoryAssessment(
+              "ass2",
+              2,
+              Seq(Certificate("cert1", "cert1c", "cert1desc"))
+            )
+          ),
+          Seq.empty,
+          None,
+          1
         )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+
       }
 
-      withClue("Should call session repository to update user answers") {
-        verify(mockSessionRepository).set(any())
+      "if all category 1 are answered Yes and there are category 2 with no exemptions" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("cert1", "cert1code", "cert1desc")
+          )
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("cert2", "cert2code", "cert2desc")
+          )
+        )
+
+        val assessment3 = CategoryAssessment(
+          "ass3",
+          2,
+          Seq(
+            Certificate("cert3", "cert3code", "cert3desc")
+          )
+        )
+
+        val assessment4 = CategoryAssessment(
+          "ass4",
+          2,
+          Seq.empty
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          Seq(
+            assessment1,
+            assessment2,
+            assessment4,
+            assessment3
+          ),
+          Seq(assessment1, assessment2),
+          None,
+          1
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category2Scenario
+
       }
+
     }
 
-    "should return future failed when the call to session repository fails" in {
-      val expectedException = new RuntimeException("Failed communicating with session repository")
-      when(mockSessionRepository.set(any()))
-        .thenReturn(Future.failed(expectedException))
+    "return StandardNoAssessments if no assessments" in {
+      val categoryInfoNoAssessments = CategorisationInfo(
+        "1234567890",
+        Seq.empty,
+        Seq.empty,
+        None,
+        1
+      )
 
-      val mockDataRequest = mock[DataRequest[AnyContent]]
+      val userAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+        .success
+        .value
 
-      val userAnswers = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
-      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
-
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
-        await(result)
-      }
-
-      actualException mustBe expectedException
-    }
-
-    "should return future failed when the longer commodity query is not set" in {
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-
-      intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
-        await(result)
-      }
-
-    }
-
-    "should return future failed when the call to the router fails" in {
-      val expectedException = new RuntimeException("Failed communicating with the router")
-      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
-        .thenReturn(Future.failed(expectedException))
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
-      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
-
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
-        await(result)
-      }
-
-      actualException mustBe expectedException
-    }
-
-    "should return future failed when the call to OTT fails" in {
-      val expectedException = new RuntimeException("Failed communicating with OTT")
-      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.failed(expectedException))
-
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      val userAnswers     = emptyUserAnswers.set(LongerCommodityQuery(testRecordId), testCommodity).success.value
-      when(mockDataRequest.userAnswers).thenReturn(userAnswers)
-
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.updateCategorisationWithNewCommodityCode(mockDataRequest, testRecordId)
-        await(result)
-      }
-
-      actualException mustBe expectedException
+      categorisationService.calculateResult(
+        categoryInfoNoAssessments,
+        userAnswers,
+        testRecordId
+      ) mustBe StandardGoodsNoAssessmentsScenario
     }
 
   }
 
-  "cleanupOldAssessmentAnswers" - {
+  "updatingAnswersForRecategorisation2" - {
 
-    "remove old assessment answers for given recordId" in {
-
-      val initialUserAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisations)
+    "should return the user answers with the reassessment answers set if old and new category assessments are the same" in {
+      val expectedUserAnswers = userAnswersForCategorisation
+        .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
         .success
         .value
-        .set(
-          AssessmentPage(testRecordId, 0),
-          AssessmentAnswer.Exemption("1234")
-        )
+        .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("4321"))
-        .success
-        .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
-        .success
-        .value
-        .set(
-          AssessmentPage("b0082f50-f13b-416a-8071-3bd95107d44e", 0),
-          AssessmentAnswer.Exemption("1234")
-        )
+        .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
         .success
         .value
 
-      val result            = categorisationService.cleanupOldAssessmentAnswers(initialUserAnswers, testRecordId)
-      val resultUserAnswers = result.get
-
-      resultUserAnswers.get(AssessmentPage(testRecordId, 0)) mustBe None
-      resultUserAnswers.get(AssessmentPage(testRecordId, 1)) mustBe None
-      resultUserAnswers.get(AssessmentPage(testRecordId, 2)) mustBe None
-
-      withClue("Other record ids must be unaffected") {
-        resultUserAnswers.get(AssessmentPage("b0082f50-f13b-416a-8071-3bd95107d44e", 0)) mustBe Some(
-          AssessmentAnswer.Exemption("1234")
-        )
-      }
-
-    }
-
-  }
-
-  "updatingAnswersForRecategorisation" - {
-
-    "should return the same user answers if old and new category assessments are the same" in {
       val result = categorisationService
         .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
-          categoryQuery,
-          categoryQuery
+          categorisationInfo,
+          categorisationInfo
         )
         .success
         .value
-      result shouldBe userAnswersForCategorisation
+      result shouldBe expectedUserAnswers
     }
 
-    "should clean up the old answers if all the assessments are different" in {
+    "should not copy across the old answers if all the assessments are different" in {
+      val newCat                     = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "12345",
-        Seq(CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))),
+        Seq(newCat),
+        Seq(newCat),
         None,
-        1,
-        Some("123")
+        1
       )
       val result                     = categorisationService
         .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
-          categoryQuery,
+          categorisationInfo,
           newCommodityCategorisation
         )
         .success
         .value
-      result.get(AssessmentPage(testRecordId, 0)) shouldBe Some(NotAnsweredYet)
-      result.get(AssessmentPage(testRecordId, 1)) shouldBe None
-      result.get(AssessmentPage(testRecordId, 2)) shouldBe None
+
+      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer.NotAnsweredYet)
+      result.get(ReassessmentPage(testRecordId, 1)) shouldBe None
+      result.get(ReassessmentPage(testRecordId, 2)) shouldBe None
     }
 
-    "should return all the old answers when new category info has a new assessment" in {
+    "should copy across all the old answers when new category info has a new assessment" in {
+      val assList                    = Seq(
+        category1,
+        category2,
+        category3,
+        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+      )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
-        Seq(
-          category1,
-          category2,
-          category3,
-          CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
-        ),
+        assList,
+        assList,
         Some("Weight, in kilograms"),
-        0,
-        Some("1234567890")
+        0
       )
       val result                     = categorisationService
         .updatingAnswersForRecategorisation(
           userAnswersForCategorisation,
           testRecordId,
-          categoryQuery,
+          categorisationInfo,
           newCommodityCategorisation
         )
         .success
         .value
-      result.get(AssessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer.Exemption("Y994"))
-      result.get(AssessmentPage(testRecordId, 1)) shouldBe Some(AssessmentAnswer.Exemption("NC123"))
-      result.get(AssessmentPage(testRecordId, 2)) shouldBe Some(AssessmentAnswer.Exemption("X812"))
+      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer.Exemption)
+      result.get(ReassessmentPage(testRecordId, 1)) shouldBe Some(AssessmentAnswer.Exemption)
+      result.get(ReassessmentPage(testRecordId, 2)) shouldBe Some(AssessmentAnswer.Exemption)
     }
 
-    "should move the old answers to the right position if they are in different order in the new categorisation" in {
-
-      val oldCommodityCategorisation = CategorisationInfo(
-        "1234567890",
-        Seq(category1, category2, category3),
-        Some("Weight, in kilograms"),
-        0,
-        Some("1234567890")
-      )
-
-      val oldUserAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisations)
-        .success
-        .value
-        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
-        .success
-        .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
-        .success
-        .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
-        .success
-        .value
+    "should copy the old answers to the right position if they are in different order in the new categorisation" in {
 
       val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
         Seq(category3, category1, category4, category2),
+        Seq(category3, category1, category4, category2),
         Some("Weight, in kilograms"),
-        0,
-        Some("1234567890")
+        0
       )
+
+      val oldUserAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .success
+        .value
+        .set(LongerCategorisationDetailsQuery(testRecordId), newCommodityCategorisation)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .success
+        .value
 
       val newUserAnswers = categorisationService
         .updatingAnswersForRecategorisation(
           oldUserAnswers,
           testRecordId,
-          oldCommodityCategorisation,
+          categorisationInfo,
           newCommodityCategorisation
         )
         .success
         .value
-      newUserAnswers.get(AssessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption("X812"))
-      newUserAnswers.get(AssessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer.Exemption("Y994"))
-      newUserAnswers.get(AssessmentPage(testRecordId, 2)) mustBe Some(NotAnsweredYet)
-      newUserAnswers.get(AssessmentPage(testRecordId, 3)) mustBe Some(AssessmentAnswer.Exemption("NC123"))
+      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer.Exemption)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe Some(AssessmentAnswer.NotAnsweredYet)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 3)) mustBe Some(AssessmentAnswer.Exemption)
     }
 
     "should move the old answers to the right position if only some are in the new categorisation" in {
 
-      val oldCommodityCategorisation = CategorisationInfo(
-        "1234567890",
-        Seq(category1, category2, category3),
-        Some("Weight, in kilograms"),
-        0,
-        Some("1234567890")
-      )
-
       val oldUserAnswers = emptyUserAnswers
-        .set(RecordCategorisationsQuery, recordCategorisations)
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
         .success
         .value
 
@@ -538,23 +628,23 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
         Seq(category1, category4),
+        Seq(category1, category4),
         Some("Weight, in kilograms"),
-        0,
-        Some("1234567890")
+        0
       )
 
       val newUserAnswers = categorisationService
         .updatingAnswersForRecategorisation(
           oldUserAnswers,
           testRecordId,
-          oldCommodityCategorisation,
+          categorisationInfo,
           newCommodityCategorisation
         )
         .success
         .value
-      newUserAnswers.get(AssessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption("Y994"))
-      newUserAnswers.get(AssessmentPage(testRecordId, 1)) mustBe Some(NotAnsweredYet)
-      newUserAnswers.get(AssessmentPage(testRecordId, 2)) mustBe None
+      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer.NotAnsweredYet)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
     }
 
   }

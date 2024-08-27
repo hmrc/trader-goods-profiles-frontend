@@ -16,22 +16,18 @@
 
 package controllers
 
-import cats.data
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.NirmsNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile, ValidationError}
+import models.{Mode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
-import play.api.i18n.Lang.logger
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.NirmsNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,8 +47,7 @@ class NirmsNumberController @Inject() (
   view: NirmsNumberView,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 
@@ -144,7 +139,10 @@ class NirmsNumberController @Inject() (
                         for {
                           _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
                         } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
-                      case Left(errors) => Future.successful(logErrorsAndContinue(errors))
+                      case Left(errors) =>
+                        val errorMessage = "Unable to update Trader profile."
+                        val continueUrl  = routes.HasNirmsController.onPageLoadUpdate
+                        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
                     }
                   }
               }
@@ -153,11 +151,4 @@ class NirmsNumberController @Inject() (
       )
   }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError]): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.HasNirmsController.onPageLoadUpdate.url)
-    logger.error(s"Unable to update Trader profile.  Missing pages: $errorMessages")
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
-  }
 }

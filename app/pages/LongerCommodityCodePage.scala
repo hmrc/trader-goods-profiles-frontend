@@ -21,8 +21,7 @@ import play.api.libs.json.JsPath
 
 import scala.util.Try
 
-case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolean = false)
-    extends QuestionPage[String] {
+case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString \ recordId
 
@@ -32,10 +31,6 @@ case class LongerCommodityCodePage(recordId: String, shouldRedirectToCya: Boolea
     value: Option[String],
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] = if (shouldRedirectToCya) {
-    super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-  } else {
+  ): Try[UserAnswers] =
     updatedUserAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId))
-  }
-
 }

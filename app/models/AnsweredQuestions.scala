@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package models.router.responses
+package models
 
-import play.api.libs.json.{Json, OFormat}
+import models.ott.CategoryAssessment
 
-final case class CreateGoodsRecordResponse(
-  recordId: String
+case class AnsweredQuestions(
+  index: Int,
+  question: CategoryAssessment,
+  answer: Option[AssessmentAnswer],
+  reassessmentQuestion: Boolean = false
 )
-
-object CreateGoodsRecordResponse {
-
-  implicit lazy val format: OFormat[CreateGoodsRecordResponse] = Json.format
-
-}

@@ -21,13 +21,13 @@ import forms.EmailFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.EmailPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.EmailView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailController @Inject() (
@@ -41,9 +41,8 @@ class EmailController @Inject() (
   formProvider: EmailFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: EmailView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+)(implicit @unused ec: ExecutionContext)
+    extends BaseController {
 
   private val form = formProvider()
 

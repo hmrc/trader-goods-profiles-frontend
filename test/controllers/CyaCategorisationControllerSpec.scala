@@ -17,26 +17,26 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
-import models.AssessmentAnswer.NoExemption
 import models.helper.CategorisationJourney
-import models.{AssessmentAnswer, Category1, CategoryRecord, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, UserAnswers}
+import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{AssessmentPage, HasSupplementaryUnitPage, LongerCommodityCodePage, SupplementaryUnitPage}
+import pages._
 import play.api.i18n.Messages
 import play.api.inject.bind
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.LongerCommodityQuery
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import queries.RecordCategorisationsQuery
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
@@ -45,19 +45,13 @@ import scala.concurrent.Future
 
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  private val shortCommodity                = "654321"
-  private val unchangedCategoryInfo         =
-    categoryQuery.copy(commodityCode = shortCommodity, originalCommodityCode = Some(shortCommodity))
-  private val unchangedCommodity            = RecordCategorisations(
-    Map(testRecordId -> unchangedCategoryInfo)
-  )
-  private val previouslyUpdatedCategoryInfo =
-    categoryQuery.copy(commodityCode = shortCommodity + 1234, originalCommodityCode = Some(shortCommodity))
-  private val previouslyUpdatedCommodity    = RecordCategorisations(
-    Map(testRecordId -> previouslyUpdatedCategoryInfo)
+  private val onwardRoute      = Call("GET", "/foo")
+  private val fakeNavigator    = new FakeNavigator(onwardRoute)
+  lazy private val continueUrl = RedirectUrl(
+    routes.CategorisationPreparationController.startCategorisation(testRecordId).url
   )
 
-  "CyaCategorisationController" - {
+  "CyaCategorisationController2" - {
 
     "for a GET" - {
 
@@ -83,13 +77,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -110,13 +104,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when no exemption is used, meaning some assessment pages are not answered" in {
 
           val userAnswers = emptyUserAnswers
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), NoExemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
@@ -132,10 +126,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -175,23 +169,33 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
 
+            val supplementaryUnitRow          = SupplementaryUnitSummary.row(userAnswers, testRecordId)
             val expectedSupplementaryUnitList = SummaryListViewModel(
               rows = Seq(
                 HasSupplementaryUnitSummary.row(userAnswers, testRecordId),
-                SupplementaryUnitSummary.row(userAnswers, testRecordId)
+                supplementaryUnitRow
               ).flatten
             )
+
+            withClue("should append measurement unit to supplementary unit") {
+              val supplementaryValue = supplementaryUnitRow.get.value.content match {
+                case Text(innerContent) => innerContent
+                case _                  => ""
+              }
+              supplementaryValue must be("1234.0 Weight, in kilograms")
+            }
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
@@ -202,32 +206,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               request,
               messages(application)
             ).toString
-          }
-        }
-
-        "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
-
-          val userAnswers = userAnswersForCategorisation
-            .set(HasSupplementaryUnitPage(testRecordId), true)
-            .success
-            .value
-            .set(SupplementaryUnitPage(testRecordId), "1234.0")
-            .success
-            .value
-
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
-          implicit val localMessages: Messages = messages(application)
-
-          running(application) {
-            val row = SupplementaryUnitSummary.row(userAnswers, testRecordId).value
-
-            val supplementaryValue = row.value.content match {
-              case Text(innerContent) => innerContent
-
-            }
-
-            supplementaryValue must be("1234.0 Weight, in kilograms")
-
           }
         }
 
@@ -251,13 +229,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -280,13 +258,32 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           }
         }
 
-        "when longer commodity code is given" in {
+        "when longer commodity code, show reassessment answers and longer commodity code" in {
 
-          val userAnswers = userAnswersForCategorisation
-            .set(RecordCategorisationsQuery, previouslyUpdatedCommodity)
+          val longerCat   = categorisationInfo.copy("9876543210", longerCode = true)
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "987654"))
             .success
             .value
-            .set(LongerCommodityCodePage(testRecordId), "1234")
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .success
+            .value
+            .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
+            .success
+            .value
+            .set(LongerCommodityCodePage(testRecordId), "3210")
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
@@ -302,13 +299,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = true)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1)
-                  .get,
-                AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = true)
                   .get
               )
             )
@@ -334,47 +328,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           }
         }
 
-        "when longer commodity code is not given" in {
-          val userAnswers = userAnswersForCategorisation
-            .set(RecordCategorisationsQuery, unchangedCommodity)
-            .success
-            .value
-
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
-          implicit val localMessages: Messages = messages(application)
-
-          running(application) {
-            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
-
-            val result = route(application, request).value
-
-            val view                   = application.injector.instanceOf[CyaCategorisationView]
-            val expectedAssessmentList = SummaryListViewModel(
-              rows = Seq(
-                AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0)
-                  .get,
-                AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1)
-                  .get,
-                AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2)
-                  .get
-              )
-            )
-
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(
-              testRecordId,
-              expectedAssessmentList,
-              emptySummaryList,
-              emptySummaryList
-            )(
-              request,
-              messages(application)
-            ).toString
-          }
-        }
       }
 
       "must redirect to Journey Recovery" - {
@@ -382,7 +335,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when no category assessments answered" in {
 
           val userAnswers = emptyUserAnswers
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 
@@ -395,14 +348,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
 
-            val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
           }
         }
 
         "when no answers are found" in {
           val application = applicationBuilder(Some(emptyUserAnswers)).build()
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -428,22 +379,18 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           }
         }
 
-        "if recordcategorisationsquery is empty/none" in {
+        "if categorisation query is not defined" in {
 
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-
-          lazy val userAnswersForCategorisationEmptyQuery: UserAnswers = emptyUserAnswers
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+          val userAnswersForCategorisationEmptyQuery: UserAnswers = emptyUserAnswers
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-
-          val userAnswers = userAnswersForCategorisationEmptyQuery
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
             .value
@@ -451,7 +398,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisationEmptyQuery)).build()
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -467,16 +414,17 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "when validation errors" in {
 
           val userAnswers = emptyUserAnswers
-            .set(RecordCategorisationsQuery, recordCategorisations)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(SupplementaryUnitPage(testRecordId), "123.0")
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-          val continueUrl = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -496,10 +444,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "must update the goods record and redirect to the CategorisationResultController with correct view" - {
 
-          "when audit service works without longer commodity code" in {
+          "when audit service works" in {
 
-            val userAnswers = UserAnswers(userAnswersId)
-              .set(RecordCategorisationsQuery, recordCategorisations)
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
               .success
               .value
 
@@ -511,23 +459,30 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
-            val sessionRepository = mock[SessionRepository]
-            when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+            val mockSessionRepository = mock[SessionRepository]
+            when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+            val mockCategorisationService = mock[CategorisationService]
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-                .overrides(bind[AuditService].toInstance(mockAuditService))
-                .overrides(bind[SessionRepository].toInstance(sessionRepository))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[Navigator].toInstance(fakeNavigator),
+                  bind[CategorisationService].toInstance(mockCategorisationService)
+                )
                 .build()
 
             val expectedPayload = CategoryRecord(
               testEori,
               testRecordId,
-              None,
-              category = 1,
-              categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categoryQuery.measurementUnit
+              "1234567890",
+              Category1Scenario,
+              0,
+              Some("Weight, in kilograms")
             )
 
             running(application) {
@@ -536,9 +491,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.CategorisationResultController
-                .onPageLoad(testRecordId, Category1)
-                .url
+              redirectLocation(result).value mustEqual onwardRoute.url
 
               verify(mockConnector)
                 .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
@@ -550,63 +503,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
               }
               withClue("must cleanse the user answers data") {
-                verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
-              }
-
-            }
-          }
-
-          "when audit service works with longer commodity code" in {
-
-            val userAnswers = UserAnswers(userAnswersId)
-              .set(RecordCategorisationsQuery, recordCategorisations)
-              .success
-              .value
-              .set(LongerCommodityQuery(testRecordId), testCommodity)
-              .success
-              .value
-
-            val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
-              .thenReturn(Future.successful(Done))
-
-            val mockAuditService = mock[AuditService]
-            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
-              .thenReturn(Future.successful(Done))
-
-            val application =
-              applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-                .overrides(bind[AuditService].toInstance(mockAuditService))
-                .build()
-
-            val expectedPayload = CategoryRecord(
-              testEori,
-              testRecordId,
-              Some(categoryQuery.commodityCode),
-              category = 1,
-              categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categoryQuery.measurementUnit
-            )
-
-            running(application) {
-              val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
-
-              val result = route(application, request).value
-
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.CategorisationResultController
-                .onPageLoad(testRecordId, Category1)
-                .url
-
-              verify(mockConnector)
-                .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
-                  any()
-                )
-
-              withClue("audit event has been fired") {
-                verify(mockAuditService)
-                  .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
+                verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
               }
 
             }
@@ -614,8 +511,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           "when audit service fails" in {
 
-            val userAnswers = UserAnswers(userAnswersId)
-              .set(RecordCategorisationsQuery, recordCategorisations)
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
               .success
               .value
 
@@ -627,19 +524,26 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
               .thenReturn(Future.failed(new RuntimeException(":(")))
 
+            val mockCategorisationService = mock[CategorisationService]
+            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-                .overrides(bind[AuditService].toInstance(mockAuditService))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[Navigator].toInstance(fakeNavigator),
+                  bind[CategorisationService].toInstance(mockCategorisationService)
+                )
                 .build()
 
             val expectedPayload = CategoryRecord(
               testEori,
               testRecordId,
-              None,
-              category = 1,
-              categoryAssessmentsWithExemptions = 0,
-              measurementUnit = categoryQuery.measurementUnit
+              "1234567890",
+              Category1Scenario,
+              0,
+              Some("Weight, in kilograms")
             )
 
             running(application) {
@@ -648,9 +552,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.CategorisationResultController
-                .onPageLoad(testRecordId, Category1)
-                .url
+              redirectLocation(result).value mustEqual onwardRoute.url
 
               withClue("connector was called even though audit failed") {
                 verify(mockConnector)
@@ -670,7 +572,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockConnector = mock[GoodsRecordConnector]
-          val continueUrl   = RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -690,6 +591,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
               .url
+
             verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
               verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -700,13 +602,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
       "must let the play error handler deal with connector failure" in {
 
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(RecordCategorisationsQuery, recordCategorisations)
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.updateGoodsRecord(any())(any()))
+        when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val sessionRepository = mock[SessionRepository]
@@ -716,11 +618,17 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
+        val mockCategorisationService = mock[CategorisationService]
+        when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .overrides(bind[SessionRepository].toInstance(sessionRepository))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockConnector),
+              bind[AuditService].toInstance(mockAuditService),
+              bind[SessionRepository].toInstance(sessionRepository),
+              bind[CategorisationService].toInstance(mockCategorisationService)
+            )
             .build()
 
         running(application) {
@@ -755,4 +663,5 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
       }
     }
   }
+
 }
