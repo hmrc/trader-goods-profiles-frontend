@@ -18,9 +18,9 @@ package controllers
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import models.{Country, NormalMode, UserAnswers}
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
+import models.{Country, NormalMode}
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,6 +35,7 @@ import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
@@ -48,8 +49,8 @@ class SingleRecordController @Inject() (
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+)(implicit @unused ec: ExecutionContext)
+  extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(recordId: String): Action[AnyContent]                                                             =
@@ -57,13 +58,14 @@ class SingleRecordController @Inject() (
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
         recordIsLocked                      = record.adviceStatus match {
-                                                case status
-                                                    if status.equalsIgnoreCase("Requested") ||
-                                                      status.equalsIgnoreCase("In progress") ||
-                                                      status.equalsIgnoreCase("Information Requested") =>
-                                                  true
-                                                case _ => false
-                                              }
+          case status
+            if status.equalsIgnoreCase("Requested") ||
+              status.equalsIgnoreCase("In progress") ||
+              status.equalsIgnoreCase("Information Requested") =>
+            true
+          case _ => false
+        }
+        countries                          <- retrieveAndStoreCountries
         updatedAnswersWithTraderReference  <-
           Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
@@ -83,8 +85,8 @@ class SingleRecordController @Inject() (
 
       } yield {
         val isCategorised = record.category.isDefined
-        val countries     = retrieveAndStoreCountries
-        val detailsList   = SummaryListViewModel(
+
+        val detailsList = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),

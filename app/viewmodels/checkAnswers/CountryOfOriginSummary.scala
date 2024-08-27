@@ -18,15 +18,13 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, Country, Mode, NormalMode, UserAnswers}
+import models.{CheckMode, Country, Mode, UserAnswers}
 import pages.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-
-import scala.concurrent.Future
 
 object CountryOfOriginSummary {
 
@@ -55,48 +53,42 @@ object CountryOfOriginSummary {
     )
   }
 
+  def rowUpdate(
+    record: GetGoodsRecordResponse,
+    recordId: String,
+    mode: Mode,
+    recordLocked: Boolean,
+    countries: Seq[Country]
+  )(implicit
+    messages: Messages
+  ): SummaryListRow = {
 
-    def rowUpdate(
-      record: GetGoodsRecordResponse,
-      recordId: String,
-      mode: Mode,
-      recordLocked: Boolean,
-      countries: Future[Seq[Country]]
-    )(implicit
-      messages: Messages
-    ): SummaryListRow =
-      countries.map { countries =>
-        val countryName = getCountryName(record.countryOfOrigin, countries)
+    val countryName = getCountryName(record.countryOfOrigin, countries)
 
-        val changeLink = if (record.category.isDefined) {
-          routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
-        } else {
-          routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
-        }
-
-        SummaryListRowViewModel(
-          key = "countryOfOrigin.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlFormat.escape(record.countryOfOrigin).toString),
-          actions = if (recordLocked) {
-            Seq.empty
-          } else {
-            Seq(
-              ActionItemViewModel("site.change", changeLink)
-                .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
-            )
-          }
+    val changeLink = if (record.category.isDefined) {
+      routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
+    } else {
+      routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
+    }
+    SummaryListRowViewModel(
+      key = "countryOfOrigin.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(countryName).toString),
+      actions = if (recordLocked) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", changeLink)
+            .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
       }
+    )
   }
 
-def getCountryName(countryOfOrigin: String, countries: Seq[Country]) = {
-  if (countries == null || countries.isEmpty) {
-
-    countryOfOrigin
-  } else {
-
-    countries.find(country => country.id == countryOfOrigin).map(_.description).getOrElse(countryOfOrigin)
-  }
-
+  private def getCountryName(countryOfOrigin: String, countries: Seq[Country]) =
+    if (countries == null || countries.isEmpty) {
+      countryOfOrigin
+    } else {
+      countries.find(country => country.id == countryOfOrigin).map(_.description).getOrElse(countryOfOrigin)
+    }
 
 }
