@@ -16,8 +16,7 @@
 
 package base
 
-import base.TestConstants.{NiphlsCode, testRecordId, userAnswersId}
-import base.TestConstants.{requested, testRecordId, userAnswersId}
+import base.TestConstants.{NiphlsCode, requested, testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
@@ -178,7 +177,7 @@ trait SpecBase
   lazy val category1Niphl: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(Certificate(NiphlsCode, "Y994", "Goods are not from warzone")))
 
-  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
+  lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
     "1234567890",
     Some(validityEndDate),
     Seq(category1, category2, category3),

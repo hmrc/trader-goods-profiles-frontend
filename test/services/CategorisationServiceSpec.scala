@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.{NiphlsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import models.ott._
+import models.ott.{CategoryAssessment, _}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
@@ -362,6 +362,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -409,6 +410,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -495,6 +497,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -667,6 +670,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -715,6 +719,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -768,6 +773,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,

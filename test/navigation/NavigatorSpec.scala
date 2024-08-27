@@ -609,6 +609,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
                 None,
@@ -703,6 +704,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
@@ -730,6 +732,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
@@ -758,6 +761,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category2NoExemptions, category1),
                 Seq.empty,
                 None,
@@ -787,6 +791,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphls assessment and has Niphls and is six-digit code with descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
+                None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
@@ -1052,6 +1057,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
                 None,
