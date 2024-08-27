@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationJourney
+import models.ott.CategorisationInfo
 import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
@@ -51,7 +52,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
     routes.CategorisationPreparationController.startCategorisation(testRecordId).url
   )
 
-  "CyaCategorisationController2" - {
+  "CyaCategorisationController" - {
 
     "for a GET" - {
 
@@ -321,6 +322,60 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               expectedAssessmentList,
               emptySummaryList,
               expectedLongerCommodityList
+            )(
+              request,
+              messages(application)
+            ).toString
+          }
+        }
+
+        "use the category assessments that need to be answered list, not the category assessment list" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Seq(category1, category2, category3),
+            Seq(category1, category3),
+            None,
+            1
+          )
+
+          val userAnswers: UserAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .success
+            .value
+
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          implicit val localMessages: Messages = messages(application)
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
+
+            val result = route(application, request).value
+
+            val view                   = application.injector.instanceOf[CyaCategorisationView]
+            val expectedAssessmentList = SummaryListViewModel(
+              rows = Seq(
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
+                  .get,
+                AssessmentsSummary
+                  .row(testRecordId, userAnswers, category3, 1, isReassessmentAnswer = false)
+                  .get
+              )
+            )
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              testRecordId,
+              expectedAssessmentList,
+              emptySummaryList,
+              emptySummaryList
             )(
               request,
               messages(application)
