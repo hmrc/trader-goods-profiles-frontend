@@ -18,7 +18,8 @@ package controllers
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
-import forms.{GoodsRecordsFormProvider, GoodsRecordsFormProvider2}
+import forms.{GoodsRecordsFormProvider2, GoodsRecordsFormProvider}
+import models.GoodsRecordsFormData
 import models.GoodsRecordsPagination._
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -33,18 +34,18 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsController @Inject() (
-  override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
-  formProvider: GoodsRecordsFormProvider2,
-  val controllerComponents: MessagesControllerComponents,
-  view: GoodsRecordsView,
-  emptyView: GoodsRecordsEmptyView,
-  goodsRecordConnector: GoodsRecordConnector,
-  ottConnector: OttConnector
+                                         override val messagesApi: MessagesApi,
+                                         sessionRepository: SessionRepository,
+                                         identify: IdentifierAction,
+                                         getData: DataRetrievalAction,
+                                         requireData: DataRequiredAction,
+                                         profileAuth: ProfileAuthenticateAction,
+                                         formProvider: GoodsRecordsFormProvider2,
+                                         val controllerComponents: MessagesControllerComponents,
+                                         view: GoodsRecordsView,
+                                         emptyView: GoodsRecordsEmptyView,
+                                         goodsRecordConnector: GoodsRecordConnector,
+                                         ottConnector: OttConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -136,11 +137,15 @@ class GoodsRecordsController @Inject() (
                   )
                 )
             },
-          value =>
+          value => {
+            println(value.searchText)
+            println(value.adviceStatus)
+            println(value.countryOfOrigin)
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
+              _ <- sessionRepository.set(updatedAnswers)
             } yield Redirect(routes.GoodsRecordsSearchResultController.onPageLoad(1))
+          }
         )
     }
 }

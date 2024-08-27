@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import models.GoodsRecordsFormData
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-case object GoodsRecordsPage extends QuestionPage[GoodsRecordsFormData] {
+case class GoodsRecordsFormData(
+  searchText: Option[String] = None,
+  adviceStatus: Option[String] = None,
+  countryOfOrigin: Option[String] = None
+)
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "goodsRecords"
+object GoodsRecordsFormData {
+  implicit val format: OFormat[GoodsRecordsFormData] = Json.format[GoodsRecordsFormData]
 }

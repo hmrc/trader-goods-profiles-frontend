@@ -38,7 +38,7 @@
   ) {
 
     <style>
-        .filters-container {
+        .filters-container-style1 {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -48,15 +48,26 @@
             width: 97%;
         }
 
+        .filters-container-style2 {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid grey;
+            padding: 30px;
+            margin: 0 0 30px 15px;
+            max-width: 643px;
+        }
+
         .header-row {
             display: flex;
             gap: 33px;
             flex-wrap: wrap;
         }
 
-        .filter-item {
+        .country-container {
             flex: 1;
             min-width: 243.811px;
+            max-width: 565px;
             flex-shrink: 0;
         }
 
@@ -120,69 +131,67 @@
 </div>
 
 @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
-<div class="govuk-grid-column-two-thirds">
     <div style="display: flex; align-items: flex-end;">
         @govukInput(
-        InputViewModel(
-        field = form("searchText"),
-        label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
-        )
+            InputViewModel(
+                field = form("searchText"),
+                label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
+            )
         )
         @govukButton(
-        ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+            ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
         )
     </div>
-</div>
 
-<div class="filters-container govuk-grid-column-full">
-    <label class="govuk-label govuk-!-font-weight-bold">Filters</label>
-    <!-- Header Row -->
-    <div class="header-row">
-        <div class="filter-item">
-            <label class="govuk-label govuk-!-font-weight-bold" for="countryOfOrigin">
-                Country of origin
-            </label>
-            <div class="spacer"></div>
-            <div>
-                <input class="govuk-input" id="countryOfOrigin" name="countryOfOrigin" type="text">
-            </div>
-        </div>
-        <div class="status-container">
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-label govuk-!-font-weight-bold">
-                    Status
-                </legend>
+    <div class="filters-container-style1 govuk-grid-column-full">
+        <label class="govuk-label govuk-!-font-weight-bold">Filters</label>
+        <!-- Header Row -->
+        <div class="header-row">
+            <div class="country-container">
+                <label class="govuk-label govuk-!-font-weight-bold" for="countryOfOrigin">
+                    Country of origin
+                </label>
                 <div class="spacer"></div>
-                <div class="checkbox-group">
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="status-ready" name="adviceStatus" type="checkbox" value="immi-ready">
-                        <label class="govuk-label govuk-checkboxes__label" for="status-ready">
-                            IMMI ready
-                        </label>
-                    </div>
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="status-not-ready" name="adviceStatus" type="checkbox" value="not-immi-ready">
-                        <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
-                            Not IMMI ready
-                        </label>
-                    </div>
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="status-action-needed" name="adviceStatus" type="checkbox" value="Not Requested">
-                        <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
-                            Action needed
-                        </label>
-                    </div>
+                <div>
+                    <input class="govuk-input" id="countryOfOrigin" name="countryOfOrigin" type="text">
                 </div>
-            </fieldset>
-        </div>
+            </div>
+            <div class="status-container">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-label govuk-!-font-weight-bold">
+                        Status
+                    </legend>
+                    <div class="spacer"></div>
+                    <div class="checkbox-group">
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="status-ready" name="adviceStatus" type="checkbox" value="immi-ready">
+                            <label class="govuk-label govuk-checkboxes__label" for="status-ready">
+                                IMMI ready
+                            </label>
+                        </div>
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="status-not-ready" name="adviceStatus" type="checkbox" value="not-immi-ready">
+                            <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
+                                Not IMMI ready
+                            </label>
+                        </div>
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="status-action-needed" name="adviceStatus" type="checkbox" value="Not Requested">
+                            <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
+                                Action needed
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
 
+        </div>
+        <div>
+            @govukButton(
+                ButtonViewModel("Apply filters").withAttribute("style", "margin-bottom: 0;")
+            )
+        </div>
     </div>
-    <div>
-        @govukButton(
-            ButtonViewModel("Apply filters").withAttribute("style", "margin-bottom: 0;")
-        )
-    </div>
-</div>
 
 }
 

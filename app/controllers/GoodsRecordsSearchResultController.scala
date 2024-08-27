@@ -53,7 +53,7 @@ class GoodsRecordsSearchResultController @Inject() (
             Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           } else {
             goodsRecordConnector
-              .searchRecords(request.eori, data.searchText, Some("Not Requested"), Some("DE"), page, pageSize)
+              .searchRecords(request.eori, data.searchText.getOrElse(""), data.adviceStatus, data.countryOfOrigin, page, pageSize)
               .flatMap {
                 case Some(searchResponse) =>
                   if (searchResponse.pagination.totalRecords != 0) {
@@ -71,14 +71,14 @@ class GoodsRecordsSearchResultController @Inject() (
                             searchResponse.pagination.totalPages
                           ),
                           page,
-                          data.searchText,
+                          data.searchText.getOrElse(""),
                           searchResponse.pagination.totalPages
                         )
                       )
                     }
                   } else {
                     request.userAnswers.get(GoodsRecordsPage) match {
-                      case Some(searchText) => Future.successful(Ok(emptyView(data.searchText)))
+                      case Some(searchText) => Future.successful(Ok(emptyView(data.searchText.getOrElse(""))))
                       case None             => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
                     }
                   }

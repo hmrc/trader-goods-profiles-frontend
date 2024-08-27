@@ -16,35 +16,18 @@
 
 package forms
 
-import javax.inject.Inject
-import forms.mappings.Mappings
+import models.GoodsRecordsFormData
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.{Json, OFormat}
 
-class GoodsRecordsFormProvider2 @Inject() extends Mappings {
+class GoodsRecordsFormProvider2 {
 
   def apply(): Form[GoodsRecordsFormData] =
     Form(
       mapping(
-        "searchText" -> text("goodsRecords.error.required")
-          .verifying(maxLength(100, "goodsRecords.error.length")),
-        "adviceStatus" -> text("goodsRecords.adviceStatus.error.required")
-          .verifying(maxLength(50, "goodsRecords.adviceStatus.error.length")),
-        "countryOfOrigin" -> text("goodsRecords.countryOfOrigin.error.required")
-          .verifying(maxLength(50, "goodsRecords.countryOfOrigin.error.length"))
+        "searchText" -> optional(text),
+        "adviceStatus" -> optional(text),
+        "countryOfOrigin" -> optional(text)
       )(GoodsRecordsFormData.apply)(GoodsRecordsFormData.unapply)
     )
 }
-
-case class GoodsRecordsFormData(
-  searchText: String,
-  adviceStatus: String,
-  countryOfOrigin: String
-)
-
-object GoodsRecordsFormData {
-  implicit val format: OFormat[GoodsRecordsFormData] = Json.format[GoodsRecordsFormData]
-}
-
-
