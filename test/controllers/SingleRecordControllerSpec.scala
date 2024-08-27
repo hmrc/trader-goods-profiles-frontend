@@ -365,6 +365,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val supplementaryValue = row.value.content match {
           case Text(innerContent) => innerContent
+          case _                  => ""
         }
 
         supplementaryValue must equal("1234567890.123456 grams")
@@ -388,6 +389,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           .value
         val hasSupplementaryUnit = row.value.content match {
           case Text(innerContent) => innerContent
+          case _                  => ""
         }
 
         hasSupplementaryUnit contains "Do you want to add the supplementary unit?"
@@ -455,8 +457,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           )
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual routes.CategoryGuidanceController
-            .onPageLoad(testRecordId)
+          row.actions.value.items.head.href mustEqual routes.CategorisationPreparationController
+            .startCategorisation(testRecordId)
             .url
         }
       }

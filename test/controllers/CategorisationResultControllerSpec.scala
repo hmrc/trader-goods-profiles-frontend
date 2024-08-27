@@ -18,14 +18,14 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.{Category1, Category2, Standard}
+import models.{Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.CategorisationResultView
 
 class CategorisationResultControllerSpec extends SpecBase {
 
-  "CategorisationResult Controller" - {
+  "CategorisationResult Controller2" - {
 
     "must return OK and the correct view for a GET" - {
 
@@ -35,14 +35,18 @@ class CategorisationResultControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Category1).url)
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Category1Scenario).url)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CategorisationResultView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(testRecordId, Category1)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(testRecordId, Category1Scenario)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -52,14 +56,18 @@ class CategorisationResultControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Category2).url)
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario).url)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CategorisationResultView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(testRecordId, Category2)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(testRecordId, Category2Scenario)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -69,16 +77,70 @@ class CategorisationResultControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Standard).url)
+          val request =
+            FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsScenario).url)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[CategorisationResultView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(testRecordId, Standard)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(testRecordId, StandardGoodsScenario)(
+            request,
+            messages(application)
+          ).toString
         }
       }
+
+      "StandardNoAssessments" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario).url
+            )
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, StandardGoodsNoAssessmentsScenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
+      "Category1NoExemptions" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationResultController.onPageLoad(testRecordId, Category1NoExemptionsScenario).url
+            )
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CategorisationResultView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, Category1NoExemptionsScenario)(
+            request,
+            messages(application)
+          ).toString
+        }
+      }
+
     }
   }
+
 }

@@ -29,7 +29,18 @@
     govukPagination: GovukPagination
 )
 
-@(form: Form[_], goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int)(implicit request: Request[_], messages: Messages)
+@(
+    form: Form[_],
+    goodsRecordsItems: Seq[GetGoodsRecordResponse],
+    totalRecords: Int,
+    firstRecord: Int,
+    lastRecord: Int,
+    countries: Seq[Country],
+    pagination: Pagination,
+    page: Int,
+    downloadLinkMessagesKey: String,
+    downloadLinkRoute: String
+)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(form, messages("goodsRecords.title")), isFullWidth = true
@@ -135,8 +146,8 @@
 
         @govukPagination(pagination)
 
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link2")</a></p>
+        <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
 
-        <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link3", "600")</a></p>
+        <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
 </div>
 }

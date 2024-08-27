@@ -16,158 +16,94 @@
 
 package pages
 
-import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
-import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
-import org.scalatest.{OptionValues, TryValues}
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import queries.RecordCategorisationsQuery
+import base.SpecBase
+import base.TestConstants.testRecordId
+import models.AssessmentAnswer
+import models.ott._
+import queries.CategorisationDetailsQuery
 
-class AssessmentPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+class AssessmentPageSpec extends SpecBase {
 
   ".cleanup" - {
 
-    val assessment1           = CategoryAssessment(
+    val assessment1        = CategoryAssessment(
       "id1",
       1,
       Seq(Certificate("cert1", "code1", "description1"), Certificate("cert11", "code11", "description11"))
     )
-    val assessment2           = CategoryAssessment(
+    val assessment2        = CategoryAssessment(
       "id2",
       2,
       Seq(Certificate("cert2", "code2", "description2"), Certificate("cert22", "code22", "description222"))
     )
-    val assessment3           = CategoryAssessment(
+    val assessment3        = CategoryAssessment(
       "id3",
       3,
       Seq(Certificate("cert3", "code3", "description3"), Certificate("cert33", "code33", "description33"))
     )
-    val assessment4           = CategoryAssessment(
+    val assessment4        = CategoryAssessment(
       "id4",
       4,
       Seq(AdditionalCode("cert4", "code4", "description4"))
     )
-    val categorisationInfo    =
-      CategorisationInfo("123", Seq(assessment1, assessment2, assessment3, assessment4), Some("some measure unit"), 0)
-    val recordId              = "321"
-    val index                 = 0
-    val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+    val assessmentList     = Seq(assessment1, assessment2, assessment3, assessment4)
+    val categorisationInfo =
+      CategorisationInfo("1234567890", assessmentList, assessmentList, None, 1)
 
     "must not remove any assessments" - {
       "when an assessment is answered with an exemption" in {
 
         val answers =
-          UserAnswers("id")
-            .set(RecordCategorisationsQuery, recordCategorisations)
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
 
-        val result = answers.set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert22")).success.value
+        val result = answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption).success.value
 
-        result.isDefined(AssessmentPage(recordId, index)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 1)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 2)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 2)) mustBe true
       }
-
-      "when an assessment is answered with no exemption and the shouldRedirectToCya flag is set" in {
-
-        val answers =
-          UserAnswers("id")
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
-            .success
-            .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
-            .success
-            .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
-            .success
-            .value
-            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
-            .success
-            .value
-
-        val result = answers
-          .set(AssessmentPage(recordId, index + 1, shouldRedirectToCya = true), AssessmentAnswer.NoExemption)
-          .success
-          .value
-
-        result.isDefined(AssessmentPage(recordId, index)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 1)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 2)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 3)) mustBe true
-      }
-
     }
 
     "must remove all assessments later in the list" - {
       "when an assessment is answered with no exemption" in {
 
         val answers =
-          UserAnswers("id")
-            .set(RecordCategorisationsQuery, recordCategorisations)
+          emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
             .success
             .value
 
-        val result = answers.set(AssessmentPage(recordId, index + 1), AssessmentAnswer.NoExemption).success.value
+        val result = answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
 
-        result.isDefined(AssessmentPage(recordId, index)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 1)) mustBe true
-        result.isDefined(AssessmentPage(recordId, index + 2)) mustBe false
-        result.isDefined(AssessmentPage(recordId, index + 3)) mustBe false
+        result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 2)) mustBe false
+        result.isDefined(AssessmentPage(testRecordId, 3)) mustBe false
       }
-
-      "when the cleanup all flag is passed in" in {
-
-        val answers =
-          UserAnswers("id")
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(AssessmentPage(recordId, index), AssessmentAnswer.Exemption("cert1"))
-            .success
-            .value
-            .set(AssessmentPage(recordId, index + 1), AssessmentAnswer.Exemption("cert2"))
-            .success
-            .value
-            .set(AssessmentPage(recordId, index + 2), AssessmentAnswer.Exemption("cert3"))
-            .success
-            .value
-            .set(AssessmentPage(recordId, index + 3), AssessmentAnswer.Exemption("cert4"))
-            .success
-            .value
-
-        val result = answers.remove(AssessmentPage(recordId, index, cleanupAll = true)).success.value
-
-        result.isDefined(AssessmentPage(recordId, index)) mustBe false
-        result.isDefined(AssessmentPage(recordId, index + 1)) mustBe false
-        result.isDefined(AssessmentPage(recordId, index + 2)) mustBe false
-        result.isDefined(AssessmentPage(recordId, index + 3)) mustBe false
-      }
-
     }
   }
 }

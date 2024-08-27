@@ -34,7 +34,7 @@
             @messages("sucessBanner.heading", page)
         }
         </h3>
-        <p class="govuk-body">@messages("sucessBanner.p1") <a class="govuk-notification-banner__link" href="#"> @messages("sucessBanner.email")</a> @messages("sucessBanner.p2")</p>
+
     }
 
 @layout(backLinkUrl = controllers.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
@@ -78,6 +78,6 @@
         </strong>
     </div>
 
-    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("singleRecord.goodsProfile.link")</a></p>
-    <p class="govuk-body"><a href="@routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("singleRecord.removeRecord.link")</a></p>
+    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+    <p class="govuk-body"><a href="@routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("site.removeThisGoodsRecord")</a></p>
 }

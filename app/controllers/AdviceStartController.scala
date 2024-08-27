@@ -20,9 +20,8 @@ import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
 import pages.AdviceStartPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.AdviceStartView
 
@@ -37,8 +36,7 @@ class AdviceStartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AdviceStartView,
   navigator: Navigator
-) extends FrontendBaseController
-    with I18nSupport {
+) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>

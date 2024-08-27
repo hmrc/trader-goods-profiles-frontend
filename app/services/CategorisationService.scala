@@ -16,216 +16,157 @@
 
 package services
 
-import connectors.{GoodsRecordConnector, OttConnector}
-import models.AssessmentAnswer.NotAnsweredYet
+import connectors.{OttConnector, TraderProfileConnector}
+import logging.Logging
+import models._
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{AssessmentAnswer, RecordCategorisations, UserAnswers}
-import pages.{AssessmentPage, InconsistentUserAnswersException}
-import queries.{CommodityUpdateQuery, LongerCommodityQuery, RecordCategorisationsQuery}
-import repositories.SessionRepository
+import pages.{AssessmentPage, ReassessmentPage}
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.firstAssessmentIndex
 
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 class CategorisationService @Inject() (
-  sessionRepository: SessionRepository,
   ottConnector: OttConnector,
-  goodsRecordsConnector: GoodsRecordConnector
-)(implicit ec: ExecutionContext) {
+  profileConnector: TraderProfileConnector
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
-  def requireCategorisation(request: DataRequest[_], recordId: String)(implicit
-    hc: HeaderCarrier
-  ): Future[UserAnswers] = {
+  def getCategorisationInfo(
+    request: DataRequest[_],
+    commodityCode: String,
+    country: String,
+    recordId: String,
+    longerCode: Boolean = false
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
+    profileConnector.getTraderProfile(request.eori).flatMap { profile =>
+      ottConnector
+        .getCategorisationInfo(
+          commodityCode,
+          request.eori,
+          request.affinityGroup,
+          Some(recordId),
+          country,
+          LocalDate.now()
+        )
+        .flatMap { response =>
+          CategorisationInfo.build(response, commodityCode, profile, longerCode) match {
+            case Some(categorisationInfo) =>
+              Future.successful(categorisationInfo)
 
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-
-    val originalCommodityCodeOpt =
-      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
-
-    recordCategorisations.records.get(recordId) match {
-      case Some(record) =>
-        if (originalCommodityCodeOpt.isEmpty) {
-          val updatedRecord                = record.copy(originalCommodityCode = Some(record.commodityCode))
-          val updatedRecordsMap            = recordCategorisations.records + (recordId -> updatedRecord)
-          val updatedRecordCategorisations = RecordCategorisations(updatedRecordsMap)
-
-          for {
-            userAnswersWithOriginal <-
-              Future.fromTry(request.userAnswers.set(RecordCategorisationsQuery, updatedRecordCategorisations))
-            _                       <- sessionRepository.set(userAnswersWithOriginal)
-          } yield userAnswersWithOriginal
-        } else {
-          Future.successful(request.userAnswers)
+            case None =>
+              logger.error("Could not build categorisation info")
+              Future.failed(new RuntimeException("Could not build categorisation info"))
+          }
         }
+    }
 
-      case None =>
-        for {
-          getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-          goodsNomenclature                <- ottConnector.getCategorisationInfo(
-                                                getGoodsRecordResponse.comcode,
-                                                request.eori,
-                                                request.affinityGroup,
-                                                Some(recordId),
-                                                getGoodsRecordResponse.countryOfOrigin,
-                                                LocalDate.now()
-                                              )
-          originalCommodityCode             = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
-          categorisationInfo               <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
-                                                case Some(categorisationInfo) => Future.successful(categorisationInfo)
-                                                case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
-                                              }
-          updatedAnswers                   <-
-            Future.fromTry(
-              request.userAnswers.set(
-                RecordCategorisationsQuery,
-                recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-              )
-            )
-          updatedAnswersCleanUpAssessments <-
-            Future.fromTry(cleanupOldAssessmentAnswers(updatedAnswers, recordId))
-          _                                <- sessionRepository.set(updatedAnswersCleanUpAssessments)
-        } yield updatedAnswersCleanUpAssessments
+  def calculateResult(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ): Scenario = {
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
+
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+
+    val areThereCategory1QuestionsWithNoExemption =
+      listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
+
+    val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
+
+    if (categorisationInfo.isNiphlsAssessment) {
+      if (!categorisationInfo.isTraderNiphlsAuthorised || areThereCategory1QuestionsWithNoExemption) {
+        Category1Scenario
+      } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
+        Category1NoExemptionsScenario
+      } else {
+        Category2Scenario
+      }
+    } else {
+      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
     }
   }
 
-  def updateCategorisationWithNewCommodityCode(
-    request: DataRequest[_],
-    recordId: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[UserAnswers] = {
-
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-
-    val originalCommodityCodeOpt =
-      recordCategorisations.records.get(recordId).flatMap(_.originalCommodityCode)
-
-    for {
-      newCommodityCode       <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
-      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-      goodsNomenclature      <- ottConnector.getCategorisationInfo(
-                                  newCommodityCode.commodityCode,
-                                  request.eori,
-                                  request.affinityGroup,
-                                  Some(recordId),
-                                  getGoodsRecordResponse.countryOfOrigin,
-                                  LocalDate.now()
-                                )
-      originalCommodityCode   = originalCommodityCodeOpt.getOrElse(getGoodsRecordResponse.comcode)
-      categorisationInfo     <- CategorisationInfo.build(goodsNomenclature, Some(originalCommodityCode)) match {
-                                  case Some(categorisationInfo) => Future.successful(categorisationInfo)
-                                  case _                        => Future.failed(new RuntimeException("Could not build categorisation info"))
-                                }
-      updatedAnswers         <-
-        Future.fromTry(
-          request.userAnswers.set(
-            RecordCategorisationsQuery,
-            recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-          )
-        )
-      _                      <- sessionRepository.set(updatedAnswers)
-    } yield updatedAnswers
-  }
-
-  def updateCategorisationWithUpdatedCommodityCode(
-    request: DataRequest[_],
-    recordId: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[UserAnswers] = {
-
-    val recordCategorisations =
-      request.userAnswers.get(RecordCategorisationsQuery).getOrElse(RecordCategorisations(Map.empty))
-
-    for {
-      newCommodityCode                 <- Future.fromTry(Try(request.userAnswers.get(CommodityUpdateQuery(recordId)).get))
-      getGoodsRecordResponse           <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
-      goodsNomenclature                <- ottConnector.getCategorisationInfo(
-                                            newCommodityCode.commodityCode,
-                                            request.eori,
-                                            request.affinityGroup,
-                                            Some(recordId),
-                                            getGoodsRecordResponse.countryOfOrigin,
-                                            LocalDate.now()
-                                          )
-      categorisationInfo               <- Future.fromTry(Try(CategorisationInfo.build(goodsNomenclature).get))
-      updatedAnswers                   <-
-        Future.fromTry(
-          request.userAnswers.set(
-            RecordCategorisationsQuery,
-            recordCategorisations.copy(records = recordCategorisations.records + (recordId -> categorisationInfo))
-          )
-        )
-      updatedAnswersCleanUpAssessments <-
-        Future.fromTry(cleanupOldAssessmentAnswers(updatedAnswers, recordId))
-      _                                <- sessionRepository.set(updatedAnswersCleanUpAssessments)
-    } yield updatedAnswersCleanUpAssessments
-  }
-
-  def cleanupOldAssessmentAnswers(
+  private def calculateResultWithoutNiphl(
+    categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ): Try[UserAnswers] =
-    (for {
-      recordQuery        <- userAnswers.get(RecordCategorisationsQuery)
-      categorisationInfo <- recordQuery.records.get(recordId)
-      count               = categorisationInfo.categoryAssessments.size
-      //Go backwards to avoid recursion issues
-      rangeToRemove       = (firstAssessmentIndex to count + 1).reverse
-    } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(userAnswers)) { (acc, currentIndexToRemove) =>
-      acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
-    }).getOrElse(
-      Failure(new InconsistentUserAnswersException(s"Could not find category assessments"))
-    )
+  ) =
+    if (categorisationInfo.categoryAssessments.isEmpty) {
+      StandardGoodsNoAssessmentsScenario
+    } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
+      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
+        Category1NoExemptionsScenario
+      } else {
+        Category2Scenario
+      }
+    } else {
+      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
+    }
+
+  private def calculateBasedOnAnswers(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ) = {
+
+    val getFirstNo = categorisationInfo
+      .getAnswersForQuestions(userAnswers, recordId)
+      .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
+
+    val areThereCategory2QuestionsWithNoExemption =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+
+    getFirstNo match {
+      case None if areThereCategory2QuestionsWithNoExemption => Category2Scenario
+      case None                                              => StandardGoodsScenario
+      case Some(details) if details.question.isCategory2     => Category2Scenario
+      case _                                                 => Category1Scenario
+    }
+  }
 
   def updatingAnswersForRecategorisation(
     userAnswers: UserAnswers,
     recordId: String,
     oldCommodityCategorisation: CategorisationInfo,
     newCommodityCategorisation: CategorisationInfo
-  ): Try[UserAnswers] =
-    if (oldCommodityCategorisation == newCommodityCategorisation) {
-      Success(userAnswers)
-    } else {
-      val oldAssessments = oldCommodityCategorisation.categoryAssessments
-      val newAssessments = newCommodityCategorisation.categoryAssessments
+  ): Try[UserAnswers] = {
+    val oldAssessments = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
+    val newAssessments = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
 
-      val listOfAnswersToKeep = oldAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer]]) {
-        (currentMap, assessment) =>
-          val newAssessmentsTheAnswerAppliesTo =
-            newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
-          newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
-            current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
-              AssessmentPage(recordId, assessment._2)
-            ))
-          }
-      }
-
-      val cleanedUserAnswers = cleanupOldAssessmentAnswers(userAnswers, recordId).get
-      // Avoid it getting upset if answers have moved too far
-      val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(cleanedUserAnswers)) {
-        (currentAnswers, newAssessment) =>
-          currentAnswers.flatMap(_.set(AssessmentPage(recordId, newAssessment._2), NotAnsweredYet))
-      }
-
-      val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
-      // Apply them backwards
-      // That way, a NoExemption being set will do the automatic cleanup required by CYA and delete any answers afterwards
-      answersToKeepSortedByNewIndex.reverse.foldLeft[Try[UserAnswers]](uaWithPlaceholders) {
-        (currentAnswers, answerToKeep) =>
-          val assessmentIndex     = answerToKeep._1
-          val assessmentAnswerOpt = answerToKeep._2
-          assessmentAnswerOpt match {
-            case Some(answer) => currentAnswers.flatMap(_.set(AssessmentPage(recordId, assessmentIndex), answer))
-            case None         => currentAnswers
-          }
-      }
+    val listOfAnswersToKeep = oldAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer]]) {
+      (currentMap, assessment) =>
+        val newAssessmentsTheAnswerAppliesTo =
+          newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
+        newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
+          current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
+            AssessmentPage(recordId, assessment._2)
+          ))
+        }
     }
+
+    // Avoid it getting upset if answers have moved too far
+    // This is needed as stored as Json array
+    val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(userAnswers)) {
+      (currentAnswers, newAssessment) =>
+        currentAnswers.flatMap(_.set(ReassessmentPage(recordId, newAssessment._2), AssessmentAnswer.NotAnsweredYet))
+    }
+
+    val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
+    // Apply them backwards
+    // That way, a NoExemption being set will do the automatic cleanup required by CYA and delete any answers afterwards
+    answersToKeepSortedByNewIndex.reverse.foldLeft[Try[UserAnswers]](uaWithPlaceholders) {
+      (currentAnswers, answerToKeep) =>
+        val assessmentIndex     = answerToKeep._1
+        val assessmentAnswerOpt = answerToKeep._2
+        assessmentAnswerOpt match {
+          case Some(answer) => currentAnswers.flatMap(_.set(ReassessmentPage(recordId, assessmentIndex), answer))
+          case None         => currentAnswers
+        }
+    }
+  }
 }

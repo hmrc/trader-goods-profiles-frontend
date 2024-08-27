@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package utils
+package queries
 
-import play.api.libs.json.{JsNull, JsObject}
+import models.ott.CategorisationInfo
+import play.api.libs.json.JsPath
 
-object ResponseModelSupport {
+case class LongerCategorisationDetailsQuery(recordId: String)
+    extends Gettable[CategorisationInfo]
+    with Settable[CategorisationInfo] {
 
-  def removeNulls(jsObject: JsObject): JsObject =
-    JsObject(jsObject.fields.collect {
-      case (s, j: JsObject)            =>
-        (s, removeNulls(j))
-      case other if other._2 != JsNull =>
-        other
-    })
+  override def path: JsPath = JsPath \ "longerCategorisationDetails" \ recordId
 }

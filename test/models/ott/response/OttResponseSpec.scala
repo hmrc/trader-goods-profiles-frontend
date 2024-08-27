@@ -26,7 +26,9 @@ class OttResponseSpec extends AnyFreeSpec with Matchers {
 
   "must parse valid JSON" in {
 
-    val input = Source.fromFile("test/models/ott/response/ottResponse.json", "utf-8").getLines.mkString
+    val source = Source.fromFile("test/models/ott/response/ottResponse.json", "utf-8")
+    val input  = source.getLines.mkString
+    source.close()
 
     val json = Json.parse(input)
 

@@ -50,25 +50,33 @@ class SessionRepositorySpec
   private val userAnswers = UserAnswers(
     userAnswersId,
     Json.obj(
-      traderReferencePage            -> "GB - Reason: unclear - In bottles",
-      useTraderReferencePage         -> "true",
-      goodsDescriptionPage           -> "In bottles",
-      countryOfOriginPage            -> "US",
-      commodityCodePage              -> "22030001",
-      hasCorrectGoodsPage            -> "true",
-      ukimsNumberPage                -> "XIUKIM47699357400020231115081800",
-      hasNirmsPage                   -> "true",
-      hasNiphlPage                   -> "true",
-      nirmsNumberPage                -> "RMS-GB-123456",
-      niphlNumberPage                -> "612345",
-      namePage                       -> "test",
-      emailPage                      -> "test",
-      withDrawAdviceStartPage        -> "true",
-      reasonForWithdrawAdvicePage    -> "not applicable",
-      assessmentsPage                -> "assessment",
-      hasSupplementaryUnitUpdatePage -> "true",
-      supplementaryUnitUpdatePage    -> "100.0",
-      measurementUnitQuery           -> "squares"
+      traderReferencePage              -> "GB - Reason: unclear - In bottles",
+      useTraderReferencePage           -> "true",
+      goodsDescriptionPage             -> "In bottles",
+      countryOfOriginPage              -> "US",
+      commodityCodePage                -> "22030001",
+      hasCorrectGoodsPage              -> "true",
+      ukimsNumberPage                  -> "XIUKIM47699357400020231115081800",
+      hasNirmsPage                     -> "true",
+      hasNiphlPage                     -> "true",
+      nirmsNumberPage                  -> "RMS-GB-123456",
+      niphlNumberPage                  -> "612345",
+      namePage                         -> "test",
+      emailPage                        -> "test",
+      withDrawAdviceStartPage          -> "true",
+      reasonForWithdrawAdvicePage      -> "not applicable",
+      assessmentsPage                  -> "assessment",
+      assessmentsPage                 -> "assessment",
+      hasSupplementaryUnitUpdatePage   -> "true",
+      supplementaryUnitUpdatePage      -> "100.0",
+      measurementUnitQuery             -> "squares",
+      hasSupplementaryUnitPage         -> "true",
+      supplementaryUnitPage            -> "123.4",
+      longerCommodityCodePage         -> "1232",
+      reassessmentPage                 -> "reassessment",
+      categorisationDetailsQuery       -> "catDets",
+      longerCommodityQuery             -> "longerCom",
+      longerCategorisationDetailsQuery -> "longerCat"
     ),
     Instant.ofEpochSecond(1)
   )
@@ -195,7 +203,11 @@ class SessionRepositorySpec
           assessmentsPage,
           hasSupplementaryUnitPage,
           supplementaryUnitPage,
-          longerCommodityCodePage
+          longerCommodityCodePage,
+          reassessmentPage,
+          categorisationDetailsQuery,
+          longerCommodityQuery,
+          longerCategorisationDetailsQuery
         )
 
       keysToCheck.foreach { key =>

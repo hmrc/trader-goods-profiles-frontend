@@ -18,17 +18,14 @@ package pages
 
 import models.{AssessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
-import queries.RecordCategorisationsQuery
+import queries.CategorisationDetailsQuery
 
 import scala.util.{Failure, Success, Try}
 
 case class AssessmentPage(
   recordId: String,
-  index: Int,
-  shouldRedirectToCya: Boolean = false,
-  cleanupAll: Boolean = false
+  index: Int
 ) extends QuestionPage[AssessmentAnswer] {
-
   override def path: JsPath = JsPath \ "assessments" \ recordId \ index
 
   override def cleanup(
@@ -36,13 +33,12 @@ case class AssessmentPage(
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if ((value.contains(AssessmentAnswer.NoExemption) && !shouldRedirectToCya) || cleanupAll) {
+    if (value.contains(AssessmentAnswer.NoExemption)) {
       (for {
-        recordQuery        <- updatedUserAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- recordQuery.records.get(recordId)
-        count               = categorisationInfo.categoryAssessments.size
+        categorisationInfo <- updatedUserAnswers.get(CategorisationDetailsQuery(recordId))
+        count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         //Go backwards to avoid recursion issues
-        rangeToRemove       = if (cleanupAll) (index to count).reverse else ((index + 1) to count).reverse
+        rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
         acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
       }).getOrElse(

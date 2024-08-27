@@ -23,11 +23,10 @@ import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasCommodityCodeChangePage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Constants.adviceProvided
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCommodityCodeChangeView
@@ -49,8 +48,7 @@ class HasCommodityCodeChangeController @Inject() (
   view: HasCommodityCodeChangeView,
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

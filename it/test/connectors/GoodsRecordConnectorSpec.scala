@@ -20,7 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, UpdateGoodsRecord}
+import models.{Category1Scenario, CategoryRecord, Commodity, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -58,7 +58,8 @@ class GoodsRecordConnectorSpec
   private val xClientId: String     = "tgp-frontend"
   private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
-  private val goodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records-summary"
 
   private lazy val getRecordResponse = Json
     .parse(s"""
@@ -319,64 +320,94 @@ class GoodsRecordConnectorSpec
 
   ".updateCategoryAndComcodeForGoodsRecord" - {
 
-    def goodsRecord(longerCommodityCode: Option[String] = None) = CategoryRecord(
+    val categoryRecord = CategoryRecord(
       eori = testEori,
       recordId = testRecordId,
-      category = 1,
+      category = Category1Scenario,
       categoryAssessmentsWithExemptions = 3,
-      measurementUnit = Some("1"),
-      supplementaryUnit = Some("123"),
-      comcode = longerCommodityCode
+      comcode = "1234567890",
+      measurementUnit = None
     )
 
-    def updateRecordRequest(longerCommodityCode: Option[String] = None) = UpdateRecordRequest(
+    val updateRecordRequest = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
       category = Some(1),
-      supplementaryUnit = Some(123),
-      measurementUnit = Some("1"),
-      comcode = longerCommodityCode
+      supplementaryUnit = None,
+      measurementUnit = None,
+      comcode = Some("1234567890")
     )
 
-    "must update a goods record with a category" in {
+    "must update a goods record" - {
+      "with a category" in {
 
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest()).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
+        wireMockServer.stubFor(
+          patch(urlEqualTo(goodsRecordUrl))
+            .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok())
+        )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord()).futureValue
-    }
+        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord).futureValue
+      }
 
-    "must update a goods record with a category and a longer commodity code" in {
+      "with a category and supplementary unit" in {
 
-      val longerCommodityCode = Some("1234567890")
+        val categoryRecordWithSupp = categoryRecord.copy(
+          measurementUnit = Some("weight"),
+          supplementaryUnit = Some("123")
+        )
 
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest(longerCommodityCode)).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
+        val updateRecordRequestWithSupp = updateRecordRequest.copy(
+          measurementUnit = Some("weight"),
+          supplementaryUnit = Some(123)
+        )
 
-      connector
-        .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord(longerCommodityCode))
-        .futureValue
+        wireMockServer.stubFor(
+          patch(urlEqualTo(goodsRecordUrl))
+            .withRequestBody(equalTo(Json.toJson(updateRecordRequestWithSupp).toString))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok())
+        )
+
+        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp).futureValue
+      }
+
+      "with a category and longer commodity code" in {
+
+        val categoryRecordWithLongerComCode = categoryRecord.copy(
+          comcode = "9988776655"
+        )
+
+        val updateRecordWithLongerComCode = updateRecordRequest.copy(
+          comcode = Some("9988776655")
+        )
+
+        wireMockServer.stubFor(
+          patch(urlEqualTo(goodsRecordUrl))
+            .withRequestBody(equalTo(Json.toJson(updateRecordWithLongerComCode).toString))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok())
+        )
+
+        connector
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithLongerComCode)
+          .futureValue
+      }
+
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
         patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest()).toString))
+          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, goodsRecord()).failed.futureValue
+      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord).failed.futureValue
     }
   }
 
@@ -656,6 +687,33 @@ class GoodsRecordConnectorSpec
       )
 
       connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
+    }
+  }
+
+  ".getRecordsSummary" - {
+
+    val recordsSummary = RecordsSummary(testEori, None, instant)
+
+    "must get a records summary" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(recordsSummaryUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(Json.toJson(recordsSummary).toString))
+      )
+
+      connector.getRecordsSummary(testEori).futureValue.eori mustBe recordsSummary.eori
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(recordsSummaryUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.getRecordsSummary(testEori).failed.futureValue
     }
   }
 }
