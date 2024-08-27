@@ -85,7 +85,7 @@ object CountryOfOriginSummary {
   }
 
   private def getCountryName(countryOfOrigin: String, countries: Seq[Country]) =
-    if (countries == null || countries.isEmpty) {
+    if (countries.isEmpty) {
       countryOfOrigin
     } else {
       countries.find(country => country.id == countryOfOrigin).map(_.description).getOrElse(countryOfOrigin)
