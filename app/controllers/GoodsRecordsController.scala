@@ -18,8 +18,7 @@ package controllers
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
-import forms.{GoodsRecordsFormProvider2, GoodsRecordsFormProvider}
-import models.GoodsRecordsFormData
+import forms.{GoodsRecordsFormProvider2}
 import models.GoodsRecordsPagination._
 import pages.GoodsRecordsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -138,11 +137,6 @@ class GoodsRecordsController @Inject() (
                 )
             },
           value => {
-            println(value.searchText)
-            println(value.immiReady)
-            println(value.notImmiReady)
-            println(value.actionNeeded)
-            println(value.countryOfOrigin)
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
               _ <- sessionRepository.set(updatedAnswers)
