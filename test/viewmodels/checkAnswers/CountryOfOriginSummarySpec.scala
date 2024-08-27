@@ -26,7 +26,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 class CountryOfOriginSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
-  private val countries                   = Seq(Country("CN", "China"), Country("US", "United States"), Country("UK", "United Kingdom"))
+  private val countries                   = Seq(Country("CN", "China"), Country("US", "United States"), Country("GB", "United Kingdom"))
   private val testCountryName             = "United Kingdom"
 
   "must return a SummaryListRow without change links when record is locked" in {

@@ -22,7 +22,6 @@ import models.helper.{CategorisationJourney, RequestAdviceJourney, Supplementary
 import models.requests.DataRequest
 import models.{Country, NormalMode}
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -37,7 +36,7 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
-  override val messagesApi: MessagesApi,
+  val controllerComponents: MessagesControllerComponents,
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
   dataCleansingService: DataCleansingService,
@@ -45,9 +44,7 @@ class SingleRecordController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  dataCleansingService: DataCleansingService,
   ottConnector: OttConnector,
-  val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
@@ -57,13 +54,13 @@ class SingleRecordController @Inject() (
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
         recordIsLocked                      = record.adviceStatus match {
-          case status
-            if status.equalsIgnoreCase("Requested") ||
-              status.equalsIgnoreCase("In progress") ||
-              status.equalsIgnoreCase("Information Requested") =>
-            true
-          case _ => false
-        }
+                                                case status
+                                                    if status.equalsIgnoreCase("Requested") ||
+                                                      status.equalsIgnoreCase("In progress") ||
+                                                      status.equalsIgnoreCase("Information Requested") =>
+                                                  true
+                                                case _ => false
+                                              }
         countries                          <- retrieveAndStoreCountries
         updatedAnswersWithTraderReference  <-
           Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
