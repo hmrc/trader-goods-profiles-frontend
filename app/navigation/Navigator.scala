@@ -82,6 +82,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
+    case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 

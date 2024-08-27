@@ -540,9 +540,9 @@ cyaSupplementaryUnit.heading = Check your answers
 cyaSupplementaryUnit.h2 = Check if the details on this record are correct.
 
 
-sucessBanner.title = Success
-sucessBanner.heading = You have changed the {0}
-sucessBannerRemove.heading = You have removed the {0}
+successBanner.title = Success
+successBanner.heading = You have changed the {0}
+successBannerRemove.heading = You have removed the {0}
 
 feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.

@@ -278,7 +278,7 @@ POST        /update-record/:recordId/withdraw-request/reason                    
 GET         /download-data/request-received                                                 controllers.DownloadRequestSuccessController.onPageLoad()
 
 GET         /download-data/request-file                                                     controllers.RequestDataController.onPageLoad()
-POST        /download-data/request-file                                                     controllers.RequestDataController.onSubmit(email: String)
+POST        /download-data/request-file                                                     controllers.RequestDataController.onSubmit()
 
 GET         /download-data/file-in-progress                                                 controllers.FileInProgressController.onPageLoad()
 
