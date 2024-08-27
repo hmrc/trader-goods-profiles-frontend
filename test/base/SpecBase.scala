@@ -16,7 +16,7 @@
 
 package base
 
-import base.TestConstants.{NiphlsCode, testRecordId, userAnswersId}
+import base.TestConstants.{NiphlsCode, requested, testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
@@ -34,7 +34,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import queries.{CategorisationDetailsQuery, CommodityQuery, MeasurementQuery}
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, ZoneId}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -75,10 +75,16 @@ trait SpecBase
     .value
 
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
+  def validityEndDate: Instant   = Instant.parse("2008-12-03T10:15:30.00Z")
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
 
   def testShorterCommodityQuery: Commodity = Commodity("1742900000", List("test"), validityStartDate, None)
+
+  val lockedRecord: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(adviceStatus = requested)
 
   def testAuditOttResponse: OttResponse = OttResponse(
     GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
@@ -171,16 +177,37 @@ trait SpecBase
   lazy val category1Niphl: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(Certificate(NiphlsCode, "Y994", "Goods are not from warzone")))
 
-  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
+  lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
     "1234567890",
+    Some(validityEndDate),
+    Seq(category1, category2, category3),
+    Seq(category1, category2, category3),
+    Some("Weight, in kilograms"),
+    1
+  )
+  val today: Instant                                                      = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
+  lazy val categorisationInfoWithExpiredCommodityCode: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Some(today),
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
     1
   )
 
+  lazy val categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode: CategorisationInfo =
+    CategorisationInfo(
+      "1234567890",
+      Some(today),
+      Seq(category1, category2, category3),
+      Seq.empty,
+      None,
+      1
+    )
+
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
+    Some(validityEndDate),
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
     None,

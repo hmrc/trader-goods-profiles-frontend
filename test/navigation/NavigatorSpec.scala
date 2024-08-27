@@ -609,6 +609,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
                 None,
@@ -630,12 +631,24 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             }
           }
 
+          "to expired commodity code controller page when commodity code is expired on the same day" in {
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), categorisationInfoWithExpiredCommodityCode)
+              .success
+              .value
+
+            navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+              routes.ExpiredCommodityCodeController.onPageLoad(testRecordId)
+
+          }
+
           "to category result page" - {
 
             "for standard goods no assessment when there are no assessments" in {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                Some(validityEndDate),
                 Seq.empty,
                 Seq.empty,
                 None,
@@ -663,6 +676,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                Some(validityEndDate),
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
                 None,
@@ -690,6 +704,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
@@ -717,6 +732,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
@@ -745,6 +761,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category2NoExemptions, category1),
                 Seq.empty,
                 None,
@@ -774,6 +791,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphls assessment and has Niphls and is six-digit code with descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
+                None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
                 None,
@@ -1039,6 +1057,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                None,
                 Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
                 None,
@@ -1657,6 +1676,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                Some(validityEndDate),
                 Seq.empty,
                 Seq.empty,
                 None,
@@ -1684,6 +1704,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                Some(validityEndDate),
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
                 None,
@@ -3261,6 +3282,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                Some(validityEndDate),
                 Seq.empty,
                 Seq.empty,
                 None,
@@ -3288,6 +3310,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                Some(validityEndDate),
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
                 None,
