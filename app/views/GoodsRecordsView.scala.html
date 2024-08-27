@@ -131,7 +131,7 @@
 </div>
 
 @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
-    <div style="display: flex; align-items: flex-end;">
+    <div class="govuk-grid-column-two-thirds" style="display: flex; align-items: flex-end;">
         @govukInput(
             InputViewModel(
                 field = form("searchText"),
