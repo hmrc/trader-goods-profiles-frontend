@@ -677,6 +677,57 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
+
+      "must redirect to Journey Recovery for a POST if record connector fails" in {
+
+        val mockOttService = mock[OttService]
+
+        when(mockOttService.getMeasurementUnit(any(), any())(any())) thenReturn Future.failed(new RuntimeException())
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[OttService].toInstance(mockOttService)
+          )
+          .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, routes.SupplementaryUnitController.onSubmitUpdate(NormalMode, testRecordId).url)
+              .withFormUrlEncodedBody(("value", validAnswer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for GET if record connector fails" in {
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.failed(new RuntimeException()))
+
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+        }
+      }
     }
   }
 }

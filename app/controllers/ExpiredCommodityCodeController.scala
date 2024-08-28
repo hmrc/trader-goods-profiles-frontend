@@ -16,42 +16,31 @@
 
 package controllers
 
-import connectors.DownloadDataConnector
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
-import pages.RequestDataPage
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.{dataRemoved, dataUpdated, fromExpiredCommodityCodePage, pageUpdated}
+import views.html.ExpiredCommodityCodeView
 
 import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.RequestDataView
 
-import scala.concurrent.ExecutionContext
-
-class RequestDataController @Inject() (
+class ExpiredCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: RequestDataView,
-  navigator: Navigator,
-  downloadDataConnector: DownloadDataConnector
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+  view: ExpiredCommodityCodeView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      //TODO get this email from the user
-      Ok(view("placeholder@email.com"))
-  }
-
-  def onSubmit: Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      downloadDataConnector.requestDownloadData(request.eori).map { _ =>
-        Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
-      }
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(NormalMode, recordId))
+        .addingToSession(fromExpiredCommodityCodePage -> "true")
+        .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
     }
 }

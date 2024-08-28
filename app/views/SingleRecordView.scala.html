@@ -29,9 +29,9 @@
     @bannerContentForUpdate(page: String,dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
         @if(dataRemoved) {
-            @messages("sucessBannerRemove.heading", page)
+            @messages("successBannerRemove.heading", page)
         } else {
-            @messages("sucessBanner.heading", page)
+            @messages("successBanner.heading", page)
         }
         </h3>
 
@@ -41,7 +41,7 @@
 
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(
-            title = Text(messages("sucessBanner.title")),
+            title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage,dataRemoved)),
             bannerType = Some("success"),
             role=Some("alert"))

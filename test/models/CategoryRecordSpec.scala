@@ -28,8 +28,6 @@ import pages._
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService
 
-import scala.collection.immutable.Seq
-
 class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
   private val mockCategorisationService = mock[CategorisationService]
 
@@ -46,9 +44,9 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
     val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo            =
-      CategorisationInfo("1234567890", assessmentList, assessmentList, None, 1)
+      CategorisationInfo("1234567890", Some(validityEndDate), assessmentList, assessmentList, None, 1)
     val categorisationInfoMeasureUnit =
-      CategorisationInfo("1234567890", assessmentList, assessmentList, Some("Weight"), 1)
+      CategorisationInfo("1234567890", Some(validityEndDate), assessmentList, assessmentList, Some("Weight"), 1)
 
     "must return a CategoryRecord" - {
 

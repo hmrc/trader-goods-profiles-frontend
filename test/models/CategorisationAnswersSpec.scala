@@ -149,6 +149,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val categoryQuery = CategorisationInfo(
             "1234567890",
+            Some(validityEndDate),
             Seq(category1, category2, category3.copy(exemptions = Seq.empty)),
             Seq(category1, category2),
             Some("Weight, in kilograms"),
