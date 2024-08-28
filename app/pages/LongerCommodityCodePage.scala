@@ -39,7 +39,7 @@ case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String
       shortCatInfo  <- updatedUserAnswers.get(CategorisationDetailsQuery(recordId))
     } yield
       if (s"${shortCatInfo.commodityCode}$longerComCode" == commodity.commodityCode) {
-        Success(updatedUserAnswers)
+        super.cleanup(value, updatedUserAnswers, originalUserAnswers)
       } else {
         updatedUserAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId))
       }
