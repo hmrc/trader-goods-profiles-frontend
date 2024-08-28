@@ -835,13 +835,22 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should return the user answers with the reassessment answers set if old and new category assessments are the same" in {
       val expectedUserAnswers = userAnswersForCategorisation
-        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+        .set(
+          ReassessmentPage(testRecordId, 0),
+          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+        )
         .success
         .value
-        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+        .set(
+          ReassessmentPage(testRecordId, 1),
+          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+        )
         .success
         .value
-        .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
+        .set(
+          ReassessmentPage(testRecordId, 2),
+          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+        )
         .success
         .value
 
@@ -877,7 +886,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
 
-      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer.NotAnsweredYet)
+      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
       result.get(ReassessmentPage(testRecordId, 1)) shouldBe None
       result.get(ReassessmentPage(testRecordId, 2)) shouldBe None
     }
@@ -906,9 +915,12 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         )
         .success
         .value
-      result.get(ReassessmentPage(testRecordId, 0)) shouldBe Some(AssessmentAnswer.Exemption)
-      result.get(ReassessmentPage(testRecordId, 1)) shouldBe Some(AssessmentAnswer.Exemption)
-      result.get(ReassessmentPage(testRecordId, 2)) shouldBe Some(AssessmentAnswer.Exemption)
+      result.get(ReassessmentPage(testRecordId, 0)) shouldBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+      result.get(ReassessmentPage(testRecordId, 1)) shouldBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+      result.get(ReassessmentPage(testRecordId, 2)) shouldBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
     }
 
     "should copy the old answers to the right position if they are in different order in the new categorisation" in {
@@ -949,10 +961,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         )
         .success
         .value
-      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption)
-      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer.Exemption)
-      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe Some(AssessmentAnswer.NotAnsweredYet)
-      newUserAnswers.get(ReassessmentPage(testRecordId, 3)) mustBe Some(AssessmentAnswer.Exemption)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe
+        Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+      newUserAnswers.get(ReassessmentPage(testRecordId, 3)) mustBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
     }
 
     "should move the old answers to the right position if only some are in the new categorisation" in {
@@ -990,8 +1006,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         )
         .success
         .value
-      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe Some(AssessmentAnswer.Exemption)
-      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe Some(AssessmentAnswer.NotAnsweredYet)
+      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
+        Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
     }
 
