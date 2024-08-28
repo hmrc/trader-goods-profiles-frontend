@@ -518,9 +518,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
     } yield assessmentAnswer.answer match {
       case AssessmentAnswer.Exemption
-          if nextIndex < assessmentCount && reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
+          if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
             _.isAnswerCopiedFromPreviousAssessment
-          ) =>
+          )) =>
         routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextIndex)
       case AssessmentAnswer.Exemption if nextIndex < assessmentCount =>
         navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)

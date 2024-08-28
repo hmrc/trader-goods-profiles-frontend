@@ -1893,10 +1893,16 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                     .success
                     .value
-                    .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                    .set(
+                      ReassessmentPage(testRecordId, 0),
+                      ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                    )
                     .success
                     .value
-                    .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                    .set(
+                      ReassessmentPage(testRecordId, 1),
+                      ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
+                    )
                     .success
                     .value
 
@@ -1914,13 +1920,22 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     )
                     .success
                     .value
-                    .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                    .set(
+                      ReassessmentPage(testRecordId, 0),
+                      ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                    )
                     .success
                     .value
-                    .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                    .set(
+                      ReassessmentPage(testRecordId, 1),
+                      ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                    )
                     .success
                     .value
-                    .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                    .set(
+                      ReassessmentPage(testRecordId, 2),
+                      ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
+                    )
                     .success
                     .value
 
@@ -3307,10 +3322,16 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
                 .value
-                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                .set(
+                  ReassessmentPage(testRecordId, 0),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                )
                 .success
                 .value
-                .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                .set(
+                  ReassessmentPage(testRecordId, 1),
+                  ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
+                )
                 .success
                 .value
 
@@ -3324,13 +3345,22 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
                 .value
-                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                .set(
+                  ReassessmentPage(testRecordId, 0),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                )
                 .success
                 .value
-                .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                .set(
+                  ReassessmentPage(testRecordId, 1),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                )
                 .success
                 .value
-                .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                .set(
+                  ReassessmentPage(testRecordId, 2),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                )
                 .success
                 .value
 
@@ -3514,13 +3544,22 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 0),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 1),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 2),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
 
@@ -3535,10 +3574,16 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 0),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 1),
+                    ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
 
@@ -3553,13 +3598,22 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 0),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 1),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
-                  .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .set(
+                    ReassessmentPage(testRecordId, 2),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+                  )
                   .success
                   .value
 
