@@ -22,7 +22,7 @@ import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -1466,17 +1466,32 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsScenario)
           }
 
-          "to journey recovery when no categorisation info is found" in {
+          "use recategorisation answers if longer commodity code entered" in {
+            val longerCommodity = categorisationInfo.copy(commodityCode = "1111111111")
+
             val userAnswers =
               emptyUserAnswers
                 .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
                 .value
+                .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
+                .success
+                .value
 
-            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
+            when(mockCategorisationService.calculateResult(eqTo(categorisationInfo), any(), any()))
+              .thenReturn(Category1Scenario)
+            when(mockCategorisationService.calculateResult(eqTo(longerCommodity), any(), any()))
+              .thenReturn(Category2Scenario)
 
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
               routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario)
+          }
+
+          "to journey recovery when no categorisation info is found" in {
+            navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+              routes.JourneyRecoveryController.onPageLoad(
+                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+              )
           }
         }
 
