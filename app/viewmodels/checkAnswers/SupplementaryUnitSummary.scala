@@ -30,10 +30,10 @@ object SupplementaryUnitSummary {
   def row(answers: UserAnswers, recordId: String)(implicit messages: Messages): Option[SummaryListRow] =
     for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      supplementaryUnit <- answers.get(SupplementaryUnitPage(recordId))
+      supplementaryUnit  <- answers.get(SupplementaryUnitPage(recordId))
     } yield {
       val measurementUnit = categorisationInfo.measurementUnit
-      val value = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
+      val value           = if (measurementUnit.nonEmpty) s"$supplementaryUnit ${measurementUnit.get.trim}" else supplementaryUnit
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
@@ -45,11 +45,11 @@ object SupplementaryUnitSummary {
     }
 
   def rowUpdate(answers: UserAnswers, recordId: String)(implicit
-                                                        messages: Messages
+    messages: Messages
   ): Option[SummaryListRow] =
     for {
       supplementaryUnit <- answers.get(SupplementaryUnitUpdatePage(recordId))
-      measurementUnit <- answers.get(MeasurementQuery(recordId))
+      measurementUnit   <- answers.get(MeasurementQuery(recordId))
     } yield {
       val value = if (!measurementUnit.isEmpty) s"$supplementaryUnit $measurementUnit" else supplementaryUnit
       SummaryListRowViewModel(
@@ -65,8 +65,14 @@ object SupplementaryUnitSummary {
       )
     }
 
-  def row(category: Option[Int], suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String, recordLocked: Boolean)(implicit
-                                                                                                                                       messages: Messages
+  def row(
+    category: Option[Int],
+    suppValue: Option[BigDecimal],
+    measureValue: Option[String],
+    recordId: String,
+    recordLocked: Boolean
+  )(implicit
+    messages: Messages
   ): Option[SummaryListRow] =
     if (category.contains(2)) {
       for {
