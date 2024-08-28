@@ -19,13 +19,9 @@ package controllers
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
-import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
+import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers}
 import navigation.Navigator
-import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers}
 import pages._
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery
@@ -83,7 +79,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -110,7 +106,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
-            routes.SingleRecordController.onPageLoad(recordId).url,
+            routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -129,7 +125,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)           =>
           logErrorsAndContinue(
             errorMessage,
-            routes.SingleRecordController.onPageLoad(recordId).url,
+            routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -166,7 +162,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -224,7 +220,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.SingleRecordController.onPageLoad(recordId).url,
+              routes.SingleRecordController.onPageLoad(recordId),
               errors
             )
           )
@@ -256,7 +252,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -290,7 +286,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.SingleRecordController.onPageLoad(recordId).url,
+              routes.SingleRecordController.onPageLoad(recordId),
               errors
             )
           )
@@ -329,7 +325,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )

@@ -16,9 +16,11 @@
 
 package controllers
 
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
+import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
+import models.DownloadDataSummary
 import models.GoodsRecordsPagination._
 import navigation.Navigator
 import pages.GoodsRecordsPage

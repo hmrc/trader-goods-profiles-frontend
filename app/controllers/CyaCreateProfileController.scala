@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages.CyaCreateProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import services.AuditService
+import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateProfileView
@@ -42,8 +42,8 @@ class CyaCreateProfileController @Inject() (
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
   auditService: AuditService,
-  navigator: Navigator
-  dataCleansingService: DataCleansingService,
+  navigator: Navigator,
+  dataCleansingService: DataCleansingService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

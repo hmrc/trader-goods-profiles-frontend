@@ -121,7 +121,7 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(Future.successful(navigator.journeyRecovery())
+        .getOrElse(Future.successful(navigator.journeyRecovery()))
         .recover(_ => navigator.journeyRecovery())
     }
 
