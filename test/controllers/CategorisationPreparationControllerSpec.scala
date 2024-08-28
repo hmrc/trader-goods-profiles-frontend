@@ -748,6 +748,62 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       }
 
+      "and save the category information without copying answers from previous assessments" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfo)
+        )
+
+        val shorterCommodity = categorisationInfo.copy(commodityCode = "123456")
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+          .set(
+            LongerCategorisationDetailsQuery(testRecordId),
+            categorisationInfo
+          )
+          .success
+          .value
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must get category details from categorisation service") {
+            verify(mockCategorisationService)
+              .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId), eqTo(true))(any())
+          }
+
+          withClue("must not update answers from categorisation service as not needed") {
+            verify(mockCategorisationService, times(0))
+              .updatingAnswersForRecategorisation(any(), any(), any(), any())
+          }
+
+          withClue("must not have updated goods record") {
+            verify(mockGoodsRecordConnector, times(0)).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
+              any()
+            )
+          }
+
+        }
+
+      }
     }
 
     "must redirect to Journey Recovery" - {

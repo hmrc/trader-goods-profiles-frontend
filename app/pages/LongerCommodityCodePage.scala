@@ -20,7 +20,7 @@ import models.UserAnswers
 import play.api.libs.json.JsPath
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 
-import scala.util.{Success, Try}
+import scala.util.Try
 
 case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String] {
 
