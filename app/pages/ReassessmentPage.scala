@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{AssessmentAnswer, UserAnswers}
+import models.{AssessmentAnswer, ReassessmentAnswer, UserAnswers}
 import play.api.libs.json.JsPath
 import queries.LongerCategorisationDetailsQuery
 
@@ -25,15 +25,15 @@ import scala.util.{Failure, Success, Try}
 case class ReassessmentPage(
   recordId: String,
   index: Int
-) extends QuestionPage[AssessmentAnswer] {
+) extends QuestionPage[ReassessmentAnswer] {
   override def path: JsPath = JsPath \ "reassessments" \ recordId \ index
 
   override def cleanup(
-    value: Option[AssessmentAnswer],
+    value: Option[ReassessmentAnswer],
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if (value.contains(AssessmentAnswer.NoExemption)) {
+    if (value.exists(x => x.answer == AssessmentAnswer.NoExemption)) {
       (for {
         categorisationInfo <- updatedUserAnswers.get(LongerCategorisationDetailsQuery(recordId))
         count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size

@@ -33,42 +33,53 @@ object AssessmentsSummary {
     assessment: CategoryAssessment,
     indexOfThisAssessment: Int,
     isReassessmentAnswer: Boolean
-  )(implicit messages: Messages): Option[SummaryListRow] = {
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    if (isReassessmentAnswer) {
+      answers.get(ReassessmentPage(recordId, indexOfThisAssessment)).map { answer =>
+        val codes        = assessment.exemptions.map(_.code)
+        val descriptions = assessment.exemptions.map(_.description)
 
-    val (pageToUse, changeLink) = if (isReassessmentAnswer) {
-      (
-        ReassessmentPage(recordId, indexOfThisAssessment),
-        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
-      )
-    } else {
-      (
-        AssessmentPage(recordId, indexOfThisAssessment),
-        routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
-      )
-    }
-
-    answers.get(pageToUse).map { answer =>
-      val codes        = assessment.exemptions.map(_.code)
-      val descriptions = assessment.exemptions.map(_.description)
-
-      SummaryListRowViewModel(
-        key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
-          .withCssClass("govuk-!-width-one-half"),
-        value = ValueViewModel(
-          if (answer == AssessmentAnswer.Exemption) {
-            messages("site.yes")
-          } else {
-            messages("site.no")
-          }
-        ),
-        actions = Seq(
-          ActionItemViewModel(
-            "site.change",
-            changeLink
-          ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
+        SummaryListRowViewModel(
+          key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
+            .withCssClass("govuk-!-width-one-half"),
+          value = ValueViewModel(
+            if (answer.answer == AssessmentAnswer.Exemption) {
+              messages("site.yes")
+            } else {
+              messages("site.no")
+            }
+          ),
+          actions = Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
+            ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
+          )
         )
-      )
+      }
+    } else {
+      answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
+        val codes        = assessment.exemptions.map(_.code)
+        val descriptions = assessment.exemptions.map(_.description)
+
+        SummaryListRowViewModel(
+          key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content)
+            .withCssClass("govuk-!-width-one-half"),
+          value = ValueViewModel(
+            if (answer == AssessmentAnswer.Exemption) {
+              messages("site.yes")
+            } else {
+              messages("site.no")
+            }
+          ),
+          actions = Seq(
+            ActionItemViewModel(
+              "site.change",
+              routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+            ).withVisuallyHiddenText(messages("assessment.change.hidden", indexOfThisAssessment + 1))
+          )
+        )
+      }
     }
-  }
 
 }
