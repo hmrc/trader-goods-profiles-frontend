@@ -150,7 +150,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
           "when this assessment index cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
             val answers            =
               emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
@@ -256,7 +263,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
           "when this assessment cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
             val answers            =
               emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
@@ -405,7 +419,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
           "when this assessment index cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
             val answers            =
               emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
@@ -511,7 +532,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
           "when this assessment cannot be found" in {
 
             val categorisationInfo =
-              CategorisationInfo("1234567890", Seq.empty[CategoryAssessment], Seq.empty[CategoryAssessment], None, 1)
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
             val answers            =
               emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 

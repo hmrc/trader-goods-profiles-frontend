@@ -18,6 +18,7 @@ package connectors
 
 import config.Service
 import models.DownloadDataSummary
+import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, OK}
 import uk.gov.hmrc.http._
@@ -35,18 +36,15 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
   private def downloadDataSummaryUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
 
-  def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .post(downloadDataSummaryUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case ACCEPTED => true
+          case ACCEPTED => Done
         }
-      }
-      .recover { case _: NotFoundException =>
-        false
       }
 
   def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
