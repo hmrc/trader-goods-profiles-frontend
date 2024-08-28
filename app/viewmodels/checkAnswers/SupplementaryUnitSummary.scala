@@ -22,6 +22,7 @@ import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
 import queries.{CategorisationDetailsQuery, MeasurementQuery}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import utils.Constants.Category2AsInt
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -74,7 +75,7 @@ object SupplementaryUnitSummary {
   )(implicit
     messages: Messages
   ): Option[SummaryListRow] =
-    if (category.contains(2)) {
+    if (category.contains(Category2AsInt)) {
       for {
         suppUnit <- suppValue
         if suppUnit != 0
