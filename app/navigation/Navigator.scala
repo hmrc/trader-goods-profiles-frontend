@@ -603,7 +603,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
-        routes.ExistingUkimsNumberController.onPageLoad()
+        routes.UseExistingUkimsNumberController.onPageLoad()
       case None    => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
     }
 

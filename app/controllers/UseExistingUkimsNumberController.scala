@@ -16,23 +16,20 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
 import controllers.actions._
-import forms.{UkimsNumberFormProvider, UseExistingUkimsFormProvider}
-import models.{Mode, NormalMode, TraderProfile}
+import forms.UseExistingUkimsFormProvider
+import models.NormalMode
 import navigation.Navigator
-import pages.{UkimsNumberPage, UkimsNumberUpdatePage, UseExistingUkimsPage}
+import pages.{UkimsNumberPage, UseExistingUkimsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
-import views.html.{ExistingUkimsNumberView, UkimsNumberView}
+import views.html.UseExistingUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
-class ExistingUkimsNumberController @Inject() (
+class UseExistingUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
@@ -42,7 +39,7 @@ class ExistingUkimsNumberController @Inject() (
   checkProfile: ProfileCheckAction,
   formProvider: UseExistingUkimsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: ExistingUkimsNumberView
+  view: UseExistingUkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -53,7 +50,7 @@ class ExistingUkimsNumberController @Inject() (
       (for {
         ukimsNumber <- request.userAnswers.get(UkimsNumberPage)
         updatedForm  = request.userAnswers.get(UseExistingUkimsPage).map(value => form.fill(value)).getOrElse(form)
-      } yield Ok(view(updatedForm, routes.ExistingUkimsNumberController.onSubmit(), ukimsNumber)))
+      } yield Ok(view(updatedForm, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)))
         .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
@@ -65,7 +62,7 @@ class ExistingUkimsNumberController @Inject() (
           Future.successful {
             request.userAnswers
               .get(UkimsNumberPage)
-              .map(ukims => BadRequest(view(formWithErrors, routes.ExistingUkimsNumberController.onSubmit(), ukims)))
+              .map(ukims => BadRequest(view(formWithErrors, routes.UseExistingUkimsNumberController.onSubmit(), ukims)))
               .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           },
         value =>

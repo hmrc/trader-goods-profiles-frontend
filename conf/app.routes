@@ -287,5 +287,5 @@ GET         /download-data/file-ready                                           
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                          controllers.PageNotFoundController.onPageLoad(path: String)
 
-GET         /create-profile/existing-ukims-number                                          controllers.ExistingUkimsNumberController.onPageLoad()
-POST        /create-profile/existing-ukims-number                                          controllers.ExistingUkimsNumberController.onSubmit()
+GET         /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsNumberController.onPageLoad()
+POST        /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsNumberController.onSubmit()
