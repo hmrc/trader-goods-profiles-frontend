@@ -176,7 +176,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         ).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
-        verify(mockSessionRepository).set(uaCaptor.capture)
 
         uaCaptor.getValue.data mustEqual userAnswers.data
 
@@ -216,7 +215,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
         )
         .build()
 
@@ -227,7 +227,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           TraderReferenceSummary.row(lockedRecord.traderRef, lockedRecord.recordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
-            .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
+            .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
           CommodityCodeSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
           StatusSummary.row(lockedRecord.declarable)
         )
@@ -289,7 +289,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           messages(application)
         ).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository).set(uaCaptor.capture)
+        verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
 
         uaCaptor.getValue.data mustEqual userAnswers.data
 
