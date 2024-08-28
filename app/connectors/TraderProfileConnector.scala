@@ -17,10 +17,10 @@
 package connectors
 
 import config.Service
-import models.TraderProfile
+import models.{HistoricProfileData, TraderProfile}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.OK
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http._
@@ -32,7 +32,9 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   ec: ExecutionContext
 ) {
 
-  private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private val routerUrl: Service        = config.get[Service]("microservice.services.trader-goods-profiles-router")
+
   private def traderProfileUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/profile"
 
@@ -64,4 +66,21 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .get(getTraderProfileUrl(eori))
       .execute[HttpResponse]
       .map(response => response.json.as[TraderProfile])
+
+  def getHistoricProfileData(eori: String)(implicit hc: HeaderCarrier): Future[Option[HistoricProfileData]] = {
+    val url = url"$routerUrl/trader-goods-profiles-router/customs/traders/goods-profiles/$eori"
+
+    httpClient
+      .get(url)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK        => Some(response.json.as[HistoricProfileData])
+          case NOT_FOUND => None
+        }
+      }
+      .recover { case _: NotFoundException =>
+        None
+      }
+  }
 }

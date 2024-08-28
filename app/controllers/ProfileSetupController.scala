@@ -16,15 +16,19 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions._
-import models.NormalMode
+import models.{HistoricProfileData, NormalMode, UserAnswers}
 import navigation.Navigator
-import pages.ProfileSetupPage
+import pages.{ProfileSetupPage, UkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.HistoricProfileDataQuery
+import repositories.SessionRepository
 import views.html.ProfileSetupView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class ProfileSetupController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,15 +39,38 @@ class ProfileSetupController @Inject() (
   navigator: Navigator,
   requireData: DataRequiredAction,
   getOrCreate: DataRetrievalOrCreateAction,
-  checkProfile: ProfileCheckAction
-) extends BaseController {
+  checkProfile: ProfileCheckAction,
+  sessionRepository: SessionRepository,
+  traderProfileConnector: TraderProfileConnector
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen checkProfile andThen getOrCreate) { implicit request =>
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers))
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    for {
+      historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
+      updatedUserAnswers  <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
+      _                   <- sessionRepository.set(updatedUserAnswers)
+    } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
 
+  }
+
+  private def updateUserAnswersWithProfileData(
+    userAnswers: UserAnswers,
+    historicProfileData: Option[HistoricProfileData]
+  ) = {
+    val ukimsNumber = historicProfileData.flatMap(_.ukimsNumber)
+
+    if (ukimsNumber.isDefined) {
+      for {
+        answersWithProfileData <- Future.fromTry(userAnswers.set(HistoricProfileDataQuery, historicProfileData.get))
+        answersWithUkims       <- Future.fromTry(answersWithProfileData.set(UkimsNumberPage, ukimsNumber.get))
+      } yield answersWithUkims
+    } else {
+      Future.successful(userAnswers)
+    }
   }
 }
