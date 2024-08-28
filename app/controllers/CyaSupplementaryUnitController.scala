@@ -16,22 +16,17 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import logging.Logging
 import models.helper.SupplementaryUnitUpdateJourney
-import models.requests.DataRequest
-import models.{NormalMode, SupplementaryRequest, ValidationError}
+import models.{NormalMode, SupplementaryRequest}
 import navigation.Navigator
 import pages.CyaSupplementaryUnitPage
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.DataCleansingService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated, supplementaryUnit}
+import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaSupplementaryUnitView
@@ -44,15 +39,17 @@ class CyaSupplementaryUnitController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  dataCleansingService: DataCleansingService,
   goodsRecordConnector: GoodsRecordConnector,
+  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView,
   navigator: Navigator
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseController {
+
+  private val errorMessage: String                = "Unable to create Supplementary Unit."
+  private def continueUrl(recordId: String): Call =
+    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -65,22 +62,10 @@ class CyaSupplementaryUnitController @Inject() (
             ).flatten
           )
           Ok(view(list, recordId))
-        case Left(errors) => logErrorsAndContinue(errors, recordId, request)
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
       }
-  }
-
-  def logErrorsAndContinue(
-    errors: data.NonEmptyChain[ValidationError],
-    recordId: String,
-    request: DataRequest[AnyContent]
-  ): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    val continueUrl = RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url)
-
-    logger.error(s"Unable to create Supplementary Unit.  Missing pages: $errorMessages")
-    dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-    navigator.journeyRecovery(Some(continueUrl))
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -104,7 +89,7 @@ class CyaSupplementaryUnitController @Inject() (
           //if supplementary unit is zero, we consider it removed. This needs to be re-factored when API starts supporting null for removing objects
           val isSuppUnitRemoved =
             (initialHasSuppUnitOpt
-              .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(0)
+              .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(BigDecimal(0))
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
@@ -114,7 +99,11 @@ class CyaSupplementaryUnitController @Inject() (
               .addingToSession(pageUpdated -> supplementaryUnit)
 
           }
-        case Left(errors) => Future.successful(logErrorsAndContinue(errors, recordId, request))
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+          Future.successful(
+            logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
+          )
       }
   }
 

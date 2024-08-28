@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import models.ott.CategorisationInfo
-import play.api.libs.json.{Json, OFormat}
-
-case class RecordCategorisations(records: Map[String, CategorisationInfo])
-
-object RecordCategorisations {
-  implicit val format: OFormat[RecordCategorisations] = Json.format[RecordCategorisations]
-}
+case class CategorisationPreparationPage(recordId: String) extends Page

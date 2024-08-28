@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
-  private lazy val fileReadyRoute = routes.FileReadyController.onPageLoad.url
+  private lazy val fileReadyRoute = routes.FileReadyController.onPageLoad().url
 
   "FileReadyController" - {
 

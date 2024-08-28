@@ -22,32 +22,31 @@ import models.NormalMode
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.DataCleansingService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
+  dataCleansingService: DataCleansingService,
   identify: IdentifierAction,
   profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: SingleRecordView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+)(implicit @unused ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>

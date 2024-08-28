@@ -31,7 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CommodityUpdateQuery, CountriesQuery}
 import repositories.SessionRepository
-import services.{AuditService, CategorisationService}
+import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -1036,18 +1036,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
 
-            val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.updateCategorisationWithUpdatedCommodityCode(any, any)(any))
-              .thenReturn(Future.successful(userAnswers))
-
             when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
               .successful(record)
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
                 .overrides(
-                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-                  bind[CategorisationService].toInstance(mockCategorisationService)
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
                 )
                 .overrides(bind[AuditService].toInstance(mockAuditService))
                 .build()

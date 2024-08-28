@@ -17,10 +17,12 @@
 package navigation
 
 import models.{Mode, UserAnswers}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
 import play.api.mvc.Call
+import services.CategorisationService
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+class FakeNavigator(desiredRoute: Call) extends Navigator(mock[CategorisationService]) {
 
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
     desiredRoute

@@ -21,13 +21,13 @@ import forms.WithdrawAdviceStartFormProvider
 import models.NormalMode
 import navigation.Navigator
 import pages.WithdrawAdviceStartPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.WithdrawAdviceStartView
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class WithdrawAdviceStartController @Inject() (
@@ -41,9 +41,8 @@ class WithdrawAdviceStartController @Inject() (
   formProvider: WithdrawAdviceStartFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: WithdrawAdviceStartView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+)(implicit @unused ec: ExecutionContext)
+    extends BaseController {
 
   private val form = formProvider()
 

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package queries
+package models
 
-import models.RecordCategorisations
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-case object RecordCategorisationsQuery extends Gettable[RecordCategorisations] with Settable[RecordCategorisations] {
+final case class DownloadDataSummary(
+  eori: String,
+  status: DownloadDataStatus
+)
 
-  override def path: JsPath = JsPath \ "recordCategorisations"
+object DownloadDataSummary {
+  implicit val format: OFormat[DownloadDataSummary] = Json.format[DownloadDataSummary]
 }

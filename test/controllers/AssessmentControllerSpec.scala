@@ -19,95 +19,83 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.AssessmentFormProvider
-import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
-import models.{AssessmentAnswer, NormalMode, RecordCategorisations}
+import models.ott.{CategorisationInfo, CategoryAssessment}
+import models.{AssessmentAnswer, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import pages.AssessmentPage
+import pages.{AssessmentPage, ReassessmentPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{RecategorisingQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import views.html.AssessmentView
 
 import scala.concurrent.Future
 
-class AssessmentControllerSpec extends SpecBase with MockitoSugar {
+class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
-  private def assessmentId    = "321"
-  private def recordId        = testRecordId
-  private def index           = 0
-  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, recordId, index).url
+  private def assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 0).url
+
+  private def reassessmentRoute = routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 0).url
 
   "AssessmentController" - {
 
-    "for a GET" - {
+    "for initial categorisation" - {
+      "onPageLoad" - {
 
-      "must redirect" - {
+        "must render the view when an assessment can be found for this id" - {
 
-        "to LongerCommodityCode if there's a cat 2 assessment without exemptions, the commodity code's short, and there are descendants" in {
+          "and has not previously been answered" in {
 
-          val commodityCode              = "1234560"
-          val descendantCount            = 1
-          val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
-          val categorisationInfo         =
-            CategorisationInfo(
-              commodityCode,
-              Seq(assessmentCat2NoExemptions),
-              Some("Weight, in kilograms"),
-              descendantCount
-            )
-          val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+            val answers =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-          val answers =
-            emptyUserAnswers
-              .set(RecordCategorisationsQuery, recordCategorisations)
-              .success
-              .value
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
 
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
+            running(application) {
+              val request = FakeRequest(GET, assessmentRoute)
 
-          running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
+              val result = route(application, request).value
 
-            val result = route(application, request).value
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.LongerCommodityCodeController
-              .onPageLoad(NormalMode, recordId)
-              .url
+              val onSubmitAction    = routes.AssessmentController.onSubmit(NormalMode, testRecordId, 0)
+              val view              = application.injector.instanceOf[AssessmentView]
+              val form              = formProvider(1)
+              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
+                exemption =>
+                  exemption.code + " - " + exemption.description
+              }
+
+              status(result) mustEqual OK
+              contentAsString(result) mustEqual view(
+                form,
+                NormalMode,
+                testRecordId,
+                0,
+                expectedListItems,
+                categorisationInfo.commodityCode,
+                onSubmitAction
+              )(
+                request,
+                messages(application)
+              ).toString
+            }
           }
-        }
 
-        "to CyaCategorisation if there's a cat 2 assessment without exemptions and the user's not being redirected to LongerCommodityCode" in {
-
-          val scenarios = Seq(
-            ("12345600", 0), // short comcode, no descendants
-            ("1234567800", 0), // long comcode, no descendants
-            ("1234567800", 1) // long comcode, with descendants
-          )
-
-          scenarios.map { scenario =>
-            val commodityCode              = scenario._1
-            val descendantCount            = scenario._2
-            val assessmentCat2NoExemptions = CategoryAssessment(assessmentId, 2, Seq())
-            val categorisationInfo         =
-              CategorisationInfo(
-                commodityCode,
-                Seq(assessmentCat2NoExemptions),
-                Some("Weight, in kilograms"),
-                descendantCount
-              )
-            val recordCategorisations      = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          "and has previously been answered" in {
 
             val answers =
               emptyUserAnswers
-                .set(RecordCategorisationsQuery, recordCategorisations)
+                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
                 .success
                 .value
 
@@ -117,110 +105,138 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
               val request = FakeRequest(GET, assessmentRoute)
 
               val result = route(application, request).value
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.CyaCategorisationController.onPageLoad(recordId).url
+
+              val onSubmitAction    = routes.AssessmentController.onSubmit(NormalMode, testRecordId, 0)
+              val view              = application.injector.instanceOf[AssessmentView]
+              val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
+              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
+                exemption =>
+                  exemption.code + " - " + exemption.description
+              }
+
+              status(result) mustEqual OK
+              contentAsString(result) mustEqual view(
+                form,
+                NormalMode,
+                testRecordId,
+                0,
+                expectedListItems,
+                categorisationInfo.commodityCode,
+                onSubmitAction
+              )(
+                request,
+                messages(application)
+              ).toString
             }
           }
         }
 
-        "when recategorising and has previously been answered" in {
+        "must redirect to Journey Recovery" - {
 
-          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          "when categorisation information does not exist" in {
+
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, assessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
+          "when this assessment index cannot be found" in {
+
+            val categorisationInfo =
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
+            val answers            =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, assessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+        }
+      }
+
+      "onSubmit" - {
+
+        "must save the answer and redirect to the next page when a valid value is submitted" in {
+
+          val mockRepository = mock[SessionRepository]
+          when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
           val answers =
-            emptyUserAnswers
-              .set(RecordCategorisationsQuery, recordCategorisations)
-              .success
-              .value
-              .set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption)
-              .success
-              .value
-              .set(RecategorisingQuery(recordId), true)
-              .success
-              .value
+            emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-          val application = applicationBuilder(userAnswers = Some(answers))
-            .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
-            .build()
+          val application =
+            applicationBuilder(userAnswers = Some(answers))
+              .overrides(
+                bind[SessionRepository].toInstance(mockRepository),
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              )
+              .build()
 
           running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
+            val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
 
             val result = route(application, request).value
+
+            val expectedAnswers =
+              answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
+            verify(mockRepository).set(eqTo(expectedAnswers))
           }
         }
 
-      }
+        "must return a Bad Request and errors when invalid data is submitted" in {
 
-      "must render the view when an assessment can be found for this id" - {
-
-        "and has not previously been answered" in {
-
-          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
-          val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
+          val answers =
+            emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
           running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
+            val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", ""))
 
             val result = route(application, request).value
 
-            val view      = application.injector.instanceOf[AssessmentView]
-            val form      = formProvider(1)
-            val listItems = assessment.exemptions.map { exemption =>
-              exemption.code + " - " + exemption.description
+            val onSubmitAction    = routes.AssessmentController.onSubmit(NormalMode, testRecordId, 0)
+            val view              = application.injector.instanceOf[AssessmentView]
+            val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val boundForm         = form.bind(Map("value" -> ""))
+            val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
+              exemption =>
+                exemption.code + " - " + exemption.description
             }
 
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
-              request,
-              messages(application)
-            ).toString
-          }
-        }
-
-        "when recategorising and has not previously been answered" in {
-
-          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
-          val answers               = emptyUserAnswers
-            .set(RecordCategorisationsQuery, recordCategorisations)
-            .success
-            .value
-            .set(RecategorisingQuery(testRecordId), true)
-            .success
-            .value
-          val listItems             = assessment.exemptions.map { exemption =>
-            exemption.code + " - " + exemption.description
-          }
-
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
-
-          running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
-
-            val result = route(application, request).value
-
-            val view = application.injector.instanceOf[AssessmentView]
-            val form = formProvider(1)
-
-            status(result) mustEqual OK
+            status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(
-              form,
+              boundForm,
               NormalMode,
-              recordId,
-              index,
-              listItems,
-              categorisationInfo.commodityCode
+              testRecordId,
+              0,
+              expectedListItems,
+              categorisationInfo.commodityCode,
+              onSubmitAction
             )(
               request,
               messages(application)
@@ -228,176 +244,346 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar {
           }
         }
 
-        "and has previously been answered" in {
+        "must redirect to Journey Recovery" - {
 
-          val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-          val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
+          "when categorisation information does not exist" in {
+
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+            running(application) {
+              val request = FakeRequest(POST, assessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
+          "when this assessment cannot be found" in {
+
+            val categorisationInfo =
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
+            val answers            =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(POST, assessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
+          "when session repository fails" in {
+
+            val mockSessionRepo = mock[SessionRepository]
+            when(mockSessionRepo.set(any())).thenReturn(Future.failed(new Exception(":(")))
+
+            val answers =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers))
+              .overrides(
+                bind[SessionRepository].toInstance(mockSessionRepo)
+              )
+              .build()
+
+            running(application) {
+              val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
+        }
+
+      }
+
+    }
+
+    "for longer commodity code reassessment" - {
+      "onPageLoad" - {
+
+        "must render the view when an assessment can be found for this id" - {
+
+          "and has not previously been answered" in {
+
+            val answers =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, reassessmentRoute)
+
+              val result = route(application, request).value
+
+              val onSubmitAction    = routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, 0)
+              val view              = application.injector.instanceOf[AssessmentView]
+              val form              = formProvider(1)
+              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
+                exemption =>
+                  exemption.code + " - " + exemption.description
+              }
+
+              status(result) mustEqual OK
+              contentAsString(result) mustEqual view(
+                form,
+                NormalMode,
+                testRecordId,
+                0,
+                expectedListItems,
+                categorisationInfo.commodityCode,
+                onSubmitAction
+              )(
+                request,
+                messages(application)
+              ).toString
+            }
+          }
+
+          "and has previously been answered" in {
+
+            val answers =
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+                .success
+                .value
+
+            val application    = applicationBuilder(userAnswers = Some(answers)).build()
+            val onSubmitAction = routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, 0)
+
+            running(application) {
+              val request = FakeRequest(GET, reassessmentRoute)
+
+              val result = route(application, request).value
+
+              val view              = application.injector.instanceOf[AssessmentView]
+              val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
+              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
+                exemption =>
+                  exemption.code + " - " + exemption.description
+              }
+
+              status(result) mustEqual OK
+              contentAsString(result) mustEqual view(
+                form,
+                NormalMode,
+                testRecordId,
+                0,
+                expectedListItems,
+                categorisationInfo.commodityCode,
+                onSubmitAction
+              )(
+                request,
+                messages(application)
+              ).toString
+            }
+          }
+        }
+
+        "must redirect to Journey Recovery" - {
+
+          "when categorisation information does not exist" in {
+
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, reassessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
+          "when this assessment index cannot be found" in {
+
+            val categorisationInfo =
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
+            val answers            =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(GET, reassessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+        }
+      }
+
+      "onSubmit" - {
+
+        "must save the answer and redirect to the next page when a valid value is submitted" in {
+
+          val mockRepository = mock[SessionRepository]
+          when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
           val answers =
-            emptyUserAnswers
-              .set(RecordCategorisationsQuery, recordCategorisations)
-              .success
-              .value
-              .set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption)
-              .success
-              .value
+            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+          val application =
+            applicationBuilder(userAnswers = Some(answers))
+              .overrides(
+                bind[SessionRepository].toInstance(mockRepository),
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              )
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", "false"))
+
+            val result = route(application, request).value
+
+            val expectedAnswers =
+              answers.set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual onwardRoute.url
+            verify(mockRepository).set(eqTo(expectedAnswers))
+          }
+        }
+
+        "must return a Bad Request and errors when invalid data is submitted" in {
+
+          val answers =
+            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
           running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
+            val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", ""))
 
             val result = route(application, request).value
 
-            val view      = application.injector.instanceOf[AssessmentView]
-            val form      = formProvider(1).fill(AssessmentAnswer.NoExemption)
-            val listItems = assessment.exemptions.map { exemption =>
-              exemption.code + " - " + exemption.description
+            val onSubmitAction    = routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, 0)
+            val view              = application.injector.instanceOf[AssessmentView]
+            val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val boundForm         = form.bind(Map("value" -> ""))
+            val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
+              exemption =>
+                exemption.code + " - " + exemption.description
             }
 
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form, NormalMode, recordId, index, listItems, "123")(
+            status(result) mustEqual BAD_REQUEST
+            contentAsString(result) mustEqual view(
+              boundForm,
+              NormalMode,
+              testRecordId,
+              0,
+              expectedListItems,
+              categorisationInfo.commodityCode,
+              onSubmitAction
+            )(
               request,
               messages(application)
             ).toString
           }
         }
-      }
 
-      "must redirect to Journey Recovery" - {
+        "must redirect to Journey Recovery" - {
 
-        "when categorisation information does not exist" in {
+          "when categorisation information does not exist" in {
 
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-          running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
+            running(application) {
+              val request = FakeRequest(POST, reassessmentRoute)
 
-            val result = route(application, request).value
+              val result = route(application, request).value
 
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-          }
-        }
-
-        "when this assessment index cannot be found" in {
-
-          val categorisationInfo    = CategorisationInfo("123", Nil, Some("Weight, in kilograms"), 0)
-          val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
-          val answers               = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
-
-          val application = applicationBuilder(userAnswers = Some(answers)).build()
-
-          running(application) {
-            val request = FakeRequest(GET, assessmentRoute)
-
-            val result = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-          }
-        }
-      }
-    }
-
-    "for a POST" - {
-
-      "must save the answer and redirect to the next page when a valid value is submitted" in {
-
-        val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-        val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-        val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
-
-        val mockRepository = mock[SessionRepository]
-        when(mockRepository.set(any())).thenReturn(Future.successful(true))
-
-        val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
-
-        val application =
-          applicationBuilder(userAnswers = Some(answers))
-            .overrides(
-              bind[SessionRepository].toInstance(mockRepository),
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-            )
-            .build()
-
-        running(application) {
-          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
-
-          val result = route(application, request).value
-
-          val expectedAnswers = answers.set(AssessmentPage(recordId, index), AssessmentAnswer.NoExemption).success.value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockRepository).set(eqTo(expectedAnswers))
-        }
-      }
-
-      "must return a Bad Request and errors when invalid data is submitted" in {
-
-        val assessment            = CategoryAssessment(assessmentId, 1, Seq(Certificate("1", "code", "description")))
-        val categorisationInfo    = CategorisationInfo("123", Seq(assessment), Some("Weight, in kilograms"), 0)
-        val recordCategorisations = RecordCategorisations(records = Map(recordId -> categorisationInfo))
-
-        val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
-
-        val application = applicationBuilder(userAnswers = Some(answers)).build()
-
-        running(application) {
-          val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", ""))
-
-          val result = route(application, request).value
-
-          val view      = application.injector.instanceOf[AssessmentView]
-          val form      = formProvider(1).fill(AssessmentAnswer.NoExemption)
-          val boundForm = form.bind(Map("value" -> ""))
-          val listItems = assessment.exemptions.map { exemption =>
-            exemption.code + " - " + exemption.description
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
           }
 
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode, recordId, index, listItems, "123")(
-            request,
-            messages(application)
-          ).toString
+          "when this assessment cannot be found" in {
+
+            val categorisationInfo =
+              CategorisationInfo(
+                "1234567890",
+                Some(validityEndDate),
+                Seq.empty[CategoryAssessment],
+                Seq.empty[CategoryAssessment],
+                None,
+                1
+              )
+            val answers            =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+            running(application) {
+              val request = FakeRequest(POST, reassessmentRoute)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
+          "when session repository fails" in {
+
+            val mockSessionRepo = mock[SessionRepository]
+            when(mockSessionRepo.set(any())).thenReturn(Future.failed(new Exception(":(")))
+
+            val answers =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+
+            val application = applicationBuilder(userAnswers = Some(answers))
+              .overrides(
+                bind[SessionRepository].toInstance(mockSessionRepo)
+              )
+              .build()
+
+            running(application) {
+              val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", "false"))
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            }
+          }
+
         }
+
       }
 
-      "must redirect to Journey Recovery" - {
-
-        "when categorisation information does not exist" in {
-
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
-          running(application) {
-            val request = FakeRequest(POST, assessmentRoute)
-
-            val result = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-          }
-        }
-
-        "when this assessment cannot be found" in {
-
-          val answers = emptyUserAnswers.set(RecordCategorisationsQuery, recordCategorisations).success.value
-
-          val application     = applicationBuilder(userAnswers = Some(answers)).build()
-          val assessmentRoute = routes.AssessmentController.onPageLoad(NormalMode, "differentRecordId", index).url
-
-          running(application) {
-            val request = FakeRequest(POST, assessmentRoute)
-
-            val result = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-          }
-        }
-      }
     }
   }
+
 }

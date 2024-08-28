@@ -18,192 +18,30 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import models.helper.CategorisationUpdate
-import models.{Category1NoExemptions, NormalMode, StandardNoAssessments}
+import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
-import services.{AuditService, CategorisationService}
+import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
 
 import scala.concurrent.Future
 
-class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
+class CategoryGuidanceControllerSpec extends SpecBase {
 
-  private val categorisationService     = mock[CategorisationService]
-  private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-      Future.successful(userAnswersForCategorisation)
-    )
-    when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
-      .thenReturn(Future.successful(Done))
-  }
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    reset(categorisationService)
-    reset(mockGoodsRecordsConnector)
-  }
-
-  val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  private val onwardRoute = Call("GET", "/foo")
 
   "CategoryGuidance Controller" - {
 
-    "must call categorisation service to load and save ott info" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-
-        status(result) mustEqual OK
-        verify(categorisationService).requireCategorisation(any(), any())(any())
-
-      }
-    }
-
-    "must redirect to JourneyRecovery when determining scenario fails due to invalid user answers" in {
-
-      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-        Future.successful(emptyUserAnswers)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to JourneyRecovery when call to connector fails in a redirect scenario" in {
-
-      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-        Future.successful(uaForCategorisationStandardNoAssessments)
-      )
-
-      when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
-        .thenReturn(Future.failed(new RuntimeException("Something went very wrong")))
-
-      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to CategorisationResult when scenario is StandardNoAssessments" in {
-
-      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-        Future.successful(uaForCategorisationStandardNoAssessments)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(uaForCategorisationStandardNoAssessments))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.CategorisationResultController
-          .onPageLoad(testRecordId, StandardNoAssessments)
-          .url
-
-        withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector).updateCategoryAndComcodeForGoodsRecord(
-            any(),
-            any(),
-            any()
-          )(any())
-        }
-      }
-    }
-
-    "must redirect to CategorisationResult when scenario is Category1NoExemptions" in {
-
-      when(categorisationService.requireCategorisation(any(), any())(any())).thenReturn(
-        Future.successful(uaForCategorisationCategory1NoExemptions)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(uaForCategorisationCategory1NoExemptions))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
-        val result  = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).get mustEqual routes.CategorisationResultController
-          .onPageLoad(testRecordId, Category1NoExemptions)
-          .url
-
-        withClue("must make a call to update goodsRecord with category info") {
-          verify(mockGoodsRecordsConnector).updateCategoryAndComcodeForGoodsRecord(
-            any(),
-            any(),
-            any()
-          )(any())
-        }
-      }
-    }
-
-    "must OK with correct view and not redirect on a GET when scenario is NOT Category1NoExemptions or StandardNoAssessments" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
-        .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
-        .build()
+    "onPageLoad should display view" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
@@ -215,17 +53,9 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
       }
-
-      withClue("must NOT make a call to update goodsRecord with category info") {
-        verify(mockGoodsRecordsConnector, never()).updateCategoryAndComcodeForGoodsRecord(
-          any(),
-          any(),
-          any()
-        )(any())
-      }
     }
 
-    "must redirect to the categorisation page when the user click continue button" in {
+    "onSubmit should call navigator to redirect" in {
 
       val mockAuditService = mock[AuditService]
 
@@ -234,9 +64,8 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
-          bind[CategorisationService].toInstance(categorisationService),
           bind[AuditService].toInstance(mockAuditService),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
         )
         .build()
 
@@ -246,7 +75,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 0).url
+        redirectLocation(result).value mustEqual onwardRoute.url
 
         withClue("must call the audit service with the correct details") {
           verify(mockAuditService)
@@ -259,5 +88,7 @@ class CategoryGuidanceControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
     }
+
   }
+
 }

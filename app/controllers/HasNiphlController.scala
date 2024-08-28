@@ -24,10 +24,9 @@ import javax.inject.Inject
 import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.{HasNiphlPage, HasNiphlUpdatePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.HasNiphlView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,8 +44,7 @@ class HasNiphlController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: HasNiphlView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form = formProvider()
 

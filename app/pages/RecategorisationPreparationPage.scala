@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-package queries
+package pages
 
-import models.router.responses.GetRecordsResponse
-import play.api.libs.json.JsPath
-
-case object GetGoodsRecordsQuery extends Gettable[GetRecordsResponse] with Settable[GetRecordsResponse] {
-
-  override def path: JsPath = JsPath \ "getRecordsResponse"
-}
+case class RecategorisationPreparationPage(recordId: String) extends Page

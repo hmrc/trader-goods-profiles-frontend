@@ -16,12 +16,12 @@
 
 package base
 
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{NiphlsCode, requested, testRecordId, userAnswersId}
 import controllers.actions._
+import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
-import models.ott.{AdditionalCode, CategorisationInfo, CategoryAssessment, Certificate}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Commodity, RecordCategorisations, UserAnswers}
+import models.{AssessmentAnswer, Commodity, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -32,9 +32,9 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import queries.{CommodityQuery, MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, CommodityQuery, MeasurementQuery}
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, ZoneId}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -75,10 +75,16 @@ trait SpecBase
     .value
 
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
+  def validityEndDate: Instant   = Instant.parse("2008-12-03T10:15:30.00Z")
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
 
   def testShorterCommodityQuery: Commodity = Commodity("1742900000", List("test"), validityStartDate, None)
+
+  val lockedRecord: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(adviceStatus = requested)
 
   def testAuditOttResponse: OttResponse = OttResponse(
     GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
@@ -168,77 +174,65 @@ trait SpecBase
     )
   )
 
-  lazy val categoryQuery: CategorisationInfo = CategorisationInfo(
+  lazy val category1Niphl: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(Certificate(NiphlsCode, "Y994", "Goods are not from warzone")))
+
+  lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
     "1234567890",
+    Some(validityEndDate),
+    Seq(category1, category2, category3),
     Seq(category1, category2, category3),
     Some("Weight, in kilograms"),
-    0,
-    Some("1234567890")
+    1
+  )
+  val today: Instant                                                      = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
+  lazy val categorisationInfoWithExpiredCommodityCode: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    Some(today),
+    Seq(category1, category2, category3),
+    Seq(category1, category2, category3),
+    Some("Weight, in kilograms"),
+    1
   )
 
-  private lazy val categoryQueryWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
+  lazy val categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode: CategorisationInfo =
+    CategorisationInfo(
+      "1234567890",
+      Some(today),
+      Seq(category1, category2, category3),
+      Seq.empty,
+      None,
+      1
+    )
+
+  lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
+    Some(validityEndDate),
+    Seq(category1, category2, category3),
     Seq(category1, category2, category3),
     None,
-    0
-  )
-
-  lazy val recordCategorisations: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQuery)
-  )
-
-  lazy val recordCategorisationsEmptyMeasurementUnit: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryWithEmptyMeasurementUnit)
+    1
   )
 
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisations)
+    .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption("Y994"))
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption("NC123"))
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption("X812"))
-    .success
-    .value
-
-  private lazy val categoryQueryNoAssessments: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(),
-    Some("Weight, in kilograms"),
-    0
-  )
-
-  lazy val recordCategorisationsNoAssessments: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryNoAssessments)
-  )
-
-  lazy val uaForCategorisationStandardNoAssessments: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisationsNoAssessments)
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
     .success
     .value
 
   lazy val category1NoExemptions: CategoryAssessment =
     CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
 
-  private lazy val categoryQueryNoExemptions: CategorisationInfo = CategorisationInfo(
-    "1234567890",
-    Seq(category1NoExemptions),
-    Some("Weight, in kilograms"),
-    0
-  )
-
-  lazy val recordCategorisationsNoExemptions: RecordCategorisations = RecordCategorisations(
-    Map(testRecordId -> categoryQueryNoExemptions)
-  )
-
-  lazy val uaForCategorisationCategory1NoExemptions: UserAnswers = emptyUserAnswers
-    .set(RecordCategorisationsQuery, recordCategorisationsNoExemptions)
-    .success
-    .value
+  lazy val category2NoExemptions: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 2, Seq())
 
   def goodsRecordResponse(
     createdDateTime: Instant = Instant.now,
@@ -249,10 +243,10 @@ trait SpecBase
       "10410100",
       "10410100",
       "BAN0010011",
-      "1234567",
+      "12345678",
       "Not requested",
       "Organic bananas",
-      "UK",
+      "GB",
       Some(1),
       None,
       None,
@@ -379,7 +373,7 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
         bind[ProfileCheckAction].to[ProfileCheckActionImpl],
-        bind[ProfileAuthenticateAction].to[ProfileAuthenticateActionImpl],
+        bind[ProfileAuthenticateAction].to[FakeProfileAuthenticateAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
 }

@@ -26,29 +26,29 @@ sealed trait AssessmentAnswer
 object AssessmentAnswer {
 
   case object NoExemption extends WithName("false") with AssessmentAnswer
-  final case class Exemption(value: String) extends AssessmentAnswer { override val toString: String = value }
+  case object Exemption extends WithName("true") with AssessmentAnswer
 
   // Unideal but need it as a placeholder when recategorising - because it stores answers in a JSON array
   case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
     case JsString("false")       => JsSuccess(NoExemption)
+    case JsString("true")        => JsSuccess(Exemption)
     case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
-    case JsString(s)             => JsSuccess(Exemption(s))
     case _                       => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {
-    case NoExemption    => JsString("false")
-    case Exemption(s)   => JsString(s)
+    case Exemption      => JsString("true")
     case NotAnsweredYet => JsString("notAnswered")
+    case NoExemption    => JsString("false")
   }
 
   def fromString(input: String): AssessmentAnswer =
     input match {
-      case NoExemption.toString    => NoExemption
+      case Exemption.toString      => Exemption
       case NotAnsweredYet.toString => NotAnsweredYet
-      case s                       => Exemption(s)
+      case _                       => NoExemption
     }
 
   def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =

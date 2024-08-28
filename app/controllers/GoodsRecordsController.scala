@@ -22,11 +22,10 @@ import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import navigation.Navigator
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
@@ -45,11 +44,11 @@ class GoodsRecordsController @Inject() (
   view: GoodsRecordsView,
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
+  downloadDataConnector: DownloadDataConnector,
   ottConnector: OttConnector,
   navigator: Navigator
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val form     = formProvider()
   private val pageSize = 10
@@ -60,38 +59,35 @@ class GoodsRecordsController @Inject() (
         Future.successful(navigator.journeyRecovery())
       } else {
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-          case Some(goodsRecordResponse) =>
-            if (goodsRecordResponse.pagination.totalRecords != 0) {
-              ottConnector.getCountries.flatMap { countries =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield {
-                  val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
-                  Ok(
-                    view(
-                      form,
-                      goodsRecordResponse.goodsItemRecords,
-                      goodsRecordResponse.pagination.totalRecords,
-                      firstRecord,
-                      getLastRecordIndex(firstRecord, goodsRecordResponse.goodsItemRecords.size),
-                      countries,
-                      getPagination(
-                        goodsRecordResponse.pagination.currentPage,
-                        goodsRecordResponse.pagination.totalPages
-                      ),
-                      page
-                    )
-                  ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
-                }
-              }
-            } else {
-              Future.successful(
-                Ok(emptyView())
-                  .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
-              )
+          case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords > 0 =>
+            for {
+              countries              <- ottConnector.getCountries
+              updatedAnswers         <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
+              _                      <- sessionRepository.set(updatedAnswers)
+              downloadDataSummaryOpt <- downloadDataConnector.getDownloadDataSummary(request.eori)
+            } yield {
+              val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
+              Ok(
+                view(
+                  form,
+                  goodsRecordsResponse.goodsItemRecords,
+                  goodsRecordsResponse.pagination.totalRecords,
+                  firstRecord,
+                  getLastRecordIndex(firstRecord, goodsRecordsResponse.goodsItemRecords.size),
+                  countries,
+                  getPagination(
+                    goodsRecordsResponse.pagination.currentPage,
+                    goodsRecordsResponse.pagination.totalPages
+                  ),
+                  page,
+                  getDownloadLinkMessagesKey(downloadDataSummaryOpt),
+                  getDownloadLinkRoute(downloadDataSummaryOpt)
+                )
+              ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
-          case None                      =>
+          case Some(_)                                                                        =>
+            Future.successful(Ok(emptyView()).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
+          case None                                                                           =>
             Future.successful(
               Redirect(
                 routes.GoodsRecordsLoadingController
@@ -102,6 +98,29 @@ class GoodsRecordsController @Inject() (
       }
     }
 
+  def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
+    opt match {
+      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
+        "goodsRecords.downloadLinkText.requestFile"
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
+        "goodsRecords.downloadLinkText.fileInProgress"
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
+        "goodsRecords.downloadLinkText.fileReady"
+      case _                                                                         =>
+        "goodsRecords.downloadLinkText.requestFile"
+    }
+
+  def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
+    opt match {
+      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
+        routes.RequestDataController.onPageLoad().url
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
+        routes.FileInProgressController.onPageLoad().url
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
+        routes.FileReadyController.onPageLoad().url
+      case _                                                                         => routes.RequestDataController.onPageLoad().url
+    }
+
   def onSearch(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
@@ -109,26 +128,31 @@ class GoodsRecordsController @Inject() (
         .fold(
           formWithErrors =>
             goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
-              case Some(goodsRecordResponse) =>
-                ottConnector.getCountries.map { countries =>
-                  val firstRecord = getFirstRecordIndex(goodsRecordResponse.pagination, pageSize)
+              case Some(goodsRecordsResponse) =>
+                for {
+                  countries              <- ottConnector.getCountries
+                  downloadDataSummaryOpt <- downloadDataConnector.getDownloadDataSummary(request.eori)
+                } yield {
+                  val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
                   BadRequest(
                     view(
                       formWithErrors,
-                      goodsRecordResponse.goodsItemRecords,
-                      goodsRecordResponse.pagination.totalRecords,
-                      getFirstRecordIndex(goodsRecordResponse.pagination, pageSize),
+                      goodsRecordsResponse.goodsItemRecords,
+                      goodsRecordsResponse.pagination.totalRecords,
+                      getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize),
                       getLastRecordIndex(firstRecord, pageSize),
                       countries,
                       getPagination(
-                        goodsRecordResponse.pagination.currentPage,
-                        goodsRecordResponse.pagination.totalPages
+                        goodsRecordsResponse.pagination.currentPage,
+                        goodsRecordsResponse.pagination.totalPages
                       ),
-                      page
+                      page,
+                      getDownloadLinkMessagesKey(downloadDataSummaryOpt),
+                      getDownloadLinkRoute(downloadDataSummaryOpt)
                     )
                   )
                 }
-              case None                      =>
+              case None                       =>
                 Future.successful(
                   Redirect(
                     routes.GoodsRecordsLoadingController

@@ -64,7 +64,7 @@ object TraderProfile {
       getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
     ).parMapN(TraderProfile.apply)
 
-  def getOptionallyRemovedPage[A](
+  private def getOptionallyRemovedPage[A](
     answers: UserAnswers,
     questionPage: QuestionPage[Boolean],
     removePage: QuestionPage[Boolean],

@@ -16,16 +16,18 @@
 
 package controllers
 
+import connectors.DownloadDataConnector
 import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
 import pages.RequestDataPage
 
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RequestDataView
+
+import scala.concurrent.ExecutionContext
 
 class RequestDataController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,9 +37,10 @@ class RequestDataController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: RequestDataView,
-  navigator: Navigator
-) extends FrontendBaseController
-    with I18nSupport {
+  navigator: Navigator,
+  downloadDataConnector: DownloadDataConnector
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
@@ -45,10 +48,10 @@ class RequestDataController @Inject() (
       Ok(view("placeholder@email.com"))
   }
 
-  def onSubmit(email: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      //TODO send an email to the user
-      //TODO redirect to the correct page
-      Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
-  }
+  def onSubmit: Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      downloadDataConnector.requestDownloadData(request.eori).map { _ =>
+        Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
+      }
+    }
 }

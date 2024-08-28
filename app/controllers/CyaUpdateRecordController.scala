@@ -16,21 +16,23 @@
 
 package controllers
 
-import cats.data
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import logging.Logging
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
+import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers}
 import pages._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, CategorisationService}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SessionData.fromExpiredCommodityCodePage
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaUpdateRecordView
@@ -48,12 +50,11 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  categorisationService: CategorisationService,
   navigator: Navigator
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseController {
+
+  private val errorMessage: String = "Unable to update Goods Record."
 
   def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
@@ -80,7 +81,11 @@ class CyaUpdateRecordController @Inject() (
               }
             case Left(errors) =>
               Future.successful(
-                logErrorsAndContinue(errors, recordId)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  errors
+                )
               )
           }
         }
@@ -103,7 +108,11 @@ class CyaUpdateRecordController @Inject() (
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)            =>
-          logErrorsAndContinue(errors, recordId)
+          logErrorsAndContinue(
+            errorMessage,
+            routes.SingleRecordController.onPageLoad(recordId).url,
+            errors
+          )
       }
     }
 
@@ -118,7 +127,11 @@ class CyaUpdateRecordController @Inject() (
           )
           Ok(view(list, onSubmitAction))
         case Left(errors)           =>
-          logErrorsAndContinue(errors, recordId)
+          logErrorsAndContinue(
+            errorMessage,
+            routes.SingleRecordController.onPageLoad(recordId).url,
+            errors
+          )
       }
     }
 
@@ -127,8 +140,14 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
+          val isCommCodeExpired = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
-            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            .validateCommodityCode(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined,
+              isCommCodeExpired
+            ) match {
             case Right(commodity) =>
               val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
@@ -145,7 +164,11 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(Ok(view(list, onSubmitAction)))
             case Left(errors)     =>
               Future.successful(
-                logErrorsAndContinue(errors, recordId)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  errors
+                )
               )
           }
         }
@@ -199,7 +222,11 @@ class CyaUpdateRecordController @Inject() (
           } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
         case Left(errors)           =>
           Future.successful(
-            logErrorsAndContinue(errors, recordId)
+            logErrorsAndContinue(
+              errorMessage,
+              routes.SingleRecordController.onPageLoad(recordId).url,
+              errors
+            )
           )
       }
     }
@@ -227,7 +254,11 @@ class CyaUpdateRecordController @Inject() (
               } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
             case Left(errors) =>
               Future.successful(
-                logErrorsAndContinue(errors, recordId)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  errors
+                )
               )
           }
         }
@@ -257,7 +288,11 @@ class CyaUpdateRecordController @Inject() (
           } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
         case Left(errors)            =>
           Future.successful(
-            logErrorsAndContinue(errors, recordId)
+            logErrorsAndContinue(
+              errorMessage,
+              routes.SingleRecordController.onPageLoad(recordId).url,
+              errors
+            )
           )
       }
     }
@@ -267,8 +302,14 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
+          val isCommCodeExpired = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
-            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            .validateCommodityCode(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined,
+              isCommCodeExpired
+            ) match {
             case Right(commodity) =>
               auditService.auditFinishUpdateGoodsRecord(
                 recordId,
@@ -283,11 +324,14 @@ class CyaUpdateRecordController @Inject() (
                   Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
                 updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
                 _                        <- sessionRepository.set(updatedAnswers)
-                _                        <- categorisationService.updateCategorisationWithUpdatedCommodityCode(request, recordId)
               } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
             case Left(errors)     =>
               Future.successful(
-                logErrorsAndContinue(errors, recordId)
+                logErrorsAndContinue(
+                  errorMessage,
+                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  errors
+                )
               )
           }
         }
@@ -299,10 +343,4 @@ class CyaUpdateRecordController @Inject() (
         }
     }
 
-  def logErrorsAndContinue(errors: data.NonEmptyChain[ValidationError], recordId: String): Result = {
-    val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-
-    logger.error(s"Unable to update Goods Record.  Missing pages: $errorMessages")
-    navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-  }
 }

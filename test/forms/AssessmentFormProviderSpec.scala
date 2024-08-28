@@ -23,27 +23,27 @@ import play.api.data.FormError
 
 class AssessmentFormProviderSpec extends StringFieldBehaviours with ScalaCheckPropertyChecks {
 
-  private val form = new AssessmentFormProvider()(1)
+  private val form2 = new AssessmentFormProvider()(1)
 
-  ".value" - {
+  ".value2" - {
 
     val fieldName = "value"
 
     "must bind `false`" in {
 
-      val result = form.bind(Map("value" -> "false"))
+      val result = form2.bind(Map("value" -> "false"))
       result.errors mustBe empty
       result.get mustEqual AssessmentAnswer.NoExemption
     }
 
     "must bind `true`" in {
-      val result = form.bind(Map("value" -> "true"))
+      val result = form2.bind(Map("value" -> "true"))
       result.errors mustBe empty
-      result.get mustEqual AssessmentAnswer.Exemption("true")
+      result.get mustEqual AssessmentAnswer.Exemption
     }
 
     "must not bind invalid value" in {
-      val result = form.bind(Map("value" -> ""))
+      val result = form2.bind(Map("value" -> ""))
       result.errors must contain only FormError(fieldName, "assessment.error.required.onlyOne")
     }
   }

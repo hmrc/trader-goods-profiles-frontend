@@ -18,20 +18,19 @@ package controllers
 
 import controllers.actions._
 import forms.HasGoodsDescriptionChangeFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.HasGoodsDescriptionChangePage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasGoodsDescriptionChangeView
 
+import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasGoodsDescriptionChangeController @Inject() (
@@ -46,9 +45,8 @@ class HasGoodsDescriptionChangeController @Inject() (
   formProvider: HasGoodsDescriptionChangeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasGoodsDescriptionChangeView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+)(implicit @unused ec: ExecutionContext)
+    extends BaseController {
 
   private val form = formProvider()
 

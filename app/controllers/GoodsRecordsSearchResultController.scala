@@ -21,10 +21,9 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
 import navigation.Navigator
 import pages.GoodsRecordsPage
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
 import javax.inject.Inject
@@ -42,8 +41,7 @@ class GoodsRecordsSearchResultController @Inject() (
   emptyView: GoodsRecordsSearchResultEmptyView,
   navigator: Navigator
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends BaseController {
 
   private val pageSize = 10
 

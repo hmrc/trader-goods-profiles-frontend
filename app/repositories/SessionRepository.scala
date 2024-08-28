@@ -93,14 +93,14 @@ class SessionRepository @Inject() (
 
   def clearData(id: String, journey: Journey): Future[Boolean] = {
     val updates = journey match {
-      case CreateProfileJourney  => CreateProfileJourney.pages.map(page => Updates.unset(s"data.$page"))
-      case CreateRecordJourney   => CreateRecordJourney.pages.map(page => Updates.unset(s"data.$page"))
-      case CategorisationJourney => CategorisationJourney.pages.map(page => Updates.unset(s"data.$page"))
-      case RequestAdviceJourney  => RequestAdviceJourney.pages.map(page => Updates.unset(s"data.$page"))
-      case WithdrawAdviceJourney => WithdrawAdviceJourney.pages.map(page => Updates.unset(s"data.$page"))
-
+      case CreateProfileJourney           => CreateProfileJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case CreateRecordJourney            => CreateRecordJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case CategorisationJourney          => CategorisationJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case RequestAdviceJourney           => RequestAdviceJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case WithdrawAdviceJourney          => WithdrawAdviceJourney.pages.map(page => Updates.unset(s"data.$page"))
       case SupplementaryUnitUpdateJourney =>
         SupplementaryUnitUpdateJourney.pages.map(page => Updates.unset(s"data.$page"))
+      case _                              => Seq.empty
     }
     collection
       .updateOne(

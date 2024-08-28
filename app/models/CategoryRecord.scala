@@ -17,130 +17,58 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple3Parallel
-import models.AssessmentAnswer.{NoExemption, NotAnsweredYet}
-import models.ott.CategorisationInfo
-import pages.{AssessmentPage, HasSupplementaryUnitPage, SupplementaryUnitPage}
-import play.api.libs.json.{Json, OFormat}
-import queries.{LongerCommodityQuery, RecordCategorisationsQuery}
+import cats.implicits.catsSyntaxTuple2Parallel
+import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
+import services.CategorisationService
 
 final case class CategoryRecord(
   eori: String,
   recordId: String,
-  comcode: Option[String] = None,
-  category: Int,
+  comcode: String,
+  category: Scenario,
   categoryAssessmentsWithExemptions: Int,
-  supplementaryUnit: Option[String] = None,
-  measurementUnit: Option[String] = None
+  measurementUnit: Option[String],
+  supplementaryUnit: Option[String] = None
 )
 
 object CategoryRecord {
 
-  implicit lazy val format: OFormat[CategoryRecord] = Json.format
-
-  def build(answers: UserAnswers, eori: String, recordId: String): EitherNec[ValidationError, CategoryRecord] =
+  def build(
+    userAnswers: UserAnswers,
+    eori: String,
+    recordId: String,
+    categorisationService: CategorisationService
+  ): EitherNec[ValidationError, CategoryRecord] =
     (
-      getCategory(answers, recordId),
-      answers.getOptionalPageValueForOptionalBooleanPage(
-        answers,
+      getCategorisationInfoForThisRecord(userAnswers, recordId),
+      userAnswers.getOptionalPageValueForOptionalBooleanPage(
+        userAnswers,
         HasSupplementaryUnitPage(recordId),
         SupplementaryUnitPage(recordId)
-      ),
-      getMeasurementUnit(answers, recordId)
-    ).parMapN((categoryDetails, supplementaryUnit, measurementUnit) =>
+      )
+    ).parMapN((categorisationInfo, supplementaryUnit) =>
       CategoryRecord(
-        eori = eori,
-        recordId = recordId,
-        comcode = getLongerCommodityCode(answers, recordId),
-        category = categoryDetails.category,
-        categoryAssessmentsWithExemptions = categoryDetails.categoryAssessmentsWithExemptions,
-        supplementaryUnit = supplementaryUnit,
-        measurementUnit = measurementUnit
+        eori,
+        recordId,
+        categorisationInfo.commodityCode,
+        categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
+        categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
+        categorisationInfo.measurementUnit,
+        supplementaryUnit
       )
     )
 
-  private def getLongerCommodityCode(answers: UserAnswers, recordId: String): Option[String] =
-    answers.get(LongerCommodityQuery(recordId)).map(_.commodityCode)
-
-  private val CATEGORY_1 = 1
-  private val CATEGORY_2 = 2
-  private val STANDARD   = 3
-
-  private case class GetCategoryReturn(category: Int, categoryAssessmentsWithExemptions: Int)
-
-  private def getCategory(answers: UserAnswers, recordId: String): EitherNec[ValidationError, GetCategoryReturn] =
-    answers
-      .get(RecordCategorisationsQuery)
-      .map { recordCategorisations =>
-        recordCategorisations.records
-          .get(recordId)
-          .map { categorisationInfo =>
-            val exemptionsCount = getHowManyAssessmentsHadExemptions(recordId, answers, categorisationInfo)
-            val category        = chooseCategory(recordId, answers, categorisationInfo)
-
-            Right(GetCategoryReturn(category, exemptionsCount))
-          }
-          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
-      }
-      .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
-
-  private def chooseCategory2Or3(
-    recordId: String,
-    answers: UserAnswers,
-    categorisationInfo: CategorisationInfo
-  ): Int = {
-    val category2AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 2)
-    if (category2AssessmentsCount > 0) {
-      answers.getPageValue(AssessmentPage(recordId, categorisationInfo.categoryAssessments.length - 1)) match {
-        case Right(AssessmentAnswer.NoExemption) => CATEGORY_2
-        case Right(_)                            => STANDARD
-        case _                                   => CATEGORY_2
-      }
-    } else {
-      STANDARD
+  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
+    userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+      case Some(catInfo) => Right(catInfo)
+      case _             =>
+        userAnswers
+          .getPageValue(CategorisationDetailsQuery(recordId))
+          .map(Right(_))
+          .getOrElse(
+            Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
+          )
     }
-  }
 
-  private def chooseCategory(
-    recordId: String,
-    answers: UserAnswers,
-    categorisationInfo: CategorisationInfo
-  ): Int = {
-    val category1AssessmentsCount = categorisationInfo.categoryAssessments.count(_.category == 1)
-    if (category1AssessmentsCount > 0) {
-      answers.getPageValue(
-        AssessmentPage(recordId, category1AssessmentsCount - 1)
-      ) match {
-        case Right(AssessmentAnswer.NoExemption) => CATEGORY_1
-        case Right(_)                            => chooseCategory2Or3(recordId, answers, categorisationInfo)
-        case _                                   => CATEGORY_1
-      }
-    } else {
-      chooseCategory2Or3(recordId, answers, categorisationInfo)
-    }
-  }
-
-  private def getHowManyAssessmentsHadExemptions(
-    recordId: String,
-    answers: UserAnswers,
-    categorisationInfo: CategorisationInfo
-  ): Int =
-    categorisationInfo.categoryAssessments.zipWithIndex
-      .map(assessment => answers.get(AssessmentPage(recordId, assessment._2)))
-      .count(optionalAnswer =>
-        optionalAnswer.isDefined && !optionalAnswer.contains(NoExemption) && !optionalAnswer.contains(NotAnsweredYet)
-      )
-
-  private def getMeasurementUnit(answers: UserAnswers, recordId: String): EitherNec[ValidationError, Option[String]] =
-    answers
-      .get(RecordCategorisationsQuery)
-      .map { recordCategorisations =>
-        recordCategorisations.records
-          .get(recordId)
-          .map { categorisationInfo =>
-            Right(categorisationInfo.measurementUnit)
-          }
-          .getOrElse(Left(NonEmptyChain.one(RecordIdMissing(RecordCategorisationsQuery))))
-      }
-      .getOrElse(Left(NonEmptyChain.one(PageMissing(RecordCategorisationsQuery))))
 }

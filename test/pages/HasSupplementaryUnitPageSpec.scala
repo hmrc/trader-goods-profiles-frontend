@@ -18,9 +18,9 @@ package pages
 
 import base.TestConstants.{testRecordId, userAnswersId}
 import models.UserAnswers
-import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.{OptionValues, TryValues}
 
 class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 

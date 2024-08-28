@@ -22,13 +22,11 @@ import forms.SupplementaryUnitFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
-import play.api.Logging
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import queries.{MeasurementQuery, RecordCategorisationsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, MeasurementQuery}
 import repositories.SessionRepository
 import services.OttService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
 import views.html.SupplementaryUnitView
 
@@ -49,9 +47,7 @@ class SupplementaryUnitController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: SupplementaryUnitView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseController {
 
   private val form = formProvider()
 
@@ -61,34 +57,37 @@ class SupplementaryUnitController @Inject() (
         case None        => form
         case Some(value) => form.fill(value)
       }
-
-      val result = for {
-        query              <- request.userAnswers.get(RecordCategorisationsQuery)
-        categorisationInfo <- query.records.get(recordId)
-      } yield {
-        val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-        val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
-        Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+      val catInfo      = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+        case Some(catInfo) => Some(catInfo)
+        case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))
       }
-
-      result.getOrElse(navigator.journeyRecovery())
+      catInfo
+        .map { categorisationInfo =>
+          val measurementUnit = categorisationInfo.measurementUnit
+          val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+          Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
+        }
+        .getOrElse(navigator.journeyRecovery())
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(
           formWithErrors => {
-            val result = for {
-              query              <- request.userAnswers.get(RecordCategorisationsQuery)
-              categorisationInfo <- query.records.get(recordId)
-            } yield {
-              val measurementUnit = categorisationInfo.measurementUnit.getOrElse("")
-              Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction)))
+            val catInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
+              case Some(catInfo) => Some(catInfo)
+              case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))
             }
-            result.getOrElse(Future.successful(navigator.journeyRecovery()))
+
+            catInfo
+              .map { categorisationInfo =>
+                val measurementUnit = categorisationInfo.measurementUnit
+                val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+                Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
+              }
+              .getOrElse(Future.successful(navigator.journeyRecovery()))
           },
           value =>
             for {
@@ -109,7 +108,7 @@ class SupplementaryUnitController @Inject() (
             case Some(value) if value != 0 => value.toString
             case _                         => ""
           }
-          val measurementUnit      = record.measurementUnit.getOrElse("")
+          val measurementUnit      = record.measurementUnit
 
           val preparedFormFuture = userAnswerValue match {
             case Some(value) =>
@@ -143,7 +142,7 @@ class SupplementaryUnitController @Inject() (
             val result = for {
               value <- ottService.getMeasurementUnit(request, recordId)
             } yield {
-              val measurementUnit = value.getOrElse("")
+              val measurementUnit = value
               BadRequest(view(formWithErrors, mode, recordId, measurementUnit, onSubmitAction))
             }
             result.recover { case ex: Exception =>
