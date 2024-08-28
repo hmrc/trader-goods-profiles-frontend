@@ -23,7 +23,7 @@ import models.ott.{CategoryAssessment, _}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile}
+import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, ReassessmentAnswer, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -835,13 +835,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should return the user answers with the reassessment answers set if old and new category assessments are the same" in {
       val expectedUserAnswers = userAnswersForCategorisation
-        .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
         .success
         .value
-        .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
         .success
         .value
-        .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
         .success
         .value
 
