@@ -19,7 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.ott.CategorisationInfo
-import models.{CategoryRecord, Commodity, Mode, NormalMode, UserAnswers}
+import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages.{CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
@@ -29,7 +29,6 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, Lo
 import repositories.SessionRepository
 import services.CategorisationService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.minimumLengthOfCommodityCode
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
