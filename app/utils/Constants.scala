@@ -27,4 +27,6 @@ case object Constants {
   val NiphlsCode: String      = "WFE012"
 
   val minimumLengthOfCommodityCode: Int = 6
+
+  val NotFoundErrorCode: Int = 7
 }

@@ -208,7 +208,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(UseExistingUkimsPage)
       .map {
-        case true  => routes.HasNiphlController.onPageLoadCreate(NormalMode)
+        case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
         case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())

@@ -50,7 +50,8 @@ class UseExistingUkimsNumberController @Inject() (
       (for {
         ukimsNumber <- request.userAnswers.get(UkimsNumberPage)
         updatedForm  = request.userAnswers.get(UseExistingUkimsPage).map(value => form.fill(value)).getOrElse(form)
-      } yield Ok(view(updatedForm, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)))
+        updatedView  = view(updatedForm, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)
+      } yield Ok(updatedView))
         .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
@@ -65,9 +66,9 @@ class UseExistingUkimsNumberController @Inject() (
               .map(ukims => BadRequest(view(formWithErrors, routes.UseExistingUkimsNumberController.onSubmit(), ukims)))
               .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
           },
-        value =>
+        useExistingUkims =>
           for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UseExistingUkimsPage, value))
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(UseExistingUkimsPage, useExistingUkims))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(navigator.nextPage(UseExistingUkimsPage, NormalMode, updatedAnswers))
       )
