@@ -87,19 +87,18 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateResultWithNirms(categorisationInfo, userAnswers, recordId)
+      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
     }
   }
 
   private def calculateResultWithNirms(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
-    recordId: String
+    recordId: String,
+    listOfAnswers: Seq[AnsweredQuestions]
   ): Scenario = {
 
-    val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
-
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+    //val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
 
     val areThereQuestionsWithNoExemption = listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
