@@ -500,6 +500,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
     "return Category 2" - {
+
       "if a category 2 question is No" in {
         val userAnswers = emptyUserAnswers
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
@@ -845,7 +846,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
-    "return StandardNoAssessments" - {
+    "return Standard" - {
 
       "if all answers are Yes" in {
 
@@ -869,28 +870,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           testRecordId
         ) mustEqual StandardGoodsScenario
 
-      }
-
-      "if no assessments" in {
-        val categoryInfoNoAssessments = CategorisationInfo(
-          "1234567890",
-          Some(validityEndDate),
-          Seq.empty,
-          Seq.empty,
-          None,
-          1
-        )
-
-        val userAnswers = emptyUserAnswers
-          .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
-          .success
-          .value
-
-        categorisationService.calculateResult(
-          categoryInfoNoAssessments,
-          userAnswers,
-          testRecordId
-        ) mustBe StandardGoodsNoAssessmentsScenario
       }
 
       ".NIRMS" - {
@@ -951,6 +930,31 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId
           ) mustEqual StandardGoodsScenario
         }
+      }
+    }
+
+    "return StandardNoAssessments" - {
+
+      "if no assessments" in {
+        val categoryInfoNoAssessments = CategorisationInfo(
+          "1234567890",
+          Some(validityEndDate),
+          Seq.empty,
+          Seq.empty,
+          None,
+          1
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categoryInfoNoAssessments,
+          userAnswers,
+          testRecordId
+        ) mustBe StandardGoodsNoAssessmentsScenario
       }
     }
 
