@@ -61,9 +61,6 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         .set(UkimsNumberPage, ukimsNumber)
         .success
         .value
-        .set(UseExistingUkimsPage, true)
-        .success
-        .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
