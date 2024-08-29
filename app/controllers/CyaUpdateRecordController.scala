@@ -27,6 +27,7 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import utils.SessionData.fromExpiredCommodityCodePage
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaUpdateRecordView
@@ -136,8 +137,14 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
+          val isCommCodeExpired = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
-            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            .validateCommodityCode(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined,
+              isCommCodeExpired
+            ) match {
             case Right(commodity) =>
               val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
@@ -298,8 +305,14 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
+          val isCommCodeExpired = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
-            .validateCommodityCode(request.userAnswers, recordId, recordResponse.category.isDefined) match {
+            .validateCommodityCode(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined,
+              isCommCodeExpired
+            ) match {
             case Right(commodity) =>
               auditService.auditFinishUpdateGoodsRecord(
                 recordId,

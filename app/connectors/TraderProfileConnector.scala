@@ -44,7 +44,11 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .put(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
-      .map(_ => Done)
+      .map(response =>
+        response.status match {
+          case OK => Done
+        }
+      )
 
   def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient

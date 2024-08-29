@@ -21,6 +21,7 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
 
+import java.time.Instant
 import scala.Function.unlift
 import scala.util.Try
 
@@ -33,6 +34,8 @@ case class UpdateRecordRequest(
   traderRef: Option[String] = None,
   comcode: Option[String] = None,
   category: Option[Int] = None,
+  comcodeEffectiveFromDate: Option[Instant] = None,
+  comcodeEffectiveToDate: Option[Instant] = None,
   supplementaryUnit: Option[BigDecimal] = None,
   measurementUnit: Option[String] = None
 )
@@ -48,7 +51,9 @@ object UpdateRecordRequest {
       goodsRecord.goodsDescription,
       goodsRecord.traderReference,
       goodsRecord.commodityCode.map(_.commodityCode),
-      goodsRecord.category
+      goodsRecord.category,
+      goodsRecord.commodityCodeStartDate,
+      goodsRecord.commodityCodeEndDate
     )
 
   def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): UpdateRecordRequest =
@@ -84,6 +89,8 @@ object UpdateRecordRequest {
       (JsPath \ "traderRef").readNullable[String] and
       (JsPath \ "comcode").readNullable[String] and
       (JsPath \ "category").readNullable[Int] and
+      (JsPath \ "comcodeEffectiveFromDate").readNullable[Instant] and
+      (JsPath \ "comcodeEffectiveToDate").readNullable[Instant] and
       (JsPath \ "supplementaryUnit").readNullable[BigDecimal] and
       (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
 
@@ -96,6 +103,8 @@ object UpdateRecordRequest {
       (JsPath \ "traderRef").writeNullable[String] and
       (JsPath \ "comcode").writeNullable[String] and
       (JsPath \ "category").writeNullable[Int] and
+      (JsPath \ "comcodeEffectiveFromDate").writeNullable[Instant] and
+      (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant] and
       (JsPath \ "supplementaryUnit").writeNullable[BigDecimal] and
       (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
 

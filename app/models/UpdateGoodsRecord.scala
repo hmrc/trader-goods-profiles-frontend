@@ -22,6 +22,8 @@ import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
 
+import java.time.Instant
+
 final case class UpdateGoodsRecord(
   eori: String,
   recordId: String,
@@ -29,7 +31,9 @@ final case class UpdateGoodsRecord(
   goodsDescription: Option[String] = None,
   traderReference: Option[String] = None,
   commodityCode: Option[Commodity] = None,
-  category: Option[Int] = None
+  category: Option[Int] = None,
+  commodityCodeStartDate: Option[Instant] = None,
+  commodityCodeEndDate: Option[Instant] = None
 )
 
 object UpdateGoodsRecord {
@@ -67,11 +71,12 @@ object UpdateGoodsRecord {
   def validateCommodityCode(
     answers: UserAnswers,
     recordId: String,
-    isCategorised: Boolean
+    isCategorised: Boolean,
+    isCommCodeExpired: Boolean
   ): EitherNec[ValidationError, Commodity] =
     (
       Right(recordId),
-      getCommodityCode(answers, recordId, isCategorised)
+      getCommodityCode(answers, recordId, isCategorised, isCommCodeExpired)
     ).parMapN((_, value) => value)
 
   def validateTraderReference(
@@ -86,9 +91,10 @@ object UpdateGoodsRecord {
   private def getCommodityCode(
     answers: UserAnswers,
     recordId: String,
-    isCategorised: Boolean
+    isCategorised: Boolean,
+    isCommCodeExpired: Boolean
   ): EitherNec[ValidationError, Commodity] =
-    (isCategorised, answers.getPageValue(HasCommodityCodeChangePage(recordId))) match {
+    (isCategorised && !isCommCodeExpired, answers.getPageValue(HasCommodityCodeChangePage(recordId))) match {
       case (true, Right(true))  => validateAndGetCommodity(answers, recordId)
       case (true, Right(false)) => Left(NonEmptyChain.one(UnexpectedPage(HasCommodityCodeChangePage(recordId))))
       case (true, Left(errors)) => Left(errors)

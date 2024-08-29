@@ -17,8 +17,9 @@
 package controllers
 
 import base.SpecBase
-import connectors.TraderProfileConnector
+import connectors.{DownloadDataConnector, TraderProfileConnector}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -59,10 +60,13 @@ class RequestDataControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to the next page when button clicked" in {
+    "must redirect to the next page when button clicked and data requested" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.requestDownloadData(any())(any())) thenReturn Future.successful(Done)
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -73,12 +77,13 @@ class RequestDataControllerSpec extends SpecBase {
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.RequestDataController.onSubmit(email).url)
+        val request = FakeRequest(POST, routes.RequestDataController.onSubmit().url)
 
         val result = route(application, request).value
 
@@ -86,6 +91,5 @@ class RequestDataControllerSpec extends SpecBase {
         redirectLocation(result).value mustEqual onwardRoute.url
       }
     }
-
   }
 }

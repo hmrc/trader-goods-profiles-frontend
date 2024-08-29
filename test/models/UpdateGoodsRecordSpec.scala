@@ -118,7 +118,12 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = true,
+          isCommCodeExpired = false
+        )
 
         result mustBe Right(commodity.copy(commodityCode = "170490"))
       }
@@ -150,7 +155,12 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = false)
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = false,
+          isCommCodeExpired = false
+        )
 
         result mustBe Right(commodity.copy(commodityCode = "170490"))
       }
@@ -208,14 +218,38 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         }
       }
 
-      "when commodity code is required and is missing" in {
+      "when commodity code is required and is missing when accessed from update commodity code page" in {
 
         val answers = UserAnswers(userAnswersId)
           .set(HasCommodityCodeChangePage(testRecordId), true)
           .success
           .value
 
-        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = true,
+          isCommCodeExpired = true
+        )
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(CommodityCodeUpdatePage(testRecordId))
+        }
+      }
+
+      "when commodity code is required and is missing when accessed from expired commodity code page" in {
+
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = false,
+          isCommCodeExpired = true
+        )
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(CommodityCodeUpdatePage(testRecordId))
@@ -232,7 +266,12 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = true,
+          isCommCodeExpired = false
+        )
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
@@ -252,7 +291,12 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = true,
+          isCommCodeExpired = false
+        )
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId))
@@ -266,7 +310,12 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.validateCommodityCode(answers, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = true,
+          isCommCodeExpired = false
+        )
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCommodityCodeChangePage(testRecordId))

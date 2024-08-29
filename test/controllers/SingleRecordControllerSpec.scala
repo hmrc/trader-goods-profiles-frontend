@@ -18,12 +18,13 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.helper.SupplementaryUnitUpdateJourney
-import models.{NormalMode, UserAnswers}
+import models.{Country, NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.i18n.Messages
@@ -42,11 +43,14 @@ import views.html.SingleRecordView
 import java.time.Instant
 import scala.concurrent.Future
 
-class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
+class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private lazy val singleRecordRoute   = routes.SingleRecordController.onPageLoad(testRecordId).url
-  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-  private val recordIsLocked           = false
+  private lazy val singleRecordRoute         = routes.SingleRecordController.onPageLoad(testRecordId).url
+  private lazy val singleRecordRouteLocked   = routes.SingleRecordController.onPageLoad(lockedRecord.recordId).url
+  private val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
+  private val mockOttConnector: OttConnector = mock[OttConnector]
+  private val recordIsLocked                 = false
+  private val countries                      = Seq(Country("CN", "China"), Country("US", "United States"))
 
   private val notCategorisedRecord = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
@@ -59,7 +63,12 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
   ).copy(recordId = testRecordId).copy(category = Some(2))
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+    when(mockOttConnector.getCountries(any())).thenReturn(Future.successful(countries))
+  }
 
   "SingleRecord Controller" - {
 
@@ -93,7 +102,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
         )
         .build()
 
@@ -104,7 +114,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           TraderReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
-            .rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
+            .rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked, countries),
           CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
           StatusSummary.row(recordForTestingSummaryRows.declarable)
         )
@@ -127,6 +137,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
             ),
           SupplementaryUnitSummary
             .row(
+              Some(2),
               recordForTestingSummaryRows.supplementaryUnit,
               recordForTestingSummaryRows.measurementUnit,
               testRecordId,
@@ -144,8 +155,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request = FakeRequest(GET, singleRecordRoute)
 
-        val result = route(application, request).value
-
+        val result                                = route(application, request).value
         val view                                  = application.injector.instanceOf[SingleRecordView]
         val changesMade                           = request.session.get(dataUpdated).contains("true")
         val changedPage                           = request.session.get(pageUpdated).getOrElse("")
@@ -166,7 +176,122 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository).set(uaCaptor.capture)
+        verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
+
+        uaCaptor.getValue.data mustEqual userAnswers.data
+
+        withClue("must cleanse the user answers data") {
+          verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+        }
+      }
+    }
+    "must return OK and the correct view for a GET and set up userAnswers when record is categorised and is locked" in {
+
+      val recordIsLocked = true
+      val userAnswers    = UserAnswers(userAnswersId)
+        .set(TraderReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
+        .success
+        .value
+        .set(GoodsDescriptionUpdatePage(lockedRecord.recordId), lockedRecord.goodsDescription)
+        .success
+        .value
+        .set(CountryOfOriginUpdatePage(lockedRecord.recordId), lockedRecord.countryOfOrigin)
+        .success
+        .value
+        .set(CommodityCodeUpdatePage(lockedRecord.recordId), lockedRecord.comcode)
+        .success
+        .value
+
+      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        .successful(lockedRecord)
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future
+        .successful(true)
+
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
+
+      implicit val message: Messages = messages(application)
+
+      val detailsList = SummaryListViewModel(
+        rows = Seq(
+          TraderReferenceSummary.row(lockedRecord.traderRef, lockedRecord.recordId, NormalMode, recordIsLocked),
+          GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
+          CountryOfOriginSummary
+            .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
+          CommodityCodeSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
+          StatusSummary.row(lockedRecord.declarable)
+        )
+      )
+
+      val categorisationList = SummaryListViewModel(
+        rows = Seq(
+          CategorySummary
+            .row("singleRecord.cat1", testRecordId, recordIsLocked, recordForTestingSummaryRows.category.isDefined)
+        )
+      )
+
+      val supplementaryUnitList = SummaryListViewModel(
+        rows = Seq(
+          HasSupplementaryUnitSummary
+            .row(
+              lockedRecord,
+              lockedRecord.recordId,
+              recordIsLocked
+            ),
+          SupplementaryUnitSummary
+            .row(
+              Some(2),
+              lockedRecord.supplementaryUnit,
+              lockedRecord.measurementUnit,
+              lockedRecord.recordId,
+              recordIsLocked
+            )
+        ).flatten
+      )
+
+      val adviceList = SummaryListViewModel(
+        rows = Seq(
+          AdviceStatusSummary.row(lockedRecord.adviceStatus, lockedRecord.recordId, recordIsLocked)
+        )
+      )
+
+      running(application) {
+        val request = FakeRequest(GET, singleRecordRouteLocked)
+
+        val result = route(application, request).value
+
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          lockedRecord.recordId,
+          detailsList,
+          categorisationList,
+          supplementaryUnitList,
+          adviceList,
+          changesMade,
+          changedPage,
+          pageRemoved,
+          recordIsLocked
+        )(
+          request,
+          messages(application)
+        ).toString
+        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
 
         uaCaptor.getValue.data mustEqual userAnswers.data
 
@@ -206,7 +331,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[OttConnector].toInstance(mockOttConnector)
         )
         .build()
 
@@ -221,7 +347,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
               notCategorisedRecord,
               testRecordId,
               NormalMode,
-              recordIsLocked
+              recordIsLocked,
+              countries
             ),
           CommodityCodeSummary
             .rowUpdate(
@@ -255,6 +382,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
             ),
           SupplementaryUnitSummary
             .row(
+              Some(2),
               notCategorisedRecord.supplementaryUnit,
               notCategorisedRecord.measurementUnit,
               testRecordId,
@@ -294,13 +422,45 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository).set(uaCaptor.capture)
+        verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
 
         uaCaptor.getValue.data mustEqual userAnswers.data
 
         withClue("must cleanse the user answers data") {
           verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
         }
+      }
+    }
+
+    "must redirect to journey recovery for a GET when ott connectors fails" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        .successful(notCategorisedRecord)
+
+      when(mockSessionRepository.set(any())) thenReturn Future
+        .successful(true)
+      when(mockOttConnector.getCountries(any())) thenReturn Future.failed(new RuntimeException("Ott connector failed"))
+
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, singleRecordRoute)
+
+        intercept[RuntimeException] {
+          await(route(application, request).value)
+        }
+
       }
     }
 
@@ -314,6 +474,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val row = SupplementaryUnitSummary
           .row(
+            Some(2),
             recordWithSupplementaryUnit.supplementaryUnit,
             recordWithSupplementaryUnit.measurementUnit,
             testRecordId,
@@ -433,6 +594,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         implicit val localMessages: Messages = messages(application)
         running(application) {
           val row = SupplementaryUnitSummary.row(
+            Some(2),
             recordWithSupplementaryUnit.supplementaryUnit,
             recordWithSupplementaryUnit.measurementUnit,
             testRecordId,
@@ -452,6 +614,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar {
         implicit val localMessages: Messages = messages(application)
         running(application) {
           val row = SupplementaryUnitSummary.row(
+            Some(2),
             recordWithSupplementaryUnit.supplementaryUnit,
             recordWithSupplementaryUnit.measurementUnit,
             testRecordId,
