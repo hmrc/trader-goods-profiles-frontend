@@ -930,6 +930,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,
@@ -1020,6 +1021,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,
@@ -1124,6 +1126,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,
@@ -1214,6 +1217,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,

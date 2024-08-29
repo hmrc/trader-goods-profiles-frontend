@@ -183,6 +183,7 @@ class CategorisationAnswersSpec extends SpecBase {
         "there are no questions to be answered but supplementary unit is asked for and answer is no" in {
           val catInfo = CategorisationInfo(
             "1234567890",
+            None,
             Seq(category2NoExemptions),
             Seq.empty,
             Some("kg"),
@@ -213,6 +214,7 @@ class CategorisationAnswersSpec extends SpecBase {
         "there are no questions to be answered but supplementary unit is asked for and answer is yes" in {
           val catInfo = CategorisationInfo(
             "1234567890",
+            None,
             Seq(category2NoExemptions),
             Seq.empty,
             Some("kg"),
