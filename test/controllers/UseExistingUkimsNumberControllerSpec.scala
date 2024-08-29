@@ -17,24 +17,21 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, userAnswersId}
+import base.TestConstants.userAnswersId
 import connectors.TraderProfileConnector
-import forms.{UkimsNumberFormProvider, UseExistingUkimsFormProvider}
-import models.{NormalMode, TraderProfile, UserAnswers}
+import forms.UseExistingUkimsFormProvider
+import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{UkimsNumberPage, UkimsNumberUpdatePage, UseExistingUkimsPage}
+import pages.UkimsNumberPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.{UkimsNumberView, UseExistingUkimsNumberView}
+import views.html.UseExistingUkimsNumberView
 
 import scala.concurrent.Future
 
@@ -48,7 +45,8 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   private val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
-  private val useExistingUkimsNumberRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
+  private val onPageLoadRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
+  private val onSubmitRoute   = routes.UseExistingUkimsNumberController.onSubmit().url
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -71,7 +69,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, useExistingUkimsNumberRoute)
+        val request = FakeRequest(GET, onPageLoadRoute)
 
         val result = route(application, request).value
 
@@ -100,7 +98,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, useExistingUkimsNumberRoute)
+        val request = FakeRequest(GET, onPageLoadRoute)
 
         val result = route(application, request).value
 
@@ -118,12 +116,13 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None)
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, useExistingUkimsNumberRoute).withFormUrlEncodedBody(("value", "true"))
+        val request = FakeRequest(POST, onSubmitRoute).withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -138,7 +137,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, useExistingUkimsNumberRoute)
+          FakeRequest(POST, onSubmitRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
