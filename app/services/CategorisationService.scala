@@ -98,8 +98,6 @@ class CategorisationService @Inject() (
     listOfAnswers: Seq[AnsweredQuestions]
   ): Scenario = {
 
-    //val category2Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory2)
-
     val areThereQuestionsWithNoExemption = listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
     if (categorisationInfo.isNirmsAssessment && !areThereQuestionsWithNoExemption) {
