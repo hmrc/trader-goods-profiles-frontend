@@ -46,6 +46,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val form         = formProvider()
 
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  private val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
   private val useExistingUkimsNumberRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
 
@@ -112,6 +113,8 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   "onSubmit" - {
 
     "must return OK and the correct view for a POST" in {
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
       val application = applicationBuilder(userAnswers = None)
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
