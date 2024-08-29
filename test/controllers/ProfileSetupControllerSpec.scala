@@ -86,15 +86,17 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
       val onwardRoute = Call("", "")
 
-      "must redirect to the next page when the user already has user answers" in {
-
-        val mockSessionRepository = mock[SessionRepository]
+      "must redirect to the next page after retrieving historic profile data" in {
+        val mockSessionRepository      = mock[SessionRepository]
+        val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())).thenReturn(Future.successful(None))
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
             )
             .build()

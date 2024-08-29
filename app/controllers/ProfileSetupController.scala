@@ -55,7 +55,6 @@ class ProfileSetupController @Inject() (
       updatedUserAnswers  <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
       _                   <- sessionRepository.set(updatedUserAnswers)
     } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
-
   }
 
   private def updateUserAnswersWithProfileData(

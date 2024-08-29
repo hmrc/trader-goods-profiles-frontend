@@ -20,7 +20,7 @@ import config.Service
 import models.{HistoricProfileData, TraderProfile}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{BAD_REQUEST, FORBIDDEN, NOT_FOUND, OK}
+import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http._
