@@ -23,8 +23,12 @@ import pages.{AssessmentPage, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
 import utils.Constants.minimumLengthOfCommodityCode
 
+import java.time.temporal.ChronoUnit
+import java.time.{Instant, ZoneId, ZonedDateTime}
+
 final case class CategorisationInfo(
   commodityCode: String,
+  comcodeEffectiveToDate: Option[Instant],
   categoryAssessments: Seq[CategoryAssessment],
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
   measurementUnit: Option[String],
@@ -71,6 +75,16 @@ final case class CategorisationInfo(
     categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
   def isNirmsAssessment: Boolean = categoryAssessments.exists(_.isNirmsAnswer)
+
+  def isCommCodeExpired: Boolean = {
+    val today: ZonedDateTime = ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+    comcodeEffectiveToDate.exists { effectiveToDate =>
+      val effectiveDate: ZonedDateTime = effectiveToDate.atZone(ZoneId.of("UTC")).truncatedTo(ChronoUnit.DAYS)
+      effectiveDate.isEqual(today)
+
+    }
+
+  }
 }
 
 object CategorisationInfo {
@@ -117,6 +131,7 @@ object CategorisationInfo {
 
         CategorisationInfo(
           commodityCodeUserEntered,
+          ott.goodsNomenclature.validityEndDate,
           assessmentsSorted,
           questionsToAnswer,
           ott.goodsNomenclature.measurementUnit,

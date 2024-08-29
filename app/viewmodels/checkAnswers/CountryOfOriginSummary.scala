@@ -53,18 +53,26 @@ object CountryOfOriginSummary {
     )
   }
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+  def rowUpdate(
+    record: GetGoodsRecordResponse,
+    recordId: String,
+    mode: Mode,
+    recordLocked: Boolean,
+    countries: Seq[Country]
+  )(implicit
     messages: Messages
   ): SummaryListRow = {
+
+    val countryName = getCountryName(record.countryOfOrigin, countries)
+
     val changeLink = if (record.category.isDefined) {
       routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
     } else {
       routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     }
-
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(record.countryOfOrigin).toString),
+      value = ValueViewModel(HtmlFormat.escape(countryName).toString),
       actions = if (recordLocked) {
         Seq.empty
       } else {
@@ -75,4 +83,12 @@ object CountryOfOriginSummary {
       }
     )
   }
+
+  private def getCountryName(countryOfOrigin: String, countries: Seq[Country]) =
+    if (countries.isEmpty) {
+      countryOfOrigin
+    } else {
+      countries.find(country => country.id == countryOfOrigin).map(_.description).getOrElse(countryOfOrigin)
+    }
+
 }

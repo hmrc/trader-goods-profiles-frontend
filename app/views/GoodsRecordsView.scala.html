@@ -16,8 +16,10 @@
 
 @import viewmodels.InputWidth._
 @import models.router.responses.GetGoodsRecordResponse
+@import config.FrontendAppConfig
 
 @this(
+    appConfig: FrontendAppConfig,
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
@@ -148,6 +150,9 @@
 
         <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
 
-        <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+        @if(appConfig.downloadFileEnabled) {
+            <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+        }
+
 </div>
 }

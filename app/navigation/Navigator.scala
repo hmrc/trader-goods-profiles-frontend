@@ -83,6 +83,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
+    case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad
   }
 
@@ -246,6 +247,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
   private def navigateFromCategorisationPreparationPage(answers: UserAnswers, recordId: String): Call =
     answers.get(CategorisationDetailsQuery(recordId)) match {
+      case Some(catInfo) if catInfo.isCommCodeExpired                           =>
+        routes.ExpiredCommodityCodeController.onPageLoad(recordId)
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         routes.CategoryGuidanceController.onPageLoad(recordId)
 

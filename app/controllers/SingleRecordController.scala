@@ -16,16 +16,17 @@
 
 package controllers
 
-import connectors.GoodsRecordConnector
+import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import models.NormalMode
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
+import models.{Country, NormalMode}
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.CountriesQuery
 import repositories.SessionRepository
 import services.DataCleansingService
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -35,7 +36,7 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 class SingleRecordController @Inject() (
-  override val messagesApi: MessagesApi,
+  val controllerComponents: MessagesControllerComponents,
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
   dataCleansingService: DataCleansingService,
@@ -43,12 +44,12 @@ class SingleRecordController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  val controllerComponents: MessagesControllerComponents,
+  ottConnector: OttConnector,
   view: SingleRecordView
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
-  def onPageLoad(recordId: String): Action[AnyContent] =
+  def onPageLoad(recordId: String): Action[AnyContent]                                                             =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
@@ -60,6 +61,7 @@ class SingleRecordController @Inject() (
                                                   true
                                                 case _ => false
                                               }
+        countries                          <- retrieveAndStoreCountries
         updatedAnswersWithTraderReference  <-
           Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
@@ -79,11 +81,12 @@ class SingleRecordController @Inject() (
 
       } yield {
         val isCategorised = record.category.isDefined
-        val detailsList   = SummaryListViewModel(
+
+        val detailsList = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
-            CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+            CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
             CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
             StatusSummary.row(record.declarable)
           )
@@ -144,5 +147,16 @@ class SingleRecordController @Inject() (
     dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
   }
+  private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
+    request.userAnswers.get(CountriesQuery) match {
+      case Some(countries) =>
+        Future.successful(countries)
+      case None            =>
+        for {
+          countries               <- ottConnector.getCountries
+          updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
+          _                       <- sessionRepository.set(updatedAnswersWithQuery)
+        } yield countries
+    }
 
 }

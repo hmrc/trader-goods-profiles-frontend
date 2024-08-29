@@ -41,8 +41,8 @@ class CategorisationInfoSpec extends SpecBase {
             "id",
             "1234567890",
             Some("some measure unit"),
-            Instant.EPOCH,
-            None,
+            validityStartDate,
+            Some(validityEndDate),
             List("test")
           ),
           categoryAssessmentRelationships = Seq(
@@ -80,6 +80,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         val expectedResult = CategorisationInfo(
           commodityCode = "1234567890",
+          comcodeEffectiveToDate = Some(validityEndDate),
           categoryAssessments = assessments,
           categoryAssessmentsThatNeedAnswers = assessments,
           Some("some measure unit"),
@@ -97,8 +98,8 @@ class CategorisationInfoSpec extends SpecBase {
             "id",
             "1234567890",
             Some("some measure unit"),
-            Instant.EPOCH,
-            None,
+            validityStartDate,
+            Some(validityEndDate),
             List("test")
           ),
           categoryAssessmentRelationships = Seq(
@@ -175,6 +176,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         val expectedResult = CategorisationInfo(
           commodityCode = "1234567890",
+          comcodeEffectiveToDate = Some(validityEndDate),
           categoryAssessments = expectedAssessments,
           categoryAssessmentsThatNeedAnswers = expectedAssessments,
           Some("some measure unit"),
@@ -192,8 +194,8 @@ class CategorisationInfoSpec extends SpecBase {
             "id",
             "1234560000",
             None,
-            Instant.EPOCH,
-            None,
+            validityStartDate,
+            Some(validityEndDate),
             List("test")
           ),
           categoryAssessmentRelationships = Seq(
@@ -231,6 +233,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         val expectedResult = CategorisationInfo(
           commodityCode = "123456",
+          comcodeEffectiveToDate = Some(validityEndDate),
           categoryAssessments = assessments,
           categoryAssessmentsThatNeedAnswers = assessments,
           None,
@@ -248,7 +251,7 @@ class CategorisationInfoSpec extends SpecBase {
             "some id",
             "1234567890",
             None,
-            Instant.EPOCH,
+            validityStartDate,
             None,
             List("test")
           ),
@@ -257,7 +260,7 @@ class CategorisationInfoSpec extends SpecBase {
           Seq[Descendant]()
         )
 
-        val expectedResult = CategorisationInfo("1234567890", Seq.empty, Seq.empty, None, 0)
+        val expectedResult = CategorisationInfo("1234567890", None, Seq.empty, Seq.empty, None, 0)
 
         val result =
           CategorisationInfo.build(
@@ -333,7 +336,8 @@ class CategorisationInfoSpec extends SpecBase {
           )
         )
 
-        val expectedResult = CategorisationInfo("1234567890", expectedAssessments, Seq.empty, None, 0)
+        val expectedResult =
+          CategorisationInfo("1234567890", None, expectedAssessments, Seq.empty, None, 0)
 
         val result =
           CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
@@ -406,7 +410,8 @@ class CategorisationInfoSpec extends SpecBase {
           )
         )
 
-        val expectedResult = CategorisationInfo("1234567890", expectedAssessments, Seq.empty, None, 0)
+        val expectedResult =
+          CategorisationInfo("1234567890", None, expectedAssessments, Seq.empty, None, 0)
 
         val result =
           CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
@@ -420,8 +425,8 @@ class CategorisationInfoSpec extends SpecBase {
             "some id",
             "1234567890",
             None,
-            Instant.EPOCH,
-            None,
+            validityStartDate,
+            Some(validityEndDate),
             List("test")
           ),
           categoryAssessmentRelationships = Seq(
@@ -486,7 +491,14 @@ class CategorisationInfoSpec extends SpecBase {
         val expectedAssessmentsThatNeedAnswers = Seq(expectedAssessmentId3, expectedAssesmentId2)
 
         val expectedResult =
-          CategorisationInfo("1234567890", expectedAssessments, expectedAssessmentsThatNeedAnswers, None, 0)
+          CategorisationInfo(
+            "1234567890",
+            Some(validityEndDate),
+            expectedAssessments,
+            expectedAssessmentsThatNeedAnswers,
+            None,
+            0
+          )
 
         val result =
           CategorisationInfo.build(mockOttResponse, "1234567890", testTraderProfileResponseWithoutNiphlAndNirms)
@@ -539,6 +551,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         val expectedResult = CategorisationInfo(
           commodityCode = "1234567890",
+          comcodeEffectiveToDate = None,
           categoryAssessments = assessments,
           categoryAssessmentsThatNeedAnswers = assessments,
           Some("some measure unit"),
@@ -625,6 +638,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,
@@ -716,6 +730,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,
@@ -810,6 +825,7 @@ class CategorisationInfoSpec extends SpecBase {
             val expectedResult =
               CategorisationInfo(
                 "1234567890",
+                None,
                 expectedAssessments,
                 expectedAssessmentsThatNeedAnswers,
                 None,
@@ -1417,6 +1433,7 @@ class CategorisationInfoSpec extends SpecBase {
 
     val categoryInfo = CategorisationInfo(
       commodityCode = "1234567890",
+      comcodeEffectiveToDate = Some(validityEndDate),
       categoryAssessments = assessments,
       categoryAssessmentsThatNeedAnswers = assessments,
       Some("some measure unit"),
@@ -1435,17 +1452,17 @@ class CategorisationInfoSpec extends SpecBase {
   "getMinimalCommodityCode" - {
 
     "must not remove non-trailing zeros" in {
-      val categoryInfo = CategorisationInfo("1234500001", Seq.empty, Seq.empty, None, 0)
+      val categoryInfo = CategorisationInfo("1234500001", Some(validityEndDate), Seq.empty, Seq.empty, None, 0)
       categoryInfo.getMinimalCommodityCode mustBe "1234500001"
     }
 
     "must remove trailing zeros to make it 6 digits" in {
-      val categoryInfo = CategorisationInfo("1234560000", Seq.empty, Seq.empty, None, 0)
+      val categoryInfo = CategorisationInfo("1234560000", Some(validityEndDate), Seq.empty, Seq.empty, None, 0)
       categoryInfo.getMinimalCommodityCode mustBe "123456"
     }
 
     "must not remove trailing zeros that would make it less than 6 digits" in {
-      val categoryInfo = CategorisationInfo("1234000000", Seq.empty, Seq.empty, None, 0)
+      val categoryInfo = CategorisationInfo("1234000000", Some(validityEndDate), Seq.empty, Seq.empty, None, 0)
       categoryInfo.getMinimalCommodityCode mustBe "123400"
     }
 

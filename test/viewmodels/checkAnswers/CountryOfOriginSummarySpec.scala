@@ -19,13 +19,15 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import controllers.routes
-import models.NormalMode
+import models.{Country, NormalMode}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 
 class CountryOfOriginSummarySpec extends SpecBase {
 
   implicit private val messages: Messages = messages(applicationBuilder().build())
+  private val countries                   = Seq(Country("CN", "China"), Country("US", "United States"), Country("GB", "United Kingdom"))
+  private val testCountryName             = "United Kingdom"
 
   "must return a SummaryListRow without change links when record is locked" in {
 
@@ -33,7 +35,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
       recordForTestingSummaryRows,
       testRecordId,
       NormalMode,
-      recordLocked = true
+      recordLocked = true,
+      countries
     )
 
     row.actions mustBe Some(Actions("", List()))
@@ -47,7 +50,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
         recordForTestingSummaryRows,
         testRecordId,
         NormalMode,
-        recordLocked = false
+        recordLocked = false,
+        countries
       )
 
       row.actions mustBe defined
@@ -64,9 +68,28 @@ class CountryOfOriginSummarySpec extends SpecBase {
         recordNoCategory,
         testRecordId,
         NormalMode,
-        recordLocked = false
+        recordLocked = false,
+        countries
       )
 
+      row.actions mustBe defined
+      row.actions.value.items.head.href mustEqual routes.CountryOfOriginController
+        .onPageLoadUpdate(NormalMode, testRecordId)
+        .url
+    }
+
+    "must display country name instead of country code" in {
+
+      val recordNoCategory = recordForTestingSummaryRows.copy(category = None)
+
+      val row = CountryOfOriginSummary.rowUpdate(
+        recordNoCategory,
+        testRecordId,
+        NormalMode,
+        recordLocked = false,
+        countries
+      )
+      row.value.content.asHtml.toString() must include(testCountryName)
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual routes.CountryOfOriginController
         .onPageLoadUpdate(NormalMode, testRecordId)

@@ -20,6 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.DownloadDataStatus.FileReady
 import models.DownloadDataSummary
+import org.apache.pekko.Done
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -57,26 +58,15 @@ class DownloadDataConnectorSpec
 
   ".requestDownloadData" - {
 
-    "must request to download data and return true if successful" in {
+    "must request download data and return true if successful" in {
 
       wireMockServer.stubFor(
         post(urlEqualTo(downloadDataSummaryUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(aResponse().withStatus(ACCEPTED))
+          .willReturn(status(ACCEPTED))
       )
 
-      connector.requestDownloadData(testEori).futureValue mustEqual true
-    }
-
-    "must request to download data and return false if not successful" in {
-
-      wireMockServer.stubFor(
-        post(urlEqualTo(downloadDataSummaryUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(notFound())
-      )
-
-      connector.requestDownloadData(testEori).futureValue mustEqual false
+      connector.requestDownloadData(testEori).futureValue mustEqual Done
     }
 
     "must return a failed future when the server returns an error" in {

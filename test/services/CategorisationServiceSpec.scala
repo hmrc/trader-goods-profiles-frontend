@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import base.TestConstants.{NiphlsCode, NirmsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import models.ott._
+import models.ott.{CategoryAssessment, _}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
@@ -147,7 +147,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
 
       await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
-        CategorisationInfo("1234567890", expectedAssessments, expectedAssessments, Some("Weight, in kilograms"), 0)
+        CategorisationInfo(
+          "1234567890",
+          None,
+          expectedAssessments,
+          expectedAssessments,
+          Some("Weight, in kilograms"),
+          0
+        )
 
       withClue("should ask for details for this commodity and country from OTT") {
         verify(mockOttConnector).getCategorisationInfo(eqTo("1234567890"), any(), any(), any(), eqTo("BV"), any())(
@@ -275,6 +282,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          Some(validityEndDate),
           Seq(
             assessment1,
             assessment2,
@@ -330,6 +338,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -377,6 +386,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -409,6 +419,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       "and not a Niphls assessment" in {
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          Some(validityEndDate),
           Seq(
             CategoryAssessment(
               "ass1",
@@ -462,6 +473,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          None,
           Seq(
             assessment1,
             assessment2,
@@ -514,6 +526,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       "if no category 1 assessments and category 2 question has no exemptions" in {
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          Some(validityEndDate),
           Seq(
             CategoryAssessment(
               "ass1",
@@ -577,6 +590,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          Some(validityEndDate),
           Seq(
             assessment1,
             assessment2,
@@ -633,6 +647,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            None,
             Seq(
               assessment1,
               assessment2,
@@ -681,6 +696,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            None,
             Seq(
               assessment1,
               assessment2,
@@ -734,6 +750,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            None,
             Seq(
               assessment1,
               assessment2,
@@ -796,6 +813,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            Some(validityEndDate),
             Seq(
               nirmsAssessment,
               assessment2,
@@ -856,6 +874,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       "if no assessments" in {
         val categoryInfoNoAssessments = CategorisationInfo(
           "1234567890",
+          Some(validityEndDate),
           Seq.empty,
           Seq.empty,
           None,
@@ -903,6 +922,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            None,
             Seq(
               nirmsAssessment,
               assessment2,
@@ -966,6 +986,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val newCat                     = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "12345",
+        Some(validityEndDate),
         Seq(newCat),
         Seq(newCat),
         None,
@@ -995,6 +1016,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
+        Some(validityEndDate),
         assList,
         assList,
         Some("Weight, in kilograms"),
@@ -1019,6 +1041,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
+        Some(validityEndDate),
         Seq(category3, category1, category4, category2),
         Seq(category3, category1, category4, category2),
         Some("Weight, in kilograms"),
@@ -1076,6 +1099,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
+        Some(validityEndDate),
         Seq(category1, category4),
         Seq(category1, category4),
         Some("Weight, in kilograms"),
