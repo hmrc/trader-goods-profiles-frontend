@@ -1586,6 +1586,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 0)
 
             }
+
+            "first reassessment is answered but answer is not copied" in {
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(
+                  ReassessmentPage(testRecordId, 0),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption)
+                )
+                .success
+                .value
+
+              navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 0)
+
+            }
           }
 
           "to the third assessment page when the first two are answered" - {
@@ -3253,6 +3270,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .success
                 .value
                 .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+                .success
+                .value
+
+              navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 0)
+
+            }
+
+            "first reassessment is answered but answer is not copied" in {
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(
+                  ReassessmentPage(testRecordId, 0),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption)
+                )
                 .success
                 .value
 
