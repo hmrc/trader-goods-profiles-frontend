@@ -1587,7 +1587,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "first reassessment is answered but answer is not copied" in {
+            "first reassessment is answered but answer was not copied from shorter assessment" in {
               val userAnswers = emptyUserAnswers
                 .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
@@ -1812,6 +1812,24 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .success
                   .value
                   .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
+                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 1)
+
+            }
+
+            "and next question is answered but was not copied from shorter assessment" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
                   .success
                   .value
 
@@ -3278,7 +3296,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "first reassessment is answered but answer is not copied" in {
+            "first reassessment is answered but answer was not copied from shorter assessment" in {
               val userAnswers = emptyUserAnswers
                 .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
@@ -3511,6 +3529,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
+            "and next question is answered but was not copied from shorter assessment" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .success
+                  .value
+                  .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 1)
+
+            }
           }
 
           "to a later reassessment if the next one is answered yes" - {
