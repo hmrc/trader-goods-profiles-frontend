@@ -25,7 +25,7 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 
 class CategorisationAnswersSpec extends SpecBase {
 
-  ".build2" - {
+  ".build" - {
 
     "for initial assessment" - {
 
@@ -177,6 +177,69 @@ class CategorisationAnswersSpec extends SpecBase {
               None
             )
           )
+        }
+
+        "there are no questions to be answered but supplementary unit is asked for and answer is no" in {
+          val catInfo = CategorisationInfo(
+            "1234567890",
+            Seq(category2NoExemptions),
+            Seq.empty,
+            Some("kg"),
+            0
+          )
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo)
+              .success
+              .value
+              .set(HasSupplementaryUnitPage(testRecordId), false)
+              .success
+              .value
+
+          val result = CategorisationAnswers.build(answers, testRecordId)
+
+          result mustEqual
+            Right(
+              CategorisationAnswers(
+                Seq.empty,
+                None
+              )
+            )
+
+        }
+
+        "there are no questions to be answered but supplementary unit is asked for and answer is yes" in {
+          val catInfo = CategorisationInfo(
+            "1234567890",
+            Seq(category2NoExemptions),
+            Seq.empty,
+            Some("kg"),
+            0
+          )
+
+          val answers =
+            emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo)
+              .success
+              .value
+              .set(HasSupplementaryUnitPage(testRecordId), true)
+              .success
+              .value
+              .set(SupplementaryUnitPage(testRecordId), "312")
+              .success
+              .value
+
+          val result = CategorisationAnswers.build(answers, testRecordId)
+
+          result mustEqual
+            Right(
+              CategorisationAnswers(
+                Seq.empty,
+                Some("312")
+              )
+            )
+
         }
 
       }

@@ -18,6 +18,7 @@ package navigation
 
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
+import models.Scenario.getResultAsInt
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
@@ -247,18 +248,27 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers.get(CategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         routes.CategoryGuidanceController.onPageLoad(recordId)
-      case Some(catInfo) if shouldGoToLongerCommodityCodeNiphls(catInfo)        =>
-        routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
-      case Some(catInfo)                                                        =>
+
+      case Some(catInfo) =>
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-        routes.CategorisationResultController.onPageLoad(recordId, scenario)
+
+        if (shouldGoToLongerCommodityCodeFromPrepPage(catInfo, scenario)) {
+          routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+        } else if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
+          routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CategorisationResultController.onPageLoad(recordId, scenario)
+        }
 
       case None => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def shouldGoToLongerCommodityCodeNiphls(catInfo: CategorisationInfo) =
-    catInfo.isNiphlsAssessment && catInfo.isTraderNiphlsAuthorised &&
-      catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0
+  private def shouldGoToLongerCommodityCodeFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
+    catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0 &&
+      getResultAsInt(scenario) == Category2AsInt
+
+  private def shouldGoToSupplementaryUnitFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
+    catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
 
   private def navigateFromReassessmentPrep(
     reasessmentPrep: RecategorisationPreparationPage
@@ -276,7 +286,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
       case Some(catInfo) =>
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-        routes.CategorisationResultController.onPageLoad(recordId, scenario)
+        if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
+          routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CategorisationResultController.onPageLoad(recordId, scenario)
+        }
 
       case None => routes.JourneyRecoveryController.onPageLoad()
 
@@ -324,7 +338,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         case AssessmentAnswer.NoExemption
-            if shouldGoToLongerCommodityCodeWhenCategory(categorisationInfo, assessmentQuestion) =>
+            if shouldGoToLongerCommodityCodeWhenCategory2(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
           routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
@@ -334,7 +348,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
   }
 
-  private def shouldGoToLongerCommodityCodeWhenCategory(
+  private def shouldGoToLongerCommodityCodeWhenCategory2(
     categorisationInfo: CategorisationInfo,
     assessmentQuestion: CategoryAssessment
   ) =
@@ -493,9 +507,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
       case Some(catInfo) =>
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-        routes.CategorisationResultController.onPageLoad(recordId, scenario)
-
-      case None => routes.JourneyRecoveryController.onPageLoad()
+        if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
+          routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
+        } else {
+          routes.CategorisationResultController.onPageLoad(recordId, scenario)
+        }
+      case None          => routes.JourneyRecoveryController.onPageLoad()
 
     }
   }
@@ -541,7 +558,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
         case AssessmentAnswer.NoExemption
-            if shouldGoToLongerCommodityCodeWhenCategory(categorisationInfo, assessmentQuestion) =>
+            if shouldGoToLongerCommodityCodeWhenCategory2(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
         case AssessmentAnswer.NoExemption
             if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
