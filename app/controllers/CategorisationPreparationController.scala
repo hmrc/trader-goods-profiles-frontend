@@ -101,20 +101,13 @@ class CategorisationPreparationController @Inject() (
         updatedUACatInfo <-
           Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), newLongerCategorisationInfo))
 
-        isNewOneTheSameAsOldOne = oldLongerCategorisationInfoOpt.exists(_.equals(newLongerCategorisationInfo))
-
-        updatedUAReassessmentAnswers <- if (isNewOneTheSameAsOldOne) {
-                                          Future.successful(updatedUACatInfo)
-                                        } else {
-                                          Future.fromTry(
-                                            categorisationService.updatingAnswersForRecategorisation(
-                                              updatedUACatInfo,
-                                              recordId,
-                                              shorterCategorisationInfo,
-                                              newLongerCategorisationInfo
-                                            )
-                                          )
-                                        }
+        updatedUAReassessmentAnswers <- updateReassessmentAnswers(
+                                          oldLongerCategorisationInfoOpt,
+                                          newLongerCategorisationInfo,
+                                          updatedUACatInfo,
+                                          recordId,
+                                          shorterCategorisationInfo
+                                        )
 
         _ <- updateCategory(updatedUAReassessmentAnswers, request.eori, recordId, newLongerCategorisationInfo)
         _ <- sessionRepository.set(updatedUAReassessmentAnswers)
@@ -168,4 +161,28 @@ class CategorisationPreparationController @Inject() (
     } else {
       Future.successful(Done)
     }
+
+  private def updateReassessmentAnswers(
+    oldLongerCategorisationInfoOpt: Option[CategorisationInfo],
+    newLongerCategorisationInfo: CategorisationInfo,
+    updatedUACatInfo: UserAnswers,
+    recordId: String,
+    shorterCategorisationInfo: CategorisationInfo
+  ): Future[UserAnswers] = {
+
+    val isNewOneTheSameAsOldOne = oldLongerCategorisationInfoOpt.exists(_.equals(newLongerCategorisationInfo))
+
+    if (isNewOneTheSameAsOldOne) {
+      Future.successful(updatedUACatInfo)
+    } else {
+      Future.fromTry(
+        categorisationService.updatingAnswersForRecategorisation(
+          updatedUACatInfo,
+          recordId,
+          shorterCategorisationInfo,
+          newLongerCategorisationInfo
+        )
+      )
+    }
+  }
 }
