@@ -33,7 +33,7 @@ case class ReassessmentPage(
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
-    if (value.exists(x => x.answer == AssessmentAnswer.NoExemption)) {
+    if (value.exists(reassessment => reassessment.answer == AssessmentAnswer.NoExemption)) {
       (for {
         categorisationInfo <- updatedUserAnswers.get(LongerCategorisationDetailsQuery(recordId))
         count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size

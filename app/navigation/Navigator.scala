@@ -609,6 +609,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer.NotAnsweredYet)
 
   private def reassessmentAnswerIsEmpty(nextAnswer: Option[ReassessmentAnswer]) =
-    nextAnswer.isEmpty || nextAnswer.exists(x => x.answer == AssessmentAnswer.NotAnsweredYet)
+    nextAnswer.isEmpty || nextAnswer.exists(reassessment => reassessment.answer == AssessmentAnswer.NotAnsweredYet)
 
 }
