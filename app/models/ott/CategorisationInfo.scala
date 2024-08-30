@@ -115,15 +115,22 @@ object CategorisationInfo {
 
         val isNirmsAssessment = category2Assessments.exists(ass => ass.isNirmsAnswer)
 
+        val isTraderNiphlAuthorised = traderProfile.niphlNumber.isDefined
+        val isTraderNirmsAuthorised = traderProfile.nirmsNumber.isDefined
+
         val questionsToAnswer = {
-          if (isNiphlsAssessment && traderProfile.niphlNumber.isDefined) {
+          if (isNiphlsAssessment && isTraderNiphlAuthorised) {
             category1ToAnswer
           } else if (isNiphlsAssessment) {
             Seq.empty
           } else if (!areAllCategory1Answerable) {
             Seq.empty
-          } else if (!isNirmsAssessment && !areAllCategory2Answerable) {
-            category1ToAnswer
+          } else if (!areAllCategory2Answerable) {
+            if (isNirmsAssessment && isTraderNirmsAuthorised) {
+              category1ToAnswer ++ category2ToAnswer
+            } else {
+              category1ToAnswer
+            }
           } else {
             category1ToAnswer ++ category2ToAnswer
           }
@@ -137,8 +144,8 @@ object CategorisationInfo {
           ott.goodsNomenclature.measurementUnit,
           ott.descendents.size,
           longerCode,
-          traderProfile.niphlNumber.isDefined,
-          traderProfile.nirmsNumber.isDefined
+          isTraderNiphlAuthorised,
+          isTraderNirmsAuthorised
         )
       }
 

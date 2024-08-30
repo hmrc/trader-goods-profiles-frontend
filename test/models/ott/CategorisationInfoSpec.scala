@@ -842,7 +842,7 @@ class CategorisationInfoSpec extends SpecBase {
 
       "when there is a NIRMS assessment" - {
 
-        "and not authorised" - {
+        "and NIRMS not authorised" - {
           "with Category 1 assessment and there is a Category 2 assessment" in {
 
             val mockOttResponse = OttResponse(
@@ -925,7 +925,7 @@ class CategorisationInfoSpec extends SpecBase {
               expectedAssessmentId3
             )
 
-            val expectedAssessmentsThatNeedAnswers = Seq(expectedAssessmentId1, expectedAssessmentId3)
+            val expectedAssessmentsThatNeedAnswers = Seq(expectedAssessmentId1)
 
             val expectedResult =
               CategorisationInfo(
