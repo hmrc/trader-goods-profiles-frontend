@@ -18,6 +18,7 @@ package pages
 
 import models.UserAnswers
 import play.api.libs.json.JsPath
+import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 
 import scala.util.Try
 
@@ -31,6 +32,19 @@ case class LongerCommodityCodePage(recordId: String) extends QuestionPage[String
     value: Option[String],
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId))
+  ): Try[UserAnswers] = {
+    val result = for {
+      longerComCode <- updatedUserAnswers.get(LongerCommodityCodePage(recordId))
+      commodity     <- updatedUserAnswers.get(LongerCommodityQuery(recordId))
+      shortCatInfo  <- updatedUserAnswers.get(CategorisationDetailsQuery(recordId))
+    } yield
+      if (s"${shortCatInfo.commodityCode}$longerComCode" == commodity.commodityCode) {
+        super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+      } else {
+        updatedUserAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId))
+      }
+    result.getOrElse {
+      updatedUserAnswers.remove(HasCorrectGoodsLongerCommodityCodePage(recordId))
+    }
+  }
 }

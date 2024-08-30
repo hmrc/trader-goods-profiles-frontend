@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.Mode
+import models.{Mode, ReassessmentAnswer}
 import navigation.Navigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
@@ -74,7 +74,7 @@ class AssessmentController @Inject() (
             val form      = formProvider(listItems.size)
 
             val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
-              case Some(value) => form.fill(value)
+              case Some(value) => form.fill(value.answer)
               case None        => form
             }
 
@@ -154,7 +154,9 @@ class AssessmentController @Inject() (
                   ),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(ReassessmentPage(recordId, index), value))
+                    updatedAnswers <-
+                      Future
+                        .fromTry(request.userAnswers.set(ReassessmentPage(recordId, index), ReassessmentAnswer(value)))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(ReassessmentPage(recordId, index), mode, updatedAnswers))
               )

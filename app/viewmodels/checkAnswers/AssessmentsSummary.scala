@@ -35,19 +35,7 @@ object AssessmentsSummary {
     isReassessmentAnswer: Boolean
   )(implicit messages: Messages): Option[SummaryListRow] = {
 
-    val (pageToUse, changeLink) = if (isReassessmentAnswer) {
-      (
-        ReassessmentPage(recordId, indexOfThisAssessment),
-        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
-      )
-    } else {
-      (
-        AssessmentPage(recordId, indexOfThisAssessment),
-        routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
-      )
-    }
-
-    answers.get(pageToUse).map { answer =>
+    def createSummaryListRowHelper(answer: AssessmentAnswer, changeLink: String): SummaryListRow = {
       val codes        = assessment.exemptions.map(_.code)
       val descriptions = assessment.exemptions.map(_.description)
 
@@ -69,6 +57,21 @@ object AssessmentsSummary {
         )
       )
     }
-  }
 
+    if (isReassessmentAnswer) {
+      answers.get(ReassessmentPage(recordId, indexOfThisAssessment)).map { answer =>
+        createSummaryListRowHelper(
+          answer.answer,
+          routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment).url
+        )
+      }
+    } else {
+      answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
+        createSummaryListRowHelper(
+          answer,
+          routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment).url
+        )
+      }
+    }
+  }
 }

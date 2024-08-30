@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.AssessmentFormProvider
 import models.ott.{CategorisationInfo, CategoryAssessment}
-import models.{AssessmentAnswer, NormalMode}
+import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -364,7 +364,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
                 .value
-                .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
                 .success
                 .value
 
@@ -468,7 +468,10 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val result = route(application, request).value
 
             val expectedAnswers =
-              answers.set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
+              answers
+                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                .success
+                .value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url

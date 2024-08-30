@@ -255,7 +255,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
             .success
             .value
 
