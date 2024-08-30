@@ -361,7 +361,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         ) mustEqual Category1Scenario
       }
 
-      "if NIPHL is authorised and has NIPHL assessments but answer no to another question" in {
+      "if NIPHL is authorised and has a NIPHL assessments but answer no to another question" in {
         val assessment1 = CategoryAssessment(
           "ass1",
           1,
@@ -497,6 +497,62 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           testRecordId
         ) mustEqual Category1NoExemptionsScenario
 
+      }
+
+      ".NIRMS" - {
+
+        "if NIRMS is authorised and category 1 with no exemptions" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            None,
+            Seq(
+              category2NoExemptions,
+              category1NoExemptions
+            ),
+            Seq.empty,
+            None,
+            1,
+            isTraderNirmsAuthorised = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category1NoExemptionsScenario
+        }
+
+        "if NIRMS is not authorised and category 1 with no exemptions" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            None,
+            Seq(
+              category2NoExemptions,
+              category1NoExemptions
+            ),
+            Seq.empty,
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category1NoExemptionsScenario
+        }
       }
 
     }
@@ -789,7 +845,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       ".NIRMS" - {
 
-        "is not authorised and has NIRMS assessment, category 1 assessment and category 2 assessment when all are answered yes" in {
+        "is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment when all are answered yes" in {
 
           val assessment2 = CategoryAssessment(
             "ass2",
@@ -838,7 +894,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           ) mustEqual Category2Scenario
         }
 
-        "is authorised and has NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
+        "is authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -864,7 +920,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           ) mustEqual Category2Scenario
         }
 
-        "is not authorised and has NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
+        "is not authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -890,7 +946,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           ) mustEqual Category2Scenario
         }
 
-        "is authorised and has NIRMS assessment, category 1 assessment and category 2 assessments when category 2 assessment answered no" in {
+        "is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessments when category 2 assessment answered no" in {
 
           val assessment2 = CategoryAssessment(
             "ass2",
@@ -940,7 +996,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           ) mustEqual Category2Scenario
         }
 
-        "is not authorised and has NIRMS assessment, category 1 assessment and category 2 assessments when category 2 assessment answered no" in {
+        "is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessments when category 2 assessment answered no" in {
 
           val assessment2 = CategoryAssessment(
             "ass2",
@@ -1020,7 +1076,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       ".NIRMS" - {
 
-        "is authorised and has NIRMS assessment, category 1 assessment and category 2 assessment when all are answered yes" in {
+        "is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment when all are answered yes" in {
           val nirmsAssessment = CategoryAssessment(
             "nirms1",
             2,
