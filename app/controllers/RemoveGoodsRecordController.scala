@@ -66,10 +66,8 @@ class RemoveGoodsRecordController @Inject() (
                 .map {
                   case true  => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
                   case false =>
-                    Redirect(
-                      routes.JourneyRecoveryController.onPageLoad(
-                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
-                      )
+                    navigator.journeyRecovery(
+                      Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
                     )
                 }
             case false =>

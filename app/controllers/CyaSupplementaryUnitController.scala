@@ -21,6 +21,8 @@ import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
+import navigation.Navigator
+import pages.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.DataCleansingService
@@ -40,7 +42,8 @@ class CyaSupplementaryUnitController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
-  view: CyaSupplementaryUnitView
+  view: CyaSupplementaryUnitView,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -90,7 +93,7 @@ class CyaSupplementaryUnitController @Inject() (
 
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-            Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))
               .addingToSession(dataUpdated -> isValueChanged.toString)
               .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
               .addingToSession(pageUpdated -> supplementaryUnit)

@@ -21,7 +21,8 @@ import models.GoodsRecordsPagination.firstPage
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
+import play.api.mvc.Results.Redirect
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -82,6 +83,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
+    case p: CyaCreateRecordPage                    => _ => routes.CreateRecordSuccessController.onPageLoad(p.recordId)
+    case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
+    case CyaCreateProfilePage                      => _ => routes.CreateProfileSuccessController.onPageLoad()
+    case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad
   }
@@ -602,4 +609,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   private def answerIsEmpty(nextAnswer: Option[AssessmentAnswer]) =
     nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer.NotAnsweredYet)
 
+  def journeyRecovery(continueUrl: Option[RedirectUrl] = None): Result = Redirect(
+    routes.JourneyRecoveryController.onPageLoad(continueUrl)
+  )
 }

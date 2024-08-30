@@ -55,7 +55,7 @@ class UseTraderReferenceController @Inject() (
 
       request.userAnswers.get(TraderReferencePage) match {
         case Some(traderReference) => Ok(view(preparedForm, traderReference, mode))
-        case None                  => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+        case None                  => navigator.journeyRecovery()
       }
   }
 
@@ -67,7 +67,7 @@ class UseTraderReferenceController @Inject() (
           formWithErrors =>
             request.userAnswers.get(TraderReferencePage) match {
               case Some(traderReference) => Future.successful(BadRequest(view(formWithErrors, traderReference, mode)))
-              case None                  => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+              case None                  => Future.successful(navigator.journeyRecovery())
             },
           value =>
             for {
