@@ -113,10 +113,9 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a POST" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(userAnswers = None)
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
