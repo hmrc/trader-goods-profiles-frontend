@@ -507,7 +507,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             "1234567890",
             None,
             Seq(
-              category2NoExemptions,
+              category2Nirms,
               category1NoExemptions
             ),
             Seq.empty,
@@ -534,7 +534,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             "1234567890",
             None,
             Seq(
-              category2NoExemptions,
+              category2Nirms,
               category1NoExemptions
             ),
             Seq.empty,
