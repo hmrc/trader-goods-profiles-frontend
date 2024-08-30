@@ -83,7 +83,7 @@ class AssessmentController @Inject() (
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
-        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(navigator.journeyRecovery())
     }
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -121,8 +121,8 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-        .recover(_ => Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(Future.successful(navigator.journeyRecovery()))
+        .recover(_ => navigator.journeyRecovery())
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -162,8 +162,8 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-        .recover(_ => Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(Future.successful(navigator.journeyRecovery()))
+        .recover(_ => navigator.journeyRecovery())
     }
 
 }

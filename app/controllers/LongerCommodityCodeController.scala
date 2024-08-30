@@ -66,7 +66,7 @@ class LongerCommodityCodeController @Inject() (
         case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           Ok(view(preparedForm, mode, shortComcode, recordId))
         case _                                                                         =>
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          navigator.journeyRecovery()
       }
   }
 
@@ -89,7 +89,7 @@ class LongerCommodityCodeController @Inject() (
                 )
             )
         case _                                                                         =>
-          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+          Future.successful(navigator.journeyRecovery())
       }
     }
 

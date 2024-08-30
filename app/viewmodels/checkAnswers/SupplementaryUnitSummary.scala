@@ -22,6 +22,7 @@ import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
 import queries.{CategorisationDetailsQuery, MeasurementQuery}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import utils.Constants.Category2AsInt
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -65,29 +66,39 @@ object SupplementaryUnitSummary {
       )
     }
 
-  def row(suppValue: Option[BigDecimal], measureValue: Option[String], recordId: String, recordLocked: Boolean)(implicit
+  def row(
+    category: Option[Int],
+    suppValue: Option[BigDecimal],
+    measureValue: Option[String],
+    recordId: String,
+    recordLocked: Boolean
+  )(implicit
     messages: Messages
   ): Option[SummaryListRow] =
-    for {
-      suppUnit <- suppValue
-      if suppUnit != 0
-    } yield {
-      val displayValue =
-        if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString
-      SummaryListRowViewModel(
-        key = "supplementaryUnit.checkYourAnswersLabel",
-        value = ValueViewModel(displayValue),
-        actions = if (recordLocked) {
-          Seq.empty
-        } else {
-          Seq(
-            ActionItemViewModel(
-              "site.change",
-              routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+    if (category.contains(Category2AsInt)) {
+      for {
+        suppUnit <- suppValue
+        if suppUnit != 0
+      } yield {
+        val displayValue =
+          if (measureValue.nonEmpty) s"$suppUnit ${measureValue.get.trim}" else suppUnit.toString
+        SummaryListRowViewModel(
+          key = "supplementaryUnit.checkYourAnswersLabel",
+          value = ValueViewModel(displayValue),
+          actions = if (recordLocked) {
+            Seq.empty
+          } else {
+            Seq(
+              ActionItemViewModel(
+                "site.change",
+                routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+              )
+                .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
             )
-              .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
-          )
-        }
-      )
+          }
+        )
+      }
+    } else {
+      None
     }
 }
