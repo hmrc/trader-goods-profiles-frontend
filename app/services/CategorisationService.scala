@@ -100,7 +100,7 @@ class CategorisationService @Inject() (
 
     val areThereQuestionsWithNoExemption = listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
-    if (categorisationInfo.isNirmsAssessment && !areThereQuestionsWithNoExemption) {
+    if (categorisationInfo.isNirmsAssessment && !areThereQuestionsWithNoExemption && listOfAnswers.nonEmpty) {
       if (categorisationInfo.isTraderNirmsAuthorised) {
         StandardGoodsScenario
       } else {

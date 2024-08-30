@@ -394,7 +394,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           ),
           Seq(assessment2),
           None,
-          1
+          1,
+          isTraderNiphlsAuthorised = true
         )
 
         val userAnswers = emptyUserAnswers
@@ -498,6 +499,90 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
+      ".NIRMS" - {
+
+        "if NIRMS is authorised and category 2 with no exemptions" in {
+
+          val nirmsAssessment = CategoryAssessment(
+            "nirms1",
+            2,
+            Seq(
+              Certificate(NirmsCode, "cert1code", "cert1desc")
+            )
+          )
+
+          val assessment2 = CategoryAssessment(
+            "ass1",
+            1,
+            Seq.empty
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            None,
+            Seq(
+              nirmsAssessment,
+              assessment2
+            ),
+            Seq.empty,
+            None,
+            1,
+            isTraderNirmsAuthorised = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category1NoExemptionsScenario
+        }
+
+        "if NIRMS is not authorised and category 2 with no exemptions" in {
+
+          val nirmsAssessment = CategoryAssessment(
+            "nirms1",
+            2,
+            Seq(
+              Certificate(NirmsCode, "cert1code", "cert1desc")
+            )
+          )
+
+          val assessment2 = CategoryAssessment(
+            "ass1",
+            1,
+            Seq.empty
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            None,
+            Seq(
+              nirmsAssessment,
+              assessment2
+            ),
+            Seq.empty,
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category1NoExemptionsScenario
+        }
+
+      }
     }
     "return Category 2" - {
 
@@ -833,6 +918,140 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2Scenario
+        }
+
+        "is authorised and has NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
+          val nirmsAssessment = CategoryAssessment(
+            "nirms1",
+            2,
+            Seq(
+              Certificate(NirmsCode, "cert1code", "cert1desc")
+            )
+          )
+
+          val assessment3 = CategoryAssessment(
+            "ass3",
+            2,
+            Seq.empty
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Some(validityEndDate),
+            Seq(
+              nirmsAssessment,
+              assessment3
+            ),
+            Seq.empty,
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2Scenario
+        }
+
+        "is not authorised and has NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
+          val nirmsAssessment = CategoryAssessment(
+            "nirms1",
+            2,
+            Seq(
+              Certificate(NirmsCode, "cert1code", "cert1desc")
+            )
+          )
+
+          val assessment3 = CategoryAssessment(
+            "ass3",
+            2,
+            Seq.empty
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Some(validityEndDate),
+            Seq(
+              nirmsAssessment,
+              assessment3
+            ),
+            Seq.empty,
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2Scenario
+        }
+
+        "is authorised and has NIRMS assessment, category 1 assessment and category 2 assessments when category 2 assessment answered no" in {
+          val nirmsAssessment = CategoryAssessment(
+            "nirms1",
+            2,
+            Seq(
+              Certificate(NirmsCode, "cert1code", "cert1desc")
+            )
+          )
+
+          val assessment2 = CategoryAssessment(
+            "ass2",
+            1,
+            Seq(
+              Certificate("cert2", "cert2code", "cert2desc")
+            )
+          )
+
+          val assessment3 = CategoryAssessment(
+            "ass3",
+            2,
+            Seq(
+              Certificate("cert3", "cert3code", "cert3desc")
+            )
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Some(validityEndDate),
+            Seq(
+              nirmsAssessment,
+              assessment2,
+              assessment3
+            ),
+            Seq(assessment2, assessment3),
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
