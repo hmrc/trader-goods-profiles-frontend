@@ -98,13 +98,25 @@ class CategorisationService @Inject() (
     listOfAnswers: Seq[AnsweredQuestions]
   ): Scenario = {
 
-    val areThereQuestionsWithNoExemption = listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption))
+    val areThereCategory1AnsweredNo   =
+      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1)
+    val areThereCategory2AnsweredNo   =
+      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory2)
+    val areThereCategory1Unanswerable =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers)
+    val areThereCategory2Unanswerable =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
-    if (categorisationInfo.isNirmsAssessment && !areThereQuestionsWithNoExemption && listOfAnswers.nonEmpty) {
-      if (categorisationInfo.isTraderNirmsAuthorised) {
-        StandardGoodsScenario
-      } else {
+    if (categorisationInfo.isNirmsAssessment && !areThereCategory1Unanswerable) {
+
+      if (areThereCategory1AnsweredNo) {
+        Category1Scenario
+      } else if (
+        !categorisationInfo.isTraderNirmsAuthorised || areThereCategory2AnsweredNo || areThereCategory2Unanswerable
+      ) {
         Category2Scenario
+      } else {
+        StandardGoodsScenario
       }
     } else {
       calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
