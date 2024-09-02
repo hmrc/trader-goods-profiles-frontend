@@ -21,7 +21,15 @@ import utils.SessionData._
 sealed trait Journey
 
 case object CreateProfileJourney extends Journey {
-  val pages: Seq[String]        = Seq(ukimsNumberPage, hasNirmsPage, hasNiphlPage, nirmsNumberPage, niphlNumberPage)
+  val pages: Seq[String]        = Seq(
+    ukimsNumberPage,
+    hasNirmsPage,
+    hasNiphlPage,
+    nirmsNumberPage,
+    niphlNumberPage,
+    useExistingUkimsPage,
+    historicProfileDataQuery
+  )
   override def toString: String = "CreateProfile"
 }
 case object CreateRecordJourney extends Journey {

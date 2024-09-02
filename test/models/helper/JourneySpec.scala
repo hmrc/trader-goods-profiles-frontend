@@ -29,7 +29,9 @@ class JourneySpec extends AnyFreeSpec with Matchers {
         hasNirmsPage,
         hasNiphlPage,
         nirmsNumberPage,
-        niphlNumberPage
+        niphlNumberPage,
+        useExistingUkimsPage,
+        historicProfileDataQuery
       )
     }
 
