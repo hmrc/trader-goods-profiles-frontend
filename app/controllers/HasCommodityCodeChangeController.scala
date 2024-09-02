@@ -70,7 +70,7 @@ class HasCommodityCodeChangeController @Inject() (
             .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
         }
         .recover { _ =>
-          Redirect(routes.JourneyRecoveryController.onPageLoad())
+          navigator.journeyRecovery()
         }
     }
 
@@ -108,7 +108,7 @@ class HasCommodityCodeChangeController @Inject() (
             )
         }
         .recover { _ =>
-          Redirect(routes.JourneyRecoveryController.onPageLoad())
+          navigator.journeyRecovery()
         }
     }
 }

@@ -19,8 +19,10 @@ package controllers
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
+import models.{NormalMode, TraderProfile}
 import models.helper.CreateProfileJourney
-import models.TraderProfile
+import navigation.Navigator
+import pages.CyaCreateProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
@@ -39,8 +41,9 @@ class CyaCreateProfileController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
-  dataCleansingService: DataCleansingService,
-  auditService: AuditService
+  auditService: AuditService,
+  navigator: Navigator,
+  dataCleansingService: DataCleansingService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -73,7 +76,7 @@ class CyaCreateProfileController @Inject() (
         auditService.auditProfileSetUp(model, request.affinityGroup)
         traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-          Redirect(routes.CreateProfileSuccessController.onPageLoad())
+          Redirect(navigator.nextPage(CyaCreateProfilePage, NormalMode, request.userAnswers))
         }
 
       case Left(errors) =>

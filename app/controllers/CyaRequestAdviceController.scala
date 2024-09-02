@@ -19,8 +19,10 @@ package controllers
 import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import models.{AdviceRequest, NormalMode}
 import models.helper.RequestAdviceJourney
-import models.AdviceRequest
+import navigation.Navigator
+import pages.CyaRequestAdvicePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
@@ -39,7 +41,8 @@ class CyaRequestAdviceController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
   dataCleansingService: DataCleansingService,
-  accreditationConnector: AccreditationConnector
+  accreditationConnector: AccreditationConnector,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -72,7 +75,7 @@ class CyaRequestAdviceController @Inject() (
             .submitRequestAccreditation(model)
             .map { _ =>
               dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-              Redirect(routes.AdviceSuccessController.onPageLoad(recordId).url)
+              Redirect(navigator.nextPage(CyaRequestAdvicePage(recordId), NormalMode, request.userAnswers))
             }
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)

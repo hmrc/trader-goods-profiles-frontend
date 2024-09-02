@@ -67,7 +67,7 @@ class SupplementaryUnitController @Inject() (
           val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
           Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
         }
-        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+        .getOrElse(navigator.journeyRecovery())
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
@@ -87,7 +87,7 @@ class SupplementaryUnitController @Inject() (
                 val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
                 Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
               }
-              .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url)))
+              .getOrElse(Future.successful(navigator.journeyRecovery()))
           },
           value =>
             for {
@@ -128,7 +128,7 @@ class SupplementaryUnitController @Inject() (
         }
         .recover { case ex: Exception =>
           logger.error(s"Error occurred while fetching record for recordId: $recordId", ex)
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          navigator.journeyRecovery()
         }
     }
 
@@ -147,7 +147,7 @@ class SupplementaryUnitController @Inject() (
             }
             result.recover { case ex: Exception =>
               logger.error(s"Error occurred while fetching measurement unit for recordId: $recordId", ex)
-              Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+              navigator.journeyRecovery()
             }
           },
           value =>

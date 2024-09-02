@@ -17,7 +17,9 @@
 package controllers
 
 import controllers.actions._
-import models.GoodsRecordsPagination.firstPage
+import models.NormalMode
+import navigation.Navigator
+import pages.PreviousMovementRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.PreviousMovementRecordsView
@@ -28,15 +30,19 @@ class PreviousMovementRecordsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   profileAuth: ProfileAuthenticateAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: PreviousMovementRecordsView
+  view: PreviousMovementRecordsView,
+  navigator: Navigator
 ) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
-    Redirect(routes.GoodsRecordsController.onPageLoad(firstPage))
+  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      Redirect(navigator.nextPage(PreviousMovementRecordsPage, NormalMode, request.userAnswers))
   }
 }

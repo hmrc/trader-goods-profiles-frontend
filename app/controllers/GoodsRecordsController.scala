@@ -22,6 +22,7 @@ import forms.GoodsRecordsFormProvider
 import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
 import models.DownloadDataSummary
 import models.GoodsRecordsPagination._
+import navigation.Navigator
 import pages.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,7 +47,8 @@ class GoodsRecordsController @Inject() (
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
   downloadDataConnector: DownloadDataConnector,
-  ottConnector: OttConnector
+  ottConnector: OttConnector,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -56,7 +58,7 @@ class GoodsRecordsController @Inject() (
   def onPageLoad(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       if (page < 1) {
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        Future.successful(navigator.journeyRecovery())
       } else {
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
           case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords > 0 =>

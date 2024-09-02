@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationJourney
-import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, UserAnswers}
+import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, ReassessmentAnswer, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -280,10 +280,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(LongerCommodityCodePage(testRecordId), "3210")
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption))
             .success
             .value
 

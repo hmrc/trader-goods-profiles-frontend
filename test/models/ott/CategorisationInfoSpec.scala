@@ -19,7 +19,7 @@ package models.ott
 import base.SpecBase
 import base.TestConstants.{NiphlsCode, testRecordId}
 import models.ott.response._
-import models.{AnsweredQuestions, AssessmentAnswer, TraderProfile}
+import models.{AnsweredQuestions, AssessmentAnswer, ReassessmentAnswer, TraderProfile}
 import pages.{AssessmentPage, ReassessmentPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 
@@ -985,13 +985,13 @@ class CategorisationInfoSpec extends SpecBase {
           .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+          .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
           .success
           .value
 

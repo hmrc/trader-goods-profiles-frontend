@@ -76,8 +76,9 @@ class CategorisationPreparationController @Inject() (
         shorterCategorisationInfo <-
           Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery(recordId)).get))
 
-        longerComCode            <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
-        longerCategorisationInfo <-
+        oldLongerCategorisationInfoOpt = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+        longerComCode                 <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+        newLongerCategorisationInfo   <-
           categorisationService
             .getCategorisationInfo(
               request,
@@ -89,22 +90,26 @@ class CategorisationPreparationController @Inject() (
 
         updatedUASuppUnit <-
           Future.fromTry(
-            cleanupSupplementaryUnit(request.userAnswers, recordId, shorterCategorisationInfo, longerCategorisationInfo)
+            cleanupSupplementaryUnit(
+              request.userAnswers,
+              recordId,
+              shorterCategorisationInfo,
+              newLongerCategorisationInfo
+            )
           )
 
         updatedUACatInfo <-
-          Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), longerCategorisationInfo))
+          Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), newLongerCategorisationInfo))
 
-        updatedUAReassessmentAnswers <- Future.fromTry(
-                                          categorisationService.updatingAnswersForRecategorisation(
-                                            updatedUACatInfo,
-                                            recordId,
-                                            shorterCategorisationInfo,
-                                            longerCategorisationInfo
-                                          )
+        updatedUAReassessmentAnswers <- updateReassessmentAnswers(
+                                          oldLongerCategorisationInfoOpt,
+                                          newLongerCategorisationInfo,
+                                          updatedUACatInfo,
+                                          recordId,
+                                          shorterCategorisationInfo
                                         )
 
-        _ <- updateCategory(updatedUAReassessmentAnswers, request.eori, recordId, longerCategorisationInfo)
+        _ <- updateCategory(updatedUAReassessmentAnswers, request.eori, recordId, newLongerCategorisationInfo)
         _ <- sessionRepository.set(updatedUAReassessmentAnswers)
       } yield Redirect(
         navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)
@@ -157,4 +162,27 @@ class CategorisationPreparationController @Inject() (
       Future.successful(Done)
     }
 
+  private def updateReassessmentAnswers(
+    oldLongerCategorisationInfoOpt: Option[CategorisationInfo],
+    newLongerCategorisationInfo: CategorisationInfo,
+    updatedUACatInfo: UserAnswers,
+    recordId: String,
+    shorterCategorisationInfo: CategorisationInfo
+  ): Future[UserAnswers] = {
+
+    val isNewOneTheSameAsOldOne = oldLongerCategorisationInfoOpt.exists(_.equals(newLongerCategorisationInfo))
+
+    if (isNewOneTheSameAsOldOne) {
+      Future.successful(updatedUACatInfo)
+    } else {
+      Future.fromTry(
+        categorisationService.updatingAnswersForRecategorisation(
+          updatedUACatInfo,
+          recordId,
+          shorterCategorisationInfo,
+          newLongerCategorisationInfo
+        )
+      )
+    }
+  }
 }
