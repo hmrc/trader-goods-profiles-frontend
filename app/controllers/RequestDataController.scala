@@ -42,10 +42,12 @@ class RequestDataController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      //TODO get this email from the user
-      Ok(view("placeholder@email.com"))
+      downloadDataConnector.getEmail(request.eori).map {
+        case Some(email) => Ok(view(email.address))
+        case None        => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 
   def onSubmit: Action[AnyContent] =

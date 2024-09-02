@@ -16,11 +16,15 @@
 
 package controllers
 
+import connectors.DownloadDataConnector
 import controllers.actions._
+
 import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.FileInProgressView
+
+import scala.concurrent.ExecutionContext
 
 class FileInProgressController @Inject() (
   override val messagesApi: MessagesApi,
@@ -28,13 +32,17 @@ class FileInProgressController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
   val controllerComponents: MessagesControllerComponents,
   view: FileInProgressView
-) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      //TODO get this email from the user
-      Ok(view("placeholder@email.com"))
+      downloadDataConnector.getEmail(request.eori).map {
+        case Some(email) => Ok(view(email.address))
+        case None        => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 }

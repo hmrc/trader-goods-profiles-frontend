@@ -18,11 +18,13 @@ package controllers
 
 import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
+import models.Email
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -30,22 +32,30 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.RequestDataView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class RequestDataControllerSpec extends SpecBase {
 
-  private val email       = "placeholder@email.com"
   private def onwardRoute = Call("GET", "/foo")
 
   "RequestData Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
+      val address   = "somebody@email.com"
+      val timestamp = Instant.now
+      val email     = Email(address, timestamp)
+
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(inject.bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
         .build()
 
       running(application) {
@@ -56,7 +66,7 @@ class RequestDataControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[RequestDataView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(email)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(email.address)(request, messages(application)).toString
       }
     }
 

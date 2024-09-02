@@ -17,7 +17,8 @@
 package controllers
 
 import base.SpecBase
-import connectors.TraderProfileConnector
+import connectors.{DownloadDataConnector, TraderProfileConnector}
+import models.Email
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -26,21 +27,28 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.FileInProgressView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class FileInProgressControllerSpec extends SpecBase {
-
-  private val email = "placeholder@email.com"
 
   "FileInProgress Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
+      val address   = "somebody@email.com"
+      val timestamp = Instant.now
+      val email     = Email(address, timestamp)
+
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(inject.bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
         .build()
 
       running(application) {
@@ -51,7 +59,7 @@ class FileInProgressControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[FileInProgressView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(email)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(email.address)(request, messages(application)).toString
       }
     }
   }

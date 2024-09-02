@@ -17,7 +17,7 @@
 package connectors
 
 import config.Service
-import models.DownloadDataSummary
+import models.{DownloadDataSummary, Email}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, OK}
@@ -35,6 +35,9 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
 
   private def downloadDataSummaryUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
+
+  private def emailUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/email"
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
@@ -55,6 +58,20 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
       .map { response =>
         response.status match {
           case OK => Some(response.json.as[DownloadDataSummary])
+        }
+      }
+      .recover { case _: NotFoundException =>
+        None
+      }
+
+  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Option[Email]] =
+    httpClient
+      .get(emailUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK => Some(response.json.as[Email])
         }
       }
       .recover { case _: NotFoundException =>
