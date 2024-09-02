@@ -42,9 +42,8 @@ class DownloadRequestSuccessController @Inject() (
     implicit request =>
       // TODO : should be replaced with actual date
       val downloadUntilDate = "18 August 2024"
-      downloadDataConnector.getEmail(request.eori).map {
-        case Some(email) => Ok(view(email.address, downloadUntilDate))
-        case None        => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      downloadDataConnector.getEmail(request.eori).map { email =>
+        Ok(view(email.address, downloadUntilDate))
       }
   }
 }

@@ -137,18 +137,7 @@ class DownloadDataConnectorSpec
           .willReturn(ok().withBody(Json.toJson(email).toString))
       )
 
-      connector.getEmail(testEori).futureValue mustBe Some(email)
-    }
-
-    "must return None if email does not exist" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(emailUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(notFound())
-      )
-
-      connector.getEmail(testEori).futureValue mustBe None
+      connector.getEmail(testEori).futureValue mustBe email
     }
 
     "must return a failed future when the server returns an error" in {

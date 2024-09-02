@@ -40,9 +40,8 @@ class FileInProgressController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      downloadDataConnector.getEmail(request.eori).map {
-        case Some(email) => Ok(view(email.address))
-        case None        => Redirect(routes.JourneyRecoveryController.onPageLoad())
+      downloadDataConnector.getEmail(request.eori).map { email =>
+        Ok(view(email.address))
       }
   }
 }
