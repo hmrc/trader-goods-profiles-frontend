@@ -19,7 +19,8 @@ package controllers
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.{CheckMode, Country, UpdateGoodsRecord, UserAnswers}
+import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers}
+import navigation.Navigator
 import pages._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
@@ -44,7 +45,8 @@ class CyaUpdateRecordController @Inject() (
   view: CyaUpdateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  navigator: Navigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -77,7 +79,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId),
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -86,10 +88,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -107,7 +106,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
-            routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId),
+            routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -126,7 +125,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)           =>
           logErrorsAndContinue(
             errorMessage,
-            routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId),
+            routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -163,7 +162,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId),
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -172,10 +171,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -219,12 +215,12 @@ class CyaUpdateRecordController @Inject() (
                               )
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
         case Left(errors)           =>
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.CyaUpdateRecordController.onPageLoadTraderReference(recordId),
+              routes.SingleRecordController.onPageLoad(recordId),
               errors
             )
           )
@@ -251,12 +247,12 @@ class CyaUpdateRecordController @Inject() (
                   Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
                 updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
                 _                        <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+              } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
             case Left(errors) =>
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId),
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -265,10 +261,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -288,12 +281,12 @@ class CyaUpdateRecordController @Inject() (
                               )
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+          } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
         case Left(errors)            =>
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId),
+              routes.SingleRecordController.onPageLoad(recordId),
               errors
             )
           )
@@ -327,12 +320,12 @@ class CyaUpdateRecordController @Inject() (
                   Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
                 updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
                 _                        <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(routes.SingleRecordController.onPageLoad(recordId))
+              } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
             case Left(errors)     =>
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId),
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -341,10 +334,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            Redirect(
-              routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
-            )
+            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }

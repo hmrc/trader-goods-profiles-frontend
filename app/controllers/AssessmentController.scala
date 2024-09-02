@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.Mode
+import models.{Mode, ReassessmentAnswer}
 import navigation.Navigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
@@ -74,7 +74,7 @@ class AssessmentController @Inject() (
             val form      = formProvider(listItems.size)
 
             val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
-              case Some(value) => form.fill(value)
+              case Some(value) => form.fill(value.answer)
               case None        => form
             }
 
@@ -83,7 +83,7 @@ class AssessmentController @Inject() (
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
-        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(navigator.journeyRecovery())
     }
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -121,8 +121,8 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-        .recover(_ => Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(Future.successful(navigator.journeyRecovery()))
+        .recover(_ => navigator.journeyRecovery())
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -154,14 +154,16 @@ class AssessmentController @Inject() (
                   ),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(ReassessmentPage(recordId, index), value))
+                    updatedAnswers <-
+                      Future
+                        .fromTry(request.userAnswers.set(ReassessmentPage(recordId, index), ReassessmentAnswer(value)))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(ReassessmentPage(recordId, index), mode, updatedAnswers))
               )
           }
         }
-        .getOrElse(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-        .recover(_ => Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(Future.successful(navigator.journeyRecovery()))
+        .recover(_ => navigator.journeyRecovery())
     }
 
 }

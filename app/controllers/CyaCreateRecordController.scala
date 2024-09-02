@@ -20,7 +20,9 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.CreateRecordJourney
-import models.{Country, GoodsRecord, UserAnswers}
+import models.{Country, GoodsRecord, NormalMode, UserAnswers}
+import navigation.Navigator
+import pages.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
@@ -44,7 +46,8 @@ class CyaCreateRecordController @Inject() (
   ottConnector: OttConnector,
   dataCleansingService: DataCleansingService,
   sessionRepository: SessionRepository,
-  auditService: AuditService
+  auditService: AuditService,
+  navigator: Navigator
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
@@ -89,7 +92,7 @@ class CyaCreateRecordController @Inject() (
         for {
           recordId <- goodsRecordConnector.submitGoodsRecord(model)
           _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        } yield Redirect(routes.CreateRecordSuccessController.onPageLoad(recordId))
+        } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))

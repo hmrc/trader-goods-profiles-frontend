@@ -18,7 +18,7 @@ package pages
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.AssessmentAnswer
+import models.{AssessmentAnswer, ReassessmentAnswer}
 import models.ott._
 import queries.LongerCategorisationDetailsQuery
 
@@ -58,17 +58,18 @@ class ReassessmentPageSpec extends SpecBase {
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
 
-        val result = answers.set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption).success.value
+        val result =
+          answers.set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption)).success.value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
@@ -85,20 +86,21 @@ class ReassessmentPageSpec extends SpecBase {
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
 
-        val result = answers.set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
+        val result =
+          answers.set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
