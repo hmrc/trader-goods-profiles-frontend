@@ -28,5 +28,4 @@ case object Constants {
 
   val minimumLengthOfCommodityCode: Int = 6
 
-  val NotFoundErrorCode: Int = 7
 }

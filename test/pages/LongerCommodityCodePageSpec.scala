@@ -19,9 +19,6 @@ package pages
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import models.{Commodity, UserAnswers}
-import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 
 import java.time.Instant

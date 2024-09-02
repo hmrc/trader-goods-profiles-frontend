@@ -52,7 +52,7 @@ class UseExistingUkimsNumberController @Inject() (
         updatedForm  = request.userAnswers.get(UseExistingUkimsPage).map(value => form.fill(value)).getOrElse(form)
         updatedView  = view(updatedForm, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)
       } yield Ok(updatedView))
-        .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        .getOrElse(navigator.journeyRecovery())
     }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
@@ -64,7 +64,7 @@ class UseExistingUkimsNumberController @Inject() (
             request.userAnswers
               .get(UkimsNumberPage)
               .map(ukims => BadRequest(view(formWithErrors, routes.UseExistingUkimsNumberController.onSubmit(), ukims)))
-              .getOrElse(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+              .getOrElse(navigator.journeyRecovery())
           },
         useExistingUkims =>
           for {

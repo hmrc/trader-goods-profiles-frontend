@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.{Json, OFormat}
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-case class HistoricProfileData(
-  eori: String,
-  actorId: String,
-  ukimsNumber: Option[String],
-  nirmsNumber: Option[String],
-  niphlNumber: Option[String]
-)
+class UseExistingUkimsFormProviderSpec extends BooleanFieldBehaviours {
 
-object HistoricProfileData {
-  implicit val format: OFormat[HistoricProfileData] = Json.format[HistoricProfileData]
+  val requiredKey = "existingUkims.error.required"
+  val invalidKey  = "error.boolean"
+
+  val form = new UseExistingUkimsFormProvider()()
+
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

@@ -45,8 +45,8 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   private val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
-  private val onPageLoadRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
-  private val onSubmitRoute   = routes.UseExistingUkimsNumberController.onSubmit().url
+  private lazy val onPageLoadRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
+  private lazy val onSubmitRoute   = routes.UseExistingUkimsNumberController.onSubmit().url
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -110,7 +110,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   "onSubmit" - {
 
-    "must return OK and the correct view for a POST" in {
+    "must return OK and and navigate to the next page" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims))
@@ -156,5 +156,25 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         ).toString
       }
     }
+
+    "must throw exception to error handler if session repository fails" in {
+      when(mockSessionRepository.set(any())) thenReturn Future.failed(new RuntimeException("failed"))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims))
+        .overrides(
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(POST, onSubmitRoute).withFormUrlEncodedBody(("value", "true"))
+
+        intercept[RuntimeException] {
+          await(route(application, request).value)
+        }
+      }
+    }
+
   }
 }
