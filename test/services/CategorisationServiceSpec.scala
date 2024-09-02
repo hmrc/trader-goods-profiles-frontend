@@ -1106,6 +1106,31 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId
           ) mustEqual Category2Scenario
         }
+
+        "is not authorised and has only a NIRMS assessment" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Some(validityEndDate),
+            Seq(
+              category2Nirms
+            ),
+            Seq.empty,
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2Scenario
+        }
       }
 
     }
@@ -1185,6 +1210,32 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual StandardGoodsScenario
+        }
+
+        "is authorised and has only a NIRMS assessment" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            Some(validityEndDate),
+            Seq(
+              category2Nirms
+            ),
+            Seq.empty,
+            None,
+            1,
+            isTraderNirmsAuthorised = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 
