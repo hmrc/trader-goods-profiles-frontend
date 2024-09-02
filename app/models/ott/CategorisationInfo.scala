@@ -125,12 +125,10 @@ object CategorisationInfo {
             Seq.empty
           } else if (!areAllCategory1Answerable) {
             Seq.empty
+          } else if (isNirmsAssessment && isTraderNirmsAuthorised) {
+            category1ToAnswer ++ category2ToAnswer
           } else if (!areAllCategory2Answerable) {
-            if (isNirmsAssessment && isTraderNirmsAuthorised) {
-              category1ToAnswer ++ category2ToAnswer
-            } else {
-              category1ToAnswer
-            }
+            category1ToAnswer
           } else {
             category1ToAnswer ++ category2ToAnswer
           }
