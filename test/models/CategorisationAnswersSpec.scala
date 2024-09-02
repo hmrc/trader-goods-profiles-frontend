@@ -387,7 +387,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
         "a NoExemption means the following assessment pages are unanswered" in {
           val answers = longerCommodityBaseAnswers
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
             .success
             .value
 
@@ -401,13 +401,13 @@ class CategorisationAnswersSpec extends SpecBase {
         "all assessments are answered Yes" in {
 
           val answers = longerCommodityBaseAnswers
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
 
@@ -431,13 +431,13 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val answers =
             longerCommodityBaseAnswers
-              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
 
@@ -461,13 +461,13 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val answers =
             longerCommodityBaseAnswers
-              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
               .success
               .value
               .set(HasSupplementaryUnitPage(testRecordId), false)
@@ -494,13 +494,13 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val answers =
             longerCommodityBaseAnswers
-              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
               .success
               .value
               .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -532,13 +532,13 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val answers =
             longerCommodityBaseAnswers
-              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
               .success
               .value
               .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -556,13 +556,13 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val answers =
             longerCommodityBaseAnswers
-              .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
               .success
               .value
-              .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
               .success
               .value
               .set(SupplementaryUnitPage(testRecordId), "42.0")
@@ -626,13 +626,13 @@ class CategorisationAnswersSpec extends SpecBase {
             )
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
 
@@ -664,10 +664,10 @@ class CategorisationAnswersSpec extends SpecBase {
             )
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
 
@@ -701,13 +701,13 @@ class CategorisationAnswersSpec extends SpecBase {
             )
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.NotAnsweredYet)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
             .success
             .value
 
@@ -741,13 +741,13 @@ class CategorisationAnswersSpec extends SpecBase {
             )
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
             .success
             .value
 

@@ -137,6 +137,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             ),
           SupplementaryUnitSummary
             .row(
+              Some(2),
               recordForTestingSummaryRows.supplementaryUnit,
               recordForTestingSummaryRows.measurementUnit,
               testRecordId,
@@ -250,6 +251,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             ),
           SupplementaryUnitSummary
             .row(
+              Some(2),
               lockedRecord.supplementaryUnit,
               lockedRecord.measurementUnit,
               lockedRecord.recordId,
@@ -380,6 +382,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             ),
           SupplementaryUnitSummary
             .row(
+              Some(2),
               notCategorisedRecord.supplementaryUnit,
               notCategorisedRecord.measurementUnit,
               testRecordId,
@@ -471,6 +474,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       running(application) {
         val row = SupplementaryUnitSummary
           .row(
+            Some(2),
             recordWithSupplementaryUnit.supplementaryUnit,
             recordWithSupplementaryUnit.measurementUnit,
             testRecordId,
@@ -590,6 +594,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         implicit val localMessages: Messages = messages(application)
         running(application) {
           val row = SupplementaryUnitSummary.row(
+            Some(2),
             recordWithSupplementaryUnit.supplementaryUnit,
             recordWithSupplementaryUnit.measurementUnit,
             testRecordId,
@@ -609,6 +614,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         implicit val localMessages: Messages = messages(application)
         running(application) {
           val row = SupplementaryUnitSummary.row(
+            Some(2),
             recordWithSupplementaryUnit.supplementaryUnit,
             recordWithSupplementaryUnit.measurementUnit,
             testRecordId,

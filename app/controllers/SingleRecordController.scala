@@ -110,7 +110,7 @@ class SingleRecordController @Inject() (
           rows = Seq(
             HasSupplementaryUnitSummary.row(record, recordId, recordIsLocked),
             SupplementaryUnitSummary
-              .row(record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
+              .row(record.category, record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
           ).flatten
         )
         val adviceList            = SummaryListViewModel(

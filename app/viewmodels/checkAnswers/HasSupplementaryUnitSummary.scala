@@ -22,6 +22,7 @@ import models.{CheckMode, NormalMode, UserAnswers}
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import utils.Constants.Category2AsInt
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -61,7 +62,7 @@ object HasSupplementaryUnitSummary {
   def row(record: GetGoodsRecordResponse, recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): Option[SummaryListRow] =
-    if (true) { //TODO should be record.category.contains(2)
+    if (record.category.contains(Category2AsInt)) {
       for {
         _ <- record.measurementUnit
       } yield {

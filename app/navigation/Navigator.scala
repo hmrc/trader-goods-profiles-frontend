@@ -22,7 +22,8 @@ import models.Scenario.getResultAsInt
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
+import play.api.mvc.Results.Redirect
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -83,6 +84,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
+    case p: CyaCreateRecordPage                    => _ => routes.CreateRecordSuccessController.onPageLoad(p.recordId)
+    case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
+    case CyaCreateProfilePage                      => _ => routes.CreateProfileSuccessController.onPageLoad()
+    case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad
   }
@@ -281,7 +288,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers.get(LongerCategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
-        if (answerIsEmpty(firstAnswer)) {
+        if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentIndex)
         } else {
           navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
@@ -311,8 +318,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
         assessmentAnswer   <- answers.get(assessmentPage)
-      } yield assessmentAnswer match {
-        case AssessmentAnswer.Exemption if nextIndex < assessmentCount && answerIsEmpty(nextAnswer)              =>
+      } yield assessmentAnswer.answer match {
+        case AssessmentAnswer.Exemption
+            if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
+              _.isAnswerCopiedFromPreviousAssessment
+            )) =>
           routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextIndex)
         case AssessmentAnswer.Exemption if nextIndex < assessmentCount                                           =>
           navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
@@ -502,7 +512,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers.get(LongerCategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
-        if (answerIsEmpty(firstAnswer)) {
+        if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentIndex)
         } else {
           navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
@@ -530,15 +540,18 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
       assessmentAnswer   <- answers.get(assessmentPage)
       nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
-    } yield assessmentAnswer match {
-      case AssessmentAnswer.Exemption if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
+    } yield assessmentAnswer.answer match {
+      case AssessmentAnswer.Exemption
+          if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
+            _.isAnswerCopiedFromPreviousAssessment
+          )) =>
         routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextIndex)
-      case AssessmentAnswer.Exemption if nextIndex < assessmentCount                              =>
+      case AssessmentAnswer.Exemption if nextIndex < assessmentCount =>
         navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
       case AssessmentAnswer.NoExemption
           if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
         routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-      case _                                                                                      =>
+      case _                                                         =>
         routes.CyaCategorisationController.onPageLoad(recordId)
     }
   } getOrElse routes.JourneyRecoveryController.onPageLoad()
@@ -619,4 +632,10 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   private def answerIsEmpty(nextAnswer: Option[AssessmentAnswer]) =
     nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer.NotAnsweredYet)
 
+  private def reassessmentAnswerIsEmpty(nextAnswer: Option[ReassessmentAnswer]) =
+    nextAnswer.isEmpty || nextAnswer.exists(reassessment => reassessment.answer == AssessmentAnswer.NotAnsweredYet)
+
+  def journeyRecovery(continueUrl: Option[RedirectUrl] = None): Result = Redirect(
+    routes.JourneyRecoveryController.onPageLoad(continueUrl)
+  )
 }

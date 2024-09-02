@@ -173,7 +173,9 @@ class CategorisationService @Inject() (
     // This is needed as stored as Json array
     val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(userAnswers)) {
       (currentAnswers, newAssessment) =>
-        currentAnswers.flatMap(_.set(ReassessmentPage(recordId, newAssessment._2), AssessmentAnswer.NotAnsweredYet))
+        currentAnswers.flatMap(
+          _.set(ReassessmentPage(recordId, newAssessment._2), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+        )
     }
 
     val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
@@ -184,7 +186,13 @@ class CategorisationService @Inject() (
         val assessmentIndex     = answerToKeep._1
         val assessmentAnswerOpt = answerToKeep._2
         assessmentAnswerOpt match {
-          case Some(answer) => currentAnswers.flatMap(_.set(ReassessmentPage(recordId, assessmentIndex), answer))
+          case Some(answer) =>
+            currentAnswers.flatMap(
+              _.set(
+                ReassessmentPage(recordId, assessmentIndex),
+                ReassessmentAnswer(answer, isAnswerCopiedFromPreviousAssessment = true)
+              )
+            )
           case None         => currentAnswers
         }
     }
