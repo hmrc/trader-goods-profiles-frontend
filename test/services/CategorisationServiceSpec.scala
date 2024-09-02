@@ -413,6 +413,68 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         ) mustEqual Category1Scenario
       }
 
+      ".NIRMS" - {
+
+        "if NIRMS is authorised and has category 1 question but answered no" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            None,
+            Seq(
+              category2Nirms,
+              category1
+            ),
+            Seq(category1),
+            None,
+            1,
+            isTraderNirmsAuthorised = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category1Scenario
+        }
+
+        "if NIRMS is not authorised and has category 1 question but answered no" in {
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            None,
+            Seq(
+              category2Nirms,
+              category1
+            ),
+            Seq(category1),
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category1Scenario
+        }
+      }
+
     }
 
     "return Category 1 No Exemptions if a category 1 question has no exemptions" - {
