@@ -16,11 +16,15 @@
 
 package controllers
 
+import connectors.DownloadDataConnector
 import controllers.actions._
+
 import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.DownloadRequestSuccessView
+
+import scala.concurrent.ExecutionContext
 
 class DownloadRequestSuccessController @Inject() (
   override val messagesApi: MessagesApi,
@@ -28,15 +32,18 @@ class DownloadRequestSuccessController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
   val controllerComponents: MessagesControllerComponents,
   view: DownloadRequestSuccessView
-) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      // TODO : should be replaced with actual email & date
-      val email             = "somebody@email.com"
+      // TODO : should be replaced with actual date
       val downloadUntilDate = "18 August 2024"
-      Ok(view(email, downloadUntilDate))
+      downloadDataConnector.getEmail(request.eori).map { email =>
+        Ok(view(email.address, downloadUntilDate))
+      }
   }
 }
