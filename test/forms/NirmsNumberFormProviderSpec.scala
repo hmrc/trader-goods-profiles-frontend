@@ -63,7 +63,21 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
 
     behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
 
-    behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGenerator)
+    "with hyphens" - {
+      behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGenerator)
+    }
+
+    "with spaces" - {
+      behave like fieldThatBindsValidData(form, fieldName, "RMS GB 123456")
+    }
+
+    "with no spaces" - {
+      behave like fieldThatBindsValidData(form, fieldName, "RMSGB123456")
+    }
+
+    "with mixture" - {
+      behave like fieldThatBindsValidData(form, fieldName, "RMS -    GB-123456  ")
+    }
 
     behave like fieldThatErrorsOnInvalidData(form, fieldName, nonNirmsNumberGenerator, FormError(fieldName, invalidKey))
   }
