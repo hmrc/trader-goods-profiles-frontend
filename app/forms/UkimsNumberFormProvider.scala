@@ -28,6 +28,10 @@ class UkimsNumberFormProvider @Inject() extends Mappings {
     Form(
       "value" -> text("ukimsNumber.error.required")
         .transform(removeWhitespace, identity[String])
+        .transform(toUpperCase, identity[String])
         .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
     )
+
+  private def toUpperCase: String => String = _.toUpperCase
+
 }
