@@ -65,12 +65,7 @@ class AssessmentController @Inject() (
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
-        .getOrElse(
-          handleDataCleansingAndRecovery(
-            request.userAnswers.id,
-            routes.CategorisationPreparationController.startCategorisation(recordId)
-          )
-        )
+        .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
     }
 
   def onPageLoadReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -92,12 +87,7 @@ class AssessmentController @Inject() (
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
-        .getOrElse(
-          handleDataCleansingAndRecovery(
-            request.userAnswers.id,
-            routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
-          )
-        )
+        .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
     }
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -136,19 +126,9 @@ class AssessmentController @Inject() (
           }
         }
         .getOrElse(
-          Future.successful(
-            handleDataCleansingAndRecovery(
-              request.userAnswers.id,
-              routes.CategorisationPreparationController.startCategorisation(recordId)
-            )
-          )
+          Future.successful(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
         )
-        .recover(_ =>
-          handleDataCleansingAndRecovery(
-            request.userAnswers.id,
-            routes.CategorisationPreparationController.startCategorisation(recordId)
-          )
-        )
+        .recover(_ => handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -188,26 +168,14 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(
-          Future.successful(
-            handleDataCleansingAndRecovery(
-              request.userAnswers.id,
-              routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
-            )
-          )
-        )
-        .recover(_ =>
-          handleDataCleansingAndRecovery(
-            request.userAnswers.id,
-            routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
-          )
-        )
+        .getOrElse(Future.successful(handleDataCleansingAndRecovery(request.userAnswers.id, recordId)))
+        .recover(_ => handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
     }
 
-  private def handleDataCleansingAndRecovery(userAnswersId: String, continueRoute: Call) = {
+  private def handleDataCleansingAndRecovery(userAnswersId: String, recordId: String) = {
     dataCleansingService.deleteMongoData(userAnswersId, CategorisationJourney)
     navigator.journeyRecovery(
-      Some(RedirectUrl(continueRoute.url))
+      Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(recordId).url))
     )
   }
 }
