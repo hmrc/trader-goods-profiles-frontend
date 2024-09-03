@@ -16,7 +16,7 @@
 
 package base
 
-import base.TestConstants.{NiphlsCode, requested, testRecordId, userAnswersId}
+import base.TestConstants.{NiphlsCode, NirmsCode, requested, testRecordId, userAnswersId}
 import controllers.actions._
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
@@ -175,7 +175,10 @@ trait SpecBase
   )
 
   lazy val category1Niphl: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(Certificate(NiphlsCode, "Y994", "Goods are not from warzone")))
+    CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(OtherExemption(NiphlsCode, "Y994", "Goods are not from warzone")))
+
+  lazy val category2Nirms: CategoryAssessment =
+    CategoryAssessment("1azbfb-1-dfsdaf-3", 2, Seq(OtherExemption(NirmsCode, "Y990", "Nirms description")))
 
   lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
     "1234567890",

@@ -87,15 +87,47 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateResultWithoutNiphl(categorisationInfo, userAnswers, recordId)
+      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
     }
   }
 
-  private def calculateResultWithoutNiphl(
+  private def calculateResultWithNirms(
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String,
+    listOfAnswers: Seq[AnsweredQuestions]
+  ): Scenario = {
+
+    val areThereCategory1AnsweredNo   =
+      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1)
+    val areThereCategory2AnsweredNo   =
+      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory2)
+    val areThereCategory1Unanswerable =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers)
+    val areThereCategory2Unanswerable =
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+
+    if (categorisationInfo.isNirmsAssessment && !areThereCategory1Unanswerable) {
+
+      if (areThereCategory1AnsweredNo) {
+        Category1Scenario
+      } else if (
+        !categorisationInfo.isTraderNirmsAuthorised || areThereCategory2AnsweredNo || areThereCategory2Unanswerable
+      ) {
+        Category2Scenario
+      } else {
+        StandardGoodsScenario
+      }
+    } else {
+      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
+    }
+  }
+
+  private def calculateResultWithoutNiphlAndNirms(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ) =
+  ): Scenario =
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
@@ -112,7 +144,7 @@ class CategorisationService @Inject() (
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
-  ) = {
+  ): Scenario = {
 
     val getFirstNo = categorisationInfo
       .getAnswersForQuestions(userAnswers, recordId)

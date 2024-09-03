@@ -83,13 +83,13 @@ class CyaCategorisationController @Inject() (
 
     CategorisationAnswers.build(userAnswers, recordId) match {
       case Right(_) =>
-        val categorisationRows = categoryInfo.categoryAssessments
+        val categorisationRows = categoryInfo.categoryAssessmentsThatNeedAnswers
           .flatMap(assessment =>
             AssessmentsSummary.row(
               recordId,
               userAnswers,
               assessment,
-              categoryInfo.categoryAssessments.indexOf(assessment),
+              categoryInfo.categoryAssessmentsThatNeedAnswers.indexOf(assessment),
               categoryInfo.longerCode
             )
           )

@@ -648,7 +648,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "if NIPHL is authorised and has NIPHL assessment and category 1 assessment need answering" in {
+            "if NIPHL is authorised and has a NIPHL assessment and a category 1 assessment" in {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
@@ -662,6 +662,104 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val userAnswers = emptyUserAnswers
                 .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                None,
+                Seq(category2Nirms, category1, category2),
+                Seq(category1, category2),
+                None,
+                1,
+                isTraderNirmsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment with no exemptions" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                None,
+                Seq(category2Nirms, category1, category2NoExemptions),
+                Seq(category1),
+                None,
+                1,
+                isTraderNirmsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                None,
+                Seq(category2Nirms, category1, category2),
+                Seq(category1, category2),
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+
+            }
+
+            "if NIRMS is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment with no exemptions" in {
+
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567890",
+                None,
+                Seq(category2Nirms, category1, category2NoExemptions),
+                Seq(category1),
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
                 .success
                 .value
 
@@ -827,6 +925,90 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .onPageLoad(testRecordId, Category1Scenario)
 
             }
+
+            "when only Nirms assessment and have Nirms and is six-digit code with descendants" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                None,
+                1,
+                isTraderNiphlsAuthorised = true,
+                isTraderNirmsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(StandardGoodsScenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad(testRecordId, StandardGoodsScenario)
+
+            }
+
+            "when only Nirms assessment and do not have Nirms and is six-digit code without descendants" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                None,
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category2Scenario)
+
+            }
+
+            "when only Nirms assessment and do not have Nirms and is ten-digit code" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567899",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category2Scenario)
+
+            }
+
           }
 
           "to longer commodity code page" - {
@@ -847,11 +1029,231 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .success
                 .value
 
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
               navigator.nextPage(
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
               ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is six-digit code with descendants" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                None,
+                1,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with descendants" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "12345600",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                None,
+                1
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+          }
+
+          "to has supplementary unit page" - {
+
+            "when Niphls assessment and has Niphls and is six-digit code with no descendants" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is six-digit code with no descendants" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with no descendants" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "12345600",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when Niphls assessment and has Niphls and is ten-digit code" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is ten-digit code" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                Some("kg"),
+                1,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and ten-digit code" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                CategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1832,6 +2234,170 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           }
 
+          "to has supplementary unit page" - {
+
+            "when Niphls assessment and has Niphls and is six-digit code with no descendants" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is six-digit code with no descendants" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with no descendants" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "12345600",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when Niphls assessment and has Niphls and is ten-digit code" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is ten-digit code" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                Some("kg"),
+                1,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and ten-digit code" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+          }
+
           "to journey recovery page when there's no categorisation info" in {
             navigator.nextPage(
               RecategorisationPreparationPage(testRecordId),
@@ -2716,7 +3282,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
-      "in Categorisation Journey 2" - {
+      "in Categorisation Journey" - {
 
         "must go from assessment page" - {
 
@@ -3561,6 +4127,170 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 userAnswers
               ) mustBe routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1NoExemptionsScenario)
+
+            }
+
+          }
+
+          "to has supplementary unit page" - {
+
+            "when Niphls assessment and has Niphls and is six-digit code with no descendants" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                CheckMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is six-digit code with no descendants" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234560000",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                CheckMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with no descendants" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "12345600",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                CheckMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+
+            }
+
+            "when Niphls assessment and has Niphls and is ten-digit code" in {
+              val categoryInfoWithNiphlAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category1Niphl, category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                CheckMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+
+            }
+
+            "when only Nirms assessment and does not have Nirms and is ten-digit code" in {
+              val categoryInfoWithNirmsAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category2Nirms),
+                Seq.empty,
+                Some("kg"),
+                1,
+                isTraderNiphlsAuthorised = true
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                CheckMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+
+            }
+
+            "when no category 1 exemptions but are category 2 exemptions with no answers and ten-digit code" in {
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "1234567891",
+                None,
+                Seq(category2NoExemptions),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                CheckMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
 
             }
 

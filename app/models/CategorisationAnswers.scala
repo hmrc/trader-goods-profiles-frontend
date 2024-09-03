@@ -82,7 +82,7 @@ object CategorisationAnswers {
   private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
     val answeredQuestionsOnly = answeredQuestionsOptions.filter(_.answer.isDefined)
 
-    if (answeredQuestionsOnly.isEmpty) {
+    if (answeredQuestionsOnly.isEmpty && answeredQuestionsOptions.nonEmpty) {
       val errorPage = if (answeredQuestionsOptions.exists(x => x.reassessmentQuestion)) {
         ReassessmentPage(recordId, firstAssessmentIndex)
       } else {
@@ -102,7 +102,7 @@ object CategorisationAnswers {
   ): EitherNec[ValidationError, Seq[AnsweredQuestions]] = {
     val answers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
-    if (answers.isEmpty) {
+    if (answers.isEmpty && categorisationInfo.categoryAssessmentsThatNeedAnswers.nonEmpty) {
       val errorPage = if (categorisationInfo.longerCode) {
         ReassessmentPage(recordId, firstAssessmentIndex)
       } else {
@@ -118,37 +118,40 @@ object CategorisationAnswers {
   private def ensureNoExemptionIsOnlyFinalAnswer(
     answeredQuestionsOnly: Seq[AnsweredQuestions],
     recordId: String
-  ): EitherNec[ValidationError, Done] = {
-
-    //Last answer can be a NoExemption. Others can't
-    val allExceptLastAnswer          = answeredQuestionsOnly.reverse.tail
-    val noExemptionsBeforeLastAnswer =
-      allExceptLastAnswer.filter(ass => ass.answer.contains(AssessmentAnswer.NoExemption))
-
-    if (noExemptionsBeforeLastAnswer.isEmpty) {
+  ): EitherNec[ValidationError, Done]             =
+    if (answeredQuestionsOnly.isEmpty) {
       Right(Done)
     } else {
-      val errors = noExemptionsBeforeLastAnswer.map { ass =>
-        val errorPage = if (ass.reassessmentQuestion) {
-          ReassessmentPage(recordId, ass.index)
-        } else {
-          AssessmentPage(recordId, ass.index)
-        }
-        UnexpectedNoExemption(errorPage)
-      }
 
-      val defaultErrorPage = if (answeredQuestionsOnly.exists(_.reassessmentQuestion)) {
-        LongerCategorisationDetailsQuery(recordId)
+      //Last answer can be a NoExemption. Others can't
+      val allExceptLastAnswer          = answeredQuestionsOnly.reverse.tail
+      val noExemptionsBeforeLastAnswer =
+        allExceptLastAnswer.filter(ass => ass.answer.contains(AssessmentAnswer.NoExemption))
+
+      if (noExemptionsBeforeLastAnswer.isEmpty) {
+        Right(Done)
       } else {
-        CategorisationDetailsQuery(recordId)
+        val errors = noExemptionsBeforeLastAnswer.map { ass =>
+          val errorPage = if (ass.reassessmentQuestion) {
+            ReassessmentPage(recordId, ass.index)
+          } else {
+            AssessmentPage(recordId, ass.index)
+          }
+          UnexpectedNoExemption(errorPage)
+        }
+
+        val defaultErrorPage = if (answeredQuestionsOnly.exists(_.reassessmentQuestion)) {
+          LongerCategorisationDetailsQuery(recordId)
+        } else {
+          CategorisationDetailsQuery(recordId)
+        }
+        val nec              =
+          NonEmptyChain
+            .fromSeq(errors)
+            .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(defaultErrorPage)))
+        Left(nec)
       }
-      val nec              =
-        NonEmptyChain
-          .fromSeq(errors)
-          .getOrElse(NonEmptyChain.one(UnexpectedNoExemption(defaultErrorPage)))
-      Left(nec)
     }
-  }
 
   private def ensureNoNotAnsweredYetInAnswers(
     answeredQuestions: Seq[AnsweredQuestions],
@@ -172,20 +175,22 @@ object CategorisationAnswers {
     answeredQuestionsOnly: Seq[AnsweredQuestions],
     totalQuestions: Int,
     recordId: String
-  ): Either[NonEmptyChain[ValidationError], Done] = {
-
-    val lastAnswerIsExemption = answeredQuestionsOnly.last.answer.contains(AssessmentAnswer.NoExemption)
-
-    if (lastAnswerIsExemption || totalQuestions == answeredQuestionsOnly.size) {
+  ): Either[NonEmptyChain[ValidationError], Done] =
+    if (answeredQuestionsOnly.isEmpty) {
       Right(Done)
     } else {
-      val errorPage = if (answeredQuestionsOnly.exists(_.reassessmentQuestion)) {
-        LongerCategorisationDetailsQuery(recordId)
-      } else {
-        CategorisationDetailsQuery(recordId)
-      }
-      Left(NonEmptyChain.one(MissingAssessmentAnswers(errorPage)))
-    }
+      val lastAnswerIsExemption = answeredQuestionsOnly.last.answer.contains(AssessmentAnswer.NoExemption)
 
-  }
+      if (lastAnswerIsExemption || totalQuestions == answeredQuestionsOnly.size) {
+        Right(Done)
+      } else {
+        val errorPage = if (answeredQuestionsOnly.exists(_.reassessmentQuestion)) {
+          LongerCategorisationDetailsQuery(recordId)
+        } else {
+          CategorisationDetailsQuery(recordId)
+        }
+        Left(NonEmptyChain.one(MissingAssessmentAnswers(errorPage)))
+      }
+
+    }
 }
