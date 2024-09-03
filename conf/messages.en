@@ -539,7 +539,6 @@ cyaSupplementaryUnit.title = Check your answers
 cyaSupplementaryUnit.heading = Check your answers
 cyaSupplementaryUnit.h2 = Check if the details on this record are correct.
 
-
 successBanner.title = Success
 successBanner.heading = You have changed the {0}
 successBannerRemove.heading = You have removed the {0}
@@ -653,9 +652,16 @@ fileInProgress.p1 = We''ll email {0} when your file is ready.
 fileInProgress.p2 = You can request a new file. Doing this will cancel your existing request and you''ll have to wait for the new file to be ready.
 fileInProgress.linkText1 = Request a new file
 
+
+existingUkims.title = UK Internal Market Scheme (UKIMS) number
+existingUkims.h1 = UK Internal Market Scheme (UKIMS) number
+existingUkims.p1 = You''ve used UKIMS number {0} on previous declarations.
+existingUkims.error.required = Select if this is the correct UKIMS number
+
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem
 expiredCommodityCode.p1 = The commodity code on this goods record has expired so you can not categorise this record.
 expiredCommodityCode.p2 = You need to update the commodity code, then categorise the record.
 expiredCommodityCode.p1.linkText = Change the commodity code
 expiredCommodityCode.p2.linkText = Go back to goods record
+

@@ -76,7 +76,9 @@ class SessionRepositorySpec
       reassessmentPage                 -> "reassessment",
       categorisationDetailsQuery       -> "catDets",
       longerCommodityQuery             -> "longerCom",
-      longerCategorisationDetailsQuery -> "longerCat"
+      longerCategorisationDetailsQuery -> "longerCat",
+      useExistingUkimsPage -> "true",
+      historicProfileDataQuery -> "historicData"
     ),
     Instant.ofEpochSecond(1)
   )
@@ -158,7 +160,7 @@ class SessionRepositorySpec
       result mustEqual true
       val updatedRecord = find(Filters.equal("_id", userAnswers.id)).futureValue.headOption.value
       val keysToCheck   =
-        Seq(ukimsNumberPage, hasNirmsPage, hasNiphlPage, nirmsNumberPage, niphlNumberPage)
+        Seq(ukimsNumberPage, hasNirmsPage, hasNiphlPage, nirmsNumberPage, niphlNumberPage, useExistingUkimsPage, historicProfileDataQuery)
 
       keysToCheck.foreach { key =>
         updatedRecord.data.keys must not contain key
