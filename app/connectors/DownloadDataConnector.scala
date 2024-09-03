@@ -17,7 +17,7 @@
 package connectors
 
 import config.Service
-import models.DownloadDataSummary
+import models.{DownloadDataSummary, Email}
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, OK}
@@ -35,6 +35,9 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
 
   private def downloadDataSummaryUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
+
+  private def emailUrl(eori: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/email"
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
@@ -59,5 +62,17 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
       }
       .recover { case _: NotFoundException =>
         None
+      }
+
+  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
+    httpClient
+      .get(emailUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          //TODO this also retunrs a 404 but we are choosing to ignore it because at some point we are going to put in a check when anyone enters our service to check that they have a verified and deliverable email so this should never be 404
+          case OK => response.json.as[Email]
+        }
       }
 }

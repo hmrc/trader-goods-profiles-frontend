@@ -19,7 +19,7 @@ package connectors
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.DownloadDataStatus.FileReady
-import models.DownloadDataSummary
+import models.{DownloadDataSummary, Email}
 import org.apache.pekko.Done
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -32,6 +32,8 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.GetRecordsResponseUtil
+
+import java.time.Instant
 
 class DownloadDataConnectorSpec
     extends AnyFreeSpec
@@ -119,4 +121,35 @@ class DownloadDataConnectorSpec
       connector.getDownloadDataSummary(testEori).failed.futureValue
     }
   }
+
+  ".getEmail" - {
+    val emailUrl =
+      s"/trader-goods-profiles-data-store/traders/$testEori/email"
+
+    val address   = "somebody@email.com"
+    val timestamp = Instant.now
+    val email     = Email(address, timestamp)
+    "must get email" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(Json.toJson(email).toString))
+      )
+
+      connector.getEmail(testEori).futureValue mustBe email
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.getEmail(testEori).failed.futureValue
+    }
+  }
+
 }
