@@ -204,10 +204,10 @@ class AssessmentController @Inject() (
         )
     }
 
-  private def handleDataCleansingAndRecovery(userAnswersId: String, call: Call) = {
+  private def handleDataCleansingAndRecovery(userAnswersId: String, continueRoute: Call) = {
     dataCleansingService.deleteMongoData(userAnswersId, CategorisationJourney)
     navigator.journeyRecovery(
-      Some(RedirectUrl(call.url))
+      Some(RedirectUrl(continueRoute.url))
     )
   }
 }
