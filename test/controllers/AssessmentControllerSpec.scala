@@ -151,7 +151,9 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -188,7 +190,9 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -286,7 +290,9 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -323,7 +329,9 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -354,7 +362,9 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -471,7 +481,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+                    )
+                  )
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -508,7 +524,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+                    )
+                  )
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -610,7 +632,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+                    )
+                  )
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -647,7 +675,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+                    )
+                  )
+                )
                 .url
 
               withClue("must cleanse the user answers data") {
@@ -678,7 +712,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(testRecordId).url)))
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+                    )
+                  )
+                )
                 .url
 
               withClue("must cleanse the user answers data") {

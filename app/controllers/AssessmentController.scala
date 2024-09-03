@@ -23,7 +23,7 @@ import models.{Mode, ReassessmentAnswer}
 import navigation.Navigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import services.DataCleansingService
@@ -65,7 +65,12 @@ class AssessmentController @Inject() (
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
-        .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
+        .getOrElse(
+          handleDataCleansingAndRecovery(
+            request.userAnswers.id,
+            routes.CategorisationPreparationController.startCategorisation(recordId)
+          )
+        )
     }
 
   def onPageLoadReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -87,7 +92,12 @@ class AssessmentController @Inject() (
             Ok(view(preparedForm, mode, recordId, index, listItems, categorisationInfo.commodityCode, submitAction))
           }
         }
-        .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
+        .getOrElse(
+          handleDataCleansingAndRecovery(
+            request.userAnswers.id,
+            routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
+          )
+        )
     }
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -125,8 +135,20 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(Future.successful(handleDataCleansingAndRecovery(request.userAnswers.id, recordId)))
-        .recover(_ => handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
+        .getOrElse(
+          Future.successful(
+            handleDataCleansingAndRecovery(
+              request.userAnswers.id,
+              routes.CategorisationPreparationController.startCategorisation(recordId)
+            )
+          )
+        )
+        .recover(_ =>
+          handleDataCleansingAndRecovery(
+            request.userAnswers.id,
+            routes.CategorisationPreparationController.startCategorisation(recordId)
+          )
+        )
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
@@ -166,12 +188,26 @@ class AssessmentController @Inject() (
               )
           }
         }
-        .getOrElse(Future.successful(handleDataCleansingAndRecovery(request.userAnswers.id, recordId)))
-        .recover(_ => handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
+        .getOrElse(
+          Future.successful(
+            handleDataCleansingAndRecovery(
+              request.userAnswers.id,
+              routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
+            )
+          )
+        )
+        .recover(_ =>
+          handleDataCleansingAndRecovery(
+            request.userAnswers.id,
+            routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
+          )
+        )
     }
 
-  private def handleDataCleansingAndRecovery(userAnswersId: String, recordId: String) = {
+  private def handleDataCleansingAndRecovery(userAnswersId: String, call: Call) = {
     dataCleansingService.deleteMongoData(userAnswersId, CategorisationJourney)
-    navigator.journeyRecovery(Some(RedirectUrl(routes.CategoryGuidanceController.onPageLoad(recordId).url)))
+    navigator.journeyRecovery(
+      Some(RedirectUrl(call.url))
+    )
   }
 }
