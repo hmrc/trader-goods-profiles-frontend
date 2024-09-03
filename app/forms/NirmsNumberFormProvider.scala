@@ -18,7 +18,6 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.trimAndCompressSpaces
 import models.StringFieldRegex
 import play.api.data.Form
 
@@ -27,7 +26,24 @@ class NirmsNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("nirmsNumber.error.required")
-        .transform(trimAndCompressSpaces, identity[String])
+        .transform(removeHyphensAndSpaces, identity[String])
         .verifying(regexp(StringFieldRegex.nirmsRegex, "nirmsNumber.error.invalidFormat"))
+        .transform(addHyphens, identity[String])
     )
+
+  def removeHyphensAndSpaces: String => String = _.replaceAll(" ", "")
+  def addHyphens: String => String = { original =>
+    val length = 11
+    if (original.length == length) {
+      val hyphenPos1 = 3
+      val hyphenPos2 = 5
+      val bite1      = original.slice(0, hyphenPos1)
+      val bite2      = original.slice(hyphenPos1, hyphenPos2)
+      val bite3      = original.slice(hyphenPos2, length)
+      s"$bite1-$bite2-$bite3"
+    } else {
+      original
+    }
+  }
+
 }

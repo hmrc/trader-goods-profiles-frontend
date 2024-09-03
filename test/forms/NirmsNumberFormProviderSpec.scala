@@ -39,29 +39,6 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
     } yield s"RMS$hyphen1$region$hyphen2$digits"
   }
 
-  val nirmsNumberGeneratorSpaces: Gen[String] = {
-    val regionGen = Gen.oneOf("GB", "NI")
-    val digitsGen = Gen.listOfN(6, Gen.numChar).map(_.mkString)
-    val spacesGen = Gen.oneOf(" ")
-
-    for {
-      region     <- regionGen
-      digits     <- digitsGen
-      spacesGen1 <- spacesGen
-      spacesGen2 <- spacesGen
-    } yield s"RMS$spacesGen1$region$spacesGen2$digits"
-  }
-
-  val nirmsNumberGeneratorNoHyphens: Gen[String] = {
-    val regionGen = Gen.oneOf("GB", "NI")
-    val digitsGen = Gen.listOfN(6, Gen.numChar).map(_.mkString)
-
-    for {
-      region <- regionGen
-      digits <- digitsGen
-    } yield s"RMS$region$digits"
-  }
-
   val nonNirmsNumberGenerator: Gen[String] = {
     def isInvalidNirmsDigits(digits: String) = digits.length != 6 || digits.toIntOption.isEmpty
 
@@ -86,23 +63,22 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
 
     behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
 
-    behave like fieldThatErrorsOnInvalidData(form, fieldName, nonNirmsNumberGenerator, FormError(fieldName, invalidKey))
-  }
-
-  ".nirmsNumber for valid data" - {
-
-    val fieldName = "value"
-
     "with hyphens" - {
       behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGenerator)
     }
 
     "with spaces" - {
-      behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGeneratorSpaces)
+      behave like fieldThatBindsValidData(form, fieldName, "RMS GB 123456")
     }
 
-    "with no hyphens" - {
-      behave like fieldThatBindsValidData(form, fieldName, nirmsNumberGeneratorNoHyphens)
+    "with no spaces" - {
+      behave like fieldThatBindsValidData(form, fieldName, "RMSGB123456")
     }
+
+    "with mixture" - {
+      behave like fieldThatBindsValidData(form, fieldName, "RMS -    GB-123456  ")
+    }
+
+    behave like fieldThatErrorsOnInvalidData(form, fieldName, nonNirmsNumberGenerator, FormError(fieldName, invalidKey))
   }
 }
