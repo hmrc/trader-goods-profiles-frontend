@@ -17,8 +17,8 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock._
-import models.TraderProfile
+import com.github.tomakehurst.wiremock.client.WireMock.{ok, _}
+import models.{HistoricProfileData, TraderProfile}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -45,7 +45,7 @@ class TraderProfileConnectorSpec
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  ".submitTraderProfile" - {
+  "submitTraderProfile" - {
 
     "must submit a trader profile" in {
 
@@ -74,7 +74,7 @@ class TraderProfileConnectorSpec
     }
   }
 
-  ".getTraderProfile" - {
+  "getTraderProfile" - {
 
     "must get a trader profile" in {
 
@@ -100,7 +100,7 @@ class TraderProfileConnectorSpec
     }
   }
 
-  ".checkTraderProfile" - {
+  "checkTraderProfile" - {
 
     "must return true if present" in {
 
@@ -130,6 +130,49 @@ class TraderProfileConnectorSpec
       )
 
       connector.checkTraderProfile(testEori).failed.futureValue
+    }
+  }
+
+  "getHistoricProfileData" - {
+
+    lazy val appWithRouterConfig: Application =
+      new GuiceApplicationBuilder()
+        .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+        .build()
+
+    lazy val connectorWithRouterConfig = appWithRouterConfig.injector.instanceOf[TraderProfileConnector]
+
+    "must return a Some of profile data if the request returns Ok with profile data in the body" in {
+
+      val profileData = HistoricProfileData(testEori, testEori, Some("UkimsNumber"), None, None)
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
+          .willReturn(ok().withBody(Json.toJson(profileData).toString))
+      )
+
+      connectorWithRouterConfig.getHistoricProfileData(testEori).futureValue mustBe Some(profileData)
+    }
+
+    "must return None when the error is forbidden" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
+          .willReturn(forbidden())
+      )
+
+      connectorWithRouterConfig.getHistoricProfileData(testEori).futureValue mustBe None
+    }
+
+    "must return a failed future when the error isn't forbidden" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
+          .willReturn(serverError())
+      )
+
+      connectorWithRouterConfig.getHistoricProfileData(testEori).failed.futureValue
     }
   }
 }

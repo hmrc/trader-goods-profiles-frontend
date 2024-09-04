@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-case object Constants {
-  val firstAssessmentIndex: Int = 0
+import play.api.libs.json.{Json, OFormat}
 
-  val adviceProvided: String = "Advice Provided"
+case class HistoricProfileData(
+  eori: String,
+  actorId: String,
+  ukimsNumber: Option[String],
+  nirmsNumber: Option[String],
+  niphlNumber: Option[String]
+)
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
-
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
+object HistoricProfileData {
+  implicit val format: OFormat[HistoricProfileData] = Json.format[HistoricProfileData]
 }

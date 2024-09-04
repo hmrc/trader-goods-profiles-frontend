@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package utils
+package forms
 
-case object Constants {
-  val firstAssessmentIndex: Int = 0
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  val adviceProvided: String = "Advice Provided"
+import javax.inject.Inject
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
+class UseExistingUkimsFormProvider @Inject() extends Mappings {
 
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("existingUkims.error.required")
+    )
 }

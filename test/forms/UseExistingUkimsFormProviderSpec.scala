@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-package utils
+package forms
 
-case object Constants {
-  val firstAssessmentIndex: Int = 0
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-  val adviceProvided: String = "Advice Provided"
+class UseExistingUkimsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
+  val requiredKey = "existingUkims.error.required"
+  val invalidKey  = "error.boolean"
 
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
+  val form = new UseExistingUkimsFormProvider()()
 
-  val minimumLengthOfCommodityCode: Int = 6
+  ".value" - {
 
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

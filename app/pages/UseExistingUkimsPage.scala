@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package utils
+package pages
 
-case object Constants {
-  val firstAssessmentIndex: Int = 0
+import play.api.libs.json.JsPath
 
-  val adviceProvided: String = "Advice Provided"
+case object UseExistingUkimsPage extends QuestionPage[Boolean] {
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
+  override def path: JsPath = JsPath \ toString
 
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
+  override def toString: String = "useExistingUkimsPage"
 }

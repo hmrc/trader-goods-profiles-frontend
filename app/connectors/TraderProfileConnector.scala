@@ -17,22 +17,25 @@
 package connectors
 
 import config.Service
-import models.TraderProfile
+import models.{HistoricProfileData, TraderProfile}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.OK
+import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
 
-  private val dataStoreBaseUrl: Service      = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  private val routerUrl: Service        = config.get[Service]("microservice.services.trader-goods-profiles-router")
+
   private def traderProfileUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/profile"
 
@@ -41,7 +44,11 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .put(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
-      .map(_ => Done)
+      .map(response =>
+        response.status match {
+          case OK => Done
+        }
+      )
 
   def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
@@ -49,7 +56,8 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK => true
+          case OK        => true
+          case NOT_FOUND => false
         }
       }
       .recover { case _: NotFoundException =>
@@ -62,6 +70,19 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient
       .get(getTraderProfileUrl(eori))
-      .execute[HttpResponse]
-      .map(response => response.json.as[TraderProfile])
+      .execute[TraderProfile]
+
+  def getHistoricProfileData(eori: String)(implicit hc: HeaderCarrier): Future[Option[HistoricProfileData]] = {
+    val profileUrl = url"$routerUrl/trader-goods-profiles-router/customs/traders/goods-profiles/$eori"
+
+    httpClient
+      .get(profileUrl)
+      .setHeader(("Accept", "application/vnd.hmrc.1.0+json"))
+      .execute[HistoricProfileData]
+      .map(Some(_))
+      .recover { case Upstream4xxResponse(_, FORBIDDEN, _, _) =>
+        None
+      }
+
+  }
 }

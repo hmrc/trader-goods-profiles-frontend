@@ -24,7 +24,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, minimumLengthOfCommodityCode}
@@ -34,7 +34,8 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ProfileSetupPage                          => _ => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+    case ProfileSetupPage                          => navigateFromProfileSetUp
+    case UseExistingUkimsPage                      => navigateFromUseExistingUkims
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
     case HasNirmsPage                              => navigateFromHasNirms
     case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
@@ -209,6 +210,15 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .map {
         case true  => routes.NirmsNumberController.onPageLoadCreate(NormalMode)
         case false => routes.HasNiphlController.onPageLoadCreate(NormalMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromUseExistingUkims(answers: UserAnswers): Call =
+    answers
+      .get(UseExistingUkimsPage)
+      .map {
+        case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
+        case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -621,6 +631,14 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromProfileSetUp(answers: UserAnswers): Call =
+    answers
+      .get(HistoricProfileDataQuery) match {
+      case Some(_) =>
+        routes.UseExistingUkimsNumberController.onPageLoad()
+      case None    => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+    }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>

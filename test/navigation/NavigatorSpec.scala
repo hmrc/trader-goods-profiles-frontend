@@ -140,10 +140,27 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Create Profile Journey" - {
 
-        "must go from ProfileSetupPage to UkimsNumberPage" in {
+        "must go from ProfileSetupPage" - {
 
-          navigator.nextPage(ProfileSetupPage, NormalMode, emptyUserAnswers) mustBe routes.UkimsNumberController
-            .onPageLoadCreate(NormalMode)
+          "to UseExistingUkimsNumber when historic data" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(
+                HistoricProfileDataQuery,
+                HistoricProfileData("GB123456789", "GB123456789", Some("XIUKIMS1234567890"), None, None)
+              )
+              .success
+              .value
+
+            navigator.nextPage(ProfileSetupPage, NormalMode, userAnswers) mustBe routes.UseExistingUkimsNumberController
+              .onPageLoad()
+          }
+
+          "to UkimsNumberPage when no historic data" in {
+
+            navigator.nextPage(ProfileSetupPage, NormalMode, emptyUserAnswers) mustBe routes.UkimsNumberController
+              .onPageLoadCreate(NormalMode)
+          }
         }
 
         "must go from UkimsNumberPage to HasNirmsPage" in {
@@ -152,6 +169,37 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             .onPageLoadCreate(
               NormalMode
             )
+        }
+
+        "must go from UseExistingNirmsPage" - {
+
+          "to HasNirmsPage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(UseExistingUkimsPage, true).success.value
+            navigator.nextPage(UseExistingUkimsPage, NormalMode, answers) mustBe routes.HasNirmsController
+              .onPageLoadCreate(
+                NormalMode
+              )
+          }
+
+          "to UkimsNumberController when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(UseExistingUkimsPage, false).success.value
+            navigator.nextPage(UseExistingUkimsPage, NormalMode, answers) mustBe routes.UkimsNumberController
+              .onPageLoadCreate(
+                NormalMode
+              )
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasNirmsPage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad()
+          }
         }
 
         "must go from HasNirmsPage" - {
