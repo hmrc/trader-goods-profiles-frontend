@@ -79,6 +79,14 @@ class NirmsNumberFormProviderSpec extends StringFieldBehaviours {
       behave like fieldThatBindsValidData(form, fieldName, "RMS -    GB-123456  ")
     }
 
+    "with lots" - {
+      behave like fieldThatBindsValidData(form, fieldName, "RMS -   --- GB    123456--  ")
+    }
+
+    "with lowercase" - {
+      behave like fieldThatBindsValidData(form, fieldName, "rms -   --- gb    123456--  ")
+    }
+
     behave like fieldThatErrorsOnInvalidData(form, fieldName, nonNirmsNumberGenerator, FormError(fieldName, invalidKey))
   }
 }
