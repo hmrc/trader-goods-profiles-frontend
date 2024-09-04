@@ -23,7 +23,7 @@ import models.{Mode, ReassessmentAnswer}
 import navigation.Navigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import services.DataCleansingService
