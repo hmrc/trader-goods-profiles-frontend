@@ -100,7 +100,7 @@ hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final 
 hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
 hasNirms.checkYourAnswersLabel = NIRMS registered
-hasNirms.error.required = Select if you are NIRMS registered
+hasNirms.error.required = Select yes, if you are Northern Ireland Retail Movement Scheme registered
 hasNirms.change.hidden = NIRMS registered
 
 niphlNumber.title = NIPHL registration number

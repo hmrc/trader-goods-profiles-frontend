@@ -84,7 +84,7 @@ hasNirms.p1 = Gall busnesau sy''n gwerthu, neu gynorthwyo symud, bwyd ar gyfer d
 hasNirms.p2 = Dysgwch ragor am
 hasNirms.p2.linkText = ba gynhyrchion y gellir eu symud o dan y NIRMS
 hasNirms.checkYourAnswersLabel = Wedi cofrestru ar gyfer y NIRMS
-hasNirms.error.required = Dewiswch os ydych wedi cofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
+hasNirms.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
 hasNirms.change.hidden = Wedi cofrestru ar gyfer y NIRMS
 
 nirmsNumber.title = Beth yw''ch rhif NIRMS?
