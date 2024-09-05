@@ -33,10 +33,10 @@ unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio''r manylion cywir.
 
 journeyRecovery.continue.title = Mae rhywbeth wedi mynd o''i le
 journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o''i le
-journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o''i le – bydd angen i chi ddechrau eto. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
+journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o''i le – bydd angen i chi ddechrau eto.
 journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o''i le
 journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o''i le
-journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o''i le – ewch i hafan y Proffil Nwyddau Masnachwyr. Nid ydym wedi cadw unrhyw wybodaeth a nodwyd gennych.
+journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o''i le – ewch i hafan y Proffil Nwyddau Masnachwyr.
 
 pageNotFound.title = Heb ddod o hyd i''r dudalen
 pageNotFound.h1 = Heb ddod o hyd i''r dudalen
