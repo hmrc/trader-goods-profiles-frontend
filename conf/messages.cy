@@ -8,6 +8,11 @@ site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
 
+
+site.goBackToGoodsProfile = Ewch yn ôl i broffil nwyddau
+site.goBackToHomePage = Ewch yn ôl i'r hafan
+
+
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
 signedOut.title = Rydych bellach wedi allgofnodi
@@ -311,6 +316,12 @@ fileReady.p1 = Dyma ffeil CSV (gwerthoedd wedi’u gwahanu gan goma) sy’n dang
 fileReady.p2.linkText = Lawrlwythwch eich data TGP (csv, {0}kb)
 fileReady.p3 = Os oes angen ffeil newydd arnoch, sy’n cynnwys eich data TGP,
 fileReady.p3.linkText = gallwch ofyn am ffeil arall
+
+fileInProgress.title = Rydym wrthi’n paratoi’ch ffeil
+fileInProgress.heading = Rydym wrthi’n paratoi’ch ffeil
+fileInProgress.p1 = Byddwn yn anfon e-bost at {0} pan fydd eich ffeil yn barod.
+fileInProgress.p2 = Gallwch wneud cais am ffeil newydd. Bydd gwneud hyn yn canslo’ch cais presennol, a bydd yn rhaid i chi aros i’r ffeil newydd i fod yn barod.
+fileInProgress.linkText1 = Gofyn am ffeil newydd
 
 downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
