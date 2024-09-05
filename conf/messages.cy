@@ -84,7 +84,7 @@ hasNirms.p1 = Gall busnesau sy''n gwerthu, neu gynorthwyo symud, bwyd ar gyfer d
 hasNirms.p2 = Dysgwch ragor am
 hasNirms.p2.linkText = ba gynhyrchion y gellir eu symud o dan y NIRMS
 hasNirms.checkYourAnswersLabel = Wedi cofrestru ar gyfer y NIRMS
-hasNirms.error.required = Dewiswch os ydych wedi cofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
+hasNirms.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
 hasNirms.change.hidden = Wedi cofrestru ar gyfer y NIRMS
 
 nirmsNumber.title = Beth yw''ch rhif NIRMS?
@@ -235,7 +235,7 @@ commodityCode.h1 = Cod nwyddau
 commodityCode.p1 = Mae codau nwyddau yn gyfeirnodau sy’n cael eu cydnabod yn rhyngwladol. Mae cod nwyddau yn disgrifio cynnyrch penodol wrth fewnforio neu allforio nwyddau. Byddwch yn defnyddio’r cod hwn ar unrhyw ddatganiadau tollau.
 commodityCode.p2 = Gallwch ychwanegu codau nwyddau i Broffil Nwyddau Masnachwr mewn 6, 8 neu 10 digid.
 commodityCode.p3 = Os nad ydych yn siŵr beth yw cod nwyddau eich nwyddau, gallwch ddefnyddio
-commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon
+commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon (yn agor mewn tab newydd).
 commodityCode.heading = Beth yw’r cod nwyddau ar gyfer eich nwyddau?
 commodityCode.hint = Gallwch ddefnyddio 6, 8 neu 10 digid, er enghraifft, 654321, 87654321, 9876543211
 

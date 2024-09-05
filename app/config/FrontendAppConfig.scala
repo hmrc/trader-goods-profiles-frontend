@@ -57,6 +57,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val userAllowListEnabled: Boolean =
     configuration.get[Boolean]("features.user-allow-list-enabled")
 
+  val getHistoricProfileEnabled: Boolean =
+    configuration.get[Boolean]("features.get-historic-profile")
+
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
     "cy" -> Lang("cy")

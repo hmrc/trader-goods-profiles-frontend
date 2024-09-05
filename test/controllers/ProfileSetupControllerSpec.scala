@@ -17,10 +17,12 @@
 package controllers
 
 import base.SpecBase
+import base.TestConstants.testEori
+import config.FrontendAppConfig
 import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{mockConstructionWithAnswer, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -86,29 +88,71 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
       val onwardRoute = Call("", "")
 
-      "must redirect to the next page after retrieving historic profile data" in {
-        val mockSessionRepository      = mock[SessionRepository]
-        val mockTraderProfileConnector = mock[TraderProfileConnector]
-        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())).thenReturn(Future.successful(None))
+      "must redirect to the next page" - {
 
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
-            )
-            .build()
+        "when historic profile data is enabled" in {
+          val mockSessionRepository      = mock[SessionRepository]
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          val mockAppConfig              = mock[FrontendAppConfig]
 
-        running(application) {
-          val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+          when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())).thenReturn(Future.successful(None))
+          when(mockAppConfig.getHistoricProfileEnabled).thenReturn(true)
 
-          val result = route(application, request).value
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(
+                bind[SessionRepository].toInstance(mockSessionRepository),
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                bind[FrontendAppConfig].toInstance(mockAppConfig)
+              )
+              .build()
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url
+          running(application) {
+            val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual onwardRoute.url
+
+            verify(mockTraderProfileConnector).getHistoricProfileData(eqTo(testEori))(any())
+          }
         }
+
+        "when historic profile data is disabled" in {
+          val mockSessionRepository      = mock[SessionRepository]
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          val mockAppConfig              = mock[FrontendAppConfig]
+
+          when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+          when(mockAppConfig.getHistoricProfileEnabled).thenReturn(false)
+
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(
+                bind[SessionRepository].toInstance(mockSessionRepository),
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                bind[FrontendAppConfig].toInstance(mockAppConfig)
+              )
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual onwardRoute.url
+
+            withClue("should not have requested historic data") {
+              verify(mockTraderProfileConnector, times(0)).getHistoricProfileData(eqTo(testEori))(any())
+            }
+          }
+        }
+
       }
     }
   }

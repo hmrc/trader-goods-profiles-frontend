@@ -26,12 +26,12 @@ class NirmsNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("nirmsNumber.error.required")
-        .transform(removeSpaces, identity[String])
+        .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
         .verifying(regexp(StringFieldRegex.nirmsRegex, "nirmsNumber.error.invalidFormat"))
         .transform(addHyphens, identity[String])
     )
 
-  def removeSpaces: String => String = _.replaceAll(" ", "")
+  def toUppercaseAndRemoveSpacesAndHyphens: String => String = _.toUpperCase.replaceAll(" ", "").replaceAll("-", "")
   def addHyphens: String => String = { original =>
     val length = 11
     if (original.length == length) {
