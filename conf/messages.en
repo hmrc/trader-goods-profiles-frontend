@@ -68,10 +68,10 @@ cyaCategorisation.longerCommodityCode = Longer commodity code
 
 journeyRecovery.continue.title = Something has gone wrong
 journeyRecovery.continue.heading = Something has gone wrong
-journeyRecovery.continue.guidance = Something has gone wrong and you''ll need to start again. We have not saved any information you''ve entered.
+journeyRecovery.continue.guidance = Something has gone wrong and you''ll need to start again.
 journeyRecovery.startAgain.title = Something has gone wrong
 journeyRecovery.startAgain.heading = Something has gone wrong
-journeyRecovery.startAgain.guidance = Something has gone wrong and you''ll need to go to the Trader Goods Profile homepage. We have not saved any information you''ve entered.
+journeyRecovery.startAgain.guidance = Something has gone wrong and you''ll need to go to the Trader Goods Profile homepage.
 
 signedOut.title = You have now signed out
 signedOut.heading = You have now signed out
