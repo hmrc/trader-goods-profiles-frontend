@@ -304,3 +304,8 @@ feedback.header = Dywedwch wrthym beth yw eich barn
 feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
 feedback.line.2 = {0}. Bydd eich meddyliau a''ch syniadau yn ein helpu i wneud gwelliannau.
 feedback.link = Anfonwch eich adborth atom
+
+profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
+profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
+profileSuccess.h2 = Yr hyn sy''n digwydd nesaf
+profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
