@@ -58,26 +58,26 @@ class AssessmentController @Inject() (
   def onPageLoad(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       getIndex(index, request.userAnswers.id, recordId) match {
-        case Right(updatedIndex) =>
+        case Right(internalIndex) =>
           request.userAnswers
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
-              categorisationInfo.getAssessmentFromIndex(updatedIndex).map { assessment =>
+              categorisationInfo.getAssessmentFromIndex(internalIndex).map { assessment =>
                 val listItems = assessment.getExemptionListItems
                 val form      = formProvider(listItems.size)
 
-                val preparedForm = request.userAnswers.get(AssessmentPage(recordId, updatedIndex)) match {
+                val preparedForm = request.userAnswers.get(AssessmentPage(recordId, internalIndex)) match {
                   case Some(value) => form.fill(value)
                   case None        => form
                 }
 
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, updatedIndex)
+                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, index)
                 Ok(
                   view(
                     preparedForm,
                     mode,
                     recordId,
-                    updatedIndex,
+                    index,
                     listItems,
                     categorisationInfo.commodityCode,
                     submitAction
@@ -86,34 +86,34 @@ class AssessmentController @Inject() (
               }
             }
             .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
-        case Left(result)        => result
+        case Left(result)         => result
       }
     }
 
   def onPageLoadReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       getIndex(index, request.userAnswers.id, recordId) match {
-        case Right(updatedIndex) =>
+        case Right(internalIndex) =>
           request.userAnswers
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
-              categorisationInfo.getAssessmentFromIndex(updatedIndex).map { assessment =>
+              categorisationInfo.getAssessmentFromIndex(internalIndex).map { assessment =>
                 val listItems = assessment.getExemptionListItems
                 val form      = formProvider(listItems.size)
 
-                val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, updatedIndex)) match {
+                val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, internalIndex)) match {
                   case Some(value) => form.fill(value.answer)
                   case None        => form
                 }
 
-                val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, updatedIndex)
+                val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, index)
 
                 Ok(
                   view(
                     preparedForm,
                     mode,
                     recordId,
-                    updatedIndex,
+                    index,
                     listItems,
                     categorisationInfo.commodityCode,
                     submitAction
@@ -122,21 +122,21 @@ class AssessmentController @Inject() (
               }
             }
             .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
-        case Left(result)        => result
+        case Left(result)         => result
       }
     }
 
   def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       getIndex(index, request.userAnswers.id, recordId) match {
-        case Right(updatedIndex) =>
+        case Right(internalIndex) =>
           request.userAnswers
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
-              categorisationInfo.getAssessmentFromIndex(updatedIndex).map { assessment =>
+              categorisationInfo.getAssessmentFromIndex(internalIndex).map { assessment =>
                 val listItems    = assessment.getExemptionListItems
                 val form         = formProvider(listItems.size)
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, updatedIndex)
+                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, index)
 
                 form
                   .bindFromRequest()
@@ -148,7 +148,7 @@ class AssessmentController @Inject() (
                             formWithErrors,
                             mode,
                             recordId,
-                            updatedIndex,
+                            index,
                             listItems,
                             categorisationInfo.commodityCode,
                             submitAction
@@ -158,9 +158,11 @@ class AssessmentController @Inject() (
                     value =>
                       for {
                         updatedAnswers <-
-                          Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, updatedIndex), value))
+                          Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, internalIndex), value))
                         _              <- sessionRepository.set(updatedAnswers)
-                      } yield Redirect(navigator.nextPage(AssessmentPage(recordId, updatedIndex), mode, updatedAnswers))
+                      } yield Redirect(
+                        navigator.nextPage(AssessmentPage(recordId, internalIndex), mode, updatedAnswers)
+                      )
                   )
               }
             }
@@ -168,21 +170,21 @@ class AssessmentController @Inject() (
               Future.successful(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
             )
             .recover(_ => handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
-        case Left(result)        => Future.successful(result)
+        case Left(result)         => Future.successful(result)
       }
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       getIndex(index, request.userAnswers.id, recordId) match {
-        case Right(updatedIndex) =>
+        case Right(internalIndex) =>
           request.userAnswers
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
-              categorisationInfo.getAssessmentFromIndex(updatedIndex).map { assessment =>
+              categorisationInfo.getAssessmentFromIndex(internalIndex).map { assessment =>
                 val listItems    = assessment.getExemptionListItems
                 val form         = formProvider(listItems.size)
-                val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, updatedIndex)
+                val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, index)
 
                 form
                   .bindFromRequest()
@@ -194,7 +196,7 @@ class AssessmentController @Inject() (
                             formWithErrors,
                             mode,
                             recordId,
-                            updatedIndex,
+                            index,
                             listItems,
                             categorisationInfo.commodityCode,
                             submitAction
@@ -207,18 +209,18 @@ class AssessmentController @Inject() (
                           Future
                             .fromTry(
                               request.userAnswers
-                                .set(ReassessmentPage(recordId, updatedIndex), ReassessmentAnswer(value))
+                                .set(ReassessmentPage(recordId, internalIndex), ReassessmentAnswer(value))
                             )
                         _              <- sessionRepository.set(updatedAnswers)
                       } yield Redirect(
-                        navigator.nextPage(ReassessmentPage(recordId, updatedIndex), mode, updatedAnswers)
+                        navigator.nextPage(ReassessmentPage(recordId, internalIndex), mode, updatedAnswers)
                       )
                   )
               }
             }
             .getOrElse(Future.successful(handleDataCleansingAndRecovery(request.userAnswers.id, recordId)))
             .recover(_ => handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
-        case Left(result)        => Future.successful(result)
+        case Left(result)         => Future.successful(result)
       }
     }
 
