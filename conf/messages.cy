@@ -8,11 +8,6 @@ site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
 
-
-site.goBackToGoodsProfile = Ewch yn ôl i broffil nwyddau
-site.goBackToHomePage = Ewch yn ôl i'r hafan
-
-
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
 signedOut.title = Rydych bellach wedi allgofnodi
@@ -310,28 +305,7 @@ feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eic
 feedback.line.2 = {0}. Bydd eich meddyliau a''ch syniadau yn ein helpu i wneud gwelliannau.
 feedback.link = Anfonwch eich adborth atom
 
-fileReady.title = Mae’ch ffeil yn barod i lawrlwytho
-fileReady.heading = Mae’ch ffeil yn barod i lawrlwytho
-fileReady.p1 = Dyma ffeil CSV (gwerthoedd wedi’u gwahanu gan goma) sy’n dangos yr holl wybodaeth o ran eich TGP. Gwnaethom greu’r ffeil hon ar {0} a bydd ar gael tan {1}
-fileReady.p2.linkText = Lawrlwythwch eich data TGP (csv, {0}kb)
-fileReady.p3 = Os oes angen ffeil newydd arnoch, sy’n cynnwys eich data TGP,
-fileReady.p3.linkText = gallwch ofyn am ffeil arall
-
-fileInProgress.title = Rydym wrthi’n paratoi’ch ffeil
-fileInProgress.heading = Rydym wrthi’n paratoi’ch ffeil
-fileInProgress.p1 = Byddwn yn anfon e-bost at {0} pan fydd eich ffeil yn barod.
-fileInProgress.p2 = Gallwch wneud cais am ffeil newydd. Bydd gwneud hyn yn canslo’ch cais presennol, a bydd yn rhaid i chi aros i’r ffeil newydd i fod yn barod.
-fileInProgress.linkText1 = Gofyn am ffeil newydd
-
-downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
-downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
-downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
-downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
-downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
-downloadRequestSuccess.p3 = Bydd y ffeil ar gael i'w lawrlwytho tan {0}.
-
-
-requestData.title = Gwneud cais i lawrlwytho’ch data TGP
-requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
-requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at 0} i roi gwybod i chi pryd y bydd yn barod i lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
-requestData.button = Gwneud cais am ddata TGP
+profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
+profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
+profileSuccess.h2 = Yr hyn sy’n digwydd nesaf
+profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
