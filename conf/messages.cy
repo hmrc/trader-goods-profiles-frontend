@@ -307,5 +307,5 @@ feedback.link = Anfonwch eich adborth atom
 
 profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
-profileSuccess.h2 = Yr hyn sy’n digwydd nesaf
+profileSuccess.h2 = Yr hyn sy''n digwydd nesaf
 profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
