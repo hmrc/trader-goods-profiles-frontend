@@ -48,7 +48,7 @@ object CreateRecordRequest {
       goodsRecord.countryOfOrigin,
       goodsRecord.commodity.validityStartDate,
       goodsRecord.commodity.validityEndDate,
-      Some(1)
+      None
     )
 
   implicit val reads: Reads[CreateRecordRequest] =
@@ -60,7 +60,7 @@ object CreateRecordRequest {
       (JsPath \ "countryOfOrigin").read[String] and
       (JsPath \ "comcodeEffectiveFromDate").read[Instant] and
       (JsPath \ "comcodeEffectiveToDate").readNullable[Instant] and
-      (JsPath \ "category").readNullableWithDefault(Some(1)))(CreateRecordRequest.apply _)
+      (JsPath \ "category").readNullable[Int])(CreateRecordRequest.apply _)
 
   implicit lazy val writes: OWrites[CreateRecordRequest] =
     ((JsPath \ "eori").write[String] and

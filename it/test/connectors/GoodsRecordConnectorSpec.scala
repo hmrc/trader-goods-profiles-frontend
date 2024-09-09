@@ -253,7 +253,7 @@ class GoodsRecordConnectorSpec
       "4",
       instant,
       None,
-      category = Some(1)
+      None
     )
 
     "must submit a goods record" in {
