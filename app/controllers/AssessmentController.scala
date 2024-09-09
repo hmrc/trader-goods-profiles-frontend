@@ -126,9 +126,9 @@ class AssessmentController @Inject() (
       }
     }
 
-  def onSubmit(mode: Mode, recordId: String, index: Int): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String, number: Int): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      getIndex(index, request.userAnswers.id, recordId) match {
+      getIndex(number, request.userAnswers.id, recordId) match {
         case Right(index) =>
           request.userAnswers
             .get(CategorisationDetailsQuery(recordId))
@@ -136,7 +136,7 @@ class AssessmentController @Inject() (
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val listItems    = assessment.getExemptionListItems
                 val form         = formProvider(listItems.size)
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, index)
+                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
 
                 form
                   .bindFromRequest()
@@ -148,7 +148,7 @@ class AssessmentController @Inject() (
                             formWithErrors,
                             mode,
                             recordId,
-                            index,
+                            number,
                             listItems,
                             categorisationInfo.commodityCode,
                             submitAction
