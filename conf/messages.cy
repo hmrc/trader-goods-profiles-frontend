@@ -323,7 +323,7 @@ categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau s
 categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
 
-todo.categorisation = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
+todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 
 cyaCategorisation.title = Gwiriwch eich atebion
 cyaCategorisation.heading = Gwiriwch eich atebion
