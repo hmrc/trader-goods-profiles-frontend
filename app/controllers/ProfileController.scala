@@ -18,7 +18,7 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import models.UserAnswers
+import models.{NormalMode, UserAnswers}
 import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,7 +50,7 @@ class ProfileController @Inject() (
           val detailsList = SummaryListViewModel(
             rows = Seq(
               Some(UkimsNumberSummary.row(profile.ukimsNumber)),
-              Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined)),
+              Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined, NormalMode)),
               NirmsNumberSummary.row(profile.nirmsNumber),
               Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
               NiphlNumberSummary.row(profile.niphlNumber)

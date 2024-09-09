@@ -23,7 +23,7 @@ import forms.RemoveNirmsFormProvider
 import javax.inject.Inject
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.RemoveNirmsPage
+import pages.{CyaMaintainProfilePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -65,24 +65,25 @@ class RemoveNirmsController @Inject() (
           value =>
             request.userAnswers.set(RemoveNirmsPage, value) match {
               case Success(answers) =>
-                sessionRepository.set(answers).flatMap { _ =>
+                sessionRepository.set(answers).map { value =>
                   if (value) {
-                    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                      TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
-                        case Right(model) =>
-                          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+//                    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+//                      TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
+//                        case Right(model) =>
+//                          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+//
+//                          for {
+//                            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+//                          } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
+//                        case Left(errors) =>
+//                          val errorMessage = "Unable to update Trader profile."
+//                          val continueUrl  = routes.HasNirmsController.onPageLoadUpdate
+//                          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+//                      }
+                    Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
 
-                          for {
-                            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
-                        case Left(errors) =>
-                          val errorMessage = "Unable to update Trader profile."
-                          val continueUrl  = routes.HasNirmsController.onPageLoadUpdate
-                          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
-                      }
-                    }
                   } else {
-                    Future.successful(Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers)))
+                    Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
                   }
                 }
             }

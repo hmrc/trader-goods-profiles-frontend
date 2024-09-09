@@ -44,7 +44,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case RemoveNirmsPage                           => _ => routes.ProfileController.onPageLoad()
+    case RemoveNirmsPage                           => _ => routes.CyaMaintainProfileController.onPageLoadNirms
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case RemoveNiphlPage                           => _ => routes.ProfileController.onPageLoad()
@@ -413,6 +413,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                              => navigateFromHasNirmsCheck
     case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
+    case RemoveNirmsPage                           => _ => routes.CyaMaintainProfileController.onPageLoadNirms
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
