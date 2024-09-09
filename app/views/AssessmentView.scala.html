@@ -25,7 +25,7 @@
         govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, recordId: String, index: Int, listItems: Seq[String], commodityCode: String, onSubmitAction: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, listItems: Seq[String], commodityCode: String, onSubmitAction: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
@@ -35,7 +35,7 @@
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
-        <h1 class="govuk-heading-l">@messages("assessment.heading", index)</h1>
+        <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
 
         <div class="govuk-inset-text">

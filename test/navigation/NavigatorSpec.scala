@@ -31,7 +31,7 @@ import play.api.http.Status.SEE_OTHER
 import queries._
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.firstAssessmentNumber
+import utils.Constants.{firstAssessmentIndex, firstAssessmentNumber}
 
 import java.time.Instant
 
@@ -2077,7 +2077,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 0)
+                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -2091,7 +2091,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 0)
+                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -2108,7 +2108,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 0)
+                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
             }
           }
@@ -2160,7 +2160,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 2)
+                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 3)
 
             }
 
@@ -3975,7 +3975,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 0)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -3989,7 +3989,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 0)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -4006,7 +4006,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 0)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
             }
           }

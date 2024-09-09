@@ -27,7 +27,7 @@ import play.api.mvc.Results.Redirect
 import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentNumber, minimumLengthOfCommodityCode}
+import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, firstAssessmentNumber, minimumLengthOfCommodityCode}
 
 import javax.inject.{Inject, Singleton}
 
@@ -297,11 +297,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
     answers.get(LongerCategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentNumber))
+        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
         } else {
-          navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentNumber))(answers)
+          navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
 
       case Some(catInfo) =>
@@ -523,11 +523,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
     answers.get(LongerCategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentNumber))
+        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
         } else {
-          navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentNumber))(answers)
+          navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
 
       case Some(catInfo) =>
