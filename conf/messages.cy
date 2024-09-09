@@ -7,6 +7,8 @@ site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
+site.goBackToGoodsRecord = Ewch i’r cofnod nwyddau
+site.goBackToHomePage = Ewch i’r hafan
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -319,8 +321,7 @@ categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, a
 categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
 categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-categorisationResult.goToRecord = Ewch i’r cofnod nwyddau
-categorisationResult.goToHome = Ewch i’r hafan
+categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
 
 todo.categorisation = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 
