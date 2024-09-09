@@ -357,3 +357,23 @@ assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.insetText = Mae’n bosibl y bydd gofyn i chi gytuno ar hyd at 10 asesiad categori gwahanol ar gyfer pob un o’r nwyddau ar wahân.
 
+expiredCommodityCode.title = Mae problem wedi codi
+expiredCommodityCode.heading = Mae problem wedi codi
+expiredCommodityCode.p1 = Mae’r cod nwyddau sydd yn y cofnod nwyddau hwn wedi dod i ben, felly ni allwch gategoreiddio’r cofnod hwn.
+expiredCommodityCode.p2 = Mae angen i chi ddiweddaru’r cod nwyddau, ac yna mynd ati i gategoreiddio’r cofnod.
+expiredCommodityCode.p1.linkText = Newidiwch y cod nwyddau
+expiredCommodityCode.p2.linkText = Ewch i’r cofnod nwyddau
+
+unauthorisedServiceUser.title = Mae problem wedi codi
+unauthorisedServiceUser.heading = Mae problem wedi codi
+unauthorisedServiceUser.p1 = Nid yw’r Proffil Nwyddau Masnachwyr (TGP) ar gael i’r cyhoedd ar hyn o bryd.
+unauthorisedServiceUser.p2 = Nid oes modd cael mynediad at y TGP gan ddefnyddio’r manylion rydych wedi eu defnyddio i fewngofnodi.
+
+unauthorisedCdsEnrolment.title = Mae problem wedi codi
+unauthorisedCdsEnrolment.heading = Mae problem wedi codi
+unauthorisedCdsEnrolment.p1 = Nid yw’r manylion rydych wedi eu defnyddio i fewngofnodi wedi’u tanysgrifio i’r Gwasanaeth Datganiadau Tollau (CDS).
+unauthorisedCdsEnrolment.cdsLink = Mae’n rhaid i chi fod wedi tanysgrifio i CDS cyn i chi allu defnyddio’r Proffil Nwyddau Masnachwyr (yn agor tab newydd).
+unauthorisedCdsEnrolment.p2.part1 = Os ydych wedi tanysgrifio i CDS,
+unauthorisedCdsEnrolment.p2.linkText = allgofnodwch
+unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r manylion cywir.
+
