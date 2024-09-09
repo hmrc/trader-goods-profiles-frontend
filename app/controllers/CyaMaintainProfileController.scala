@@ -30,6 +30,7 @@ import models.helper.CreateProfileJourney
 import connectors.TraderProfileConnector
 import navigation.Navigator
 import pages.CyaMaintainProfilePage
+import services.AuditService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +43,8 @@ class CyaMaintainProfileController @Inject() (
   view: CyaMaintainProfileView,
   dataCleansingService: DataCleansingService,
   traderProfileConnector: TraderProfileConnector,
-  navigator: Navigator
+  navigator: Navigator,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -68,8 +70,10 @@ class CyaMaintainProfileController @Inject() (
     traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
       TraderProfile.buildHasNirms(request.userAnswers) match {
         case Right(_)     =>
+          val updatedProfile = traderProfile.copy(nirmsNumber = None)
+          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
           for {
-            _ <- traderProfileConnector.submitTraderProfile(traderProfile.copy(nirmsNumber = None), request.eori)
+            _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         case Left(errors) =>
           val errorMessage = "Unable to update Trader profile."

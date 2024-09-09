@@ -327,13 +327,29 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
-        "must go from RemoveNirmsPage to ProfilePage" in {
+        "must go from RemoveNirmsPage" - {
 
-          navigator.nextPage(
-            RemoveNirmsPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad
+          "to ProfilePage when user answered No" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, false).success.value
+
+            navigator.nextPage(
+              RemoveNirmsPage,
+              NormalMode,
+              answers
+            ) mustBe routes.ProfileController.onPageLoad
+          }
+
+          "to Cya NIRMS registered when user answered yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, true).success.value
+
+            navigator.nextPage(
+              RemoveNirmsPage,
+              NormalMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+          }
         }
 
         "must go from NirmsNumberUpdatePage to ProfilePage" in {
@@ -3070,6 +3086,34 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateProfileController.onPageLoad
+        }
+      }
+
+      "in Update Profile Journey" - {
+
+        "must go from RemoveNirmsPage" - {
+
+          "to ProfilePage when user answered No" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, false).success.value
+
+            navigator.nextPage(
+              RemoveNirmsPage,
+              CheckMode,
+              answers
+            ) mustBe routes.ProfileController.onPageLoad
+          }
+
+          "to Cya NIRMS registered when user answered yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, true).success.value
+
+            navigator.nextPage(
+              RemoveNirmsPage,
+              CheckMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+          }
         }
       }
 
