@@ -22,7 +22,7 @@ import models.ott.CategorisationInfo
 import org.apache.pekko.Done
 import pages._
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
-import utils.Constants.firstAssessmentIndex
+import utils.Constants.firstAssessmentNumber
 
 final case class CategorisationAnswers(
   assessmentValues: Seq[Option[AssessmentAnswer]],
@@ -84,9 +84,9 @@ object CategorisationAnswers {
 
     if (answeredQuestionsOnly.isEmpty && answeredQuestionsOptions.nonEmpty) {
       val errorPage = if (answeredQuestionsOptions.exists(x => x.reassessmentQuestion)) {
-        ReassessmentPage(recordId, firstAssessmentIndex)
+        ReassessmentPage(recordId, firstAssessmentNumber)
       } else {
-        AssessmentPage(recordId, firstAssessmentIndex)
+        AssessmentPage(recordId, firstAssessmentNumber)
       }
       Left(NonEmptyChain.one(MissingAssessmentAnswers(errorPage)))
     } else {
@@ -104,9 +104,9 @@ object CategorisationAnswers {
 
     if (answers.isEmpty && categorisationInfo.categoryAssessmentsThatNeedAnswers.nonEmpty) {
       val errorPage = if (categorisationInfo.longerCode) {
-        ReassessmentPage(recordId, firstAssessmentIndex)
+        ReassessmentPage(recordId, firstAssessmentNumber)
       } else {
-        AssessmentPage(recordId, firstAssessmentIndex)
+        AssessmentPage(recordId, firstAssessmentNumber)
       }
 
       Left(NonEmptyChain(PageMissing(errorPage)))

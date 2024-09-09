@@ -45,10 +45,10 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
   private def assessmentRoute =
-    routes.AssessmentController.onPageLoad(NormalMode, testRecordId, Constants.firstAssessmentIndex).url
+    routes.AssessmentController.onPageLoad(NormalMode, testRecordId, Constants.firstAssessmentNumber).url
 
   private def reassessmentRoute =
-    routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, Constants.firstAssessmentIndex).url
+    routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber).url
 
   "AssessmentController" - {
 
@@ -70,7 +70,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val onSubmitAction    =
-                routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentIndex)
+                routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view              = application.injector.instanceOf[AssessmentView]
               val form              = formProvider(1)
               val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
@@ -83,7 +83,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 form,
                 NormalMode,
                 testRecordId,
-                Constants.firstAssessmentIndex,
+                Constants.firstAssessmentNumber,
                 expectedListItems,
                 categorisationInfo.commodityCode,
                 onSubmitAction
@@ -113,7 +113,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val onSubmitAction    =
-                routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentIndex)
+                routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view              = application.injector.instanceOf[AssessmentView]
               val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
               val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
@@ -126,7 +126,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 form,
                 NormalMode,
                 testRecordId,
-                Constants.firstAssessmentIndex,
+                Constants.firstAssessmentNumber,
                 expectedListItems,
                 categorisationInfo.commodityCode,
                 onSubmitAction
@@ -253,7 +253,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val result = route(application, request).value
 
             val onSubmitAction    =
-              routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentIndex)
+              routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view              = application.injector.instanceOf[AssessmentView]
             val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
             val boundForm         = form.bind(Map("value" -> ""))
@@ -267,7 +267,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               boundForm,
               NormalMode,
               testRecordId,
-              Constants.firstAssessmentIndex,
+              Constants.firstAssessmentNumber,
               expectedListItems,
               categorisationInfo.commodityCode,
               onSubmitAction
@@ -403,7 +403,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val onSubmitAction    = routes.AssessmentController
-                .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentIndex)
+                .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view              = application.injector.instanceOf[AssessmentView]
               val form              = formProvider(1)
               val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
@@ -416,7 +416,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 form,
                 NormalMode,
                 testRecordId,
-                Constants.firstAssessmentIndex,
+                Constants.firstAssessmentNumber,
                 expectedListItems,
                 categorisationInfo.commodityCode,
                 onSubmitAction
@@ -440,7 +440,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val application    = applicationBuilder(userAnswers = Some(answers)).build()
             val onSubmitAction =
-              routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentIndex)
+              routes.AssessmentController
+                .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
 
             running(application) {
               val request = FakeRequest(GET, reassessmentRoute)
@@ -459,7 +460,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 form,
                 NormalMode,
                 testRecordId,
-                Constants.firstAssessmentIndex,
+                Constants.firstAssessmentNumber,
                 expectedListItems,
                 categorisationInfo.commodityCode,
                 onSubmitAction
@@ -590,7 +591,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val result = route(application, request).value
 
             val onSubmitAction    =
-              routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentIndex)
+              routes.AssessmentController
+                .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view              = application.injector.instanceOf[AssessmentView]
             val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
             val boundForm         = form.bind(Map("value" -> ""))
@@ -604,7 +606,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               boundForm,
               NormalMode,
               testRecordId,
-              Constants.firstAssessmentIndex,
+              Constants.firstAssessmentNumber,
               expectedListItems,
               categorisationInfo.commodityCode,
               onSubmitAction

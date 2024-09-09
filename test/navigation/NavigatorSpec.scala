@@ -31,7 +31,7 @@ import play.api.http.Status.SEE_OTHER
 import queries._
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.firstAssessmentIndex
+import utils.Constants.firstAssessmentNumber
 
 import java.time.Instant
 
@@ -1319,7 +1319,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "must go from category guidance to the first assessment page" in {
 
           navigator.nextPage(CategoryGuidancePage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
-            routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentIndex)
+            routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentNumber)
 
         }
 
