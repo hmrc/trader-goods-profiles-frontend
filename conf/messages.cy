@@ -309,3 +309,50 @@ profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h2 = Yr hyn sy''n digwydd nesaf
 profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
+
+categorisationResult.title = Categoreiddio wedi’i gwblhau
+categorisationResult.heading = Categoreiddio wedi’i gwblhau
+categorisationResult.Category1.panelBody = Mae’ch nwyddau yn nwyddau Categori 1
+categorisationResult.Category1NoExemptions.panelBody = Mae’ch nwyddau yn nwyddau Categori 1
+categorisationResult.Category1NoExemptions.p1 = Mae’r nwyddau hyn yn perthyn i Gategori 1
+categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol
+categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol
+categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol
+categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2
+categorisationResult.goToRecord = Ewch i’r cofnod nwyddau
+categorisationResult.goToHome = Ewch i’r hafan
+
+todo.categorisation = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE
+
+cyaCategorisation.title = Gwiriwch eich atebion
+cyaCategorisation.heading = Gwiriwch eich atebion
+cyaCategorisation.categorisationHeader = Asesiadau categori
+cyaCategorisation.categorisationQuestion = A ydych yn bodloni unrhyw un o’r eithriadau canlynol
+cyaCategorisation.supplementaryUnitHeader = Unedau atodol
+
+categoryGuidance.title = Categoreiddio
+categoryGuidance.heading = Categoreiddio
+categoryGuidance.p1 = you can improve the category of your goods if you hold certain exclusions."
+categoryGuidance.p2 = we might ask you for an 8 or 10 digit commodity code."
+categoryGuidance.subheading = Eithriadau
+categoryGuidance.p3 = Bydd eich nwyddau yn cael eu rhannu i 1 o 3 chategori:
+categoryGuidance.p3.1 = Categori 1 – nwyddau sydd wedi’u heithrio
+categoryGuidance.p3.2 = Categori 2 – nwyddau sydd o dan reolaeth
+categoryGuidance.p3.3 = Safonol – nwyddau nad ydynt yn perthyn i Gategori 1 neu Gategori 2
+categoryGuidance.p4 = your certificate number could be either C644
+
+assessment.title = Cwestiwn categoreiddio
+assessment.heading = Asesiadau categori {0}
+assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sy’n berthnasol ar gyfer {0}. Mae angen yr wybodaeth hon arnom er mwyn gallu categoreiddio’ch nwyddau.
+assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
+assessment.question = A ydych yn bodloni unrhyw un o’r eithriadau canlynol
+assessment.question.onlyOne = A ydych yn bodloni’r amod canlynol
+assessment.hint = Dewiswch un ateb.
+assessment.exemption = {0} – {1}
+assessment.exemption.none = Dim un o’r uchod
+assessment.error.required = Dewiswch ‘Iawn’ os ydych yn bodloni unrhyw un o’r eithriadau
+assessment.error.required.onlyOne = Dewiswch ‘Iawn’ os ydych yn bodloni’r amod
+assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
+assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
+assessment.insetText = Mae’n bosibl y bydd gofyn i chi gytuno ar hyd at 10 asesiad categori gwahanol ar gyfer pob un o’r nwyddau ar wahân.
+
