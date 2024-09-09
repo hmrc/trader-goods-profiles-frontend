@@ -7,6 +7,8 @@ site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
+site.goBackToGoodsRecord = Ewch i’r cofnod nwyddau
+site.goBackToHomePage = Ewch i’r hafan
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -309,3 +311,49 @@ profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h2 = Yr hyn sy''n digwydd nesaf
 profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
+
+categorisationResult.title = Categoreiddio wedi’i gwblhau
+categorisationResult.heading = Categoreiddio wedi’i gwblhau
+categorisationResult.Category1.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.Category1NoExemptions.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.Category1NoExemptions.p1 = Mae’r nwyddau hyn yn perthyn i Gategori 1, ac nad oes eithriadau ar gael er mwyn newid y categori.
+categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
+categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
+
+todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
+
+cyaCategorisation.title = Gwiriwch eich atebion
+cyaCategorisation.heading = Gwiriwch eich atebion
+cyaCategorisation.categorisationHeader = Asesiadau categori
+cyaCategorisation.categorisationQuestion = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
+cyaCategorisation.supplementaryUnitHeader = Unedau atodol
+
+categoryGuidance.title = Categoreiddio
+categoryGuidance.heading = Categoreiddio
+categoryGuidance.p1 = Mae categoreiddio yn eich galluogi i wybod pa gategori sy’n berthnasol i’ch nwyddau, a ph’un a ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) neu beidio. Trwy gwblhau’r daith gategoreiddio, gallwch wella categori eich nwyddau os oes eithriadau penodol yn berthnasol i chi.
+categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw eithriadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi i ba gategori y mae’ch nwyddau’n perthyn iddo. Os oes gan y cod nwyddau ormod o eithriadau i ni allu eu rhestru, mae’n bosibl y byddwn yn gofyn am god nwyddau 8 neu 10 digit.
+categoryGuidance.subheading = Eithriadau
+categoryGuidance.p3 = Bydd eich nwyddau yn cael eu rhannu i 1 o 3 chategori:
+categoryGuidance.p3.1 = Categori 1 – nwyddau sydd wedi’u heithrio, ac nad ydynt yn gymwys i ddefnyddio SPIMM
+categoryGuidance.p3.2 = Categori 2 – nwyddau sydd o dan reolaeth, ac mae angen manylion y nwyddau ychwanegol ar eu cyfer er mwyn gallu defnyddio SPIMM
+categoryGuidance.p3.3 = Safonol – nwyddau nad ydynt yn perthyn i Gategori 1 neu Gategori 2, ac maent yn cael budd o ddefnyddio SPIMM
+categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau sy’n berthnasol ar gyfer eich nwyddau. Er enghraifft, gall eich rhif tystysgrif fod yn C644, Y929 neu C640. Os byddwch yn cael amod newydd, byddwch yn gallu ei newid yn nes ymlaen. Os yw unrhyw fesurau yn berthnasol i’ch masnach, byddwch yn cael canlyniad categoreiddio.
+
+assessment.title = Cwestiwn categoreiddio
+assessment.heading = Asesiadau categori {0}
+assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sy’n berthnasol ar gyfer {0}. Mae angen yr wybodaeth hon arnom er mwyn gallu categoreiddio’ch nwyddau.
+assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
+assessment.question = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
+assessment.question.onlyOne = A ydych yn bodloni’r amod canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiad?
+assessment.hint = Dewiswch un ateb.
+assessment.exemption = {0} – {1}
+assessment.exemption.none = Dim un o’r uchod
+assessment.error.required = Dewiswch ‘Iawn’ os ydych yn bodloni unrhyw un o’r eithriadau
+assessment.error.required.onlyOne = Dewiswch ‘Iawn’ os ydych yn bodloni’r amod
+assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
+assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
+assessment.insetText = Mae’n bosibl y bydd gofyn i chi gytuno ar hyd at 10 asesiad categori gwahanol ar gyfer pob un o’r nwyddau ar wahân.
+
