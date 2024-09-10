@@ -46,40 +46,28 @@ class FileReadyController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      downloadDataConnector.getDownloadDataSummary(request.eori).flatMap {
-        case Some(downloadDataSummary) =>
-          downloadDataSummary.status match {
-            case FileReadySeen | FileReadyUnseen =>
-              downloadDataSummary.fileInfo match {
-                case Some(info) =>
-                  downloadDataConnector
-                    .submitDownloadDataSummary(
-                      DownloadDataSummary(request.eori, FileReadySeen, downloadDataSummary.fileInfo)
-                    )
-                    .flatMap { _ =>
-                      downloadDataConnector.getDownloadData(request.eori).map {
-                        case Some(downloadData) =>
-                          Ok(
-                            view(
-                              info.fileSize,
-                              downloadData.downloadURL,
-                              convertToDateString(info.fileCreated),
-                              convertToDateString(info.fileCreated.plus(info.retentionDays.toInt, ChronoUnit.DAYS))
-                            )
-                          )
-                        case None               => navigator.journeyRecovery()
-                      }
-                    }
-                case _          => Future.successful(navigator.journeyRecovery())
-              }
-            case _                               => Future.successful(navigator.journeyRecovery())
-          }
-        case _                         => Future.successful(navigator.journeyRecovery())
-      }
+      (for {
+        Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
+        if (downloadDataSummary.status == FileReadyUnseen || downloadDataSummary.status == FileReadySeen) && downloadDataSummary.fileInfo.isDefined
+        _                         <- downloadDataConnector.submitDownloadDataSummary(
+                                       DownloadDataSummary(request.eori, FileReadySeen, downloadDataSummary.fileInfo)
+                                     )
+        Some(downloadData)        <- downloadDataConnector.getDownloadData(request.eori)
+      } yield Ok(
+        view(
+          downloadDataSummary.fileInfo.get.fileSize,
+          downloadData.downloadURL,
+          convertToDateString(downloadDataSummary.fileInfo.get.fileCreated),
+          convertToDateString(
+            downloadDataSummary.fileInfo.get.fileCreated
+              .plus(downloadDataSummary.fileInfo.get.retentionDays.toInt, ChronoUnit.DAYS)
+          )
+        )
+      )).recover { case _ => navigator.journeyRecovery() }
   }
 
   def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
-    instant.atZone(ZoneOffset.UTC).toLocalDate().format(dateTimeFormat())
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat())
   }
 }
