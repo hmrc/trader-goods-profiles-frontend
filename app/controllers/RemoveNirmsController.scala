@@ -30,7 +30,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 
-class RemoveNirmsController @Inject()(
+class RemoveNirmsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
@@ -40,7 +40,8 @@ class RemoveNirmsController @Inject()(
   formProvider: RemoveNirmsFormProvider,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: RemoveNirmsView)(implicit ec: ExecutionContext)
+  view: RemoveNirmsView
+)(implicit ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()
