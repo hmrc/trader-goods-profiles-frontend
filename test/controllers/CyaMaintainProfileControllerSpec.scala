@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import models.{TraderProfile, UserAnswers}
+import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -27,6 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
 import play.api.Application
 import play.api.inject.bind
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{running, _}
 import queries.TraderProfileQuery
@@ -43,6 +45,8 @@ import scala.concurrent.Future
 class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   private lazy val journeyRecoveryContinueUrl = routes.ProfileController.onPageLoad().url
+
+  private def onwardRoute = Call("GET", "/foo")
 
   "CyaMaintainProfile Controller" - {
 
@@ -151,7 +155,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val application = applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-                bind[AuditService].toInstance(mockAuditService)
+                bind[AuditService].toInstance(mockAuditService),
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
               )
               .build()
 
@@ -162,7 +167,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+              redirectLocation(result).value mustEqual onwardRoute.url
               verify(mockTraderProfileConnector)
                 .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
             }
