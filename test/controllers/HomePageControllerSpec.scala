@@ -41,14 +41,13 @@ class HomePageControllerSpec extends SpecBase {
     val fileSize      = 600
     val fileCreated   = Instant.now.minus(40, ChronoUnit.DAYS)
     val retentionDays = "30"
-    val fileType      = "CSV"
 
     "must return OK and the correct view for a GET with banner" in {
 
       val downloadDataSummary = DownloadDataSummary(
         testEori,
         FileReadyUnseen,
-        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
       )
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -86,7 +85,7 @@ class HomePageControllerSpec extends SpecBase {
       val downloadDataSummary = DownloadDataSummary(
         testEori,
         FileReadySeen,
-        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
       )
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]

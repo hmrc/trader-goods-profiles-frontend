@@ -46,37 +46,32 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
       "must OK and display correct view when link is got successfully" in {
 
-        val fileName                  = "fileName"
-        val fileSize                  = 600
-        val fileCreated               = Instant.parse("2025-03-01T18:35:24.00Z")
-        val retentionDays             = "30"
-        val fileType                  = "CSV"
-        val url                       = "/some-url"
-        val fileRoleMetadata          = Metadata("FileRole", "C79Certificate")
-        val retentionFileTypeMetadata = Metadata("RETENTION_FILE_TYPE", "TraderStatement")
-        val periodStartYearMetadata   = Metadata("PeriodStartYear", "2020")
-        val fileTypeMetadata          = Metadata("FileRole", fileType)
-        val retentionDaysMetadata     = Metadata("RETENTION_DAYS", retentionDays)
-        val periodStartMonthMetadata  = Metadata("PeriodStartMonth", "08")
-        val createdDate               = "1 March 2025"
-        val availableUntil            = "31 March 2025"
-        val downloadData              = DownloadData(
+        val fileName                 = "fileName"
+        val fileSize                 = 600
+        val fileCreated              = Instant.parse("2025-03-01T18:35:24.00Z")
+        val retentionDays            = "30"
+        val url                      = "/some-url"
+        val fileRoleMetadata         = Metadata("FileRole", "C79Certificate")
+        val periodStartYearMetadata  = Metadata("PeriodStartYear", "2020")
+        val retentionDaysMetadata    = Metadata("RETENTION_DAYS", retentionDays)
+        val periodStartMonthMetadata = Metadata("PeriodStartMonth", "08")
+        val createdDate              = "1 March 2025"
+        val availableUntil           = "31 March 2025"
+        val downloadData             = DownloadData(
           url,
           fileName,
           fileSize,
           Seq(
             fileRoleMetadata,
-            retentionFileTypeMetadata,
             periodStartYearMetadata,
-            fileTypeMetadata,
             retentionDaysMetadata,
             periodStartMonthMetadata
           )
         )
-        val downloadDataSummary       = DownloadDataSummary(
+        val downloadDataSummary      = DownloadDataSummary(
           testEori,
           FileReadySeen,
-          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
         )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -118,12 +113,11 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val fileSize      = 600
           val fileCreated   = Instant.parse("2025-03-01T18:35:24.00Z")
           val retentionDays = "30"
-          val fileType      = "CSV"
 
           val downloadDataSummary = DownloadDataSummary(
             testEori,
             FileReadySeen,
-            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
           )
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]

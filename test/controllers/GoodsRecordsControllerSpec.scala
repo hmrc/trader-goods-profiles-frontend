@@ -130,7 +130,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val fileSize      = 600
   private val fileCreated   = Instant.now.minus(40, ChronoUnit.DAYS)
   private val retentionDays = "30"
-  private val fileType      = "CSV"
 
   "GoodsRecords Controller" - {
 
@@ -306,7 +305,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             DownloadDataSummary(
               testEori,
               FileReadySeen,
-              Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+              Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
             )
           )
         )
