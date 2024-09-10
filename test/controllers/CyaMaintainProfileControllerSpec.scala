@@ -17,28 +17,25 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
+import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import models.{TraderProfile, UserAnswers}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
 import play.api.Application
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{running, _}
-import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import play.api.inject.bind
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.HasNirmsSummary
-import views.html.CyaMaintainProfileView
 import viewmodels.govuk.SummaryListFluency
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import views.html.CyaMaintainProfileView
 
 import scala.concurrent.Future
 

@@ -19,9 +19,7 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.HasNirmsFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.Mode
 import navigation.Navigator
 import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.MessagesApi
@@ -29,6 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.HasNirmsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasNirmsController @Inject() (

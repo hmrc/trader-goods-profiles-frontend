@@ -16,11 +16,10 @@
 
 package models
 
-import cats.data.{EitherNec, NonEmptyChain, RWS}
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import play.api.libs.json.{Json, OFormat, Reads}
-import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
 
 final case class TraderProfile(
   actorId: String,
@@ -87,6 +86,6 @@ object TraderProfile {
   ): EitherNec[ValidationError, Boolean] =
     (answers.getPageValue(RemoveNirmsPage), answers.getPageValue(HasNirmsUpdatePage)) match {
       case (Right(true), Right(false)) => answers.getPageValue(HasNirmsUpdatePage).map(value => value)
-      case (_, _) => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
+      case (_, _)                      => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
     }
 }

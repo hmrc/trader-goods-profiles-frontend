@@ -16,20 +16,17 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNirmsFormProvider
-
-import javax.inject.Inject
-import models.{NormalMode, TraderProfile}
+import models.NormalMode
 import navigation.Navigator
-import pages.{CyaMaintainProfilePage, RemoveNirmsPage}
+import pages.RemoveNirmsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.RemoveNirmsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 

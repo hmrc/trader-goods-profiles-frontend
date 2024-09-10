@@ -16,22 +16,19 @@
 
 package controllers
 
-import controllers.actions._
-
-import javax.inject.Inject
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import views.html.CyaMaintainProfileView
-import models.{NormalMode, TraderProfile}
-import viewmodels.checkAnswers.HasNirmsSummary
-import viewmodels.govuk.summarylist._
-import services.DataCleansingService
-import models.helper.CreateProfileJourney
 import connectors.TraderProfileConnector
+import controllers.actions._
+import models.{NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.CyaMaintainProfilePage
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
+import viewmodels.checkAnswers.HasNirmsSummary
+import viewmodels.govuk.summarylist._
+import views.html.CyaMaintainProfileView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CyaMaintainProfileController @Inject() (
@@ -41,7 +38,6 @@ class CyaMaintainProfileController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaMaintainProfileView,
-  dataCleansingService: DataCleansingService,
   traderProfileConnector: TraderProfileConnector,
   navigator: Navigator,
   auditService: AuditService
