@@ -545,7 +545,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
     val nextIndex  = assessmentPage.index + 1
-    val nextNumber = assessmentPage.index + 1
+    val nextNumber = nextIndex + 1
 
     for {
       categorisationInfo <- answers.get(LongerCategorisationDetailsQuery(recordId))
@@ -570,8 +570,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   } getOrElse routes.JourneyRecoveryController.onPageLoad()
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
-    val recordId  = assessmentPage.recordId
-    val nextIndex = assessmentPage.index + 1
+    val recordId   = assessmentPage.recordId
+    val nextIndex  = assessmentPage.index + 1
+    val nextNumber = nextIndex + 1
 
     {
       for {
@@ -580,9 +581,10 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
         nextAnswer          = answers.get(AssessmentPage(recordId, nextIndex))
+        _                   = println("HELLO " + nextAnswer + " X: " + nextNumber)
       } yield assessmentAnswer match {
         case AssessmentAnswer.Exemption if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
-          routes.AssessmentController.onPageLoad(CheckMode, recordId, nextIndex)
+          routes.AssessmentController.onPageLoad(CheckMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)

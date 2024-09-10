@@ -3345,7 +3345,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-              routes.AssessmentController.onPageLoad(CheckMode, testRecordId, 1)
+              routes.AssessmentController.onPageLoad(CheckMode, testRecordId, 2)
 
           }
 
@@ -4032,7 +4032,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -4058,7 +4058,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -4368,7 +4368,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 1)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
 
@@ -4386,7 +4386,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 1)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
 
@@ -4404,7 +4404,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 1)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
           }
@@ -4431,7 +4431,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -4461,7 +4461,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
