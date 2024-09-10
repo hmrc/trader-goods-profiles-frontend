@@ -581,7 +581,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
         nextAnswer          = answers.get(AssessmentPage(recordId, nextIndex))
-        _                   = println("HELLO " + nextAnswer + " X: " + nextNumber)
       } yield assessmentAnswer match {
         case AssessmentAnswer.Exemption if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
           routes.AssessmentController.onPageLoad(CheckMode, recordId, nextNumber)
