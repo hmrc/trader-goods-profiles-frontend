@@ -308,7 +308,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.NirmsNumberController.onPageLoadUpdate
           }
 
-          "to RemoveNirmsPage when answer is No and Nirms number associated to profile" in {
+          "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasNirmsUpdatePage, false)
@@ -322,6 +322,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .onPageLoad()
           }
 
+          "to RemoveNirmsPage when answer is No and Nirms number is not associated to profile" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphls")))
+              .success
+              .value
+
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              NormalMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onSubmitNirms
+          }
+
           "to JourneyRecoveryPage when answer is not present" in {
             val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
@@ -329,6 +346,22 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+
+          "to JourneyRecoveryPage when TraderProfileQuery not present" in {
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              NormalMode,
+              answers
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
@@ -3154,7 +3187,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.NirmsNumberController.onPageLoadUpdate
           }
 
-          "to RemoveNirmsPage when answer is No and Nirms number associated to profile" in {
+          "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasNirmsUpdatePage, false)
@@ -3167,6 +3200,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .onPageLoad()
           }
 
+          "to RemoveNirmsPage when answer is No and Nirms number is not associated to profile" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphls")))
+              .success
+              .value
+
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              CheckMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onSubmitNirms
+          }
+
           "to JourneyRecoveryPage when answer is not present" in {
             val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
 
@@ -3174,6 +3224,22 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+
+          "to JourneyRecoveryPage when TraderProfileQuery not present" in {
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              CheckMode,
+              answers
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
