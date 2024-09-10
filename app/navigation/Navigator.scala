@@ -24,7 +24,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
-import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery, TraderProfileQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, minimumLengthOfCommodityCode}
@@ -238,7 +238,17 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .get(HasNirmsUpdatePage)
       .map {
         case true  => routes.NirmsNumberController.onPageLoadUpdate
-        case false => routes.RemoveNirmsController.onPageLoad()
+        case false =>
+          answers
+            .get(TraderProfileQuery)
+            .map { userProfile =>
+              if (userProfile.nirmsNumber.isDefined) {
+                routes.RemoveNirmsController.onPageLoad()
+              } else {
+                routes.CyaMaintainProfileController.onSubmitNirms
+              }
+            }
+            .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

@@ -72,8 +72,6 @@ class CyaMaintainProfileController @Inject() (
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         }
       case Left(errors) =>
-        val errorMessage = "Unable to update Trader profile."
-        val continueUrl  = routes.ProfileController.onPageLoad()
         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
 

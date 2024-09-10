@@ -29,6 +29,7 @@ import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{running, _}
+import queries.TraderProfileQuery
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -57,11 +58,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must return OK and the correct view" in {
 
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
           val userAnswers = emptyUserAnswers
             .set(RemoveNirmsPage, true)
             .success
             .value
             .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
             .success
             .value
 
@@ -119,6 +125,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "when user answers can remove Nirms and update user profile" - {
 
           "must update the profile and redirect to the Profile Page" - {
+            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNirmsPage, true)
@@ -127,9 +135,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-
-            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-            val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
+              .set(TraderProfileQuery, traderProfile)
+              .success
+              .value
 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
@@ -168,9 +176,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           }
         }
 
-        "when user answers cannot remove Nirms and cannot update user profile" - {
+        "must redirect to Journey recovery" - {
 
-          "if the data is invalid then must not submit anything, and redirect to Journey Recovery" - {
+          "when the data is invalid" - {
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNirmsPage, true)
@@ -211,7 +219,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           }
 
-          "must not submit anything, and redirect to Journey Recovery" in {
+          "when user doesn't answer yes or no" in {
 
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -232,11 +240,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must let the play error handler deal with connector failure" in {
 
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
           val userAnswers = emptyUserAnswers
             .set(RemoveNirmsPage, true)
             .success
             .value
             .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
             .success
             .value
 

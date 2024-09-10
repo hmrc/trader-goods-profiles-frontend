@@ -308,9 +308,16 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.NirmsNumberController.onPageLoadUpdate
           }
 
-          "to RemoveNirmsPage when answer is No" in {
+          "to RemoveNirmsPage when answer is No and Nirms number associated to profile" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .success
+              .value
+
             navigator.nextPage(HasNirmsUpdatePage, NormalMode, answers) mustBe routes.RemoveNirmsController
               .onPageLoad()
           }
@@ -3147,9 +3154,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.NirmsNumberController.onPageLoadUpdate
           }
 
-          "to RemoveNirmsPage when answer is No" in {
+          "to RemoveNirmsPage when answer is No and Nirms number associated to profile" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .success
+              .value
             navigator.nextPage(HasNirmsUpdatePage, CheckMode, answers) mustBe routes.RemoveNirmsController
               .onPageLoad()
           }

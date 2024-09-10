@@ -24,6 +24,7 @@ import navigation.Navigator
 import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.TraderProfileQuery
 import repositories.SessionRepository
 import views.html.HasNirmsView
 
@@ -98,14 +99,13 @@ class HasNirmsController @Inject() (
             Future.successful(BadRequest(view(formWithErrors, routes.HasNirmsController.onSubmitUpdate(mode)))),
           value =>
             traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-              if (traderProfile.nirmsNumber.isDefined == value) {
-                Future.successful(Redirect(routes.ProfileController.onPageLoad()))
-              } else {
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, mode, updatedAnswers))
-              }
+              for {
+                updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
+                updatedAnswersWithTraderProfile <-
+                  Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
+                _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
+              } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, mode, updatedAnswersWithTraderProfile))
+
             }
         )
   }
