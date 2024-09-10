@@ -243,7 +243,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           }
         }
 
-        "must let the play error handler deal with connector failure" in {
+        "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
 
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
@@ -280,6 +280,55 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             withClue("must not call the audit connector") {
               verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+            }
+          }
+
+        }
+
+        "must let the play error handler deal with connector failure when submitTraderProfile request fails" in {
+
+          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
+
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
+
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          val mockAuditService           = mock[AuditService]
+
+          when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+          when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+            .thenReturn(Future.successful(Done))
+
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[AuditService].toInstance(mockAuditService)
+              )
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirms.url)
+            intercept[RuntimeException] {
+              await(route(application, request).value)
+            }
+
+            withClue("must call the audit connector with the supplied details") {
+              verify(mockAuditService)
+                .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
+                  any()
+                )
             }
           }
 
