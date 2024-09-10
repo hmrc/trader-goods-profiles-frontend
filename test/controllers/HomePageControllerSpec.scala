@@ -19,8 +19,8 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, TraderProfileConnector}
-import models.DownloadDataStatus.FileReady
-import models.DownloadDataSummary
+import models.DownloadDataStatus.{FileReadySeen, FileReadyUnseen}
+import models.{DownloadDataSummary, FileInfo}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -29,20 +29,34 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.HomePageView
 
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class HomePageControllerSpec extends SpecBase {
 
   "HomePage Controller" - {
 
+    val fileName      = "fileName"
+    val fileSize      = 600
+    val fileCreated   = Instant.now.minus(40, ChronoUnit.DAYS)
+    val retentionDays = "30"
+    val fileType      = "CSV"
+
     "must return OK and the correct view for a GET with banner" in {
+
+      val downloadDataSummary = DownloadDataSummary(
+        testEori,
+        FileReadyUnseen,
+        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+      )
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
       when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-        Some(DownloadDataSummary(testEori, FileReady))
+        Some(downloadDataSummary)
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -69,9 +83,15 @@ class HomePageControllerSpec extends SpecBase {
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
+      val downloadDataSummary = DownloadDataSummary(
+        testEori,
+        FileReadySeen,
+        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+      )
+
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
       when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-        None
+        Some(downloadDataSummary)
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -92,6 +112,5 @@ class HomePageControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view(false)(request, messages(application)).toString
       }
     }
-
   }
 }

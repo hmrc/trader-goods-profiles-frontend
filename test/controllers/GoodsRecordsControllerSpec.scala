@@ -20,10 +20,10 @@ import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import forms.GoodsRecordsFormProvider
-import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen, RequestFile}
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, DownloadDataSummary, GoodsRecordsPagination}
+import models.{Country, DownloadDataSummary, FileInfo, GoodsRecordsPagination}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -37,6 +37,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
@@ -125,6 +126,12 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val downloadLinkRoute = routes.RequestDataController.onPageLoad().url
   private val downloadLinkText  = "goodsRecords.downloadLinkText.requestFile"
 
+  private val fileName      = "fileName"
+  private val fileSize      = 600
+  private val fileCreated   = Instant.now.minus(40, ChronoUnit.DAYS)
+  private val retentionDays = "30"
+  private val fileType      = "CSV"
+
   "GoodsRecords Controller" - {
 
     "must return OK and the correct view for a GET with records and latest records are stored" - {
@@ -187,7 +194,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(DownloadDataSummary(testEori, RequestFile))
+          Some(DownloadDataSummary(testEori, RequestFile, None))
         )
 
         val mockOttConnector = mock[OttConnector]
@@ -241,7 +248,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(DownloadDataSummary(testEori, FileInProgress))
+          Some(DownloadDataSummary(testEori, FileInProgress, None))
         )
 
         val mockOttConnector = mock[OttConnector]
@@ -295,7 +302,13 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(DownloadDataSummary(testEori, FileReady))
+          Some(
+            DownloadDataSummary(
+              testEori,
+              FileReadySeen,
+              Some(FileInfo(fileName, fileSize, fileCreated, retentionDays, fileType))
+            )
+          )
         )
 
         val mockOttConnector = mock[OttConnector]

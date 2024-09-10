@@ -18,12 +18,13 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class DownloadDataSummary(
-  eori: String,
-  status: DownloadDataStatus,
-  fileInfo: Option[FileInfo]
+case class DownloadData(
+  downloadURL: String,
+  filename: String,
+  filesize: Int,
+  metadata: Seq[Metadata]
 )
 
-object DownloadDataSummary {
-  implicit val format: OFormat[DownloadDataSummary] = Json.format[DownloadDataSummary]
+object DownloadData {
+  implicit val format: OFormat[DownloadData] = Json.format[DownloadData]
 }
