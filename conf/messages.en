@@ -306,10 +306,13 @@ categorisationResult.heading = Categorisation complete
 categorisationResult.Category1.panelBody = Your goods are Category 1 goods and are not eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.Category1NoExemptions.panelBody = Your goods are Category 1 goods and are not eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.Category1NoExemptions.p1 = These goods are Category 1 goods and there are no available exclusions to change the category.
-categorisationResult.Standard.panelBody = Your goods are standard goods and eligible for Simplified Process for Internal Market Movements (SPIMM).
-categorisationResult.StandardNoAssessments.panelBody = Your goods are standard goods and eligible for Simplified Process for Internal Market Movements (SPIMM).
-categorisationResult.StandardNoAssessments.p1 = These goods are Standard goods and there are no category assessments needed.
+categorisationResult.Standard.title = Standard goods
+categorisationResult.Standard.heading = Standard goods
+categorisationResult.Standard.p1 = Your goods are standard goods and eligible for Simplified Process for Internal Market Movements (SPIMM) to standard goods.
+categorisationResult.StandardNoAssessments.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM). There are no category assessments needed.
 categorisationResult.Category2.panelBody = Your goods are Category 2 goods and are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.h2 = What happens next
+categorisationResult.h2.paragraph = You can view the record from your goods profile, create a new record or go to the homepage.
 
 adviceStart.title = Asking HMRC for advice
 adviceStart.heading = Asking HMRC for advice
