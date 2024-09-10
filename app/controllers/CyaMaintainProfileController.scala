@@ -61,26 +61,25 @@ class CyaMaintainProfileController @Inject() (
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
       case Left(errors) =>
-        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
         logErrorsAndContinue(errorMessage, continueUrl, errors)
     }
   }
 
   def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-      TraderProfile.validateHasNirms(request.userAnswers) match {
-        case Right(_)     =>
+    TraderProfile.validateHasNirms(request.userAnswers) match {
+      case Right(_)     =>
+        traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
           val updatedProfile = traderProfile.copy(nirmsNumber = None)
           auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
           for {
             _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-        case Left(errors) =>
-          val errorMessage = "Unable to update Trader profile."
-          val continueUrl  = routes.ProfileController.onPageLoad()
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
-      }
-
+        }
+      case Left(errors) =>
+        val errorMessage = "Unable to update Trader profile."
+        val continueUrl  = routes.ProfileController.onPageLoad()
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
+
   }
 }

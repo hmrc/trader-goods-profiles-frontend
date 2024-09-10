@@ -17,19 +17,34 @@
 package controllers
 
 import base.SpecBase
-import models.UserAnswers
+import base.TestConstants.{testEori, testRecordId}
+import connectors.TraderProfileConnector
+import models.{TraderProfile, UserAnswers}
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
 import play.api.Application
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{running, _}
+import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import play.api.inject.bind
+import uk.gov.hmrc.auth.core.AffinityGroup
 import viewmodels.checkAnswers.HasNirmsSummary
 import views.html.CyaMaintainProfileView
 import viewmodels.govuk.SummaryListFluency
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+
+import scala.concurrent.Future
 
 class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
+
+  private lazy val journeyRecoveryContinueUrl = routes.ProfileController.onPageLoad().url
 
   "CyaMaintainProfile Controller" - {
 
@@ -41,31 +56,232 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         ).flatten
       )
 
-      "must return OK and the correct view for a GET" in {
+      "for a GET" - {
 
-        val userAnswers = emptyUserAnswers
-          .set(RemoveNirmsPage, true)
-          .success
-          .value
-          .set(HasNirmsUpdatePage, false)
-          .success
-          .value
+        "must return OK and the correct view" in {
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
 
-        val action = routes.CyaMaintainProfileController.onSubmitNirms
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-        running(application) {
-          val list = createChangeList(application, userAnswers)
+          val action = routes.CyaMaintainProfileController.onSubmitNirms
 
-          val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNirms.url)
+          running(application) {
+            val list = createChangeList(application, userAnswers)
 
-          val result = route(application, request).value
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNirms.url)
 
-          val view = application.injector.instanceOf[CyaMaintainProfileView]
+            val result = route(application, request).value
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+            val view = application.injector.instanceOf[CyaMaintainProfileView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+          }
+        }
+
+        "must redirect to Journey Recovery if no answers are found" in {
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+          running(application) {
+
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNirms.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+          }
+        }
+
+        "must redirect to Journey Recovery if no existing data is found" in {
+
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNirms.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
+      }
+
+      "for a POST" - {
+
+        "when user answers can remove Nirms and update user profile" - {
+
+          "must update the profile and redirect to the Profile Page" - {
+
+            val userAnswers = emptyUserAnswers
+              .set(RemoveNirmsPage, true)
+              .success
+              .value
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+
+            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
+
+            val mockTraderProfileConnector = mock[TraderProfileConnector]
+            val mockAuditService           = mock[AuditService]
+
+            when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+            when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+            when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[AuditService].toInstance(mockAuditService)
+              )
+              .build()
+
+            running(application) {
+
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirms.url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+              verify(mockTraderProfileConnector)
+                .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
+            }
+
+            withClue("must call the audit connector with the supplied details") {
+              verify(mockAuditService)
+                .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
+                  any()
+                )
+            }
+          }
+        }
+
+        "when user answers cannot remove Nirms and cannot update user profile" - {
+
+          "if the data is invalid then must not submit anything, and redirect to Journey Recovery" - {
+
+            val userAnswers = emptyUserAnswers
+              .set(RemoveNirmsPage, true)
+              .success
+              .value
+              .set(HasNirmsUpdatePage, true)
+              .success
+              .value
+
+            val mockTraderProfileConnector = mock[TraderProfileConnector]
+            val mockAuditService           = mock[AuditService]
+
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[AuditService].toInstance(mockAuditService)
+              )
+              .build()
+
+            running(application) {
+
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirms.url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+
+              withClue("must not call the trader profile connector") {
+                verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
+              }
+
+              withClue("must not call the audit connector") {
+                verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+              }
+            }
+
+          }
+
+          "must not submit anything, and redirect to Journey Recovery" in {
+
+            val application =
+              applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirms.url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual
+                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+            }
+
+          }
+        }
+
+        "must let the play error handler deal with connector failure" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          val mockAuditService           = mock[AuditService]
+
+          when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[AuditService].toInstance(mockAuditService)
+              )
+              .build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirms.url)
+            intercept[RuntimeException] {
+              await(route(application, request).value)
+            }
+
+            withClue("must not call the audit connector") {
+              verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+            }
+          }
+
+        }
+
+        "must redirect to Journey Recovery if no existing data is found" in {
+
+          val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirms.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
         }
       }
     }
