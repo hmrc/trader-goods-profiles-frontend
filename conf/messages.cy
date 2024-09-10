@@ -393,3 +393,15 @@ fileInProgress.p1 = Byddwn yn anfon e-bost at {0} pan fydd eich ffeil yn barod.
 fileInProgress.p2 = Gallwch wneud cais am ffeil newydd. Bydd gwneud hyn yn canslo’ch cais presennol, a bydd yn rhaid i chi aros i’r ffeil newydd i fod yn barod.
 fileInProgress.linkText1 = Gofyn am ffeil newydd
 
+requestData.title = Gwneud cais i lawrlwytho’ch data TGP
+requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
+requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd y bydd yn barod i lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
+requestData.button = Gwneud cais am ddata TGP
+
+downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
+downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
+downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
+downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
+downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
+downloadRequestSuccess.p3 = Bydd gennych 10 diwrnod o {0} i lawrlwytho’r ffeil. Ar ôl 10 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
+
