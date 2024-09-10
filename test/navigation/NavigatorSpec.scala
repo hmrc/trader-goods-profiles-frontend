@@ -407,6 +407,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           ) mustBe routes.ProfileController.onPageLoad
         }
 
+        "must go from CyaMaintainProfilePage to ProfilePage" in {
+
+          navigator.nextPage(
+            CyaMaintainProfilePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad()
+        }
+
       }
 
       "in Create Record Journey" - {
@@ -3113,6 +3122,37 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               CheckMode,
               answers
             ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+          }
+        }
+
+        "must go from HasNirmsUpdatePage" - {
+
+          "to NirmsNumberUpdatePage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, true).success.value
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              CheckMode,
+              answers
+            ) mustBe routes.NirmsNumberController.onPageLoadUpdate
+          }
+
+          "to RemoveNirmsPage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
+            navigator.nextPage(HasNirmsUpdatePage, CheckMode, answers) mustBe routes.RemoveNirmsController
+              .onPageLoad()
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNirmsUpdatePage,
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
           }
         }
       }

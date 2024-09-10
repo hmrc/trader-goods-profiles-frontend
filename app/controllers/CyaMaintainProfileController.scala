@@ -52,7 +52,7 @@ class CyaMaintainProfileController @Inject() (
   private val continueUrl: Call    = routes.ProfileController.onPageLoad()
 
   def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.buildHasNirms(request.userAnswers) match {
+    TraderProfile.validateHasNirms(request.userAnswers) match {
       case Right(_)     =>
         val list = SummaryListViewModel(
           rows = Seq(
@@ -68,7 +68,7 @@ class CyaMaintainProfileController @Inject() (
 
   def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-      TraderProfile.buildHasNirms(request.userAnswers) match {
+      TraderProfile.validateHasNirms(request.userAnswers) match {
         case Right(_)     =>
           val updatedProfile = traderProfile.copy(nirmsNumber = None)
           auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)

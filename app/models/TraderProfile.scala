@@ -82,7 +82,7 @@ object TraderProfile {
       case Left(errors) => Left(errors)
     }
 
-  def buildHasNirms(
+  def validateHasNirms(
     answers: UserAnswers
   ): EitherNec[ValidationError, Boolean] =
     (answers.getPageValue(RemoveNirmsPage), answers.getPageValue(HasNirmsUpdatePage)) match {
