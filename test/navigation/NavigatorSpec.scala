@@ -391,14 +391,13 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
           }
 
-          "to JourneyRecoveryPage when answer is not present" in {
+          "to ProfilePage when answer is not present" in {
 
             navigator.nextPage(
               RemoveNirmsPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
-              .onPageLoad()
+            ) mustBe routes.ProfileController.onPageLoad()
           }
         }
 

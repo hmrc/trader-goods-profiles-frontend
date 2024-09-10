@@ -221,7 +221,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         case true  => routes.CyaMaintainProfileController.onPageLoadNirms
         case false => routes.ProfileController.onPageLoad()
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(routes.ProfileController.onPageLoad())
 
   private def navigateFromUseExistingUkims(answers: UserAnswers): Call =
     answers
