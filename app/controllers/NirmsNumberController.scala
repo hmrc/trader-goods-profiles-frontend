@@ -79,6 +79,7 @@ class NirmsNumberController @Inject() (
   def onPageLoadUpdate: Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        val nirmsNumberUpdateAnswer: Option[String] = request.userAnswers.get(NirmsNumberUpdatePage)
         request.userAnswers.get(HasNirmsUpdatePage) match {
           case Some(_) =>
             traderProfile.nirmsNumber match {
@@ -90,7 +91,7 @@ class NirmsNumberController @Inject() (
                     Future.fromTry(request.userAnswers.set(NirmsNumberPage, data))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
+                  view(form.fill(nirmsNumberUpdateAnswer.getOrElse(data)), routes.NirmsNumberController.onSubmitUpdate)
                 )
             }
           case None    =>
@@ -111,7 +112,7 @@ class NirmsNumberController @Inject() (
                     Future.fromTry(updatedAnswersWithHasNirms.set(NirmsNumberPage, data))
                   _                          <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
+                  view(form.fill(nirmsNumberUpdateAnswer.getOrElse(data)), routes.NirmsNumberController.onSubmitUpdate)
                 )
             }
         }
