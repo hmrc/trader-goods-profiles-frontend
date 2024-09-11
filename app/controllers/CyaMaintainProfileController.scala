@@ -20,11 +20,11 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.CyaMaintainProfilePage
+import pages.{CyaMaintainProfilePage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.HasNirmsSummary
+import viewmodels.checkAnswers.{HasNirmsSummary, NirmsNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -46,6 +46,26 @@ class CyaMaintainProfileController @Inject() (
 
   private val errorMessage: String = "Unable to update Trader profile."
   private val continueUrl: Call    = routes.ProfileController.onPageLoad()
+
+  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    val list = SummaryListViewModel(
+      rows = Seq(
+        HasNirmsSummary.row(request.userAnswers),
+        NirmsNumberSummary.row(request.userAnswers.get(NirmsNumberUpdatePage))
+      ).flatten
+    )
+    Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
+  }
+
+  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      val updatedProfile = traderProfile.copy(nirmsNumber = request.userAnswers.get(NirmsNumberUpdatePage))
+      auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+      for {
+        _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+      } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+    }
+  }
 
   def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     TraderProfile.validateHasNirms(request.userAnswers) match {
