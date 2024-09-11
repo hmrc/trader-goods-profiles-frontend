@@ -48,11 +48,13 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
+  private lazy val hasNiphlRouteCreate = routes.HasNiphlController.onPageLoadCreate(NormalMode).url
+
+  private lazy val hasNiphlRouteUpdate = routes.HasNiphlController.onPageLoadUpdate(NormalMode).url
+
   "HasNiphlController" - {
 
     ".create" - {
-
-      val hasNiphlRoute = routes.HasNiphlController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -63,7 +65,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val result = route(application, request).value
 
@@ -88,7 +90,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val view = application.injector.instanceOf[HasNiphlView]
 
@@ -117,7 +119,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteCreate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -137,7 +139,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteCreate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -163,7 +165,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val result = route(application, request).value
 
@@ -183,7 +185,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val result = route(application, request).value
 
@@ -202,7 +204,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteCreate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -214,8 +216,6 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
     }
 
     ".update" - {
-
-      val hasNiphlRoute = routes.HasNiphlController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
 
@@ -237,7 +237,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteUpdate)
 
           val result = route(application, request).value
 
@@ -262,7 +262,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteUpdate)
 
           val view = application.injector.instanceOf[HasNiphlView]
 
@@ -295,7 +295,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -317,19 +317,20 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
             )
             .build()
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+          redirectLocation(result).value mustEqual onwardRoute.url
         }
       }
 
@@ -340,7 +341,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -363,7 +364,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNiphlRoute)
+          val request = FakeRequest(GET, hasNiphlRouteUpdate)
 
           val result = route(application, request).value
 
@@ -379,7 +380,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNiphlRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value

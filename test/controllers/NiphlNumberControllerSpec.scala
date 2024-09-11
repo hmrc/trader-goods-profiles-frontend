@@ -52,11 +52,13 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
+  private lazy val niphlNumberRouteCreate = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
+
+  private lazy val niphlNumberRouteUpdate = routes.NiphlNumberController.onPageLoadUpdate.url
+
   "NiphlNumber Controller" - {
 
     ".create" - {
-
-      val niphlNumberRoute = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -67,7 +69,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -92,7 +94,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val view = application.injector.instanceOf[NiphlNumberView]
 
@@ -120,7 +122,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", "SN12345"))
 
           val result = route(application, request).value
@@ -136,7 +138,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -162,7 +164,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -182,7 +184,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -197,7 +199,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value
@@ -209,8 +211,6 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     ".update" - {
-
-      val niphlNumberRoute = routes.NiphlNumberController.onPageLoadUpdate.url
 
       "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
 
@@ -234,7 +234,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -274,7 +274,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -316,7 +316,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -358,7 +358,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -412,7 +412,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
@@ -467,7 +467,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
@@ -489,7 +489,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -512,7 +512,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -527,7 +527,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value
@@ -565,7 +565,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value

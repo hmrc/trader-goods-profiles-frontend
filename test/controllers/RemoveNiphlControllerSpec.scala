@@ -17,24 +17,19 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.userAnswersId
 import connectors.TraderProfileConnector
 import forms.RemoveNiphlFormProvider
-import models.TraderProfile
+import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HasNiphlUpdatePage
+import pages.{HasNiphlUpdatePage, RemoveNiphlPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SessionRepository
-import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveNiphlView
 
 import scala.concurrent.Future
@@ -43,24 +38,20 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                       = new RemoveNiphlFormProvider()
-  private val form                       = formProvider()
-  private val mockSessionRepository      = mock[SessionRepository]
-  private val mockTraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  val formProvider = new RemoveNiphlFormProvider()
+  private val form = formProvider()
 
   private lazy val removeNiphlRoute = routes.RemoveNiphlController.onPageLoad().url
+
+  private val mockTraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "RemoveNiphl Controller" - {
 
     "must return OK and the correct view for a GET" in {
-      val mockAuditService = mock[AuditService]
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[AuditService].toInstance(mockAuditService),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-        )
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
@@ -72,25 +63,35 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form)(request, messages(application)).toString
-
-        withClue("must not try and submit an audit") {
-          verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
-        }
       }
     }
 
-    "must redirect to the next page when No submitted and not submit" in {
-      val mockAuditService = mock[AuditService]
+    "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      val userAnswers = UserAnswers(userAnswersId).set(RemoveNiphlPage, true).success.value
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeNiphlRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[RemoveNiphlView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form.fill(true))(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to the next page when No submitted" in {
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 
@@ -103,36 +104,16 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
-
-        withClue("must not try and submit an audit") {
-          verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
-        }
       }
     }
 
-    "must redirect to the next page when Yes submitted and submit" in {
-      val mockAuditService = mock[AuditService]
-
-      when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
-        .thenReturn(Future.successful(Done))
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
-      val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-      val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None)
-
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+    "must redirect to the next page when Yes submitted" in {
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
@@ -145,19 +126,6 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockTraderProfileConnector)
-          .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
-
-        withClue("must call the audit connector with the supplied details") {
-          verify(mockAuditService)
-            .auditMaintainProfile(
-              eqTo(traderProfile),
-              eqTo(updatedTraderProfile),
-              eqTo(AffinityGroup.Individual)
-            )(
-              any()
-            )
-        }
       }
     }
 

@@ -573,7 +573,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "when user answered No but No to remove Niphls question" in {
 
-        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
+        val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
 
         val answers =
           UserAnswers(userAnswersId)
@@ -591,7 +591,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(RemoveNirmsPage)
+            UnexpectedPage(RemoveNiphlPage)
           )
         }
       }
