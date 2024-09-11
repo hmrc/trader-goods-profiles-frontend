@@ -129,23 +129,7 @@ class NirmsNumberController @Inject() (
             if (traderProfile.nirmsNumber.getOrElse("") == value) {
               Future.successful(Redirect(routes.ProfileController.onPageLoad()))
             } else {
-              request.userAnswers.set(NirmsNumberUpdatePage, value) match {
-                case Success(answers) =>
-                  sessionRepository.set(answers).flatMap { _ =>
-                    TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
-                      case Right(model) =>
-                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
-
-                        for {
-                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
-                      case Left(errors) =>
-                        val errorMessage = "Unable to update Trader profile."
-                        val continueUrl  = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
-                        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
-                    }
-                  }
-              }
+              Future.successful(Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, request.userAnswers)))
             }
           }
       )
