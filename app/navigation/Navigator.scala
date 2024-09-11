@@ -43,7 +43,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
-    case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
+    case NirmsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNirmsNumber
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()

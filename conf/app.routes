@@ -57,6 +57,9 @@ POST        /create-profile/nirms-number/check                                  
 
 GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate
 POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate
+GET         /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onPageLoadNirmsNumber
+POST        /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onSubmitNirmsNumber
+
 
 GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms
 POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms
