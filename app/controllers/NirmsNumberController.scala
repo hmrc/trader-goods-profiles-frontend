@@ -126,17 +126,11 @@ class NirmsNumberController @Inject() (
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, routes.NirmsNumberController.onSubmitUpdate))),
         value =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            if (traderProfile.nirmsNumber.getOrElse("") == value) {
-              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
-            } else {
-              request.userAnswers.set(NirmsNumberUpdatePage, value) match {
-                case Success(answers) =>
-                  sessionRepository.set(answers).flatMap { _ =>
-                    Future.successful(Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers)))
-                  }
+          request.userAnswers.set(NirmsNumberUpdatePage, value) match {
+            case Success(answers) =>
+              sessionRepository.set(answers).flatMap { _ =>
+                Future.successful(Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers)))
               }
-            }
           }
       )
   }
