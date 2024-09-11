@@ -47,7 +47,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case RemoveNiphlPage                           => _ => routes.ProfileController.onPageLoad()
+    case RemoveNiphlPage                           => navigateFromRemoveNiphlsPage
     case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
@@ -219,6 +219,15 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .get(RemoveNirmsPage)
       .map {
         case true  => routes.CyaMaintainProfileController.onPageLoadNirms
+        case false => routes.ProfileController.onPageLoad()
+      }
+      .getOrElse(routes.ProfileController.onPageLoad())
+
+  private def navigateFromRemoveNiphlsPage(answers: UserAnswers): Call =
+    answers
+      .get(RemoveNiphlPage)
+      .map {
+        case true  => routes.CyaMaintainProfileController.onPageLoadNiphls
         case false => routes.ProfileController.onPageLoad()
       }
       .getOrElse(routes.ProfileController.onPageLoad())
