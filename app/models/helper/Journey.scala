@@ -33,7 +33,7 @@ case object CreateProfileJourney extends Journey {
   override def toString: String = "CreateProfile"
 }
 
-case object RemoveRecordJourney extends Journey
+case object RemoveRecord extends Journey
 
 case object CreateRecordJourney extends Journey {
   val pages: Seq[String]        =
