@@ -475,6 +475,28 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
           )
         }
       }
+
+      "when TraderProfileQuery is not set" in {
+
+        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNirmsPage, false)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(TraderProfileQuery)
+          )
+        }
+      }
     }
   }
 }

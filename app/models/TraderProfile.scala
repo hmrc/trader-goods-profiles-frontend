@@ -99,7 +99,7 @@ object TraderProfile {
             } else {
               Right(false)
             }
-          case Left(_)            => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
+          case Left(errors)       => Left(errors)
         }
       case Left(errors) => Left(errors)
     }
