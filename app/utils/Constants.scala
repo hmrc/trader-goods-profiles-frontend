@@ -17,7 +17,8 @@
 package utils
 
 case object Constants {
-  val firstAssessmentIndex: Int = 0
+  val firstAssessmentNumber: Int = 1
+  val firstAssessmentIndex: Int  = 0
 
   val adviceProvided: String = "Advice Provided"
 
