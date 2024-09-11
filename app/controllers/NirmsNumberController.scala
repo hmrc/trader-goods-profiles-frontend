@@ -129,7 +129,12 @@ class NirmsNumberController @Inject() (
             if (traderProfile.nirmsNumber.getOrElse("") == value) {
               Future.successful(Redirect(routes.ProfileController.onPageLoad()))
             } else {
-              Future.successful(Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, request.userAnswers)))
+              request.userAnswers.set(NirmsNumberUpdatePage, value) match {
+                case Success(answers) =>
+                  sessionRepository.set(answers).flatMap { _ =>
+                    Future.successful(Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers)))
+                  }
+              }
             }
           }
       )
