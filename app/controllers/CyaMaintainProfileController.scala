@@ -18,7 +18,7 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import models.{NormalMode, TraderProfile}
+import models.{CheckMode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.{CyaMaintainProfilePage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
@@ -50,7 +50,10 @@ class CyaMaintainProfileController @Inject() (
   def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val list = SummaryListViewModel(
       rows = Seq(
-        HasNirmsSummary.row(request.userAnswers),
+        // If changing the Nirms Number,
+        // this will always be true,
+        // hence the hard-coded value.
+        Some(HasNirmsSummary.row(value = true, CheckMode)),
         NirmsNumberSummary.row(request.userAnswers.get(NirmsNumberUpdatePage))
       ).flatten
     )
