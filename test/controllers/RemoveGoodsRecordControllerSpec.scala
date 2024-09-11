@@ -159,7 +159,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
         verify(mockConnector).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
-        verify(mockAuditService).auditStartRemoveGoodsRecord(any(), any(), any())(any())
+        verify(mockAuditService).auditFinishRemoveGoodsRecord(any(), any(), any())(any())
       }
     }
 

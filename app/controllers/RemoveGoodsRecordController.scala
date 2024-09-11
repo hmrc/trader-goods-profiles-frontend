@@ -65,16 +65,17 @@ class RemoveGoodsRecordController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
           {
             case true  =>
-              auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
-
               goodsRecordConnector
                 .removeGoodsRecord(request.eori, recordId)
-                .map {
-                  case true  => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
-                  case false =>
+                .map { value =>
+                  auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
+                  if (value) {
+                    Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
+                  } else {
                     navigator.journeyRecovery(
                       Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
                     )
+                  }
                 }
             case false =>
               Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
