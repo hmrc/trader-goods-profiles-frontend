@@ -48,24 +48,23 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         }
       }
 
-  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] = if (
-    config.downloadFileEnabled
-  ) {
-    httpClient
-      .get(downloadDataSummaryUrl(eori))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK => Some(response.json.as[DownloadDataSummary])
+  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
+    if (config.downloadFileEnabled) {
+      httpClient
+        .get(downloadDataSummaryUrl(eori))
+        .setHeader(clientIdHeader)
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case OK => Some(response.json.as[DownloadDataSummary])
+          }
         }
-      }
-      .recover { case _: NotFoundException =>
-        None
-      }
-  } else {
-    Future.successful(None)
-  }
+        .recover { case _: NotFoundException =>
+          None
+        }
+    } else {
+      Future.successful(None)
+    }
 
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
     httpClient
