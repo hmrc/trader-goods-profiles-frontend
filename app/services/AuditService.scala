@@ -73,11 +73,11 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     }
   }
 
-  def auditStartRemoveGoodsRecord(eori: String, affinityGroup: AffinityGroup)(implicit
+  def auditStartRemoveGoodsRecord(eori: String, affinityGroup: AffinityGroup, recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
     val event =
-      auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, RemoveRecordJourney, None, None)
+      auditEventFactory.createStartManageGoodsRecordEvent(eori, affinityGroup, RemoveRecordJourney, None, Some(recordId))
 
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"auditStartRemoveGoodsRecord audit event status: $auditResult")
@@ -92,7 +92,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       auditEventFactory.createSubmitGoodsRecordEventForRemoveRecord(eori, affinityGroup, RemoveRecordJourney, recordId)
 
     auditConnector.sendEvent(event).map { auditResult =>
-      logger.info(s"FinishCreateGoodsRecord audit event status: $auditResult")
+      logger.info(s"FinishRemoveGoodsRecord audit event status: $auditResult")
       Done
     }
   }

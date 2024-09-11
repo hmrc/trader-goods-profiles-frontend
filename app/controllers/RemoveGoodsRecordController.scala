@@ -52,7 +52,7 @@ class RemoveGoodsRecordController @Inject() (
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup)
+      auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
 
       Ok(view(form, recordId, location))
     }
@@ -65,7 +65,7 @@ class RemoveGoodsRecordController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
           {
             case true  =>
-              auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup,recordId)
+              auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
 
               goodsRecordConnector
                 .removeGoodsRecord(request.eori, recordId)
