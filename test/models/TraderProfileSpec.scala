@@ -478,8 +478,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "when TraderProfileQuery is not set" in {
 
-        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
-
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNirmsUpdatePage, false)
