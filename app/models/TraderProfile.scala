@@ -92,9 +92,9 @@ object TraderProfile {
           case Right(userProfile) =>
             if (userProfile.nirmsNumber.isDefined) {
               answers.getPageValue(RemoveNirmsPage) match {
-                case Right(true)  => Right(true)
+                case Right(true)  => Right(false)
                 case Right(false) =>
-                  Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
+                  Left(NonEmptyChain.one(UnexpectedPage(RemoveNirmsPage)))
               }
             } else {
               Right(false)

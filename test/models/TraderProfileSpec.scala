@@ -22,6 +22,7 @@ import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import pages._
+import queries.TraderProfileQuery
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -371,6 +372,106 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
             UnexpectedPage(RemoveNiphlPage)
+          )
+        }
+      }
+    }
+  }
+
+  ".validateHasNirms" - {
+
+    "must validate Nirms" - {
+
+      "user has Nirms and changes answer to No" in {
+        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        result mustEqual Right(false)
+      }
+
+      "user does not have Nirms and does not change answer to Yes" in {
+        val userProfile = TraderProfile(testEori, "1", None, None)
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        result mustEqual Right(false)
+      }
+    }
+
+    "must return errors" - {
+
+      "when user does not have answers" in {
+
+        def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+        val result                        = TraderProfile.validateHasNirms(emptyUserAnswers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNirmsUpdatePage)
+          )
+        }
+      }
+
+      "when user answered Yes" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, true)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(HasNirmsUpdatePage)
+          )
+        }
+      }
+
+      "when user answered No but No to remove Nirms question" in {
+
+        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNirmsPage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(RemoveNirmsPage)
           )
         }
       }
