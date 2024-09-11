@@ -22,6 +22,7 @@ import models.{NormalMode, UserAnswers}
 import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.TraderProfileQuery
 import repositories.SessionRepository
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -64,20 +65,22 @@ class ProfileController @Inject() (
 
   private def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
     for {
-      updatedAnswersRemovedUkims       <-
+      updatedAnswersRemovedUkims            <-
         Future.fromTry(answers.remove(UkimsNumberUpdatePage))
-      updatedAnswersRemovedHasNirms    <-
+      updatedAnswersRemovedHasNirms         <-
         Future.fromTry(updatedAnswersRemovedUkims.remove(HasNirmsUpdatePage))
-      updatedAnswersRemovedRemoveNirms <-
+      updatedAnswersRemovedRemoveNirms      <-
         Future.fromTry(updatedAnswersRemovedHasNirms.remove(RemoveNirmsPage))
-      updatedAnswersRemovedNirmsNumber <-
+      updatedAnswersRemovedNirmsNumber      <-
         Future.fromTry(updatedAnswersRemovedRemoveNirms.remove(NirmsNumberUpdatePage))
-      updatedAnswersRemovedHasNiphl    <-
+      updatedAnswersRemovedHasNiphl         <-
         Future.fromTry(updatedAnswersRemovedNirmsNumber.remove(HasNiphlUpdatePage))
-      updatedAnswersRemovedRemoveNiphl <-
+      updatedAnswersRemovedRemoveNiphl      <-
         Future.fromTry(updatedAnswersRemovedHasNiphl.remove(RemoveNiphlPage))
-      updatedAnswers                   <-
+      updatedAnswersRemoveNiphlNumberUpdate <-
         Future.fromTry(updatedAnswersRemovedRemoveNiphl.remove(NiphlNumberUpdatePage))
-      _                                <- sessionRepository.set(updatedAnswers)
+      updatedAnswers                        <-
+        Future.fromTry(updatedAnswersRemoveNiphlNumberUpdate.remove(TraderProfileQuery))
+      _                                     <- sessionRepository.set(updatedAnswers)
     } yield updatedAnswers
 }
