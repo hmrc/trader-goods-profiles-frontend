@@ -570,7 +570,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
+          val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate(NormalMode).url)
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url

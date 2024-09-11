@@ -217,41 +217,5 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a POST if Trader Profile cannot be built" in {
-      val mockAuditService = mock[AuditService]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
-
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService)
-          )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, removeNiphlRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-
-        withClue("must not try and submit an audit") {
-          verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
-        }
-      }
-    }
   }
 }

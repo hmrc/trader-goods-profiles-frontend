@@ -571,23 +571,23 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when user answered No but No to remove Nirms question" in {
+      "when user answered No but No to remove Niphls question" in {
 
         val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
+            .set(HasNiphlUpdatePage, false)
             .success
             .value
-            .set(RemoveNirmsPage, false)
+            .set(RemoveNiphlPage, false)
             .success
             .value
             .set(TraderProfileQuery, userProfile)
             .success
             .value
 
-        val result = TraderProfile.validateHasNirms(answers)
+        val result = TraderProfile.validateHasNiphls(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(

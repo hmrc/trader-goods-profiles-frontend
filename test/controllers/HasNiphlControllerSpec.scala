@@ -215,7 +215,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val hasNiphlRoute = routes.HasNiphlController.onPageLoadUpdate.url
+      val hasNiphlRoute = routes.HasNiphlController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
 
@@ -244,7 +244,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasNiphlView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -269,7 +269,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -350,7 +350,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNiphlController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(boundForm, routes.HasNiphlController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString

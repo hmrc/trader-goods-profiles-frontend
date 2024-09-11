@@ -277,7 +277,17 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .get(HasNiphlUpdatePage)
       .map {
         case true  => routes.NiphlNumberController.onPageLoadUpdate
-        case false => routes.RemoveNiphlController.onPageLoad()
+        case false =>
+          answers
+            .get(TraderProfileQuery)
+            .map { userProfile =>
+              if (userProfile.niphlNumber.isDefined) {
+                routes.RemoveNiphlController.onPageLoad()
+              } else {
+                routes.CyaMaintainProfileController.onPageLoadNiphls
+              }
+            }
+            .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
@@ -446,6 +456,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
+    case RemoveNiphlPage                           => navigateFromRemoveNiphlsPage
+    case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
     case UseTraderReferencePage                    => navigateFromUseTraderReferenceCheck
