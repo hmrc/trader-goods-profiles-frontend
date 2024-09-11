@@ -50,9 +50,6 @@ class CyaMaintainProfileController @Inject() (
   def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     val list = SummaryListViewModel(
       rows = Seq(
-        // If changing the Nirms Number,
-        // this will always be true,
-        // hence the hard-coded value.
         Some(HasNirmsSummary.row(value = true, CheckMode)),
         NirmsNumberSummary.row(request.userAnswers.get(NirmsNumberUpdatePage))
       ).flatten

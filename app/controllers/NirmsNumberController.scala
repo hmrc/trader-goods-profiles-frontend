@@ -21,13 +21,12 @@ import controllers.actions._
 import forms.NirmsNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile}
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.NirmsNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,7 +44,6 @@ class NirmsNumberController @Inject() (
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
   view: NirmsNumberView,
-  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
