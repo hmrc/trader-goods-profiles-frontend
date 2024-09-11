@@ -27,6 +27,7 @@ import navigation.Navigator
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
@@ -41,6 +42,7 @@ class RemoveGoodsRecordController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveGoodsRecordFormProvider,
+  auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveGoodsRecordView
 )(implicit ec: ExecutionContext)
@@ -50,6 +52,8 @@ class RemoveGoodsRecordController @Inject() (
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup)
+
       Ok(view(form, recordId, location))
     }
 
@@ -61,6 +65,8 @@ class RemoveGoodsRecordController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
           {
             case true  =>
+              auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup,recordId)
+
               goodsRecordConnector
                 .removeGoodsRecord(request.eori, recordId)
                 .map {
