@@ -24,7 +24,7 @@ import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.HasNirmsSummary
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -74,6 +74,34 @@ class CyaMaintainProfileController @Inject() (
       case Left(errors) =>
         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
+  }
 
+  def onPageLoadNiphls(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.validateHasNiphls(request.userAnswers) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            HasNiphlSummary.rowUpdate(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphls))
+      case Left(errors) =>
+        logErrorsAndContinue(errorMessage, continueUrl, errors)
+    }
+  }
+
+  def onSubmitNiphls(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    TraderProfile.validateHasNiphls(request.userAnswers) match {
+      case Right(_)     =>
+        traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+          val updatedProfile = traderProfile.copy(niphlNumber = None)
+          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+          for {
+            _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        }
+      case Left(errors) =>
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+    }
   }
 }

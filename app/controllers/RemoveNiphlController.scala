@@ -53,7 +53,12 @@ class RemoveNiphlController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(form))
+      val preparedForm = request.userAnswers.get(RemoveNiphlPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm))
   }
 
   def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
@@ -65,25 +70,8 @@ class RemoveNiphlController @Inject() (
           value =>
             request.userAnswers.set(RemoveNiphlPage, value) match {
               case Success(answers) =>
-                sessionRepository.set(answers).flatMap { _ =>
-                  if (value) {
-                    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                      TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
-                        case Right(model) =>
-                          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
-
-                          for {
-                            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          } yield Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
-                        case Left(errors) =>
-                          val errorMessage = "Unable to update Trader profile."
-                          val continueUrl  = routes.HasNiphlController.onPageLoadUpdate
-                          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
-                      }
-                    }
-                  } else {
-                    Future.successful(Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers)))
-                  }
+                sessionRepository.set(answers).map { _ =>
+                  Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
                 }
             }
         )

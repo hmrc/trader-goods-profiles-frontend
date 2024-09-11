@@ -497,4 +497,124 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
     }
   }
+
+  ".validateHasNiphls" - {
+
+    "must validate Niphls" - {
+
+      "user has Niphls and changes answer to No" in {
+        val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNiphlPage, true)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphls(answers)
+
+        result mustEqual Right(false)
+      }
+
+      "user does not have Niphls and does not change answer to Yes" in {
+        val userProfile = TraderProfile(testEori, "1", None, None)
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphls(answers)
+
+        result mustEqual Right(false)
+      }
+    }
+
+    "must return errors" - {
+
+      "when user does not have answers" in {
+
+        def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+        val result                        = TraderProfile.validateHasNiphls(emptyUserAnswers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when user answered Yes" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphls(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when user answered No but No to remove Nirms question" in {
+
+        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNirmsPage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(RemoveNirmsPage)
+          )
+        }
+      }
+
+      "when TraderProfileQuery is not set" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNiphlPage, false)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphls(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(TraderProfileQuery)
+          )
+        }
+      }
+    }
+  }
 }
