@@ -47,6 +47,7 @@ class DownloadDataConnectorSpec
   private lazy val app: Application =
     new GuiceApplicationBuilder()
       .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
+      .configure("features.download-file-enabled" -> true)
       .build()
 
   private lazy val connector = app.injector.instanceOf[DownloadDataConnector]
@@ -99,15 +100,36 @@ class DownloadDataConnectorSpec
       connector.getDownloadDataSummary(testEori).futureValue mustBe Some(downloadDataSummary)
     }
 
-    "must return None if Download summary does not exist" in {
+    "must return None" - {
+      "if Download summary does not exist" in {
 
-      wireMockServer.stubFor(
-        get(urlEqualTo(downloadDataSummaryUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(notFound())
-      )
+        wireMockServer.stubFor(
+          get(urlEqualTo(downloadDataSummaryUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(notFound())
+        )
 
-      connector.getDownloadDataSummary(testEori).futureValue mustBe None
+        connector.getDownloadDataSummary(testEori).futureValue mustBe None
+      }
+
+      "if feature flag for downloading data is disabled" in {
+
+        val appNoDownload = new GuiceApplicationBuilder()
+          .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
+          .configure("features.download-file-enabled" -> false)
+          .build()
+
+        val connectorNoDownload = appNoDownload.injector.instanceOf[DownloadDataConnector]
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(downloadDataSummaryUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
+        )
+
+        connectorNoDownload.getDownloadDataSummary(testEori).futureValue mustBe None
+      }
+
     }
 
     "must return a failed future when the server returns an error" in {
