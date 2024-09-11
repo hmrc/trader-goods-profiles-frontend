@@ -336,7 +336,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onSubmitNirms
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -3213,7 +3213,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onSubmitNirms
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
