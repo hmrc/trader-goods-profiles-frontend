@@ -74,8 +74,8 @@ POST        /update-profile/ukims-number/check                                  
 GET         /update-profile/check-your-answers/ukims-number                                 controllers.CyaMaintainProfileController.onPageLoadUkimsNumber
 POST        /update-profile/check-your-answers/ukims-number                                 controllers.CyaMaintainProfileController.onSubmitUkimsNumber
 
-GET         /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsController.onPageLoad()
-POST        /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsController.onSubmit()
+GET         /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsNumberController.onPageLoad()
+POST        /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsNumberController.onSubmit()
 
 GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)

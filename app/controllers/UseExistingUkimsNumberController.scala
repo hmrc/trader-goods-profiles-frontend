@@ -17,19 +17,19 @@
 package controllers
 
 import controllers.actions._
-import forms.UseExistingUkimsFormProvider
+import forms.UseExistingUkimsNumberFormProvider
 import models.NormalMode
 import navigation.Navigator
-import pages.{UkimsNumberPage, UseExistingUkimsPage}
+import pages.{UkimsNumberPage, UseExistingUkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.UseExistingUkimsView
+import views.html.UseExistingUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UseExistingUkimsController @Inject() (
+class UseExistingUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
@@ -37,9 +37,9 @@ class UseExistingUkimsController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
-  formProvider: UseExistingUkimsFormProvider,
+  formProvider: UseExistingUkimsNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: UseExistingUkimsView
+  view: UseExistingUkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -49,8 +49,8 @@ class UseExistingUkimsController @Inject() (
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       (for {
         ukimsNumber <- request.userAnswers.get(UkimsNumberPage)
-        updatedForm  = request.userAnswers.get(UseExistingUkimsPage).map(value => form.fill(value)).getOrElse(form)
-        updatedView  = view(updatedForm, routes.UseExistingUkimsController.onSubmit(), ukimsNumber)
+        updatedForm  = request.userAnswers.get(UseExistingUkimsNumberPage).map(value => form.fill(value)).getOrElse(form)
+        updatedView  = view(updatedForm, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)
       } yield Ok(updatedView))
         .getOrElse(navigator.journeyRecovery())
     }
@@ -64,16 +64,16 @@ class UseExistingUkimsController @Inject() (
             request.userAnswers
               .get(UkimsNumberPage)
               .map(ukimsNumber =>
-                BadRequest(view(formWithErrors, routes.UseExistingUkimsController.onSubmit(), ukimsNumber))
+                BadRequest(view(formWithErrors, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber))
               )
               .getOrElse(navigator.journeyRecovery())
           },
-        useExistingUkims =>
+        useExistingUkimsNumber =>
           for {
             updatedAnswers <-
-              Future.fromTry(request.userAnswers.set(UseExistingUkimsPage, useExistingUkims))
+              Future.fromTry(request.userAnswers.set(UseExistingUkimsNumberPage, useExistingUkimsNumber))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(UseExistingUkimsPage, NormalMode, updatedAnswers))
+          } yield Redirect(navigator.nextPage(UseExistingUkimsNumberPage, NormalMode, updatedAnswers))
       )
   }
 

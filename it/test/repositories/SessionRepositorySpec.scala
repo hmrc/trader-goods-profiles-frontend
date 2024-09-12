@@ -77,7 +77,7 @@ class SessionRepositorySpec
       categorisationDetailsQuery       -> "catDets",
       longerCommodityQuery             -> "longerCom",
       longerCategorisationDetailsQuery -> "longerCat",
-      useExistingUkimsPage             -> "true",
+      useExistingUkimsNumberPage       -> "true",
       historicProfileDataQuery         -> "historicData"
     ),
     Instant.ofEpochSecond(1)
@@ -166,7 +166,7 @@ class SessionRepositorySpec
           hasNiphlPage,
           nirmsNumberPage,
           niphlNumberPage,
-          useExistingUkimsPage,
+          useExistingUkimsNumberPage,
           historicProfileDataQuery
         )
 

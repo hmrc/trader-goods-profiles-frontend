@@ -35,7 +35,7 @@ import javax.inject.{Inject, Singleton}
 class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage                          => navigateFromProfileSetUp
-    case UseExistingUkimsPage                      => navigateFromUseExistingUkims
+    case UseExistingUkimsNumberPage                => navigateFromUseExistingUkimsNumber
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
     case HasNirmsPage                              => navigateFromHasNirms
     case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
@@ -213,9 +213,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromUseExistingUkims(answers: UserAnswers): Call =
+  private def navigateFromUseExistingUkimsNumber(answers: UserAnswers): Call =
     answers
-      .get(UseExistingUkimsPage)
+      .get(UseExistingUkimsNumberPage)
       .map {
         case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
         case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
@@ -637,7 +637,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
-        routes.UseExistingUkimsController.onPageLoad()
+        routes.UseExistingUkimsNumberController.onPageLoad()
       case None    => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
     }
 

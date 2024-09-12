@@ -142,7 +142,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from ProfileSetupPage" - {
 
-          "to UseExistingUkims when historic data" in {
+          "to UseExistingUkimsNumber when historic data" in {
 
             val userAnswers = emptyUserAnswers
               .set(
@@ -152,7 +152,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .success
               .value
 
-            navigator.nextPage(ProfileSetupPage, NormalMode, userAnswers) mustBe routes.UseExistingUkimsController
+            navigator.nextPage(ProfileSetupPage, NormalMode, userAnswers) mustBe routes.UseExistingUkimsNumberController
               .onPageLoad()
           }
 
@@ -175,8 +175,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to HasNirmsPage when answer is Yes" in {
 
-            val answers = UserAnswers(userAnswersId).set(UseExistingUkimsPage, true).success.value
-            navigator.nextPage(UseExistingUkimsPage, NormalMode, answers) mustBe routes.HasNirmsController
+            val answers = UserAnswers(userAnswersId).set(UseExistingUkimsNumberPage, true).success.value
+            navigator.nextPage(UseExistingUkimsNumberPage, NormalMode, answers) mustBe routes.HasNirmsController
               .onPageLoadCreate(
                 NormalMode
               )
@@ -184,8 +184,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to UkimsNumberController when answer is No" in {
 
-            val answers = UserAnswers(userAnswersId).set(UseExistingUkimsPage, false).success.value
-            navigator.nextPage(UseExistingUkimsPage, NormalMode, answers) mustBe routes.UkimsNumberController
+            val answers = UserAnswers(userAnswersId).set(UseExistingUkimsNumberPage, false).success.value
+            navigator.nextPage(UseExistingUkimsNumberPage, NormalMode, answers) mustBe routes.UkimsNumberController
               .onPageLoadCreate(
                 NormalMode
               )

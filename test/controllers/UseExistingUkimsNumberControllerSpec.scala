@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.userAnswersId
 import connectors.TraderProfileConnector
-import forms.UseExistingUkimsFormProvider
+import forms.UseExistingUkimsNumberFormProvider
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
@@ -31,22 +31,22 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.UseExistingUkimsView
+import views.html.UseExistingUkimsNumberView
 
 import scala.concurrent.Future
 
-class UseExistingUkimsControllerSpec extends SpecBase with MockitoSugar {
+class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  private val formProvider = new UseExistingUkimsFormProvider()
+  private val formProvider = new UseExistingUkimsNumberFormProvider()
   private val form         = formProvider()
 
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   private val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
-  private lazy val onPageLoadRoute = routes.UseExistingUkimsController.onPageLoad().url
-  private lazy val onSubmitRoute   = routes.UseExistingUkimsController.onSubmit().url
+  private lazy val onPageLoadRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
+  private lazy val onSubmitRoute   = routes.UseExistingUkimsNumberController.onSubmit().url
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -73,12 +73,12 @@ class UseExistingUkimsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[UseExistingUkimsView]
+        val view = application.injector.instanceOf[UseExistingUkimsNumberView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
-          routes.UseExistingUkimsController.onSubmit(),
+          routes.UseExistingUkimsNumberController.onSubmit(),
           ukimsNumber
         )(
           request,
@@ -141,14 +141,14 @@ class UseExistingUkimsControllerSpec extends SpecBase with MockitoSugar {
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[UseExistingUkimsView]
+        val view = application.injector.instanceOf[UseExistingUkimsNumberView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
           boundForm,
-          routes.UseExistingUkimsController.onSubmit(),
+          routes.UseExistingUkimsNumberController.onSubmit(),
           ukimsNumber
         )(
           request,
