@@ -246,7 +246,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
               if (userProfile.nirmsNumber.isDefined) {
                 routes.RemoveNirmsController.onPageLoad()
               } else {
-                routes.CyaMaintainProfileController.onSubmitNirms
+                routes.CyaMaintainProfileController.onPageLoadNirms
               }
             }
             .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
