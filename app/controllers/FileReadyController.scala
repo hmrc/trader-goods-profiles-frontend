@@ -48,7 +48,8 @@ class FileReadyController @Inject() (
     implicit request =>
       (for {
         Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
-        if (downloadDataSummary.status == FileReadyUnseen || downloadDataSummary.status == FileReadySeen) && downloadDataSummary.fileInfo.isDefined
+        if downloadDataSummary.status == FileReadyUnseen || downloadDataSummary.status == FileReadySeen
+        Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
         _                         <- downloadDataConnector.submitDownloadDataSummary(
                                        DownloadDataSummary(request.eori, FileReadySeen, downloadDataSummary.fileInfo)
                                      )
@@ -57,7 +58,7 @@ class FileReadyController @Inject() (
         view(
           downloadDataSummary.fileInfo.get.fileSize,
           downloadData.downloadURL,
-          convertToDateString(downloadDataSummary.fileInfo.get.fileCreated),
+          convertToDateString(fileInfo.fileCreated),
           convertToDateString(
             downloadDataSummary.fileInfo.get.fileCreated
               .plus(downloadDataSummary.fileInfo.get.retentionDays.toInt, ChronoUnit.DAYS)

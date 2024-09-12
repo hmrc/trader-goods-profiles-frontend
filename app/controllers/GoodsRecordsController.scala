@@ -101,30 +101,30 @@ class GoodsRecordsController @Inject() (
     }
 
   def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
-    opt match {
-      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile     =>
+    opt.map(_.status) match {
+      case Some(RequestFile)     =>
         "goodsRecords.downloadLinkText.requestFile"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress  =>
+      case Some(FileInProgress)  =>
         "goodsRecords.downloadLinkText.fileInProgress"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
+      case Some(FileReadyUnseen) =>
         "goodsRecords.downloadLinkText.fileReady"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReadySeen   =>
+      case Some(FileReadySeen)   =>
         "goodsRecords.downloadLinkText.fileReady"
-      case _                                                                          =>
+      case _                     =>
         "goodsRecords.downloadLinkText.requestFile"
     }
 
   def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
-    opt match {
-      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile     =>
+    opt.map(_.status) match {
+      case Some(RequestFile)     =>
         routes.RequestDataController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress  =>
+      case Some(FileInProgress)  =>
         routes.FileInProgressController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReadySeen   =>
+      case Some(FileReadySeen)   =>
         routes.FileReadyController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
+      case Some(FileReadyUnseen) =>
         routes.FileReadyController.onPageLoad().url
-      case _                                                                          => routes.RequestDataController.onPageLoad().url
+      case _                     => routes.RequestDataController.onPageLoad().url
     }
 
   def onSearch(page: Int): Action[AnyContent] =
