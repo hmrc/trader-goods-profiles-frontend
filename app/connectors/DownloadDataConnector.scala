@@ -54,17 +54,6 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
         }
       }
 
-  def submitDownloadDataSummary(downloadDataSummary: DownloadDataSummary)(implicit hc: HeaderCarrier): Future[Done] =
-    httpClient
-      .post(downloadDataSummaryUrl(downloadDataSummary.eori))
-      .withBody(Json.toJson(downloadDataSummary))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case NO_CONTENT => Done
-        }
-      }
-
   def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
     httpClient
       .get(downloadDataSummaryUrl(eori))

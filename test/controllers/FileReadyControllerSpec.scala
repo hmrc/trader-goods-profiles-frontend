@@ -79,7 +79,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
           Some(downloadDataSummary)
         )
-        when(mockDownloadDataConnector.submitDownloadDataSummary(any())(any())) thenReturn Future.successful(Done)
         when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Some(downloadData))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -98,7 +97,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-          verify(mockDownloadDataConnector).submitDownloadDataSummary(eqTo(downloadDataSummary))(any())
           verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
 
         }
@@ -125,7 +123,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
             Some(downloadDataSummary)
           )
-          when(mockDownloadDataConnector.submitDownloadDataSummary(any())(any())) thenReturn Future.successful(Done)
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -142,7 +139,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .url
 
             verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector).submitDownloadDataSummary(eqTo(downloadDataSummary))(any())
             verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
           }
         }
@@ -160,7 +156,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
             Some(downloadDataSummary)
           )
-          when(mockDownloadDataConnector.submitDownloadDataSummary(any())(any())) thenReturn Future.successful(Done)
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -177,7 +172,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .url
 
             verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector, never()).submitDownloadDataSummary(any())(any())
             verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
           }
         }
@@ -195,7 +189,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
             Some(downloadDataSummary)
           )
-          when(mockDownloadDataConnector.submitDownloadDataSummary(any())(any())) thenReturn Future.successful(Done)
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -212,7 +205,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .url
 
             verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector, never()).submitDownloadDataSummary(any())(any())
             verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
           }
         }
@@ -224,7 +216,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
             None
           )
-          when(mockDownloadDataConnector.submitDownloadDataSummary(any())(any())) thenReturn Future.successful(Done)
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -241,7 +232,6 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .url
 
             verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector, never()).submitDownloadDataSummary(any())(any())
             verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
           }
         }

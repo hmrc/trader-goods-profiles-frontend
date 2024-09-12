@@ -162,33 +162,6 @@ class DownloadDataConnectorSpec
     }
   }
 
-  ".submitDownloadDataSummary" - {
-
-    val downloadDataSummary = DownloadDataSummary(testEori, RequestFile, None)
-
-    "must submit download data summary" in {
-
-      wireMockServer.stubFor(
-        post(urlEqualTo(downloadDataSummaryUrl))
-          .withRequestBody(equalToJson(Json.stringify(Json.toJson(downloadDataSummary))))
-          .willReturn(noContent())
-      )
-
-      connector.submitDownloadDataSummary(downloadDataSummary).futureValue mustBe Done
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(downloadDataSummaryUrl))
-          .withRequestBody(equalToJson(Json.stringify(Json.toJson(downloadDataSummary))))
-          .willReturn(serverError())
-      )
-
-      connector.submitDownloadDataSummary(downloadDataSummary).failed.futureValue
-    }
-  }
-
   ".getEmail" - {
     val emailUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/email"

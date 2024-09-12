@@ -50,18 +50,15 @@ class FileReadyController @Inject() (
         Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
         if isFileReady(downloadDataSummary)
         Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
-        _                         <- downloadDataConnector.submitDownloadDataSummary(
-                                       DownloadDataSummary(request.eori, FileReadySeen, downloadDataSummary.fileInfo)
-                                     )
         Some(downloadData)        <- downloadDataConnector.getDownloadData(request.eori)
       } yield Ok(
         view(
-          downloadDataSummary.fileInfo.get.fileSize,
+          fileInfo.fileSize,
           downloadData.downloadURL,
           convertToDateString(fileInfo.fileCreated),
           convertToDateString(
-            downloadDataSummary.fileInfo.get.fileCreated
-              .plus(downloadDataSummary.fileInfo.get.retentionDays.toInt, ChronoUnit.DAYS)
+            fileInfo.fileCreated
+              .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)
           )
         )
       )).recover { case _ => navigator.journeyRecovery() }
