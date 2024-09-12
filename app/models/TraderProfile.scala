@@ -16,10 +16,11 @@
 
 package models
 
-import cats.data.EitherNec
+import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import play.api.libs.json.{Json, OFormat, Reads}
+import queries.TraderProfileQuery
 
 final case class TraderProfile(
   actorId: String,
@@ -80,4 +81,27 @@ object TraderProfile {
         }
       case Left(errors) => Left(errors)
     }
+
+  def validateHasNirms(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Boolean] =
+    answers.getPageValue(HasNirmsUpdatePage) match {
+      case Right(true)  => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
+      case Right(false) =>
+        answers.getPageValue(TraderProfileQuery) match {
+          case Right(userProfile) =>
+            if (userProfile.nirmsNumber.isDefined) {
+              answers.getPageValue(RemoveNirmsPage) match {
+                case Right(true)  => Right(false)
+                case Right(false) =>
+                  Left(NonEmptyChain.one(UnexpectedPage(RemoveNirmsPage)))
+              }
+            } else {
+              Right(false)
+            }
+          case Left(errors)       => Left(errors)
+        }
+      case Left(errors) => Left(errors)
+    }
+
 }

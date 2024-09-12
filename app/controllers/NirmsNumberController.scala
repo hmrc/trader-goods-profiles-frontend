@@ -141,7 +141,7 @@ class NirmsNumberController @Inject() (
                         } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
                       case Left(errors) =>
                         val errorMessage = "Unable to update Trader profile."
-                        val continueUrl  = routes.HasNirmsController.onPageLoadUpdate
+                        val continueUrl  = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
                         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
                     }
                   }
