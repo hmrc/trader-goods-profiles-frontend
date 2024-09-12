@@ -58,18 +58,20 @@ class CyaMaintainProfileController @Inject() (
           ).flatten
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
-      case None => logErrorsAndContinue(errorMessage, continueUrl, NonEmptyChain.one(UnexpectedPage(NiphlNumberUpdatePage)))
+      case None                    =>
+        logErrorsAndContinue(errorMessage, continueUrl, NonEmptyChain.one(UnexpectedPage(NiphlNumberUpdatePage)))
     }
   }
 
-  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-      val updatedProfile = traderProfile.copy(nirmsNumber = request.userAnswers.get(NirmsNumberUpdatePage))
-      auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-      for {
-        _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-      } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-    }
+  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        val updatedProfile = traderProfile.copy(nirmsNumber = request.userAnswers.get(NirmsNumberUpdatePage))
+        auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+        for {
+          _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+        } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+      }
   }
 
   def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>

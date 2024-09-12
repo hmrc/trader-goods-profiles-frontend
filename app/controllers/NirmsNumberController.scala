@@ -43,7 +43,7 @@ class NirmsNumberController @Inject() (
   traderProfileConnector: TraderProfileConnector,
   checkProfile: ProfileCheckAction,
   val controllerComponents: MessagesControllerComponents,
-  view: NirmsNumberView,
+  view: NirmsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

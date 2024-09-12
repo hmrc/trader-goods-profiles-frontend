@@ -403,8 +403,11 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from NirmsNumberUpdatePage to ProfilePage" in {
 
-          navigator.nextPage(NirmsNumberUpdatePage, NormalMode, emptyUserAnswers) mustBe routes.ProfileController
-            .onPageLoad()
+          navigator.nextPage(
+            NirmsNumberUpdatePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
         }
 
         "must go from HasNiphlUpdatePage" - {
