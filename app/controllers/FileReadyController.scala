@@ -44,11 +44,11 @@ class FileReadyController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent]                               = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       (for {
         Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
-        if downloadDataSummary.status == FileReadyUnseen || downloadDataSummary.status == FileReadySeen
+        if isFileReady(downloadDataSummary)
         Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
         _                         <- downloadDataConnector.submitDownloadDataSummary(
                                        DownloadDataSummary(request.eori, FileReadySeen, downloadDataSummary.fileInfo)
@@ -66,6 +66,8 @@ class FileReadyController @Inject() (
         )
       )).recover { case _ => navigator.journeyRecovery() }
   }
+  def isFileReady(downloadDataSummary: DownloadDataSummary): Boolean =
+    downloadDataSummary.status == FileReadyUnseen || downloadDataSummary.status == FileReadySeen
 
   def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
