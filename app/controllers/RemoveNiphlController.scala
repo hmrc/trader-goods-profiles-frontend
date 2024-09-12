@@ -19,17 +19,15 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNiphlFormProvider
-
-import javax.inject.Inject
-import models.{NormalMode, TraderProfile}
+import models.NormalMode
 import navigation.Navigator
 import pages.RemoveNiphlPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.RemoveNiphlView
 
+import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
