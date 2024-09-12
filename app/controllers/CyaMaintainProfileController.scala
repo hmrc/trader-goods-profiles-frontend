@@ -48,19 +48,24 @@ class CyaMaintainProfileController @Inject() (
   private val errorMessage: String = "Unable to update Trader profile."
   private val continueUrl: Call    = routes.ProfileController.onPageLoad()
 
-  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    request.userAnswers.get(NirmsNumberUpdatePage) match {
-      case Some(nirmsNumberAnswer) =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            Some(HasNirmsSummary.row(value = true, CheckMode)),
-            NirmsNumberSummary.row(Some(nirmsNumberAnswer))
-          ).flatten
-        )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
-      case None                    =>
-        logErrorsAndContinue(errorMessage, continueUrl, NonEmptyChain.one(UnexpectedPage(NiphlNumberUpdatePage)))
-    }
+  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { _ =>
+        request.userAnswers.get(NirmsNumberUpdatePage) match {
+          case Some(nirmsNumberAnswer) =>
+            val list = SummaryListViewModel(
+              rows = Seq(
+                Some(HasNirmsSummary.row(value = true, CheckMode)),
+                NirmsNumberSummary.row(Some(nirmsNumberAnswer))
+              ).flatten
+            )
+            Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
+          case None                    =>
+            Future.successful(
+              logErrorsAndContinue(errorMessage, continueUrl, NonEmptyChain.one(UnexpectedPage(NiphlNumberUpdatePage)))
+            )
+        }
+      }
   }
 
   def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {

@@ -27,7 +27,6 @@ import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.Application
-import play.api.i18n.Messages.implicitMessagesProviderToMessages
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -376,7 +375,17 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must return OK and the correct view" in {
 
-          val application = applicationBuilder(userAnswers = Some(nirmsNumberAnswers)).build()
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+          when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+          when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val application = applicationBuilder(userAnswers = Some(nirmsNumberAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           val action = routes.CyaMaintainProfileController.onSubmitNirmsNumber
 
@@ -396,7 +405,17 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must redirect to Journey Recovery if no answers are found" in {
 
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+          when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+          when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
+            .thenReturn(Future.successful(Done))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
 
