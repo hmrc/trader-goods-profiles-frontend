@@ -41,7 +41,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
     case HasNiphlPage                              => navigateFromHasNiphl
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
-    case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
+    case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case RemoveNirmsPage                           => _ => routes.ProfileController.onPageLoad()
@@ -415,6 +415,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
+    case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
     case UseTraderReferencePage                    => navigateFromUseTraderReferenceCheck
@@ -636,7 +637,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
-        routes.UseExistingUkimsNumberController.onPageLoad()
+        routes.UseExistingUkimsController.onPageLoad()
       case None    => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
     }
 

@@ -80,4 +80,10 @@ object TraderProfile {
         }
       case Left(errors) => Left(errors)
     }
+
+  def validateUkimsNumber(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, String] =
+    answers.getPageValue(UkimsNumberUpdatePage)
+
 }

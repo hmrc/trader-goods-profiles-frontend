@@ -31,11 +31,11 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.UseExistingUkimsNumberView
+import views.html.UseExistingUkimsView
 
 import scala.concurrent.Future
 
-class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
+class UseExistingUkimsControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -45,14 +45,14 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   private val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
-  private lazy val onPageLoadRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
-  private lazy val onSubmitRoute   = routes.UseExistingUkimsNumberController.onSubmit().url
+  private lazy val onPageLoadRoute = routes.UseExistingUkimsController.onPageLoad().url
+  private lazy val onSubmitRoute   = routes.UseExistingUkimsController.onSubmit().url
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
   private val ukimsNumber = "UKIMS123"
 
-  private val userAnswersWithUkims = UserAnswers(userAnswersId)
+  private val userAnswersWithUkimsNumber = UserAnswers(userAnswersId)
     .set(UkimsNumberPage, ukimsNumber)
     .success
     .value
@@ -61,7 +61,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims))
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
@@ -73,12 +73,12 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[UseExistingUkimsNumberView]
+        val view = application.injector.instanceOf[UseExistingUkimsView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
-          routes.UseExistingUkimsNumberController.onSubmit(),
+          routes.UseExistingUkimsController.onSubmit(),
           ukimsNumber
         )(
           request,
@@ -113,7 +113,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and and navigate to the next page" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims))
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
           bind[SessionRepository].toInstance(mockSessionRepository)
@@ -132,7 +132,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber)).build()
 
       running(application) {
         val request =
@@ -141,14 +141,14 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[UseExistingUkimsNumberView]
+        val view = application.injector.instanceOf[UseExistingUkimsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
           boundForm,
-          routes.UseExistingUkimsNumberController.onSubmit(),
+          routes.UseExistingUkimsController.onSubmit(),
           ukimsNumber
         )(
           request,
@@ -160,7 +160,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     "must throw exception to error handler if session repository fails" in {
       when(mockSessionRepository.set(any())) thenReturn Future.failed(new RuntimeException("failed"))
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkims))
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
           bind[SessionRepository].toInstance(mockSessionRepository)

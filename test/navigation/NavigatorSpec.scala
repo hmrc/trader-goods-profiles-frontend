@@ -142,7 +142,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from ProfileSetupPage" - {
 
-          "to UseExistingUkimsNumber when historic data" in {
+          "to UseExistingUkims when historic data" in {
 
             val userAnswers = emptyUserAnswers
               .set(
@@ -152,7 +152,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .success
               .value
 
-            navigator.nextPage(ProfileSetupPage, NormalMode, userAnswers) mustBe routes.UseExistingUkimsNumberController
+            navigator.nextPage(ProfileSetupPage, NormalMode, userAnswers) mustBe routes.UseExistingUkimsController
               .onPageLoad()
           }
 
@@ -287,13 +287,13 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Update Profile Journey" - {
 
-        "must go from UkimsNumberUpdatePage to ProfilePage" in {
+        "must go from UkimsNumberUpdatePage to CyaMaintainProfilePage" in {
 
           navigator.nextPage(
             UkimsNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber
         }
 
         "must go from HasNirmsUpdatePage" - {
@@ -3070,6 +3070,18 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateProfileController.onPageLoad
+        }
+      }
+
+      "in Update Profile Journey" - {
+
+        "must go from UkimsNumberUpdatePage to CyaMaintainProfilePage" in {
+
+          navigator.nextPage(
+            UkimsNumberUpdatePage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber
         }
       }
 

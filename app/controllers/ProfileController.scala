@@ -64,10 +64,10 @@ class ProfileController @Inject() (
 
   private def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
     for {
-      updatedAnswersRemovedUkims       <-
+      updatedAnswersRemovedUkimsNumber <-
         Future.fromTry(answers.remove(UkimsNumberUpdatePage))
       updatedAnswersRemovedHasNirms    <-
-        Future.fromTry(updatedAnswersRemovedUkims.remove(HasNirmsUpdatePage))
+        Future.fromTry(updatedAnswersRemovedUkimsNumber.remove(HasNirmsUpdatePage))
       updatedAnswersRemovedRemoveNirms <-
         Future.fromTry(updatedAnswersRemovedHasNirms.remove(RemoveNirmsPage))
       updatedAnswersRemovedNirmsNumber <-
