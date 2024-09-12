@@ -170,6 +170,22 @@ case class AuditEventFactory() {
     createSubmitGoodsRecordEvent(auditDetails)
   }
 
+  def createSubmitGoodsRecordEventForRemoveRecord(
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    recordId: String
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori"          -> eori,
+      "affinityGroup" -> affinityGroup.toString,
+      "journey"       -> journey.toString,
+      "recordId"      -> recordId
+    )
+
+    createSubmitGoodsRecordEvent(auditDetails)
+  }
+
   def createRequestAdviceEvent(
     affinityGroup: AffinityGroup,
     journey: Journey,
