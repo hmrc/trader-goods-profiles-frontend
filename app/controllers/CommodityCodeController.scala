@@ -96,7 +96,8 @@ class CommodityCodeController @Inject() (
                   None
                 )
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
-              updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityQuery, commodity))
+              updatedAnswersWithQuery <-
+                Future.fromTry(updatedAnswers.set(CommodityQuery, commodity.copy(commodityCode = value)))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
@@ -131,7 +132,9 @@ class CommodityCodeController @Inject() (
                   )
                 updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
                 updatedAnswersWithQuery <-
-                  Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity))
+                  Future.fromTry(
+                    updatedAnswers.set(CommodityUpdateQuery(recordId), commodity.copy(commodityCode = value))
+                  )
                 _                       <- sessionRepository.set(updatedAnswersWithQuery)
               } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
                 .addingToSession(dataUpdated -> isValueChanged.toString)
