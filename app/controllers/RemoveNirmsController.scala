@@ -16,20 +16,17 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNirmsFormProvider
-
-import javax.inject.Inject
-import models.{NormalMode, TraderProfile}
+import models.NormalMode
 import navigation.Navigator
 import pages.RemoveNirmsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.RemoveNirmsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 
@@ -43,9 +40,7 @@ class RemoveNirmsController @Inject() (
   formProvider: RemoveNirmsFormProvider,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  traderProfileConnector: TraderProfileConnector,
-  view: RemoveNirmsView,
-  auditService: AuditService
+  view: RemoveNirmsView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -53,7 +48,12 @@ class RemoveNirmsController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(form))
+      val preparedForm = request.userAnswers.get(RemoveNirmsPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm))
   }
 
   def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
@@ -65,25 +65,8 @@ class RemoveNirmsController @Inject() (
           value =>
             request.userAnswers.set(RemoveNirmsPage, value) match {
               case Success(answers) =>
-                sessionRepository.set(answers).flatMap { _ =>
-                  if (value) {
-                    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                      TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
-                        case Right(model) =>
-                          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
-
-                          for {
-                            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                          } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
-                        case Left(errors) =>
-                          val errorMessage = "Unable to update Trader profile."
-                          val continueUrl  = routes.HasNirmsController.onPageLoadUpdate
-                          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
-                      }
-                    }
-                  } else {
-                    Future.successful(Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers)))
-                  }
+                sessionRepository.set(answers).map { _ =>
+                  Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
                 }
             }
         )

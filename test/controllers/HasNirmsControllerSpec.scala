@@ -215,7 +215,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val hasNirmsRoute = routes.HasNirmsController.onPageLoadUpdate.url
+      val hasNirmsRoute = routes.HasNirmsController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
 
@@ -244,7 +244,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasNirmsView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -269,7 +269,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -317,7 +317,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
             )
             .build()
 
@@ -329,7 +330,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+          redirectLocation(result).value mustEqual onwardRoute.url
         }
       }
 
@@ -350,7 +351,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNirmsController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(boundForm, routes.HasNirmsController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString

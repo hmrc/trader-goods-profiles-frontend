@@ -20,11 +20,13 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CommodityCodeFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.data.FormError
@@ -35,6 +37,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CommodityCodeView
@@ -80,7 +84,15 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET" in {
 
+        val mockAuditService = mock[AuditService]
+
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
           .build()
 
         running(application) {
@@ -92,6 +104,51 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+
+          if (page == CommodityCodePage) {
+            withClue("must not audit") {
+              verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any())(any())
+            }
+          } else {
+            withClue("must call the audit service with the correct details") {
+              verify(mockAuditService)
+                .auditStartUpdateGoodsRecord(
+                  eqTo(testEori),
+                  eqTo(AffinityGroup.Individual),
+                  eqTo(GoodsDetailsUpdate),
+                  eqTo(testRecordId)
+                )(any())
+            }
+          }
+        }
+      }
+
+      "must not audit if already done on the previous page" in {
+
+        val mockAuditService = mock[AuditService]
+
+        val userAnswers = emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, commodityCodeRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+
+          withClue("must not audit") {
+            verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any())(any())
+          }
+
         }
       }
 

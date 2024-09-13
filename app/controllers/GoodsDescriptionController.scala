@@ -19,11 +19,13 @@ package controllers
 import controllers.actions._
 import forms.GoodsDescriptionFormProvider
 import models.Mode
+import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import utils.SessionData._
 import views.html.GoodsDescriptionView
 
@@ -41,7 +43,8 @@ class GoodsDescriptionController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   formProvider: GoodsDescriptionFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: GoodsDescriptionView
+  view: GoodsDescriptionView,
+  auditService: AuditService
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
@@ -79,6 +82,18 @@ class GoodsDescriptionController @Inject() (
       val preparedForm = request.userAnswers.get(GoodsDescriptionUpdatePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
+      }
+
+      request.userAnswers.get(HasGoodsDescriptionChangePage(recordId)) match {
+        case None =>
+          auditService
+            .auditStartUpdateGoodsRecord(
+              request.eori,
+              request.affinityGroup,
+              GoodsDetailsUpdate,
+              recordId
+            )
+        case _    =>
       }
 
       val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)

@@ -24,7 +24,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
-import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery, TraderProfileQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, firstAssessmentNumber, minimumLengthOfCommodityCode}
@@ -44,10 +44,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case RemoveNirmsPage                           => _ => routes.ProfileController.onPageLoad()
+    case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case RemoveNiphlPage                           => _ => routes.ProfileController.onPageLoad()
+    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
@@ -213,6 +214,15 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def navigateFromRemoveNirmsPage(answers: UserAnswers): Call =
+    answers
+      .get(RemoveNirmsPage)
+      .map {
+        case true  => routes.CyaMaintainProfileController.onPageLoadNirms
+        case false => routes.ProfileController.onPageLoad()
+      }
+      .getOrElse(routes.ProfileController.onPageLoad())
+
   private def navigateFromUseExistingUkims(answers: UserAnswers): Call =
     answers
       .get(UseExistingUkimsPage)
@@ -228,7 +238,17 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .get(HasNirmsUpdatePage)
       .map {
         case true  => routes.NirmsNumberController.onPageLoadUpdate
-        case false => routes.RemoveNirmsController.onPageLoad()
+        case false =>
+          answers
+            .get(TraderProfileQuery)
+            .map { userProfile =>
+              if (userProfile.nirmsNumber.isDefined) {
+                routes.RemoveNirmsController.onPageLoad()
+              } else {
+                routes.CyaMaintainProfileController.onPageLoadNirms
+              }
+            }
+            .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
@@ -415,6 +435,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                              => navigateFromHasNirmsCheck
     case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
+    case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
+    case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
