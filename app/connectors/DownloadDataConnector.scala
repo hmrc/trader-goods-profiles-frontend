@@ -17,9 +17,10 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.{DownloadDataSummary, Email}
+import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, OK}
+import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -34,12 +35,15 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   private def downloadDataSummaryUrl(eori: String) =
     url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
 
+  private def downloadDataUrl(eori: String) =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data"
+
   private def emailUrl(eori: String) =
     url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/email"
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .post(downloadDataSummaryUrl(eori))
+      .post(downloadDataUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
@@ -51,25 +55,36 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
     if (config.downloadFileEnabled) {
       httpClient
-        .get(downloadDataSummaryUrl(eori))
-        .setHeader(clientIdHeader)
-        .execute[HttpResponse]
-        .map { response =>
-          response.status match {
-            case OK => Some(response.json.as[DownloadDataSummary])
-          }
+      .get(downloadDataSummaryUrl(eori))
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK => Some(response.json.as[DownloadDataSummary])
         }
-        .recover { case _: NotFoundException =>
-          None
-        }
+      }
+      .recover { case _: NotFoundException =>
+        None
+      }
     } else {
       Future.successful(None)
     }
 
+  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadData]] =
+    httpClient
+      .get(downloadDataUrl(eori))
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK => Some(response.json.as[DownloadData])
+        }
+      }
+      .recover { case _: NotFoundException =>
+        None
+      }
+
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
     httpClient
       .get(emailUrl(eori))
-      .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
         response.status match {

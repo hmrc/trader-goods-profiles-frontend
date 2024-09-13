@@ -37,8 +37,10 @@ POST        /create-profile/nirms-question                                      
 GET         /create-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadUpdate
-POST        /update-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitUpdate
+GET         /update-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadUpdate(mode: Mode = NormalMode)
+POST        /update-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadUpdate(mode: Mode = CheckMode)
+POST        /update-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitUpdate(mode: Mode = CheckMode)
 
 GET         /create-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitCreate(mode: Mode = NormalMode)
@@ -55,6 +57,9 @@ POST        /create-profile/nirms-number/check                                  
 
 GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate
 POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate
+
+GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms
+POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms
 
 GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
 POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()
@@ -145,15 +150,15 @@ POST        /update-record/:recordId/trader-reference                           
 GET         /update-record/:recordId/trader-reference/check                                 controllers.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/trader-reference/check                                 controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, index: Int)
-POST        /update-record/:recordId/categorisation/category-assessment/:index              controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, index: Int)
-GET         /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, index: Int)
-POST        /update-record/:recordId/categorisation/category-assessment/:index/check        controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, index: Int)
+GET         /update-record/:recordId/categorisation/category-assessment/:number              controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, number: Int)
+POST        /update-record/:recordId/categorisation/category-assessment/:number              controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, number: Int)
+GET         /update-record/:recordId/categorisation/category-assessment/:number/check        controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, number: Int)
+POST        /update-record/:recordId/categorisation/category-assessment/:number/check        controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, number: Int)
 
-GET         /update-record/:recordId/recategorise/category-assessment/:index                controllers.AssessmentController.onPageLoadReassessment(mode: Mode = NormalMode, recordId: String, index: Int)
-POST        /update-record/:recordId/recategorise/category-assessment/:index                controllers.AssessmentController.onSubmitReassessment(mode: Mode = NormalMode, recordId: String, index: Int)
-GET         /update-record/:recordId/recategorise/category-assessment/:index/check          controllers.AssessmentController.onPageLoadReassessment(mode: Mode = CheckMode, recordId: String, index: Int)
-POST        /update-record/:recordId/recategorise/category-assessment/:index/check          controllers.AssessmentController.onSubmitReassessment(mode: Mode = CheckMode, recordId: String, index: Int)
+GET         /update-record/:recordId/recategorise/category-assessment/:number                controllers.AssessmentController.onPageLoadReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
+POST        /update-record/:recordId/recategorise/category-assessment/:number                controllers.AssessmentController.onSubmitReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
+GET         /update-record/:recordId/recategorise/category-assessment/:number/check          controllers.AssessmentController.onPageLoadReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
+POST        /update-record/:recordId/recategorise/category-assessment/:number/check          controllers.AssessmentController.onSubmitReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
 
 GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
 

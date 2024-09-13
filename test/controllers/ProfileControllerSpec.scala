@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.TraderProfileConnector
-import models.TraderProfile
+import models.{NormalMode, TraderProfile}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -68,7 +68,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
       val detailsList = SummaryListViewModel(
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
-          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
           NirmsNumberSummary.row(profileResponse.nirmsNumber),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
@@ -113,7 +113,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
       val detailsList = SummaryListViewModel(
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
-          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
           NirmsNumberSummary.row(profileResponse.nirmsNumber),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
@@ -158,7 +158,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
       val detailsList = SummaryListViewModel(
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
-          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
           NirmsNumberSummary.row(profileResponse.nirmsNumber),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
@@ -203,7 +203,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
       val detailsList = SummaryListViewModel(
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
-          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined)),
+          Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
           NirmsNumberSummary.row(profileResponse.nirmsNumber),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)

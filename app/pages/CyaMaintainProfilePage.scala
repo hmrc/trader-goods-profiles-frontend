@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-package utils
+package pages
 
-case object Constants {
-  val firstAssessmentNumber: Int = 1
-  val firstAssessmentIndex: Int  = 0
-
-  val adviceProvided: String = "Advice Provided"
-
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
-
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
-}
+case object CyaMaintainProfilePage extends Page

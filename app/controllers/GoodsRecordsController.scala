@@ -19,7 +19,7 @@ package controllers
 import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
-import models.DownloadDataStatus.{FileInProgress, FileReady, RequestFile}
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen, RequestFile}
 import models.DownloadDataSummary
 import models.GoodsRecordsPagination._
 import navigation.Navigator
@@ -101,26 +101,30 @@ class GoodsRecordsController @Inject() (
     }
 
   def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
-    opt match {
-      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
+    opt.map(_.status) match {
+      case Some(RequestFile)     =>
         "goodsRecords.downloadLinkText.requestFile"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
+      case Some(FileInProgress)  =>
         "goodsRecords.downloadLinkText.fileInProgress"
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
+      case Some(FileReadyUnseen) =>
         "goodsRecords.downloadLinkText.fileReady"
-      case _                                                                         =>
+      case Some(FileReadySeen)   =>
+        "goodsRecords.downloadLinkText.fileReady"
+      case _                     =>
         "goodsRecords.downloadLinkText.requestFile"
     }
 
   def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
-    opt match {
-      case Some(downloadDataSummary) if downloadDataSummary.status == RequestFile    =>
+    opt.map(_.status) match {
+      case Some(RequestFile)     =>
         routes.RequestDataController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileInProgress =>
+      case Some(FileInProgress)  =>
         routes.FileInProgressController.onPageLoad().url
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady      =>
+      case Some(FileReadySeen)   =>
         routes.FileReadyController.onPageLoad().url
-      case _                                                                         => routes.RequestDataController.onPageLoad().url
+      case Some(FileReadyUnseen) =>
+        routes.FileReadyController.onPageLoad().url
+      case _                     => routes.RequestDataController.onPageLoad().url
     }
 
   def onSearch(page: Int): Action[AnyContent] =

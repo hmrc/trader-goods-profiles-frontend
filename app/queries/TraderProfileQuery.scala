@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package utils
+package queries
 
-case object Constants {
-  val firstAssessmentNumber: Int = 1
-  val firstAssessmentIndex: Int  = 0
+import models.TraderProfile
+import play.api.libs.json.JsPath
 
-  val adviceProvided: String = "Advice Provided"
+case object TraderProfileQuery extends Gettable[TraderProfile] with Settable[TraderProfile] {
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
-
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
+  override def path: JsPath = JsPath \ "traderProfile"
 }

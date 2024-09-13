@@ -40,10 +40,8 @@ class DownloadRequestSuccessController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      // TODO : should be replaced with actual date
-      val downloadUntilDate = "18 August 2024"
       downloadDataConnector.getEmail(request.eori).map { email =>
-        Ok(view(email.address, downloadUntilDate))
+        Ok(view(email.address))
       }
   }
 }
