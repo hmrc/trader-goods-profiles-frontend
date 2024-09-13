@@ -276,8 +276,8 @@ countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
 
-hasCorrectGoods.title = Canlyniadau ar gyfer
-hasCorrectGoods.heading = Canlyniadau ar gyfer
+hasCorrectGoods.title = Canlyniadau ar gyfer {0}
+hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma''r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ai dyma''r nwyddau cywir

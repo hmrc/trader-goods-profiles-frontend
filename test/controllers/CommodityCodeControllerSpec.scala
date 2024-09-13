@@ -24,6 +24,7 @@ import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -34,6 +35,7 @@ import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -181,7 +183,12 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
         when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
           .successful(
-            Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+            Commodity(
+              "6543210000",
+              List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+              Instant.now,
+              None
+            )
           )
 
         val userAnswers =
@@ -216,6 +223,20 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
               any()
             )
+
+          withClue("must save commodity as user entered it rather than in the ott-formatted version") {
+            val userAnswersSent: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockSessionRepository).set(userAnswersSent.capture())
+
+            val commodityDetails = if (page == CommodityCodePage) {
+              userAnswersSent.getValue.get(CommodityQuery).get
+            } else {
+              userAnswersSent.getValue.get(CommodityUpdateQuery(testRecordId)).get
+            }
+
+            commodityDetails.commodityCode mustBe "654321"
+
+          }
         }
       }
 
