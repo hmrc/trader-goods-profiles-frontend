@@ -19,8 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
-import play.api.libs.json.Json
+import play.api.http.Status.{ACCEPTED, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -55,16 +54,16 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
     if (config.downloadFileEnabled) {
       httpClient
-      .get(downloadDataSummaryUrl(eori))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK => Some(response.json.as[DownloadDataSummary])
+        .get(downloadDataSummaryUrl(eori))
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case OK => Some(response.json.as[DownloadDataSummary])
+          }
         }
-      }
-      .recover { case _: NotFoundException =>
-        None
-      }
+        .recover { case _: NotFoundException =>
+          None
+        }
     } else {
       Future.successful(None)
     }
