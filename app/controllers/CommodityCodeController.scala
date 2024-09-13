@@ -20,14 +20,15 @@ import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
 import models.Mode
-import models.helper.CreateRecordJourney
+import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage}
 import play.api.data.FormError
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData._
 import views.html.CommodityCodeView
@@ -46,7 +47,8 @@ class CommodityCodeController @Inject() (
   formProvider: CommodityCodeFormProvider,
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: CommodityCodeView
+  view: CommodityCodeView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -69,6 +71,18 @@ class CommodityCodeController @Inject() (
       val preparedForm = request.userAnswers.get(CommodityCodeUpdatePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
+      }
+
+      request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
+        case None =>
+          auditService
+            .auditStartUpdateGoodsRecord(
+              request.eori,
+              request.affinityGroup,
+              GoodsDetailsUpdate,
+              recordId
+            )
+        case _    =>
       }
 
       val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
