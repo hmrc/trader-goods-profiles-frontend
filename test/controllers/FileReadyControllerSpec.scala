@@ -21,7 +21,6 @@ import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.DownloadDataStatus.{FileReadySeen, RequestFile}
 import models.{DownloadData, DownloadDataSummary, FileInfo, Metadata}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
