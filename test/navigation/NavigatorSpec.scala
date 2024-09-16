@@ -3157,9 +3157,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             emptyUserAnswers
           ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber
         }
-      }
-
-      "in Update Profile Journey" - {
 
         "must go from RemoveNirmsPage" - {
 
