@@ -367,6 +367,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
+        "must go from NirmsNumberUpdatePage to ProfilePage" in {
+
+          navigator.nextPage(
+            NirmsNumberUpdatePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+        }
+
         "must go from RemoveNirmsPage" - {
 
           "to ProfilePage when user answered No" in {
@@ -399,15 +408,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               emptyUserAnswers
             ) mustBe routes.ProfileController.onPageLoad()
           }
-        }
-
-        "must go from NirmsNumberUpdatePage to ProfilePage" in {
-
-          navigator.nextPage(
-            NirmsNumberUpdatePage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
         }
 
         "must go from HasNiphlUpdatePage" - {
@@ -3245,6 +3245,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
+        }
+
+        "must go from NirmsNumberUpdatePage to ProfilePage" in {
+
+          navigator.nextPage(
+            NirmsNumberUpdatePage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
         }
       }
 

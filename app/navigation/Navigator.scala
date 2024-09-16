@@ -439,6 +439,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdateCheck
+    case NirmsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNirmsNumber
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
@@ -489,7 +490,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HasNirmsUpdatePage)
       .map {
-        case true => routes.NirmsNumberController.onPageLoadUpdate(CheckMode)
+        case true  => routes.NirmsNumberController.onPageLoadUpdate(CheckMode)
         case false =>
           answers
             .get(TraderProfileQuery)
