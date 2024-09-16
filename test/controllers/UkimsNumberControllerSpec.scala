@@ -22,7 +22,6 @@ import connectors.TraderProfileConnector
 import forms.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,7 +32,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.UkimsNumberView
 
 import scala.concurrent.Future
