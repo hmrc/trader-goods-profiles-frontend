@@ -24,7 +24,7 @@ import models.{NormalMode, SupplementaryRequest}
 import navigation.Navigator
 import pages.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DataCleansingService
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
@@ -47,9 +47,9 @@ class CyaSupplementaryUnitController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val errorMessage: String                = "Unable to create Supplementary Unit."
-  private def continueUrl(recordId: String): Call =
-    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
+  private val errorMessage: String                  = "Unable to create Supplementary Unit."
+  private def continueUrl(recordId: String): String =
+    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

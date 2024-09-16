@@ -22,7 +22,7 @@ import models.{NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import viewmodels.checkAnswers.UkimsNumberSummary
 import viewmodels.checkAnswers.HasNirmsSummary
@@ -46,7 +46,7 @@ class CyaMaintainProfileController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to update Trader profile."
-  private val continueUrl: Call    = routes.ProfileController.onPageLoad()
+  private val continueUrl: String  = routes.ProfileController.onPageLoad().url
 
   def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     TraderProfile.validateHasNirms(request.userAnswers) match {

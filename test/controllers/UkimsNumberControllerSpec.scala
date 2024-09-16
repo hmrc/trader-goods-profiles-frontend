@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.UkimsNumberFormProvider
-import models.{NormalMode, TraderProfile, UserAnswers}
+import models.{CheckMode, NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -258,6 +258,47 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
+        }
+      }
+
+      "must return OK and the correct view for a GET with all trader profile complete if the user is returning from the CYA page and UKIMS number should be filled in" in {
+
+        val ukimsNumberCheckRoute = routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url
+        val newUkims              = "newUkims"
+        val mockAuditService      = mock[AuditService]
+
+        val userAnswers = emptyUserAnswers.set(UkimsNumberUpdatePage, newUkims).success.value
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, ukimsNumberCheckRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[UkimsNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill(newUkims),
+            routes.UkimsNumberController.onSubmitUpdate(CheckMode)
+          )(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not try and submit an audit or get profile") {
             verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
           }
         }

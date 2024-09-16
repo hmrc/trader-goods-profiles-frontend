@@ -24,7 +24,7 @@ import models.{Country, GoodsRecord, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
@@ -52,7 +52,7 @@ class CyaCreateRecordController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Goods Record."
-  private val continueUrl: Call    = routes.CreateRecordStartController.onPageLoad()
+  private val continueUrl: String  = routes.CreateRecordStartController.onPageLoad().url
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     GoodsRecord.build(request.userAnswers, request.eori) match {

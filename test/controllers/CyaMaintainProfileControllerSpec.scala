@@ -362,8 +362,6 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must return OK and the correct view" in {
 
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
-
           val userAnswers = emptyUserAnswers
             .set(UkimsNumberUpdatePage, "newUkims")
             .success
@@ -509,8 +507,6 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
-
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
           val userAnswers = emptyUserAnswers
             .set(UkimsNumberUpdatePage, "newUkims")

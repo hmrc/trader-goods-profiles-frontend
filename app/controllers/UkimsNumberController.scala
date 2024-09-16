@@ -76,12 +76,19 @@ class UkimsNumberController @Inject() (
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      for {
-        traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
-        updatedAnswers <-
-          Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-        _              <- sessionRepository.set(updatedAnswers)
-      } yield Ok(view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate(mode: Mode)))
+      request.userAnswers.get(UkimsNumberUpdatePage) match {
+        case None        =>
+          for {
+            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            updatedAnswers <-
+              Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Ok(
+            view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate(mode: Mode))
+          )
+        case Some(value) =>
+          Future.successful(Ok(view(form.fill(value), routes.UkimsNumberController.onSubmitUpdate(mode: Mode))))
+      }
     }
 
   def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {

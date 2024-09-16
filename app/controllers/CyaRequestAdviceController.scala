@@ -24,7 +24,7 @@ import models.helper.RequestAdviceJourney
 import navigation.Navigator
 import pages.CyaRequestAdvicePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
 import viewmodels.govuk.summarylist._
@@ -46,8 +46,8 @@ class CyaRequestAdviceController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val errorMessage: String                = "Unable to create Request Advice."
-  private def continueUrl(recordId: String): Call = routes.AdviceStartController.onPageLoad(recordId)
+  private val errorMessage: String                  = "Unable to create Request Advice."
+  private def continueUrl(recordId: String): String = routes.AdviceStartController.onPageLoad(recordId).url
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

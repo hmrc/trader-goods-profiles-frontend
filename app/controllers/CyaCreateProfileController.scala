@@ -24,7 +24,7 @@ import models.helper.CreateProfileJourney
 import navigation.Navigator
 import pages.CyaCreateProfilePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -48,7 +48,7 @@ class CyaCreateProfileController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Trader profile."
-  private val continueUrl: Call    = routes.ProfileSetupController.onPageLoad()
+  private val continueUrl: String  = routes.ProfileSetupController.onPageLoad().url
 
   def onPageLoad(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
     implicit request =>
