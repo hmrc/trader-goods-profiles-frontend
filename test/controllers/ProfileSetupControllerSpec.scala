@@ -152,7 +152,6 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
             }
           }
         }
-
       }
     }
   }

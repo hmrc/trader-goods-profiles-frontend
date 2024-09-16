@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-case object Constants {
-  val firstAssessmentNumber: Int = 1
-  val firstAssessmentIndex: Int  = 0
+import play.api.libs.json.{Json, OFormat}
 
-  val adviceProvided: String = "Advice Provided"
+case class DownloadData(
+  downloadURL: String,
+  filename: String,
+  filesize: Int,
+  metadata: Seq[Metadata]
+)
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
-
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
+object DownloadData {
+  implicit val format: OFormat[DownloadData] = Json.format[DownloadData]
 }

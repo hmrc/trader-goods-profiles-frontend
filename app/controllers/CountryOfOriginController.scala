@@ -19,14 +19,16 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.CountryOfOriginFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData._
 import views.html.CountryOfOriginView
@@ -45,7 +47,8 @@ class CountryOfOriginController @Inject() (
   formProvider: CountryOfOriginFormProvider,
   val controllerComponents: MessagesControllerComponents,
   ottConnector: OttConnector,
-  view: CountryOfOriginView
+  view: CountryOfOriginView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -115,6 +118,18 @@ class CountryOfOriginController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
 
+      request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
+        case None =>
+          auditService
+            .auditStartUpdateGoodsRecord(
+              request.eori,
+              request.affinityGroup,
+              GoodsDetailsUpdate,
+              recordId
+            )
+        case _    =>
+      }
+
       request.userAnswers
         .get(CountriesQuery) match {
         case Some(countries) =>
@@ -165,6 +180,7 @@ class CountryOfOriginController @Inject() (
       case None        => form
       case Some(value) => form.fill(value)
     }
+
     Ok(view(preparedForm, action, countries))
   }
 

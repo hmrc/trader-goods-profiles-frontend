@@ -43,7 +43,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasCorrectGoodsFormProvider()
   private val form = formProvider()
 
-  "HasCorrectGoodsController2" - {
+  "HasCorrectGoodsController" - {
 
     "For create journey" - {
       lazy val hasCorrectGoodsCreateRoute = routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode).url
