@@ -18,7 +18,7 @@ package controllers
 
 import connectors.DownloadDataConnector
 import controllers.actions._
-import models.DownloadDataStatus.FileReady
+import models.DownloadDataStatus.FileReadyUnseen
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.HomePageView
@@ -39,8 +39,8 @@ class HomePageController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     downloadDataConnector.getDownloadDataSummary(request.eori).map {
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReady => Ok(view(downloadReady = true))
-      case _                                                                    => Ok(view(downloadReady = false))
+      case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen => Ok(view(downloadReady = true))
+      case _                                                                          => Ok(view(downloadReady = false))
     }
   }
 }

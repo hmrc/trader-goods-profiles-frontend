@@ -29,7 +29,7 @@
             content = HtmlContent(f"""
                 <h3 class='govuk-notification-banner__heading'>
                     ${messages("homepage.downloadBanner.content")}
-                    <a href='#' class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+                    <a href="${routes.FileReadyController.onPageLoad.url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
                 </h3>"""),
             bannerType = Some("success"),
             role=Some("alert"))

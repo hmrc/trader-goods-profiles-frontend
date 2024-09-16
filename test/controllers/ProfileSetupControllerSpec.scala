@@ -22,7 +22,7 @@ import config.FrontendAppConfig
 import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{mockConstructionWithAnswer, times, verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -152,7 +152,6 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
             }
           }
         }
-
       }
     }
   }

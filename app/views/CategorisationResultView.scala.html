@@ -26,26 +26,45 @@
 @(recordId: String, scenario: Scenario)(implicit request: Request[_], messages: Messages)
 
 @panel = @{
-    val panelContent = scenario match {
-        case Category1NoExemptionsScenario => messages("categorisationResult.Category1NoExemptions.panelBody")
-        case StandardGoodsScenario => messages("categorisationResult.Standard.panelBody")
-        case Category1Scenario => messages("categorisationResult.Category1.panelBody")
-        case Category2Scenario => messages("categorisationResult.Category2.panelBody")
-        case StandardGoodsNoAssessmentsScenario => messages("categorisationResult.StandardNoAssessments.panelBody")
+    val panelTitle = scenario match {
+        case StandardGoodsScenario => messages("categorisationResult.Standard.heading")
+        case StandardGoodsNoAssessmentsScenario => messages("categorisationResult.Standard.heading")
+        case _ => messages("categorisationResult.heading")
     }
-    govukPanel(Panel(title = messages("categorisationResult.heading"), content = HtmlContent("<p class=\"govuk-body\" style=\"color:#FFFFFF\">" + panelContent + "</p>")))
+
+    val panelContent = scenario match {
+        case Category1NoExemptionsScenario => Some(messages("categorisationResult.Category1NoExemptions.panelBody"))
+        case Category1Scenario => Some(messages("categorisationResult.Category1.panelBody"))
+        case Category2Scenario => Some(messages("categorisationResult.Category2.panelBody"))
+        case _ => None
+    }
+
+    if(panelContent.isDefined){
+        govukPanel(Panel(title = panelTitle, content = HtmlContent("<p class=\"govuk-body\" style=\"color:#FFFFFF\">" + panelContent.get + "</p>")))
+    } else {
+        govukPanel(Panel(title = panelTitle))
+    }
 }
 
 @paragraphContent = @{
     scenario match {
         case Category1NoExemptionsScenario => Some(messages("categorisationResult.Category1NoExemptions.p1"))
+        case StandardGoodsScenario => Some(messages("categorisationResult.Standard.p1"))
         case StandardGoodsNoAssessmentsScenario => Some(messages("categorisationResult.StandardNoAssessments.p1"))
         case _ => None
     }
 }
 
+@title = @{
+    scenario match {
+        case StandardGoodsScenario => titleNoForm(messages("categorisationResult.Standard.title"))
+        case StandardGoodsNoAssessmentsScenario => titleNoForm(messages("categorisationResult.Standard.title"))
+        case _ => titleNoForm(messages("categorisationResult.title"))
+    }
+}
+
 @layout(
-    pageTitle = titleNoForm(messages("categorisationResult.title")),
+    pageTitle = title,
     showBackLink = false
 ) {
 
@@ -53,14 +72,18 @@
 
     @if(paragraphContent.isDefined) {
         <p class="govuk-body">
-            @paragraphContent
+            @paragraphContent.get
         </p>
     }
 
-    @feedbackSection()
+    <h2 class="govuk-heading-m">@messages("categorisationResult.h2")</h2>
+
+    <p class="govuk-body">@messages("categorisationResult.h2.paragraph")</p>
 
     <p class="govuk-body"><a href="@routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("site.goBackToGoodsRecord")</a></p>
     <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
+
+    @feedbackSection()
 
 }

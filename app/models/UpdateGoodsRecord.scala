@@ -54,8 +54,7 @@ object UpdateGoodsRecord {
       UpdateGoodsRecord(
         eori,
         recordId,
-        countryOfOrigin = Some(value),
-        category = Some(1)
+        countryOfOrigin = Some(value)
       )
     )
 

@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-case object Constants {
-  val firstAssessmentNumber: Int = 1
-  val firstAssessmentIndex: Int  = 0
+import play.api.libs.json.{Json, OFormat}
 
-  val adviceProvided: String = "Advice Provided"
+case class Metadata(
+  metadata: String,
+  value: String
+)
 
-  val Category1AsInt: Int     = 1
-  val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
-
-  val NiphlsCode: String = "WFE012"
-  val NirmsCode: String  = "WFE013"
-
-  val minimumLengthOfCommodityCode: Int = 6
-
+object Metadata {
+  implicit val format: OFormat[Metadata] = Json.format[Metadata]
 }

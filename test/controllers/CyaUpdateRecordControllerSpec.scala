@@ -61,7 +61,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val page            = CountryOfOriginUpdatePage(testRecordId)
       val answer          = "CN"
       val expectedPayload =
-        UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer), category = Some(1))
+        UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
       val getUrl          = routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url
       val call            = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId)
       val postUrl         = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
@@ -827,7 +827,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val summaryUrl      = routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = CommodityCodeUpdatePage(testRecordId)
       val expectedPayload =
-        UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(testCommodity), category = Some(1))
+        UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(testCommodity))
       val getUrl          = routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId).url
       val call            = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId)
       val postUrl         = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId).url

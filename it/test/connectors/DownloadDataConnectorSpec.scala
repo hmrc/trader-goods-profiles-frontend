@@ -18,9 +18,10 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.DownloadDataStatus.FileReady
-import models.{DownloadDataSummary, Email}
+import models.DownloadDataStatus.{FileReadySeen, RequestFile}
+import models.{DownloadData, DownloadDataSummary, Email, Metadata}
 import org.apache.pekko.Done
+import org.apache.pekko.actor.typed.delivery.internal.ProducerControllerImpl.Request
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -47,6 +48,7 @@ class DownloadDataConnectorSpec
   private lazy val app: Application =
     new GuiceApplicationBuilder()
       .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
+      .configure("features.download-file-enabled" -> true)
       .build()
 
   private lazy val connector = app.injector.instanceOf[DownloadDataConnector]
@@ -58,12 +60,15 @@ class DownloadDataConnectorSpec
   private val downloadDataSummaryUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data-summary"
 
+  private val downloadDataUrl =
+    s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
+
   ".requestDownloadData" - {
 
     "must request download data and return true if successful" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(downloadDataSummaryUrl))
+        post(urlEqualTo(downloadDataUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(status(ACCEPTED))
       )
@@ -84,37 +89,94 @@ class DownloadDataConnectorSpec
 
   }
 
-  ".getDownloadDataSummary" - {
-
-    val downloadDataSummary = DownloadDataSummary(testEori, FileReady)
+  ".getDownloadData" - {
 
     "must get download data summary" in {
 
+      val downloadURL  = "downloadURL"
+      val filename     = "filename"
+      val filesize     = 600
+      val metadata     = Seq.empty
+      val downloadData = DownloadData(downloadURL, filename, filesize, metadata)
+
       wireMockServer.stubFor(
-        get(urlEqualTo(downloadDataSummaryUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
+        get(urlEqualTo(downloadDataUrl))
+          .willReturn(ok().withBody(Json.toJson(downloadData).toString))
       )
 
-      connector.getDownloadDataSummary(testEori).futureValue mustBe Some(downloadDataSummary)
+      connector.getDownloadData(testEori).futureValue mustBe Some(downloadData)
     }
 
     "must return None if Download summary does not exist" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(downloadDataSummaryUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
+        get(urlEqualTo(downloadDataUrl))
           .willReturn(notFound())
       )
 
-      connector.getDownloadDataSummary(testEori).futureValue mustBe None
+      connector.getDownloadData(testEori).futureValue mustBe None
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataSummaryUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.getDownloadDataSummary(testEori).failed.futureValue
+    }
+  }
+
+  ".getDownloadDataSummary" - {
+
+    val downloadDataSummary = DownloadDataSummary(testEori, RequestFile, None)
+
+    "must get download data summary" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
+      )
+
+      connector.getDownloadDataSummary(testEori).futureValue mustBe Some(downloadDataSummary)
+    }
+
+    "must return None" - {
+      "if Download summary does not exist" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(downloadDataSummaryUrl))
+            .willReturn(notFound())
+        )
+
+        connector.getDownloadDataSummary(testEori).futureValue mustBe None
+      }
+
+      "if feature flag for downloading data is disabled" in {
+
+        val appNoDownload = new GuiceApplicationBuilder()
+          .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
+          .configure("features.download-file-enabled" -> false)
+          .build()
+
+        val connectorNoDownload = appNoDownload.injector.instanceOf[DownloadDataConnector]
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(downloadDataSummaryUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
+        )
+
+        connectorNoDownload.getDownloadDataSummary(testEori).futureValue mustBe None
+      }
+
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
           .willReturn(serverError())
       )
 
@@ -133,7 +195,6 @@ class DownloadDataConnectorSpec
 
       wireMockServer.stubFor(
         get(urlEqualTo(emailUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok().withBody(Json.toJson(email).toString))
       )
 
@@ -144,7 +205,6 @@ class DownloadDataConnectorSpec
 
       wireMockServer.stubFor(
         get(urlEqualTo(emailUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
 

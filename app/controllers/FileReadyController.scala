@@ -16,33 +16,58 @@
 
 package controllers
 
+import connectors.DownloadDataConnector
 import controllers.actions._
-import play.api.i18n.MessagesApi
+import models.DownloadDataStatus.{FileReadySeen, FileReadyUnseen}
+import models.DownloadDataSummary
+import navigation.Navigator
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import utils.DateTimeFormats.dateTimeFormat
 import views.html.FileReadyView
 
+import java.time.{Instant, ZoneOffset}
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileReadyController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  navigator: Navigator,
   profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
   val controllerComponents: MessagesControllerComponents,
   view: FileReadyView
-) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent]                               = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      // TODO: Get file size to pass in to view
-      // TODO: Get file download link to pass in to view
-      // TODO: Get file created date and available until date
-      val fileSizeKilobytes = 1024
-      val fileDownloadLink  = "www.example.com"
-      val createdDate       = "19 July 2024"
-      val availableUntil    = "18 August 2024"
-      Ok(view(fileSizeKilobytes, fileDownloadLink, createdDate, availableUntil))
+      (for {
+        Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
+        if isFileReady(downloadDataSummary)
+        Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
+        Some(downloadData)        <- downloadDataConnector.getDownloadData(request.eori)
+      } yield Ok(
+        view(
+          fileInfo.fileSize,
+          downloadData.downloadURL,
+          convertToDateString(fileInfo.fileCreated),
+          convertToDateString(
+            fileInfo.fileCreated
+              .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)
+          )
+        )
+      )).recover { case _ => navigator.journeyRecovery() }
   }
+  def isFileReady(downloadDataSummary: DownloadDataSummary): Boolean =
+    downloadDataSummary.status == FileReadyUnseen || downloadDataSummary.status == FileReadySeen
 
+  def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
+    implicit val lang: Lang = messages.lang
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat())
+  }
 }

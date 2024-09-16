@@ -252,6 +252,7 @@ class GoodsRecordConnectorSpec
       "3",
       "4",
       instant,
+      None,
       None
     )
 
