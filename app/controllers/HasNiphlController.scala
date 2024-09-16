@@ -105,7 +105,7 @@ class HasNiphlController @Inject() (
                 updatedAnswersWithTraderProfile <-
                   Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
                 _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
-              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, NormalMode, updatedAnswersWithTraderProfile))
+              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithTraderProfile))
             }
         )
   }
