@@ -18,10 +18,11 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import models.UserAnswers
+import models.{NormalMode, UserAnswers}
 import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.TraderProfileQuery
 import repositories.SessionRepository
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -50,7 +51,7 @@ class ProfileController @Inject() (
           val detailsList = SummaryListViewModel(
             rows = Seq(
               Some(UkimsNumberSummary.row(profile.ukimsNumber)),
-              Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined)),
+              Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined, NormalMode)),
               NirmsNumberSummary.row(profile.nirmsNumber),
               Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
               NiphlNumberSummary.row(profile.niphlNumber)
@@ -64,20 +65,22 @@ class ProfileController @Inject() (
 
   private def cleanseProfileData(answers: UserAnswers): Future[UserAnswers] =
     for {
-      updatedAnswersRemovedUkimsNumber <-
+      updatedAnswersRemovedUkims            <-
         Future.fromTry(answers.remove(UkimsNumberUpdatePage))
-      updatedAnswersRemovedHasNirms    <-
-        Future.fromTry(updatedAnswersRemovedUkimsNumber.remove(HasNirmsUpdatePage))
-      updatedAnswersRemovedRemoveNirms <-
+      updatedAnswersRemovedHasNirms         <-
+        Future.fromTry(updatedAnswersRemovedUkims.remove(HasNirmsUpdatePage))
+      updatedAnswersRemovedRemoveNirms      <-
         Future.fromTry(updatedAnswersRemovedHasNirms.remove(RemoveNirmsPage))
-      updatedAnswersRemovedNirmsNumber <-
+      updatedAnswersRemovedNirmsNumber      <-
         Future.fromTry(updatedAnswersRemovedRemoveNirms.remove(NirmsNumberUpdatePage))
-      updatedAnswersRemovedHasNiphl    <-
+      updatedAnswersRemovedHasNiphl         <-
         Future.fromTry(updatedAnswersRemovedNirmsNumber.remove(HasNiphlUpdatePage))
-      updatedAnswersRemovedRemoveNiphl <-
+      updatedAnswersRemovedRemoveNiphl      <-
         Future.fromTry(updatedAnswersRemovedHasNiphl.remove(RemoveNiphlPage))
-      updatedAnswers                   <-
+      updatedAnswersRemoveNiphlNumberUpdate <-
         Future.fromTry(updatedAnswersRemovedRemoveNiphl.remove(NiphlNumberUpdatePage))
-      _                                <- sessionRepository.set(updatedAnswers)
+      updatedAnswers                        <-
+        Future.fromTry(updatedAnswersRemoveNiphlNumberUpdate.remove(TraderProfileQuery))
+      _                                     <- sessionRepository.set(updatedAnswers)
     } yield updatedAnswers
 }

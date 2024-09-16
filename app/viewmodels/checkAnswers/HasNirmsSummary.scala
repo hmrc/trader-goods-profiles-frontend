@@ -17,8 +17,8 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.HasNirmsPage
+import models.{CheckMode, Mode, UserAnswers}
+import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -41,15 +41,30 @@ object HasNirmsSummary {
       )
     }
 
-  def row(value: Boolean)(implicit messages: Messages): SummaryListRow = {
+  def row(value: Boolean, mode: Mode)(implicit messages: Messages): SummaryListRow = {
     val textValue = if (value) "site.yes" else "site.no"
     SummaryListRowViewModel(
       key = "hasNirms.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(textValue).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadUpdate.url)
+        ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadUpdate(mode).url)
           .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
       )
     )
   }
+
+  def rowUpdate(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(HasNirmsUpdatePage).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+
+      SummaryListRowViewModel(
+        key = "hasNirms.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadUpdate(CheckMode).url)
+            .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
+        )
+      )
+    }
+
 }

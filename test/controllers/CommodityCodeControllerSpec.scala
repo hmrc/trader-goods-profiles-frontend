@@ -20,10 +20,13 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CommodityCodeFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.data.FormError
@@ -32,7 +35,10 @@ import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CommodityCodeView
@@ -78,7 +84,15 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET" in {
 
+        val mockAuditService = mock[AuditService]
+
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
           .build()
 
         running(application) {
@@ -90,6 +104,51 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+
+          if (page == CommodityCodePage) {
+            withClue("must not audit") {
+              verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any())(any())
+            }
+          } else {
+            withClue("must call the audit service with the correct details") {
+              verify(mockAuditService)
+                .auditStartUpdateGoodsRecord(
+                  eqTo(testEori),
+                  eqTo(AffinityGroup.Individual),
+                  eqTo(GoodsDetailsUpdate),
+                  eqTo(testRecordId)
+                )(any())
+            }
+          }
+        }
+      }
+
+      "must not audit if already done on the previous page" in {
+
+        val mockAuditService = mock[AuditService]
+
+        val userAnswers = emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, commodityCodeRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+
+          withClue("must not audit") {
+            verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any())(any())
+          }
+
         }
       }
 
@@ -124,7 +183,12 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
         when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
           .successful(
-            Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+            Commodity(
+              "6543210000",
+              List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+              Instant.now,
+              None
+            )
           )
 
         val userAnswers =
@@ -159,6 +223,20 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
               any()
             )
+
+          withClue("must save commodity as user entered it rather than in the ott-formatted version") {
+            val userAnswersSent: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockSessionRepository).set(userAnswersSent.capture())
+
+            val commodityDetails = if (page == CommodityCodePage) {
+              userAnswersSent.getValue.get(CommodityQuery).get
+            } else {
+              userAnswersSent.getValue.get(CommodityUpdateQuery(testRecordId)).get
+            }
+
+            commodityDetails.commodityCode mustBe "654321"
+
+          }
         }
       }
 

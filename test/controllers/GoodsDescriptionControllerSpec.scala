@@ -17,20 +17,24 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import forms.GoodsDescriptionFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage}
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
 import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.GoodsDescriptionView
 
@@ -212,8 +216,15 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
       lazy val onSubmitAction: Call        = routes.GoodsDescriptionController.onSubmitUpdate(NormalMode, testRecordId)
 
       "must return OK and the correct view for a GET" in {
+        val mockAuditService = mock[AuditService]
+
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
           .build()
 
         running(application) {
@@ -228,6 +239,52 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(GoodsDetailsUpdate),
+                eqTo(testRecordId)
+              )(any())
+          }
+        }
+      }
+
+      "must not audit if already done on previous page" in {
+        val mockAuditService = mock[AuditService]
+
+        val userAnswers = emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, goodsDescriptionUpdateRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[GoodsDescriptionView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, onSubmitAction)(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not audit as already done on last page") {
+            verify(mockAuditService, times(0))
+              .auditStartUpdateGoodsRecord(
+                any(),
+                any(),
+                any(),
+                any()
+              )(any())
+          }
         }
       }
 

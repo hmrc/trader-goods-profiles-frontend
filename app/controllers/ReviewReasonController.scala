@@ -47,7 +47,7 @@ class ReviewReasonController @Inject() (
         .getRecord(request.eori, recordId)
         .map { record =>
           record.reviewReason match {
-            case Some(reviewReason) if record.toReview => Ok(view(recordId, reviewReason))
+            case Some(reviewReason) if record.toReview => Ok(view(recordId, reviewReason.toLowerCase))
             case _                                     => Redirect(navigator.nextPage(ReviewReasonPage(recordId), NormalMode, request.userAnswers))
           }
         }

@@ -34,6 +34,13 @@
         <li>@messages(s"cyaMaintainProfile.li3")</li>
     </ul>
     @govukSummaryList(list)
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">@messages("cyaMaintainProfile.warning")</span>
+            @messages("cyaMaintainProfile.warningText")
+        </strong>
+    </div>
 
     @formHelper(action = action) {
     @govukButton(ButtonViewModel(messages("site.save.continue")))

@@ -27,6 +27,7 @@ import navigation.Navigator
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
@@ -41,6 +42,7 @@ class RemoveGoodsRecordController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveGoodsRecordFormProvider,
+  auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveGoodsRecordView
 )(implicit ec: ExecutionContext)
@@ -50,6 +52,8 @@ class RemoveGoodsRecordController @Inject() (
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
+
       Ok(view(form, recordId, location))
     }
 
@@ -63,12 +67,15 @@ class RemoveGoodsRecordController @Inject() (
             case true  =>
               goodsRecordConnector
                 .removeGoodsRecord(request.eori, recordId)
-                .map {
-                  case true  => Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
-                  case false =>
+                .map { value =>
+                  auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
+                  if (value) {
+                    Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
+                  } else {
                     navigator.journeyRecovery(
                       Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
                     )
+                  }
                 }
             case false =>
               Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))

@@ -23,6 +23,7 @@ import forms.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,6 +31,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
@@ -45,12 +47,19 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
+  private val mockAuditService = mock[AuditService]
+
   "RemoveGoodsRecord Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
+      when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[AuditService].toInstance(mockAuditService)
+          )
           .build()
 
       running(application) {
@@ -65,6 +74,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
+
+        verify(mockAuditService).auditStartRemoveGoodsRecord(any(), any(), any())(any())
       }
     }
 
@@ -122,6 +133,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
       val mockConnector = mock[GoodsRecordConnector]
 
+      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+
       when(mockConnector.removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any()))
         .thenReturn(Future.successful(false))
 
@@ -129,7 +143,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[GoodsRecordConnector].toInstance(mockConnector)
+            bind[GoodsRecordConnector].toInstance(mockConnector),
+            bind[AuditService].toInstance(mockAuditService)
           )
           .build()
 
@@ -144,6 +159,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
         verify(mockConnector).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
+        verify(mockAuditService).auditFinishRemoveGoodsRecord(any(), any(), any())(any())
       }
     }
 

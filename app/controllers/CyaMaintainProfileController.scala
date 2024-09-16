@@ -25,6 +25,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
 import viewmodels.checkAnswers.UkimsNumberSummary
+import viewmodels.checkAnswers.HasNirmsSummary
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -46,6 +47,20 @@ class CyaMaintainProfileController @Inject() (
 
   private val errorMessage: String = "Unable to update Trader profile."
   private val continueUrl: Call    = routes.ProfileController.onPageLoad()
+
+  def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.validateHasNirms(request.userAnswers) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            HasNirmsSummary.rowUpdate(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
+      case Left(errors) =>
+        logErrorsAndContinue(errorMessage, continueUrl, errors)
+    }
+  }
 
   def onPageLoadUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     TraderProfile.validateUkimsNumber(request.userAnswers) match {
@@ -75,5 +90,21 @@ class CyaMaintainProfileController @Inject() (
         case Left(errors) =>
           Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
       }
+  }
+
+  def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    TraderProfile.validateHasNirms(request.userAnswers) match {
+      case Right(_)     =>
+        traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+          val updatedProfile = traderProfile.copy(nirmsNumber = None)
+          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+          for {
+            _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        }
+      case Left(errors) =>
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+    }
+
   }
 }
