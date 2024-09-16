@@ -79,7 +79,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -106,7 +106,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
-            routes.SingleRecordController.onPageLoad(recordId).url,
+            routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -125,7 +125,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)           =>
           logErrorsAndContinue(
             errorMessage,
-            routes.SingleRecordController.onPageLoad(recordId).url,
+            routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -162,7 +162,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -220,7 +220,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.SingleRecordController.onPageLoad(recordId).url,
+              routes.SingleRecordController.onPageLoad(recordId),
               errors
             )
           )
@@ -252,7 +252,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -286,7 +286,7 @@ class CyaUpdateRecordController @Inject() (
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.SingleRecordController.onPageLoad(recordId).url,
+              routes.SingleRecordController.onPageLoad(recordId),
               errors
             )
           )
@@ -325,7 +325,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId).url,
+                  routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )

@@ -20,7 +20,7 @@ import cats.data
 import logging.Logging
 import models.ValidationError
 import play.api.i18n.I18nSupport
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -28,24 +28,24 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
 
   def logErrorsAndContinue(
     errorMessage: String,
-    continueUrl: String,
+    continueCall: Call,
     errors: data.NonEmptyChain[ValidationError]
   ): Result = {
 
     val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
     val completeError  = s"$errorMessage Missing pages: $errorsAsString"
 
-    logErrorsAndContinue(completeError, continueUrl)
+    logErrorsAndContinue(completeError, continueCall)
   }
 
   def logErrorsAndContinue(
     errorMessage: String,
-    continueUrl: String
+    continueCall: Call
   ): Result = {
 
     logger.error(s"$errorMessage")
 
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueUrl))))
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
 
 }

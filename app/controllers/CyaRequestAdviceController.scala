@@ -46,8 +46,7 @@ class CyaRequestAdviceController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val errorMessage: String                  = "Unable to create Request Advice."
-  private def continueUrl(recordId: String): String = routes.AdviceStartController.onPageLoad(recordId).url
+  private val errorMessage: String = "Unable to create Request Advice."
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -62,7 +61,7 @@ class CyaRequestAdviceController @Inject() (
           Ok(view(list, recordId))
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-          logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
+          logErrorsAndContinue(errorMessage, routes.AdviceStartController.onPageLoad(recordId), errors)
       }
   }
 
@@ -79,7 +78,9 @@ class CyaRequestAdviceController @Inject() (
             }
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors))
+          Future.successful(
+            logErrorsAndContinue(errorMessage, routes.AdviceStartController.onPageLoad(recordId), errors)
+          )
       }
   }
 }

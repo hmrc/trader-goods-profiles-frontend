@@ -46,11 +46,8 @@ import scala.concurrent.Future
 
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  private val onwardRoute      = Call("GET", "/foo")
-  private val fakeNavigator    = new FakeNavigator(onwardRoute)
-  lazy private val continueUrl = RedirectUrl(
-    routes.CategorisationPreparationController.startCategorisation(testRecordId).url
-  )
+  private val onwardRoute   = Call("GET", "/foo")
+  private val fakeNavigator = new FakeNavigator(onwardRoute)
 
   "CyaCategorisationController" - {
 
@@ -404,7 +401,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
 
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(
+                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+              )
+              .url
           }
         }
 
@@ -417,7 +418,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(
+                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+              )
+              .url
 
           }
         }
@@ -462,7 +467,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(
+                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+              )
+              .url
 
           }
         }
@@ -488,7 +497,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(
+                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+              )
+              .url
           }
         }
       }
@@ -645,7 +658,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController
-              .onPageLoad(Some(continueUrl))
+              .onPageLoad(
+                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+              )
               .url
 
             verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any())

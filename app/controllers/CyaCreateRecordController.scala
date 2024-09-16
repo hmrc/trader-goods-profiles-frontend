@@ -52,7 +52,6 @@ class CyaCreateRecordController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Goods Record."
-  private val continueUrl: String  = routes.CreateRecordStartController.onPageLoad().url
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     GoodsRecord.build(request.userAnswers, request.eori) match {
@@ -68,7 +67,9 @@ class CyaCreateRecordController @Inject() (
         }
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(
+          logErrorsAndContinue(errorMessage, routes.CreateRecordStartController.onPageLoad(), errors)
+        )
     }
   }
 
@@ -95,7 +96,9 @@ class CyaCreateRecordController @Inject() (
         } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(
+          logErrorsAndContinue(errorMessage, routes.CreateRecordStartController.onPageLoad(), errors)
+        )
     }
   }
 

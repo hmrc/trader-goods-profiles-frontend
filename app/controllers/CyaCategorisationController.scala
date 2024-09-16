@@ -50,9 +50,7 @@ class CyaCategorisationController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val errorMessage: String                  = "Unable to update Goods Profile."
-  private def continueUrl(recordId: String): String =
-    routes.CategorisationPreparationController.startCategorisation(recordId).url
+  private val errorMessage: String = "Unable to update Goods Profile."
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -70,7 +68,10 @@ class CyaCategorisationController @Inject() (
             }
             .getOrElse {
               dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-              logErrorsAndContinue("Failed to get categorisation details", continueUrl(recordId))
+              logErrorsAndContinue(
+                "Failed to get categorisation details",
+                routes.CategorisationPreparationController.startCategorisation(recordId)
+              )
             }
       }
 
@@ -115,7 +116,11 @@ class CyaCategorisationController @Inject() (
 
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-        logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
+        logErrorsAndContinue(
+          errorMessage,
+          routes.CategorisationPreparationController.startCategorisation(recordId),
+          errors
+        )
 
     }
   }
@@ -145,7 +150,13 @@ class CyaCategorisationController @Inject() (
           }
         case Left(errors)          =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl(recordId), errors))
+          Future.successful(
+            logErrorsAndContinue(
+              errorMessage,
+              routes.CategorisationPreparationController.startCategorisation(recordId),
+              errors
+            )
+          )
 
       }
   }

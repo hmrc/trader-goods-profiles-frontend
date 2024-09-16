@@ -46,7 +46,6 @@ class CyaMaintainProfileController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to update Trader profile."
-  private val continueUrl: String  = routes.ProfileController.onPageLoad().url
 
   def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     TraderProfile.validateHasNirms(request.userAnswers) match {
@@ -58,7 +57,7 @@ class CyaMaintainProfileController @Inject() (
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
       case Left(errors) =>
-        logErrorsAndContinue(errorMessage, continueUrl, errors)
+        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
     }
   }
 
@@ -72,7 +71,7 @@ class CyaMaintainProfileController @Inject() (
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber))
       case Left(errors) =>
-        logErrorsAndContinue(errorMessage, continueUrl, errors)
+        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
     }
   }
 
@@ -88,7 +87,7 @@ class CyaMaintainProfileController @Inject() (
             _             <- traderProfileConnector.submitTraderProfile(traderProfile.copy(ukimsNumber = value), request.eori)
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
   }
 
@@ -103,7 +102,7 @@ class CyaMaintainProfileController @Inject() (
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         }
       case Left(errors) =>
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
     }
 
   }
