@@ -66,7 +66,7 @@ class RemoveNirmsController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(RemoveNirmsPage, value))
               updatedAndCleansedAnswers <- if (!value) {
-                  Future.fromTry(updatedAnswers.remove(HasNirmsUpdatePage))
+                  Future.fromTry(updatedAnswers.set(HasNirmsUpdatePage, true))
                 } else {
                   Future.successful(updatedAnswers)
                 }
