@@ -141,7 +141,13 @@ class NiphlNumberController @Inject() (
                         } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, NormalMode, answers))
                       case Left(errors) =>
                         val errorMessage = "Unable to update Trader profile."
-                        Future.successful(logErrorsAndContinue(errorMessage, routes.HasNiphlController.onPageLoadUpdate(NormalMode), errors))
+                        Future.successful(
+                          logErrorsAndContinue(
+                            errorMessage,
+                            routes.HasNiphlController.onPageLoadUpdate(NormalMode),
+                            errors
+                          )
+                        )
                     }
                   }
               }
