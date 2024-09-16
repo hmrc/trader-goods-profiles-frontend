@@ -104,7 +104,7 @@ object TraderProfile {
       case Left(errors) => Left(errors)
     }
 
-  def validateHasNiphls(
+  def validateHasNiphl(
     answers: UserAnswers
   ): EitherNec[ValidationError, Boolean] =
     answers.getPageValue(HasNiphlUpdatePage) match {

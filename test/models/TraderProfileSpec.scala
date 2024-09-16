@@ -498,12 +498,12 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
   }
 
-  ".validateHasNiphls" - {
+  ".validateHasNiphl" - {
 
-    "must validate Niphls" - {
+    "must validate Niphl" - {
 
-      "user has Niphls and changes answer to No" in {
-        val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
+      "user has Niphl and changes answer to No" in {
+        val userProfile = TraderProfile(testEori, "1", None, Some("niphl"))
 
         val answers =
           UserAnswers(userAnswersId)
@@ -517,12 +517,12 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         result mustEqual Right(false)
       }
 
-      "user does not have Niphls and does not change answer to Yes" in {
+      "user does not have Niphl and does not change answer to Yes" in {
         val userProfile = TraderProfile(testEori, "1", None, None)
 
         val answers =
@@ -534,7 +534,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         result mustEqual Right(false)
       }
@@ -545,7 +545,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "when user does not have answers" in {
 
         def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-        val result                        = TraderProfile.validateHasNiphls(emptyUserAnswers)
+        val result                        = TraderProfile.validateHasNiphl(emptyUserAnswers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -562,7 +562,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -571,9 +571,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when user answered No but No to remove Niphls question" in {
+      "when user answered No but No to remove Niphl question" in {
 
-        val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
+        val userProfile = TraderProfile(testEori, "1", None, Some("niphl"))
 
         val answers =
           UserAnswers(userAnswersId)
@@ -587,7 +587,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -607,7 +607,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(

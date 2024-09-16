@@ -47,7 +47,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case NiphlNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
-    case RemoveNiphlPage                           => navigateFromRemoveNiphlsPage
+    case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
     case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
@@ -223,11 +223,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       }
       .getOrElse(routes.ProfileController.onPageLoad())
 
-  private def navigateFromRemoveNiphlsPage(answers: UserAnswers): Call =
+  private def navigateFromRemoveNiphlPage(answers: UserAnswers): Call =
     answers
       .get(RemoveNiphlPage)
       .map {
-        case true  => routes.CyaMaintainProfileController.onPageLoadNiphls
+        case true  => routes.CyaMaintainProfileController.onPageLoadNiphl
         case false => routes.ProfileController.onPageLoad()
       }
       .getOrElse(routes.ProfileController.onPageLoad())
@@ -284,7 +284,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
               if (userProfile.niphlNumber.isDefined) {
                 routes.RemoveNiphlController.onPageLoad()
               } else {
-                routes.CyaMaintainProfileController.onPageLoadNiphls
+                routes.CyaMaintainProfileController.onPageLoadNiphl
               }
             }
             .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
@@ -458,7 +458,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
-    case RemoveNiphlPage                           => navigateFromRemoveNiphlsPage
+    case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)

@@ -350,7 +350,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
       }
     }
 
-    "Has NIPHLS" - {
+    "Has NIPHL" - {
 
       def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
         rows = Seq(
@@ -377,12 +377,12 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          val action = routes.CyaMaintainProfileController.onSubmitNiphls
+          val action = routes.CyaMaintainProfileController.onSubmitNiphl
 
           running(application) {
             val list = createChangeList(application, userAnswers)
 
-            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphls.url)
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphl.url)
 
             val result = route(application, request).value
 
@@ -399,7 +399,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphls.url)
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphl.url)
 
             val result = route(application, request).value
 
@@ -414,7 +414,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphls.url)
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphl.url)
 
             val result = route(application, request).value
 
@@ -426,7 +426,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
       "for a POST" - {
 
-        "when user answers can remove Niphls and update user profile" - {
+        "when user answers can remove Niphl and update user profile" - {
 
           "must update the profile and redirect to the Profile Page" - {
             val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
@@ -462,7 +462,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
               val result = route(application, request).value
 
@@ -505,7 +505,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
               val result = route(application, request).value
 
@@ -531,7 +531,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
               val result = route(application, request).value
 
@@ -573,7 +573,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -619,7 +619,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -639,7 +639,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
             val result = route(application, request).value
 

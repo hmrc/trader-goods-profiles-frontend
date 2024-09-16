@@ -63,8 +63,8 @@ POST        /update-profile/nirms-number                                        
 
 GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms
 POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms
-GET         /update-profile/check-your-answers/niphls-registered                            controllers.CyaMaintainProfileController.onPageLoadNiphls
-POST        /update-profile/check-your-answers/niphls-registered                            controllers.CyaMaintainProfileController.onSubmitNiphls
+GET         /update-profile/check-your-answers/niphl-registered                             controllers.CyaMaintainProfileController.onPageLoadNiphl
+POST        /update-profile/check-your-answers/niphl-registered                             controllers.CyaMaintainProfileController.onSubmitNiphl
 
 GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
 POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()

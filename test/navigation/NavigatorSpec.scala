@@ -314,7 +314,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
               .success
               .value
 
@@ -328,7 +328,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphls")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl")))
               .success
               .value
 
@@ -419,20 +419,20 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.NiphlNumberController.onPageLoadUpdate
           }
 
-          "to RemoveNiphlsPage when answer is No and Niphls number is associated to profile" in {
+          "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasNiphlUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
               .success
               .value
 
             navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.RemoveNiphlController.onPageLoad()
           }
 
-          "to RemoveNiphlsPage when answer is No and Niphls number is not associated to profile" in {
+          "to RemoveNiphlPage when answer is No and Niphl number is not associated to profile" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasNiphlUpdatePage, false)
@@ -446,7 +446,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -495,7 +495,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
           }
 
           "to ProfilePage when answer is not present" in {
@@ -840,7 +840,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq(category1),
                 None,
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1061,7 +1061,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 None,
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1117,7 +1117,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 None,
                 1,
-                isTraderNiphlsAuthorised = true,
+                isTraderNiphlAuthorised = true,
                 isTraderNirmsAuthorised = true
               )
 
@@ -1196,7 +1196,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to longer commodity code page" - {
 
-            "when Niphls assessment and has Niphls and is six-digit code with descendants" in {
+            "when Niphl assessment and has Niphl and is six-digit code with descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
                 None,
@@ -1204,7 +1204,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 None,
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1231,7 +1231,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 None,
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1280,7 +1280,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to has supplementary unit page" - {
 
-            "when Niphls assessment and has Niphls and is six-digit code with no descendants" in {
+            "when Niphl assessment and has Niphl and is six-digit code with no descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
                 None,
@@ -1288,7 +1288,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1315,7 +1315,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1360,7 +1360,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "when Niphls assessment and has Niphls and is ten-digit code" in {
+            "when Niphl assessment and has Niphl and is ten-digit code" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567891",
                 None,
@@ -1368,7 +1368,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1395,7 +1395,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -1690,7 +1690,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq(category1),
                 None,
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers =
@@ -2419,7 +2419,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to has supplementary unit page" - {
 
-            "when Niphls assessment and has Niphls and is six-digit code with no descendants" in {
+            "when Niphl assessment and has Niphl and is six-digit code with no descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
                 None,
@@ -2427,7 +2427,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -2454,7 +2454,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -2499,7 +2499,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "when Niphls assessment and has Niphls and is ten-digit code" in {
+            "when Niphl assessment and has Niphl and is ten-digit code" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567891",
                 None,
@@ -2507,7 +2507,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -2534,7 +2534,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -3253,7 +3253,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
           }
 
           "to ProfilePage when answer is not present" in {
@@ -3284,7 +3284,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
               .success
               .value
             navigator.nextPage(HasNirmsUpdatePage, CheckMode, answers) mustBe routes.RemoveNirmsController
@@ -3297,7 +3297,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphls")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl")))
               .success
               .value
 
@@ -3348,20 +3348,20 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.NiphlNumberController.onPageLoadUpdate
           }
 
-          "to RemoveNiphlsPage when answer is No and Niphls number is associated to profile" in {
+          "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasNiphlUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
               .success
               .value
 
             navigator.nextPage(HasNiphlUpdatePage, CheckMode, answers) mustBe routes.RemoveNiphlController.onPageLoad()
           }
 
-          "to RemoveNiphlsPage when answer is No and Niphls number is not associated to profile" in {
+          "to RemoveNiphlPage when answer is No and Niphl number is not associated to profile" in {
 
             val answers = UserAnswers(userAnswersId)
               .set(HasNiphlUpdatePage, false)
@@ -3375,7 +3375,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -4516,7 +4516,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "to has supplementary unit page" - {
 
-            "when Niphls assessment and has Niphls and is six-digit code with no descendants" in {
+            "when Niphl assessment and has Niphl and is six-digit code with no descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
                 None,
@@ -4524,7 +4524,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -4551,7 +4551,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -4596,7 +4596,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
-            "when Niphls assessment and has Niphls and is ten-digit code" in {
+            "when Niphl assessment and has Niphl and is ten-digit code" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567891",
                 None,
@@ -4604,7 +4604,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 0,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers
@@ -4631,7 +4631,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 Seq.empty,
                 Some("kg"),
                 1,
-                isTraderNiphlsAuthorised = true
+                isTraderNiphlAuthorised = true
               )
 
               val userAnswers = emptyUserAnswers

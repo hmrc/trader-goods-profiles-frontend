@@ -76,22 +76,22 @@ class CyaMaintainProfileController @Inject() (
     }
   }
 
-  def onPageLoadNiphls(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.validateHasNiphls(request.userAnswers) match {
+  def onPageLoadNiphl(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.validateHasNiphl(request.userAnswers) match {
       case Right(_)     =>
         val list = SummaryListViewModel(
           rows = Seq(
             HasNiphlSummary.rowUpdate(request.userAnswers)
           ).flatten
         )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphls))
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl))
       case Left(errors) =>
         logErrorsAndContinue(errorMessage, continueUrl, errors)
     }
   }
 
-  def onSubmitNiphls(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    TraderProfile.validateHasNiphls(request.userAnswers) match {
+  def onSubmitNiphl(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    TraderProfile.validateHasNiphl(request.userAnswers) match {
       case Right(_)     =>
         traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
           val updatedProfile = traderProfile.copy(niphlNumber = None)
