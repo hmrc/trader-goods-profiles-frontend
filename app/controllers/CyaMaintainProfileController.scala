@@ -56,7 +56,7 @@ class CyaMaintainProfileController @Inject() (
             val list = SummaryListViewModel(
               rows = Seq(
                 Some(HasNirmsSummary.row(value = true, CheckMode)),
-                NirmsNumberSummary.row(Some(nirmsNumberAnswer))
+                NirmsNumberSummary.rowUpdate(Some(nirmsNumberAnswer))
               ).flatten
             )
             Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))

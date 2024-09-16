@@ -52,7 +52,7 @@ class ProfileController @Inject() (
             rows = Seq(
               Some(UkimsNumberSummary.row(profile.ukimsNumber)),
               Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined, NormalMode)),
-              NirmsNumberSummary.row(profile.nirmsNumber),
+              NirmsNumberSummary.row(profile.nirmsNumber, NormalMode),
               Some(HasNiphlSummary.row(profile.niphlNumber.isDefined)),
               NiphlNumberSummary.row(profile.niphlNumber)
             ).flatten

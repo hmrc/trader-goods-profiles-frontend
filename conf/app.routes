@@ -54,15 +54,16 @@ GET         /create-profile/nirms-number                                        
 POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitCreate(mode: Mode = NormalMode)
 GET         /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate
-POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate
-GET         /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onPageLoadNirmsNumber
-POST        /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onSubmitNirmsNumber
-
-
 GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms
 POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms
+
+GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
+POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
+POST        /update-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitUpdate(mode: Mode = CheckMode)
+
+GET         /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onPageLoadNirmsNumber
+POST        /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onSubmitNirmsNumber
 
 GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
 POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()

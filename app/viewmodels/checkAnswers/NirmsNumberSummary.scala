@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import pages.NirmsNumberPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -39,15 +39,28 @@ object NirmsNumberSummary {
       )
     }
 
-  def row(value: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+  def row(value: Option[String], mode: Mode)(implicit messages: Messages): Option[SummaryListRow] =
     value.map { nirmsNumber =>
       SummaryListRowViewModel(
         key = "nirmsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(nirmsNumber).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate.url)
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate(mode).url)
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
       )
     }
+
+  def rowUpdate(value: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    value.map { nirmsNumber =>
+      SummaryListRowViewModel(
+        key = "nirmsNumber.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(nirmsNumber).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate(CheckMode).url)
+            .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
+        )
+      )
+    }
+
 }

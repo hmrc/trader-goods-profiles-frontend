@@ -69,7 +69,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
           Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
-          NirmsNumberSummary.row(profileResponse.nirmsNumber),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
         ).flatten
@@ -114,7 +114,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
           Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
-          NirmsNumberSummary.row(profileResponse.nirmsNumber),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
         ).flatten
@@ -159,7 +159,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
           Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
-          NirmsNumberSummary.row(profileResponse.nirmsNumber),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
         ).flatten
@@ -204,7 +204,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         rows = Seq(
           Some(UkimsNumberSummary.row(profileResponse.ukimsNumber)),
           Some(HasNirmsSummary.row(profileResponse.nirmsNumber.isDefined, NormalMode)),
-          NirmsNumberSummary.row(profileResponse.nirmsNumber),
+          NirmsNumberSummary.row(profileResponse.nirmsNumber, NormalMode),
           Some(HasNiphlSummary.row(profileResponse.niphlNumber.isDefined)),
           NiphlNumberSummary.row(profileResponse.niphlNumber)
         ).flatten

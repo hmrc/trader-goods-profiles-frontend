@@ -305,7 +305,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.NirmsNumberController.onPageLoadUpdate
+            ) mustBe routes.NirmsNumberController.onPageLoadUpdate(NormalMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
@@ -3186,7 +3186,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.NirmsNumberController.onPageLoadUpdate
+            ) mustBe routes.NirmsNumberController.onPageLoadUpdate(CheckMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {

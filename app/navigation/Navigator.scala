@@ -239,7 +239,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HasNirmsUpdatePage)
       .map {
-        case true  => routes.NirmsNumberController.onPageLoadUpdate
+        case true  => routes.NirmsNumberController.onPageLoadUpdate(NormalMode)
         case false =>
           answers
             .get(TraderProfileQuery)
@@ -436,7 +436,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case HasNirmsPage                              => navigateFromHasNirmsCheck
     case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
-    case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
+    case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdateCheck
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
@@ -481,6 +481,27 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         case false => routes.CyaCreateProfileController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasNirmsUpdateCheck(answers: UserAnswers): Call = {
+    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+    answers
+      .get(HasNirmsUpdatePage)
+      .map {
+        case true => routes.NirmsNumberController.onPageLoadUpdate(CheckMode)
+        case false =>
+          answers
+            .get(TraderProfileQuery)
+            .map { userProfile =>
+              if (userProfile.nirmsNumber.isDefined) {
+                routes.RemoveNirmsController.onPageLoad()
+              } else {
+                routes.CyaMaintainProfileController.onPageLoadNirms
+              }
+            }
+            .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+  }
 
   private def navigateFromHasNiphlCheck(answers: UserAnswers): Call =
     answers
