@@ -607,8 +607,6 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-          when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
-            .thenReturn(Future.successful(Done))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -622,13 +620,6 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
             intercept[RuntimeException] {
               await(route(application, request).value)
-            }
-
-            withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
-                .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
-                  any()
-                )
             }
           }
 

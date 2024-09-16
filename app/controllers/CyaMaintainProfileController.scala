@@ -96,7 +96,6 @@ class CyaMaintainProfileController @Inject() (
       case Right(niphlNumber) =>
         traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
           val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
-          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
           for {
             _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
             _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)

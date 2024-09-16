@@ -33,8 +33,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.NiphlNumberView
 
 import scala.concurrent.Future
@@ -402,8 +400,6 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
         when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
         val application =
@@ -425,19 +421,6 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockTraderProfileConnector)
-            .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
-
-          withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
-              .auditMaintainProfile(
-                eqTo(traderProfile),
-                eqTo(updatedTraderProfile),
-                eqTo(AffinityGroup.Individual)
-              )(
-                any()
-              )
-          }
         }
       }
 
@@ -479,7 +462,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+          redirectLocation(result).value mustEqual routes.CyaMaintainProfileController.onPageLoadNiphls.url
           verify(mockTraderProfileConnector, never())
             .submitTraderProfile(any(), any())(any())
 
@@ -540,50 +523,6 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
-      }
-
-      "must redirect to Journey Recovery for a POST if TraderProfile can't be built" in {
-        val answer = "SN12345"
-
-        val userAnswers = emptyUserAnswers
-          .set(HasNiphlUpdatePage, false)
-          .success
-          .value
-          .set(NiphlNumberUpdatePage, answer)
-          .success
-          .value
-
-        val mockAuditService = mock[AuditService]
-
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[AuditService].toInstance(mockAuditService)
-            )
-            .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, niphlNumberRouteUpdate)
-              .withFormUrlEncodedBody(("value", answer))
-
-          val result = route(application, request).value
-
-          val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate(NormalMode).url)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-
-          withClue("must not try and submit an audit") {
-            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
-          }
         }
       }
     }

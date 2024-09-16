@@ -514,7 +514,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
         }
 
         "must go from CyaMaintainProfilePage to ProfilePage" in {

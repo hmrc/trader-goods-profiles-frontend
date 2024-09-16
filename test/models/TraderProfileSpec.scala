@@ -519,7 +519,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateNiphlsUpdate(answers)
 
-        result mustEqual Right(false)
+        result mustEqual Right(None)
       }
 
       "user does not have Niphls and does not change answer to Yes" in {
@@ -536,7 +536,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateNiphlsUpdate(answers)
 
-        result mustEqual Right(false)
+        result mustEqual Right(None)
       }
     }
 
@@ -566,7 +566,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(HasNiphlUpdatePage)
+            PageMissing(NiphlNumberUpdatePage)
           )
         }
       }
