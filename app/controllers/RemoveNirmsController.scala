@@ -64,13 +64,13 @@ class RemoveNirmsController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(RemoveNirmsPage, value))
+              updatedAnswers            <- Future.fromTry(request.userAnswers.set(RemoveNirmsPage, value))
               updatedAndCleansedAnswers <- if (!value) {
-                  Future.fromTry(updatedAnswers.set(HasNirmsUpdatePage, true))
-                } else {
-                  Future.successful(updatedAnswers)
-                }
-              _ <- sessionRepository.set(updatedAndCleansedAnswers)
+                                             Future.fromTry(updatedAnswers.set(HasNirmsUpdatePage, true))
+                                           } else {
+                                             Future.successful(updatedAnswers)
+                                           }
+              _                         <- sessionRepository.set(updatedAndCleansedAnswers)
             } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, updatedAndCleansedAnswers))
         )
   }
