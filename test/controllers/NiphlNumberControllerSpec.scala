@@ -54,7 +54,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val niphlNumberRouteCreate = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
 
-  private lazy val niphlNumberRouteUpdate = routes.NiphlNumberController.onPageLoadUpdate.url
+  private lazy val niphlNumberRouteUpdate = routes.NiphlNumberController.onPageLoadUpdate(NormalMode).url
 
   "NiphlNumber Controller" - {
 
@@ -241,7 +241,10 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("3"), routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("3"),
+            routes.NiphlNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -281,7 +284,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -323,7 +326,10 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("3"), routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("3"),
+            routes.NiphlNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -365,7 +371,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -499,7 +505,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString

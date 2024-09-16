@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.NiphlNumberPage
+import pages.{NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -45,9 +45,22 @@ object NiphlNumberSummary {
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(niphlNumber).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadUpdate.url)
+          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadUpdate(CheckMode).url)
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )
     }
+
+  def rowUpdate(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(NiphlNumberUpdatePage).map { answer =>
+      SummaryListRowViewModel(
+        key = "niphlNumber.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(answer).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadUpdate(CheckMode).url)
+            .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
+        )
+      )
+    }
+
 }

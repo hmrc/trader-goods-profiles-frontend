@@ -24,7 +24,7 @@ import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary}
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -77,11 +77,12 @@ class CyaMaintainProfileController @Inject() (
   }
 
   def onPageLoadNiphls(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.validateHasNiphls(request.userAnswers) match {
+    TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
       case Right(_)     =>
         val list = SummaryListViewModel(
           rows = Seq(
-            HasNiphlSummary.rowUpdate(request.userAnswers)
+            HasNiphlSummary.rowUpdate(request.userAnswers),
+            NiphlNumberSummary.rowUpdate(request.userAnswers)
           ).flatten
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphls))
@@ -91,16 +92,17 @@ class CyaMaintainProfileController @Inject() (
   }
 
   def onSubmitNiphls(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    TraderProfile.validateHasNiphls(request.userAnswers) match {
-      case Right(_)     =>
+    TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
+      case Right(niphlNumber) =>
         traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-          val updatedProfile = traderProfile.copy(niphlNumber = None)
+          val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
           auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
           for {
             _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+            _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         }
-      case Left(errors) =>
+      case Left(errors)       =>
         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
   }

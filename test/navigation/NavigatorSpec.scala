@@ -416,7 +416,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.NiphlNumberController.onPageLoadUpdate
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate(NormalMode)
           }
 
           "to RemoveNiphlsPage when answer is No and Niphls number is associated to profile" in {
@@ -3345,7 +3345,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.NiphlNumberController.onPageLoadUpdate
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate(CheckMode)
           }
 
           "to RemoveNiphlsPage when answer is No and Niphls number is associated to profile" in {

@@ -50,8 +50,10 @@ POST        /create-profile/niphl-number                                        
 GET         /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadUpdate
-POST        /update-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitUpdate
+GET         /update-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
+POST        /update-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
+POST        /update-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitUpdate(mode: Mode = CheckMode)
 
 GET         /create-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitCreate(mode: Mode = NormalMode)

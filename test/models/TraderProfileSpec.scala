@@ -498,7 +498,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
   }
 
-  ".validateHasNiphls" - {
+  ".validateNiphlsUpdate" - {
 
     "must validate Niphls" - {
 
@@ -517,7 +517,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateNiphlsUpdate(answers)
 
         result mustEqual Right(false)
       }
@@ -534,7 +534,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateNiphlsUpdate(answers)
 
         result mustEqual Right(false)
       }
@@ -545,7 +545,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       "when user does not have answers" in {
 
         def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-        val result                        = TraderProfile.validateHasNiphls(emptyUserAnswers)
+        val result                        = TraderProfile.validateNiphlsUpdate(emptyUserAnswers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -562,7 +562,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateNiphlsUpdate(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -587,7 +587,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateNiphlsUpdate(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -607,7 +607,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.validateHasNiphls(answers)
+        val result = TraderProfile.validateNiphlsUpdate(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
