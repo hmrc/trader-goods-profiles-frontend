@@ -521,7 +521,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           navigator.nextPage(
             CyaMaintainProfilePage,
-            NormalMode,
+            CheckMode,
             emptyUserAnswers
           ) mustBe routes.ProfileController.onPageLoad()
         }

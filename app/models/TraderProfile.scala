@@ -53,18 +53,6 @@ object TraderProfile {
       Right(traderProfile.niphlNumber)
     ).parMapN(TraderProfile.apply)
 
-  def buildNiphl(
-    answers: UserAnswers,
-    eori: String,
-    traderProfile: TraderProfile
-  ): EitherNec[ValidationError, TraderProfile] =
-    (
-      Right(eori),
-      Right(traderProfile.ukimsNumber),
-      Right(traderProfile.nirmsNumber),
-      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
-    ).parMapN(TraderProfile.apply)
-
   private def getOptionallyRemovedPage[A](
     answers: UserAnswers,
     questionPage: QuestionPage[Boolean],
