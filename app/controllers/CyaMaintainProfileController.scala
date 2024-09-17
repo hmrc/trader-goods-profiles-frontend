@@ -62,7 +62,7 @@ class CyaMaintainProfileController @Inject() (
 
   def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     TraderProfile.validateHasNirms(request.userAnswers) match {
-      case Right(_) =>
+      case Right(_)     =>
         traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
           val updatedProfile = traderProfile.copy(nirmsNumber = None)
           auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
@@ -85,19 +85,20 @@ class CyaMaintainProfileController @Inject() (
     Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
   }
 
-  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-      TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
-        case Right(model) =>
-          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
-          for {
-            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-        case Left(errors) =>
-          val errorMessage = "Unable to update Trader profile."
-          val continueUrl = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
-          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
+          case Right(model) =>
+            auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+            for {
+              _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+          case Left(errors) =>
+            val errorMessage = "Unable to update Trader profile."
+            val continueUrl  = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
+            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+        }
       }
-    }
   }
 }
