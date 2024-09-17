@@ -24,7 +24,7 @@ import models.helper.CreateProfileJourney
 import navigation.Navigator
 import pages.CyaCreateProfilePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -48,7 +48,6 @@ class CyaCreateProfileController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Trader profile."
-  private val continueUrl: Call    = routes.ProfileSetupController.onPageLoad()
 
   def onPageLoad(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData) {
     implicit request =>
@@ -66,7 +65,7 @@ class CyaCreateProfileController @Inject() (
           Ok(view(list))
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-          logErrorsAndContinue(errorMessage, continueUrl, errors)
+          logErrorsAndContinue(errorMessage, routes.ProfileSetupController.onPageLoad(), errors)
       }
   }
 
@@ -81,7 +80,7 @@ class CyaCreateProfileController @Inject() (
 
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileSetupController.onPageLoad(), errors))
     }
 
   }

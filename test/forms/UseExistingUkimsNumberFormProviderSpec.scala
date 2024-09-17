@@ -19,12 +19,12 @@ package forms
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class UseExistingUkimsFormProviderSpec extends BooleanFieldBehaviours {
+class UseExistingUkimsNumberFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "existingUkims.error.required"
+  val requiredKey = "existingUkimsNumber.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new UseExistingUkimsFormProvider()()
+  val form = new UseExistingUkimsNumberFormProvider()()
 
   ".value" - {
 

@@ -60,6 +60,6 @@ case object SessionData {
   val withDrawAdviceStartPage: String        = "withdrawAdviceStart"
   val reasonForWithdrawAdvicePage: String    = "reasonForWithdrawAdvice"
   val fromExpiredCommodityCodePage: String   = "fromExpiredCommodityCodePage"
-  val useExistingUkimsPage: String           = "useExistingUkimsPage"
+  val useExistingUkimsNumberPage: String     = "useExistingUkimsNumberPage"
   val historicProfileDataQuery: String       = "historicProfileData"
 }

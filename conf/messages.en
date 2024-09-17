@@ -127,7 +127,7 @@ nirmsNumber.change.hidden = NIRMS number
 profileSetup.title = Setting up your profile
 profileSetup.h1 = Setting up your profile
 profileSetup.intro = We’re going to ask you some questions, then for some information depending on your answers.
-profileSetup.ukims.h2 = UK Internal Market Scheme (UKIMS)
+profileSetup.ukimsNumber.h2 = UK Internal Market Scheme (UKIMS)
 profileSetup.p1 = The trader who is registering for a Trader Goods Profile must be UKIMS registered. You’ll need your UKIMS numbers to set up your profile.
 profileSetup.p2 = If you’ve applied to UKIMS, HMRC will have sent you a letter with your UKIMS authorisation number.
 profileSetup.p3 = If you are not UKIMS registered, you can check here to find out
@@ -660,11 +660,10 @@ fileInProgress.p1 = We''ll email {0} when your file is ready.
 fileInProgress.p2 = You can request a new file. Doing this will cancel your existing request and you''ll have to wait for the new file to be ready.
 fileInProgress.linkText1 = Request a new file
 
-
-existingUkims.title = UK Internal Market Scheme (UKIMS) number
-existingUkims.h1 = UK Internal Market Scheme (UKIMS) number
-existingUkims.p1 = You''ve used UKIMS number {0} on previous declarations.
-existingUkims.error.required = Select if this is the correct UKIMS number
+existingUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.p1 = You''ve used UKIMS number {0} on previous declarations.
+existingUkimsNumber.error.required = Select if this is the correct UKIMS number
 
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem
@@ -672,6 +671,13 @@ expiredCommodityCode.p1 = The commodity code on this goods record has expired so
 expiredCommodityCode.p2 = You need to update the commodity code, then categorise the record.
 expiredCommodityCode.p1.linkText = Change the commodity code
 expiredCommodityCode.p2.linkText = Go back to goods record
+
+cyaMaintainProfile.title = Check your answers
+cyaMaintainProfile.heading = Check your answers
+cyaMaintainProfile.h2 = Schemes
+cyaMaintainProfile.li1 = UK Internal Market Scheme (UKIMS)
+cyaMaintainProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
+cyaMaintainProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 
 cyaMaintainProfile.title = Check your answers
 cyaMaintainProfile.heading = Check your answers
