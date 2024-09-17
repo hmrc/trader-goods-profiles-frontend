@@ -33,7 +33,7 @@ case object HasNirmsUpdatePage extends QuestionPage[Boolean] {
     originalUserAnswers: UserAnswers
   ): Try[UserAnswers] =
     updatedUserAnswers.get(HasNirmsUpdatePage) match {
-      case Some(false) => updatedUserAnswers.remove(NirmsNumberUpdatePage)
+      case Some(false) => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
       case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
     }
 

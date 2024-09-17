@@ -104,4 +104,13 @@ object TraderProfile {
       case Left(errors) => Left(errors)
     }
 
+  def validateNirmsNumber(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Boolean] =
+    answers.getPageValue(HasNirmsUpdatePage) match {
+      case Right(true)  => Right(true)
+      case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
+      case Left(errors) => Left(errors)
+    }
+
 }

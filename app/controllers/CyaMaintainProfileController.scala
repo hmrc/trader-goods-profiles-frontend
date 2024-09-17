@@ -20,7 +20,7 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.CyaMaintainProfilePage
+import pages.{CyaMaintainProfilePage, HasNirmsPage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
@@ -76,13 +76,18 @@ class CyaMaintainProfileController @Inject() (
   }
 
   def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    val list = SummaryListViewModel(
-      rows = Seq(
-        HasNirmsSummary.rowUpdate(request.userAnswers),
-        NirmsNumberSummary.rowUpdate(request.userAnswers)
-      ).flatten
-    )
-    Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
+    TraderProfile.validateNirmsNumber(request.userAnswers) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            HasNirmsSummary.rowUpdate(request.userAnswers),
+            NirmsNumberSummary.rowUpdate(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
+      case Left(errors) =>
+        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+    }
   }
 
   def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -96,8 +101,9 @@ class CyaMaintainProfileController @Inject() (
             } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
           case Left(errors) =>
             val errorMessage = "Unable to update Trader profile."
-            val continueUrl  = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
-            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+            Future.successful(
+              logErrorsAndContinue(errorMessage, routes.HasNirmsController.onPageLoadUpdate(NormalMode), errors)
+            )
         }
       }
   }

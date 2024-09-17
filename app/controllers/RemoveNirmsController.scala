@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.RemoveNirmsFormProvider
 import models.NormalMode
 import navigation.Navigator
-import pages.RemoveNirmsPage
+import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -65,9 +65,12 @@ class RemoveNirmsController @Inject() (
           value =>
             request.userAnswers.set(RemoveNirmsPage, value) match {
               case Success(answers) =>
-                sessionRepository.set(answers).map { _ =>
-                  Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
-                }
+                for {
+                  updatedAnswers <- Future.fromTry(
+                                      answers.set(HasNirmsUpdatePage, !value)
+                                    )
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
             }
         )
   }
