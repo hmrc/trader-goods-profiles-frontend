@@ -28,7 +28,6 @@ import repositories.SessionRepository
 import views.html.RemoveNiphlView
 
 import javax.inject.Inject
-import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 
@@ -41,7 +40,6 @@ class RemoveNiphlController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveNiphlFormProvider,
-  @unused traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveNiphlView
 )(implicit ec: ExecutionContext)

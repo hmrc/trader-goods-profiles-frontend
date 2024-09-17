@@ -24,7 +24,7 @@ import models.{Country, GoodsRecord, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
@@ -52,7 +52,6 @@ class CyaCreateRecordController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Goods Record."
-  private val continueUrl: Call    = routes.CreateRecordStartController.onPageLoad()
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     GoodsRecord.build(request.userAnswers, request.eori) match {
@@ -68,7 +67,9 @@ class CyaCreateRecordController @Inject() (
         }
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(
+          logErrorsAndContinue(errorMessage, routes.CreateRecordStartController.onPageLoad(), errors)
+        )
     }
   }
 
@@ -95,7 +96,9 @@ class CyaCreateRecordController @Inject() (
         } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(
+          logErrorsAndContinue(errorMessage, routes.CreateRecordStartController.onPageLoad(), errors)
+        )
     }
   }
 
