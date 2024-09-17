@@ -76,21 +76,21 @@ class NirmsNumberController @Inject() (
         )
   }
 
-  def onPageLoadUpdate: Action[AnyContent] =
+  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
         request.userAnswers.get(HasNirmsUpdatePage) match {
           case Some(_) =>
             traderProfile.nirmsNumber match {
               case None       =>
-                Future.successful(Ok(view(form, routes.NirmsNumberController.onSubmitUpdate)))
+                Future.successful(Ok(view(form, routes.NirmsNumberController.onSubmitUpdate(mode))))
               case Some(data) =>
                 for {
                   updatedAnswers <-
                     Future.fromTry(request.userAnswers.set(NirmsNumberPage, data))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
+                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate(mode))
                 )
             }
           case None    =>
@@ -101,7 +101,7 @@ class NirmsNumberController @Inject() (
                     Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, false))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form, routes.NirmsNumberController.onSubmitUpdate)
+                  view(form, routes.NirmsNumberController.onSubmitUpdate(mode))
                 )
               case Some(data) =>
                 for {
@@ -111,44 +111,28 @@ class NirmsNumberController @Inject() (
                     Future.fromTry(updatedAnswersWithHasNirms.set(NirmsNumberPage, data))
                   _                          <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate)
+                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate(mode))
                 )
             }
         }
       }
     }
 
-  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, routes.NirmsNumberController.onSubmitUpdate))),
-        value =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            if (traderProfile.nirmsNumber.getOrElse("") == value) {
-              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
-            } else {
-              request.userAnswers.set(NirmsNumberUpdatePage, value) match {
-                case Success(answers) =>
-                  sessionRepository.set(answers).flatMap { _ =>
-                    TraderProfile.buildNirms(answers, request.eori, traderProfile) match {
-                      case Right(model) =>
-                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
-
-                        for {
-                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, NormalMode, answers))
-                      case Left(errors) =>
-                        val errorMessage = "Unable to update Trader profile."
-                        val continueUrl  = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
-                        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
-                    }
-                  }
-              }
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.NirmsNumberController.onSubmitUpdate(mode)))),
+          value =>
+            request.userAnswers.set(NirmsNumberUpdatePage, value) match {
+              case Success(answers) =>
+                sessionRepository.set(answers).flatMap { _ =>
+                  Future.successful(Redirect(navigator.nextPage(NirmsNumberUpdatePage, mode, answers)))
+                }
             }
-          }
-      )
+        )
   }
 
 }

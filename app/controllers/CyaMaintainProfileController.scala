@@ -18,13 +18,13 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import models.{NormalMode, TraderProfile}
+import models.{Mode, NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.CyaMaintainProfilePage
+import pages.{CyaMaintainProfilePage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.HasNirmsSummary
+import viewmodels.checkAnswers.{HasNirmsSummary, NirmsNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -63,7 +63,7 @@ class CyaMaintainProfileController @Inject() (
 
   def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     TraderProfile.validateHasNirms(request.userAnswers) match {
-      case Right(_)     =>
+      case Right(_) =>
         traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
           val updatedProfile = traderProfile.copy(nirmsNumber = None)
           auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
@@ -74,6 +74,43 @@ class CyaMaintainProfileController @Inject() (
       case Left(errors) =>
         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
+  }
 
+    def onPageLoadNirmsNumber: Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              HasNirmsSummary.rowUpdate(request.userAnswers),
+              NirmsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
+//      TraderProfile.validateHasNirms(request.userAnswers) match {
+//        case Right(_) =>
+//          val list = SummaryListViewModel(
+//            rows = Seq(
+//              HasNirmsSummary.rowUpdate(request.userAnswers),
+//              NirmsNumberSummary.rowUpdate(request.userAnswers)
+//            ).flatten
+//          )
+//          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
+//        case Left(errors) =>
+//          logErrorsAndContinue(errorMessage, continueUrl, errors)
+//      }
+    }
+
+  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
+        case Right(model) =>
+          auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+          for {
+            _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
+          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        case Left(errors) =>
+          val errorMessage = "Unable to update Trader profile."
+          val continueUrl = routes.HasNirmsController.onPageLoadUpdate(NormalMode)
+          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+      }
+    }
   }
 }

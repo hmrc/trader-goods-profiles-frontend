@@ -210,7 +210,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate.url
+      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
 
@@ -241,7 +241,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NirmsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("2"), routes.NirmsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("2"),
+            routes.NirmsNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -281,7 +284,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NirmsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -323,7 +326,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NirmsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("2"), routes.NirmsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("2"),
+            routes.NirmsNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -365,7 +371,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NirmsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -499,7 +505,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
