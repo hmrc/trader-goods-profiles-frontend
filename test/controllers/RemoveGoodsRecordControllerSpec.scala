@@ -47,7 +47,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeGoodsRecordRoute =
     routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
-  val mockAuditService = mock[AuditService]
+  private val mockAuditService = mock[AuditService]
 
   "RemoveGoodsRecord Controller" - {
 

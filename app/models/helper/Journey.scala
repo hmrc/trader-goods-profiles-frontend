@@ -27,7 +27,7 @@ case object CreateProfileJourney extends Journey {
     hasNiphlPage,
     nirmsNumberPage,
     niphlNumberPage,
-    useExistingUkimsPage,
+    useExistingUkimsNumberPage,
     historicProfileDataQuery
   )
   override def toString: String = "CreateProfile"
