@@ -547,9 +547,9 @@ successBanner.heading = You have changed the {0}
 successBannerRemove.heading = You have removed the {0}
 
 successProfileBanner.title = Success
-successProfileBannerChangeNumber.heading = You have changed your {0} number
-successProfileBannerRemoveRegistration.heading = You have removed your {0} registration
-successProfileBannerAddNumber.heading = You have added your {0} number
+successProfileBanner.changeNumber.heading = You have changed your {0} number
+successProfileBanner.removeRegistration.heading = You have removed your {0} registration
+successProfileBanner.addNumber.heading = You have added your {0} number
 
 feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.
