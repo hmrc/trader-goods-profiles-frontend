@@ -20,9 +20,9 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.{CyaMaintainProfilePage, HasNirmsPage, NirmsNumberPage, NirmsNumberUpdatePage}
+import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import viewmodels.checkAnswers.{HasNirmsSummary, NirmsNumberSummary}
 import viewmodels.govuk.summarylist._

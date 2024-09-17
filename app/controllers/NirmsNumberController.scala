@@ -27,11 +27,9 @@ import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.NirmsNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 class NirmsNumberController @Inject() (
   override val messagesApi: MessagesApi,
