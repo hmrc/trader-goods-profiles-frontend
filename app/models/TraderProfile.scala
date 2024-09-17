@@ -108,7 +108,11 @@ object TraderProfile {
     answers: UserAnswers
   ): EitherNec[ValidationError, Boolean] =
     answers.getPageValue(HasNirmsUpdatePage) match {
-      case Right(true)  => Right(true)
+      case Right(true)  =>
+        answers.getPageValue(NirmsNumberUpdatePage) match {
+          case Right(_)     => Right(true)
+          case Left(errors) => Left(errors)
+        }
       case Right(false) => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
       case Left(errors) => Left(errors)
     }
