@@ -56,5 +56,4 @@ case object SessionData {
   val fromExpiredCommodityCodePage: String   = "fromExpiredCommodityCodePage"
   val useExistingUkimsPage: String           = "useExistingUkimsPage"
   val historicProfileDataQuery: String       = "historicProfileData"
-
 }
