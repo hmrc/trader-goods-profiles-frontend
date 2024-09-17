@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.NirmsNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile}
+import models.Mode
 import navigation.Navigator
 import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
@@ -79,18 +79,29 @@ class NirmsNumberController @Inject() (
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+
+        val previousAnswerOpt = request.userAnswers.get(NirmsNumberUpdatePage)
+
+        val preparedForm = previousAnswerOpt match {
+          case Some(previousNirmsAnswer) => form.fill(previousNirmsAnswer)
+          case None => traderProfile.nirmsNumber match {
+            case Some(profileNirmsNumber) => form.fill(profileNirmsNumber)
+            case None => form
+          }
+        }
+
         request.userAnswers.get(HasNirmsUpdatePage) match {
           case Some(_) =>
             traderProfile.nirmsNumber match {
               case None       =>
-                Future.successful(Ok(view(form, routes.NirmsNumberController.onSubmitUpdate(mode))))
+                Future.successful(Ok(view(preparedForm, routes.NirmsNumberController.onSubmitUpdate(mode))))
               case Some(data) =>
                 for {
                   updatedAnswers <-
                     Future.fromTry(request.userAnswers.set(NirmsNumberPage, data))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate(mode))
+                  view(preparedForm, routes.NirmsNumberController.onSubmitUpdate(mode))
                 )
             }
           case None    =>
@@ -101,7 +112,7 @@ class NirmsNumberController @Inject() (
                     Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, false))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form, routes.NirmsNumberController.onSubmitUpdate(mode))
+                  view(preparedForm, routes.NirmsNumberController.onSubmitUpdate(mode))
                 )
               case Some(data) =>
                 for {
@@ -111,7 +122,7 @@ class NirmsNumberController @Inject() (
                     Future.fromTry(updatedAnswersWithHasNirms.set(NirmsNumberPage, data))
                   _                          <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NirmsNumberController.onSubmitUpdate(mode))
+                  view(preparedForm, routes.NirmsNumberController.onSubmitUpdate(mode))
                 )
             }
         }
