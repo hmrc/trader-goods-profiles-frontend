@@ -24,7 +24,7 @@ import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.{HasNirmsSummary, NirmsNumberSummary}
+import viewmodels.checkAnswers.{HasNirmsSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -58,6 +58,36 @@ class CyaMaintainProfileController @Inject() (
       case Left(errors) =>
         logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
     }
+  }
+
+  def onPageLoadUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.validateUkimsNumber(request.userAnswers) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            UkimsNumberSummary.rowUpdate(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber))
+      case Left(errors) =>
+        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+    }
+  }
+
+  def onSubmitUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      TraderProfile.validateUkimsNumber(request.userAnswers) match {
+        case Right(value) =>
+          for {
+            traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+            _             <-
+              auditService
+                .auditMaintainProfile(traderProfile, traderProfile.copy(ukimsNumber = value), request.affinityGroup)
+            _             <- traderProfileConnector.submitTraderProfile(traderProfile.copy(ukimsNumber = value), request.eori)
+          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+      }
   }
 
   def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>

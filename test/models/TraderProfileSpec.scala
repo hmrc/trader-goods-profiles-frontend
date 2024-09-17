@@ -498,6 +498,38 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
   }
 
+  ".validateUkimsNumber" - {
+
+    "must validate Ukims Number" in {
+
+      val answers =
+        UserAnswers(userAnswersId)
+          .set(UkimsNumberUpdatePage, "newUkims")
+          .success
+          .value
+
+      val result = TraderProfile.validateUkimsNumber(answers)
+
+      result mustEqual Right("newUkims")
+
+    }
+
+    "must return errors" - {
+
+      "when user does not have answers" in {
+
+        def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+        val result                        = TraderProfile.validateUkimsNumber(emptyUserAnswers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(UkimsNumberUpdatePage)
+          )
+        }
+      }
+    }
+  }
+
   ".validateNirmsNumber" - {
 
     "must validate Nirms" - {

@@ -19,7 +19,7 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.UkimsNumberFormProvider
-import models.{Mode, NormalMode, TraderProfile}
+import models.Mode
 import navigation.Navigator
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
@@ -30,7 +30,6 @@ import views.html.UkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 class UkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -75,42 +74,36 @@ class UkimsNumberController @Inject() (
         )
   }
 
-  def onPageLoadUpdate: Action[AnyContent] =
+  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      for {
-        traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
-        updatedAnswers <-
-          Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-        _              <- sessionRepository.set(updatedAnswers)
-      } yield Ok(view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate))
+      request.userAnswers.get(UkimsNumberUpdatePage) match {
+        case None        =>
+          for {
+            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            updatedAnswers <-
+              Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Ok(
+            view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate(mode: Mode))
+          )
+        case Some(value) =>
+          Future.successful(Ok(view(form.fill(value), routes.UkimsNumberController.onSubmitUpdate(mode: Mode))))
+      }
     }
 
-  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitUpdate))),
-        value =>
-          request.userAnswers.set(UkimsNumberUpdatePage, value) match {
-            case Success(answers) =>
-              sessionRepository.set(answers).flatMap { _ =>
-                traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-                  if (traderProfile.ukimsNumber == value) {
-                    Future.successful(Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers)))
-                  } else {
-                    val newTraderProfile =
-                      TraderProfile(request.eori, value, traderProfile.nirmsNumber, traderProfile.niphlNumber)
-
-                    auditService.auditMaintainProfile(traderProfile, newTraderProfile, request.affinityGroup)
-
-                    traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori).map { _ =>
-                      Redirect(navigator.nextPage(UkimsNumberUpdatePage, NormalMode, answers))
-                    }
-                  }
-                }
-              }
-          }
-      )
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future
+              .successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitUpdate(mode: Mode)))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
+        )
   }
 }
