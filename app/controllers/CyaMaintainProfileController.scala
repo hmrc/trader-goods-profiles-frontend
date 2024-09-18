@@ -108,20 +108,19 @@ class CyaMaintainProfileController @Inject() (
 
   def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      traderProfileConnector.getTraderProfile(request.eori).flatMap {
-        traderProfile =>
-          TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
-            case Right(_) =>
-              val list = SummaryListViewModel(
-                rows = Seq(
-                  HasNiphlSummary.rowUpdate(request.userAnswers),
-                  NiphlNumberSummary.rowUpdate(request.userAnswers)
-                ).flatten
-              )
-              Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
-            case Left(errors) =>
-              Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
-          }
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
+          case Right(_)     =>
+            val list = SummaryListViewModel(
+              rows = Seq(
+                HasNiphlSummary.rowUpdate(request.userAnswers),
+                NiphlNumberSummary.rowUpdate(request.userAnswers)
+              ).flatten
+            )
+            Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
+          case Left(errors) =>
+            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+        }
       }
   }
 
@@ -134,7 +133,7 @@ class CyaMaintainProfileController @Inject() (
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
             } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-          case Left(errors) =>
+          case Left(errors)          =>
             Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
         }
       }
