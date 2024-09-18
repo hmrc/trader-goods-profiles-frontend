@@ -34,6 +34,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
+    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad
     case ProfileSetupPage                          => navigateFromProfileSetUp
     case UseExistingUkimsNumberPage                => navigateFromUseExistingUkimsNumber
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
