@@ -458,7 +458,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
-    case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
     case HasNiphlUpdatePage                        => navigateFromHasNiphlUpdate
     case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad

@@ -19,9 +19,7 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.HasNiphlFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.Mode
 import navigation.Navigator
 import pages.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.i18n.MessagesApi
@@ -30,6 +28,7 @@ import queries.TraderProfileQuery
 import repositories.SessionRepository
 import views.html.HasNiphlView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasNiphlController @Inject() (

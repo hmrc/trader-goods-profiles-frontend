@@ -16,7 +16,6 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNiphlFormProvider
 import models.NormalMode

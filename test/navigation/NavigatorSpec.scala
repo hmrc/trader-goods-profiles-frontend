@@ -3244,37 +3244,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
-        "must go from RemoveNiphlPage" - {
-          "to ProfilePage when user answered No" in {
-
-            val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, false).success.value
-            navigator.nextPage(
-              RemoveNiphlPage,
-              CheckMode,
-              answers
-            ) mustBe routes.ProfileController.onPageLoad
-          }
-
-          "to Cya NIPHL registered when user answered yes" in {
-
-            val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, true).success.value
-            navigator.nextPage(
-              RemoveNiphlPage,
-              CheckMode,
-              answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
-          }
-
-          "to ProfilePage when answer is not present" in {
-
-            navigator.nextPage(
-              RemoveNiphlPage,
-              CheckMode,
-              emptyUserAnswers
-            ) mustBe routes.ProfileController.onPageLoad()
-          }
-        }
-
         "must go from HasNirmsUpdatePage" - {
 
           "to NirmsNumberUpdatePage when answer is Yes" in {

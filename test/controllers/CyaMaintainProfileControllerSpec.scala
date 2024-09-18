@@ -128,7 +128,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "when user answers can remove Nirms and update user profile" - {
 
-          "must update the profile and redirect to the Profile Page" - {
+          "must update the profile and redirect to the Profile Page" in {
             val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
             val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
 
@@ -183,7 +183,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must redirect to Journey recovery" - {
 
-          "when the data is invalid" - {
+          "when the data is invalid" in {
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNirmsPage, true)
@@ -375,7 +375,15 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+          when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           val action = routes.CyaMaintainProfileController.onSubmitNiphl
 
@@ -395,7 +403,17 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must redirect to Journey Recovery if no answers are found" in {
 
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+          when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
 
@@ -428,7 +446,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "when user answers can remove Niphl and update user profile" - {
 
-          "must update the profile and redirect to the Profile Page" - {
+          "must update the profile and redirect to the Profile Page" in {
             val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
             val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
@@ -483,7 +501,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must redirect to Journey recovery" - {
 
-          "when the data is invalid" - {
+          "when the data is invalid" in {
+            val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNiphlPage, true)
@@ -495,6 +514,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
+
+            when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
             val application = applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
@@ -513,10 +534,6 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               redirectLocation(result).value mustEqual
                 routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
 
-              withClue("must not call the trader profile connector") {
-                verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
-              }
-
               withClue("must not call the audit connector") {
                 verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
               }
@@ -525,9 +542,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           }
 
           "when user doesn't answer yes or no" in {
+            val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+            when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(
+                  bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+                )
                 .build()
 
             running(application) {
@@ -719,7 +743,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "when user answers can change UKIMS Number and update user profile" - {
 
-          "must update the profile and redirect to the Profile Page" - {
+          "must update the profile and redirect to the Profile Page" in {
             val newUkims             = "newUkims"
             val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
             val updatedTraderProfile = TraderProfile(testEori, newUkims, Some("2"), Some("3"))
@@ -769,7 +793,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must redirect to Journey recovery" - {
 
-          "when the data is invalid" - {
+          "when the data is invalid" in {
 
             val userAnswers = emptyUserAnswers
 
