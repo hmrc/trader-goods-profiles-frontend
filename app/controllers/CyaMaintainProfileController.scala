@@ -105,18 +105,20 @@ class CyaMaintainProfileController @Inject() (
     }
   }
 
-  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.validateNirmsNumber(request.userAnswers) match {
-      case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            HasNirmsSummary.rowUpdate(request.userAnswers),
-            NirmsNumberSummary.rowUpdate(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
-      case Left(errors) =>
-        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
+        case Right(_) =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              HasNirmsSummary.rowUpdate(request.userAnswers),
+              NirmsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+      }
     }
   }
 
