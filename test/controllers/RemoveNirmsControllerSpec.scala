@@ -18,9 +18,12 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
+import connectors.TraderProfileConnector
 import forms.RemoveNirmsFormProvider
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
 import play.api.inject.bind
@@ -28,6 +31,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.RemoveNirmsView
+
+import scala.concurrent.Future
 
 class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
@@ -38,11 +43,16 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val removeNirmsRoute = routes.RemoveNirmsController.onPageLoad().url
 
+  private val mockTraderProfileConnector = mock[TraderProfileConnector]
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
   "RemoveNirms Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, removeNirmsRoute)
@@ -59,7 +69,9 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(RemoveNirmsPage, true).success.value
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, removeNirmsRoute)
@@ -75,7 +87,10 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when No submitted and not submit" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
+        .overrides(
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
         .build()
 
       running(application) {
@@ -93,7 +108,10 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page when Yes submitted and submit" in {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
-          .overrides(bind[Navigator].toInstance(new FakeNavigator(onwardRoute)))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
           .build()
 
       running(application) {
@@ -110,7 +128,9 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =
@@ -130,7 +150,9 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, removeNirmsRoute)
@@ -144,7 +166,9 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .build()
 
       running(application) {
         val request =

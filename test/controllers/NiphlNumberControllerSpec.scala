@@ -33,8 +33,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.NiphlNumberView
 
 import scala.concurrent.Future
@@ -52,11 +50,13 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
+  private lazy val niphlNumberRouteCreate = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
+
+  private lazy val niphlNumberRouteUpdate = routes.NiphlNumberController.onPageLoadUpdate(NormalMode).url
+
   "NiphlNumber Controller" - {
 
     ".create" - {
-
-      val niphlNumberRoute = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -67,7 +67,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -92,7 +92,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val view = application.injector.instanceOf[NiphlNumberView]
 
@@ -120,7 +120,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", "SN12345"))
 
           val result = route(application, request).value
@@ -136,7 +136,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -162,7 +162,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -182,7 +182,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -197,7 +197,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value
@@ -209,8 +209,6 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     ".update" - {
-
-      val niphlNumberRoute = routes.NiphlNumberController.onPageLoadUpdate.url
 
       "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
 
@@ -234,14 +232,17 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("3"), routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("3"),
+            routes.NiphlNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -274,14 +275,14 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -316,14 +317,17 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("3"), routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("3"),
+            routes.NiphlNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -358,14 +362,14 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
           val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -396,8 +400,6 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
         when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
         val application =
@@ -412,26 +414,13 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockTraderProfileConnector)
-            .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
-
-          withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
-              .auditMaintainProfile(
-                eqTo(traderProfile),
-                eqTo(updatedTraderProfile),
-                eqTo(AffinityGroup.Individual)
-              )(
-                any()
-              )
-          }
         }
       }
 
@@ -467,13 +456,13 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.ProfileController.onPageLoad().url
+          redirectLocation(result).value mustEqual routes.CyaMaintainProfileController.onPageLoadNiphls.url
           verify(mockTraderProfileConnector, never())
             .submitTraderProfile(any(), any())(any())
 
@@ -489,7 +478,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -499,7 +488,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -512,7 +501,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, niphlNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -527,57 +516,13 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, niphlNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-        }
-      }
-
-      "must redirect to Journey Recovery for a POST if TraderProfile can't be built" in {
-        val answer = "SN12345"
-
-        val userAnswers = emptyUserAnswers
-          .set(HasNiphlUpdatePage, false)
-          .success
-          .value
-          .set(NiphlNumberUpdatePage, answer)
-          .success
-          .value
-
-        val mockAuditService = mock[AuditService]
-
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[AuditService].toInstance(mockAuditService)
-            )
-            .build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, niphlNumberRoute)
-              .withFormUrlEncodedBody(("value", answer))
-
-          val result = route(application, request).value
-
-          val continueUrl = RedirectUrl(routes.HasNiphlController.onPageLoadUpdate.url)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
-
-          withClue("must not try and submit an audit") {
-            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
-          }
         }
       }
     }

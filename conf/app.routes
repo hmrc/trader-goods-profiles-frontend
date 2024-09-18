@@ -29,8 +29,11 @@ POST        /create-profile/niphl-question                                      
 GET         /create-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadUpdate
-POST        /update-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitUpdate
+GET         /update-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadUpdate(mode: Mode = NormalMode)
+POST        /update-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoadUpdate(mode: Mode = CheckMode)
+POST        /update-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmitUpdate(mode: Mode = CheckMode)
+
 
 GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitCreate(mode: Mode = NormalMode)
@@ -47,8 +50,10 @@ POST        /create-profile/niphl-number                                        
 GET         /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadUpdate
-POST        /update-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitUpdate
+GET         /update-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
+POST        /update-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
+POST        /update-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitUpdate(mode: Mode = CheckMode)
 
 GET         /create-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitCreate(mode: Mode = NormalMode)
@@ -56,6 +61,8 @@ GET         /create-profile/nirms-number/check                                  
 POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitCreate(mode: Mode = CheckMode)
 GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms
 POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms
+GET         /update-profile/check-your-answers/niphls-registered                            controllers.CyaMaintainProfileController.onPageLoadNiphls
+POST        /update-profile/check-your-answers/niphls-registered                            controllers.CyaMaintainProfileController.onSubmitNiphls
 
 GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
 POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate(mode: Mode = NormalMode)

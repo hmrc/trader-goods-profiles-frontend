@@ -53,18 +53,6 @@ object TraderProfile {
       Right(traderProfile.niphlNumber)
     ).parMapN(TraderProfile.apply)
 
-  def buildNiphl(
-    answers: UserAnswers,
-    eori: String,
-    traderProfile: TraderProfile
-  ): EitherNec[ValidationError, TraderProfile] =
-    (
-      Right(eori),
-      Right(traderProfile.ukimsNumber),
-      Right(traderProfile.nirmsNumber),
-      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
-    ).parMapN(TraderProfile.apply)
-
   private def getOptionallyRemovedPage[A](
     answers: UserAnswers,
     questionPage: QuestionPage[Boolean],
@@ -107,6 +95,25 @@ object TraderProfile {
           case Left(errors)       => Left(errors)
         }
       case Left(errors) => Left(errors)
+    }
+
+  def validateNiphlsUpdate(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Option[String]] =
+    answers.getPageValue(HasNiphlUpdatePage).flatMap {
+      case true  => answers.getPageValue(NiphlNumberUpdatePage).map(Some(_))
+      case false =>
+        answers.getPageValue(TraderProfileQuery).flatMap { userProfile =>
+          if (userProfile.niphlNumber.isDefined) {
+            answers.getPageValue(RemoveNiphlPage) match {
+              case Right(true)  => Right(None)
+              case Right(false) =>
+                Left(NonEmptyChain.one(UnexpectedPage(RemoveNiphlPage)))
+            }
+          } else {
+            Right(None)
+          }
+        }
     }
 
 }
