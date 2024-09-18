@@ -109,4 +109,23 @@ object TraderProfile {
       case Left(errors) => Left(errors)
     }
 
+  def validateNiphlsUpdate(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Option[String]] =
+    answers.getPageValue(HasNiphlUpdatePage).flatMap {
+      case true  => answers.getPageValue(NiphlNumberUpdatePage).map(Some(_))
+      case false =>
+        answers.getPageValue(TraderProfileQuery).flatMap { userProfile =>
+          if (userProfile.niphlNumber.isDefined) {
+            answers.getPageValue(RemoveNiphlPage) match {
+              case Right(true)  => Right(None)
+              case Right(false) =>
+                Left(NonEmptyChain.one(UnexpectedPage(RemoveNiphlPage)))
+            }
+          } else {
+            Right(None)
+          }
+        }
+    }
+
 }

@@ -416,7 +416,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.NiphlNumberController.onPageLoadUpdate
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate(NormalMode)
           }
 
           "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {
@@ -514,16 +514,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad
-        }
-
-        "must go from CyaMaintainProfilePage to ProfilePage" in {
-
-          navigator.nextPage(
-            CyaMaintainProfilePage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad()
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
         }
 
       }
@@ -3323,7 +3314,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.NiphlNumberController.onPageLoadUpdate
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate(CheckMode)
           }
 
           "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {

@@ -18,13 +18,13 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import models.{NormalMode, TraderProfile}
+import models.{CheckMode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, UkimsNumberSummary}
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -36,6 +36,7 @@ class CyaMaintainProfileController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaMaintainProfileView,
   traderProfileConnector: TraderProfileConnector,
@@ -105,34 +106,37 @@ class CyaMaintainProfileController @Inject() (
     }
   }
 
-  def onPageLoadNiphl(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-      TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
-        case Right(_)     =>
-          val list = SummaryListViewModel(
-            rows = Seq(
-              HasNiphlSummary.rowUpdate(request.userAnswers)
-            ).flatten
-          )
-          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
-        case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+  def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap {
+        traderProfile =>
+          TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
+            case Right(_) =>
+              val list = SummaryListViewModel(
+                rows = Seq(
+                  HasNiphlSummary.rowUpdate(request.userAnswers),
+                  NiphlNumberSummary.rowUpdate(request.userAnswers)
+                ).flatten
+              )
+              Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
+            case Left(errors) =>
+              Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+          }
       }
-    }
   }
 
-  def onSubmitNiphl(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-      TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
-        case Right(_)     =>
-          val updatedProfile = traderProfile.copy(niphlNumber = None)
-          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-          for {
-            _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-        case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+  def onSubmitNiphl(): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
+          case Right(updatedProfile) =>
+            auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+            for {
+              _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+          case Left(errors) =>
+            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+        }
       }
     }
-  }
 }
