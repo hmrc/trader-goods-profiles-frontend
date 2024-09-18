@@ -65,7 +65,9 @@ class RemoveNirmsController @Inject() (
           value =>
             request.userAnswers.set(RemoveNirmsPage, value) match {
               case Success(answers) =>
-                Future.successful(Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers)))
+                sessionRepository.set(answers).map { _ =>
+                  Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
+                }
             }
         )
   }
