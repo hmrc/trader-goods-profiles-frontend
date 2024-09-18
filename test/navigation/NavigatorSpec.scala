@@ -3224,6 +3224,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from RemoveNirmsPage" - {
 
+          "to CyaMaintainProfile when user answered No and NimrsNumberUpdate is defined" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(RemoveNirmsPage, false)
+              .success
+              .value
+              .set(NirmsNumberUpdatePage, "some nirms")
+              .success
+              .value
+
+            navigator.nextPage(
+              RemoveNirmsPage,
+              CheckMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+          }
+
           "to ProfilePage when user answered No" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, false).success.value

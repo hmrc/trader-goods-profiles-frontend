@@ -543,5 +543,4 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
     }
   }
-
 }
