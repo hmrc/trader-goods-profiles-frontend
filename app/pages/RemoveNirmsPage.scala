@@ -16,11 +16,24 @@
 
 package pages
 
+import models.UserAnswers
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object RemoveNirmsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "removeNirms"
+
+  override def cleanup(
+    value: Option[Boolean],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] = updatedUserAnswers.get(NirmsNumberUpdatePage) match {
+    case Some(_) if value.isDefined => updatedUserAnswers.set(HasNirmsUpdatePage, !value.get)
+    case _                          => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+  }
+
 }
