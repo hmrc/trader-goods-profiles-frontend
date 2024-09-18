@@ -24,7 +24,7 @@ import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NirmsNumberSummary, NiphlNumberSummary, UkimsNumberSummary}
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -131,10 +131,10 @@ class CyaMaintainProfileController @Inject() (
             val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-              _ = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+              _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
             } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, CheckMode, request.userAnswers))
           }
-        case Left(errors) =>
+        case Left(errors)       =>
           Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
     }
