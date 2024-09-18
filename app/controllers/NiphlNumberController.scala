@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.NiphlNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, TraderProfile}
+import models.Mode
 import navigation.Navigator
 import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
@@ -31,7 +31,6 @@ import services.AuditService
 import views.html.NiphlNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 class NiphlNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -131,6 +130,7 @@ class NiphlNumberController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, mode, updatedAnswers))
         )
+
   }
 
 }

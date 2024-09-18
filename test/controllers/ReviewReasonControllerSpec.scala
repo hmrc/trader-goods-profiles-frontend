@@ -68,6 +68,29 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
       }
 
+      "must OK and display correct view for review reason in a different case" in {
+
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(toReviewGoodsRecordResponse(Instant.now, Instant.now, "Inadequate")))
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, reviewReasonRoute)
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[ReviewReasonView]
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, "inadequate")(request, messages(application)).toString
+        }
+
+      }
+
       "must redirect to SingleRecordController when the record is not marked with 'toReview'" in {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]

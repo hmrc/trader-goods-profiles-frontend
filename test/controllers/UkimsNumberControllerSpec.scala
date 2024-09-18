@@ -20,9 +20,8 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.UkimsNumberFormProvider
-import models.{NormalMode, TraderProfile, UserAnswers}
+import models.{CheckMode, NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,7 +32,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.UkimsNumberView
 
 import scala.concurrent.Future
@@ -220,7 +218,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadUpdate.url
+      val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with all trader profile complete" in {
 
@@ -251,7 +249,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[UkimsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("1"), routes.UkimsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(
+            form.fill("1"),
+            routes.UkimsNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -262,66 +263,48 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to Profile for a POST and submit data if value is different from original" in {
+      "must return OK and the correct view for a GET with all trader profile complete if the user is returning from the CYA page and UKIMS number should be filled in" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val ukimsNumberCheckRoute = routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url
+        val newUkims              = "newUkims"
+        val mockAuditService      = mock[AuditService]
 
-        val answer               = "XIUKIM47699357400020231115081800"
-        val updatedTraderProfile = TraderProfile(testEori, answer, Some("2"), Some("3"))
+        val userAnswers = emptyUserAnswers.set(UkimsNumberUpdatePage, newUkims).success.value
 
-        val userAnswers = emptyUserAnswers
-          .set(UkimsNumberUpdatePage, answer)
-          .success
-          .value
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
 
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
-          .thenReturn(Future.successful(Done))
-
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
-        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[AuditService].toInstance(mockAuditService)
-            )
-            .build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
 
         running(application) {
-          val request =
-            FakeRequest(POST, ukimsNumberRoute)
-              .withFormUrlEncodedBody(("value", answer))
+          val request = FakeRequest(GET, ukimsNumberCheckRoute)
 
           val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockTraderProfileConnector)
-            .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
+          val view = application.injector.instanceOf[UkimsNumberView]
 
-          withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
-              .auditMaintainProfile(
-                eqTo(traderProfile),
-                eqTo(updatedTraderProfile),
-                eqTo(AffinityGroup.Individual)
-              )(
-                any()
-              )
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill(newUkims),
+            routes.UkimsNumberController.onSubmitUpdate(CheckMode)
+          )(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not try and submit an audit or get profile") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
           }
         }
       }
 
-      "must redirect to Profile for a POST and not submit data if value is the same as original" in {
-
-        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"))
+      "must redirect for a POST" in {
 
         val answer = "XIUKIM47699357400020231115081800"
 
@@ -330,22 +313,13 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        val mockAuditService                                   = mock[AuditService]
-
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())) thenReturn Future.successful(Done)
-
-        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[AuditService].toInstance(mockAuditService)
+              bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
 
@@ -358,11 +332,6 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-          verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
-
-          withClue("must not try and submit an audit") {
-            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
-          }
         }
       }
 
@@ -382,7 +351,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.UkimsNumberController.onSubmitUpdate)(
+          contentAsString(result) mustEqual view(boundForm, routes.UkimsNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString

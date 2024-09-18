@@ -17,10 +17,10 @@
 package controllers
 
 import controllers.actions._
-import forms.UseExistingUkimsFormProvider
+import forms.UseExistingUkimsNumberFormProvider
 import models.NormalMode
 import navigation.Navigator
-import pages.{UkimsNumberPage, UseExistingUkimsPage}
+import pages.{UkimsNumberPage, UseExistingUkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -37,7 +37,7 @@ class UseExistingUkimsNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
-  formProvider: UseExistingUkimsFormProvider,
+  formProvider: UseExistingUkimsNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UseExistingUkimsNumberView
 )(implicit ec: ExecutionContext)
@@ -49,7 +49,7 @@ class UseExistingUkimsNumberController @Inject() (
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       (for {
         ukimsNumber <- request.userAnswers.get(UkimsNumberPage)
-        updatedForm  = request.userAnswers.get(UseExistingUkimsPage).map(value => form.fill(value)).getOrElse(form)
+        updatedForm  = request.userAnswers.get(UseExistingUkimsNumberPage).map(value => form.fill(value)).getOrElse(form)
         updatedView  = view(updatedForm, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)
       } yield Ok(updatedView))
         .getOrElse(navigator.journeyRecovery())
@@ -63,14 +63,17 @@ class UseExistingUkimsNumberController @Inject() (
           Future.successful {
             request.userAnswers
               .get(UkimsNumberPage)
-              .map(ukims => BadRequest(view(formWithErrors, routes.UseExistingUkimsNumberController.onSubmit(), ukims)))
+              .map(ukimsNumber =>
+                BadRequest(view(formWithErrors, routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber))
+              )
               .getOrElse(navigator.journeyRecovery())
           },
-        useExistingUkims =>
+        useExistingUkimsNumber =>
           for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(UseExistingUkimsPage, useExistingUkims))
+            updatedAnswers <-
+              Future.fromTry(request.userAnswers.set(UseExistingUkimsNumberPage, useExistingUkimsNumber))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(UseExistingUkimsPage, NormalMode, updatedAnswers))
+          } yield Redirect(navigator.nextPage(UseExistingUkimsNumberPage, NormalMode, updatedAnswers))
       )
   }
 

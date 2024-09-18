@@ -7,6 +7,9 @@ site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
+site.goBackToGoodsRecord = Ewch i’r cofnod nwyddau
+site.goBackToHomePage = Ewch i’r hafan
+site.goBackToGoodsProfile = Ewch i’r proffil nwyddau
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -23,6 +26,8 @@ homepage.h2.2 = Rheoli''ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.3 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
+homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdani, sy’n cynnwys eich data TGP, yn barod i’w lawrlwytho.
+homepage.downloadBanner.linkText = Ewch i’r dudalen lawrlwytho i gael mynediad at eich ffeil.
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
@@ -49,7 +54,7 @@ pageNotFound.p3.1 = os oes angen i chi siarad â rhywun am eich proffil.
 profileSetup.title = Sefydlu eich proffil
 profileSetup.h1 = Sefydlu eich proffil
 profileSetup.intro = Rydym am ofyn rhai cwestiynau i chi, yna byddwn yn gofyn am beth o wybodaeth gennych yn dibynnu ar eich atebion.
-profileSetup.ukims.h2 = Cynllun Marchnad Fewnol y DU (UKIMS)
+profileSetup.ukimsNumber.h2 = Cynllun Marchnad Fewnol y DU (UKIMS)
 profileSetup.p1 = Mae''n rhaid i''r masnachwr sy''n cofrestru ar gyfer Proffil Nwyddau Masnachwyr fod wedi''i gofrestru ar gyfer yr UKIMS. Bydd angen eich rhifau UKIMS arnoch er mwyn sefydlu eich proffil.
 profileSetup.p2 = Os ydych wedi gwneud cais i''r UKIMS, bydd CThEF yn anfon llythyr atoch gyda''ch rhif awdurdodi UKIMS.
 profileSetup.p3 = Os nad ydych wedi cofrestru ar gyfer yr UKIMS, gallwch wirio yma i ddarganfod
@@ -271,8 +276,8 @@ countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
 
-hasCorrectGoods.title = Canlyniadau ar gyfer
-hasCorrectGoods.heading = Canlyniadau ar gyfer
+hasCorrectGoods.title = Canlyniadau ar gyfer {0}
+hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma''r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ai dyma''r nwyddau cywir
@@ -309,3 +314,94 @@ profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h2 = Yr hyn sy''n digwydd nesaf
 profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
+
+categorisationResult.title = Categoreiddio wedi’i gwblhau
+categorisationResult.heading = Categoreiddio wedi’i gwblhau
+categorisationResult.Category1.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.Category1NoExemptions.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.Category1NoExemptions.p1 = Mae’r nwyddau hyn yn perthyn i Gategori 1, ac nad oes eithriadau ar gael er mwyn newid y categori.
+categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
+categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
+
+todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
+
+cyaCategorisation.title = Gwiriwch eich atebion
+cyaCategorisation.heading = Gwiriwch eich atebion
+cyaCategorisation.categorisationHeader = Asesiadau categori
+cyaCategorisation.categorisationQuestion = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
+cyaCategorisation.supplementaryUnitHeader = Unedau atodol
+
+categoryGuidance.title = Categoreiddio
+categoryGuidance.heading = Categoreiddio
+categoryGuidance.p1 = Mae categoreiddio yn eich galluogi i wybod pa gategori sy’n berthnasol i’ch nwyddau, a ph’un a ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) neu beidio. Trwy gwblhau’r daith gategoreiddio, gallwch wella categori eich nwyddau os oes eithriadau penodol yn berthnasol i chi.
+categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw eithriadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi i ba gategori y mae’ch nwyddau’n perthyn iddo. Os oes gan y cod nwyddau ormod o eithriadau i ni allu eu rhestru, mae’n bosibl y byddwn yn gofyn am god nwyddau 8 neu 10 digit.
+categoryGuidance.subheading = Eithriadau
+categoryGuidance.p3 = Bydd eich nwyddau yn cael eu rhannu i 1 o 3 chategori:
+categoryGuidance.p3.1 = Categori 1 – nwyddau sydd wedi’u heithrio, ac nad ydynt yn gymwys i ddefnyddio SPIMM
+categoryGuidance.p3.2 = Categori 2 – nwyddau sydd o dan reolaeth, ac mae angen manylion y nwyddau ychwanegol ar eu cyfer er mwyn gallu defnyddio SPIMM
+categoryGuidance.p3.3 = Safonol – nwyddau nad ydynt yn perthyn i Gategori 1 neu Gategori 2, ac maent yn cael budd o ddefnyddio SPIMM
+categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau sy’n berthnasol ar gyfer eich nwyddau. Er enghraifft, gall eich rhif tystysgrif fod yn C644, Y929 neu C640. Os byddwch yn cael amod newydd, byddwch yn gallu ei newid yn nes ymlaen. Os yw unrhyw fesurau yn berthnasol i’ch masnach, byddwch yn cael canlyniad categoreiddio.
+
+assessment.title = Cwestiwn categoreiddio
+assessment.heading = Asesiadau categori {0}
+assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sy’n berthnasol ar gyfer {0}. Mae angen yr wybodaeth hon arnom er mwyn gallu categoreiddio’ch nwyddau.
+assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
+assessment.question = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
+assessment.question.onlyOne = A ydych yn bodloni’r amod canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiad?
+assessment.hint = Dewiswch un ateb.
+assessment.exemption = {0} – {1}
+assessment.exemption.none = Dim un o’r uchod
+assessment.error.required = Dewiswch ‘Iawn’ os ydych yn bodloni unrhyw un o’r eithriadau
+assessment.error.required.onlyOne = Dewiswch ‘Iawn’ os ydych yn bodloni’r amod
+assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
+assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
+assessment.insetText = Mae’n bosibl y bydd gofyn i chi gytuno ar hyd at 10 asesiad categori gwahanol ar gyfer pob un o’r nwyddau ar wahân.
+
+expiredCommodityCode.title = Mae problem wedi codi
+expiredCommodityCode.heading = Mae problem wedi codi
+expiredCommodityCode.p1 = Mae’r cod nwyddau sydd yn y cofnod nwyddau hwn wedi dod i ben, felly ni allwch gategoreiddio’r cofnod hwn.
+expiredCommodityCode.p2 = Mae angen i chi ddiweddaru’r cod nwyddau, ac yna mynd ati i gategoreiddio’r cofnod.
+expiredCommodityCode.p1.linkText = Newidiwch y cod nwyddau
+expiredCommodityCode.p2.linkText = Ewch i’r cofnod nwyddau
+
+unauthorisedServiceUser.title = Mae problem wedi codi
+unauthorisedServiceUser.heading = Mae problem wedi codi
+unauthorisedServiceUser.p1 = Nid yw’r Proffil Nwyddau Masnachwyr (TGP) ar gael i’r cyhoedd ar hyn o bryd.
+unauthorisedServiceUser.p2 = Nid oes modd cael mynediad at y TGP gan ddefnyddio’r manylion rydych wedi eu defnyddio i fewngofnodi.
+
+unauthorisedCdsEnrolment.title = Mae problem wedi codi
+unauthorisedCdsEnrolment.heading = Mae problem wedi codi
+unauthorisedCdsEnrolment.p1 = Nid yw’r manylion rydych wedi eu defnyddio i fewngofnodi wedi’u tanysgrifio i’r Gwasanaeth Datganiadau Tollau (CDS).
+unauthorisedCdsEnrolment.cdsLink = Mae’n rhaid i chi fod wedi tanysgrifio i CDS cyn i chi allu defnyddio’r Proffil Nwyddau Masnachwyr (yn agor tab newydd).
+unauthorisedCdsEnrolment.p2.part1 = Os ydych wedi tanysgrifio i CDS,
+unauthorisedCdsEnrolment.p2.linkText = allgofnodwch
+unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r manylion cywir.
+
+fileReady.title = Mae’ch ffeil yn barod i lawrlwytho
+fileReady.heading = Mae’ch ffeil yn barod i lawrlwytho
+fileReady.p1 = Dyma ffeil CSV (gwerthoedd wedi’u gwahanu gan goma) sy’n dangos yr holl wybodaeth o ran eich TGP. Gwnaethom greu’r ffeil hon ar {0} a bydd ar gael tan {1}
+fileReady.p2.linkText = Lawrlwythwch eich data TGP (csv, {0}kb)
+fileReady.p3 = Os oes angen ffeil newydd arnoch, sy’n cynnwys eich data TGP, gallwch
+fileReady.p3.linkText = ofyn am ffeil arall
+
+fileInProgress.title = Rydym wrthi’n paratoi’ch ffeil
+fileInProgress.heading = Rydym wrthi’n paratoi’ch ffeil
+fileInProgress.p1 = Byddwn yn anfon e-bost at {0} pan fydd eich ffeil yn barod.
+fileInProgress.p2 = Gallwch wneud cais am ffeil newydd. Bydd gwneud hyn yn canslo’ch cais presennol, a bydd yn rhaid i chi aros i’r ffeil newydd i fod yn barod.
+fileInProgress.linkText1 = Gofyn am ffeil newydd
+
+requestData.title = Gwneud cais i lawrlwytho’ch data TGP
+requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
+requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd y bydd yn barod i lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
+requestData.button = Gwneud cais am ddata TGP
+
+downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
+downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
+downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
+downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
+downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
+downloadRequestSuccess.p3 = Bydd gennych 10 diwrnod o {0} i lawrlwytho’r ffeil. Ar ôl 10 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
+

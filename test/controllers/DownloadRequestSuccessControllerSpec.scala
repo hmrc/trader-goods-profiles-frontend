@@ -36,10 +36,9 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val address           = "somebody@email.com"
-      val timestamp         = Instant.now
-      val email             = Email(address, timestamp)
-      val downloadUntilDate = "18 August 2024"
+      val address   = "somebody@email.com"
+      val timestamp = Instant.now
+      val email     = Email(address, timestamp)
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
@@ -60,7 +59,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[DownloadRequestSuccessView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(email.address, downloadUntilDate)(
+        contentAsString(result) mustEqual view(email.address)(
           request,
           messages(application)
         ).toString

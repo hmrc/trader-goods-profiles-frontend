@@ -22,9 +22,10 @@ import models.{CheckMode, NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary}
+import viewmodels.checkAnswers.UkimsNumberSummary
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -46,37 +47,66 @@ class CyaMaintainProfileController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to update Trader profile."
-  private val continueUrl: Call    = routes.ProfileController.onPageLoad()
+  private val continueUrl          = routes.ProfileController.onPageLoad()
 
-  def onPageLoadNirms(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      TraderProfile.validateHasNirms(request.userAnswers) match {
-        case Right(_)     =>
-          val list = SummaryListViewModel(
-            rows = Seq(
-              HasNirmsSummary.rowUpdate(request.userAnswers)
-            ).flatten
-          )
-          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
-        case Left(errors) =>
-          logErrorsAndContinue(errorMessage, continueUrl, errors)
-      }
+  def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.validateHasNirms(request.userAnswers) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            HasNirmsSummary.rowUpdate(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
+      case Left(errors) =>
+        logErrorsAndContinue(errorMessage, continueUrl, errors)
+    }
   }
 
-  def onSubmitNirms(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+  def onPageLoadUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
+    TraderProfile.validateUkimsNumber(request.userAnswers) match {
+      case Right(_)     =>
+        val list = SummaryListViewModel(
+          rows = Seq(
+            UkimsNumberSummary.rowUpdate(request.userAnswers)
+          ).flatten
+        )
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber))
+      case Left(errors) =>
+        logErrorsAndContinue(errorMessage, continueUrl, errors)
+    }
+  }
+
+  def onSubmitUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      TraderProfile.validateHasNirms(request.userAnswers) match {
-        case Right(_)     =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            val updatedProfile = traderProfile.copy(nirmsNumber = None)
-            auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-            for {
-              _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-          }
+      TraderProfile.validateUkimsNumber(request.userAnswers) match {
+        case Right(value) =>
+          for {
+            traderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+            _             <-
+              auditService
+                .auditMaintainProfile(traderProfile, traderProfile.copy(ukimsNumber = value), request.affinityGroup)
+            _             <- traderProfileConnector.submitTraderProfile(traderProfile.copy(ukimsNumber = value), request.eori)
+          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         case Left(errors) =>
           Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
       }
+  }
+
+  def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    TraderProfile.validateHasNirms(request.userAnswers) match {
+      case Right(_)     =>
+        traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+          val updatedProfile = traderProfile.copy(nirmsNumber = None)
+          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+          for {
+            _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        }
+      case Left(errors) =>
+        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+    }
+
   }
 
   def onPageLoadNiphls(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
@@ -95,8 +125,8 @@ class CyaMaintainProfileController @Inject() (
       }
   }
 
-  def onSubmitNiphls(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitNiphls(): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
         case Right(niphlNumber) =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
@@ -109,5 +139,6 @@ class CyaMaintainProfileController @Inject() (
         case Left(errors)       =>
           Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
       }
-  }
+    }
+
 }

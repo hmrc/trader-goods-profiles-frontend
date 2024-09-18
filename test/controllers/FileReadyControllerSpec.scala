@@ -17,15 +17,19 @@
 package controllers
 
 import base.SpecBase
-import connectors.TraderProfileConnector
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import base.TestConstants.testEori
+import connectors.{DownloadDataConnector, TraderProfileConnector}
+import models.DownloadDataStatus.{FileReadySeen, RequestFile}
+import models.{DownloadData, DownloadDataSummary, FileInfo, Metadata}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.FileReadyView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class FileReadyControllerSpec extends SpecBase with MockitoSugar {
@@ -39,32 +43,198 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
     "onPageLoad" - {
 
-      "must OK and display correct view" in {
+      "must OK and display correct view when link is got successfully" in {
+
+        val fileName                 = "fileName"
+        val fileSize                 = 600
+        val fileCreated              = Instant.parse("2025-03-01T18:35:24.00Z")
+        val retentionDays            = "30"
+        val url                      = "/some-url"
+        val fileRoleMetadata         = Metadata("FileRole", "C79Certificate")
+        val periodStartYearMetadata  = Metadata("PeriodStartYear", "2020")
+        val retentionDaysMetadata    = Metadata("RETENTION_DAYS", retentionDays)
+        val periodStartMonthMetadata = Metadata("PeriodStartMonth", "08")
+        val createdDate              = "1 March 2025"
+        val availableUntil           = "31 March 2025"
+        val downloadData             = DownloadData(
+          url,
+          fileName,
+          fileSize,
+          Seq(
+            fileRoleMetadata,
+            periodStartYearMetadata,
+            retentionDaysMetadata,
+            periodStartMonthMetadata
+          )
+        )
+        val downloadDataSummary      = DownloadDataSummary(
+          testEori,
+          FileReadySeen,
+          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+        )
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(downloadDataSummary)
+        )
+        when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Some(downloadData))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
           .build()
-
-        // TODO: Update these with mocks.
-        val fileSizeKilobytes = 1024
-        val fileDownloadLink  = "www.example.com"
-        val createdDate       = "19 July 2024"
-        val availableUntil    = "18 August 2024"
 
         running(application) {
           val request = FakeRequest(GET, fileReadyRoute)
           val result  = route(application, request).value
           val view    = application.injector.instanceOf[FileReadyView]
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(fileSizeKilobytes, fileDownloadLink, createdDate, availableUntil)(
+          contentAsString(result) mustEqual view(fileSize, url, createdDate, availableUntil)(
             request,
             messages(application)
           ).toString
+
+          verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+          verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+
         }
 
       }
 
-    }
+      "redirect to journey recovery if the link cannot be retrieved" - {
 
+        "because download data is not found" in {
+
+          val fileName      = "fileName"
+          val fileSize      = 600
+          val fileCreated   = Instant.parse("2025-03-01T18:35:24.00Z")
+          val retentionDays = "30"
+
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            FileReadySeen,
+            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+          )
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+            .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, fileReadyRoute)
+            val result  = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
+
+            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+          }
+        }
+
+        "because fileInfo is not present" in {
+
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            FileReadySeen,
+            None
+          )
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+            .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, fileReadyRoute)
+            val result  = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
+
+            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
+          }
+        }
+
+        "because status is not FileReady (seen or unseen)" in {
+
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            RequestFile,
+            None
+          )
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+            .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, fileReadyRoute)
+            val result  = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
+
+            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
+          }
+        }
+
+        "because summary is not found" in {
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            None
+          )
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+            .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, fileReadyRoute)
+            val result  = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
+
+            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
+          }
+        }
+      }
+    }
   }
 }

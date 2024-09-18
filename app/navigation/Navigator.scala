@@ -27,7 +27,7 @@ import play.api.mvc.Results.Redirect
 import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery, TraderProfileQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, minimumLengthOfCommodityCode}
+import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, firstAssessmentNumber, minimumLengthOfCommodityCode}
 
 import javax.inject.{Inject, Singleton}
 
@@ -35,13 +35,13 @@ import javax.inject.{Inject, Singleton}
 class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage                          => navigateFromProfileSetUp
-    case UseExistingUkimsPage                      => navigateFromUseExistingUkims
+    case UseExistingUkimsNumberPage                => navigateFromUseExistingUkimsNumber
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
     case HasNirmsPage                              => navigateFromHasNirms
     case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
     case HasNiphlPage                              => navigateFromHasNiphl
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
-    case UkimsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
+    case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case HasNirmsUpdatePage                        => navigateFromHasNirmsUpdate
     case NirmsNumberUpdatePage                     => _ => routes.ProfileController.onPageLoad()
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
@@ -80,7 +80,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CategorisationPreparationPage          => answers => navigateFromCategorisationPreparationPage(answers, p.recordId)
     case p: CategoryGuidancePage                   =>
-      _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentIndex)
+      _ => routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentNumber)
     case p: ReassessmentPage                       => navigateFromReassessment(p)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
@@ -94,6 +94,15 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad
   }
+
+  private def navigateFromUseExistingUkimsNumber(answers: UserAnswers): Call =
+    answers
+      .get(UseExistingUkimsNumberPage)
+      .map {
+        case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
+        case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
 
@@ -233,7 +242,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
 
   private def navigateFromUseExistingUkims(answers: UserAnswers): Call =
     answers
-      .get(UseExistingUkimsPage)
+      .get(UseExistingUkimsNumberPage)
       .map {
         case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
         case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
@@ -337,7 +346,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentIndex)
+          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
         } else {
           navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
@@ -356,8 +365,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   }
 
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
-    val recordId  = assessmentPage.recordId
-    val nextIndex = assessmentPage.index + 1
+    val recordId   = assessmentPage.recordId
+    val nextIndex  = assessmentPage.index + 1
+    val nextNumber = nextIndex + 1
 
     {
       for {
@@ -371,7 +381,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
             if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
               _.isAnswerCopiedFromPreviousAssessment
             )) =>
-          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextIndex)
+          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption if nextIndex < assessmentCount                                           =>
           navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
@@ -383,8 +393,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   }
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
-    val recordId  = assessmentPage.recordId
-    val nextIndex = assessmentPage.index + 1
+    val recordId   = assessmentPage.recordId
+    val nextIndex  = assessmentPage.index + 1
+    val nextNumber = nextIndex + 1
 
     {
       for {
@@ -394,7 +405,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
         case AssessmentAnswer.Exemption if nextIndex < assessmentCount                                           =>
-          routes.AssessmentController.onPageLoad(NormalMode, recordId, nextIndex)
+          routes.AssessmentController.onPageLoad(NormalMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
@@ -459,6 +470,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case RemoveNiphlPage                           => navigateFromRemoveNiphlsPage
     case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphls
     case HasNiphlUpdatePage                        => userAnswers => navigateFromHasNiphlUpdate(userAnswers, CheckMode)
+    case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
     case UseTraderReferencePage                    => navigateFromUseTraderReferenceCheck
@@ -567,7 +579,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentIndex)
+          routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
         } else {
           navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
@@ -585,8 +597,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   }
 
   private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
-    val recordId  = assessmentPage.recordId
-    val nextIndex = assessmentPage.index + 1
+    val recordId   = assessmentPage.recordId
+    val nextIndex  = assessmentPage.index + 1
+    val nextNumber = nextIndex + 1
 
     for {
       categorisationInfo <- answers.get(LongerCategorisationDetailsQuery(recordId))
@@ -599,7 +612,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
           if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
             _.isAnswerCopiedFromPreviousAssessment
           )) =>
-        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextIndex)
+        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
       case AssessmentAnswer.Exemption if nextIndex < assessmentCount =>
         navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
       case AssessmentAnswer.NoExemption
@@ -611,8 +624,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   } getOrElse routes.JourneyRecoveryController.onPageLoad()
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
-    val recordId  = assessmentPage.recordId
-    val nextIndex = assessmentPage.index + 1
+    val recordId   = assessmentPage.recordId
+    val nextIndex  = assessmentPage.index + 1
+    val nextNumber = nextIndex + 1
 
     {
       for {
@@ -623,7 +637,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         nextAnswer          = answers.get(AssessmentPage(recordId, nextIndex))
       } yield assessmentAnswer match {
         case AssessmentAnswer.Exemption if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
-          routes.AssessmentController.onPageLoad(CheckMode, recordId, nextIndex)
+          routes.AssessmentController.onPageLoad(CheckMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)

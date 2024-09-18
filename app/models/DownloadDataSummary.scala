@@ -20,7 +20,8 @@ import play.api.libs.json.{Json, OFormat}
 
 final case class DownloadDataSummary(
   eori: String,
-  status: DownloadDataStatus
+  status: DownloadDataStatus,
+  fileInfo: Option[FileInfo]
 )
 
 object DownloadDataSummary {

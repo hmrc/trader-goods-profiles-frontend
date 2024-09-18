@@ -17,21 +17,25 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
 import forms.CountryOfOriginFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage}
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.CountriesQuery
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.CountryOfOriginView
 
@@ -264,6 +268,11 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET" in {
 
+        val mockAuditService = mock[AuditService]
+
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
         val mockOttConnector = mock[OttConnector]
         when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
           countries
@@ -273,7 +282,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
@@ -291,6 +301,65 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(GoodsDetailsUpdate),
+                eqTo(testRecordId)
+              )(any())
+          }
+
+        }
+      }
+
+      "must not fire audit event if already fired on last page" in {
+
+        val mockAuditService = mock[AuditService]
+
+        val mockOttConnector = mock[OttConnector]
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
+          countries
+        )
+
+        val userAnswers = emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[AuditService].toInstance(mockAuditService)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(GET, countryOfOriginRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[CountryOfOriginView]
+
+          val call = onSubmitAction
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, call, countries)(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not call the audit service as this has already been done") {
+            verify(mockAuditService, times(0))
+              .auditStartUpdateGoodsRecord(
+                any(),
+                any(),
+                any(),
+                any()
+              )(any())
+          }
+
         }
       }
 

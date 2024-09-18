@@ -16,10 +16,9 @@
 
 package connectors
 
-import config.Service
-import models.{DownloadDataSummary, Email}
+import config.FrontendAppConfig
+import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
-import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -27,21 +26,23 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
+class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
-  private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
-  private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
+  private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
 
   private def downloadDataSummaryUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
+
+  private def downloadDataUrl(eori: String) =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data"
 
   private def emailUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/email"
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/email"
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .post(downloadDataSummaryUrl(eori))
+      .post(downloadDataUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
@@ -51,13 +52,29 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
       }
 
   def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
+    if (config.downloadFileEnabled) {
+      httpClient
+        .get(downloadDataSummaryUrl(eori))
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case OK => Some(response.json.as[DownloadDataSummary])
+          }
+        }
+        .recover { case _: NotFoundException =>
+          None
+        }
+    } else {
+      Future.successful(None)
+    }
+
+  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadData]] =
     httpClient
-      .get(downloadDataSummaryUrl(eori))
-      .setHeader(clientIdHeader)
+      .get(downloadDataUrl(eori))
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK => Some(response.json.as[DownloadDataSummary])
+          case OK => Some(response.json.as[DownloadData])
         }
       }
       .recover { case _: NotFoundException =>
@@ -67,7 +84,6 @@ class DownloadDataConnector @Inject() (config: Configuration, httpClient: HttpCl
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
     httpClient
       .get(emailUrl(eori))
-      .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
         response.status match {

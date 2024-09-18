@@ -29,22 +29,22 @@
 
 @(form: Form[_], action: Call, ukimsNumber: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("existingUkims.title"))) {
+@layout(pageTitle = title(form, messages("existingUkimsNumber.title"))) {
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@messages("existingUkims.h1")</h1>
+    <h1 class="govuk-heading-l">@messages("existingUkimsNumber.h1")</h1>
 
-    <p class="govuk-body">@messages("existingUkims.p1",ukimsNumber)</p>
+    <p class="govuk-body">@messages("existingUkimsNumber.p1",ukimsNumber)</p>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(
             field = form("value"),
-            legend = Legend(content = "existingUkims.h1", classes = "govuk-visually-hidden")
+            legend = Legend(content = "existingUkimsNumber.h1", classes = "govuk-visually-hidden")
             )
         )
 

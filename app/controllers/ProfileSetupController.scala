@@ -72,8 +72,8 @@ class ProfileSetupController @Inject() (
     if (ukimsNumber.isDefined) {
       for {
         answersWithProfileData <- Future.fromTry(userAnswers.set(HistoricProfileDataQuery, historicProfileData.get))
-        answersWithUkims       <- Future.fromTry(answersWithProfileData.set(UkimsNumberPage, ukimsNumber.get))
-      } yield answersWithUkims
+        answersWithUkimsNumber <- Future.fromTry(answersWithProfileData.set(UkimsNumberPage, ukimsNumber.get))
+      } yield answersWithUkimsNumber
     } else {
       Future.successful(userAnswers)
     }
