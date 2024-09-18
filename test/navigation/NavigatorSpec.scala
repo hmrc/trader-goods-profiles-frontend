@@ -416,14 +416,37 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.NiphlNumberController.onPageLoadUpdate
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate(NormalMode)
           }
 
-          "to RemoveNiphlPage when answer is No" in {
+          "to RemoveNiphlsPage when answer is No and Niphls number is associated to profile" in {
 
-            val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, false).success.value
-            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.RemoveNiphlController
-              .onPageLoad()
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .success
+              .value
+
+            navigator.nextPage(HasNiphlUpdatePage, NormalMode, answers) mustBe routes.RemoveNiphlController.onPageLoad()
+          }
+
+          "to RemoveNiphlsPage when answer is No and Niphls number is not associated to profile" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), None))
+              .success
+              .value
+
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              NormalMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -436,15 +459,53 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
+
+          "to JourneyRecoveryPage when TraderProfileQuery not present" in {
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              NormalMode,
+              answers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
         }
 
-        "must go from RemoveNiphlPage to ProfilePage" in {
+        "must go from RemoveNiphlPage" - {
+          "to ProfilePage when user answered No" in {
 
-          navigator.nextPage(
-            RemoveNiphlPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad
+            val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, false).success.value
+            navigator.nextPage(
+              RemoveNiphlPage,
+              NormalMode,
+              answers
+            ) mustBe routes.ProfileController.onPageLoad
+          }
+
+          "to Cya NIPHL registered when user answered yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, true).success.value
+            navigator.nextPage(
+              RemoveNiphlPage,
+              NormalMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+          }
+
+          "to ProfilePage when answer is not present" in {
+
+            navigator.nextPage(
+              RemoveNiphlPage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe routes.ProfileController.onPageLoad()
+          }
         }
 
         "must go from NiphlNumberUpdatePage to ProfilePage" in {
@@ -453,14 +514,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.ProfileController.onPageLoad
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
         }
 
         "must go from CyaMaintainProfilePage to ProfilePage" in {
 
           navigator.nextPage(
             CyaMaintainProfilePage,
-            NormalMode,
+            CheckMode,
             emptyUserAnswers
           ) mustBe routes.ProfileController.onPageLoad()
         }
@@ -3183,6 +3244,37 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
+        "must go from RemoveNiphlPage" - {
+          "to ProfilePage when user answered No" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, false).success.value
+            navigator.nextPage(
+              RemoveNiphlPage,
+              CheckMode,
+              answers
+            ) mustBe routes.ProfileController.onPageLoad
+          }
+
+          "to Cya NIPHL registered when user answered yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, true).success.value
+            navigator.nextPage(
+              RemoveNiphlPage,
+              CheckMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+          }
+
+          "to ProfilePage when answer is not present" in {
+
+            navigator.nextPage(
+              RemoveNiphlPage,
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.ProfileController.onPageLoad()
+          }
+        }
+
         "must go from HasNirmsUpdatePage" - {
 
           "to NirmsNumberUpdatePage when answer is Yes" in {
@@ -3246,6 +3338,76 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
             navigator.nextPage(
               HasNirmsUpdatePage,
+              CheckMode,
+              answers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+        }
+
+        "must go from HasNiphlUpdatePage" - {
+
+          "to NiphlNumberUpdatePage when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, true).success.value
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              CheckMode,
+              answers
+            ) mustBe routes.NiphlNumberController.onPageLoadUpdate(CheckMode)
+          }
+
+          "to RemoveNiphlsPage when answer is No and Niphls number is associated to profile" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphls")))
+              .success
+              .value
+
+            navigator.nextPage(HasNiphlUpdatePage, CheckMode, answers) mustBe routes.RemoveNiphlController.onPageLoad()
+          }
+
+          "to RemoveNiphlsPage when answer is No and Niphls number is not associated to profile" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), None))
+              .success
+              .value
+
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              CheckMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphls
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNiphlUpdatePage,
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+          }
+
+          "to JourneyRecoveryPage when TraderProfileQuery not present" in {
+            val answers = UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+
+            val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+
+            navigator.nextPage(
+              HasNiphlUpdatePage,
               CheckMode,
               answers
             ) mustBe routes.JourneyRecoveryController

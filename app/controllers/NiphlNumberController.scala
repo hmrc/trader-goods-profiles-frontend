@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.NiphlNumberFormProvider
 
 import javax.inject.Inject
-import models.{Mode, NormalMode, TraderProfile}
+import models.Mode
 import navigation.Navigator
 import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
@@ -31,7 +31,6 @@ import services.AuditService
 import views.html.NiphlNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 class NiphlNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -76,21 +75,21 @@ class NiphlNumberController @Inject() (
         )
   }
 
-  def onPageLoadUpdate: Action[AnyContent] =
+  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
         request.userAnswers.get(HasNiphlUpdatePage) match {
           case Some(_) =>
             traderProfile.niphlNumber match {
               case None       =>
-                Future.successful(Ok(view(form, routes.NiphlNumberController.onSubmitUpdate)))
+                Future.successful(Ok(view(form, routes.NiphlNumberController.onSubmitUpdate(mode))))
               case Some(data) =>
                 for {
                   updatedAnswers <-
-                    Future.fromTry(request.userAnswers.set(NiphlNumberPage, data))
+                    Future.fromTry(request.userAnswers.set(NiphlNumberUpdatePage, data))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NiphlNumberController.onSubmitUpdate)
+                  view(form.fill(data), routes.NiphlNumberController.onSubmitUpdate(mode))
                 )
             }
           case None    =>
@@ -101,55 +100,37 @@ class NiphlNumberController @Inject() (
                     Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, false))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form, routes.NiphlNumberController.onSubmitUpdate)
+                  view(form, routes.NiphlNumberController.onSubmitUpdate(mode))
                 )
               case Some(data) =>
                 for {
                   updatedAnswersWithHasNiphl <-
                     Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, true))
                   updatedAnswers             <-
-                    Future.fromTry(updatedAnswersWithHasNiphl.set(NiphlNumberPage, data))
+                    Future.fromTry(updatedAnswersWithHasNiphl.set(NiphlNumberUpdatePage, data))
                   _                          <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), routes.NiphlNumberController.onSubmitUpdate)
+                  view(form.fill(data), routes.NiphlNumberController.onSubmitUpdate(mode))
                 )
             }
         }
       }
     }
 
-  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, routes.NiphlNumberController.onSubmitUpdate))),
-        value =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            if (traderProfile.niphlNumber.getOrElse("") == value) {
-              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
-            } else {
-              request.userAnswers.set(NiphlNumberUpdatePage, value) match {
-                case Success(answers) =>
-                  sessionRepository.set(answers).flatMap { _ =>
-                    TraderProfile.buildNiphl(answers, request.eori, traderProfile) match {
-                      case Right(model) =>
-                        auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.NiphlNumberController.onSubmitUpdate(mode)))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(NiphlNumberUpdatePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, mode, updatedAnswers))
+        )
 
-                        for {
-                          _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-                        } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, NormalMode, answers))
-                      case Left(errors) =>
-                        val errorMessage = "Unable to update Trader profile."
-                        Future.successful(
-                          logErrorsAndContinue(errorMessage, routes.HasNiphlController.onPageLoadUpdate, errors)
-                        )
-                    }
-                  }
-              }
-            }
-          }
-      )
   }
 
 }

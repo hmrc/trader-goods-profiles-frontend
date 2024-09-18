@@ -17,8 +17,8 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.HasNiphlPage
+import models.{CheckMode, Mode, UserAnswers}
+import pages.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -41,15 +41,29 @@ object HasNiphlSummary {
       )
     }
 
-  def row(value: Boolean)(implicit messages: Messages): SummaryListRow = {
+  def row(value: Boolean, mode: Mode)(implicit messages: Messages): SummaryListRow = {
     val textValue = if (value) "site.yes" else "site.no"
     SummaryListRowViewModel(
       key = "hasNiphl.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(textValue).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoadUpdate.url)
+        ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoadUpdate(mode).url)
           .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
       )
     )
   }
+
+  def rowUpdate(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(HasNiphlUpdatePage).map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+
+      SummaryListRowViewModel(
+        key = "hasNiphl.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoadUpdate(CheckMode).url)
+            .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
+        )
+      )
+    }
 }
