@@ -383,9 +383,8 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Profile for a POST and submit data if value is different from original" in {
         val answer = "SN12345"
 
-        val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-        val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), Some(answer))
-        val userAnswers          = emptyUserAnswers
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val userAnswers   = emptyUserAnswers
           .set(HasNiphlUpdatePage, true)
           .success
           .value

@@ -53,12 +53,12 @@ object TraderProfile {
       Right(traderProfile.niphlNumber)
     ).parMapN(TraderProfile.apply)
 
-  private def getOptionallyRemovedPage[A](
+  def getOptionallyRemovedPage(
     answers: UserAnswers,
-    questionPage: QuestionPage[Boolean],
-    removePage: QuestionPage[Boolean],
-    optionalPage: QuestionPage[A]
-  )(implicit rds: Reads[A]): EitherNec[ValidationError, Option[A]] =
+    questionPage: QuestionPage[Boolean] = HasNirmsUpdatePage,
+    removePage: QuestionPage[Boolean] = RemoveNirmsPage,
+    optionalPage: QuestionPage[String] = NirmsNumberUpdatePage
+  ): EitherNec[ValidationError, Option[String]] =
     answers.getPageValue(questionPage) match {
       case Right(true)  => answers.getPageValue(optionalPage).map(Some(_))
       case Right(false) =>
