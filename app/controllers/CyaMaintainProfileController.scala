@@ -163,9 +163,9 @@ class CyaMaintainProfileController @Inject() (
         TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
           case Right(model) =>
             auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
-            for {
-              _ <- traderProfileConnector.submitTraderProfile(model, request.eori)
-            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+            traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
+              Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+            }
           case Left(errors) =>
             val errorMessage = "Unable to update Trader profile."
             Future.successful(
