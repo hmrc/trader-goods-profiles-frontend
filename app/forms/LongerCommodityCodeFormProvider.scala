@@ -19,7 +19,7 @@ package forms
 import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import forms.mappings.helpers.FormatAnswers.removeWhitespace
 import models.StringFieldRegex
 
 class LongerCommodityCodeFormProvider @Inject() extends Mappings {
