@@ -20,7 +20,7 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{CheckMode, NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.CyaMaintainProfilePage
+import pages.{CyaMaintainProfilePage, HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
@@ -141,19 +141,17 @@ class CyaMaintainProfileController @Inject() (
 
   def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-        TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
-          case Right(_)     =>
-            val list = SummaryListViewModel(
-              rows = Seq(
-                HasNirmsSummary.rowUpdate(request.userAnswers),
-                NirmsNumberSummary.rowUpdate(request.userAnswers)
-              ).flatten
-            )
-            Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
-          case Left(errors) =>
-            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
-        }
+      TraderProfile.getOptionallyRemovedPage(request.userAnswers) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              HasNirmsSummary.rowUpdate(request.userAnswers),
+              NirmsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
   }
 
