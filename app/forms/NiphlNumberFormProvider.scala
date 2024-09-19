@@ -18,8 +18,8 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
+import forms.mappings.helpers.FormatAnswers.toUppercaseAndRemoveSpacesAndHyphens
 import models.StringFieldRegex
-import models.helper.RemoveWhitespace.removeWhitespace
 import play.api.data.Form
 
 class NiphlNumberFormProvider @Inject() extends Mappings {
@@ -27,7 +27,7 @@ class NiphlNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("niphlNumber.error.required")
-        .transform(removeWhitespace, identity[String])
+        .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
         .verifying(regexp(StringFieldRegex.niphlRegex, "niphlNumber.error.invalidFormat"))
     )
 }

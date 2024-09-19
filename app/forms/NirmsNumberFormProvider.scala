@@ -18,6 +18,7 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
+import forms.mappings.helpers.FormatAnswers.{addHyphens, toUppercaseAndRemoveSpacesAndHyphens}
 import models.StringFieldRegex
 import play.api.data.Form
 
@@ -30,20 +31,4 @@ class NirmsNumberFormProvider @Inject() extends Mappings {
         .verifying(regexp(StringFieldRegex.nirmsRegex, "nirmsNumber.error.invalidFormat"))
         .transform(addHyphens, identity[String])
     )
-
-  def toUppercaseAndRemoveSpacesAndHyphens: String => String = _.toUpperCase.replaceAll(" ", "").replaceAll("-", "")
-  def addHyphens: String => String = { original =>
-    val length = 11
-    if (original.length == length) {
-      val hyphenPos1 = 3
-      val hyphenPos2 = 5
-      val bite1      = original.slice(0, hyphenPos1)
-      val bite2      = original.slice(hyphenPos1, hyphenPos2)
-      val bite3      = original.slice(hyphenPos2, length)
-      s"$bite1-$bite2-$bite3"
-    } else {
-      original
-    }
-  }
-
 }
