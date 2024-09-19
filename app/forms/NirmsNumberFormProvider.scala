@@ -18,7 +18,7 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.FormatAnswers.{addHyphens, toUppercaseAndRemoveSpacesAndHyphens}
+import forms.mappings.helpers.FormatAnswers.{addHyphensToNirms, toUppercaseAndRemoveSpacesAndHyphens}
 import models.StringFieldRegex
 import play.api.data.Form
 
@@ -29,6 +29,6 @@ class NirmsNumberFormProvider @Inject() extends Mappings {
       "value" -> text("nirmsNumber.error.required")
         .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
         .verifying(regexp(StringFieldRegex.nirmsRegex, "nirmsNumber.error.invalidFormat"))
-        .transform(addHyphens, identity[String])
+        .transform(addHyphensToNirms, identity[String])
     )
 }

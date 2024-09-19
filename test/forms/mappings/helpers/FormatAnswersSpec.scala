@@ -16,7 +16,7 @@
 
 package forms.mappings.helpers
 
-import forms.mappings.helpers.FormatAnswers.{addHyphens, removeWhitespace, toUppercaseAndRemoveSpacesAndHyphens, trimAndCompressSpaces}
+import forms.mappings.helpers.FormatAnswers.{addHyphensToNirms, removeWhitespace, toUppercaseAndRemoveSpacesAndHyphens, trimAndCompressSpaces}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 
@@ -40,9 +40,9 @@ class FormatAnswersSpec extends AnyFreeSpec with Matchers {
     }
   }
 
-  "addHyphens" - {
+  "addHyphensToNirms" - {
     "must add hyphens to nirms number" in {
-      addHyphens("RMSGB123456") mustBe "RMS-GB-123456"
+      addHyphensToNirms("RMSGB123456") mustBe "RMS-GB-123456"
     }
   }
 }
