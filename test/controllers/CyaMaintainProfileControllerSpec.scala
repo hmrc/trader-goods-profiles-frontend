@@ -914,6 +914,17 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         .success
         .value
 
+      val nirmsNumberAnswersNoUpdate = emptyUserAnswers
+        .set(HasNirmsUpdatePage, true)
+        .success
+        .value
+        .set(NirmsNumberUpdatePage, "RMS-GB-123456")
+        .success
+        .value
+        .set(TraderProfileQuery, traderProfile)
+        .success
+        .value
+
       "for a GET" - {
 
         "must return OK and the correct view" in {
@@ -924,7 +935,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
-          val application = applicationBuilder(userAnswers = Some(nirmsNumberAnswers))
+          val application = applicationBuilder(userAnswers = Some(nirmsNumberAnswersNoUpdate))
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
@@ -933,7 +944,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val action = routes.CyaMaintainProfileController.onSubmitNirmsNumber
 
           running(application) {
-            val list = createChangeList(application, nirmsNumberAnswers)
+            val list = createChangeList(application, nirmsNumberAnswersNoUpdate)
 
             val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNirmsNumber.url)
 
