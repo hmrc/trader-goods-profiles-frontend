@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.RemoveNirmsFormProvider
 import models.NormalMode
 import navigation.Navigator
-import pages.RemoveNirmsPage
+import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

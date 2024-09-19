@@ -18,14 +18,13 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import models.{CheckMode, NormalMode, TraderProfile}
+import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.CyaMaintainProfilePage
+import pages.{CyaMaintainProfilePage, HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary}
-import viewmodels.checkAnswers.UkimsNumberSummary
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -47,7 +46,6 @@ class CyaMaintainProfileController @Inject() (
     extends BaseController {
 
   private val errorMessage: String = "Unable to update Trader profile."
-  private val continueUrl          = routes.ProfileController.onPageLoad()
 
   def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
     TraderProfile.validateHasNirms(request.userAnswers) match {
@@ -59,7 +57,7 @@ class CyaMaintainProfileController @Inject() (
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
       case Left(errors) =>
-        logErrorsAndContinue(errorMessage, continueUrl, errors)
+        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
     }
   }
 
@@ -73,7 +71,7 @@ class CyaMaintainProfileController @Inject() (
         )
         Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber))
       case Left(errors) =>
-        logErrorsAndContinue(errorMessage, continueUrl, errors)
+        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
     }
   }
 
@@ -89,7 +87,7 @@ class CyaMaintainProfileController @Inject() (
             _             <- traderProfileConnector.submitTraderProfile(traderProfile.copy(ukimsNumber = value), request.eori)
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
   }
 
@@ -104,9 +102,8 @@ class CyaMaintainProfileController @Inject() (
           } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         }
       case Left(errors) =>
-        Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+        Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
     }
-
   }
 
   def onPageLoadNiphls(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
@@ -121,7 +118,7 @@ class CyaMaintainProfileController @Inject() (
           )
           Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphls))
         case Left(errors) =>
-          logErrorsAndContinue(errorMessage, continueUrl, errors)
+          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
       }
   }
 
@@ -134,11 +131,45 @@ class CyaMaintainProfileController @Inject() (
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
               _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, CheckMode, request.userAnswers))
+            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
           }
         case Left(errors)       =>
-          Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
     }
+
+  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      TraderProfile.getOptionallyRemovedPage(request.userAnswers) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              HasNirmsSummary.rowUpdate(request.userAnswers),
+              NirmsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+      }
+  }
+
+  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+        TraderProfile.buildNirms(request.userAnswers, request.eori, traderProfile) match {
+          case Right(model) =>
+            auditService.auditMaintainProfile(traderProfile, model, request.affinityGroup)
+            traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
+              Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+            }
+          case Left(errors) =>
+            val errorMessage = "Unable to update Trader profile."
+            Future.successful(
+              logErrorsAndContinue(errorMessage, routes.HasNirmsController.onPageLoadUpdate(NormalMode), errors)
+            )
+        }
+      }
+  }
 
 }
