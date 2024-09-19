@@ -31,9 +31,15 @@ case object RemoveNirmsPage extends QuestionPage[Boolean] {
     value: Option[Boolean],
     updatedUserAnswers: UserAnswers,
     originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] = updatedUserAnswers.get(NirmsNumberUpdatePage) match {
-    case Some(_) if value.isDefined => updatedUserAnswers.set(HasNirmsUpdatePage, !value.get)
-    case _                          => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-  }
+  ): Try[UserAnswers] = updatedUserAnswers
+    .get(NirmsNumberUpdatePage)
+    .flatMap { _ =>
+      value.map { answer =>
+        updatedUserAnswers.set(HasNirmsUpdatePage, !answer)
+      }
+    }
+    .getOrElse {
+      super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+    }
 
 }
