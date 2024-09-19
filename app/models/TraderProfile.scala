@@ -82,6 +82,29 @@ object TraderProfile {
       case Left(errors) => Left(errors)
     }
 
+//  private def getOptionallyRemovedPage2(
+//                                           answers: UserAnswers,
+//                                           questionPage: QuestionPage[Boolean],
+//                                           removePage: QuestionPage[Boolean],
+//                                           optionalPage: QuestionPage[A]
+//                                         ): EitherNec[ValidationError, Option[Boolean]] =
+//    answers.getPageValue(HasNiphlUpdatePage) match {
+//      case Right(true) => answers.getPageValue(HasNiphlUpdatePage).map(Some(_))
+//      case Right(false) =>
+//        answers.getPageValue(TraderProfileQuery).flatMap { userProfile =>
+//          if (userProfile.niphlNumber.isDefined) {
+//            answers.getPageValue(RemoveNiphlPage) match {
+//              case Right(true) => Right(None)
+//              case Right(false) =>
+//                Left(NonEmptyChain.one(UnexpectedPage(RemoveNiphlPage)))
+//            }
+//          } else {
+//            Right(None)
+//          }
+//        }
+//      case Left(errors) => Left(errors)
+//    }
+
   def validateUkimsNumber(
     answers: UserAnswers
   ): EitherNec[ValidationError, String] =

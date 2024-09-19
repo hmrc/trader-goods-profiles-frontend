@@ -109,8 +109,8 @@ class CyaMaintainProfileController @Inject() (
   def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-        TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
-          case Right(_)     =>
+        TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
+          case Right(_) =>
             val list = SummaryListViewModel(
               rows = Seq(
                 HasNiphlSummary.rowUpdate(request.userAnswers),
@@ -126,16 +126,18 @@ class CyaMaintainProfileController @Inject() (
 
   def onSubmitNiphl(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-        TraderProfile.buildNiphl(request.userAnswers, request.eori, traderProfile) match {
-          case Right(updatedProfile) =>
-            auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-            for {
-              _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-          case Left(errors)          =>
+        TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
+          case Right(niphlNumber) =>
+            traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+              val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
+              for {
+                _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
+                _ = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
+              } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, CheckMode, request.userAnswers))
+            }
+          case Left(errors) =>
             Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
         }
-      }
+
     }
 }
