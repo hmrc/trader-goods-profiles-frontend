@@ -76,15 +76,27 @@ class NirmsNumberController @Inject() (
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-        val previousAnswerOpt = request.userAnswers.get(NirmsNumberUpdatePage)
-        val nirmsNumberOpt    = previousAnswerOpt.orElse(traderProfile.nirmsNumber)
-
-        val preparedForm = nirmsNumberOpt match {
-          case Some(nirmsNumber) => form.fill(nirmsNumber)
-          case None              => form
+        request.userAnswers.getPageValue(HasNirmsUpdatePage) match {
+          case Right(true) =>
+            val previousAnswerOpt = request.userAnswers.get(NirmsNumberUpdatePage)
+            val nirmsNumberOpt = previousAnswerOpt.orElse(traderProfile.nirmsNumber)
+            val preparedForm = nirmsNumberOpt match {
+              case Some(nirmsNumber) => form.fill(nirmsNumber)
+              case None => form
+            }
+            Future.successful(Ok(view(preparedForm, routes.NirmsNumberController.onSubmitUpdate(mode))))
+          case Right(false) =>
+            Future.successful(logErrorsAndContinue(
+              "Expected HasNirmsUpdate answer to be true",
+              routes.HasNirmsController.onPageLoadUpdate(mode)
+            ))
+          case Left(errors) =>
+            Future.successful(logErrorsAndContinue(
+              "Expected HasNirmsUpdate to be answered",
+              routes.HasNirmsController.onPageLoadUpdate(mode),
+              errors
+            ))
         }
-
-        Future.successful(Ok(view(preparedForm, routes.NirmsNumberController.onSubmitUpdate(mode))))
       }
     }
 
