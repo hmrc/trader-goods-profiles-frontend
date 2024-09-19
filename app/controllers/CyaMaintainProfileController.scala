@@ -18,7 +18,7 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import models.{CheckMode, NormalMode, TraderProfile}
+import models.{NormalMode, TraderProfile}
 import navigation.Navigator
 import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
@@ -106,7 +106,6 @@ class CyaMaintainProfileController @Inject() (
       case Left(errors) =>
         Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
     }
-
   }
 
   def onPageLoadNiphls(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
@@ -134,7 +133,7 @@ class CyaMaintainProfileController @Inject() (
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
               _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, CheckMode, request.userAnswers))
+            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
           }
         case Left(errors)       =>
           Future.successful(logErrorsAndContinue(errorMessage, continueUrl, errors))
