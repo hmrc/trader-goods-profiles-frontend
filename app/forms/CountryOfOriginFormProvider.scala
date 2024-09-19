@@ -18,6 +18,7 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
+import forms.mappings.helpers.RemoveWhitespace.trimAndCompressSpaces
 import models.Country
 import play.api.data.Form
 
@@ -26,6 +27,7 @@ class CountryOfOriginFormProvider @Inject() extends Mappings {
   def apply(countries: Seq[Country]): Form[String] =
     Form(
       "value" -> text("countryOfOrigin.error.required")
+        .transform(trimAndCompressSpaces, identity[String])
         .verifying("countryOfOrigin.error.invalid", value => countries.exists(_.id == value))
     )
 }
