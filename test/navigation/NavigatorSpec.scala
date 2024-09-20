@@ -369,7 +369,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from RemoveNirmsPage" - {
 
-          "to ProfilePage when user answered No" in {
+          "to CyaMaintainProfile when user answered No" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, false).success.value
 
@@ -377,7 +377,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               NormalMode,
               answers
-            ) mustBe routes.ProfileController.onPageLoad
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
           }
 
           "to Cya NIRMS registered when user answered yes" in {
@@ -3241,7 +3241,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
           }
 
-          "to ProfilePage when user answered No" in {
+          "to CyaMaintainProfile when user answered No" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, false).success.value
 
@@ -3249,7 +3249,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               CheckMode,
               answers
-            ) mustBe routes.ProfileController.onPageLoad
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
           }
 
           "to Cya NIRMS registered when user answered yes" in {

@@ -227,13 +227,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(RemoveNirmsPage)
       .map {
+        case false => routes.CyaMaintainProfileController.onPageLoadNirmsNumber
         case true  => routes.CyaMaintainProfileController.onPageLoadNirms
-        case false =>
-          if (answers.get(NirmsNumberUpdatePage).isDefined) {
-            routes.CyaMaintainProfileController.onPageLoadNirmsNumber
-          } else {
-            routes.ProfileController.onPageLoad()
-          }
       }
       .getOrElse(routes.ProfileController.onPageLoad())
 
