@@ -61,6 +61,7 @@ GET         /create-profile/nirms-number/check                                  
 POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitCreate(mode: Mode = CheckMode)
 GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms
 POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms
+
 GET         /update-profile/check-your-answers/niphl-registered                             controllers.CyaMaintainProfileController.onPageLoadNiphl
 POST        /update-profile/check-your-answers/niphl-registered                             controllers.CyaMaintainProfileController.onSubmitNiphl
 

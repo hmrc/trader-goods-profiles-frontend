@@ -54,7 +54,7 @@ class ProfileController @Inject() (
               Some(HasNirmsSummary.row(profile.nirmsNumber.isDefined, NormalMode)),
               NirmsNumberSummary.row(profile.nirmsNumber),
               Some(HasNiphlSummary.row(profile.niphlNumber.isDefined, NormalMode)),
-              NiphlNumberSummary.row(profile.niphlNumber)
+              NiphlNumberSummary.row(profile.niphlNumber, NormalMode)
             ).flatten
           )
 

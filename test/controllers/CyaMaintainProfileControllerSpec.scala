@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
-import models.{TraderProfile, UserAnswers}
+import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -604,7 +604,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
       def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
         rows = Seq(
-          HasNiphlSummary.rowUpdate(userAnswers)(messages(app)),
+          HasNiphlSummary.rowUpdate(userAnswers, NormalMode)(messages(app)),
           NiphlNumberSummary.rowUpdate(userAnswers)(messages(app))
         ).flatten
       )
