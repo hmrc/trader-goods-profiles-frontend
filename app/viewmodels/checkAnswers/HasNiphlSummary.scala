@@ -53,7 +53,7 @@ object HasNiphlSummary {
     )
   }
 
-  def rowUpdate(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+  def rowUpdate(answers: UserAnswers, mode: Mode)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(HasNiphlUpdatePage).map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
@@ -61,7 +61,7 @@ object HasNiphlSummary {
         key = "hasNiphl.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel("site.change", routes.HasNiphlController.onPageLoadUpdate(mode).url)
             .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
         )
       )

@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import pages.{NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -39,13 +39,13 @@ object NiphlNumberSummary {
       )
     }
 
-  def row(value: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+  def row(value: Option[String], mode: Mode)(implicit messages: Messages): Option[SummaryListRow] =
     value.map { niphlNumber =>
       SummaryListRowViewModel(
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(niphlNumber).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel("site.change", routes.NiphlNumberController.onPageLoadUpdate(mode).url)
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )

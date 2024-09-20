@@ -106,36 +106,37 @@ class CyaMaintainProfileController @Inject() (
     }
   }
 
-  def onPageLoadNiphls(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
             rows = Seq(
-              HasNiphlSummary.rowUpdate(request.userAnswers),
+              HasNiphlSummary.rowUpdate(request.userAnswers, NormalMode),
               NiphlNumberSummary.rowUpdate(request.userAnswers)
             ).flatten
           )
-          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphls))
+          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
         case Left(errors) =>
-          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
   }
 
-  def onSubmitNiphls(): Action[AnyContent] =
+  def onSubmitNiphl(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
         case Right(niphlNumber) =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
             val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
+            auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-              _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
             } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
           }
         case Left(errors)       =>
           Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
+
     }
 
   def onPageLoadNirmsNumber(): Action[AnyContent] =

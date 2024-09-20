@@ -27,6 +27,6 @@ object TestConstants {
   val recordSize              = 20
   val page                    = 1
   val withdrawReason          = "issue resolved"
-  val NiphlsCode: String      = "WFE012"
+  val NiphlCode: String       = "WFE012"
   val NirmsCode: String       = "WFE013"
 }
