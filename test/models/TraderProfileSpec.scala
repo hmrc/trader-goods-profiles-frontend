@@ -399,10 +399,11 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
   ".validateNiphlsUpdate" - {
 
+    val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
+
     "must validate Niphls" - {
 
       "user has Niphls and changes answer to No" in {
-        val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
 
         val answers =
           UserAnswers(userAnswersId)
@@ -472,8 +473,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "when user answered No but No to remove Niphls question" in {
 
-        val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
-
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, false)
@@ -514,6 +513,27 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
           )
         }
       }
+
+      "when user answered No and RemoveNiphlPage is not set" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile)
+            .success
+            .value
+
+        val result = TraderProfile.validateNiphlsUpdate(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(RemoveNiphlPage)
+          )
+        }
+      }
+
     }
   }
 

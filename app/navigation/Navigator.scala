@@ -34,7 +34,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
-    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad
+    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case ProfileSetupPage                          => navigateFromProfileSetUp
     case UseExistingUkimsNumberPage                => navigateFromUseExistingUkimsNumber
     case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
@@ -240,15 +240,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         case false => routes.ProfileController.onPageLoad()
       }
       .getOrElse(routes.ProfileController.onPageLoad())
-
-  private def navigateFromUseExistingUkims(answers: UserAnswers): Call =
-    answers
-      .get(UseExistingUkimsNumberPage)
-      .map {
-        case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
-        case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNirmsUpdate(answers: UserAnswers, mode: Mode): Call = {
     val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
@@ -460,7 +451,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
-    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad
+    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNirmsPage                              => navigateFromHasNirmsCheck
     case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad

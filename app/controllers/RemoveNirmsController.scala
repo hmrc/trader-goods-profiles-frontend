@@ -16,11 +16,12 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNirmsFormProvider
 import models.NormalMode
 import navigation.Navigator
-import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
+import pages.{NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -28,7 +29,7 @@ import views.html.RemoveNirmsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
+import scala.util.{Success, Try}
 
 class RemoveNirmsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,7 +41,8 @@ class RemoveNirmsController @Inject() (
   formProvider: RemoveNirmsFormProvider,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: RemoveNirmsView
+  view: RemoveNirmsView,
+  traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -63,11 +65,25 @@ class RemoveNirmsController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           value =>
-            request.userAnswers.set(RemoveNirmsPage, value) match {
-              case Success(answers) =>
-                sessionRepository.set(answers).map { _ =>
-                  Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
-                }
+            if (value) {
+              request.userAnswers.set(RemoveNirmsPage, value) match {
+                case Success(answers) =>
+                  sessionRepository.set(answers).map { _ =>
+                    Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
+                  }
+              }
+            } else {
+
+              for {
+                traderProfile     <- traderProfileConnector.getTraderProfile(request.eori)
+                nirmsNumberOpt     = request.userAnswers.get(NirmsNumberUpdatePage).orElse(traderProfile.nirmsNumber)
+                nirmsNumber       <- Future.fromTry(Try(nirmsNumberOpt.get))
+                uaWithRemoveValue <- Future.fromTry(request.userAnswers.set(RemoveNirmsPage, value))
+                uaWithNirmsNumber <-
+                  Future.fromTry(uaWithRemoveValue.set(NirmsNumberUpdatePage, nirmsNumber))
+                _                 <- sessionRepository.set(uaWithNirmsNumber)
+              } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, uaWithNirmsNumber))
+
             }
         )
   }

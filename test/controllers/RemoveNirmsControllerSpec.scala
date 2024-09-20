@@ -17,19 +17,21 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.RemoveNirmsFormProvider
-import models.UserAnswers
+import models.{TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNirmsUpdatePage, RemoveNirmsPage}
+import pages.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import views.html.RemoveNirmsView
 
 import scala.concurrent.Future
@@ -85,11 +87,20 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to the next page when No submitted and not submit" in {
+    "must redirect to the next page when No submitted and save the answers" in {
+      val mockSessionRepository                               = mock[SessionRepository]
+      val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None))
+      )
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
 
@@ -102,15 +113,77 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val finalUserAnswers = finalUserAnswersCaptor.getValue
+
+        withClue("must have saved the answer") {
+          finalUserAnswers.get(RemoveNirmsPage).get mustBe false
+        }
+
+        withClue("must have saved the nirms number as future items will depend on it") {
+          finalUserAnswers.get(NirmsNumberUpdatePage).get mustBe "RMS-GB-848211"
+        }
+
       }
     }
 
-    "must redirect to the next page when Yes submitted and submit" in {
+    "must redirect to the next page when No submitted and not overwrite the existing nirms value" in {
+      val mockSessionRepository                               = mock[SessionRepository]
+      val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None))
+      )
+
+      val application = applicationBuilder(userAnswers =
+        Some(emptyUserAnswers.set(NirmsNumberUpdatePage, "RMS-XI-111333").success.value)
+      )
+        .overrides(
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeNirmsRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        val finalUserAnswers = finalUserAnswersCaptor.getValue
+
+        withClue("must have saved the answer") {
+          finalUserAnswers.get(RemoveNirmsPage).get mustBe false
+        }
+
+        withClue("must not overwrite the user entered nirms") {
+          finalUserAnswers.get(NirmsNumberUpdatePage).get mustBe "RMS-XI-111333"
+        }
+
+      }
+    }
+
+    "must redirect to the next page when Yes submitted and save the answers" in {
+      val mockSessionRepository                               = mock[SessionRepository]
+      val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None))
+      )
+
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -123,6 +196,16 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val finalUserAnswers = finalUserAnswersCaptor.getValue
+
+        withClue("must have saved the answer") {
+          finalUserAnswers.get(RemoveNirmsPage).get mustBe true
+        }
+
+        withClue("must not have saved the nirms number as not needed") {
+          finalUserAnswers.get(NirmsNumberUpdatePage) mustBe None
+        }
       }
     }
 
