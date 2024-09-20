@@ -36,7 +36,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NirmsNumberSummary, UkimsNumberSummary}
+import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaMaintainProfileView
 
@@ -604,7 +604,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
       def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
         rows = Seq(
-          HasNiphlSummary.rowUpdate(userAnswers)(messages(app))
+          HasNiphlSummary.rowUpdate(userAnswers)(messages(app)),
+          NiphlNumberSummary.rowUpdate(userAnswers)(messages(app))
         ).flatten
       )
 
@@ -627,12 +628,12 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          val action = routes.CyaMaintainProfileController.onSubmitNiphls
+          val action = routes.CyaMaintainProfileController.onSubmitNiphl
 
           running(application) {
             val list = createChangeList(application, userAnswers)
 
-            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphls.url)
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphl.url)
 
             val result = route(application, request).value
 
@@ -649,7 +650,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphls.url)
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphl.url)
 
             val result = route(application, request).value
 
@@ -664,7 +665,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphls.url)
+            val request = FakeRequest(GET, routes.CyaMaintainProfileController.onPageLoadNiphl.url)
 
             val result = route(application, request).value
 
@@ -676,7 +677,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
       "for a POST" - {
 
-        "when user answers can remove Niphls and update user profile" - {
+        "when user answers can remove Niphl and update user profile" - {
 
           "must update the profile and redirect to the Profile Page" - {
             val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
@@ -712,7 +713,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
               val result = route(application, request).value
 
@@ -734,6 +735,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must redirect to Journey recovery" - {
 
           "when the data is invalid" - {
+            val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNiphlPage, true)
@@ -746,6 +748,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
             val application = applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
@@ -755,17 +759,13 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
                 routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
-
-              withClue("must not call the trader profile connector") {
-                verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
-              }
 
               withClue("must not call the audit connector") {
                 verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -776,12 +776,20 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           "when user doesn't answer yes or no" in {
 
+            val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val mockTraderProfileConnector = mock[TraderProfileConnector]
+
+            when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(
+                  bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+                )
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
               val result = route(application, request).value
 
@@ -823,7 +831,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -837,7 +845,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must let the play error handler deal with connector failure when submitTraderProfile request fails" in {
 
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNiphlPage, true)
@@ -866,10 +875,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
+          }
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService)
+              .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
+                any()
+              )
           }
 
         }
@@ -879,7 +894,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphls.url)
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphl.url)
 
             val result = route(application, request).value
 
@@ -889,7 +904,6 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
       }
     }
-
     "NIRMS Number" - {
 
       def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
