@@ -18,10 +18,9 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.DownloadDataStatus.{FileReadySeen, RequestFile}
-import models.{DownloadData, DownloadDataSummary, Email, Metadata}
+import models.DownloadDataStatus.RequestFile
+import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
-import org.apache.pekko.actor.typed.delivery.internal.ProducerControllerImpl.Request
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec

@@ -305,7 +305,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.NirmsNumberController.onPageLoadUpdate
+            ) mustBe routes.NirmsNumberController.onPageLoadUpdate(NormalMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
@@ -401,10 +401,13 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
-        "must go from NirmsNumberUpdatePage to ProfilePage" in {
+        "must go from NirmsNumberUpdatePage to CyaMaintainProfile" in {
 
-          navigator.nextPage(NirmsNumberUpdatePage, NormalMode, emptyUserAnswers) mustBe routes.ProfileController
-            .onPageLoad()
+          navigator.nextPage(
+            NirmsNumberUpdatePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
         }
 
         "must go from HasNiphlUpdatePage" - {
@@ -3212,6 +3215,23 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from RemoveNirmsPage" - {
 
+          "to CyaMaintainProfile when user answered No and NimrsNumberUpdate is defined" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(RemoveNirmsPage, false)
+              .success
+              .value
+              .set(NirmsNumberUpdatePage, "some nirms")
+              .success
+              .value
+
+            navigator.nextPage(
+              RemoveNirmsPage,
+              CheckMode,
+              answers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+          }
+
           "to ProfilePage when user answered No" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNirmsPage, false).success.value
@@ -3233,6 +3253,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               answers
             ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
           }
+
+          "must go from NirmsNumberUpdatePage to CyaMaintainProfile" in {
+
+            navigator.nextPage(
+              NirmsNumberUpdatePage,
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+          }
         }
 
         "must go from HasNirmsUpdatePage" - {
@@ -3244,7 +3273,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.NirmsNumberController.onPageLoadUpdate
+            ) mustBe routes.NirmsNumberController.onPageLoadUpdate(CheckMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {

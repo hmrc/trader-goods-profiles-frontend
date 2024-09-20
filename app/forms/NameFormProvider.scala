@@ -18,7 +18,7 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.trimAndCompressSpaces
+import forms.mappings.helpers.FormatAnswers.trimAndCompressSpaces
 import play.api.data.Form
 
 class NameFormProvider @Inject() extends Mappings {
