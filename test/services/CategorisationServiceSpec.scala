@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{NiphlsCode, NirmsCode, testRecordId}
+import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.ott.{CategoryAssessment, _}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
@@ -318,7 +318,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass1",
           1,
           Seq(
-            Certificate(NiphlsCode, "cert1code", "cert1desc")
+            Certificate(NiphlCode, "cert1code", "cert1desc")
           )
         )
 
@@ -326,7 +326,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass2",
           1,
           Seq(
-            Certificate(NiphlsCode, "cert2code", "cert2desc")
+            Certificate(NiphlCode, "cert2code", "cert2desc")
           )
         )
 
@@ -366,7 +366,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "ass1",
           1,
           Seq(
-            Certificate(NiphlsCode, "cert1code", "cert1desc")
+            Certificate(NiphlCode, "cert1code", "cert1desc")
           )
         )
 
@@ -395,7 +395,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(assessment2),
           None,
           1,
-          isTraderNiphlsAuthorised = true
+          isTraderNiphlAuthorised = true
         )
 
         val userAnswers = emptyUserAnswers
@@ -479,7 +479,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "return Category 1 No Exemptions if a category 1 question has no exemptions" - {
 
-      "and not a Niphls assessment" in {
+      "and not a Niphl assessment" in {
         val categorisationInfo = CategorisationInfo(
           "1234567890",
           Some(validityEndDate),
@@ -513,12 +513,12 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
-      "and is a Niphls assessment" in {
+      "and is a Niphl assessment" in {
         val assessment1 = CategoryAssessment(
           "ass1",
           1,
           Seq(
-            Certificate(NiphlsCode, "cert1code", "cert1desc")
+            Certificate(NiphlCode, "cert1code", "cert1desc")
           )
         )
 
@@ -545,7 +545,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq.empty,
           None,
           1,
-          isTraderNiphlsAuthorised = true
+          isTraderNiphlAuthorised = true
         )
 
         val userAnswers = emptyUserAnswers
@@ -748,7 +748,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             "ass1",
             1,
             Seq(
-              Certificate(NiphlsCode, "cert1code", "cert1desc")
+              Certificate(NiphlCode, "cert1code", "cert1desc")
             )
           )
 
@@ -756,7 +756,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             "ass2",
             1,
             Seq(
-              Certificate(NiphlsCode, "cert2code", "cert2desc")
+              Certificate(NiphlCode, "cert2code", "cert2desc")
             )
           )
 
@@ -777,7 +777,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq.empty,
             None,
             1,
-            isTraderNiphlsAuthorised = true
+            isTraderNiphlAuthorised = true
           )
 
           val userAnswers = emptyUserAnswers
@@ -805,7 +805,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             "ass2",
             1,
             Seq(
-              Certificate(NiphlsCode, "cert2code", "cert2desc")
+              Certificate(NiphlCode, "cert2code", "cert2desc")
             )
           )
 
@@ -826,7 +826,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(assessment1),
             None,
             1,
-            isTraderNiphlsAuthorised = true
+            isTraderNiphlAuthorised = true
           )
 
           val userAnswers = emptyUserAnswers
@@ -857,7 +857,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             "ass2",
             1,
             Seq(
-              Certificate(NiphlsCode, "cert2code", "cert2desc")
+              Certificate(NiphlCode, "cert2code", "cert2desc")
             )
           )
 
@@ -880,7 +880,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(assessment1, assessment2, assessment3),
             None,
             1,
-            isTraderNiphlsAuthorised = true
+            isTraderNiphlAuthorised = true
           )
 
           val userAnswers = emptyUserAnswers

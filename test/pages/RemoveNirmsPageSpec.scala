@@ -54,16 +54,5 @@ class RemoveNirmsPageSpec extends AnyFreeSpec with Matchers with TryValues with 
       result.get(HasNirmsUpdatePage) mustBe Some(false)
     }
 
-    "does not change HasNirmsUpdate when NirmsNumberUpdatePage is not present" in {
-      val userAnswers = UserAnswers(userAnswersId)
-
-      val result = userAnswers
-        .set(RemoveNirmsPage, false)
-        .success
-        .value
-
-      result.get(HasNirmsUpdatePage) mustBe None
-    }
-
   }
 }

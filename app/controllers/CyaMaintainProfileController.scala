@@ -20,11 +20,11 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.CyaMaintainProfilePage
+import pages.{CyaMaintainProfilePage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
+import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 
@@ -106,7 +106,7 @@ class CyaMaintainProfileController @Inject() (
     }
   }
 
-  def onPageLoadNiphls(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
         case Right(_)     =>
@@ -116,43 +116,51 @@ class CyaMaintainProfileController @Inject() (
               NiphlNumberSummary.rowUpdate(request.userAnswers)
             ).flatten
           )
-          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphls))
+          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
         case Left(errors) =>
-          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
   }
 
-  def onSubmitNiphls(): Action[AnyContent] =
+  def onSubmitNiphl(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
         case Right(niphlNumber) =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
             val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
+            auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-              _  = auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
             } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
           }
         case Left(errors)       =>
           Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
+
     }
 
-  def onPageLoadNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-      TraderProfile.getOptionallyRemovedPage(request.userAnswers) match {
-        case Right(_)     =>
-          val list = SummaryListViewModel(
-            rows = Seq(
-              HasNirmsSummary.rowUpdate(request.userAnswers),
-              NirmsNumberSummary.rowUpdate(request.userAnswers)
-            ).flatten
-          )
-          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
-        case Left(errors) =>
-          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+  def onPageLoadNirmsNumber(): Action[AnyContent] =
+    (identify andThen getData andThen requireData).async { implicit request =>
+      (for {
+        nirmsNumberOpt <- traderProfileConnector.getTraderProfile(request.eori).map(_.nirmsNumber)
+        userAnswers    <- nirmsNumberOpt.fold(Future.successful(request.userAnswers)) { nirmsNumber =>
+                            Future.fromTry(request.userAnswers.set(NirmsNumberUpdatePage, nirmsNumber))
+                          }
+      } yield userAnswers).flatMap { userAnswers =>
+        TraderProfile.getOptionallyRemovedPage(userAnswers) match {
+          case Right(_)     =>
+            val list = SummaryListViewModel(
+              rows = Seq(
+                HasNirmsSummary.rowUpdate(userAnswers),
+                NirmsNumberSummary.rowUpdate(userAnswers)
+              ).flatten
+            )
+            Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
+          case Left(errors) =>
+            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+        }
       }
-  }
+    }
 
   def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>

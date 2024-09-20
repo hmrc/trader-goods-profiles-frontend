@@ -79,16 +79,11 @@ object TraderProfile {
     answers: UserAnswers
   ): EitherNec[ValidationError, Boolean] =
     answers.getPageValue(HasNirmsUpdatePage) match {
-      case Right(true)  => Left(NonEmptyChain.one(UnexpectedPage(HasNirmsUpdatePage)))
-      case Right(false) =>
+      case Right(_)     =>
         answers.getPageValue(TraderProfileQuery) match {
           case Right(userProfile) =>
             if (userProfile.nirmsNumber.isDefined) {
-              answers.getPageValue(RemoveNirmsPage) match {
-                case Right(true)  => Right(false)
-                case Right(false) =>
-                  Left(NonEmptyChain.one(UnexpectedPage(RemoveNirmsPage)))
-              }
+              answers.getPageValue(RemoveNirmsPage)
             } else {
               Right(false)
             }
