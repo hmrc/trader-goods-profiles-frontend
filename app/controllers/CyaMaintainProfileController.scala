@@ -20,7 +20,7 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.{CyaMaintainProfilePage, HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
+import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
@@ -112,7 +112,7 @@ class CyaMaintainProfileController @Inject() (
         case Right(_)     =>
           val list = SummaryListViewModel(
             rows = Seq(
-              HasNiphlSummary.rowUpdate(request.userAnswers),
+              HasNiphlSummary.rowUpdate(request.userAnswers, NormalMode),
               NiphlNumberSummary.rowUpdate(request.userAnswers)
             ).flatten
           )

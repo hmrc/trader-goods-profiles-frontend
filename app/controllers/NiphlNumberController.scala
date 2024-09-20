@@ -43,8 +43,7 @@ class NiphlNumberController @Inject() (
   formProvider: NiphlNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: NiphlNumberView,
-  auditService: AuditService
+  view: NiphlNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
