@@ -318,6 +318,7 @@ adviceStart.title = Asking HMRC for advice
 adviceStart.heading = Asking HMRC for advice
 adviceStart.p1 = Asking HMRC for advice lets you get a view from HMRC if the commodity code matches the information in your goods record.
 adviceStart.warningText = This advice is not legally binding.
+adviceStart.warning = Warning
 adviceStart.p2 = If you want a legally binding decision,
 adviceStart.p2.linkText = apply for a Binding Tariff information decision
 adviceStart.subheading1 = What HMRC needs

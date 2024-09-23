@@ -142,6 +142,7 @@ adviceStart.title = Gofyn i CThEF am gyngor
 adviceStart.heading = Gofyn i CThEF am gyngor
 adviceStart.p1 = Mae gofyn i CThEF am gyngor yn golygu y cewch wybod os yw CThEF o''r farn bod y cod nwyddau yn cyd-fynd â''r wybodaeth sydd yn eich cofnod nwyddau.
 adviceStart.warningText = Nid yw''r cyngor hwn yn gyfreithiol rwymol.
+adviceStart.warning = Rhybudd
 adviceStart.p2 = Os ydych am gael penderfyniad sy''n gyfreithiol rwymol,
 adviceStart.p2.linkText = gwnewch gais am benderfyniad ynghylch gwybodaeth am Dariff sy''n Rhwymo.
 adviceStart.subheading1 = Yr hyn y mae ei angen ar CThEF
