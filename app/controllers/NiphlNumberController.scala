@@ -19,17 +19,15 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.NiphlNumberFormProvider
-
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.NiphlNumberView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NiphlNumberController @Inject() (
