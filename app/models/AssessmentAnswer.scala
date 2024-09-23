@@ -50,17 +50,4 @@ object AssessmentAnswer {
       case NotAnsweredYet.toString => NotAnsweredYet
       case _                       => NoExemption
     }
-
-  def radioOptions(exemptions: Seq[ott.Exemption])(implicit messages: Messages): Seq[RadioItem] =
-    exemptions.distinct.zipWithIndex.map { case (exemption, index) =>
-      RadioItem(
-        content = Text(messages("assessment.exemption", exemption.code, exemption.description)),
-        value = Some(exemption.id),
-        id = Some(s"value_$index")
-      )
-    } :+ RadioItem(divider = Some(messages("site.or"))) :+ RadioItem(
-      content = Text(messages("assessment.exemption.none")),
-      value = Some(NoExemption.toString),
-      id = Some(s"value_${exemptions.size}")
-    )
 }

@@ -51,20 +51,5 @@ class AssessmentAnswerSpec extends SpecBase {
         json.validate[AssessmentAnswer] mustEqual JsSuccess(AssessmentAnswer.NotAnsweredYet)
       }
     }
-    "must remove duplicate exemptions from the radio list if we've been sent duplicates from OTT" in {
-
-      val exemption1 = Certificate("id1", "code1", "desc1")
-      val exemption2 = Certificate("id2", "code2", "desc2")
-      val exemptions = Seq(exemption1, exemption1, exemption2, exemption1)
-
-      implicit val testMessages: Messages = messages(applicationBuilder(None).build())
-
-      val result = AssessmentAnswer.radioOptions(exemptions)
-
-      result.size mustBe 4
-      result.count(x => x.value.contains("id1")) mustBe 1
-
-    }
   }
-
 }
