@@ -36,8 +36,7 @@
         </ul>
     </div>
 
-    @govukSummaryList(list)
-    <div class="govuk-warning-text">
+    <div class="govuk-warning-text govuk-grid-column-full">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
             <span class="govuk-visually-hidden">@messages("cyaCreateProfile.warning")</span>
@@ -45,6 +44,7 @@
         </strong>
     </div>
 
+    @govukSummaryList(list)
     @formHelper(action = routes.CyaCreateProfileController.onSubmit) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
