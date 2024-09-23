@@ -95,7 +95,7 @@ hasNirms.change.hidden = Wedi cofrestru ar gyfer y NIRMS
 
 nirmsNumber.title = Beth yw''ch rhif NIRMS?
 nirmsNumber.heading = Beth yw''ch rhif NIRMS?
-nirmsNumber.hint = Mae rhifau NIRMS yn 13 o gymeriadau, ac maent yn dechrau ag RMS, wedyn dash wedi''i ddilyn gan GB neu NI, dash arall, ac yna 6 o rifau. Er enghraifft, RMS-GB-123456.
+nirmsNumber.hint = Mae rhifau NIRMS yn dechrau ag RMS, wedi’i ddilyn gan GB neu NI, ac yna 6 o rifau. Er enghraifft, RMS-GB-123456 neu RMS NI 456789.
 nirmsNumber.checkYourAnswersLabel = Rhif NIRMS
 nirmsNumber.error.required = Nodwch eich rhif NIRMS
 nirmsNumber.error.invalidFormat = Nodwch eich rhif NIRMS yn y fformat cywir

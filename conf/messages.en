@@ -118,7 +118,7 @@ niphlNumber.change.hidden = NIPHL number
 
 nirmsNumber.title = What is your NIRMS number?
 nirmsNumber.heading = What is your NIRMS number?
-nirmsNumber.hint = NIRMS numbers are 13 characters, start with RMS with a dash followed by GB or NI, a dash then 6 numbers. For example, RMS-GB-123456.
+nirmsNumber.hint = NIRMS numbers start with RMS followed by GB or NI and then 6 numbers. For example RMS-GB-123456 or RMS NI 456789.
 nirmsNumber.checkYourAnswersLabel = NIRMS number
 nirmsNumber.error.required = Enter your NIRMS number
 nirmsNumber.error.invalidFormat = Enter your NIRMS number in the correct format
