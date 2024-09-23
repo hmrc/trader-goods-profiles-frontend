@@ -604,7 +604,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
       def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
         rows = Seq(
-          HasNiphlSummary.rowUpdate(userAnswers, NormalMode)(messages(app)),
+          HasNiphlSummary.rowUpdate(userAnswers)(messages(app)),
           NiphlNumberSummary.rowUpdate(userAnswers)(messages(app))
         ).flatten
       )

@@ -112,7 +112,7 @@ class CyaMaintainProfileController @Inject() (
         case Right(_)     =>
           val list = SummaryListViewModel(
             rows = Seq(
-              HasNiphlSummary.rowUpdate(request.userAnswers, NormalMode),
+              HasNiphlSummary.rowUpdate(request.userAnswers),
               NiphlNumberSummary.rowUpdate(request.userAnswers)
             ).flatten
           )
