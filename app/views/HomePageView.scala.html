@@ -21,7 +21,7 @@
 
 @(downloadReady: Boolean = false)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false) {
+@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
     @if(downloadReady) {
         @govukNotificationBanner(NotificationBanner(

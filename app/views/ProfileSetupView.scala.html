@@ -22,7 +22,7 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("profileSetup.title")), showBackLink = false) {
+@layout(pageTitle = titleNoForm(messages("profileSetup.title")), showBackLink = false, headerShouldHaveServiceLink = false) {
 
     <h1 class="govuk-heading-l">@messages("profileSetup.h1")</h1>
 
