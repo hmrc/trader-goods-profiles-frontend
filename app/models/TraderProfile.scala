@@ -104,6 +104,7 @@ object TraderProfile {
               case Right(true)  => Right(None)
               case Right(false) =>
                 Left(NonEmptyChain.one(UnexpectedPage(RemoveNiphlPage)))
+              case Left(errors) => Left(errors)
             }
           } else {
             Right(None)

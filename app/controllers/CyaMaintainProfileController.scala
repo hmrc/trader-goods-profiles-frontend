@@ -20,7 +20,7 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile}
 import navigation.Navigator
-import pages.{CyaMaintainProfilePage, NirmsNumberUpdatePage}
+import pages.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
@@ -141,24 +141,17 @@ class CyaMaintainProfileController @Inject() (
 
   def onPageLoadNirmsNumber(): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      (for {
-        nirmsNumberOpt <- traderProfileConnector.getTraderProfile(request.eori).map(_.nirmsNumber)
-        userAnswers    <- nirmsNumberOpt.fold(Future.successful(request.userAnswers)) { nirmsNumber =>
-                            Future.fromTry(request.userAnswers.set(NirmsNumberUpdatePage, nirmsNumber))
-                          }
-      } yield userAnswers).flatMap { userAnswers =>
-        TraderProfile.getOptionallyRemovedPage(userAnswers) match {
-          case Right(_)     =>
-            val list = SummaryListViewModel(
-              rows = Seq(
-                HasNirmsSummary.rowUpdate(userAnswers),
-                NirmsNumberSummary.rowUpdate(userAnswers)
-              ).flatten
-            )
-            Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
-          case Left(errors) =>
-            Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
-        }
+      TraderProfile.getOptionallyRemovedPage(request.userAnswers) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              HasNirmsSummary.rowUpdate(request.userAnswers),
+              NirmsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber)))
+        case Left(errors) =>
+          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
     }
 
