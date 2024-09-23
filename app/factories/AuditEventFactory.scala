@@ -18,6 +18,7 @@ package factories
 
 import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
+import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
@@ -79,7 +80,8 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup,
     journey: Journey,
     updateSection: Option[UpdateSection],
-    recordId: Option[String]
+    recordId: Option[String],
+    commodity: Option[CategorisationInfo] = None,
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     val auditDetails = Map(
@@ -88,7 +90,9 @@ case class AuditEventFactory() {
       "affinityGroup" -> affinityGroup.toString
     ) ++
       writeOptional("updateSection", updateSection.map(_.toString)) ++
-      writeOptional("recordId", recordId)
+      writeOptional("recordId", recordId) ++
+      writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
+      writeOptional("descendants", commodity.map(_.descendantCount.toString))
 
     DataEvent(
       auditSource = auditSource,
@@ -131,11 +135,13 @@ case class AuditEventFactory() {
     category: Int
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
+      "journey" -> journey.toString,
+      "updateSection" -> CategorisationUpdate.toString,
+      "recordId" -> recordId,
       "eori"                              -> eori,
       "affinityGroup"                     -> affinityGroup.toString,
-      "journey"                           -> journey.toString,
-      "updateSection"                     -> CategorisationUpdate.toString,
-      "recordId"                          -> recordId,
+   //   "commodityCode" -> commodityCode,
+
       "categoryAssessmentsWithExemptions" -> categoryAssessmentsWithExemptions.toString,
       "category"                          -> category.toString
     )

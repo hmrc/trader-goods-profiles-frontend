@@ -109,7 +109,8 @@ class AuditEventFactorySpec extends SpecBase {
           AffinityGroup.Individual,
           UpdateRecordJourney,
           Some(CategorisationUpdate),
-          Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f")
+          Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"),
+          Some(categorisationInfo)
         )
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -117,12 +118,14 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 5
+        auditDetails.size mustBe 7
         auditDetails("journey") mustBe "UpdateRecord"
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("updateSection") mustBe "categorisation"
         auditDetails("recordId") mustBe "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+        auditDetails("commodityCode") mustBe "1234567890"
+        auditDetails("descendants") mustBe "1"
 
       }
 

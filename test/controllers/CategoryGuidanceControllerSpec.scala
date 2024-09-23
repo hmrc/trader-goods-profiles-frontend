@@ -59,7 +59,7 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
       val mockAuditService = mock[AuditService]
 
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
@@ -83,7 +83,8 @@ class CategoryGuidanceControllerSpec extends SpecBase {
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
               eqTo(CategorisationUpdate),
-              eqTo(testRecordId)
+              eqTo(testRecordId),
+              eqTo(Some(categorisationInfo))
             )(any())
         }
       }

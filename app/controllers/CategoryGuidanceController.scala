@@ -23,6 +23,7 @@ import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.CategorisationDetailsQuery
 import services.AuditService
 import views.html.CategoryGuidanceView
 
@@ -47,12 +48,16 @@ class CategoryGuidanceController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+
+      val categoryDetails = request.userAnswers.get(CategorisationDetailsQuery(recordId))
+
       auditService
         .auditStartUpdateGoodsRecord(
           request.eori,
           request.affinityGroup,
           CategorisationUpdate,
-          recordId
+          recordId,
+          categoryDetails
         )
 
       Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))

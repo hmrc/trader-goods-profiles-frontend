@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper._
+import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
@@ -203,7 +204,8 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     eori: String,
     affinityGroup: AffinityGroup,
     updateSection: UpdateSection,
-    recordId: String
+    recordId: String,
+    categoryDetails: Option[CategorisationInfo] = None
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
@@ -212,7 +214,8 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       affinityGroup,
       UpdateRecordJourney,
       Some(updateSection),
-      Some(recordId)
+      Some(recordId),
+      categoryDetails
     )
 
     auditConnector.sendEvent(event).map { auditResult =>
