@@ -33,14 +33,12 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@messages("email.heading")</h1>
-
     @formHelper(action = routes.EmailController.onSubmit(mode, recordId)) {
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = Label(content = messages("email.heading"), classes = "govuk-visually-hidden")
+                label = Label(content = messages("email.heading")).asPageHeading(Large)
             )
             .withHint(Hint(content = Text(messages("email.hint"))))
             .withWidth(Full)

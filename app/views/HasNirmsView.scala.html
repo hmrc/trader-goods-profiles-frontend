@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -42,14 +44,12 @@
         </a>
     </p>
 
-    <h2 class="govuk-heading-m">@messages("hasNirms.h2")</h2>
-
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "hasNirms.h2", classes = "govuk-visually-hidden")
+                legend = Legend(content = "hasNirms.h2").asSecondaryHeading(Medium)
             )
         )
 

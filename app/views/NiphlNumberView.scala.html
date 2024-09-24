@@ -16,6 +16,7 @@
 
 @import viewmodels.InputWidth._
 @import viewmodels.InputWidth.Fixed10
+@import viewmodels.LabelSize._
 
 @this(
     layout: templates.Layout,
@@ -42,14 +43,12 @@
         <li>@messages("niphlNumber.li3")</li>
     </ul>
 
-    <h2 class="govuk-heading-m">@messages("niphlNumber.h2")</h2>
-
     @formHelper(action = action) {
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = Label(content = "niphlNumber.h2", classes = "govuk-visually-hidden")
+                label = Label(content = "niphlNumber.h2").asSecondaryHeading(Medium)
             ).withHint(Hint(content = Text(messages("niphlNumber.hint"))))
             .withWidth(Fixed10)
         )
