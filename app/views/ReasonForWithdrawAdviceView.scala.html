@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.govuk.characterCount._
+@import viewmodels.LabelSize._
 
 @this(
     layout: templates.Layout,
@@ -32,14 +33,12 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@messages("reasonForWithdrawAdvice.h1")</h1>
-
     @formHelper(action = routes.ReasonForWithdrawAdviceController.onSubmit(recordId)) {
 
         @textArea(
             CharacterCountViewModel(
                 field = form("value"),
-                label = Label(content = messages("reasonForWithdrawAdvice.h1"), classes = "govuk-visually-hidden")
+                label = Label(content = messages("reasonForWithdrawAdvice.h1")).asPageHeading(Large)
             )
             .withRows(5)
             .withMaxLength(512)

@@ -19,7 +19,8 @@ package viewmodels.govuk
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
-import viewmodels.LegendSize
+import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+import viewmodels.{LabelSize, LegendSize}
 
 object fieldset extends FieldsetFluency
 
@@ -60,6 +61,11 @@ trait FieldsetFluency {
     def asPageHeading(size: LegendSize = LegendSize.ExtraLarge): Legend =
       legend
         .copy(isPageHeading = true)
+        .withCssClass(size.toString)
+
+    def asSecondaryHeading(size: LegendSize = LegendSize.Medium): Legend =
+      legend
+        .copy(isPageHeading = false)
         .withCssClass(size.toString)
 
     def withCssClass(newClass: String): Legend =

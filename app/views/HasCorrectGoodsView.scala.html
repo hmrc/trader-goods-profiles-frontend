@@ -15,6 +15,7 @@
  *@
 
 @import models.Commodity
+@import viewmodels.LegendSize._
 
 @this(
     layout: templates.Layout,
@@ -48,14 +49,12 @@
         <a href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" target="_blank" class="govuk-link" >@messages("hasCorrectGoods.p2.linkText")</a>
     </p>
 
-    <h2 class="govuk-heading-m">@messages("hasCorrectGoods.h2")</h2>
-
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "hasCorrectGoods.h2", classes = "govuk-visually-hidden")
+                legend = Legend(content = "hasCorrectGoods.h2").asSecondaryHeading(Medium)
             )
         )
 
