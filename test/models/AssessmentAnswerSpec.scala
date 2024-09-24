@@ -17,8 +17,6 @@
 package models
 
 import base.SpecBase
-import models.ott.Certificate
-import play.api.i18n.Messages
 import play.api.libs.json.{JsString, JsSuccess, Json}
 
 class AssessmentAnswerSpec extends SpecBase {

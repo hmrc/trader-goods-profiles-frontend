@@ -208,7 +208,6 @@ traderReference.p1 = Mae cyfeirnod masnachwr yn enw wedi’i deilwra y gallwch e
 traderReference.p2 = Mae angen i’r cyfeirnod masnachwr fod yn unigryw i’ch Proffil Nwyddau Masnachwr.
 traderReference.p3 = Efallai y byddwch am ddefnyddio’r uned cadw stoc (SKU).
 traderReference.inputHeading = Beth yw’r cyfeirnod masnachwr?
-traderReference.hint = Mae gennych 512 o gymeriadau yn weddill
 traderReference.checkYourAnswersLabel = Cyfeirnod masnachwr
 traderReference.change.hidden = Cyfeirnod masnachwr
 
