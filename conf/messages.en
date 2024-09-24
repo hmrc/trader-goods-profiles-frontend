@@ -89,7 +89,7 @@ hasNiphl.p1 = Growers and traders can move goods to Northern Ireland using the N
 hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
-hasNiphl.checkYourAnswersLabel = NIPHL registered
+hasNiphl.checkYourAnswersLabel = Are you NIPHL registered?
 hasNiphl.error.required = Select if you are NIPHL registered
 hasNiphl.change.hidden = NIPHL registered
 
@@ -99,7 +99,7 @@ hasNirms.h2 = Are you NIRMS registered?
 hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
 hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
-hasNirms.checkYourAnswersLabel = NIRMS registered
+hasNirms.checkYourAnswersLabel = Are you NIRMS registered?
 hasNirms.error.required = Select yes, if you are Northern Ireland Retail Movement Scheme registered
 hasNirms.change.hidden = NIRMS registered
 

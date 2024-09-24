@@ -89,7 +89,7 @@ hasNirms.h2 = A ydych wedi cofrestru ar gyfer y NIRMS?
 hasNirms.p1 = Gall busnesau sy''n gwerthu, neu gynorthwyo symud, bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon ddefnyddio''r NIRMS.
 hasNirms.p2 = Dysgwch ragor am
 hasNirms.p2.linkText = ba gynhyrchion y gellir eu symud o dan y NIRMS
-hasNirms.checkYourAnswersLabel = Wedi cofrestru ar gyfer y NIRMS
+hasNirms.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer y NIRMS?
 hasNirms.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
 hasNirms.change.hidden = Wedi cofrestru ar gyfer y NIRMS
 
@@ -107,7 +107,7 @@ hasNiphl.p1 = Gall tyfwyr a masnachwyr symud nwyddau i Ogledd Iwerddon gan ddefn
 hasNiphl.p2 = Dysgwch ragor am
 hasNiphl.p2.linkText = symud planhigion o Brydain Fawr i Ogledd Iwerddon.
 hasNiphl.h2 = A ydych wedi cofrestru ar gyfer NIPHL?
-hasNiphl.checkYourAnswersLabel = Wedi cofrestru ar gyfer y NIPHL
+hasNiphl.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer NIPHL?
 hasNiphl.error.required = Dewiswch ‘Iawn'' os ydych wedi cofrestru ar gyfer cynllun Label iechyd planhigion Gogledd Iwerddon
 hasNiphl.change.hidden = Wedi cofrestru ar gyfer y NIPHL
 
