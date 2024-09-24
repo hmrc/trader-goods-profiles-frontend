@@ -42,12 +42,14 @@
         <p class="govuk-body">@messages("hasCommodityCodeChange.category")</p>
     }
 
+<h2 class="govuk-heading-m">@messages("hasCommodityCodeChange.h2")</h2>
+
     @formHelper(action = routes.HasCommodityCodeChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "hasCommodityCodeChange.h2").asSecondaryHeading(Medium)
+                legend = Legend(content = "hasCommodityCodeChange.h2", classes = "govuk-visually-hidden").asSecondaryHeading(Medium)
             )
         )
 

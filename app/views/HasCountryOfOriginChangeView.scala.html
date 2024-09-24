@@ -36,12 +36,14 @@
 
     <p class="govuk-body">@messages("hasCountryOfOriginChange.p1")</p>
 
+<h2 class="govuk-heading-m">@messages("hasCountryOfOriginChange.h2")</h2>
+
     @formHelper(action = routes.HasCountryOfOriginChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "hasCountryOfOriginChange.h2").asSecondaryHeading(Medium)
+                legend = Legend(content = "hasCountryOfOriginChange.h2", classes = "govuk-visually-hidden").asSecondaryHeading(Medium)
             )
         )
 
