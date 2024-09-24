@@ -270,7 +270,6 @@ traderReference.p1 = A trader reference is a custom name you can give a goods re
 traderReference.p2 = The trader reference needs to be unique to your Trader Goods Profile.
 traderReference.p3 = You may want to use the stock keeping unit (SKU).
 traderReference.inputHeading = What is the trader reference?
-traderReference.hint = You can enter up to 512 characters.
 traderReference.error.required = Enter the trader reference
 traderReference.error.length = Trader reference must be 512 characters or less
 traderReference.error.traderRefNotUnique = This trader reference is already in your TGP. Enter a unique trader reference.
