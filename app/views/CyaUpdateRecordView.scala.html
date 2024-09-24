@@ -26,7 +26,6 @@ govukButton: GovukButton
 @layout(pageTitle = titleNoForm(messages("cyaUpdateRecord.title"))) {
 
 <h1 class="govuk-heading-l">@messages("cyaUpdateRecord.h1")</h1>
-<p class="govuk-body">@messages("cyaUpdateRecord.h2")</p>
 @govukSummaryList(list)
 
  @formHelper(action = action) {
