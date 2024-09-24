@@ -39,13 +39,13 @@
         iconFallbackText = Some(messages("removeGoodsRecord.warning")),
         content = Text(messages("removeGoodsRecord.warningText"))
     ))
-<h2 class="govuk-heading-m">@messages("removeGoodsRecord.question")</h2>
+
     @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId, location), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.apply(
                 field = form("value"),
-                legend = Legend(content = "removeGoodsRecord.question", classes = "govuk-visually-hidden").asSecondaryHeading(Medium),
+                legend = Legend(content = "removeGoodsRecord.question").asSecondaryHeading(Medium),
                   items = Seq(
                                 RadioItem(content = messages("removeGoodsRecord.yes"), value = Some("true"),id = Some(s"value")),
                                 RadioItem(content = if(location == GoodsProfileLocation) { messages("removeGoodsRecord.noProfile") } else {messages("removeGoodsRecord.noRecord")}, value = Some("false"),id = Some(s"value-no"))
