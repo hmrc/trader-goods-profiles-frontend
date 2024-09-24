@@ -252,7 +252,6 @@ commodityCode.change.hidden = Cod nwyddau
 
 cyaCreateRecord.title = Gwiriwch eich atebion
 cyaCreateRecord.h1 = Gwiriwch eich atebion
-cyaCreateRecord.h2 = Gwiriwch fod y manylion yn y cofnod hwn yn gywir.
 cyaCreateRecord.warning = Rhybudd
 cyaCreateRecord.warningText = Rydych yn agored am y wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
 
