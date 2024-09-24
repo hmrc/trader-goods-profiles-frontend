@@ -46,7 +46,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case NirmsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNirmsNumber
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNiphlUpdatePage                        => userAnswers => navigateFromHasNiphlUpdate(userAnswers, NormalMode)
-    case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphl
+    case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphlNumber
     case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
     case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
@@ -461,7 +461,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case HasNiphlPage                              => navigateFromHasNiphlCheck
     case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad
     case HasNiphlUpdatePage                        => answers => navigateFromHasNiphlUpdate(answers, CheckMode)
-    case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphl
+    case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphlNumber
     case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
