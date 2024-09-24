@@ -550,8 +550,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               testRecordId,
               "1234567890",
               Category1Scenario,
-              0,
-              Some("Weight, in kilograms")
+              Some("Weight, in kilograms"),
+              None,
+              categorisationInfo,
+              0
             )
 
             running(application) {
@@ -611,8 +613,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               testRecordId,
               "1234567890",
               Category1Scenario,
-              0,
-              Some("Weight, in kilograms")
+              Some("Weight, in kilograms"),
+              None,
+              categorisationInfo,
+              0
             )
 
             running(application) {

@@ -132,7 +132,8 @@ case class AuditEventFactory() {
     journey: Journey,
     recordId: String,
     categoryAssessmentsWithExemptions: Int,
-    category: Int
+    category: Int,
+//    categorisationInfo: CategorisationInfo
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "journey" -> journey.toString,
@@ -140,8 +141,8 @@ case class AuditEventFactory() {
       "recordId" -> recordId,
       "eori"                              -> eori,
       "affinityGroup"                     -> affinityGroup.toString,
-   //   "commodityCode" -> commodityCode,
-
+//      "commodityCode" -> categorisationInfo.commodityCode,
+//      "descendants" -> categorisationInfo.descendantCount,
       "categoryAssessmentsWithExemptions" -> categoryAssessmentsWithExemptions.toString,
       "category"                          -> category.toString
     )

@@ -62,7 +62,7 @@ object UpdateRecordRequest {
       categoryRecord.recordId,
       categoryRecord.eori,
       category = Some(Scenario.getResultAsInt(categoryRecord.category)),
-      comcode = Some(categoryRecord.comcode),
+      comcode = Some(categoryRecord.finalComCode),
       supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
       measurementUnit = categoryRecord.measurementUnit
     )

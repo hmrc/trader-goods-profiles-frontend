@@ -20,11 +20,11 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, withdrawReason}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, WithdrawAdviceJourney}
+import models.helper._
 import models.ott.response._
 import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, isNull, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock

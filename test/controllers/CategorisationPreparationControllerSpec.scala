@@ -222,7 +222,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
             val categoryRecord = categoryRecordArgCaptor.getValue
             categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
-            categoryRecord.categoryAssessmentsWithExemptions mustBe 0
+            categoryRecord.assessmentAnswersWithExemptions mustBe 0
           }
 
           withClue("must update User Answers with Categorisation Info") {
@@ -494,7 +494,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
             val categoryRecord = categoryRecordArgCaptor.getValue
             categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
-            categoryRecord.categoryAssessmentsWithExemptions mustBe 0
+            categoryRecord.assessmentAnswersWithExemptions mustBe 0
           }
 
           withClue("must update User Answers with Categorisation Info") {

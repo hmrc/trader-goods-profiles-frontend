@@ -18,6 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.ott.CategorisationInfo
 import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Category1Scenario, CategoryRecord, Commodity, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
@@ -325,9 +326,11 @@ class GoodsRecordConnectorSpec
       eori = testEori,
       recordId = testRecordId,
       category = Category1Scenario,
-      categoryAssessmentsWithExemptions = 3,
-      comcode = "1234567890",
-      measurementUnit = None
+      assessmentAnswersWithExemptions = 3,
+      finalComCode = "1234567890",
+      measurementUnit = None,
+      supplementaryUnit = None,
+      initialCategoryInfo = CategorisationInfo("1234567890",None,Seq.empty,Seq.empty,None,0)
     )
 
     val updateRecordRequest = UpdateRecordRequest(
@@ -378,7 +381,7 @@ class GoodsRecordConnectorSpec
       "with a category and longer commodity code" in {
 
         val categoryRecordWithLongerComCode = categoryRecord.copy(
-          comcode = "9988776655"
+          finalComCode = "9988776655"
         )
 
         val updateRecordWithLongerComCode = updateRecordRequest.copy(

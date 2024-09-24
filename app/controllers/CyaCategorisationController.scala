@@ -133,7 +133,7 @@ class CyaCategorisationController @Inject() (
             request.eori,
             request.affinityGroup,
             recordId,
-            categoryRecord.categoryAssessmentsWithExemptions,
+            categoryRecord.assessmentAnswersWithExemptions,
             Scenario.getResultAsInt(categoryRecord.category)
           )
 

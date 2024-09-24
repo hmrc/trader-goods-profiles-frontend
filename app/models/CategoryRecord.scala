@@ -17,7 +17,8 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.catsSyntaxTuple2Parallel
+import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
+import models.ott.CategorisationInfo
 import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService
@@ -25,11 +26,16 @@ import services.CategorisationService
 final case class CategoryRecord(
   eori: String,
   recordId: String,
-  comcode: String,
+  finalComCode: String,
   category: Scenario,
-  categoryAssessmentsWithExemptions: Int,
   measurementUnit: Option[String],
-  supplementaryUnit: Option[String] = None
+  supplementaryUnit: Option[String],
+
+  //The below stuff is just for audits
+  initialCategoryInfo: CategorisationInfo,
+  assessmentAnswersWithExemptions: Int,
+  longerCategoryInfo: Option[CategorisationInfo] = None,
+  longerAssessmentAnswersWithExemptions: Option[Int] = None
 )
 
 object CategoryRecord {
@@ -41,34 +47,46 @@ object CategoryRecord {
     categorisationService: CategorisationService
   ): EitherNec[ValidationError, CategoryRecord] =
     (
-      getCategorisationInfoForThisRecord(userAnswers, recordId),
+      getInitialCategoryInfo(userAnswers, recordId),
       userAnswers.getOptionalPageValueForOptionalBooleanPage(
         userAnswers,
         HasSupplementaryUnitPage(recordId),
         SupplementaryUnitPage(recordId)
       )
-    ).parMapN((categorisationInfo, supplementaryUnit) =>
+    ).parMapN((initialCategorisationInfo, supplementaryUnit) => {
+
+      val longerCategoryInfo = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+      val finalCategorisationInfo = longerCategoryInfo.getOrElse(initialCategorisationInfo)
+
       CategoryRecord(
         eori,
         recordId,
-        categorisationInfo.commodityCode,
-        categorisationService.calculateResult(categorisationInfo, userAnswers, recordId),
-        categorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(x => x.answer.isDefined),
-        categorisationInfo.measurementUnit,
-        supplementaryUnit
+        finalCategorisationInfo.commodityCode,
+        categorisationService.calculateResult(finalCategorisationInfo, userAnswers, recordId),
+        finalCategorisationInfo.measurementUnit,
+        supplementaryUnit,
+        initialCategorisationInfo,
+        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined),
+        longerCategoryInfo,
+        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined))
       )
+    }
     )
 
   private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
     userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) => Right(catInfo)
       case _             =>
-        userAnswers
-          .getPageValue(CategorisationDetailsQuery(recordId))
-          .map(Right(_))
-          .getOrElse(
-            Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
-          )
+        getInitialCategoryInfo(userAnswers, recordId)
     }
+
+  private def getInitialCategoryInfo(userAnswers: UserAnswers, recordId: String) = {
+    userAnswers
+      .getPageValue(CategorisationDetailsQuery(recordId))
+      .map(Right(_))
+      .getOrElse(
+        Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
+      )
+  }
 
 }
