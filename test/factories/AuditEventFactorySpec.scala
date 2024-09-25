@@ -278,7 +278,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "2"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
-            auditDetails("reAssessmentNeeded") mustBe "false"
+            auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
           }
 
@@ -319,7 +319,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
-            auditDetails("reAssessmentNeeded") mustBe "false"
+            auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
             auditDetails("providedSupplementaryUnit") mustBe "false"
           }
@@ -361,7 +361,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
-            auditDetails("reAssessmentNeeded") mustBe "false"
+            auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "858.321"
@@ -376,7 +376,7 @@ class AuditEventFactorySpec extends SpecBase {
             val categoryRecord = CategoryRecord(
               testEori,
               testRecordId,
-              "998877",
+              "1234567890",
               Category2Scenario,
               Some("Weight, in kilograms"),
               Some("99"),
@@ -410,10 +410,10 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "3"
-            auditDetails("reAssessmentNeeded") mustBe "true"
-            auditDetails("reAssessmentCommodityCode") mustBe "1234567890"
-            auditDetails("reAssessmentCategoryAssessments") mustBe "1"
-            auditDetails("reAssessmentCategoryAssessmentsWithExemptions") mustBe "0"
+            auditDetails("reassessmentNeeded") mustBe "true"
+            auditDetails("reassessmentCommodityCode") mustBe "1234567890"
+            auditDetails("reassessmentCategoryAssessments") mustBe "1"
+            auditDetails("reassessmentCategoryAssessmentsWithExemptions") mustBe "0"
             auditDetails("category") mustBe "2"
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "99"

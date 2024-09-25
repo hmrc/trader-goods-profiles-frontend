@@ -18,12 +18,10 @@ package controllers
 
 import controllers.actions._
 import models.NormalMode
-import models.helper.CategorisationUpdate
 import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.CategorisationDetailsQuery
 import services.AuditService
 import views.html.CategoryGuidanceView
 

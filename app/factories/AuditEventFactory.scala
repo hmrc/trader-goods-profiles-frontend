@@ -139,11 +139,11 @@ case class AuditEventFactory() {
       "recordId"                          -> recordId,
       "eori"                              -> eori,
       "affinityGroup"                     -> affinityGroup.toString,
-      "commodityCode"                     -> categoryRecord.finalComCode,
+      "commodityCode"                     -> categoryRecord.initialCategoryInfo.commodityCode,
       "descendants"                       -> categoryRecord.initialCategoryInfo.descendantCount.toString,
       "categoryAssessments"               -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
       "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,
-      "reAssessmentNeeded"                -> categoryRecord.longerCategoryInfo.isDefined.toString,
+      "reassessmentNeeded"                -> categoryRecord.longerCategoryInfo.isDefined.toString,
       "category"                          -> Scenario.getResultAsInt(categoryRecord.category).toString
     ) ++ writeSupplementaryUnitDetails(categoryRecord) ++
       writeReassessmentDetails(categoryRecord)
@@ -166,9 +166,9 @@ case class AuditEventFactory() {
     categoryRecord.longerCategoryInfo
       .map { catInfo =>
         Map(
-          "reAssessmentCommodityCode"                     -> catInfo.commodityCode,
-          "reAssessmentCategoryAssessments"               -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
-          "reAssessmentCategoryAssessmentsWithExemptions" -> categoryRecord.longerAssessmentAnswersWithExemptions
+          "reassessmentCommodityCode"                     -> catInfo.commodityCode,
+          "reassessmentCategoryAssessments"               -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+          "reassessmentCategoryAssessmentsWithExemptions" -> categoryRecord.longerAssessmentAnswersWithExemptions
             .getOrElse(0)
             .toString
         )

@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario}
+import models.{CategorisationAnswers, CategoryRecord, NormalMode}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}

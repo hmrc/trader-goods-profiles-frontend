@@ -17,22 +17,13 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
-import models.helper.CategorisationUpdate
+import base.TestConstants.testRecordId
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
-
-import scala.concurrent.Future
 
 class CategoryGuidanceControllerSpec extends SpecBase {
 

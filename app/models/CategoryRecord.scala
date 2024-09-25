@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
+import cats.implicits.catsSyntaxTuple2Parallel
 import models.ott.CategorisationInfo
 import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
@@ -30,7 +30,6 @@ final case class CategoryRecord(
   category: Scenario,
   measurementUnit: Option[String],
   supplementaryUnit: Option[String],
-
   //The below stuff is just for audits
   initialCategoryInfo: CategorisationInfo,
   assessmentAnswersWithExemptions: Int,
@@ -54,9 +53,8 @@ object CategoryRecord {
         HasSupplementaryUnitPage(recordId),
         SupplementaryUnitPage(recordId)
       )
-    ).parMapN((initialCategorisationInfo, supplementaryUnit) => {
-
-      val longerCategoryInfo = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+    ).parMapN { (initialCategorisationInfo, supplementaryUnit) =>
+      val longerCategoryInfo      = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
       val finalCategorisationInfo = longerCategoryInfo.getOrElse(initialCategorisationInfo)
 
       CategoryRecord(
@@ -73,22 +71,13 @@ object CategoryRecord {
         longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined))
       )
     }
-    )
 
-  private def getCategorisationInfoForThisRecord(userAnswers: UserAnswers, recordId: String) =
-    userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
-      case Some(catInfo) => Right(catInfo)
-      case _             =>
-        getInitialCategoryInfo(userAnswers, recordId)
-    }
-
-  private def getInitialCategoryInfo(userAnswers: UserAnswers, recordId: String) = {
+  private def getInitialCategoryInfo(userAnswers: UserAnswers, recordId: String) =
     userAnswers
       .getPageValue(CategorisationDetailsQuery(recordId))
       .map(Right(_))
       .getOrElse(
         Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
       )
-  }
 
 }
