@@ -317,6 +317,7 @@ profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros res
 
 categorisationResult.title = Categoreiddio wedi’i gwblhau
 categorisationResult.heading = Categoreiddio wedi’i gwblhau
+categorisationResult.Category2.title = Categori 2
 categorisationResult.Category2.heading = Categori 2
 categorisationResult.Category2.p1 = Mae’ch nwyddau wedi’u categoreiddio ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.Category1.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
