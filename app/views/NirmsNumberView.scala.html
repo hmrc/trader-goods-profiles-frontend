@@ -30,7 +30,7 @@
 @(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("nirmsNumber.title")),
+    pageTitle    = title(form, messages("nirmsNumber.title")),
     showBackLink = true
 ) {
 
