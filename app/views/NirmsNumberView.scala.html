@@ -30,7 +30,7 @@
 @(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("nirmsNumber.title")),
+    pageTitle    = title(form, messages("nirmsNumber.title")),
     showBackLink = true
 ) {
 
@@ -38,13 +38,12 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@messages("nirmsNumber.heading")</h1>
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = Label(content = "nirmsNumber.heading", classes = "govuk-visually-hidden")
+                label = Label(content = "nirmsNumber.heading").asPageHeading(Large)
             ).withHint(Hint(content = Text(messages("nirmsNumber.hint"))))
             .withWidth(Fixed10)
         )

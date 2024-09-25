@@ -73,6 +73,9 @@ POST        /update-profile/nirms-number/check                                  
 GET         /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onPageLoadNirmsNumber
 POST        /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onSubmitNirmsNumber
 
+GET         /update-profile/check-your-answers/niphl-number                                 controllers.CyaMaintainProfileController.onPageLoadNiphlNumber
+POST        /update-profile/check-your-answers/niphl-number                                 controllers.CyaMaintainProfileController.onSubmitNiphlNumber
+
 GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
 POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()
 
