@@ -80,7 +80,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             None,
             None,
             categorisationInfo,
-            4
+            4,
+            wasSupplementaryUnitAsked = false
           )
         )
 
@@ -119,7 +120,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             Some("Weight"),
             None,
             categorisationInfoMeasureUnit,
-            4
+            4,
+            wasSupplementaryUnitAsked = false
           )
         )
 
@@ -158,7 +160,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             Some("Weight"),
             None,
             categorisationInfoMeasureUnit,
-            4
+            4,
+            wasSupplementaryUnitAsked = true
           )
         )
 
@@ -201,7 +204,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             Some("Weight"),
             Some("1234"),
             categorisationInfoMeasureUnit,
-            4
+            4,
+            wasSupplementaryUnitAsked = true
           )
         )
 
@@ -229,7 +233,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             None,
             None,
             categorisationInfo,
-            1
+            1,
+            wasSupplementaryUnitAsked = false
           )
         )
 
@@ -279,6 +284,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             None,
             shorterCat,
             4,
+            wasSupplementaryUnitAsked = false,
             Some(longerCat),
             Some(1)
           )

@@ -517,7 +517,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         Some("Weight, in kilograms"),
         None,
         categorisationInfo,
-        0
+        0,
+        wasSupplementaryUnitAsked = false
       )
       "when user answers can update a valid goods record" - {
 

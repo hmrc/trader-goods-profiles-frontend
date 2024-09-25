@@ -34,6 +34,7 @@ final case class CategoryRecord(
   //The below stuff is just for audits
   initialCategoryInfo: CategorisationInfo,
   assessmentAnswersWithExemptions: Int,
+  wasSupplementaryUnitAsked: Boolean,
   longerCategoryInfo: Option[CategorisationInfo] = None,
   longerAssessmentAnswersWithExemptions: Option[Int] = None
 )
@@ -67,6 +68,7 @@ object CategoryRecord {
         supplementaryUnit,
         initialCategorisationInfo,
         initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined),
+        userAnswers.get(HasSupplementaryUnitPage(recordId)).isDefined,
         longerCategoryInfo,
         longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined))
       )

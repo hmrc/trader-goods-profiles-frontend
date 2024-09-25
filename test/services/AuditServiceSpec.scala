@@ -57,7 +57,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
     None,
     None,
     categorisationInfo,
-    2
+    2,
+    wasSupplementaryUnitAsked = false
   )
 
   override def beforeEach(): Unit = {

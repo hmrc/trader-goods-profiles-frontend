@@ -81,7 +81,7 @@ case class AuditEventFactory() {
     journey: Journey,
     updateSection: Option[UpdateSection],
     recordId: Option[String],
-    commodity: Option[CategorisationInfo] = None,
+    commodity: Option[CategorisationInfo] = None
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     val auditDetails = Map(
@@ -131,24 +131,49 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup,
     journey: Journey,
     recordId: String,
-    categoryRecord: CategoryRecord,
+    categoryRecord: CategoryRecord
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "journey" -> journey.toString,
-      "updateSection" -> CategorisationUpdate.toString,
-      "recordId" -> recordId,
+      "journey"                           -> journey.toString,
+      "updateSection"                     -> CategorisationUpdate.toString,
+      "recordId"                          -> recordId,
       "eori"                              -> eori,
       "affinityGroup"                     -> affinityGroup.toString,
-      "commodityCode" -> categoryRecord.finalComCode,
-      "descendants" -> categoryRecord.initialCategoryInfo.descendantCount.toString,
-      "categoryAssessments" -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+      "commodityCode"                     -> categoryRecord.finalComCode,
+      "descendants"                       -> categoryRecord.initialCategoryInfo.descendantCount.toString,
+      "categoryAssessments"               -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
       "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,
-      "reAssessmentNeeded" -> categoryRecord.longerCategoryInfo.isDefined.toString,
+      "reAssessmentNeeded"                -> categoryRecord.longerCategoryInfo.isDefined.toString,
       "category"                          -> Scenario.getResultAsInt(categoryRecord.category).toString
-    )
+    ) ++ writeSupplementaryUnitDetails(categoryRecord) ++
+      writeReassessmentDetails(categoryRecord)
 
     createSubmitGoodsRecordEvent(auditDetails)
   }
+
+  private def writeSupplementaryUnitDetails(categoryRecord: CategoryRecord) =
+    if (categoryRecord.wasSupplementaryUnitAsked) {
+      writeOptionalWithAssociatedBooleanFlag(
+        "providedSupplementaryUnit",
+        "supplementaryUnit",
+        categoryRecord.supplementaryUnit
+      )
+    } else {
+      Map.empty[String, String]
+    }
+
+  private def writeReassessmentDetails(categoryRecord: CategoryRecord) =
+    categoryRecord.longerCategoryInfo
+      .map { catInfo =>
+        Map(
+          "reAssessmentCommodityCode"                     -> catInfo.commodityCode,
+          "reAssessmentCategoryAssessments"               -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+          "reAssessmentCategoryAssessmentsWithExemptions" -> categoryRecord.longerAssessmentAnswersWithExemptions
+            .getOrElse(0)
+            .toString
+        )
+      }
+      .getOrElse(Map.empty[String, String])
 
   def createSubmitGoodsRecordEventForUpdateRecord(
     affinityGroup: AffinityGroup,
