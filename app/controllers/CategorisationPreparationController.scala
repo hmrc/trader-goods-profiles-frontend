@@ -170,7 +170,6 @@ class CategorisationPreparationController @Inject() (
     if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired) {
       CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
         case Right(record) =>
-
           auditService.auditFinishCategorisation(
             eori,
             affinityGroup,
