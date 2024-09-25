@@ -17,7 +17,7 @@
 package models.ott
 
 import base.SpecBase
-import base.TestConstants.{NiphlsCode, NirmsCode, testRecordId}
+import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import models.ott.response._
 import models.{AnsweredQuestions, AssessmentAnswer, ReassessmentAnswer, TraderProfile}
 import pages.{AssessmentPage, ReassessmentPage}
@@ -643,7 +643,7 @@ class CategorisationInfoSpec extends SpecBase {
                 expectedAssessmentsThatNeedAnswers,
                 None,
                 0,
-                isTraderNiphlsAuthorised = true,
+                isTraderNiphlAuthorised = true,
                 isTraderNirmsAuthorised = true
               )
 
@@ -684,10 +684,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "assessmentId2",
                   "themeId2",
                   Seq(
-                    ExemptionResponse(NiphlsCode, ExemptionType.Certificate)
+                    ExemptionResponse(NiphlCode, ExemptionType.Certificate)
                   )
                 ),
-                CertificateResponse(NiphlsCode, "WFE-code", "WFE-description"),
+                CertificateResponse(NiphlCode, "WFE-code", "WFE-description"),
                 ThemeResponse("themeId3", 2),
                 CategoryAssessmentResponse(
                   "assessmentId3",
@@ -710,7 +710,7 @@ class CategorisationInfoSpec extends SpecBase {
               "assessmentId2",
               1,
               Seq(
-                Certificate(NiphlsCode, "WFE-code", "WFE-description")
+                Certificate(NiphlCode, "WFE-code", "WFE-description")
               )
             )
             val expectedAssessmentId3     = CategoryAssessment(
@@ -735,7 +735,7 @@ class CategorisationInfoSpec extends SpecBase {
                 expectedAssessmentsThatNeedAnswers,
                 None,
                 0,
-                isTraderNiphlsAuthorised = true,
+                isTraderNiphlAuthorised = true,
                 isTraderNirmsAuthorised = true
               )
 
@@ -779,10 +779,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "assessmentId2",
                   "themeId2",
                   Seq(
-                    ExemptionResponse(NiphlsCode, ExemptionType.Certificate)
+                    ExemptionResponse(NiphlCode, ExemptionType.Certificate)
                   )
                 ),
-                CertificateResponse(NiphlsCode, "WFE-code", "WFE-description"),
+                CertificateResponse(NiphlCode, "WFE-code", "WFE-description"),
                 ThemeResponse("themeId3", 2),
                 CategoryAssessmentResponse(
                   "assessmentId3",
@@ -805,7 +805,7 @@ class CategorisationInfoSpec extends SpecBase {
               "assessmentId2",
               1,
               Seq(
-                Certificate(NiphlsCode, "WFE-code", "WFE-description")
+                Certificate(NiphlCode, "WFE-code", "WFE-description")
               )
             )
             val expectedAssessmentId3     = CategoryAssessment(

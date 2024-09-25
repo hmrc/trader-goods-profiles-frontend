@@ -46,7 +46,11 @@
                 field = form("value"),
                 label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
             )
-            .withHint(Hint(content = Text(messages("ukimsNumber.hint"))))
+            .withHint(
+                HintViewModel(messages("ukimsNumber.hint"))
+                .withCssClass("text-overflow")
+                .withAttribute(("style", "word-wrap: break-word"))
+            )
             .withWidth(Fixed30)
         )
 

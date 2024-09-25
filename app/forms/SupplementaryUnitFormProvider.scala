@@ -17,7 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import forms.mappings.helpers.FormatAnswers.removeWhitespace
 import models.StringFieldRegex.supplementaryUnitRegex
 
 import javax.inject.Inject

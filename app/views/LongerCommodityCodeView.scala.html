@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.InputWidth._
+@import viewmodels.LabelSize._
 @import models.Commodity
 
 @this(
@@ -37,15 +38,13 @@
     <p class="govuk-body">@messages("longerCommodityCode.p1", commodity)</p>
     <p class="govuk-body">@messages("longerCommodityCode.p2")</p>
     <p class="govuk-inset-text">@messages("longerCommodityCode.insetText")</p>
-
-    <h2 class="govuk-heading-m">@messages("longerCommodityCode.h2")</h2>
-
+<h2 class="govuk-heading-m">@messages("longerCommodityCode.h2")</h2>
     @formHelper(action = routes.LongerCommodityCodeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = Label(content = "longerCommodityCode.h2", classes = "govuk-visually-hidden")
+                label = Label(content = "longerCommodityCode.h2", classes = "govuk-visually-hidden").asSecondaryHeading(Medium)
             ).withHint(Hint(content = Text(messages("longerCommodityCode.hint"))))
             .withPrefix(PrefixOrSuffix(content = Text(messages(commodity))))
             .asNumeric()

@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -40,15 +42,13 @@
             iconFallbackText = Some(messages("removeNiphl.warning")),
             content = Text(messages("removeNiphl.warningText"))
              ))
-
-    <h2 class="govuk-heading-m">@messages("removeNiphl.h2")</h2>
-
+<h2 class="govuk-heading-m">@messages("removeNiphl.h2")</h2>
     @formHelper(action = routes.RemoveNiphlController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
                 RadiosViewModel.apply(
                     field = form("value"),
-                    legend = Legend(content = "removeNiphl.h2", classes = "govuk-visually-hidden"),
+                    legend = Legend(content = "removeNiphl.h2", classes = "govuk-visually-hidden").asSecondaryHeading(Medium),
                     items = Seq(
                     RadioItem(content = messages("removeNiphl.yes"), value = Some("true"), id = Some(s"value")),
                     RadioItem(content = messages("removeNiphl.no"), value = Some("false"), id = Some(s"value-no"))

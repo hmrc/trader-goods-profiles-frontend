@@ -78,8 +78,8 @@ class CategorisationService @Inject() (
 
     val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
 
-    if (categorisationInfo.isNiphlsAssessment) {
-      if (!categorisationInfo.isTraderNiphlsAuthorised || areThereCategory1QuestionsWithNoExemption) {
+    if (categorisationInfo.isNiphlAssessment) {
+      if (!categorisationInfo.isTraderNiphlAuthorised || areThereCategory1QuestionsWithNoExemption) {
         Category1Scenario
       } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
         Category1NoExemptionsScenario

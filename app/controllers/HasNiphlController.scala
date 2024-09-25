@@ -19,16 +19,16 @@ package controllers
 import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.HasNiphlFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.Mode
 import navigation.Navigator
 import pages.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import queries.TraderProfileQuery
 import repositories.SessionRepository
 import views.html.HasNiphlView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasNiphlController @Inject() (
@@ -73,7 +73,7 @@ class HasNiphlController @Inject() (
         )
   }
 
-  def onPageLoadUpdate: Action[AnyContent] =
+  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(HasNiphlUpdatePage) match {
         case None        =>
@@ -82,27 +82,30 @@ class HasNiphlController @Inject() (
             updatedAnswers <-
               Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
             _              <- sessionRepository.set(updatedAnswers)
-          } yield Ok(view(form.fill(traderProfile.niphlNumber.isDefined), routes.HasNiphlController.onSubmitUpdate))
-        case Some(value) => Future.successful(Ok(view(form.fill(value), routes.HasNiphlController.onSubmitUpdate)))
+          } yield Ok(
+            view(form.fill(traderProfile.niphlNumber.isDefined), routes.HasNiphlController.onSubmitUpdate(mode))
+          )
+        case Some(value) =>
+          Future.successful(Ok(view(form.fill(value), routes.HasNiphlController.onSubmitUpdate(mode))))
       }
     }
 
-  def onSubmitUpdate: Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, routes.HasNiphlController.onSubmitUpdate))),
-        value =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            if (traderProfile.niphlNumber.isDefined == value) {
-              Future.successful(Redirect(routes.ProfileController.onPageLoad()))
-            } else {
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, routes.HasNiphlController.onSubmitUpdate(mode)))),
+          value =>
+            traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
               for {
-                updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, NormalMode, updatedAnswers))
+                updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
+                updatedAnswersWithTraderProfile <-
+                  Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
+                _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
+              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithTraderProfile))
             }
-          }
-      )
+        )
   }
 }

@@ -18,7 +18,7 @@ package forms
 
 import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.RemoveWhitespace.removeWhitespace
+import forms.mappings.helpers.FormatAnswers.toUppercaseAndRemoveSpacesAndHyphens
 import models.StringFieldRegex
 import play.api.data.Form
 
@@ -27,11 +27,7 @@ class UkimsNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("ukimsNumber.error.required")
-        .transform(removeWhitespace, identity[String])
-        .transform(toUpperCase, identity[String])
+        .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
         .verifying(regexp(StringFieldRegex.ukimsNumberRegex, "ukimsNumber.error.invalidFormat"))
     )
-
-  private def toUpperCase: String => String = _.toUpperCase
-
 }

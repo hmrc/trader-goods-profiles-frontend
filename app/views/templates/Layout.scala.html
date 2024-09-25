@@ -45,7 +45,8 @@
     showSignOut: Boolean = true,
     signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url,
     isFullWidth: Boolean = false,
-    extraHead: Html = HtmlFormat.empty
+    extraHead: Html = HtmlFormat.empty,
+    headerShouldHaveServiceLink: Boolean = true
     )(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
@@ -120,7 +121,7 @@
     pageTitle   = Some(pageTitle),
     headBlock   = Some(head),
     headerBlock = Some(hmrcStandardHeader(
-        serviceUrl  = Some(routes.IndexController.onPageLoad.url),
+        serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad.url) else None,
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
         phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
     )),

@@ -34,7 +34,7 @@ final case class CategorisationInfo(
   measurementUnit: Option[String],
   descendantCount: Int,
   longerCode: Boolean = false,
-  isTraderNiphlsAuthorised: Boolean = false,
+  isTraderNiphlAuthorised: Boolean = false,
   isTraderNirmsAuthorised: Boolean = false
 ) {
 
@@ -71,7 +71,7 @@ final case class CategorisationInfo(
   def getMinimalCommodityCode: String =
     commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
-  def isNiphlsAssessment: Boolean = categoryAssessments.exists(ass => ass.isNiphlsAnswer) &&
+  def isNiphlAssessment: Boolean = categoryAssessments.exists(ass => ass.isNiphlAnswer) &&
     categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
   def isNirmsAssessment: Boolean = categoryAssessments.exists(_.isNirmsAnswer)
@@ -104,14 +104,14 @@ object CategorisationInfo {
         val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
         val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
-        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlsAnswer)
+        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlAnswer)
         val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNirmsAnswer)
 
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
-        val isNiphlsAssessment =
-          category1Assessments.exists(ass => ass.isNiphlsAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+        val isNiphlAssessment =
+          category1Assessments.exists(ass => ass.isNiphlAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
 
         val isNirmsAssessment = category2Assessments.exists(ass => ass.isNirmsAnswer)
 
@@ -119,9 +119,9 @@ object CategorisationInfo {
         val isTraderNirmsAuthorised = traderProfile.nirmsNumber.isDefined
 
         val questionsToAnswer = {
-          if (isNiphlsAssessment && isTraderNiphlAuthorised) {
+          if (isNiphlAssessment && isTraderNiphlAuthorised) {
             category1ToAnswer
-          } else if (isNiphlsAssessment) {
+          } else if (isNiphlAssessment) {
             Seq.empty
           } else if (!areAllCategory1Answerable) {
             Seq.empty
