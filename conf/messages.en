@@ -47,13 +47,11 @@ cyaCreateProfile.warningText = You need to make sure these details are correct. 
 
 cyaCreateRecord.title = Check your answers
 cyaCreateRecord.h1 = Check your answers
-cyaCreateRecord.h2 = Check if the details on this record are correct.
 cyaCreateRecord.warning = Warning
 cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
 cyaUpdateRecord.title = Check your answers
 cyaUpdateRecord.h1 = Check your answers
-cyaUpdateRecord.h2 = Check if the details on this record are correct.
 
 cyaRequestAdvice.title = Check your answers before sending your request for advice
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
@@ -89,7 +87,7 @@ hasNiphl.p1 = Growers and traders can move goods to Northern Ireland using the N
 hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
-hasNiphl.checkYourAnswersLabel = NIPHL registered
+hasNiphl.checkYourAnswersLabel = Are you NIPHL registered?
 hasNiphl.error.required = Select if you are NIPHL registered
 hasNiphl.change.hidden = NIPHL registered
 
@@ -99,7 +97,7 @@ hasNirms.h2 = Are you NIRMS registered?
 hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final consumption in Northern Ireland can use NIRMS.
 hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
-hasNirms.checkYourAnswersLabel = NIRMS registered
+hasNirms.checkYourAnswersLabel = Are you NIRMS registered?
 hasNirms.error.required = Select yes, if you are Northern Ireland Retail Movement Scheme registered
 hasNirms.change.hidden = NIRMS registered
 
@@ -137,7 +135,7 @@ profileSetup.p4 = Businesses responsible for selling or facilitating the movemen
 profileSetup.p5 = NIRMS registered traders can add their NIRMS authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIRMS.
 profileSetup.p6 = NIRMS authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIRMS authorised, find out about
 profileSetup.p6.linkText = the Northern Ireland Retail Movement Scheme
-profileSetup.niphl.h2 = Northern Ireland plant health label (NIPHL)
+profileSetup.niphl.h2 = Northern Ireland Plant Health Label (NIPHL)
 profileSetup.p7 = The NIPHL scheme is a way for growers and traders in Great Britain (England, Scotland and Wales) to move certain products to Northern Ireland.
 profileSetup.p8 = NIPHL registered traders can add their NIPHL authorisation to their Trader Goods Profile. Doing this will help categorise goods that are subject to NIPHL.
 profileSetup.p9 = NIPHL authorisation is optional for Trader Goods Profile. If you aren’t sure if you should be NIPHL authorised, find out about
@@ -272,7 +270,6 @@ traderReference.p1 = A trader reference is a custom name you can give a goods re
 traderReference.p2 = The trader reference needs to be unique to your Trader Goods Profile.
 traderReference.p3 = You may want to use the stock keeping unit (SKU).
 traderReference.inputHeading = What is the trader reference?
-traderReference.hint = You can enter up to 512 characters.
 traderReference.error.required = Enter the trader reference
 traderReference.error.length = Trader reference must be 512 characters or less
 traderReference.error.traderRefNotUnique = This trader reference is already in your TGP. Enter a unique trader reference.
@@ -541,7 +538,6 @@ goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
 
 cyaSupplementaryUnit.title = Check your answers
 cyaSupplementaryUnit.heading = Check your answers
-cyaSupplementaryUnit.h2 = Check if the details on this record are correct.
 
 successBanner.title = Success
 successBanner.heading = You have changed the {0}
