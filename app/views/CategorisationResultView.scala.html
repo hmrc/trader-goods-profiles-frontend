@@ -48,7 +48,6 @@
 
 @paragraphContent = @{
     scenario match {
-        case Category1NoExemptionsScenario => Some(messages("categorisationResult.Category1NoExemptions.p1"))
         case StandardGoodsScenario => Some(messages("categorisationResult.Standard.p1"))
         case StandardGoodsNoAssessmentsScenario => Some(messages("categorisationResult.StandardNoAssessments.p1"))
         case _ => None
@@ -57,6 +56,7 @@
 
 @title = @{
     scenario match {
+        case Category1NoExemptionsScenario | Category1Scenario => titleNoForm(messages("categorisationResult.Category1.title"))
         case StandardGoodsScenario => titleNoForm(messages("categorisationResult.Standard.title"))
         case StandardGoodsNoAssessmentsScenario => titleNoForm(messages("categorisationResult.Standard.title"))
         case _ => titleNoForm(messages("categorisationResult.title"))
@@ -68,7 +68,21 @@
     showBackLink = false
 ) {
 
-    @panel
+    @{
+        scenario match {
+            case Category1Scenario | Category1NoExemptionsScenario => {
+                <h1 class="govuk-heading-l">{messages("categorisationResult.Category1.h1")}</h1>
+                <p class="govuk-body">{
+                    if (scenario == Category1NoExemptionsScenario) {
+                        messages("categorisationResult.Category1NoExemptions.p1")
+                    } else {
+                        messages("categorisationResult.Category1.p1")
+                    }
+                }</p>
+            }
+            case _ => panel
+        }
+    }
 
     @if(paragraphContent.isDefined) {
         <p class="govuk-body">
