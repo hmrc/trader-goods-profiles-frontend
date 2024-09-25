@@ -48,18 +48,6 @@ class CategoryGuidanceController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-
-      val categoryDetails = request.userAnswers.get(CategorisationDetailsQuery(recordId))
-
-      auditService
-        .auditStartUpdateGoodsRecord(
-          request.eori,
-          request.affinityGroup,
-          CategorisationUpdate,
-          recordId,
-          categoryDetails
-        )
-
       Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
     }
 }

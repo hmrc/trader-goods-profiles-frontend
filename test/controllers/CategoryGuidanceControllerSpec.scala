@@ -57,14 +57,8 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
     "onSubmit should call navigator to redirect" in {
 
-      val mockAuditService = mock[AuditService]
-
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
-          bind[AuditService].toInstance(mockAuditService),
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
         )
         .build()
@@ -76,17 +70,6 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-
-        withClue("must call the audit service with the correct details") {
-          verify(mockAuditService)
-            .auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(CategorisationUpdate),
-              eqTo(testRecordId),
-              eqTo(Some(categorisationInfo))
-            )(any())
-        }
       }
     }
 

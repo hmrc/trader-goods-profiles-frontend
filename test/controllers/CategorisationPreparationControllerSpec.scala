@@ -17,8 +17,9 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
+import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Commodity, NormalMode, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -35,7 +36,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
-import services.CategorisationService
+import services.{AuditService, CategorisationService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -47,6 +49,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
   private val mockCategorisationService = mock[CategorisationService]
   private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
   private val mockSessionRepository     = mock[SessionRepository]
+  private val mockAuditService          = mock[AuditService]
 
   private val longerCommodity = Commodity(
     "1234567890",
@@ -70,7 +73,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         bind[CategorisationService].toInstance(mockCategorisationService),
         bind[SessionRepository].toInstance(mockSessionRepository),
         bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-        bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+        bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+        bind[AuditService].toInstance(mockAuditService)
       )
       .build()
 
@@ -80,10 +84,13 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
     reset(mockCategorisationService)
     reset(mockGoodsRecordConnector)
     reset(mockSessionRepository)
+    reset(mockAuditService)
 
     when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(goodsRecordResponse()))
 
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+    when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(Done))
 
   }
 
@@ -128,6 +135,26 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             verify(mockGoodsRecordConnector, times(0)).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
               any()
             )
+          }
+
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categorisationInfo))
+              )(any())
+          }
+
+          withClue("must not call the audit service finish categorisation event") {
+            verify(mockAuditService, times(0)).auditFinishCategorisation(
+              any(),
+              any(),
+              any(),
+              any()
+            )(any())
           }
 
         }
@@ -175,6 +202,26 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           }
 
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode))
+              )(any())
+          }
+
+          withClue("must not call the audit service finish categorisation event") {
+            verify(mockAuditService, times(0)).auditFinishCategorisation(
+              any(),
+              any(),
+              any(),
+              any()
+            )(any())
+          }
+
         }
 
       }
@@ -211,19 +258,17 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
               .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId))
           }
 
-          withClue("must have updated goods record") {
-            val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
-              ArgumentCaptor.forClass(classOf[CategoryRecord])
-            verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
-              any(),
-              eqTo(testRecordId),
-              categoryRecordArgCaptor.capture()
-            )(any())
+          val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
+            ArgumentCaptor.forClass(classOf[CategoryRecord])
+          verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
+            any(),
+            eqTo(testRecordId),
+            categoryRecordArgCaptor.capture()
+          )(any())
 
-            val categoryRecord = categoryRecordArgCaptor.getValue
-            categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
-            categoryRecord.assessmentAnswersWithExemptions mustBe 0
-          }
+          val categoryRecord = categoryRecordArgCaptor.getValue
+          categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
+          categoryRecord.assessmentAnswersWithExemptions mustBe 0
 
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -232,6 +277,26 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val finalUserAnswers = uaArgCaptor.getValue
 
             finalUserAnswers.get(CategorisationDetailsQuery(testRecordId)).get mustBe categoryInfoNoAssessments
+          }
+
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categoryInfoNoAssessments))
+              )(any())
+          }
+
+          withClue("must call the audit service finish categorisation event") {
+            verify(mockAuditService).auditFinishCategorisation(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(testRecordId),
+              eqTo(categoryRecord)
+            )(any())
           }
 
         }
@@ -291,6 +356,18 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categorisationInfo))
+              )(any())
+          }
+
         }
 
       }
@@ -314,6 +391,27 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categoryInfoNoAssessments))
+              )(any())
+          }
+
+          withClue("must call the audit service finish categorisation event even though the update failed") {
+            verify(mockAuditService).auditFinishCategorisation(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(testRecordId),
+              any()
+            )(any())
+          }
+
         }
 
       }
@@ -336,6 +434,18 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categoryInfoNoAssessments))
+              )(any())
+          }
+
         }
 
       }
@@ -482,20 +592,18 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
               .calculateResult(any(), any(), any())
           }
 
-          withClue("must have updated goods record") {
-            val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
-              ArgumentCaptor.forClass(classOf[CategoryRecord])
+          val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
+            ArgumentCaptor.forClass(classOf[CategoryRecord])
 
-            verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
-              any(),
-              eqTo(testRecordId),
-              categoryRecordArgCaptor.capture()
-            )(any())
+          verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
+            any(),
+            eqTo(testRecordId),
+            categoryRecordArgCaptor.capture()
+          )(any())
 
-            val categoryRecord = categoryRecordArgCaptor.getValue
-            categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
-            categoryRecord.assessmentAnswersWithExemptions mustBe 0
-          }
+          val categoryRecord = categoryRecordArgCaptor.getValue
+          categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
+          categoryRecord.assessmentAnswersWithExemptions mustBe 0
 
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -506,6 +614,15 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val finalUserAnswers = uaArgCaptor.getValue
 
             finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)).get mustBe longerCode
+          }
+
+          withClue("must call the audit service finish categorisation event") {
+            verify(mockAuditService).auditFinishCategorisation(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(testRecordId),
+              eqTo(categoryRecord)
+            )(any())
           }
 
         }
@@ -954,6 +1071,15 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          withClue("must call the audit service finish categorisation event even though the update failed") {
+            verify(mockAuditService).auditFinishCategorisation(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(testRecordId),
+              any()
+            )(any())
+          }
         }
 
       }
