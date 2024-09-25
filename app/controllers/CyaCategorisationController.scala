@@ -133,8 +133,7 @@ class CyaCategorisationController @Inject() (
             request.eori,
             request.affinityGroup,
             recordId,
-            categoryRecord.assessmentAnswersWithExemptions,
-            Scenario.getResultAsInt(categoryRecord.category)
+            categoryRecord
           )
 
           goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord).map { _ =>

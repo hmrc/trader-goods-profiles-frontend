@@ -19,11 +19,12 @@ package services
 import cats.implicits.catsSyntaxTuple4Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
+import models.Scenario.getResultAsInt
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper._
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
@@ -180,8 +181,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     eori: String,
     affinityGroup: AffinityGroup,
     recordId: String,
-    categoryAssessmentsWithExemptions: Int,
-    category: Int
+    categoryRecord: CategoryRecord
   )(implicit hc: HeaderCarrier): Future[Done] = {
 
     val event = auditEventFactory.createSubmitGoodsRecordEventForCategorisation(
@@ -189,8 +189,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       affinityGroup,
       UpdateRecordJourney,
       recordId,
-      categoryAssessmentsWithExemptions,
-      category
+      categoryRecord
     )
 
     auditConnector.sendEvent(event).map { auditResult =>

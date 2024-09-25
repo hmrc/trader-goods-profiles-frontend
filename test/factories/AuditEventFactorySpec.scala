@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import models.audits._
 import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response._
-import models.{AdviceRequest, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, CategoryRecord, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -235,30 +235,49 @@ class AuditEventFactorySpec extends SpecBase {
 
       "create event when journey is updating a goods record" - {
 
-        "and update is for categorisation" in {
+        "and update is for categorisation" - {
 
-          val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
-            testEori,
-            AffinityGroup.Organisation,
-            UpdateRecordJourney,
-            testRecordId,
-            2,
-            1
-          )
+          "without longer commodity code journey nor supplementary unit" in {
 
-          result.auditSource mustBe "trader-goods-profiles-frontend"
-          result.auditType mustBe "SubmitGoodsRecord"
-          result.tags.isEmpty mustBe false
+            val categoryInfo = categorisationInfo.copy(categoryAssessmentsThatNeedAnswers = Seq(category1, category3), measurementUnit = None)
 
-          val auditDetails = result.detail
-          auditDetails.size mustBe 7
-          auditDetails("journey") mustBe "UpdateRecord"
-          auditDetails("updateSection") mustBe "categorisation"
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
-          auditDetails("category") mustBe "1"
+            val categoryRecord = CategoryRecord(
+              testEori,
+              testRecordId,
+              "1234567890",
+              Category1Scenario,
+              None,
+              None,
+              categoryInfo,
+              2
+            )
+
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
+              testEori,
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              testRecordId,
+              categoryRecord
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+             auditDetails.size mustBe 11
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "categorisation"
+            auditDetails("eori") mustBe testEori
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("descendants") mustBe "1"
+            auditDetails("categoryAssessments") mustBe "2"
+            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("reAssessmentNeeded") mustBe "false"
+            auditDetails("category") mustBe "1"
+          }
         }
 
         "and update is for goods details" in {

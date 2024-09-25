@@ -20,7 +20,7 @@ import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -131,9 +131,7 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup,
     journey: Journey,
     recordId: String,
-    categoryAssessmentsWithExemptions: Int,
-    category: Int,
-//    categorisationInfo: CategorisationInfo
+    categoryRecord: CategoryRecord,
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "journey" -> journey.toString,
@@ -141,10 +139,12 @@ case class AuditEventFactory() {
       "recordId" -> recordId,
       "eori"                              -> eori,
       "affinityGroup"                     -> affinityGroup.toString,
-//      "commodityCode" -> categorisationInfo.commodityCode,
-//      "descendants" -> categorisationInfo.descendantCount,
-      "categoryAssessmentsWithExemptions" -> categoryAssessmentsWithExemptions.toString,
-      "category"                          -> category.toString
+      "commodityCode" -> categoryRecord.finalComCode,
+      "descendants" -> categoryRecord.initialCategoryInfo.descendantCount.toString,
+      "categoryAssessments" -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+      "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,
+      "reAssessmentNeeded" -> categoryRecord.longerCategoryInfo.isDefined.toString,
+      "category"                          -> Scenario.getResultAsInt(categoryRecord.category).toString
     )
 
     createSubmitGoodsRecordEvent(auditDetails)

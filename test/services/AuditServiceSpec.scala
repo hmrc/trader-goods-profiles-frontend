@@ -22,7 +22,7 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper._
 import models.ott.response._
-import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -36,6 +36,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
+import utils.Constants.Category1AsInt
 
 import java.time.{Instant, LocalDate}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -47,6 +48,17 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockAuditFactory                = mock[AuditEventFactory]
   val auditService                            = new AuditService(mockAuditConnector, mockAuditFactory)
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  private val categoryRecord = CategoryRecord(
+    testEori,
+    testRecordId,
+    "019233222",
+    Category1Scenario,
+    None,
+    None,
+    categorisationInfo,
+    2
+  )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -418,13 +430,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val fakeAuditEvent = DataEvent("source", "type")
       when(
-        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any(), any())(any())
+        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any())(any())
       )
         .thenReturn(fakeAuditEvent)
 
       val result =
         await(
-          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, 2, 1)
+          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, categoryRecord)
         )
 
       result mustBe Done
@@ -436,8 +448,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
             eqTo(testRecordId),
-            eqTo(2),
-            eqTo(1)
+            eqTo(categoryRecord)
           )(any())
       }
 
@@ -453,26 +464,25 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val fakeAuditEvent = DataEvent("source", "type")
       when(
-        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any(), any())(any())
+        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any())(any())
       )
         .thenReturn(fakeAuditEvent)
 
       val result =
         await(
-          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, 2, 1)
+          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, categoryRecord)
         )
 
       result mustBe Done
 
-      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+      withClue("Should have supplied the details to the factory to create the event") {
         verify(mockAuditFactory)
           .createSubmitGoodsRecordEventForCategorisation(
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
             eqTo(testRecordId),
-            eqTo(2),
-            eqTo(1)
+            eqTo(categoryRecord)
           )(any())
       }
 
@@ -492,8 +502,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             testRecordId,
-            2,
-            1
+            categoryRecord
           )
         )
       }
