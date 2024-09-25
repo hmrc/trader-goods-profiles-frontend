@@ -27,7 +27,7 @@
 
     @bannerContentForUpdate(page: String, dataRemoved: Boolean, dataAdded: Boolean) = {
         <h3 class="govuk-notification-banner__heading">
-        if(dataRemoved) {
+        @if(dataRemoved) {
             @messages("successProfileBanner.removeRegistration.heading", page)
         } else if(dataAdded) {
             @messages("successProfileBanner.addNumber.heading", page)

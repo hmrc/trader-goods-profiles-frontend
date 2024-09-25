@@ -41,6 +41,18 @@ object TraderProfile {
       answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
 
+  def buildUkims(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      validateUkimsNumber(answers),
+      Right(traderProfile.nirmsNumber),
+      Right(traderProfile.niphlNumber)
+    ).parMapN(TraderProfile.apply)
+
   def buildNirms(
     answers: UserAnswers,
     eori: String,
@@ -51,6 +63,18 @@ object TraderProfile {
       Right(traderProfile.ukimsNumber),
       getOptionallyRemovedPage(answers, HasNirmsUpdatePage, RemoveNirmsPage, NirmsNumberUpdatePage),
       Right(traderProfile.niphlNumber)
+    ).parMapN(TraderProfile.apply)
+
+  def buildNiphl(
+    answers: UserAnswers,
+    eori: String,
+    traderProfile: TraderProfile
+  ): EitherNec[ValidationError, TraderProfile] =
+    (
+      Right(eori),
+      Right(traderProfile.ukimsNumber),
+      Right(traderProfile.nirmsNumber),
+      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
     ).parMapN(TraderProfile.apply)
 
   def getOptionallyRemovedPage(

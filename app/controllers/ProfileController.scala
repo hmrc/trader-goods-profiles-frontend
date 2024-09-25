@@ -67,7 +67,7 @@ class ProfileController @Inject() (
               request.session.get(dataRemoved).contains("true"),
               request.session.get(dataAdded).contains("true")
             )
-          )
+          ).removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
         }
       }
     }
