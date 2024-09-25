@@ -310,7 +310,7 @@ categorisationResult.Standard.title = Standard goods
 categorisationResult.Standard.heading = Standard goods
 categorisationResult.Standard.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM). There are no category assessments needed.
-categorisationResult.h2 = What happens next
+categorisationResult.h2 = What happens next?
 categorisationResult.h2.paragraph = You can view the record from your goods profile, create a new record or go to the homepage.
 
 adviceStart.title = Asking HMRC for advice

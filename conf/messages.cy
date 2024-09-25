@@ -326,7 +326,7 @@ categorisationResult.Category1NoExemptions.p1 = Mae’r nwyddau hyn yn perthyn i
 categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
-categorisationResult.h2 = Beth sy''n digwydd nesaf
+categorisationResult.h2 = Beth sy''n digwydd nesaf?
 categorisationResult.h2.paragraph = Gallwch fwrw golwg dros y cofnod o’ch proffil nwyddau, Creu cofnod nwyddau newydd neu fynd i’r hafan.
 
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
