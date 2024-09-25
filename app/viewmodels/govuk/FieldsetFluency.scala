@@ -19,8 +19,7 @@ package viewmodels.govuk
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
-import viewmodels.{LabelSize, LegendSize}
+import viewmodels.LegendSize
 
 object fieldset extends FieldsetFluency
 
