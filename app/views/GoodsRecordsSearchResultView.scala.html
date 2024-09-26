@@ -28,7 +28,7 @@
 @preparedTitle = @{
     pagination.items match {
         case Some(items) if (items.size > 1) => titleNoForm(messages("goodsRecordSearchResult.title.withPage", totalRecords, page, items.size))
-        case None => titleNoForm(messages("goodsRecordSearchResult.title", totalRecords, page))
+        case _ => titleNoForm(messages("goodsRecordSearchResult.title", totalRecords, page))
     }
 }
 
@@ -39,7 +39,7 @@
     @{
         pagination.items match {
             case Some(items) if (items.size > 1) => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1.withPage", totalRecords, page, items.size)}</h1>
-            case None => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1", totalRecords)}</h1>
+            case _ => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1", totalRecords)}</h1>
         }
     }
 
