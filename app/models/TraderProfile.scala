@@ -20,7 +20,6 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import play.api.libs.json.{Json, OFormat}
-import queries.TraderProfileQuery
 
 final case class TraderProfile(
   actorId: String,
@@ -41,11 +40,11 @@ object TraderProfile {
       answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
     ).parMapN(TraderProfile.apply)
 
-  def getOptionallyRemovedPage(
+  private def getOptionallyRemovedPage(
     answers: UserAnswers,
-    questionPage: QuestionPage[Boolean] = HasNirmsUpdatePage,
-    removePage: QuestionPage[Boolean] = RemoveNirmsPage,
-    optionalPage: QuestionPage[String] = NirmsNumberUpdatePage,
+    questionPage: QuestionPage[Boolean],
+    removePage: QuestionPage[Boolean],
+    optionalPage: QuestionPage[String],
     isRegistered: Boolean
   ): EitherNec[ValidationError, Option[String]] =
     answers.getPageValue(questionPage) match {
@@ -112,25 +111,4 @@ object TraderProfile {
     NiphlNumberUpdatePage,
     false
   )
-
-  def validateNiphlsUpdate(
-    answers: UserAnswers
-  ): EitherNec[ValidationError, Option[String]] =
-    answers.getPageValue(HasNiphlUpdatePage).flatMap {
-      case true  => answers.getPageValue(NiphlNumberUpdatePage).map(Some(_))
-      case false =>
-        answers.getPageValue(TraderProfileQuery).flatMap { userProfile =>
-          if (userProfile.niphlNumber.isDefined) {
-            answers.getPageValue(RemoveNiphlPage) match {
-              case Right(true)  => Right(None)
-              case Right(false) =>
-                Left(NonEmptyChain.one(UnexpectedPage(RemoveNiphlPage)))
-              case Left(errors) => Left(errors)
-            }
-          } else {
-            Right(None)
-          }
-        }
-    }
-
 }
