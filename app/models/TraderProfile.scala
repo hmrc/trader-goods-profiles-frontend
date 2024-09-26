@@ -72,6 +72,26 @@ object TraderProfile {
   ): EitherNec[ValidationError, String] =
     answers.getPageValue(UkimsNumberUpdatePage)
 
+  def validateHasNirms(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Option[String]] = getOptionallyRemovedPage(
+    answers,
+    HasNirmsUpdatePage,
+    RemoveNirmsPage,
+    NirmsNumberUpdatePage,
+    false
+  )
+
+  def validateHasNiphl(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Option[String]] = getOptionallyRemovedPage(
+    answers,
+    HasNiphlUpdatePage,
+    RemoveNiphlPage,
+    NiphlNumberUpdatePage,
+    false
+  )
+
   def validateNirmsNumber(
     answers: UserAnswers
   ): EitherNec[ValidationError, Option[String]] = getOptionallyRemovedPage(
@@ -92,23 +112,4 @@ object TraderProfile {
     true
   )
 
-  def validateHasNirms(
-    answers: UserAnswers
-  ): EitherNec[ValidationError, Option[String]] = getOptionallyRemovedPage(
-    answers,
-    HasNirmsUpdatePage,
-    RemoveNirmsPage,
-    NirmsNumberUpdatePage,
-    false
-  )
-
-  def validateHasNiphl(
-    answers: UserAnswers
-  ): EitherNec[ValidationError, Option[String]] = getOptionallyRemovedPage(
-    answers,
-    HasNiphlUpdatePage,
-    RemoveNiphlPage,
-    NiphlNumberUpdatePage,
-    false
-  )
 }
