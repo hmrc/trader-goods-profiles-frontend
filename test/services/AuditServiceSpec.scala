@@ -20,9 +20,9 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, withdrawReason}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney, WithdrawAdviceJourney}
+import models.helper._
 import models.ott.response._
-import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -47,6 +47,18 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   private val mockAuditFactory                = mock[AuditEventFactory]
   val auditService                            = new AuditService(mockAuditConnector, mockAuditFactory)
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  private val categoryRecord = CategoryRecord(
+    testEori,
+    testRecordId,
+    "019233222",
+    Category1Scenario,
+    None,
+    None,
+    categorisationInfo,
+    2,
+    wasSupplementaryUnitAsked = false
+  )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -124,7 +136,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val result = await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
@@ -137,6 +149,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
+            any(),
             any(),
             any()
           )(any())
@@ -154,7 +167,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val result = await(auditService.auditStartCreateGoodsRecord(testEori, AffinityGroup.Individual))
@@ -167,6 +180,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
+            any(),
             any(),
             any()
           )(any())
@@ -416,13 +430,13 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val fakeAuditEvent = DataEvent("source", "type")
       when(
-        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any(), any())(any())
+        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any())(any())
       )
         .thenReturn(fakeAuditEvent)
 
       val result =
         await(
-          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, 2, 1)
+          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, categoryRecord)
         )
 
       result mustBe Done
@@ -434,8 +448,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
             eqTo(testRecordId),
-            eqTo(2),
-            eqTo(1)
+            eqTo(categoryRecord)
           )(any())
       }
 
@@ -451,26 +464,25 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val fakeAuditEvent = DataEvent("source", "type")
       when(
-        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any(), any())(any())
+        mockAuditFactory.createSubmitGoodsRecordEventForCategorisation(any(), any(), any(), any(), any())(any())
       )
         .thenReturn(fakeAuditEvent)
 
       val result =
         await(
-          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, 2, 1)
+          auditService.auditFinishCategorisation(testEori, AffinityGroup.Individual, testRecordId, categoryRecord)
         )
 
       result mustBe Done
 
-      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+      withClue("Should have supplied the details to the factory to create the event") {
         verify(mockAuditFactory)
           .createSubmitGoodsRecordEventForCategorisation(
             eqTo(testEori),
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
             eqTo(testRecordId),
-            eqTo(2),
-            eqTo(1)
+            eqTo(categoryRecord)
           )(any())
       }
 
@@ -490,8 +502,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             testRecordId,
-            2,
-            1
+            categoryRecord
           )
         )
       }
@@ -505,7 +516,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val result =
@@ -514,7 +525,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             CategorisationUpdate,
-            testRecordId
+            testRecordId,
+            Some(categorisationInfo)
           )
         )
 
@@ -527,7 +539,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
             eqTo(Some(CategorisationUpdate)),
-            eqTo(Some(testRecordId))
+            eqTo(Some(testRecordId)),
+            eqTo(Some(categorisationInfo))
           )(any())
       }
 
@@ -542,7 +555,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createStartManageGoodsRecordEvent(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val result =
@@ -551,7 +564,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             CategorisationUpdate,
-            testRecordId
+            testRecordId,
+            None
           )
         )
 
@@ -564,7 +578,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(UpdateRecordJourney),
             eqTo(Some(CategorisationUpdate)),
-            eqTo(Some(testRecordId))
+            eqTo(Some(testRecordId)),
+            eqTo(None)
           )(any())
       }
 

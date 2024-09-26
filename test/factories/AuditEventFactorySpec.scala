@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import models.audits._
 import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response._
-import models.{AdviceRequest, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, Category2Scenario, CategoryRecord, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -109,7 +109,8 @@ class AuditEventFactorySpec extends SpecBase {
           AffinityGroup.Individual,
           UpdateRecordJourney,
           Some(CategorisationUpdate),
-          Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f")
+          Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"),
+          Some(categorisationInfo)
         )
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -117,12 +118,14 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 5
+        auditDetails.size mustBe 7
         auditDetails("journey") mustBe "UpdateRecord"
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("updateSection") mustBe "categorisation"
         auditDetails("recordId") mustBe "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+        auditDetails("commodityCode") mustBe "1234567890"
+        auditDetails("descendants") mustBe "1"
 
       }
 
@@ -232,30 +235,190 @@ class AuditEventFactorySpec extends SpecBase {
 
       "create event when journey is updating a goods record" - {
 
-        "and update is for categorisation" in {
+        "and update is for categorisation" - {
 
-          val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
-            testEori,
-            AffinityGroup.Organisation,
-            UpdateRecordJourney,
-            testRecordId,
-            2,
-            1
-          )
+          "without longer commodity code journey nor supplementary unit" in {
 
-          result.auditSource mustBe "trader-goods-profiles-frontend"
-          result.auditType mustBe "SubmitGoodsRecord"
-          result.tags.isEmpty mustBe false
+            val categoryInfo = categorisationInfo.copy(
+              categoryAssessmentsThatNeedAnswers = Seq(category1, category3)
+            )
 
-          val auditDetails = result.detail
-          auditDetails.size mustBe 7
-          auditDetails("journey") mustBe "UpdateRecord"
-          auditDetails("updateSection") mustBe "categorisation"
-          auditDetails("eori") mustBe testEori
-          auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
-          auditDetails("category") mustBe "1"
+            val categoryRecord = CategoryRecord(
+              testEori,
+              testRecordId,
+              "1234567890",
+              Category1Scenario,
+              Some("Weight, in kilograms"),
+              None,
+              categoryInfo,
+              2,
+              wasSupplementaryUnitAsked = false
+            )
+
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
+              testEori,
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              testRecordId,
+              categoryRecord
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 11
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "categorisation"
+            auditDetails("eori") mustBe testEori
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("descendants") mustBe "1"
+            auditDetails("categoryAssessments") mustBe "2"
+            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("reassessmentNeeded") mustBe "false"
+            auditDetails("category") mustBe "1"
+          }
+
+          "with supplementary unit asked but not supplied" in {
+
+            val categoryRecord = CategoryRecord(
+              testEori,
+              testRecordId,
+              "1234567890",
+              Category1Scenario,
+              Some("Weight, in kilograms"),
+              None,
+              categorisationInfo,
+              2,
+              wasSupplementaryUnitAsked = true
+            )
+
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
+              testEori,
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              testRecordId,
+              categoryRecord
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 12
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "categorisation"
+            auditDetails("eori") mustBe testEori
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("descendants") mustBe "1"
+            auditDetails("categoryAssessments") mustBe "3"
+            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("reassessmentNeeded") mustBe "false"
+            auditDetails("category") mustBe "1"
+            auditDetails("providedSupplementaryUnit") mustBe "false"
+          }
+
+          "with supplementary unit asked and supplied" in {
+
+            val categoryRecord = CategoryRecord(
+              testEori,
+              testRecordId,
+              "1234567890",
+              Category1Scenario,
+              Some("Weight, in kilograms"),
+              Some("858.321"),
+              categorisationInfo,
+              2,
+              wasSupplementaryUnitAsked = true
+            )
+
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
+              testEori,
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              testRecordId,
+              categoryRecord
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 13
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "categorisation"
+            auditDetails("eori") mustBe testEori
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("descendants") mustBe "1"
+            auditDetails("categoryAssessments") mustBe "3"
+            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("reassessmentNeeded") mustBe "false"
+            auditDetails("category") mustBe "1"
+            auditDetails("providedSupplementaryUnit") mustBe "true"
+            auditDetails("supplementaryUnit") mustBe "858.321"
+          }
+
+          "with longer commodity code asked and supplementary unit asked and supplied" in {
+
+            val shorterCode = categorisationInfo.copy(commodityCode = "998877")
+            val longerCode  =
+              categorisationInfo.copy(categoryAssessmentsThatNeedAnswers = Seq(category1), descendantCount = 0)
+
+            val categoryRecord = CategoryRecord(
+              testEori,
+              testRecordId,
+              "1234567890",
+              Category2Scenario,
+              Some("Weight, in kilograms"),
+              Some("99"),
+              shorterCode,
+              3,
+              wasSupplementaryUnitAsked = true,
+              Some(longerCode),
+              Some(0)
+            )
+
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
+              testEori,
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              testRecordId,
+              categoryRecord
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 16
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "categorisation"
+            auditDetails("eori") mustBe testEori
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("commodityCode") mustBe "998877"
+            auditDetails("descendants") mustBe "1"
+            auditDetails("categoryAssessments") mustBe "3"
+            auditDetails("categoryAssessmentsWithExemptions") mustBe "3"
+            auditDetails("reassessmentNeeded") mustBe "true"
+            auditDetails("reassessmentCommodityCode") mustBe "1234567890"
+            auditDetails("reassessmentCategoryAssessments") mustBe "1"
+            auditDetails("reassessmentCategoryAssessmentsWithExemptions") mustBe "0"
+            auditDetails("category") mustBe "2"
+            auditDetails("providedSupplementaryUnit") mustBe "true"
+            auditDetails("supplementaryUnit") mustBe "99"
+          }
+
         }
 
         "and update is for goods details" in {

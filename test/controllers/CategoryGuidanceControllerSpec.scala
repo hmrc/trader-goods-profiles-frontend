@@ -17,22 +17,13 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
-import models.helper.CategorisationUpdate
+import base.TestConstants.testRecordId
 import navigation.{FakeNavigator, Navigator}
-import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject._
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.CategoryGuidanceView
-
-import scala.concurrent.Future
 
 class CategoryGuidanceControllerSpec extends SpecBase {
 
@@ -57,14 +48,8 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
     "onSubmit should call navigator to redirect" in {
 
-      val mockAuditService = mock[AuditService]
-
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
-          bind[AuditService].toInstance(mockAuditService),
           bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
         )
         .build()
@@ -76,16 +61,6 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-
-        withClue("must call the audit service with the correct details") {
-          verify(mockAuditService)
-            .auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(CategorisationUpdate),
-              eqTo(testRecordId)
-            )(any())
-        }
       }
     }
 

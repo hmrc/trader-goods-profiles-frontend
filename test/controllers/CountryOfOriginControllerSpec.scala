@@ -53,8 +53,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
     "create journey" - {
 
-      val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadCreate(NormalMode).url
-      val onSubmitAction       = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
+      lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadCreate(NormalMode).url
+      lazy val onSubmitAction       = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
 
       "must return OK and the correct view for a GET" in {
 
@@ -263,14 +263,14 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
     "update journey" - {
 
-      val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
-      val onSubmitAction       = routes.CountryOfOriginController.onSubmitUpdate(NormalMode, testRecordId)
+      lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
+      lazy val onSubmitAction       = routes.CountryOfOriginController.onSubmitUpdate(NormalMode, testRecordId)
 
       "must return OK and the correct view for a GET" in {
 
         val mockAuditService = mock[AuditService]
 
-        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val mockOttConnector = mock[OttConnector]
@@ -308,7 +308,8 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
                 eqTo(GoodsDetailsUpdate),
-                eqTo(testRecordId)
+                eqTo(testRecordId),
+                any()
               )(any())
           }
 
@@ -353,6 +354,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           withClue("must not call the audit service as this has already been done") {
             verify(mockAuditService, times(0))
               .auditStartUpdateGoodsRecord(
+                any(),
                 any(),
                 any(),
                 any(),
