@@ -429,6 +429,52 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "when user answers can change UKIMS Number and update user profile" - {
 
+          "when user answer is the same and no change is needed redirect to the Profile Page" - {
+            val ukims         = "newUkims"
+            val traderProfile = TraderProfile(testEori, ukims, Some("2"), Some("3"))
+
+            val userAnswers = emptyUserAnswers
+              .set(UkimsNumberUpdatePage, ukims)
+              .success
+              .value
+
+            val mockTraderProfileConnector = mock[TraderProfileConnector]
+            val mockAuditService           = mock[AuditService]
+
+            when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+            when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+            when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[AuditService].toInstance(mockAuditService),
+                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              )
+              .build()
+
+            running(application) {
+
+              val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitUkimsNumber.url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual onwardRoute.url
+              verify(mockTraderProfileConnector, never())
+                .submitTraderProfile(any(), eqTo(testEori))(any())
+            }
+
+            withClue("must call the audit connector with the supplied details") {
+              verify(mockAuditService)
+                .auditMaintainProfile(eqTo(traderProfile), eqTo(traderProfile), eqTo(AffinityGroup.Individual))(
+                  any()
+                )
+            }
+          }
+
           "must update the profile and redirect to the Profile Page" - {
             val newUkims             = "newUkims"
             val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
@@ -1167,7 +1213,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
           }
         }
 
@@ -1422,7 +1470,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
           }
         }
       }
