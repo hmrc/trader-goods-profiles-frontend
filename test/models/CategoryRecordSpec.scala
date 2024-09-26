@@ -36,7 +36,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
     super.beforeEach()
   }
 
-  ".build2" - {
+  ".build" - {
     val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")))
     val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")))
     val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
@@ -77,8 +77,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             "1234567890",
             Category1Scenario,
+            None,
+            None,
+            categorisationInfo,
             4,
-            None
+            wasSupplementaryUnitAsked = false
           )
         )
 
@@ -114,8 +117,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             "1234567890",
             Category1Scenario,
+            Some("Weight"),
+            None,
+            categorisationInfoMeasureUnit,
             4,
-            Some("Weight")
+            wasSupplementaryUnitAsked = false
           )
         )
 
@@ -151,9 +157,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             "1234567890",
             Category1Scenario,
-            4,
             Some("Weight"),
-            None
+            None,
+            categorisationInfoMeasureUnit,
+            4,
+            wasSupplementaryUnitAsked = true
           )
         )
 
@@ -193,9 +201,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             "1234567890",
             Category1Scenario,
-            4,
             Some("Weight"),
-            Some("1234")
+            Some("1234"),
+            categorisationInfoMeasureUnit,
+            4,
+            wasSupplementaryUnitAsked = true
           )
         )
 
@@ -220,8 +230,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             "1234567890",
             Category1Scenario,
+            None,
+            None,
+            categorisationInfo,
             1,
-            None
+            wasSupplementaryUnitAsked = false
           )
         )
 
@@ -267,8 +280,13 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             "9999999999",
             Category1Scenario,
-            1,
-            None
+            None,
+            None,
+            shorterCat,
+            4,
+            wasSupplementaryUnitAsked = false,
+            Some(longerCat),
+            Some(1)
           )
         )
 

@@ -18,8 +18,9 @@ package factories
 
 import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
+import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -79,7 +80,8 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup,
     journey: Journey,
     updateSection: Option[UpdateSection],
-    recordId: Option[String]
+    recordId: Option[String],
+    commodity: Option[CategorisationInfo] = None
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     val auditDetails = Map(
@@ -88,7 +90,9 @@ case class AuditEventFactory() {
       "affinityGroup" -> affinityGroup.toString
     ) ++
       writeOptional("updateSection", updateSection.map(_.toString)) ++
-      writeOptional("recordId", recordId)
+      writeOptional("recordId", recordId) ++
+      writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
+      writeOptional("descendants", commodity.map(_.descendantCount.toString))
 
     DataEvent(
       auditSource = auditSource,
@@ -127,21 +131,49 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup,
     journey: Journey,
     recordId: String,
-    categoryAssessmentsWithExemptions: Int,
-    category: Int
+    categoryRecord: CategoryRecord
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori"                              -> eori,
-      "affinityGroup"                     -> affinityGroup.toString,
       "journey"                           -> journey.toString,
       "updateSection"                     -> CategorisationUpdate.toString,
       "recordId"                          -> recordId,
-      "categoryAssessmentsWithExemptions" -> categoryAssessmentsWithExemptions.toString,
-      "category"                          -> category.toString
-    )
+      "eori"                              -> eori,
+      "affinityGroup"                     -> affinityGroup.toString,
+      "commodityCode"                     -> categoryRecord.initialCategoryInfo.commodityCode,
+      "descendants"                       -> categoryRecord.initialCategoryInfo.descendantCount.toString,
+      "categoryAssessments"               -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+      "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,
+      "reassessmentNeeded"                -> categoryRecord.longerCategoryInfo.isDefined.toString,
+      "category"                          -> Scenario.getResultAsInt(categoryRecord.category).toString
+    ) ++ writeSupplementaryUnitDetails(categoryRecord) ++
+      writeReassessmentDetails(categoryRecord)
 
     createSubmitGoodsRecordEvent(auditDetails)
   }
+
+  private def writeSupplementaryUnitDetails(categoryRecord: CategoryRecord) =
+    if (categoryRecord.wasSupplementaryUnitAsked) {
+      writeOptionalWithAssociatedBooleanFlag(
+        "providedSupplementaryUnit",
+        "supplementaryUnit",
+        categoryRecord.supplementaryUnit
+      )
+    } else {
+      Map.empty[String, String]
+    }
+
+  private def writeReassessmentDetails(categoryRecord: CategoryRecord) =
+    categoryRecord.longerCategoryInfo
+      .map { catInfo =>
+        Map(
+          "reassessmentCommodityCode"                     -> catInfo.commodityCode,
+          "reassessmentCategoryAssessments"               -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+          "reassessmentCategoryAssessmentsWithExemptions" -> categoryRecord.longerAssessmentAnswersWithExemptions
+            .getOrElse(0)
+            .toString
+        )
+      }
+      .getOrElse(Map.empty[String, String])
 
   def createSubmitGoodsRecordEventForUpdateRecord(
     affinityGroup: AffinityGroup,

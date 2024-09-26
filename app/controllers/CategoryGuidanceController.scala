@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions._
 import models.NormalMode
-import models.helper.CategorisationUpdate
 import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.MessagesApi
@@ -47,14 +46,6 @@ class CategoryGuidanceController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      auditService
-        .auditStartUpdateGoodsRecord(
-          request.eori,
-          request.affinityGroup,
-          CategorisationUpdate,
-          recordId
-        )
-
       Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
     }
 }

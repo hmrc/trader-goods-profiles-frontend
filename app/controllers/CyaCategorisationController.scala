@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategoryRecord, NormalMode, Scenario}
+import models.{CategorisationAnswers, CategoryRecord, NormalMode}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}
@@ -133,8 +133,7 @@ class CyaCategorisationController @Inject() (
             request.eori,
             request.affinityGroup,
             recordId,
-            categoryRecord.categoryAssessmentsWithExemptions,
-            Scenario.getResultAsInt(categoryRecord.category)
+            categoryRecord
           )
 
           goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord).map { _ =>
