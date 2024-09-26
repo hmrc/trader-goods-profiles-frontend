@@ -170,11 +170,20 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when Yes submitted" in {
 
+      val mockSessionRepository                               = mock[SessionRepository]
+      val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+        Future.successful(TraderProfile(testEori, "1", None, Some("933844")))
+      )
+
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -187,6 +196,16 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val finalUserAnswers = finalUserAnswersCaptor.getValue
+
+        withClue("must have saved the answer") {
+          finalUserAnswers.get(RemoveNiphlPage).get mustBe true
+        }
+
+        withClue("must not have saved the nirms number as not needed") {
+          finalUserAnswers.get(NiphlNumberUpdatePage) mustBe None
+        }
       }
     }
 

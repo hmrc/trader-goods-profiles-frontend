@@ -490,7 +490,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         "must go from RemoveNiphlPage" - {
-          "to Cya NIPHL number when user answered No" in {
+          "to Check Your Answers for Niphls Number when user answered No" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, false).success.value
             navigator.nextPage(
@@ -500,7 +500,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
           }
 
-          "to Cya NIPHL registered when user answered yes" in {
+          "to Check Your Answers for NIPHL registered when user answered yes" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, true).success.value
             navigator.nextPage(
