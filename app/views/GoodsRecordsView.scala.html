@@ -47,7 +47,7 @@
 
 @preparedTitle = @{
     pagination.items match {
-        case Some(items) => if (items.size > 1) title(form, messages("goodsRecords.title.withPage", page, items.size))
+        case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
         case _ => title(form, messages("goodsRecords.title"))
     }
 }
