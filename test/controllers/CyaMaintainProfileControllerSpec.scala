@@ -217,7 +217,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               redirectLocation(result).value mustEqual
                 routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
 
-              verify(mockTraderProfileConnector).getTraderProfile(any())(any())
+              verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
               withClue("must not call the audit connector") {
                 verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -507,7 +507,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               redirectLocation(result).value mustEqual
                 routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
 
-              verify(mockTraderProfileConnector).getTraderProfile(any())(any())
+              verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
               withClue("must not call the audit connector") {
                 verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -778,6 +778,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
                 routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+
+              verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
               withClue("must not call the audit connector") {
                 verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
