@@ -77,10 +77,10 @@ class RemoveNiphlController @Inject() (
               for {
                 traderProfile     <- traderProfileConnector.getTraderProfile(request.eori)
                 niphlNumberOpt     = request.userAnswers.get(NiphlNumberUpdatePage).orElse(traderProfile.niphlNumber)
-                nirmsNumber       <- Future.fromTry(Try(niphlNumberOpt.get))
+                niphlNumber       <- Future.fromTry(Try(niphlNumberOpt.get))
                 uaWithRemoveValue <- Future.fromTry(request.userAnswers.set(RemoveNiphlPage, value))
                 uaWithNiphlNumber <-
-                  Future.fromTry(uaWithRemoveValue.set(NiphlNumberUpdatePage, nirmsNumber))
+                  Future.fromTry(uaWithRemoveValue.set(NiphlNumberUpdatePage, niphlNumber))
                 _                 <- sessionRepository.set(uaWithNiphlNumber)
               } yield Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, uaWithNiphlNumber))
 
