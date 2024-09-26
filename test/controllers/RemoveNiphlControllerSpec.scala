@@ -17,19 +17,21 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
+import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.RemoveNiphlFormProvider
-import models.UserAnswers
+import models.{TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlUpdatePage, RemoveNiphlPage}
+import pages.{HasNiphlUpdatePage, NiphlNumberUpdatePage, RemoveNiphlPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import views.html.RemoveNiphlView
 
 import scala.concurrent.Future
@@ -85,13 +87,61 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to the next page when No submitted" in {
+    "must redirect to the next page when No submitted and save the answers" in {
+      val mockSessionRepository                               = mock[SessionRepository]
+      val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+        Future.successful(TraderProfile(testEori, "1", None, Some("SN12345")))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeNiphlRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        val finalUserAnswers = finalUserAnswersCaptor.getValue
+
+        withClue("must have saved the answer") {
+          finalUserAnswers.get(RemoveNiphlPage).get mustBe false
+        }
+
+        withClue("must have saved the niphl number as future items will depend on it") {
+          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "SN12345"
+        }
+
+      }
+    }
+
+    "must redirect to the next page when No submitted and not overwrite the existing niphl value" in {
+      val mockSessionRepository                               = mock[SessionRepository]
+      val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
+
+      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+        Future.successful(TraderProfile(testEori, "1", None, Some("SN12345")))
+      )
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(NiphlNumberUpdatePage, "SN12346").success.value))
           .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -104,6 +154,17 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val finalUserAnswers = finalUserAnswersCaptor.getValue
+
+        withClue("must have saved the answer") {
+          finalUserAnswers.get(RemoveNiphlPage).get mustBe false
+        }
+
+        withClue("must not overwrite the user entered niphl") {
+          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "SN12346"
+        }
+
       }
     }
 

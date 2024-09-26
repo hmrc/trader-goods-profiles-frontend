@@ -410,6 +410,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
         }
 
+        "must go from CyaMaintainProfilePage to CyaMaintainProfile" in {
+
+          navigator.nextPage(
+            CyaMaintainProfilePage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad()
+        }
+
         "must go from HasNiphlUpdatePage" - {
 
           "to NiphlNumberUpdatePage when answer is Yes" in {
@@ -481,14 +490,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         "must go from RemoveNiphlPage" - {
-          "to ProfilePage when user answered No" in {
+          "to Cya NIPHL number when user answered No" in {
 
             val answers = UserAnswers(userAnswersId).set(RemoveNiphlPage, false).success.value
             navigator.nextPage(
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
           }
 
           "to Cya NIPHL registered when user answered yes" in {
@@ -498,7 +507,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
           }
 
           "to ProfilePage when answer is not present" in {
@@ -3334,6 +3343,15 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
+        "must go from NirmsNumberUpdatePage to CyaMaintainProfile" in {
+
+          navigator.nextPage(
+            NirmsNumberUpdatePage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+        }
+
         "must go from HasNiphlUpdatePage" - {
 
           "to NiphlNumberUpdatePage when answer is Yes" in {
@@ -3402,6 +3420,24 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ) mustBe routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
+        }
+
+        "must go from NiphlNumberUpdatePage to CyaMaintainProfile" in {
+
+          navigator.nextPage(
+            NiphlNumberUpdatePage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
+        }
+
+        "must go from CyaMaintainProfilePage to CyaMaintainProfile" in {
+
+          navigator.nextPage(
+            CyaMaintainProfilePage,
+            CheckMode,
+            emptyUserAnswers
+          ) mustBe routes.ProfileController.onPageLoad()
         }
       }
 

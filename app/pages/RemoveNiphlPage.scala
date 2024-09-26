@@ -16,11 +16,27 @@
 
 package pages
 
+import models.UserAnswers
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object RemoveNiphlPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "removeNiphl"
+
+  override def cleanup(
+    value: Option[Boolean],
+    updatedUserAnswers: UserAnswers,
+    originalUserAnswers: UserAnswers
+  ): Try[UserAnswers] =
+    value
+      .map { answer =>
+        updatedUserAnswers.set(HasNiphlUpdatePage, !answer)
+      }
+      .getOrElse {
+        super.cleanup(value, updatedUserAnswers, originalUserAnswers)
+      }
 }

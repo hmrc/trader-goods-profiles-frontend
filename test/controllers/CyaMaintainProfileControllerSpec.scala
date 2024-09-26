@@ -918,6 +918,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
       }
     }
+
     "NIRMS Number" - {
 
       def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
@@ -1144,6 +1145,32 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
           }
         }
+
+        "must redirect to Journey Recovery if data is invalid" in {
+
+          val invalidNirmsNumberAnswers = emptyUserAnswers
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "RMS-GB-555555")
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(invalidNirmsNumberAnswers)).build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNirmsNumber.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
+
       }
     }
 
@@ -1363,6 +1390,31 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must redirect to Journey Recovery if no existing data is found" in {
 
           val application = applicationBuilder(userAnswers = None).build()
+
+          running(application) {
+            val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphlNumber.url)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          }
+        }
+
+        "must redirect to Journey Recovery if data is invalid" in {
+
+          val invalidNiphlNumberAnswers = emptyUserAnswers
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "NIPHL")
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
+
+          val application = applicationBuilder(userAnswers = Some(invalidNiphlNumberAnswers)).build()
 
           running(application) {
             val request = FakeRequest(POST, routes.CyaMaintainProfileController.onSubmitNiphlNumber.url)
