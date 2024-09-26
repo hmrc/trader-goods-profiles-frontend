@@ -25,10 +25,23 @@
 
 @(goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int, searchString: String, totalPages: Int)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResult.title", totalRecords)), isFullWidth = true) {
+@preparedTitle = @{
+    pagination.items match {
+        case Some(items) => titleNoForm(messages("goodsRecordSearchResult.title.withPage", totalRecords, page, items.size))
+        case None => titleNoForm(messages("goodsRecordSearchResult.title", totalRecords, page))
+    }
+}
+
+@layout(pageTitle = preparedTitle, isFullWidth = true) {
 
 <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1", totalRecords)</h1>
+
+    @{
+        pagination.items match {
+            case Some(items) => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1.withPage", totalRecords, page, items.size)}</h1>
+            case None => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1", totalRecords)}</h1>
+        }
+    }
 
     <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString)</p>
 </div>
