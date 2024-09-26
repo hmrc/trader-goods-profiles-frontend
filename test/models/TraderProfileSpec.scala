@@ -471,17 +471,17 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when user answered No but No to remove Niphls question" in {
+      "when user answered No to Has Niphls and No to Remove Niphls but there is a Niphls number defined" in {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
             .set(RemoveNiphlPage, false)
             .success
             .value
-            .set(TraderProfileQuery, userProfile)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, userProfile.copy(niphlNumber = Some("432444")))
             .success
             .value
 
@@ -499,9 +499,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNiphlPage, false)
             .success
             .value
 
