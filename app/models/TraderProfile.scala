@@ -56,40 +56,52 @@ object TraderProfile {
   def buildNirms(
     answers: UserAnswers,
     eori: String,
-    traderProfile: TraderProfile
+    traderProfile: TraderProfile,
+    isRegistered: Boolean
   ): EitherNec[ValidationError, TraderProfile] =
     (
       Right(eori),
       Right(traderProfile.ukimsNumber),
-      getOptionallyRemovedPage(answers, HasNirmsUpdatePage, RemoveNirmsPage, NirmsNumberUpdatePage),
+      getOptionallyRemovedPage(answers, HasNirmsUpdatePage, RemoveNirmsPage, NirmsNumberUpdatePage, isRegistered),
       Right(traderProfile.niphlNumber)
     ).parMapN(TraderProfile.apply)
 
   def buildNiphl(
     answers: UserAnswers,
     eori: String,
-    traderProfile: TraderProfile
+    traderProfile: TraderProfile,
+    isRegistered: Boolean
   ): EitherNec[ValidationError, TraderProfile] =
     (
       Right(eori),
       Right(traderProfile.ukimsNumber),
       Right(traderProfile.nirmsNumber),
-      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage)
+      getOptionallyRemovedPage(answers, HasNiphlUpdatePage, RemoveNiphlPage, NiphlNumberUpdatePage, isRegistered)
     ).parMapN(TraderProfile.apply)
 
   def getOptionallyRemovedPage(
     answers: UserAnswers,
     questionPage: QuestionPage[Boolean] = HasNirmsUpdatePage,
     removePage: QuestionPage[Boolean] = RemoveNirmsPage,
-    optionalPage: QuestionPage[String] = NirmsNumberUpdatePage
+    optionalPage: QuestionPage[String] = NirmsNumberUpdatePage,
+    isRegistered: Boolean
   ): EitherNec[ValidationError, Option[String]] =
     answers.getPageValue(questionPage) match {
-      case Right(true)  => answers.getPageValue(optionalPage).map(Some(_))
+      case Right(true)  =>
+        if (isRegistered) {
+          answers.getPageValue(optionalPage).map(Some(_))
+        } else {
+          Left(NonEmptyChain.one(IncorrectlyAnsweredPage(questionPage)))
+        }
       case Right(false) =>
-        answers.getPageValue(removePage) match {
-          case Right(true)  => Right(None)
-          case Right(false) => answers.unexpectedValueDefined(answers, removePage)
-          case Left(errors) => Left(errors)
+        if (isRegistered) {
+          Left(NonEmptyChain.one(IncorrectlyAnsweredPage(questionPage)))
+        } else {
+          answers.getPageValue(removePage) match {
+            case Right(true)  => Right(None)
+            case Right(false) => answers.unexpectedValueDefined(answers, removePage)
+            case Left(errors) => Left(errors)
+          }
         }
       case Left(errors) => Left(errors)
     }

@@ -16,21 +16,22 @@
 
 package controllers
 
+import cats.data
+import cats.data.EitherNec
 import connectors.TraderProfileConnector
 import controllers.actions._
-import models.{NormalMode, TraderProfile}
+import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
-import pages.{CyaMaintainProfilePage, HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, Page, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
+import pages._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import utils.SessionData.{dataAdded, dataRemoved, dataUpdated, niphlNumberUpdatePage, nirmsNumberUpdatePage, pageUpdated, ukimsNumberUpdatePage}
+import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -84,31 +85,34 @@ class CyaMaintainProfileController @Inject() (
   def onSubmitUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        oldTraderProfile       <- traderProfileConnector.getTraderProfile(request.eori)
-        Right(newTraderProfile) = TraderProfile.buildUkims(request.userAnswers, request.eori, oldTraderProfile)
-        _                       = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                      <- submitTraderProfileIfValueChanged(oldTraderProfile, newTraderProfile, UkimsNumberUpdatePage, request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile <-
+          handleBuildError(TraderProfile.buildUkims(request.userAnswers, request.eori, oldTraderProfile))
+        _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, UkimsNumberUpdatePage, request.eori)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> isValueChanged(newTraderProfile, oldTraderProfile, UkimsNumberUpdatePage).toString
         )
-        .addingToSession(pageUpdated -> ukimsNumberUpdatePage)).recover { case _ =>
-        navigator.journeyRecovery(Some(RedirectUrl(routes.ProfileController.onPageLoad().url)))
+        .addingToSession(pageUpdated -> ukimsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
   }
 
   def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    TraderProfile.validateHasNirms(request.userAnswers) match {
-      case Right(_)     =>
-        traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-          val updatedProfile = traderProfile.copy(nirmsNumber = None)
-          auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-          for {
-            _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-          } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-        }
-      case Left(errors) =>
-        Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
+    (for {
+      oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+      newTraderProfile <-
+        handleBuildError(TraderProfile.buildNirms(request.userAnswers, request.eori, oldTraderProfile, false))
+      _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+      _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, HasNirmsUpdatePage, request.eori)
+    } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+      .addingToSession(
+        dataUpdated -> isValueChanged(newTraderProfile, oldTraderProfile, HasNirmsUpdatePage).toString
+      )
+      .addingToSession(dataRemoved -> isValueRemoved(newTraderProfile, oldTraderProfile, HasNirmsUpdatePage).toString)
+      .addingToSession(pageUpdated -> hasNirmsUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+      logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
     }
   }
 
@@ -131,21 +135,22 @@ class CyaMaintainProfileController @Inject() (
       }
   }
 
-  def onSubmitNiphl(): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
-        case Right(niphlNumber) =>
-          traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
-            auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
-            for {
-              _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
-            } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-          }
-        case Left(errors)       =>
-          Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
-      }
+  def onSubmitNiphl(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
+    (for {
+      oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+      newTraderProfile <-
+        handleBuildError(TraderProfile.buildNiphl(request.userAnswers, request.eori, oldTraderProfile, false))
+      _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+      _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, HasNiphlUpdatePage, request.eori)
+    } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+      .addingToSession(
+        dataUpdated -> isValueChanged(newTraderProfile, oldTraderProfile, HasNiphlUpdatePage).toString
+      )
+      .addingToSession(dataRemoved -> isValueRemoved(newTraderProfile, oldTraderProfile, HasNiphlUpdatePage).toString)
+      .addingToSession(pageUpdated -> hasNiphlUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+      logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
     }
+  }
 
   def onPageLoadNirmsNumber(): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
@@ -153,7 +158,8 @@ class CyaMaintainProfileController @Inject() (
         request.userAnswers,
         HasNirmsUpdatePage,
         RemoveNirmsPage,
-        NirmsNumberUpdatePage
+        NirmsNumberUpdatePage,
+        true
       ) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
@@ -174,17 +180,18 @@ class CyaMaintainProfileController @Inject() (
   def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        oldTraderProfile       <- traderProfileConnector.getTraderProfile(request.eori)
-        Right(newTraderProfile) = TraderProfile.buildNirms(request.userAnswers, request.eori, oldTraderProfile)
-        _                       = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                      <- submitTraderProfileIfValueChanged(oldTraderProfile, newTraderProfile, NirmsNumberUpdatePage, request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile <-
+          handleBuildError(TraderProfile.buildNirms(request.userAnswers, request.eori, oldTraderProfile, true))
+        _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, NirmsNumberUpdatePage, request.eori)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> isValueChanged(newTraderProfile, oldTraderProfile, NirmsNumberUpdatePage).toString
         )
         .addingToSession(dataAdded -> isValueAdded(newTraderProfile, oldTraderProfile, NirmsNumberUpdatePage).toString)
-        .addingToSession(pageUpdated -> nirmsNumberUpdatePage)).recover { case _ =>
-        navigator.journeyRecovery(Some(RedirectUrl(routes.ProfileController.onPageLoad().url)))
+        .addingToSession(pageUpdated -> nirmsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
   }
 
@@ -194,7 +201,8 @@ class CyaMaintainProfileController @Inject() (
         request.userAnswers,
         HasNiphlUpdatePage,
         RemoveNiphlPage,
-        NiphlNumberUpdatePage
+        NiphlNumberUpdatePage,
+        true
       ) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
@@ -215,34 +223,41 @@ class CyaMaintainProfileController @Inject() (
   def onSubmitNiphlNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        oldTraderProfile       <- traderProfileConnector.getTraderProfile(request.eori)
-        Right(newTraderProfile) = TraderProfile.buildNiphl(request.userAnswers, request.eori, oldTraderProfile)
-        _                       = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                      <- submitTraderProfileIfValueChanged(oldTraderProfile, newTraderProfile, NiphlNumberUpdatePage, request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile <-
+          handleBuildError(TraderProfile.buildNiphl(request.userAnswers, request.eori, oldTraderProfile, true))
+        _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, NiphlNumberUpdatePage, request.eori)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> isValueChanged(newTraderProfile, oldTraderProfile, NiphlNumberUpdatePage).toString
         )
         .addingToSession(dataAdded -> isValueAdded(newTraderProfile, oldTraderProfile, NiphlNumberUpdatePage).toString)
-        .addingToSession(pageUpdated -> niphlNumberUpdatePage)).recover { case _ =>
-        navigator.journeyRecovery(Some(RedirectUrl(routes.ProfileController.onPageLoad().url)))
+        .addingToSession(pageUpdated -> niphlNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
   }
 
-  def isValueChanged(newTraderProfile: TraderProfile, oldTraderProfile: TraderProfile, page: Page): Boolean =
+  private def isValueChanged(newTraderProfile: TraderProfile, oldTraderProfile: TraderProfile, page: Page): Boolean =
     page match {
-      case UkimsNumberUpdatePage => oldTraderProfile.ukimsNumber != newTraderProfile.ukimsNumber
-      case NirmsNumberUpdatePage => oldTraderProfile.nirmsNumber != newTraderProfile.nirmsNumber
-      case NiphlNumberUpdatePage => oldTraderProfile.niphlNumber != newTraderProfile.niphlNumber
+      case UkimsNumberUpdatePage                      => oldTraderProfile.ukimsNumber != newTraderProfile.ukimsNumber
+      case NirmsNumberUpdatePage | HasNirmsUpdatePage => oldTraderProfile.nirmsNumber != newTraderProfile.nirmsNumber
+      case NiphlNumberUpdatePage | HasNiphlUpdatePage => oldTraderProfile.niphlNumber != newTraderProfile.niphlNumber
     }
 
-  def isValueAdded(newTraderProfile: TraderProfile, oldTraderProfile: TraderProfile, page: Page): Boolean =
+  private def isValueAdded(newTraderProfile: TraderProfile, oldTraderProfile: TraderProfile, page: Page): Boolean =
     page match {
       case NirmsNumberUpdatePage => oldTraderProfile.nirmsNumber.isEmpty && newTraderProfile.nirmsNumber.isDefined
       case NiphlNumberUpdatePage => oldTraderProfile.niphlNumber.isEmpty && newTraderProfile.niphlNumber.isDefined
     }
 
-  def submitTraderProfileIfValueChanged(
+  private def isValueRemoved(newTraderProfile: TraderProfile, oldTraderProfile: TraderProfile, page: Page): Boolean =
+    page match {
+      case HasNirmsUpdatePage => oldTraderProfile.nirmsNumber.isDefined && newTraderProfile.nirmsNumber.isEmpty
+      case HasNiphlUpdatePage => oldTraderProfile.niphlNumber.isDefined && newTraderProfile.niphlNumber.isEmpty
+    }
+
+  private def submitTraderProfileIfValueChanged(
     newTraderProfile: TraderProfile,
     oldTraderProfile: TraderProfile,
     page: Page,
@@ -253,4 +268,15 @@ class CyaMaintainProfileController @Inject() (
     } else {
       Future.successful(Done)
     }
+
+  private def handleBuildError(result: EitherNec[ValidationError, TraderProfile]): Future[TraderProfile] =
+    result match {
+      case Right(traderProfile) => Future.successful(traderProfile)
+      case Left(errors)         => Future.failed(TraderProfileBuildFailure(errors))
+    }
+
+  private case class TraderProfileBuildFailure(errors: data.NonEmptyChain[ValidationError]) extends Exception {
+    private val errorsAsString      = errors.toChain.toList.map(_.message).mkString(", ")
+    override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
+  }
 }

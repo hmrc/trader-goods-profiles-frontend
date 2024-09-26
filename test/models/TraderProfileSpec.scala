@@ -169,107 +169,346 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
   ".buildNirms" - {
 
     val traderProfile = TraderProfile(testEori, "1", None, None)
+    "on the nirms-registered CYA page" - {
 
-    "must return a TraderProfile when all nirms data is answered" - {
+      "must return a TraderProfile when all nirms data is answered" - {
 
-      "and nirms is present" in {
+        "and nirms is not present" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, true)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "2")
-            .success
-            .value
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(RemoveNirmsPage, true)
+              .success
+              .value
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, false)
 
-        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), None))
+          result mustEqual Right(traderProfile)
+        }
       }
 
-      "and nirms is not present" in {
+      "must return errors" - {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNirmsPage, true)
-            .success
-            .value
+        "and nirms is present" in {
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, true)
+              .success
+              .value
+              .set(NirmsNumberUpdatePage, "2")
+              .success
+              .value
 
-        result mustEqual Right(traderProfile)
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              IncorrectlyAnsweredPage(HasNirmsUpdatePage)
+            )
+          }
+        }
+
+        "when mandatory answers are missing" in {
+
+          val answers = UserAnswers(userAnswersId)
+
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              PageMissing(HasNirmsUpdatePage)
+            )
+          }
+        }
+
+        "when the user said they don't have optional data but they haven't confirmed it" in {
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              PageMissing(RemoveNirmsPage)
+            )
+          }
+        }
+
+        "when the user has confirmed deleting something they don't want to delete" in {
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(RemoveNirmsPage, false)
+              .success
+              .value
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(NirmsNumberUpdatePage, "123")
+              .success
+              .value
+
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              UnexpectedPage(RemoveNirmsPage)
+            )
+          }
+        }
       }
     }
 
-    "must return errors" - {
+    "on the nirms-number CYA page" - {
 
-      "when mandatory answers are missing" in {
+      "must return a TraderProfile when all nirms data is answered" - {
 
-        val answers = UserAnswers(userAnswersId)
+        "and nirms is present" in {
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, true)
+              .success
+              .value
+              .set(NirmsNumberUpdatePage, "2")
+              .success
+              .value
 
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(HasNirmsUpdatePage)
-          )
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, true)
+
+          result mustEqual Right(TraderProfile(testEori, "1", Some("2"), None))
+        }
+
+      }
+
+      "must return errors" - {
+
+        "and nirms is not present" in {
+
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(RemoveNirmsPage, true)
+              .success
+              .value
+
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, true)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              IncorrectlyAnsweredPage(HasNirmsUpdatePage)
+            )
+          }
+        }
+
+        "when mandatory answers are missing" in {
+
+          val answers = UserAnswers(userAnswersId)
+
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, true)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              PageMissing(HasNirmsUpdatePage)
+            )
+          }
+        }
+
+        "when the user said they have a Nirms number but it is missing" in {
+
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNirmsUpdatePage, true)
+              .success
+              .value
+
+          val result = TraderProfile.buildNirms(answers, testEori, traderProfile, true)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+          }
+        }
+      }
+    }
+  }
+
+  ".buildNiphl" - {
+
+    val traderProfile = TraderProfile(testEori, "1", None, None)
+    "on the niphl-registered CYA page" - {
+
+      "must return a TraderProfile when all niphl data is answered" - {
+
+        "and niphl is not present" in {
+
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(RemoveNiphlPage, true)
+              .success
+              .value
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, false)
+
+          result mustEqual Right(traderProfile)
         }
       }
 
-      "when the user said they have a Nirms number but it is missing" in {
+      "must return errors" - {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, true)
-            .success
-            .value
+        "and niphl is present" in {
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, true)
+              .success
+              .value
+              .set(NiphlNumberUpdatePage, "2")
+              .success
+              .value
 
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              IncorrectlyAnsweredPage(HasNiphlUpdatePage)
+            )
+          }
+        }
+
+        "when mandatory answers are missing" in {
+
+          val answers = UserAnswers(userAnswersId)
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              PageMissing(HasNiphlUpdatePage)
+            )
+          }
+        }
+
+        "when the user said they don't have optional data but they haven't confirmed it" in {
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              PageMissing(RemoveNiphlPage)
+            )
+          }
+        }
+
+        "when the user has confirmed deleting something they don't want to delete" in {
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(RemoveNiphlPage, false)
+              .success
+              .value
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(NiphlNumberUpdatePage, "123")
+              .success
+              .value
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, false)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              UnexpectedPage(RemoveNiphlPage)
+            )
+          }
         }
       }
+    }
 
-      "when the user said they don't have optional data but they haven't confirmed it" in {
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
+    "on the niphl-number CYA page" - {
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+      "must return a TraderProfile when all niphl data is answered" - {
 
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(RemoveNirmsPage)
-          )
+        "and niphl is present" in {
+
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, true)
+              .success
+              .value
+              .set(NiphlNumberUpdatePage, "2")
+              .success
+              .value
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, true)
+
+          result mustEqual Right(TraderProfile(testEori, "1", None, Some("2")))
         }
+
       }
 
-      "when the user has confirmed deleting something they don't want to delete" in {
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RemoveNirmsPage, false)
-            .success
-            .value
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "123")
-            .success
-            .value
+      "must return errors" - {
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+        "and niphl is not present" in {
 
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(RemoveNirmsPage)
-          )
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(RemoveNiphlPage, true)
+              .success
+              .value
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, true)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              IncorrectlyAnsweredPage(HasNiphlUpdatePage)
+            )
+          }
+        }
+
+        "when mandatory answers are missing" in {
+
+          val answers = UserAnswers(userAnswersId)
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, true)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain theSameElementsAs Seq(
+              PageMissing(HasNiphlUpdatePage)
+            )
+          }
+        }
+
+        "when the user said they have a Niphl number but it is missing" in {
+
+          val answers =
+            UserAnswers(userAnswersId)
+              .set(HasNiphlUpdatePage, true)
+              .success
+              .value
+
+          val result = TraderProfile.buildNiphl(answers, testEori, traderProfile, true)
+
+          inside(result) { case Left(errors) =>
+            errors.toChain.toList must contain only PageMissing(NiphlNumberUpdatePage)
+          }
         }
       }
     }

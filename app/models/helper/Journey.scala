@@ -33,19 +33,6 @@ case object CreateProfileJourney extends Journey {
   override def toString: String = "CreateProfile"
 }
 
-case object MaintainProfileJourney extends Journey {
-  val pages: Seq[String]        = Seq(
-    ukimsNumberUpdatePage,
-    hasNirmsUpdatePage,
-    hasNiphlUpdatePage,
-    nirmsNumberUpdatePage,
-    niphlNumberUpdatePage,
-    useExistingUkimsNumberPage,
-    historicProfileDataQuery
-  )
-  override def toString: String = "CreateProfile"
-}
-
 case object RemoveRecord extends Journey
 
 case object CreateRecordJourney extends Journey {
