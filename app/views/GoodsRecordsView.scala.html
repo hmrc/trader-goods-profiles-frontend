@@ -84,7 +84,9 @@
 
 <div class="govuk-grid-column-full">
 
-        <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+    <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+
+    <div style="overflow-x: auto;">
 
         @govukTable(
             Table(
@@ -146,13 +148,15 @@
             )
         )
 
-        @govukPagination(pagination)
+    </div>
 
-        <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+    @govukPagination(pagination)
 
-        @if(appConfig.downloadFileEnabled) {
-            <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
-        }
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+
+    @if(appConfig.downloadFileEnabled) {
+        <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+    }
 
 </div>
 }

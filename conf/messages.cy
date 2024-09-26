@@ -241,7 +241,7 @@ commodityCode.h1 = Cod nwyddau
 commodityCode.p1 = Mae codau nwyddau yn gyfeirnodau sy’n cael eu cydnabod yn rhyngwladol. Mae cod nwyddau yn disgrifio cynnyrch penodol wrth fewnforio neu allforio nwyddau. Byddwch yn defnyddio’r cod hwn ar unrhyw ddatganiadau tollau.
 commodityCode.p2 = Gallwch ychwanegu codau nwyddau i Broffil Nwyddau Masnachwr mewn 6, 8 neu 10 digid.
 commodityCode.p3 = Os nad ydych yn siŵr beth yw cod nwyddau eich nwyddau, gallwch ddefnyddio
-commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon (yn agor mewn tab newydd)
+commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon (yn agor tab newydd)
 commodityCode.heading = Beth yw’r cod nwyddau ar gyfer eich nwyddau?
 commodityCode.hint = Gallwch ddefnyddio 6, 8 neu 10 digid, er enghraifft, 654321, 87654321, 9876543211
 
@@ -281,7 +281,7 @@ hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma''r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ai dyma''r nwyddau cywir
-hasCorrectGoods.p2.linkText = Chwiliwch am god nwydd ar yr Offeryn Tariff Ar-lein (yn agor mewn tab newydd)
+hasCorrectGoods.p2.linkText = Chwiliwch am god nwydd ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
 
 
 singleRecord.title = Cofnod nwyddau
@@ -317,14 +317,17 @@ profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros res
 
 categorisationResult.title = Categoreiddio wedi’i gwblhau
 categorisationResult.heading = Categoreiddio wedi’i gwblhau
-categorisationResult.Category1.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-categorisationResult.Category1NoExemptions.panelBody = Mae’ch nwyddau yn nwyddau Categori 1, ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-categorisationResult.Category1NoExemptions.p1 = Mae’r nwyddau hyn yn perthyn i Gategori 1, ac nad oes eithriadau ar gael er mwyn newid y categori.
+categorisationResult.Category1.title = Categori 1
+categorisationResult.Category1.h1 = Categori 1
+categorisationResult.Category1.p1 = Mae’ch nwyddau wedi’u categoreiddio ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.Category1NoExemptions.p1 = Mae’ch nwyddau wedi’u categoreiddio ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM). Nid oes unrhyw eithriadau ar gael i newid y categori.
 categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
 categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
+categorisationResult.h2 = Beth sy’n digwydd nesaf?
+categorisationResult.h2.paragraph = Gallwch fwrw golwg dros y cofnod o’ch proffil nwyddau, creu cofnod nwyddau newydd neu fynd i’r hafan.
+
 
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 

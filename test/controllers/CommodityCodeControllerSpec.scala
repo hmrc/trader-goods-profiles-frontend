@@ -86,7 +86,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         val mockAuditService = mock[AuditService]
 
-        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -107,7 +107,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           if (page == CommodityCodePage) {
             withClue("must not audit") {
-              verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any())(any())
+              verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
             }
           } else {
             withClue("must call the audit service with the correct details") {
@@ -116,7 +116,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
                   eqTo(testEori),
                   eqTo(AffinityGroup.Individual),
                   eqTo(GoodsDetailsUpdate),
-                  eqTo(testRecordId)
+                  eqTo(testRecordId),
+                  any()
                 )(any())
             }
           }
@@ -146,7 +147,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
 
           withClue("must not audit") {
-            verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any())(any())
+            verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
           }
 
         }

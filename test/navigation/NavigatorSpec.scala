@@ -488,7 +488,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.ProfileController.onPageLoad
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
           }
 
           "to Cya NIPHL registered when user answered yes" in {
@@ -498,7 +498,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
           }
 
           "to ProfilePage when answer is not present" in {

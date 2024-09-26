@@ -18,6 +18,7 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
@@ -27,7 +28,8 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
-import services.CategorisationService
+import services.{AuditService, CategorisationService}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 
@@ -45,7 +47,8 @@ class CategorisationPreparationController @Inject() (
   categorisationService: CategorisationService,
   goodsRecordsConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
-  navigator: Navigator
+  navigator: Navigator,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -56,10 +59,17 @@ class CategorisationPreparationController @Inject() (
         categorisationInfo <-
           categorisationService
             .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
+        _                   = auditService.auditStartUpdateGoodsRecord(
+                                request.eori,
+                                request.affinityGroup,
+                                CategorisationUpdate,
+                                recordId,
+                                Some(categorisationInfo)
+                              )
         updatedUserAnswers <-
           Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
         _                  <- sessionRepository.set(updatedUserAnswers)
-        _                  <- updateCategory(updatedUserAnswers, request.eori, recordId, categorisationInfo)
+        _                  <- updateCategory(updatedUserAnswers, request.eori, request.affinityGroup, recordId, categorisationInfo)
       } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers))
         .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
         .recover { e =>
@@ -109,7 +119,13 @@ class CategorisationPreparationController @Inject() (
                                           shorterCategorisationInfo
                                         )
 
-        _ <- updateCategory(updatedUAReassessmentAnswers, request.eori, recordId, newLongerCategorisationInfo)
+        _ <- updateCategory(
+               updatedUAReassessmentAnswers,
+               request.eori,
+               request.affinityGroup,
+               recordId,
+               newLongerCategorisationInfo
+             )
         _ <- sessionRepository.set(updatedUAReassessmentAnswers)
       } yield Redirect(
         navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)
@@ -145,6 +161,7 @@ class CategorisationPreparationController @Inject() (
   private def updateCategory(
     updatedUserAnswers: UserAnswers,
     eori: String,
+    affinityGroup: AffinityGroup,
     recordId: String,
     categorisationInfo: CategorisationInfo
   )(implicit
@@ -152,7 +169,15 @@ class CategorisationPreparationController @Inject() (
   ): Future[Done] =
     if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired) {
       CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
-        case Right(record) => goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record)
+        case Right(record) =>
+          auditService.auditFinishCategorisation(
+            eori,
+            affinityGroup,
+            recordId,
+            record
+          )
+
+          goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record)
         case Left(errors)  =>
           val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
 

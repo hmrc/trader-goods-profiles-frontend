@@ -509,6 +509,17 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
     "for a POST" - {
 
+      val expectedCategoryRecord = CategoryRecord(
+        testEori,
+        testRecordId,
+        "1234567890",
+        Category1Scenario,
+        Some("Weight, in kilograms"),
+        None,
+        categorisationInfo,
+        0,
+        wasSupplementaryUnitAsked = false
+      )
       "when user answers can update a valid goods record" - {
 
         "must update the goods record and redirect to the CategorisationResultController with correct view" - {
@@ -525,7 +536,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
-            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockSessionRepository = mock[SessionRepository]
@@ -545,14 +556,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 )
                 .build()
 
-            val expectedPayload = CategoryRecord(
-              testEori,
-              testRecordId,
-              "1234567890",
-              Category1Scenario,
-              0,
-              Some("Weight, in kilograms")
-            )
+            val expectedPayload = expectedCategoryRecord
 
             running(application) {
               val request = FakeRequest(POST, routes.CyaCategorisationController.onSubmit(testRecordId).url)
@@ -569,7 +573,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               withClue("audit event has been fired") {
                 verify(mockAuditService)
-                  .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
+                  .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(expectedPayload))(any)
               }
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
@@ -590,7 +594,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
-            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+            when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any())(any()))
               .thenReturn(Future.failed(new RuntimeException(":(")))
 
             val mockCategorisationService = mock[CategorisationService]
@@ -606,14 +610,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 )
                 .build()
 
-            val expectedPayload = CategoryRecord(
-              testEori,
-              testRecordId,
-              "1234567890",
-              Category1Scenario,
-              0,
-              Some("Weight, in kilograms")
-            )
+            val expectedPayload = expectedCategoryRecord
 
             running(application) {
               val request = FakeRequest(POST, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -686,7 +683,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
         val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any(), any())(any()))
+        when(mockAuditService.auditFinishCategorisation(any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val mockCategorisationService = mock[CategorisationService]
@@ -710,8 +707,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           }
 
           withClue("audit event has been fired even though connector failed") {
+
             verify(mockAuditService)
-              .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(0), eqTo(1))(any)
+              .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(expectedCategoryRecord))(any)
           }
           withClue("must not cleanse the user answers data when connector fails") {
             verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))

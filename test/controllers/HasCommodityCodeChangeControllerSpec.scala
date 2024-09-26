@@ -202,7 +202,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       val mockSessionRepository = mock[SessionRepository]
       val mockAuditService      = mock[AuditService]
 
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -232,7 +232,8 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
               eqTo(GoodsDetailsUpdate),
-              eqTo(testRecordId)
+              eqTo(testRecordId),
+              any()
             )(any())
         }
       }
@@ -316,7 +317,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       val mockSessionRepository = mock[SessionRepository]
       val mockAuditService      = mock[AuditService]
 
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any())(any()))
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 

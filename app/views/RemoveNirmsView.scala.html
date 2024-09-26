@@ -41,13 +41,13 @@
             iconFallbackText = Some(messages("removeNirms.warning")),
             content = Text(messages("removeNirms.warningText"))
                 ))
-<h2 class="govuk-heading-m">@messages("removeNirms.h2")</h2>
+
     @formHelper(action = routes.RemoveNirmsController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.apply(
                 field = form("value"),
-                legend = Legend(content = "removeNirms.h2", classes = "govuk-visually-hidden").asSecondaryHeading(Medium),
+                legend = Legend(content = "removeNirms.h2").asSecondaryHeading(Medium),
             items = Seq(
                 RadioItem(content = messages("removeNirms.yes"), value = Some("true"),id = Some(s"value")),
                 RadioItem(content = messages("removeNirms.no"), value = Some("false"),id = Some(s"value-no"))
