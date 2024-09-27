@@ -52,6 +52,13 @@ class HasCountryOfOriginChangeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          GoodsDetailsUpdate,
+          recordId
+        )
       val preparedForm = request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)

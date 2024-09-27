@@ -55,9 +55,14 @@ class HasCommodityCodeChangeController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val record = goodsRecordConnector.getRecord(request.eori, recordId)
-
       record
         .map { goodsRecord =>
+          auditService.auditStartUpdateGoodsRecord(
+            request.eori,
+            request.affinityGroup,
+            GoodsDetailsUpdate,
+            recordId
+          )
           val preparedForm = request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
             case None        => form
             case Some(value) => form.fill(value)
