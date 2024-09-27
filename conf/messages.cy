@@ -8,9 +8,9 @@ site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
-site.goBackToGoodsRecord = Ewch i’r cofnod nwyddau
-site.goBackToHomePage = Ewch i’r hafan
-site.goBackToGoodsProfile = Ewch i’r proffil nwyddau
+site.goBackToGoodsRecord = Ewch yn ôl i’r cofnod nwyddau
+site.goBackToHomePage = Ewch yn ôl i’r hafan
+site.goBackToGoodsProfile = Ewch yn ôl i’r proffil nwyddau
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -321,13 +321,15 @@ categorisationResult.Category1.title = Categori 1
 categorisationResult.Category1.h1 = Categori 1
 categorisationResult.Category1.p1 = Mae’ch nwyddau wedi’u categoreiddio ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.Category1NoExemptions.p1 = Mae’ch nwyddau wedi’u categoreiddio ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM). Nid oes unrhyw eithriadau ar gael i newid y categori.
+categorisationResult.Category2.title = Categori 2
+categorisationResult.Category2.heading = Categori 2
+categorisationResult.Category2.p1 = Mae’ch nwyddau wedi’u categoreiddio ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
-categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
 categorisationResult.h2 = Beth sy’n digwydd nesaf?
 categorisationResult.h2.paragraph = Gallwch fwrw golwg dros y cofnod o’ch proffil nwyddau, creu cofnod nwyddau newydd neu fynd i’r hafan.
-
 
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 
