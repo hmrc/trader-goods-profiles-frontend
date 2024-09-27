@@ -61,13 +61,7 @@
     }
 
 <div class="govuk-grid-column-two-thirds">
-
-    @{
-        pagination.items match {
-            case Some(items) if (items.size > 1) => <h1 class="govuk-heading-l">{messages("goodsRecords.title.withPage", page, items.size)}</h1>
-            case _ => <h1 class="govuk-heading-l">{messages("goodsRecords.title")}</h1>
-        }
-    }
+    <h1 class="govuk-heading-l">{messages("goodsRecords.title")}</h1>
 
     <p class="govuk-body">@messages("goodsRecords.p1")</p>
 
