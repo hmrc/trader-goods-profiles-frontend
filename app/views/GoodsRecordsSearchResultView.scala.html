@@ -47,70 +47,65 @@
 </div>
 
 <div class="govuk-grid-column-full">
-
-    <div style="overflow-x: auto;">
-
-        @govukTable(
-            Table(
-                head = Some(Seq(
-                    HeadCell(
-                        content = Text(messages("goodsRecords.tableHeader.traderReference"))
+    @govukTable(
+        Table(
+            head = Some(Seq(
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.traderReference"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.status"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.actions"))
+                )
+            )),
+            rows = goodsRecordsItems.map{
+                goodsRecord =>  Seq(
+                    TableRow(
+                        content = Text(goodsRecord.traderRef)
                     ),
-                    HeadCell(
-                        content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+                    TableRow(
+                        content = Text(goodsRecord.goodsDescription)
                     ),
-                    HeadCell(
-                        content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+                    TableRow(
+                        content = Text(
+                            countries.find(_.id == goodsRecord.countryOfOrigin)
+                                .map(_.description)
+                                .getOrElse(goodsRecord.countryOfOrigin)
+                            )
                     ),
-                    HeadCell(
-                        content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+                    TableRow(
+                        content = Text(goodsRecord.comcode)
                     ),
-                    HeadCell(
-                        content = Text(messages("goodsRecords.tableHeader.status"))
+                    TableRow(
+                        content = Text(goodsRecord.declarable)
                     ),
-                    HeadCell(
-                        content = Text(messages("goodsRecords.tableHeader.actions"))
-                    )
-                )),
-                rows = goodsRecordsItems.map{
-                    goodsRecord =>  Seq(
-                        TableRow(
-                            content = Text(goodsRecord.traderRef)
-                        ),
-                        TableRow(
-                            content = Text(goodsRecord.goodsDescription)
-                        ),
-                        TableRow(
-                            content = Text(
-                                countries.find(_.id == goodsRecord.countryOfOrigin)
-                                    .map(_.description)
-                                    .getOrElse(goodsRecord.countryOfOrigin)
-                                )
-                        ),
-                        TableRow(
-                            content = Text(goodsRecord.comcode)
-                        ),
-                        TableRow(
-                            content = Text(goodsRecord.declarable)
-                        ),
-                        TableRow(
-                            content = HtmlContent(
-                                tableRowActionList(
-                                    text1 = messages("site.change"),
-                                    text2 = messages("site.remove"),
-                                    visuallyHiddenContent1 = goodsRecord.traderRef,
-                                    visuallyHiddenContent2 = goodsRecord.traderRef,
-                                    href1 = routes.ReviewReasonController.onPageLoad(goodsRecord.recordId).url,
-                                    href2 = routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
-                                )
+                    TableRow(
+                        content = HtmlContent(
+                            tableRowActionList(
+                                text1 = messages("site.change"),
+                                text2 = messages("site.remove"),
+                                visuallyHiddenContent1 = goodsRecord.traderRef,
+                                visuallyHiddenContent2 = goodsRecord.traderRef,
+                                href1 = routes.ReviewReasonController.onPageLoad(goodsRecord.recordId).url,
+                                href2 = routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
                             )
                         )
                     )
-                }
-            )
+                )
+            }
         )
-
-    </div>
+    )
 
     @if(totalPages > 1) {
         @govukPagination(pagination)
