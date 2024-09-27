@@ -108,12 +108,11 @@ class CyaMaintainProfileController @Inject() (
 
   def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
+      TraderProfile.validateHasNiphl(request.userAnswers) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
             rows = Seq(
-              HasNiphlSummary.rowUpdate(request.userAnswers),
-              NiphlNumberSummary.rowUpdate(request.userAnswers)
+              HasNiphlSummary.rowUpdate(request.userAnswers)
             ).flatten
           )
           Future.successful(Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl)))
@@ -124,16 +123,16 @@ class CyaMaintainProfileController @Inject() (
 
   def onSubmitNiphl(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      TraderProfile.validateNiphlsUpdate(request.userAnswers) match {
-        case Right(niphlNumber) =>
+      TraderProfile.validateHasNiphl(request.userAnswers) match {
+        case Right(_)     =>
           traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-            val updatedProfile = traderProfile.copy(niphlNumber = niphlNumber)
+            val updatedProfile = traderProfile.copy(niphlNumber = None)
             auditService.auditMaintainProfile(traderProfile, updatedProfile, request.affinityGroup)
             for {
               _ <- traderProfileConnector.submitTraderProfile(updatedProfile, request.eori)
             } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
           }
-        case Left(errors)       =>
+        case Left(errors) =>
           Future.successful(logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors))
       }
     }

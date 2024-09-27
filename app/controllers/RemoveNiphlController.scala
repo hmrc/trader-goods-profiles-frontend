@@ -16,11 +16,12 @@
 
 package controllers
 
+import connectors.TraderProfileConnector
 import controllers.actions._
 import forms.RemoveNiphlFormProvider
 import models.NormalMode
 import navigation.Navigator
-import pages.RemoveNiphlPage
+import pages.{NiphlNumberUpdatePage, RemoveNiphlPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -28,7 +29,7 @@ import views.html.RemoveNiphlView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
+import scala.util.{Success, Try}
 
 class RemoveNiphlController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,7 +41,8 @@ class RemoveNiphlController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   formProvider: RemoveNiphlFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: RemoveNiphlView
+  view: RemoveNiphlView,
+  traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -63,11 +65,25 @@ class RemoveNiphlController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           value =>
-            request.userAnswers.set(RemoveNiphlPage, value) match {
-              case Success(answers) =>
-                sessionRepository.set(answers).map { _ =>
-                  Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
-                }
+            if (value) {
+              request.userAnswers.set(RemoveNiphlPage, value) match {
+                case Success(answers) =>
+                  sessionRepository.set(answers).map { _ =>
+                    Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
+                  }
+              }
+            } else {
+
+              for {
+                traderProfile     <- traderProfileConnector.getTraderProfile(request.eori)
+                niphlNumberOpt     = request.userAnswers.get(NiphlNumberUpdatePage).orElse(traderProfile.niphlNumber)
+                niphlNumber       <- Future.fromTry(Try(niphlNumberOpt.get))
+                uaWithRemoveValue <- Future.fromTry(request.userAnswers.set(RemoveNiphlPage, value))
+                uaWithNiphlNumber <-
+                  Future.fromTry(uaWithRemoveValue.set(NiphlNumberUpdatePage, niphlNumber))
+                _                 <- sessionRepository.set(uaWithNiphlNumber)
+              } yield Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, uaWithNiphlNumber))
+
             }
         )
   }

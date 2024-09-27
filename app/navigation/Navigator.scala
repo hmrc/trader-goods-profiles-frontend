@@ -236,8 +236,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(RemoveNiphlPage)
       .map {
+        case false => routes.CyaMaintainProfileController.onPageLoadNiphlNumber
         case true  => routes.CyaMaintainProfileController.onPageLoadNiphl
-        case false => routes.ProfileController.onPageLoad()
       }
       .getOrElse(routes.ProfileController.onPageLoad())
 

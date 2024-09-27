@@ -92,6 +92,23 @@ object TraderProfile {
       case Left(errors) => Left(errors)
     }
 
+  def validateHasNiphl(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, Boolean] =
+    answers.getPageValue(HasNiphlUpdatePage) match {
+      case Right(_)     =>
+        answers.getPageValue(TraderProfileQuery) match {
+          case Right(userProfile) =>
+            if (userProfile.niphlNumber.isDefined) {
+              answers.getPageValue(RemoveNiphlPage)
+            } else {
+              Right(false)
+            }
+          case Left(errors)       => Left(errors)
+        }
+      case Left(errors) => Left(errors)
+    }
+
   def validateNiphlsUpdate(
     answers: UserAnswers
   ): EitherNec[ValidationError, Option[String]] =
